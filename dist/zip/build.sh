@@ -99,6 +99,10 @@ if [ ! -e "./dependencies/jgrapht-core-1.4.0.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/jgrapht-core-1.4.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.4.0/jgrapht-core-1.4.0.jar
 fi
+if [ ! -e "./dependencies/jgrapht-io-1.4.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jgrapht-io-1.4.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-io/1.4.0/jgrapht-io-1.4.0.jar
+fi
 if [ ! -e "./dependencies/autolink-0.10.0.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/autolink-0.10.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/nibor/autolink/autolink/0.10.0/autolink-0.10.0.jar

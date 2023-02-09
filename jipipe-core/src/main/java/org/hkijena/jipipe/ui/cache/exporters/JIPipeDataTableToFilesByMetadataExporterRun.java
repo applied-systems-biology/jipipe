@@ -39,6 +39,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
      */
     public JIPipeDataTableToFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<? extends JIPipeDataTable> dataTables, boolean splitBySlot) {
         super(workbench);
-        this.dataTables = dataTables;
+        this.dataTables = new ArrayList<>(dataTables);
         this.settings = new Settings();
         settings.splitBySlotName = splitBySlot;
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);

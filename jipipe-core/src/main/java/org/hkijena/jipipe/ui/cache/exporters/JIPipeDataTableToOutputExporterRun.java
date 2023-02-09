@@ -34,6 +34,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,7 +57,7 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
     public JIPipeDataTableToOutputExporterRun(JIPipeWorkbench workbench, Path outputPath, List<? extends JIPipeDataTable> dataTables, boolean splitBySlot, boolean clearDirectory) {
         super(workbench);
         this.outputPath = outputPath;
-        this.dataTables = dataTables;
+        this.dataTables = new ArrayList<>(dataTables);
         this.splitBySlot = splitBySlot;
         this.clearDirectory = clearDirectory;
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);

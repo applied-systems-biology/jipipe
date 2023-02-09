@@ -19,6 +19,10 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.ImportFilamentsFromJsonAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.SkeletonToFilamentsFijiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -56,7 +60,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public Set<JIPipeDependency> getDependencies() {
-        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY);
     }
 
     @Override
@@ -76,7 +80,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyId() {
-        return "org.hkijena.jipipe:ij-multi-template-matching";
+        return "org.hkijena.jipipe:ij-filaments";
     }
 
     @Override
@@ -91,6 +95,9 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        registerDatatype("filaments", FilamentsData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
+        registerNodeType("filaments-from-json", ImportFilamentsFromJsonAlgorithm.class);
+        registerNodeType("filaments-skeleton-to-filaments", SkeletonToFilamentsFijiAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
     }
 
 
