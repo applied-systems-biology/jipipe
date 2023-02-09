@@ -373,6 +373,7 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.jdom:jdom2:2.0.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: math.geom2d:javaGeom:0.11.1" level="project" />
     <orderEntry type="module" module-name="jipipe-ij-multi-template-matching" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-ij-filaments" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-clij" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-strings" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-utils" scope="RUNTIME" />

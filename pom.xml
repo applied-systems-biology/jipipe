@@ -297,6 +297,11 @@ See the LICENSE file provided with this code for the full license.
                 <artifactId>jipipe-omnipose</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij-filaments</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -329,6 +334,7 @@ See the LICENSE file provided with this code for the full license.
         <module>jipipe-ij-omero</module>
         <module>jipipe-ij-algorithms</module>
         <module>jipipe-ij-multi-template-matching</module>
+        <module>jipipe-ij-filaments</module>
         <module>jipipe-annotation</module>
         <module>jipipe-filesystem</module>
         <module>jipipe-tables</module>
