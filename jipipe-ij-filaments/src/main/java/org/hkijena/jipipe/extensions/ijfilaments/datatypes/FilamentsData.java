@@ -26,6 +26,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.nio.json.JSONImporter;
 
@@ -37,6 +38,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Filaments", description = "Stores filaments as graph")
@@ -420,5 +423,25 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
             maxY = Math.max(maxY, vertex.getCentroid().getY());
         }
         return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+    }
+
+    public void removeVertexIf(Predicate<FilamentVertex> predicate) {
+        List<FilamentVertex> toDelete = vertexSet().stream().filter(predicate).collect(Collectors.toList());
+        for (FilamentVertex vertex : toDelete) {
+            removeVertex(vertex);
+        }
+    }
+
+    public Map<FilamentVertex, Integer> findComponentIds() {
+        ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = new ConnectivityInspector<>(this);
+        Map<FilamentVertex, Integer> result = new HashMap<>();
+        int component = 0;
+        for (Set<FilamentVertex> connectedSet : connectivityInspector.connectedSets()) {
+            for(FilamentVertex vertex : connectedSet) {
+                result.put(vertex, component);
+            }
+            ++component;
+        }
+        return result;
     }
 }
