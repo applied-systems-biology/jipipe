@@ -6,7 +6,9 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSour
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class FilamentVertexVariableSource implements ExpressionParameterVariableSource {
@@ -15,23 +17,18 @@ public class FilamentVertexVariableSource implements ExpressionParameterVariable
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("Centroid X", "The X location of the centroid", "cx"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid Y", "The Y location of the centroid", "cy"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid Z", "The Z location of the centroid", "cz"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid channel", "The channel (c) location of the centroid", "cc"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid frame", "The frame (t) location of the centroid", "ct"));
+        VARIABLES.add(new ExpressionParameterVariable("UUID", "The unique ID of the vertex", "uuid"));
+        VARIABLES.add(new ExpressionParameterVariable("Centroid X", "The X location of the centroid", "x"));
+        VARIABLES.add(new ExpressionParameterVariable("Centroid Y", "The Y location of the centroid", "y"));
+        VARIABLES.add(new ExpressionParameterVariable("Centroid Z", "The Z location of the centroid", "z"));
+        VARIABLES.add(new ExpressionParameterVariable("Centroid channel", "The channel (c) location of the centroid", "c"));
+        VARIABLES.add(new ExpressionParameterVariable("Centroid frame", "The frame (t) location of the centroid", "t"));
         VARIABLES.add(new ExpressionParameterVariable("Thickness", "The thickness around the centroid", "thickness"));
         VARIABLES.add(new ExpressionParameterVariable("Degree", "The degree (number of edges) of the vertex", "degree"));
     }
 
     public static void writeToVariables(FilamentsData graph, FilamentVertex vertex, ExpressionVariables variables, String prefix) {
-        variables.set(prefix + "cx", vertex.getCentroid().getX());
-        variables.set(prefix + "cy", vertex.getCentroid().getY());
-        variables.set(prefix + "cz", vertex.getCentroid().getZ());
-        variables.set(prefix + "cc", vertex.getCentroid().getC());
-        variables.set(prefix + "ct", vertex.getCentroid().getT());
-        variables.set(prefix + "thickness", vertex.getThickness());
-        variables.set(prefix + "degree", graph.degreeOf(vertex));
+        graph.measureVertex(vertex, variables, prefix);
     }
 
     @Override

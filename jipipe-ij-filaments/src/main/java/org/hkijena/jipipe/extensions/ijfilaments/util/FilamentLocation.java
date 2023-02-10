@@ -100,4 +100,24 @@ public class FilamentLocation {
     public int hashCode() {
         return Objects.hash(x, y, z, c, t);
     }
+
+    /**
+     * Calculates the distances between two locations
+     * Accounts for negative Z/C/T locations (location everywhere)
+     * @param other the other location
+     * @return the euclidean distance
+     */
+    public double distanceTo(FilamentLocation other) {
+        int z1 = other.z;
+        int c1 = other.c;
+        int t1 = other.t;
+        if(z1 < 0)
+            z1 = z;
+        if(c1 < 0)
+            c1 = c;
+        if(t1 < 0)
+            t1 = t;
+        return Math.sqrt(Math.pow(x - other.getX(), 2) + Math.pow(y - other.getY(), 2)
+                + Math.pow(z - z1, 2) + Math.pow(c - c1, 2) + Math.pow(t - t1, 2));
+    }
 }

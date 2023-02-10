@@ -12,23 +12,20 @@ import java.util.UUID;
 
 public class FilamentsDataSerializer extends JsonSerializer<FilamentsData> {
     @Override
-    public void serialize(FilamentsData FilamentsData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+    public void serialize(FilamentsData filamentsData, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
         jsonGenerator.writeStartObject();
-        BiMap<UUID, FilamentVertex> vertexMap = HashBiMap.create();
         jsonGenerator.writeObjectFieldStart("vertices");
-        for (FilamentVertex vertex : FilamentsData.vertexSet()) {
-            UUID uuid = UUID.randomUUID();
-            vertexMap.put(uuid, vertex);
-            jsonGenerator.writeObjectField(uuid.toString(), vertex);
+        for (FilamentVertex vertex : filamentsData.vertexSet()) {
+            jsonGenerator.writeObjectField(vertex.getUuid().toString(), vertex);
         }
         jsonGenerator.writeEndObject();
         jsonGenerator.writeArrayFieldStart("edges");
-        for (FilamentEdge edge : FilamentsData.edgeSet()) {
-            FilamentVertex edgeSource = FilamentsData.getEdgeSource(edge);
-            FilamentVertex edgeTarget = FilamentsData.getEdgeTarget(edge);
+        for (FilamentEdge edge : filamentsData.edgeSet()) {
+            FilamentVertex edgeSource = filamentsData.getEdgeSource(edge);
+            FilamentVertex edgeTarget = filamentsData.getEdgeTarget(edge);
             jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("source", vertexMap.inverse().get(edgeSource).toString());
-            jsonGenerator.writeStringField("target", vertexMap.inverse().get(edgeTarget).toString());
+            jsonGenerator.writeStringField("source", edgeSource.getUuid().toString());
+            jsonGenerator.writeStringField("target", edgeTarget.getUuid().toString());
             jsonGenerator.writeObjectField("data", edge);
             jsonGenerator.writeEndObject();
         }

@@ -23,6 +23,7 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -484,6 +485,37 @@ public class StringUtils {
             }
         }
         return comparisonResult;
+    }
+
+    /**
+     * Attempts to parse a string as double.
+     * If not successful, return the string
+     * @param str the string
+     * @return the number or the string
+     */
+    public static Object tryParseDoubleOrReturnString(String str) {
+        str = StringUtils.nullToEmpty(str);
+        str = str.replace(',', '.').replace(" ", "");
+        double value;
+        if (NumberUtils.isCreatable(str)) {
+            value = NumberUtils.createDouble(str);
+        }
+        else if(StringUtils.isNullOrEmpty(str)) {
+            value = 0d;
+        }
+        else if(str.toLowerCase().startsWith("-inf")) {
+            value = Double.NEGATIVE_INFINITY;
+        }
+        else if(str.toLowerCase().startsWith("inf")) {
+            value = Double.POSITIVE_INFINITY;
+        }
+        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+            value = Double.NaN;
+        }
+        else {
+            return str;
+        }
+        return value;
     }
 
     public static double parseDouble(String str) {

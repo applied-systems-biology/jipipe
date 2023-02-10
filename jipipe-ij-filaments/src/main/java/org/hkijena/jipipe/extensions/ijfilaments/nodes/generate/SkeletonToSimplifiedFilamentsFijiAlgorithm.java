@@ -123,7 +123,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
                 FilamentEdge filamentEdge = new FilamentEdge();
                 FilamentVertex filamentVertex1 = vertexMapping.get(v1);
                 FilamentVertex filamentVertex2 = vertexMapping.get(v2);
-                filamentsData.addEdge(filamentVertex1, filamentVertex2, filamentEdge);
+                filamentsData.addEdgeIgnoreLoops(filamentVertex1, filamentVertex2, filamentEdge);
             }
         }
 

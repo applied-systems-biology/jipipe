@@ -5,19 +5,28 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import ij.gui.EllipseRoi;
+import ij.gui.Line;
+import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.ijfilaments.display.CachedFilamentsDataViewerWindow;
 import org.hkijena.jipipe.extensions.ijfilaments.util.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.nio.json.JSONImporter;
 
 import java.awt.*;
@@ -25,9 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Filaments", description = "Stores filaments as graph")
@@ -35,7 +42,7 @@ import java.util.stream.Collectors;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 @JsonSerialize(using = FilamentsDataSerializer.class)
 @JsonDeserialize(using = FilamentsDataDeserializer.class)
-public class FilamentsData  extends DefaultDirectedGraph<FilamentVertex, FilamentEdge> implements JIPipeData {
+public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> implements JIPipeData {
 
     public FilamentsData() {
         super(FilamentEdge.class);
@@ -90,7 +97,8 @@ public class FilamentsData  extends DefaultDirectedGraph<FilamentVertex, Filamen
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-
+        CachedFilamentsDataViewerWindow window = new CachedFilamentsDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        window.setVisible(true);
     }
 
     @Override
@@ -115,6 +123,65 @@ public class FilamentsData  extends DefaultDirectedGraph<FilamentVertex, Filamen
         return graph;
     }
 
+    public ROIListData toRoi(boolean ignoreNon2DEdges, boolean withEdges, boolean withVertices, boolean thinEdgeLines) {
+        ROIListData outputData = new ROIListData();
+
+        if(withEdges) {
+            for (FilamentEdge edge : edgeSet()) {
+                FilamentVertex edgeSource = getEdgeSource(edge);
+                FilamentVertex edgeTarget = getEdgeTarget(edge);
+
+                if (edgeSource.getCentroid().getZ() != edgeTarget.getCentroid().getZ() ||
+                        edgeSource.getCentroid().getC() != edgeTarget.getCentroid().getC() ||
+                        edgeSource.getCentroid().getT() != edgeTarget.getCentroid().getT()) {
+                    if (ignoreNon2DEdges)
+                        continue;
+                    outputData.add(edgeToRoiLine(edge, edgeSource.getCentroid().getZ(), edgeSource.getCentroid().getC(), edgeSource.getCentroid().getT(), thinEdgeLines));
+                    outputData.add(edgeToRoiLine(edge, edgeTarget.getCentroid().getZ(), edgeTarget.getCentroid().getC(), edgeTarget.getCentroid().getT(), thinEdgeLines));
+                } else {
+                    outputData.add(edgeToRoiLine(edge, edgeSource.getCentroid().getZ(), edgeSource.getCentroid().getC(), edgeSource.getCentroid().getT(), thinEdgeLines));
+                }
+            }
+        }
+        if(withVertices) {
+            for (FilamentVertex vertex : vertexSet()) {
+                outputData.add(vertexToRoi(vertex));
+            }
+        }
+
+        return outputData;
+    }
+
+    private Roi vertexToRoi(FilamentVertex vertex) {
+        FilamentLocation centroid = vertex.getCentroid();
+        EllipseRoi roi = new EllipseRoi(centroid.getX() - vertex.getThickness() / 2,
+                centroid.getY() - vertex.getThickness() / 2,
+                centroid.getX() + vertex.getThickness() / 2,
+                centroid.getY() + vertex.getThickness() / 2,
+                1);
+        roi.setName(vertex.getUuid().toString());
+        roi.setStrokeColor(vertex.getColor());
+//        roi.setFillColor(vertex.getColor());
+        int c = Math.max(-1, centroid.getC());
+        int z = Math.max(-1, centroid.getZ());
+        int t = Math.max(-1, centroid.getT());
+        roi.setPosition(c + 1, z + 1, t + 1);
+        return roi;
+    }
+
+    public Line edgeToRoiLine(FilamentEdge edge, int z, int c, int t, boolean thinLines) {
+        FilamentVertex edgeSource = getEdgeSource(edge);
+        FilamentVertex edgeTarget = getEdgeTarget(edge);
+        Line roi = new Line(edgeSource.getCentroid().getX(), edgeSource.getCentroid().getY(), edgeTarget.getCentroid().getX(), edgeTarget.getCentroid().getY());
+        roi.setStrokeColor(edge.getColor());
+//        roi.setFillColor(edge.getColor());
+        if(!thinLines) {
+            roi.setStrokeWidth((edgeSource.getThickness() + edgeTarget.getThickness()) / 2);
+        }
+        roi.setName(edge.getUuid().toString());
+        roi.setPosition(c + 1, z + 1, t + 1);
+        return roi;
+    }
 
     public void removeDuplicateVertices() {
         Multimap<FilamentLocation, FilamentVertex> multimap = groupVerticesByLocation();
@@ -140,16 +207,28 @@ public class FilamentsData  extends DefaultDirectedGraph<FilamentVertex, Filamen
                             FilamentVertex edgeSource = getEdgeSource(edge);
                             FilamentVertex edgeTarget = getEdgeTarget(edge);
                             if(edgeSource == vertex) {
-                                addEdge(referenceVertex, edgeTarget);
+                                addEdgeIgnoreLoops(referenceVertex, edgeTarget);
                             }
                             else {
-                                addEdge(edgeSource, referenceVertex);
+                                addEdgeIgnoreLoops(edgeSource, referenceVertex);
                             }
                         }
                         removeVertex(vertex);
                     }
                 }
             }
+        }
+    }
+
+    public void addEdgeIgnoreLoops(FilamentVertex source, FilamentVertex target) {
+        if(!Objects.equals(source, target)) {
+            addEdge(source, target);
+        }
+    }
+
+    public void addEdgeIgnoreLoops(FilamentVertex source, FilamentVertex target, FilamentEdge edge) {
+        if(!Objects.equals(source, target)) {
+            addEdge(source, target, edge);
         }
     }
 
@@ -161,6 +240,72 @@ public class FilamentsData  extends DefaultDirectedGraph<FilamentVertex, Filamen
                 removeEdge(edge);
             }
         }
+    }
+
+    public ResultsTableData measureVertices() {
+        ResultsTableData tableData = new ResultsTableData();
+        tableData.addStringColumn("uuid");
+        tableData.addNumericColumn("x");
+        tableData.addNumericColumn("y");
+        tableData.addNumericColumn("z");
+        tableData.addNumericColumn("c");
+        tableData.addNumericColumn("t");
+        tableData.addNumericColumn("thickness");
+        tableData.addStringColumn("color");
+        tableData.addNumericColumn("degree");
+        Map<String, Object> rowData = new LinkedHashMap<>();
+        for (FilamentVertex vertex : vertexSet()) {
+            rowData.clear();
+            measureVertex(vertex, rowData, "");
+            tableData.addRow(rowData);
+        }
+        return tableData;
+    }
+
+    public void measureVertex(FilamentVertex vertex, Map<String, Object> target, String prefix) {
+        target.put(prefix + "uuid", vertex.getUuid().toString());
+        target.put(prefix + "x", vertex.getCentroid().getX());
+        target.put(prefix + "y", vertex.getCentroid().getY());
+        target.put(prefix + "z", vertex.getCentroid().getZ());
+        target.put(prefix + "c", vertex.getCentroid().getC());
+        target.put(prefix + "t", vertex.getCentroid().getT());
+        target.put(prefix + "thickness", vertex.getThickness());
+        target.put(prefix + "color", ColorUtils.colorToHexString(vertex.getColor()));
+        target.put(prefix + "degree", degreeOf(vertex));
+        for (Map.Entry<String, String> entry : vertex.getMetadata().entrySet()) {
+            target.put(prefix + entry.getKey(), StringUtils.tryParseDoubleOrReturnString(entry.getValue()));
+        }
+    }
+
+    public ResultsTableData measureEdges() {
+        ResultsTableData tableData = new ResultsTableData();
+        tableData.addStringColumn("uuid");
+        tableData.addStringColumn("color");
+        tableData.addNumericColumn("length");
+        Map<String, Object> rowData = new LinkedHashMap<>();
+        for (FilamentEdge edge : edgeSet()) {
+            rowData.clear();
+            measureEdge(edge, rowData, "");
+            tableData.addRow(rowData);
+        }
+        return tableData;
+    }
+
+    public void measureEdge(FilamentEdge edge, Map<String, Object> target, String prefix) {
+        target.put(prefix + "uuid", edge.getUuid());
+        target.put(prefix + "color", ColorUtils.colorToHexString(edge.getColor()));
+        target.put(prefix + "length", getEdgeLength(edge));
+        for (Map.Entry<String, String> entry : edge.getMetadata().entrySet()) {
+            target.put(prefix + entry.getKey(), StringUtils.tryParseDoubleOrReturnString(entry.getValue()));
+        }
+        measureVertex(getEdgeSource(edge), target, prefix + "source.");
+        measureVertex(getEdgeTarget(edge), target, prefix + "target.");
+    }
+
+    private double getEdgeLength(FilamentEdge edge) {
+        FilamentVertex edgeSource = getEdgeSource(edge);
+        FilamentVertex edgeTarget = getEdgeTarget(edge);
+        return edgeSource.getCentroid().distanceTo(edgeTarget.getCentroid());
     }
 
     public Multimap<FilamentLocation, FilamentVertex> groupVerticesByLocation() {
@@ -233,5 +378,23 @@ public class FilamentsData  extends DefaultDirectedGraph<FilamentVertex, Filamen
 
         // Cleanup
         removeSelfEdges();
+    }
+
+    public boolean isEmpty() {
+        return vertexSet().isEmpty();
+    }
+
+    public Rectangle getBoundsXY() {
+        int minX = Integer.MAX_VALUE;
+        int maxX = Integer.MIN_VALUE;
+        int minY = Integer.MAX_VALUE;
+        int maxY = Integer.MIN_VALUE;
+        for (FilamentVertex vertex : vertexSet()) {
+            minX = Math.min(minX, vertex.getCentroid().getX());
+            maxX = Math.max(maxX, vertex.getCentroid().getX());
+            minY = Math.min(minY, vertex.getCentroid().getY());
+            maxY = Math.max(maxY, vertex.getCentroid().getY());
+        }
+        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }
 }

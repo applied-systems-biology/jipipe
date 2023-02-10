@@ -80,7 +80,7 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                                         continue;
                                     if(ip.get(sx,sy) > 0) {
                                         FilamentVertex target = vertexMap.get(new Point(sx, sy));
-                                        filamentsData.addEdge(source, target);
+                                        filamentsData.addEdgeIgnoreLoops(source, target);
                                     }
                                 }
                             }
