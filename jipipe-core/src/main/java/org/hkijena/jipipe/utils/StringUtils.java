@@ -567,4 +567,13 @@ public class StringUtils {
         }
         return value;
     }
+
+    public static double objectToDouble(Object o) {
+        if(o instanceof Number) {
+            return ((Number) o).doubleValue();
+        }
+        else {
+            return StringUtils.parseDouble(StringUtils.nullToEmpty(o));
+        }
+    }
 }

@@ -23,7 +23,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private double factorC = 0;
     private double factorT = 0;
 
-    private DefaultExpressionParameter locationMergingFunction = new DefaultExpressionParameter("MEDIAN(values)");
+    private DefaultExpressionParameter locationMergingFunction = new DefaultExpressionParameter("AVG(values)");
 
     public SmoothFilamentsAlgorithm(JIPipeNodeInfo info) {
         super(info);

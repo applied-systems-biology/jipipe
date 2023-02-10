@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.statistics.*;
 import org.hkijena.jipipe.extensions.expressions.functions.string.*;
 import org.hkijena.jipipe.extensions.expressions.functions.util.PrintFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.variables.*;
+import org.hkijena.jipipe.extensions.expressions.functions.vector.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -269,6 +270,14 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new DoubleToStringFunction());
         registerExpressionFunction(new StringFormatFunction());
         registerExpressionFunction(new ToNumber2Function());
+        registerExpressionFunction(new VectorAddFunction());
+        registerExpressionFunction(new VectorEuclideanNormFunction());
+        registerExpressionFunction(new VectorManhattanNormFunction());
+        registerExpressionFunction(new VectorMaximumNormFunction());
+        registerExpressionFunction(new VectorMultiplyScalarFunction());
+        registerExpressionFunction(new VectorNormalizeFunction());
+        registerExpressionFunction(new VectorScalarProductFunction());
+        registerExpressionFunction(new VectorSubtractFunction());
     }
 
     @Override
