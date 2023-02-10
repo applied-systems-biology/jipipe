@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.ijfilaments.nodes;
+package org.hkijena.jipipe.extensions.ijfilaments.nodes.filter;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
@@ -17,7 +18,7 @@ import java.util.Map;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Filter filament vertices", description = "Filters filament vertices by various properties")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filaments\nFilter")
+@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
 public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlgorithm {
@@ -61,7 +62,7 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Filter", description = "If the filter is left empty or returns TRUE, the vertex is kept. Otherwise the vertex is deleted.")
+    @JIPipeDocumentation(name = "Only keep vertex if", description = "If the filter is left empty or returns TRUE, the vertex is kept. Otherwise the vertex is deleted.")
     @JIPipeParameter("filter")
     @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)

@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.ijfilaments.nodes;
+package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
@@ -17,7 +18,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "Change filament vertex properties", description = "Allows to override various properties of the filament vertices")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filaments\nModify")
+@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
 public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

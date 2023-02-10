@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.ijfilaments.nodes;
+package org.hkijena.jipipe.extensions.ijfilaments.nodes.generate;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;

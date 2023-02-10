@@ -12,7 +12,7 @@
  *
  */
 
-package org.hkijena.jipipe.extensions.ijfilaments.nodes;
+package org.hkijena.jipipe.extensions.ijfilaments.nodes.generate;
 
 import ij.ImagePlus;
 import ij.gui.Roi;

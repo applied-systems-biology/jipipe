@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.ijfilaments.nodes;
+package org.hkijena.jipipe.extensions.ijfilaments.nodes.split;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Split filaments into connected components", description = "Splits the filament graph into connected components and outputs one graph per component")
-@JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filaments\nMerge")
+@JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Split")
 @JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
 public class SplitFilamentsIntoConnectedComponentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

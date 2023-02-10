@@ -3,6 +3,8 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import java.util.Objects;
+
 public class FilamentLocation {
     private int x;
     private int y;
@@ -84,5 +86,18 @@ public class FilamentLocation {
     @JsonSetter("t")
     public void setT(int t) {
         this.t = t;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FilamentLocation that = (FilamentLocation) o;
+        return x == that.x && y == that.y && z == that.z && c == that.c && t == that.t;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(x, y, z, c, t);
     }
 }

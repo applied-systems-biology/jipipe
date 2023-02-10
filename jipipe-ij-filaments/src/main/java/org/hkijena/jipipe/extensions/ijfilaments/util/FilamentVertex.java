@@ -20,6 +20,8 @@ public class FilamentVertex {
 
     public FilamentVertex(FilamentVertex other) {
         this.centroid = new FilamentLocation(other.centroid);
+        this.thickness = other.thickness;
+        this.metadata = new HashMap<>(other.metadata);
     }
 
     @JsonGetter("centroid")
