@@ -15,9 +15,11 @@ import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.scijava.vecmath.Vector3d;
 
+import java.awt.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -42,6 +44,8 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
         FilamentsData filamentsData = new FilamentsData(dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo));
         Map<FilamentVertex, Integer> components = filamentsData.findComponentIds();
 
+        TODO: First collect all candidates and then apply
+
         // Remove all junction nodes (degree > 2)
         filamentsData.removeVertexIf(vertex -> filamentsData.degreeOf(vertex) > 2);
 
@@ -54,15 +58,19 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
         Set<FilamentVertex> candidates = new HashSet<>();
         Map<FilamentVertex, Double> candidateScores = new HashMap<>();
         int successes = 0;
+        ConnectivityInspector<FilamentVertex, FilamentEdge> inspector = new ConnectivityInspector<>(filamentsData);
+        Random random = new Random();
         while(!toConnect.isEmpty()) {
             candidates.clear();
+            candidateScores.clear();
+
             FilamentVertex current = toConnect.iterator().next();
             toConnect.remove(current);
             Vector3d currentCentroid = current.getCentroid().toVector3d();
 
             for (FilamentVertex other : toConnect) {
                 // TODO: visibility (Z/C/T)
-                if(other != current && Objects.equals(components.get(other), components.get(current)) && other.getCentroid().distanceTo(current.getCentroid()) < 50) { // TODO: configurable formula
+                if(other != current && Objects.equals(components.get(other), components.get(current)) && other.getCentroid().distanceTo(current.getCentroid()) < 50 && !inspector.pathExists(current, other)) { // TODO: configurable formula
                     // TODO: allow to restrict angle
                     candidates.add(other);
                 }
@@ -80,8 +88,10 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
                 FilamentVertex bestCandidate = candidateScores.entrySet().stream().max(Map.Entry.comparingByValue()).get().getKey();
 
                 // Connect
-                filamentsData.addEdge(current, bestCandidate);
+                FilamentEdge edge = filamentsData.addEdge(current, bestCandidate);
+                edge.setColor(Color.getHSBColor(random.nextFloat(), 1, 1));
                 toConnect.remove(bestCandidate);
+                inspector = new ConnectivityInspector<>(filamentsData);
                 ++successes;
             }
             else {
