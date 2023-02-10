@@ -7,7 +7,6 @@ import java.util.List;
 public class VectorUtils {
     public static List<Double> objectListToNumericVector(Collection<?> items) {
         List<Double> vector = new ArrayList<>(items.size());
-        int i = 0;
         for (Object item : items) {
             if(item instanceof Number) {
                 vector.add(((Number) item).doubleValue());
@@ -15,7 +14,6 @@ public class VectorUtils {
             else {
                 vector.add(StringUtils.parseDouble(StringUtils.nullToEmpty(item)));
             }
-            ++i;
         }
         return vector;
     }

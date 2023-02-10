@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.scijava.vecmath.Vector3d;
 
 import java.util.Objects;
 
@@ -119,5 +120,9 @@ public class FilamentLocation {
             t1 = t;
         return Math.sqrt(Math.pow(x - other.getX(), 2) + Math.pow(y - other.getY(), 2)
                 + Math.pow(z - z1, 2) + Math.pow(c - c1, 2) + Math.pow(t - t1, 2));
+    }
+
+    public Vector3d toVector3d() {
+        return new Vector3d(x,y,z);
     }
 }

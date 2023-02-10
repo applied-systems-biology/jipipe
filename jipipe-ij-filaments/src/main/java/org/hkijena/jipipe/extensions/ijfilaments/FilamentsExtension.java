@@ -32,6 +32,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureVerticesAl
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.merge.MergeFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.ChangeFilamentVertexPropertiesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexThicknessFromImageAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.FixOverlapsNonBranchingAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
@@ -127,6 +128,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexThicknessFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-remove-duplicate-vertices", RemoveDuplicateVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("filaments-smooth-downscale", SmoothFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("filaments-fix-overlaps-non-branching", FixOverlapsNonBranchingAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-perpendicular.png"));
 
         registerNodeType("filaments-measure-vertices", MeasureVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("filaments-measure-edges", MeasureEdgesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));

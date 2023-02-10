@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.scijava.vecmath.Vector3d;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -93,4 +94,6 @@ public class FilamentVertex {
     public int hashCode() {
         return Objects.hash(uuid);
     }
+
+
 }
