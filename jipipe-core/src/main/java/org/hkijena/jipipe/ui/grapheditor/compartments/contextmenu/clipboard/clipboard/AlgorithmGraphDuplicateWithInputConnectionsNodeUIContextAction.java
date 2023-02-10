@@ -47,6 +47,7 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(copyGraph);
             Map<UUID, JIPipeGraphNode> pastedNodes = AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvasUI, json);
 
+            // Reconnect to inputs
             for (Map.Entry<UUID, JIPipeGraphNode> entry : pastedNodes.entrySet()) {
                 JIPipeGraphNode copyNode = entry.getValue();
                 JIPipeGraphNode originalNode = canvasUI.getGraph().getNodeByUUID(entry.getKey());
@@ -56,7 +57,9 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
                 for (JIPipeInputDataSlot originalInputSlot : originalNode.getInputSlots()) {
                     JIPipeInputDataSlot copyInputSlot = copyNode.getInputSlot(originalInputSlot.getName());
                     for (JIPipeDataSlot sourceSlot : canvasUI.getGraph().getInputIncomingSourceSlots(originalInputSlot)) {
-                        canvasUI.getGraph().connect(sourceSlot, copyInputSlot);
+                        if(!copyGraph.containsNode(sourceSlot.getNode().getUUIDInParentGraph())) {
+                            canvasUI.getGraph().connect(sourceSlot, copyInputSlot);
+                        }
                     }
                 }
             }
