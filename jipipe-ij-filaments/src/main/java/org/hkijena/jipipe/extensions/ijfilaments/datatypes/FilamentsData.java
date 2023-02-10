@@ -29,7 +29,9 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.graph.SimpleGraph;
 import org.jgrapht.nio.json.JSONImporter;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -103,13 +105,37 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
 
     @Override
     public Component preview(int width, int height) {
-        return JIPipeData.super.preview(width, height);
+        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = image.createGraphics();
+        Rectangle boundsXY = getBoundsXY();
+        double scale = Math.min(1.0 * width / boundsXY.width, 1.0 * height / boundsXY.height);
+        double dx = width / 2.0 - scale * boundsXY.width / 2;
+        double dy = height / 2.0 - scale * boundsXY.height / 2;
+        for (FilamentEdge edge : edgeSet()) {
+            FilamentVertex edgeSource = getEdgeSource(edge);
+            FilamentVertex edgeTarget = getEdgeTarget(edge);
+            int x1 = (int)Math.round((edgeSource.getCentroid().getX() - boundsXY.x) * scale + dx);
+            int y1 = (int)Math.round((edgeSource.getCentroid().getY() - boundsXY.y) * scale + dy);
+            int x2 = (int)Math.round((edgeTarget.getCentroid().getX() - boundsXY.x) * scale + dx);
+            int y2 = (int)Math.round((edgeTarget.getCentroid().getY() - boundsXY.y) * scale + dy);
+            graphics.setPaint(edge.getColor());
+            graphics.drawLine(x1, y1, x2, y2);
+        }
+//        for (FilamentVertex vertex : vertexSet()) {
+//            int x1 = (int)Math.round((vertex.getCentroid().getX() - boundsXY.x) * scale + dx);
+//            int y1 = (int)Math.round((vertex.getCentroid().getY() - boundsXY.y) * scale + dy);
+//            graphics.setPaint(vertex.getColor());
+//            graphics.drawRect(x1,y1,1,1);
+//        }
+        graphics.dispose();
+        return new JLabel(new ImageIcon(image));
     }
 
     @Override
     public String toString() {
         return String.format("Filaments [%d vertices, %d edges]", vertexSet().size(), edgeSet().size());
     }
+
 
     public static FilamentsData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         FilamentsData graph;
