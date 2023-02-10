@@ -66,7 +66,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
 
             FilamentVertex current = toConnect.iterator().next();
             toConnect.remove(current);
-            Vector3d currentCentroid = current.getCentroid().toVector3d();
+            Vector3d currentCentroid = current.getCentroid().toNormalizedVector3d();
 
             for (FilamentVertex other : toConnect) {
                 // TODO: visibility (Z/C/T)
@@ -78,7 +78,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
 
             // Calculate score
             for (FilamentVertex candidate : candidates) {
-                Vector3d candidateCentroid = candidate.getCentroid().toVector3d(); // TODO: custom formula
+                Vector3d candidateCentroid = candidate.getCentroid().toNormalizedVector3d(); // TODO: custom formula
                 double score = Math.abs( currentCentroid.dot(candidateCentroid) );
                 candidateScores.put(candidate, score);
             }

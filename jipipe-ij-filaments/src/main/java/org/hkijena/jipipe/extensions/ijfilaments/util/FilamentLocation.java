@@ -125,4 +125,10 @@ public class FilamentLocation {
     public Vector3d toVector3d() {
         return new Vector3d(x,y,z);
     }
+
+    public Vector3d toNormalizedVector3d() {
+        Vector3d vector3d = toVector3d();
+        vector3d.normalize();
+        return vector3d;
+    }
 }
