@@ -105,19 +105,17 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
 
     @Override
     public Component preview(int width, int height) {
-        BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics = image.createGraphics();
         Rectangle boundsXY = getBoundsXY();
         double scale = Math.min(1.0 * width / boundsXY.width, 1.0 * height / boundsXY.height);
-        double dx = width / 2.0 - scale * boundsXY.width / 2;
-        double dy = height / 2.0 - scale * boundsXY.height / 2;
+        BufferedImage image = new BufferedImage((int)(boundsXY.width * scale), (int)(boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = image.createGraphics();
         for (FilamentEdge edge : edgeSet()) {
             FilamentVertex edgeSource = getEdgeSource(edge);
             FilamentVertex edgeTarget = getEdgeTarget(edge);
-            int x1 = (int)Math.round((edgeSource.getCentroid().getX() - boundsXY.x) * scale + dx);
-            int y1 = (int)Math.round((edgeSource.getCentroid().getY() - boundsXY.y) * scale + dy);
-            int x2 = (int)Math.round((edgeTarget.getCentroid().getX() - boundsXY.x) * scale + dx);
-            int y2 = (int)Math.round((edgeTarget.getCentroid().getY() - boundsXY.y) * scale + dy);
+            int x1 = (int)Math.round((edgeSource.getCentroid().getX() - boundsXY.x) * scale);
+            int y1 = (int)Math.round((edgeSource.getCentroid().getY() - boundsXY.y) * scale);
+            int x2 = (int)Math.round((edgeTarget.getCentroid().getX() - boundsXY.x) * scale);
+            int y2 = (int)Math.round((edgeTarget.getCentroid().getY() - boundsXY.y) * scale);
             graphics.setPaint(edge.getColor());
             graphics.drawLine(x1, y1, x2, y2);
         }
