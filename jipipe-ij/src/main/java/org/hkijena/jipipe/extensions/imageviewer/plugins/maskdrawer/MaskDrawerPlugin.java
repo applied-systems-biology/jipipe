@@ -73,6 +73,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private Color maskColor = new Color(255, 0, 0, 128);
     private Function<ImagePlus, ImagePlus> maskGenerator;
     private SmallButtonAction exportToRoiManagerAction;
+    private boolean drawCurrentMaskSlicePreview;
 
     public MaskDrawerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
@@ -359,7 +360,8 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         if (currentMaskSlice == null || currentMaskSlicePreview == null)
             return;
         ImageJUtils.maskToBufferedImage(currentMaskSlice, currentMaskSlicePreview, maskColor, ColorUtils.WHITE_TRANSPARENT);
-        getViewerPanel().getCanvas().repaint();
+        drawCurrentMaskSlicePreview = currentMaskSlice.getStats().max > 0;
+        getViewerPanel().getCanvas().repaint(50);
     }
 
     private <T> void addSelectionButton(T value, JPanel target, Map<T, JToggleButton> targetMap, ButtonGroup targetGroup, String text, String toolTip, Icon icon, Supplier<T> getter, Consumer<T> setter) {
@@ -634,15 +636,17 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         final int renderW = renderArea.width;
         final int renderH = renderArea.height;
         final double zoom = getViewerPanel().getCanvas().getZoom();
-        AffineTransform transform = new AffineTransform();
-        transform.scale(zoom, zoom);
-        BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-        graphics2D.drawImage(currentMaskSlicePreview, op, renderX, renderY);
+        if(drawCurrentMaskSlicePreview) {
+            AffineTransform transform = new AffineTransform();
+            transform.scale(zoom, zoom);
+            BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            graphics2D.drawImage(currentMaskSlicePreview, op, renderX, renderY);
+        }
 //        currentTool.postprocessDraw(graphics2D, renderArea, sliceIndex);
         if (showGuidesToggle.isSelected() && currentTool.showGuides()) {
             graphics2D.setStroke(STROKE_GUIDE_LINE);
             graphics2D.setColor(getHighlightColor());
-            Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
+            Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
             if (mousePosition != null) {
                 int displayedX = (int) (renderX + zoom * mousePosition.x);
                 int displayedY = (int) (renderY + zoom * mousePosition.y);

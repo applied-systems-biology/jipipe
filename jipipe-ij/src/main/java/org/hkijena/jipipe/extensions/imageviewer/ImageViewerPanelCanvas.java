@@ -34,6 +34,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     private final EventBus eventBus = new EventBus();
     private BufferedImage image;
 
+    private Image scaledImage;
     private ImageSliceIndex imageSliceIndex;
     private double zoom = 1.0;
     private int contentX = 0;
@@ -60,8 +61,9 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 //        System.out.println(image);
         this.image = image;
         this.imageSliceIndex = imageSliceIndex;
+        this.scaledImage = null;
         revalidate();
-        repaint();
+        repaint(50);
     }
 
     public void centerImage() {
@@ -82,7 +84,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             contentY = 0;
         }
         revalidate();
-        repaint();
+        repaint(50);
     }
 
     public EventBus getEventBus() {
@@ -125,10 +127,12 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         }
 
         if (image != null && error == null) {
+//            ensureScaledImage();
             AffineTransform transform = new AffineTransform();
             transform.scale(zoom, zoom);
             BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
             graphics2D.drawImage(image, op, contentX, contentY);
+//            graphics2D.drawImage(scaledImage, contentX, contentY, null);
             for (ImageViewerPanelPlugin plugin : imageViewerPanel.getPlugins()) {
                 plugin.postprocessDraw(graphics2D, new Rectangle(x, y, w, h), imageSliceIndex);
             }
@@ -145,6 +149,19 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             }
             graphics2D.setColor(UIManager.getColor("Button.borderColor"));
             graphics2D.drawRect(x, y, w, h);
+        }
+    }
+
+    private void ensureScaledImage() {
+        if(image != null && scaledImage == null) {
+            if(zoom != 1.0) {
+                scaledImage = image.getScaledInstance((int) (zoom * image.getWidth()),
+                        (int) (zoom * image.getHeight()),
+                        zoom < 1 ? Image.SCALE_SMOOTH : Image.SCALE_REPLICATE);
+            }
+            else {
+                scaledImage = image;
+            }
         }
     }
 
@@ -170,6 +187,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             currentPixel = screenToImageSubPixelCoordinate(mousePosition, false);
         }
         this.zoom = zoom;
+        this.scaledImage = null;
         imageViewerPanel.getZoomedDummyCanvas().setMagnification(zoom);
         imageViewerPanel.getZoomedDummyCanvas().setSize((int) (image.getWidth() * zoom), (int) (image.getHeight() * zoom));
         if (currentPixel != null) {
@@ -180,7 +198,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             contentY -= (int) dy;
         }
         revalidate();
-        repaint();
+        repaint(50);
 
         moveBackIntoViewIfOutside();
     }
@@ -275,10 +293,9 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             this.contentX = withOffsetX;
             this.contentY = withOffsetY;
             fixNegativeOffsets();
-            revalidate();
-            repaint();
+            repaint(50);
         } else {
-            eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false), e));
+            eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(e, false), e));
         }
         eventBus.post(new MouseDraggedEvent(e.getComponent(),
                 e.getID(),
@@ -306,6 +323,11 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         }
         contentX = Math.max(-w + 10, contentX);
         contentY = Math.max(-h + 10, contentY);
+
+        if(contentX + w > getWidth() || contentY + h > getHeight()) {
+            revalidate();
+        }
+
 //        if (contentX < 0) {
 //            int d = -contentX;
 //            contentX = 0;
@@ -317,7 +339,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(false), e));
+        eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(e, false), e));
         eventBus.post(new MouseMovedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
@@ -345,7 +367,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         this.error = error;
         this.renderedError = null;
         revalidate();
-        repaint();
+        repaint(50);
     }
 
     private BufferedImage createImage(Component panel) {
@@ -465,13 +487,20 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     /**
      * Gets the pixel coordinates inside the shown image under the mouse.
      *
+     * @param mouseEvent the mouse event. can be null
      * @param checkBounds If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
      * @return the pixel coordinates. Null if the current mouse position is invalid.
      */
-    public Point getMouseModelPixelCoordinate(boolean checkBounds) {
+    public Point getMouseModelPixelCoordinate(MouseEvent mouseEvent, boolean checkBounds) {
         if (image == null)
             return null;
-        Point mousePosition = getMousePosition();
+        Point mousePosition;
+        if(mouseEvent == null) {
+            mousePosition = getMousePosition();
+        }
+        else {
+            mousePosition = SwingUtilities.convertMouseEvent(mouseEvent.getComponent(), mouseEvent, this).getPoint();
+        }
         if (mousePosition != null) {
             return screenToImageCoordinate(mousePosition, checkBounds);
         }
@@ -485,7 +514,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     public void setContentX(int contentX) {
         this.contentX = contentX;
         revalidate();
-        repaint();
+        repaint(50);
     }
 
     public int getContentY() {
@@ -495,14 +524,14 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     public void setContentY(int contentY) {
         this.contentY = contentY;
         revalidate();
-        repaint();
+        repaint(50);
     }
 
     public void setContentXY(int x, int y) {
         this.contentX = x;
         this.contentY = y;
         revalidate();
-        repaint();
+        repaint(50);
     }
 
     /**

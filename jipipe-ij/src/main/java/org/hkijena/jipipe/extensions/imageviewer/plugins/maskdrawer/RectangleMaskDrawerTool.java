@@ -123,7 +123,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
 
     private void cancelDrawing() {
         referencePoint = null;
-        getViewerPanel().getCanvas().repaint();
+        getViewerPanel().getCanvas().repaint(50);
         updateInfo();
     }
 
@@ -132,7 +132,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
         if (!toolIsActive())
             return;
         if (SwingUtilities.isLeftMouseButton(event)) {
-            Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
+            Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
             if (point == null) {
                 cancelDrawing();
                 return;
@@ -171,7 +171,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
         final int renderX = renderArea.x;
         final int renderY = renderArea.y;
         Point p0 = referencePoint;
-        Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
+        Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
         if (p1 == null)
             return;
         final double zoom = getViewerPanel().getCanvas().getZoom();
@@ -193,7 +193,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
     public void onMouseMove(MouseMovedEvent event) {
         if (!toolIsActive())
             return;
-        getViewerPanel().getCanvas().repaint();
+        getViewerPanel().getCanvas().repaint(50);
         updateInfo();
     }
 
@@ -207,7 +207,7 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
     private void updateInfo() {
         if (referencePoint != null) {
             Point p0 = referencePoint;
-            Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
+            Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
             Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
             if (p1 == null) {
                 infoArea.setText(String.format("P1: %d, %d\n" +

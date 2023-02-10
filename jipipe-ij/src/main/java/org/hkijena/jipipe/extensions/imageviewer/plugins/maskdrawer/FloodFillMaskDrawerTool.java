@@ -49,7 +49,7 @@ public class FloodFillMaskDrawerTool extends MaskDrawerTool {
         if (!toolIsActive())
             return;
         if (SwingUtilities.isLeftMouseButton(event)) {
-            Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(true);
+            Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, true);
             if (point == null) {
                 return;
             }
