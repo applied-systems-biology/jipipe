@@ -181,10 +181,10 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
 
     private Roi vertexToRoi(FilamentVertex vertex) {
         FilamentLocation centroid = vertex.getCentroid();
-        EllipseRoi roi = new EllipseRoi(centroid.getX() - vertex.getThickness() / 2,
-                centroid.getY() - vertex.getThickness() / 2,
-                centroid.getX() + vertex.getThickness() / 2,
-                centroid.getY() + vertex.getThickness() / 2,
+        EllipseRoi roi = new EllipseRoi(centroid.getX() - vertex.getThickness() / 2.0,
+                centroid.getY() - vertex.getThickness() / 2.0,
+                centroid.getX() + vertex.getThickness() / 2.0,
+                centroid.getY() + vertex.getThickness() / 2.0,
                 1);
         roi.setName(vertex.getUuid().toString());
         roi.setStrokeColor(vertex.getColor());

@@ -55,7 +55,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
 
             Vector3d currentV1 = current.getCentroid().toVector3d();
             Vector3d currentV2 = Graphs.neighborSetOf(filamentsData, current).iterator().next().getCentroid().toVector3d();
-            Vector3d currentDirection = new Vector3d(currentV1.x - currentV2.x, currentV1.y - currentV2.y, currentV1.z - currentV2.z);
+            Vector3d currentDirection = new Vector3d(currentV2.x - currentV1.x, currentV2.y - currentV1.y, currentV2.z - currentV1.z);
             currentDirection.normalize();
 
             for (FilamentVertex other : unconnected) {
@@ -72,10 +72,10 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
                     // Calculate score
                     Vector3d otherV1 = other.getCentroid().toVector3d();
                     Vector3d otherV2 = Graphs.neighborSetOf(filamentsData, other).iterator().next().getCentroid().toVector3d();
-                    Vector3d otherDirection = new Vector3d(otherV1.x - otherV2.x, otherV1.y - otherV2.y, otherV1.z - otherV2.z);
+                    Vector3d otherDirection = new Vector3d(otherV2.x - otherV1.x, otherV2.y - otherV1.y, otherV2.z - otherV1.z);
                     otherDirection.normalize();
 
-                    double score = Math.abs( currentDirection.dot(otherDirection) );
+                    double score = -currentDirection.dot(otherDirection);
 
                     // Add as candidate
                     EdgeCandidate candidate = new EdgeCandidate(current, other, score);
