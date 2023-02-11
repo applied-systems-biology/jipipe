@@ -75,6 +75,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
                     Vector3d otherDirection = new Vector3d(otherV2.x - otherV1.x, otherV2.y - otherV1.y, otherV2.z - otherV1.z);
                     otherDirection.normalize();
 
+                    // Idea is: opposite directions -> scalar product is -1. 
                     double score = -currentDirection.dot(otherDirection);
 
                     // Add as candidate
