@@ -35,34 +35,37 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData filamentsData = new FilamentsData(dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo));
-        Map<FilamentVertex, Integer> components = filamentsData.findComponentIds();
+        FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
+        FilamentsData outputData = new FilamentsData(inputData);
+        ConnectivityInspector<FilamentVertex, FilamentEdge> inputDataInspector = new ConnectivityInspector<>(inputData);
+        Map<FilamentVertex, Integer> components = outputData.findComponentIds();
 
         // Remove all junction nodes (degree > 2)
-        filamentsData.removeVertexIf(vertex -> filamentsData.degreeOf(vertex) > 2);
+        outputData.removeVertexIf(vertex -> outputData.degreeOf(vertex) > 2);
 
         // Detect candidates to be connected (degree == 1)
-        Set<FilamentVertex> unconnected = filamentsData.vertexSet().stream().filter(vertex -> filamentsData.degreeOf(vertex) == 1).collect(Collectors.toSet());
+        Set<FilamentVertex> unconnected = outputData.vertexSet().stream().filter(vertex -> outputData.degreeOf(vertex) == 1).collect(Collectors.toSet());
 
 
         // For each candidate: search for best matching vertex within radius that is within the same original component
         // The other candidate should also not be connected to the current candidate
         // Score: abs(scalar product of normalized vectors)
         Set<EdgeCandidate> candidates = new TreeSet<>();
-        ConnectivityInspector<FilamentVertex, FilamentEdge> inspector = new ConnectivityInspector<>(filamentsData);
+        ConnectivityInspector<FilamentVertex, FilamentEdge> outputDataInspector = new ConnectivityInspector<>(outputData);
         Random random = new Random();
         for (FilamentVertex current : unconnected) {
 
             Vector3d currentV1 = current.getCentroid().toVector3d();
-            Vector3d currentV2 = Graphs.neighborSetOf(filamentsData, current).iterator().next().getCentroid().toVector3d();
+            Vector3d currentV2 = Graphs.neighborSetOf(outputData, current).iterator().next().getCentroid().toVector3d();
             Vector3d currentDirection = new Vector3d(currentV2.x - currentV1.x, currentV2.y - currentV1.y, currentV2.z - currentV1.z);
             currentDirection.normalize();
 
             for (FilamentVertex other : unconnected) {
+                // TODO: Auto-detect radius (based on connections to removed edges?) -> could be imprecise
                 if(other != current &&
                         Objects.equals(components.get(current), components.get(other)) &&
                         other.getCentroid().distanceTo(current.getCentroid()) < 50  &&
-                        !inspector.pathExists(current, other)) {
+                        !outputDataInspector.pathExists(current, other)) {
                     // TODO: visibility (Z/C/T)
                     // TODO: allow to restrict angle
 
@@ -71,7 +74,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
 
                     // Calculate score
                     Vector3d otherV1 = other.getCentroid().toVector3d();
-                    Vector3d otherV2 = Graphs.neighborSetOf(filamentsData, other).iterator().next().getCentroid().toVector3d();
+                    Vector3d otherV2 = Graphs.neighborSetOf(outputData, other).iterator().next().getCentroid().toVector3d();
                     Vector3d otherDirection = new Vector3d(otherV2.x - otherV1.x, otherV2.y - otherV1.y, otherV2.z - otherV1.z);
                     otherDirection.normalize();
 
@@ -92,7 +95,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
         for (EdgeCandidate candidate : candidates) {
             if(!processedCandidateVertices.contains(candidate.source) && !processedCandidateVertices.contains(candidate.target)) {
                 // Connect
-                FilamentEdge edge = filamentsData.addEdge(candidate.source, candidate.target);
+                FilamentEdge edge = outputData.addEdge(candidate.source, candidate.target);
                 edge.setColor(Color.getHSBColor(random.nextFloat(), 1, 1));
 
                 // Mark as used
@@ -104,7 +107,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
 
         progressInfo.log("Successfully created " + successes + " edges.");
 
-        dataBatch.addOutputData(getFirstOutputSlot(), filamentsData, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     public static class EdgeCandidate implements Comparable<EdgeCandidate> {
