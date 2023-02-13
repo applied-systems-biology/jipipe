@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
 
@@ -14,19 +14,33 @@ import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
 @JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
 public class RemoveDuplicateVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private boolean onlySameComponent = true;
+
     public RemoveDuplicateVerticesAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
     public RemoveDuplicateVerticesAlgorithm(RemoveDuplicateVerticesAlgorithm other) {
         super(other);
+        this.onlySameComponent = other.onlySameComponent;
+    }
+
+    @JIPipeDocumentation(name = "Only merge if in same component", description = "If enabled, vertices will be only merged if they are in the same component.")
+    @JIPipeParameter("only-same-component")
+    public boolean isOnlySameComponent() {
+        return onlySameComponent;
+    }
+
+    @JIPipeParameter("only-same-component")
+    public void setOnlySameComponent(boolean onlySameComponent) {
+        this.onlySameComponent = onlySameComponent;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
         FilamentsData outputData = new FilamentsData(inputData);
-        outputData.removeDuplicateVertices();
+        outputData.removeDuplicateVertices(onlySameComponent);
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 }

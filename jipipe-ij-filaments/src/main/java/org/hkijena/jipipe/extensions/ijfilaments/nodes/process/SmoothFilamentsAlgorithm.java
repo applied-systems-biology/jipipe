@@ -23,6 +23,8 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private double factorC = 0;
     private double factorT = 0;
 
+    private boolean enforceSameComponent = true;
+
     private DefaultExpressionParameter locationMergingFunction = new DefaultExpressionParameter("AVG(values)");
 
     public SmoothFilamentsAlgorithm(JIPipeNodeInfo info) {
@@ -36,6 +38,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.factorC = other.factorC;
         this.factorT = other.factorT;
         this.locationMergingFunction = new DefaultExpressionParameter(other.locationMergingFunction);
+        this.enforceSameComponent = other.enforceSameComponent;
     }
 
     @Override
@@ -43,7 +46,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
         FilamentsData outputData = new FilamentsData(inputData);
 
-        outputData.smooth(factorXY, factorZ, factorC, factorT, locationMergingFunction);
+        outputData.smooth(factorXY, factorZ, factorC, factorT, enforceSameComponent, locationMergingFunction);
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
@@ -103,5 +106,16 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("location-merging-function")
     public void setLocationMergingFunction(DefaultExpressionParameter locationMergingFunction) {
         this.locationMergingFunction = locationMergingFunction;
+    }
+
+    @JIPipeDocumentation(name = "Prevent cross-object edges", description = "If enabled, new edges will never be created across two different objects. Disable this option if there are broken filaments in the input graph.")
+    @JIPipeParameter("enforce-same-component")
+    public boolean isEnforceSameComponent() {
+        return enforceSameComponent;
+    }
+
+    @JIPipeParameter("enforce-same-component")
+    public void setEnforceSameComponent(boolean enforceSameComponent) {
+        this.enforceSameComponent = enforceSameComponent;
     }
 }

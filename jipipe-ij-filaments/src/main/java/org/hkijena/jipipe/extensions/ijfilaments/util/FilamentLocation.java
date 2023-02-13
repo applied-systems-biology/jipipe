@@ -131,4 +131,16 @@ public class FilamentLocation {
         vector3d.normalize();
         return vector3d;
     }
+
+    public boolean sameZ(FilamentLocation other) {
+        return z == other.z || z < 0 || other.z < 0;
+    }
+
+    public boolean sameC(FilamentLocation other) {
+        return c == other.c || c < 0 || other.c < 0;
+    }
+
+    public boolean sameT(FilamentLocation other) {
+        return t == other.t || t < 0 || other.t < 0;
+    }
 }

@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.vecmath.Vector3d;
 
 import java.awt.*;
@@ -30,6 +31,7 @@ public class FilamentVertex {
         this.centroid = new FilamentLocation(other.centroid);
         this.thickness = other.thickness;
         this.metadata = new HashMap<>(other.metadata);
+        this.color = other.color;
     }
 
     @JsonGetter("centroid")
@@ -95,5 +97,7 @@ public class FilamentVertex {
         return Objects.hash(uuid);
     }
 
-
+    public void setMetadata(String key, Object value) {
+        metadata.put(key, StringUtils.nullToEmpty(value));
+    }
 }

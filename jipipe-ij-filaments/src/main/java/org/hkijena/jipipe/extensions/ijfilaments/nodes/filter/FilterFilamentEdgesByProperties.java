@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
@@ -13,6 +14,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdgeVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -79,5 +81,12 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
     @JIPipeParameter("filter")
     public void setFilter(DefaultExpressionParameter filter) {
         this.filter = filter;
+    }
+
+    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomExpressionVariables() {
+        return customExpressionVariables;
     }
 }

@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -17,6 +18,15 @@ public class FilamentEdge {
     private Color color = new Color(0x3584E4);
 
     private Map<String, String> metadata = new HashMap<>();
+
+    public FilamentEdge() {
+
+    }
+
+    public FilamentEdge(FilamentEdge other) {
+        this.color = other.color;
+        this.metadata = new HashMap<>(other.metadata);
+    }
 
     @JsonGetter("metadata")
     public Map<String, String> getMetadata() {
@@ -48,10 +58,9 @@ public class FilamentEdge {
         this.color = color;
     }
 
-    public FilamentEdge() {
 
-    }
 
-    public FilamentEdge(FilamentEdge other) {
+    public void setMetadata(String key, Object value) {
+        metadata.put(key, StringUtils.nullToEmpty(value));
     }
 }

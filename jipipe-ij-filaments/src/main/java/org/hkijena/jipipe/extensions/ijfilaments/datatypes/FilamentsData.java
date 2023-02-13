@@ -109,6 +109,10 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
     @Override
     public Component preview(int width, int height) {
         Rectangle boundsXY = getBoundsXY();
+        if(boundsXY.width == 0)
+            boundsXY.width = width;
+        if(boundsXY.height == 0)
+            boundsXY.height = height;
         double scale = Math.min(1.0 * width / boundsXY.width, 1.0 * height / boundsXY.height);
         BufferedImage image = new BufferedImage((int)(boundsXY.width * scale), (int)(boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
@@ -210,38 +214,55 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
         return roi;
     }
 
-    public void removeDuplicateVertices() {
+    public void removeDuplicateVertices(boolean onlySameComponent) {
         Multimap<FilamentLocation, FilamentVertex> multimap = groupVerticesByLocation();
+        Map<FilamentVertex, Integer> componentIds;
+        if(onlySameComponent) {
+            componentIds = findComponentIds();
+        } else {
+            componentIds = null;
+        }
 
         for (FilamentLocation location : multimap.keySet()) {
             Collection<FilamentVertex> vertices = multimap.get(location);
-            if(vertices.size() > 1) {
-                // Apply merge
-                FilamentVertex referenceVertex = vertices.iterator().next();
-
-                // Calculate new thickness
-                double thickness = 0;
-                for (FilamentVertex vertex : vertices) {
-                    thickness += vertex.getThickness();
+            if(onlySameComponent) {
+                Map<Integer, List<FilamentVertex>> groups = vertices.stream().collect(Collectors.groupingBy(componentIds::get));
+                for (List<FilamentVertex> vertexList : groups.values()) {
+                    mergeVertices(vertexList);
                 }
-                thickness /= vertices.size();
-                referenceVertex.setThickness(thickness);
+            }
+            else {
+                mergeVertices(vertices);
+            }
+        }
+    }
 
-                // Merge
-                for (FilamentVertex vertex : vertices) {
-                    if(vertex != referenceVertex) {
-                        for (FilamentEdge edge : edgesOf(vertex)) {
-                            FilamentVertex edgeSource = getEdgeSource(edge);
-                            FilamentVertex edgeTarget = getEdgeTarget(edge);
-                            if(edgeSource == vertex) {
-                                addEdgeIgnoreLoops(referenceVertex, edgeTarget);
-                            }
-                            else {
-                                addEdgeIgnoreLoops(edgeSource, referenceVertex);
-                            }
+    public void mergeVertices(Collection<FilamentVertex> vertices) {
+        if(vertices.size() > 1) {
+            // Apply merge
+            FilamentVertex referenceVertex = vertices.iterator().next();
+
+            // Calculate new thickness
+            double thickness = 0;
+            for (FilamentVertex vertex : vertices) {
+                thickness += vertex.getThickness();
+            }
+            thickness /= vertices.size();
+            referenceVertex.setThickness(thickness);
+
+            // Merge
+            for (FilamentVertex vertex : vertices) {
+                if (vertex != referenceVertex) {
+                    for (FilamentEdge edge : edgesOf(vertex)) {
+                        FilamentVertex edgeSource = getEdgeSource(edge);
+                        FilamentVertex edgeTarget = getEdgeTarget(edge);
+                        if (edgeSource == vertex) {
+                            addEdgeIgnoreLoops(referenceVertex, edgeTarget);
+                        } else {
+                            addEdgeIgnoreLoops(edgeSource, referenceVertex);
                         }
-                        removeVertex(vertex);
                     }
+                    removeVertex(vertex);
                 }
             }
         }
@@ -343,11 +364,17 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
         return multimap;
     }
 
-    public void smooth(double factorXY, double factorZ, double factorC, double factorT, DefaultExpressionParameter locationMergingFunction) {
+    public void smooth(double factorXY, double factorZ, double factorC, double factorT, boolean enforceSameComponent, DefaultExpressionParameter locationMergingFunction) {
         // Backup
         Map<FilamentVertex, FilamentLocation> locationMap = new IdentityHashMap<>();
         for (FilamentVertex vertex : vertexSet()) {
             locationMap.put(vertex, new FilamentLocation(vertex.getCentroid()));
+        }
+        Map<FilamentVertex, Integer> componentIds;
+        if(enforceSameComponent) {
+            componentIds = findComponentIds();
+        } else {
+            componentIds = null;
         }
 
         // Downscale
@@ -369,42 +396,58 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
         }
 
         // Remove duplicates
-       removeDuplicateVertices();
+       removeDuplicateVertices(enforceSameComponent);
 
         // Group vertices by location and calculate a new centroid
         Multimap<FilamentLocation, FilamentVertex> multimap = groupVerticesByLocation();
         ExpressionVariables variables = new ExpressionVariables();
         for (FilamentVertex vertex : vertexSet()) {
-            Collection<FilamentVertex> group = multimap.get(vertex.getCentroid());
-
             // Restore original
             vertex.setCentroid(locationMap.get(vertex));
+            Collection<FilamentVertex> group = multimap.get(vertex.getCentroid());
 
-            // Apply average where applicable
-            if(factorXY > 0) {
-                variables.set("values", group.stream().map(v -> v.getCentroid().getX()).collect(Collectors.toList()));
-                vertex.getCentroid().setX(locationMergingFunction.evaluateToInteger(variables));
-            }
-            if(factorXY > 0) {
-                variables.set("values", group.stream().map(v -> v.getCentroid().getY()).collect(Collectors.toList()));
-                vertex.getCentroid().setY(locationMergingFunction.evaluateToInteger(variables));
-            }
-            if(factorC > 0) {
-                variables.set("values", group.stream().map(v -> v.getCentroid().getC()).collect(Collectors.toList()));
-                vertex.getCentroid().setC(locationMergingFunction.evaluateToInteger(variables));
-            }
-            if(factorZ > 0) {
-                variables.set("values", group.stream().map(v -> v.getCentroid().getX()).collect(Collectors.toList()));
-                vertex.getCentroid().setZ(locationMergingFunction.evaluateToInteger(variables));
-            }
-            if(factorT > 0) {
-                variables.set("values", group.stream().map(v -> v.getCentroid().getT()).collect(Collectors.toList()));
-                vertex.getCentroid().setT(locationMergingFunction.evaluateToInteger(variables));
+            if(group.size() > 1) {
+                if (enforceSameComponent) {
+                    int component = componentIds.get(vertex);
+                    Set<FilamentVertex> group2 = new HashSet<>();
+                    for (FilamentVertex item : group) {
+                        if (componentIds.get(item) == component) {
+                            group2.add(item);
+                        }
+                    }
+                    calculateNewVertexLocation(factorXY, factorZ, factorC, factorT, locationMergingFunction, locationMap, variables, vertex, group2);
+                } else {
+                    calculateNewVertexLocation(factorXY, factorZ, factorC, factorT, locationMergingFunction, locationMap, variables, vertex, group);
+                }
             }
         }
 
         // Cleanup
         removeSelfEdges();
+    }
+
+    private static void calculateNewVertexLocation(double factorXY, double factorZ, double factorC, double factorT, DefaultExpressionParameter locationMergingFunction, Map<FilamentVertex, FilamentLocation> locationMap, ExpressionVariables variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
+        // Apply average where applicable
+        if(factorXY > 0) {
+            variables.set("values", group.stream().map(v -> locationMap.get(v).getX()).collect(Collectors.toList()));
+            vertex.getCentroid().setX(locationMergingFunction.evaluateToInteger(variables));
+        }
+        if(factorXY > 0) {
+            variables.set("values", group.stream().map(v -> locationMap.get(v).getY()).collect(Collectors.toList()));
+            vertex.getCentroid().setY(locationMergingFunction.evaluateToInteger(variables));
+        }
+        if(factorC > 0) {
+            variables.set("values", group.stream().map(v -> locationMap.get(v).getC()).collect(Collectors.toList()));
+            vertex.getCentroid().setC(locationMergingFunction.evaluateToInteger(variables));
+        }
+        if(factorZ > 0) {
+            variables.set("values", group.stream().map(v -> locationMap.get(v).getZ()).collect(Collectors.toList()));
+            vertex.getCentroid().setZ(locationMergingFunction.evaluateToInteger(variables));
+        }
+        if(factorT > 0) {
+            variables.set("values", group.stream().map(v -> locationMap.get(v).getT()).collect(Collectors.toList()));
+            vertex.getCentroid().setT(locationMergingFunction.evaluateToInteger(variables));
+        }
     }
 
     public boolean isEmpty() {
