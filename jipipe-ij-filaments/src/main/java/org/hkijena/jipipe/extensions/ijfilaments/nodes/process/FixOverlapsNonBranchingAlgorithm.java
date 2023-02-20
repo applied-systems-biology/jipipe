@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.process;
 
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -14,7 +16,9 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdgeVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentUnconnectedEdgeVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.jetbrains.annotations.NotNull;
@@ -30,8 +34,9 @@ import java.util.stream.Collectors;
         "Please note that this operation assumes that all filaments are non-branching.")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
 @JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, autoCreate = true)
 @JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
-public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean enforceSameComponent = true;
 
@@ -52,6 +57,8 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
 
     private OptionalColorParameter newEdgeColor = new OptionalColorParameter(Color.GREEN, true);
 
+    private boolean enforceEdgesWithinMask = true;
+
     public FixOverlapsNonBranchingAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
@@ -69,6 +76,18 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
         this.scoringFunction = new DefaultExpressionParameter(other.scoringFunction);
         this.filterFunction = new DefaultExpressionParameter(other.filterFunction);
         this.newEdgeColor = new OptionalColorParameter(other.newEdgeColor);
+        this.enforceEdgesWithinMask = other.enforceEdgesWithinMask;
+    }
+
+    @JIPipeDocumentation(name = "Prevent edges outside mask", description = "If enabled and a mask is available, check if edges crosses outside the mask boundaries and exclude those from being marked as candidate edge")
+    @JIPipeParameter("enforce-edges-within-mask")
+    public boolean isEnforceEdgesWithinMask() {
+        return enforceEdgesWithinMask;
+    }
+
+    @JIPipeParameter("enforce-edges-within-mask")
+    public void setEnforceEdgesWithinMask(boolean enforceEdgesWithinMask) {
+        this.enforceEdgesWithinMask = enforceEdgesWithinMask;
     }
 
     @JIPipeDocumentation(name = "Color new edges", description = "Allows to color newly made edges")
@@ -200,8 +219,23 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
+        FilamentsData inputData = dataBatch.getInputData("Input", FilamentsData.class, progressInfo);
         FilamentsData outputData = new FilamentsData(inputData);
+
+        ImagePlus mask;
+        if(enforceEdgesWithinMask) {
+            ImagePlusGreyscaleMaskData maskData = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo);
+            if(maskData != null) {
+                mask = maskData.getImage();
+            }
+            else {
+                mask = null;
+            }
+        }
+        else {
+            mask = null;
+        }
+
         Map<FilamentVertex, Integer> components = outputData.findComponentIds();
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
@@ -235,6 +269,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
             Vector3d currentDirection = new Vector3d(currentV2.x - currentV1.x, currentV2.y - currentV1.y, currentV2.z - currentV1.z);
             currentDirection.normalize();
 
+            outer:
             for (FilamentVertex other : candidateEndpoints) {
                 // TODO: Auto-detect radius (based on connections to removed edges?) -> could be imprecise
                 if(other != current) {
@@ -252,6 +287,26 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeSimpleIteratingAlgor
                     }
                     if(ensureNoPathExists && outputDataInspector.pathExists(current, other)) {
                         continue;
+                    }
+                    if(mask != null) {
+                        Vector3d difference = new Vector3d(currentV2.x - currentV1.x, currentV2.y - currentV1.y, currentV2.z - currentV1.z);
+                        double length = difference.length();
+                        int nSteps = (int) length;
+                        Vector3d step = new Vector3d(difference);
+                        step.scale(1.0 / nSteps);
+                        for (int i = 1; i < nSteps; i++) {
+                            Vector3d testLocation = new Vector3d(currentV1.x + i * step.x,
+                                    currentV1.y + i * step.y,
+                                    currentV1.z + i * step.z);
+                            int x = Math.max(0, Math.min (mask.getWidth() - 1, (int)Math.round(testLocation.x)));
+                            int y = (int)Math.round(testLocation.y);
+                            int z = Math.max(0, (int)Math.round(testLocation.z));
+
+                            ImageProcessor ip = ImageJUtils.getSliceZero(mask, 0, z, 0);
+                            if(ip.get(x,y) == 0) {
+                                continue outer;
+                            }
+                        }
                     }
 
                     // Calculate other direction
