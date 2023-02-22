@@ -1377,7 +1377,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 viewX,
                 viewY,
                 false,
-                false);
+                false, false);
     }
 
     @Override
@@ -1420,7 +1420,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 0,
                 0,
                 true,
-                isAutoHideEdges());
+                isAutoHideEdges(), false);
 
         // Outside edges drawing
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges()) {
@@ -1439,7 +1439,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     0,
                     0,
                     true,
-                    false);
+                    false,
+                    true);
         }
 
         // Draw highlights
@@ -1656,7 +1657,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private List<DisplayedSlotEdge> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean enableAutoHide) {
+    private List<DisplayedSlotEdge> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean enableAutoHide, boolean forceVisible) {
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
         List<DisplayedSlotEdge> displayedSlotEdges = new ArrayList<>();
 
@@ -1769,6 +1770,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     default:
                         hidden = false;
                     break;
+                }
+
+                if(forceVisible) {
+                    hidden = false;
                 }
 
                 displayedSlotEdge.setHidden(hidden);
