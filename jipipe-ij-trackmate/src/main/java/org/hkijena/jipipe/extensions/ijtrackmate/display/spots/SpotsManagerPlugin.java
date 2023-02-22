@@ -81,8 +81,12 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
 
     private void initializeRibbon() {
         {
+            displayLabelsViewMenuItem.addActionListener(e -> {
+                spotDrawer.getLabelSettings().setDrawLabels(displayLabelsViewMenuItem.getState());
+            });
             displayLabelsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
             displaySpotsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
+
 
             Ribbon.Task viewTask = ribbon.getOrCreateTask("View");
             Ribbon.Band generalBand = viewTask.addBand("General");
