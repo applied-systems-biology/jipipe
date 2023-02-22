@@ -28,6 +28,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * {@link JTabbedPane} with larger tabs, ability to close tabs, singleton tabs that are hidden instead of being closed
  */
-public class DocumentTabPane extends JPanel {
+public class DocumentTabPane extends JPanel implements Disposable {
 
     /**
      * List of open tabs
@@ -182,6 +183,16 @@ public class DocumentTabPane extends JPanel {
             }
             tabHistory.add(tab);
         }
+    }
+
+    @Override
+    public void dispose() {
+        for (DocumentTab tab : tabs) {
+            if(tab.content instanceof Disposable) {
+                ((Disposable) tab.content).dispose();
+            }
+        }
+        closeAllTabs(true);
     }
 
     /**

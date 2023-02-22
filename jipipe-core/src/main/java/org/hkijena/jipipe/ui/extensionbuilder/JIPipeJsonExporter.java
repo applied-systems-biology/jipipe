@@ -158,14 +158,14 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
     protected void updateSelection() {
         super.updateSelection();
         if (getSelection().isEmpty()) {
-            setPropertyPanel(exportPanel);
+            setPropertyPanel(exportPanel, true);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new JIPipeJsonAlgorithmExporterSingleSelectionPanelUI(this,
-                    getSelection().iterator().next().getNode()));
+                    getSelection().iterator().next().getNode()), true);
         } else {
             setPropertyPanel(new JIPipeJsonAlgorithmExporterMultiSelectionPanelUI(getWorkbench(),
                     getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
         }
     }
 

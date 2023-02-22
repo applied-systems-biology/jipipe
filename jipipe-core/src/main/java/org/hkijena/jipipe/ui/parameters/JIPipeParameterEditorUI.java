@@ -19,20 +19,22 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.Disposable;
 
 import java.util.Objects;
 
 /**
  * A UI for a parameter type
  */
-public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual {
+public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual, Disposable {
     public static final int CONTROL_STYLE_PANEL = 1;
     public static final int CONTROL_STYLE_LIST = 2;
     public static final int CONTROL_STYLE_CHECKBOX = 4;
 
-    private final JIPipeParameterAccess parameterAccess;
+    private JIPipeParameterAccess parameterAccess;
     private Context context;
     private int preventReload = 0;
     private boolean reloadScheduled = false;
@@ -167,6 +169,12 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
                 --preventReload;
             }
         }
+    }
+
+    @Override
+    public void dispose() {
+        UIUtils.removeAllWithDispose(this);
+        parameterAccess = null;
     }
 
     @Override

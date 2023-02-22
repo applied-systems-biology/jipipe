@@ -22,6 +22,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -428,6 +429,17 @@ public class FormPanel extends JXPanel {
      * Removes all components
      */
     public void clear() {
+        for (FormPanelEntry entry : entries) {
+            if(entry.label instanceof Disposable) {
+                ((Disposable) entry.label).dispose();
+            }
+            if(entry.properties instanceof Disposable) {
+                ((Disposable) entry.properties).dispose();
+            }
+            if(entry.content instanceof Disposable) {
+                ((Disposable) entry.content).dispose();
+            }
+        }
         entries.clear();
         contentPanel.removeAll();
         numRows = 0;

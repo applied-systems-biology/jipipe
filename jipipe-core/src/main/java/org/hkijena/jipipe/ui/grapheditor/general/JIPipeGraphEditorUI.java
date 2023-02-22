@@ -43,6 +43,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.graphics2d.svg.SVGUtils;
+import org.scijava.Disposable;
 
 import javax.imageio.ImageIO;
 import javax.swing.FocusManager;
@@ -860,12 +861,19 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * Sets the component displayed in the right property panel
      *
      * @param content the component
+     * @param disposeExisting if the old component should be disposed
      */
-    protected void setPropertyPanel(Component content) {
+    protected void setPropertyPanel(Component content, boolean disposeExisting) {
         int dividerLocation = splitPane.getDividerLocation();
         if (isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
+            if(disposeExisting && splitPane.getLeftComponent() instanceof Disposable) {
+                ((Disposable) splitPane.getLeftComponent()).dispose();
+            }
             splitPane.setLeftComponent(content);
         } else {
+            if(disposeExisting && splitPane.getRightComponent() instanceof Disposable) {
+                ((Disposable) splitPane.getRightComponent()).dispose();
+            }
             splitPane.setRightComponent(content);
         }
         splitPane.setDividerLocation(dividerLocation);

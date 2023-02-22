@@ -38,6 +38,7 @@ import org.hkijena.jipipe.ui.running.JIPipeRunQueuePanelUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +48,7 @@ import java.util.List;
 /**
  * UI for a single {@link JIPipeGraphNode}
  */
-public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenchPanel implements Disposable {
     private static String SAVED_TAB = null;
     private final JIPipeGraphEditorUI graphEditorUI;
     private final JIPipeGraphCanvasUI canvas;
@@ -156,6 +157,11 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         tabbedPane.getTabbedPane().addChangeListener(e -> saveTabState(tabbedPane));
 
         initializeToolbar();
+    }
+
+    @Override
+    public void dispose() {
+        UIUtils.removeAllWithDispose(this);
     }
 
     private void restoreTabState() {

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * UI around a {@link JIPipeParameterCollection}
  */
-public class ParameterPanel extends FormPanel implements Contextual {
+public class ParameterPanel extends FormPanel implements Contextual, Disposable {
     /**
      * Flag for {@link ParameterPanel}. Makes that no group headers are created.
      * This includes dynamic parameter group headers that contain buttons for modification.
@@ -117,6 +118,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
             reloadForm();
             this.displayedParameters.getEventBus().register(this);
         }
+    }
+
+    @Override
+    public void dispose() {
+        clear();
+        traversed = null;
+        displayedParameters = null;
     }
 
     /**

@@ -41,6 +41,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
+import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.theme.DarkModernMetalTheme;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
@@ -48,6 +49,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
+import org.scijava.Disposable;
 
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
@@ -1838,6 +1840,15 @@ public class UIUtils {
     public static void drawStringVerticallyCentered(Graphics2D g2, String text, int x, int y, FontMetrics fontMetrics) {
         int metricHeight = fontMetrics.getAscent() - fontMetrics.getLeading();
         g2.drawString(text, x, y + metricHeight / 2);
+    }
+
+    public static void removeAllWithDispose(JComponent component) {
+        for (Component child : component.getComponents()) {
+            if(child instanceof Disposable) {
+                ((Disposable) child).dispose();
+            }
+        }
+        component.removeAll();
     }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

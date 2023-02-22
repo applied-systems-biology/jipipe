@@ -55,7 +55,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
                 UIUtils.getIconFromResources("data-types/slot.png"),
                 outputsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
-        setPropertyPanel(propertyPanel);
+        setPropertyPanel(propertyPanel, true);
     }
 
     public RunSingleAlgorithmSettingsPanel getSettingsPanel() {

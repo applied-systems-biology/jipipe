@@ -54,7 +54,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
     public JIPipeJsonExtensionGraphUI(JIPipeJsonExtensionWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI, algorithmGraph, compartment, new JIPipeDedicatedGraphHistoryJournal(algorithmGraph));
         initializeDefaultPanel();
-        setPropertyPanel(defaultPanel);
+        setPropertyPanel(defaultPanel, true);
 
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeCreateNodesFromDraggedDataDragAndDropBehavior());
@@ -131,13 +131,13 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
     protected void updateSelection() {
         super.updateSelection();
         if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel);
+            setPropertyPanel(defaultPanel, true);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new JIPipeJsonExtensionSingleAlgorithmSelectionPanelUI(this,
-                    getSelection().iterator().next().getNode()));
+                    getSelection().iterator().next().getNode()), true);
         } else {
             setPropertyPanel(new JIPipeJsonExtensionMultiAlgorithmSelectionPanelUI((JIPipeJsonExtensionWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
         }
     }
 }

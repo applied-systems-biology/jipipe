@@ -76,7 +76,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
     public JIPipePipelineGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI, algorithmGraph, compartment, algorithmGraph.getProject() != null ? algorithmGraph.getProject().getHistoryJournal() : new JIPipeDedicatedGraphHistoryJournal(algorithmGraph));
         initializeDefaultPanel();
-        setPropertyPanel(defaultPanel);
+        setPropertyPanel(defaultPanel, true);
 
         // Set D&D and Copy&Paste behavior
         initializeContextActions();
@@ -404,13 +404,13 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         if (disableUpdateOnSelection)
             return;
         if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel);
+            setPropertyPanel(defaultPanel, true);
         } else if (getSelection().size() == 1) {
             JIPipeNodeUI ui = getSelection().iterator().next();
-            setPropertyPanel(new JIPipePipelineSingleAlgorithmSelectionPanelUI(this, ui.getNode()));
+            setPropertyPanel(new JIPipePipelineSingleAlgorithmSelectionPanelUI(this, ui.getNode()), true);
         } else {
             setPropertyPanel(new JIPipePipelineMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
         }
     }
 
@@ -445,7 +445,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
             selectOnly(event.getUi());
             JIPipePipelineSingleAlgorithmSelectionPanelUI panel = new JIPipePipelineSingleAlgorithmSelectionPanelUI(this,
                     event.getUi().getNode());
-            setPropertyPanel(panel);
+            setPropertyPanel(panel, true);
             panel.executeQuickRun(true,
                     false,
                     false,
@@ -458,7 +458,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
             selectOnly(event.getUi());
             JIPipePipelineSingleAlgorithmSelectionPanelUI panel = new JIPipePipelineSingleAlgorithmSelectionPanelUI(this,
                     event.getUi().getNode());
-            setPropertyPanel(panel);
+            setPropertyPanel(panel, true);
             panel.executeQuickRun(false,
                     true,
                     false,

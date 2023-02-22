@@ -75,7 +75,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     public JIPipeCompartmentsGraphEditorUI(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, workbenchUI.getProject().getHistoryJournal());
         initializeDefaultPanel();
-        setPropertyPanel(defaultPanel);
+        setPropertyPanel(defaultPanel, true);
 
         getCanvasUI().setDragAndDropBehavior(new JIPipeCompartmentGraphDragAndDropBehavior());
         List<NodeUIContextAction> actions = Arrays.asList(
@@ -166,22 +166,22 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         if (disableUpdateOnSelection)
             return;
         if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel);
+            setPropertyPanel(defaultPanel, true);
         } else if (getSelection().size() == 1) {
             JIPipeGraphNode node = getSelection().iterator().next().getNode();
             if (node instanceof JIPipeProjectCompartment) {
                 setPropertyPanel(new JIPipeSingleCompartmentSelectionPanelUI(this,
-                        (JIPipeProjectCompartment) node));
+                        (JIPipeProjectCompartment) node), true);
             } else {
-                setPropertyPanel(new JIPipePipelineSingleAlgorithmSelectionPanelUI(this, node));
+                setPropertyPanel(new JIPipePipelineSingleAlgorithmSelectionPanelUI(this, node), true);
             }
         } else {
             if (getSelection().stream().allMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
                 setPropertyPanel(new JIPipeMultiCompartmentSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(),
-                        getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()));
+                        getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()), true);
             } else {
                 setPropertyPanel(new JIPipePipelineMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
-                        getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+                        getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
             }
         }
     }
@@ -297,7 +297,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
             selectOnly(event.getUi());
             JIPipeSingleCompartmentSelectionPanelUI panel = new JIPipeSingleCompartmentSelectionPanelUI(this,
                     (JIPipeProjectCompartment) event.getUi().getNode());
-            setPropertyPanel(panel);
+            setPropertyPanel(panel, true);
             panel.executeQuickRun(true,
                     false,
                     true,
@@ -309,7 +309,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
             selectOnly(event.getUi());
             JIPipeSingleCompartmentSelectionPanelUI panel = new JIPipeSingleCompartmentSelectionPanelUI(this,
                     (JIPipeProjectCompartment) event.getUi().getNode());
-            setPropertyPanel(panel);
+            setPropertyPanel(panel, true);
             panel.executeQuickRun(false,
                     true,
                     false,
