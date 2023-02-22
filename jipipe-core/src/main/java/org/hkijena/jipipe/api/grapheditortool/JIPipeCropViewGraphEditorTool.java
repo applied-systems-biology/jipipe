@@ -6,7 +6,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 
-public class CropViewGraphEditorTool implements JIPipeGraphEditorTool {
+public class JIPipeCropViewGraphEditorTool implements JIPipeGraphEditorTool {
 
     private JIPipeGraphEditorUI graphEditor;
 

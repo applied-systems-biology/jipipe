@@ -215,7 +215,7 @@ public class RewireConnectionsToolUI extends JDialog {
             if(enabledConnection.isInput()) {
                 // Search for another output that produces compatible data
                 for (JIPipeDataSlot availableSource : enabledConnection.getNode().getParentGraph().getAvailableSources(enabledConnection, true, false)) {
-                    if(currentConnectionNodes.contains(availableSource.getNode()))
+                    if(availableSource == currentSlot)
                         continue;
                     if(!availableSource.getNode().getInfo().isRunnable())
                         continue;
@@ -227,7 +227,7 @@ public class RewireConnectionsToolUI extends JDialog {
             else {
                 // Search for another input that is compatible to the produced data
                 for (JIPipeDataSlot availableTarget : enabledConnection.getNode().getParentGraph().getAvailableTargets(enabledConnection, true, false)) {
-                    if(currentConnectionNodes.contains(availableTarget.getNode()))
+                    if(availableTarget == currentSlot)
                         continue;
                     if(!availableTarget.getNode().getInfo().isRunnable())
                         continue;

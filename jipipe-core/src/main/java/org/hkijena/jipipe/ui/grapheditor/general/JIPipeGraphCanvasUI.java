@@ -607,7 +607,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             // Mark this as actual dragging
             this.currentConnectionDragSourceDragged = true;
 
-            JIPipeNodeUI nodeUI = pickComponent(mouseEvent);
+            JIPipeNodeUI nodeUI = pickNodeUI(mouseEvent);
             if (nodeUI != null && currentConnectionDragSource.getNodeUI() != nodeUI) {
                 // Advanced dragging behavior
                 boolean snapped = false;
@@ -859,7 +859,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         boolean changed = false;
-        JIPipeNodeUI nodeUI = pickComponent(mouseEvent);
+        JIPipeNodeUI nodeUI = pickNodeUI(mouseEvent);
         if(nodeUI != null) {
             if(nodeUI != currentlyMouseEnteredNode) {
                 if(currentlyMouseEnteredNode != null) {
@@ -894,7 +894,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
         }
 
-        JIPipeNodeUI ui = pickComponent(mouseEvent);
+        JIPipeNodeUI ui = pickNodeUI(mouseEvent);
 
         if(ui != null) {
             ui.mouseClicked(mouseEvent);
@@ -976,7 +976,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
             if (currentlyDraggedOffsets.isEmpty()) {
-                JIPipeNodeUI ui = pickComponent(mouseEvent);
+                JIPipeNodeUI ui = pickNodeUI(mouseEvent);
                 if (ui != null) {
                     if (mouseEvent.isShiftDown()) {
                         if (getSelection().contains(ui))
@@ -1040,7 +1040,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private JIPipeNodeUI pickComponent(MouseEvent mouseEvent) {
+    public JIPipeNodeUI pickNodeUI(MouseEvent mouseEvent) {
         for (int i = 0; i < getComponentCount(); ++i) {
             Component component = getComponent(i);
             if (component.getBounds().contains(mouseEvent.getX(), mouseEvent.getY())) {
@@ -1098,7 +1098,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 selectionSecond = null;
                 repaint();
             } else {
-                JIPipeNodeUI ui = pickComponent(mouseEvent);
+                JIPipeNodeUI ui = pickNodeUI(mouseEvent);
                 if (ui == null) {
                     selectOnly(null);
                 }
@@ -1403,7 +1403,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         // Below node paint
         if(currentTool != null) {
-            currentTool.paintAfterNodes(g);
+            currentTool.paintBelowNodesAndEdges(g);
         }
 
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
@@ -1447,6 +1447,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         paintCurrentlyDraggedConnection(g);
         paintDisconnectHighlight(g);
         paintConnectHighlight(g);
+
+        if(currentTool != null) {
+            currentTool.paintBelowNodesAfterEdges(g);
+        }
 
         g.setStroke(STROKE_UNIT);
     }
@@ -1668,6 +1672,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             JIPipeDataSlot source = kv.getKey();
             JIPipeDataSlot target = kv.getValue();
             JIPipeGraphEdge edge = graph.getGraph().getEdge(kv.getKey(), kv.getValue());
+
+            if(currentTool != null) {
+                if(!currentTool.canRenderEdge(source, target, edge)) {
+                    continue;
+                }
+            }
 
             // Check for only showing selected nodes
             JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
@@ -2237,7 +2247,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * @param viewY        the view y
      * @param enableArrows enable arrows
      */
-    private void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows) {
+    public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows) {
         switch (shape) {
             case Elbow:
                 paintElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, enableArrows);

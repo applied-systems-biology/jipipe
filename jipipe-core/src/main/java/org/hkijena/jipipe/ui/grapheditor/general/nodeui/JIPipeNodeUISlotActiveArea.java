@@ -108,4 +108,8 @@ public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
     public boolean isInput() {
         return slotType == JIPipeSlotType.Input;
     }
+
+    public boolean isOutput() {
+        return slotType == JIPipeSlotType.Output;
+    }
 }

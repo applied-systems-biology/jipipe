@@ -12,10 +12,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.data.JIPipeWeakDataReferenceData;
-import org.hkijena.jipipe.api.grapheditortool.CropViewGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeConnectGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeMoveNodesGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -122,7 +119,8 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerGraphEditorTool(JIPipeDefaultGraphEditorTool.class);
         registerGraphEditorTool(JIPipeConnectGraphEditorTool.class);
         registerGraphEditorTool(JIPipeMoveNodesGraphEditorTool.class);
-        registerGraphEditorTool(CropViewGraphEditorTool.class);
+        registerGraphEditorTool(JIPipeCropViewGraphEditorTool.class);
+        registerGraphEditorTool(JIPipeRewireGraphEditorTool.class);
     }
 
     @Override
