@@ -1851,6 +1851,16 @@ public class UIUtils {
         component.removeAll();
     }
 
+    public static Map<?, ?> getDesktopRenderingHints() {
+        Map<?, ?> result = (Map<?, ?>) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
+        if(result == null) {
+            return Collections.emptyMap();
+        }
+        else {
+            return result;
+        }
+    }
+
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
         private final Component target;

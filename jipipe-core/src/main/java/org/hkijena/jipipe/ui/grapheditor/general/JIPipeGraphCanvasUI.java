@@ -143,8 +143,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private Font smartEdgeTooltipNodeFont;
     private List<DisplayedSlotEdge> lastDisplayedMainEdges;
 
-    private final Map<?, ?> desktopRenderingHints =
-            (Map<?, ?>) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
+    private final Map<?, ?> desktopRenderingHints = UIUtils.getDesktopRenderingHints();
 
     private JIPipeToggleableGraphEditorTool currentTool;
 
