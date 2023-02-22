@@ -59,6 +59,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     private JPanel batchAssistantTabContent;
     private JPanel currentRunTabContent;
     private DocumentTabPane tabbedPane;
+    private boolean disposed;
 
     /**
      * @param graphEditorUI the graph editor
@@ -161,6 +162,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
 
     @Override
     public void dispose() {
+        disposed = true;
         UIUtils.removeAllWithDispose(this);
     }
 
@@ -176,6 +178,8 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     }
 
     private void activateLazyContent(DocumentTabPane tabbedPane) {
+        if(disposed)
+            return;
         if (testBenchTabContent != null && tabbedPane.getCurrentContent() == testBenchTabContent) {
             if (testBenchTabContent.getComponentCount() == 0) {
                 QuickRunSetupUI testBenchSetupUI = new QuickRunSetupUI(getProjectWorkbench(), node);
