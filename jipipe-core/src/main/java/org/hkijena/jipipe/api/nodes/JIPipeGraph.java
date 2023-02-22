@@ -1148,6 +1148,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         return Collections.unmodifiableList(result);
     }
 
+    public JIPipeGraphConnection getConnection(JIPipeDataSlot source, JIPipeDataSlot target) {
+        JIPipeGraphEdge edge = graph.getEdge(source, target);
+        return new JIPipeGraphConnection(this, source, target, edge);
+    }
+
     /**
      * Returns ALL predecessor algorithms of an algorithm. The predecessors are ordered according to the list of traversed algorithms (topological order)
      *
@@ -1847,6 +1852,14 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             return true;
         }
         return false;
+    }
+
+    public void disconnect(JIPipeGraphConnection connection, boolean user) {
+        disconnect(connection.getSource(), connection.getTarget(), user);
+    }
+
+    public void disconnect(JIPipeGraphConnection connection) {
+        disconnect(connection.getSource(), connection.getTarget(), true);
     }
 
     /**

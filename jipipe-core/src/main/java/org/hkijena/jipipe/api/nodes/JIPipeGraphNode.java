@@ -453,7 +453,14 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param locations map from compartment UUID to visual mode to location
      */
     public void setLocations(Map<String, Map<String, Point>> locations) {
-        this.locations = locations;
+        this.locations.clear();
+        for (Map.Entry<String, Map<String, Point>> entry : locations.entrySet()) {
+            Map<String, Point> pointMap = new HashMap<>();
+            for (Map.Entry<String, Point> stringPointEntry : entry.getValue().entrySet()) {
+                pointMap.put(stringPointEntry.getKey(), new Point(stringPointEntry.getValue()));
+            }
+            this.locations.put(entry.getKey(), pointMap);
+        }
     }
 
     /**
