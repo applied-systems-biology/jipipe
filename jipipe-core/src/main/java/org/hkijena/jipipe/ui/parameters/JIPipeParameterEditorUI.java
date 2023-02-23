@@ -155,6 +155,9 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      */
     @Subscribe
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if(parameterAccess == null) {
+            return;
+        }
         if (!isDisplayable()) {
             try {
                 parameterAccess.getSource().getEventBus().unregister(this);
@@ -173,6 +176,9 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
 
     @Override
     public void dispose() {
+        if(parameterAccess != null) {
+            parameterAccess.getSource().getEventBus().unregister(this);
+        }
         UIUtils.removeAllWithDispose(this);
         parameterAccess = null;
     }

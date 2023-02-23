@@ -890,7 +890,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         // Draw name
         if (indicatorTextColor != null) {
             g2.setPaint(indicatorTextColor);
-        } else {
+        }
+        else if(slotState.getSlot().getInfo().isOptional()) {
+            g2.setPaint(Color.GRAY);
+        }
+        else {
             g2.setPaint(mainTextColor);
         }
         FontMetrics fontMetrics = g2.getFontMetrics();
@@ -904,6 +908,19 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     (int) Math.round(12 * zoom),
                     (int) Math.round(12 * zoom),
                     null);
+        }
+        else if(slotState.getSlot().isInput()) {
+            ImageIcon uiInputSlotIcon = node.getUIInputSlotIcon(slotState.getSlotName());
+            if(uiInputSlotIcon != null) {
+                Dimension dimension = node.getUIInputSlotIconBaseDimensions(slotState.getSlotName());
+                startX =  originalStartX + slotWidth - 8 * zoom - dimension.width * zoom;
+                g2.drawImage(uiInputSlotIcon.getImage(),
+                        (int)Math.round(startX),
+                        (int)Math.round(centerY - dimension.height / 2.0 * zoom),
+                        (int) Math.round(dimension.width * zoom),
+                        (int) Math.round(dimension.width * zoom),
+                        null);
+            }
         }
     }
 
@@ -1752,10 +1769,22 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         ViewOnlyMenuItem infoItem = new ViewOnlyMenuItem("<html>" + dataInfo.getName() + "<br><small>" + StringUtils.orElse(dataInfo.getDescription(), "No description provided") + "</small></html>", JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
         menu.add(infoItem);
 
+        // Optional info
+        if(slot.getInfo().isOptional()) {
+            menu.add(new ViewOnlyMenuItem("<html>Optional slot<br><small>This slot requires no input connections.</small></html>", UIUtils.getIconFromResources("actions/checkbox.png")));
+        }
+
         // Role information item
         if(slot.getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
             ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for data batch generation.</small></html>", UIUtils.getIconFromResources("actions/wrench.png"));
             menu.add(roleInfoItem);
+        }
+
+        // Input info
+        List<ViewOnlyMenuItem> additionalItems = new ArrayList<>();
+        node.createUIInputSlotIconDescriptionMenuItems(slot.getName(), additionalItems);
+        for (ViewOnlyMenuItem additionalItem : additionalItems) {
+            menu.add(additionalItem);
         }
 
         // Missing input item

@@ -40,7 +40,10 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParamet
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -1159,6 +1162,36 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 }
             }
         }
+    }
+
+    /**
+     * An icon that is displayed on the right-hand side of the input slot
+     * Can be null
+     * @param slotName the slot name
+     * @return the icon or null
+     */
+    public ImageIcon getUIInputSlotIcon(String slotName) {
+        return null;
+    }
+
+    /**
+     * Explanations added to the slot menu
+     * Can be null
+     * @param slotName the slot name
+     * @param target the list of menu items
+     */
+    public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
+    }
+
+    /**
+     * Size of the icon returned by getUIInputSlotIcon
+     * Should be at most 16x16
+     * Defaults to 12x12
+     * @param slotName the slot name
+     * @return the icon size
+     */
+    public Dimension getUIInputSlotIconBaseDimensions(String slotName) {
+        return new Dimension(12, 12);
     }
 
     /**

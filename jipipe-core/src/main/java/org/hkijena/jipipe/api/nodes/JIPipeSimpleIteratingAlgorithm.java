@@ -22,10 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -37,9 +34,14 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.Intege
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -261,6 +263,30 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     annotateWithParameter(dataBatch, key, target, newValue);
                 }
             }
+        }
+    }
+
+//    @Override
+//    public Dimension getUIInputSlotIconBaseDimensions(String slotName) {
+//        return new Dimension(16,16);
+//    }
+//
+//    @Override
+//    public ImageIcon getUIInputSlotIcon(String slotName) {
+//        JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
+//        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+//            return UIUtils.getIconInvertedFromResources("actions/1-to-n.png");
+//        }
+//        return super.getUIInputSlotIcon(slotName);
+//    }
+
+    @Override
+    public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
+        super.createUIInputSlotIconDescriptionMenuItems(slotName, target);
+        JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
+        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+            target.add(new ViewOnlyMenuItem("<html>One-to-Many processing<br/><small>The data within this slot is processed one-by-one (1 input can produce N outputs)</small>",
+                    UIUtils.getIconFromResources("actions/1-to-n.png")));
         }
     }
 
