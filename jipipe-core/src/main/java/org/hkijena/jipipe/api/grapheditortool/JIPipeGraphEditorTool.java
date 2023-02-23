@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.grapheditortool;
 
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 
 import javax.swing.*;
@@ -25,6 +26,10 @@ public interface JIPipeGraphEditorTool extends MouseMotionListener, MouseListene
     JIPipeGraphEditorUI getGraphEditor();
 
     void setGraphEditor(JIPipeGraphEditorUI graphEditorUI);
+
+    default JIPipeGraphCanvasUI getGraphCanvas() {
+        return getGraphEditor().getCanvasUI();
+    }
 
     void activate();
 

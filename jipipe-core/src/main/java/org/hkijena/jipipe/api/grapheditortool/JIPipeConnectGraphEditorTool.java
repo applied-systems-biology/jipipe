@@ -42,7 +42,6 @@ public class JIPipeConnectGraphEditorTool implements JIPipeToggleableGraphEditor
 
     @Override
     public void activate() {
-
     }
 
     @Override
