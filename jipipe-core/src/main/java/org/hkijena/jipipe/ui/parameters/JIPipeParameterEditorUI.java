@@ -177,7 +177,11 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
     @Override
     public void dispose() {
         if(parameterAccess != null) {
-            parameterAccess.getSource().getEventBus().unregister(this);
+            try {
+                parameterAccess.getSource().getEventBus().unregister(this);
+            }
+            catch (IllegalArgumentException e) {
+            }
         }
         UIUtils.removeAllWithDispose(this);
         parameterAccess = null;
