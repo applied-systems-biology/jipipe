@@ -4,14 +4,14 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.74.0-SNAPSHOT</version>
+        <version>1.79.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-ij-3d</artifactId>
-    <version>1.74.0-SNAPSHOT</version>
+    <version>1.79.0-SNAPSHOT</version>
 
     <name>jipipe-ij-3d</name>
-    <description>JIPipe Trainable Weka Filter Integration</description>
+    <description>JIPipe 3D ImageJ Suite Integration</description>
     <inceptionYear>2022</inceptionYear>
     <url>https://www.jipipe.org/</url>
 
@@ -82,27 +82,27 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
+                <version>1.79.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-filesystem</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
+                <version>1.79.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-multiparameters</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
+                <version>1.79.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
+                <version>1.79.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-algorithms</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
+                <version>1.79.0-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.framagit.mcib3d</groupId>

@@ -71,7 +71,7 @@
       "categories" : [ "Automation", "Annotation", "Filtering" ]
     },
     "id" : "org.hkijena.jipipe:filesystem",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -122,7 +122,7 @@
       "categories" : [ "Core" ]
     },
     "id" : "org.hkijena.jipipe:compartments",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -173,7 +173,7 @@
       "categories" : [ "Annotation" ]
     },
     "id" : "org.hkijena.jipipe:annotations",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -194,7 +194,7 @@
       "categories" : [ ]
     },
     "id" : "org.hkijena.jipipe:imagej-algorithms",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -215,7 +215,7 @@
       "categories" : [ ]
     },
     "id" : "org.hkijena.jipipe:core",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -266,7 +266,7 @@
       "categories" : [ "Data processing", "Scripting" ]
     },
     "id" : "org.hkijena.jipipe:utils",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -357,7 +357,7 @@
       "categories" : [ "Deep-Learning", "Segmentation", "Machine Learning" ]
     },
     "id" : "org.hkijena.jipipe:cellpose",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -378,7 +378,7 @@
       "categories" : [ ]
     },
     "id" : "org.hkijena.jipipe:python",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -399,7 +399,7 @@
       "categories" : [ ]
     },
     "id" : "org.hkijena.jipipe:multi-parameters-algorithms",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
@@ -420,7 +420,7 @@
       "categories" : [ ]
     },
     "id" : "org.hkijena.jipipe:imagej-integration",
-    "version" : "1.74.0-SNAPSHOT",
+    "version" : "1.79.0-SNAPSHOT",
     "ij:update-site-dependencies" : [ ],
     "dependencies" : [ ],
     "ij:update-site-providers" : [ ]
