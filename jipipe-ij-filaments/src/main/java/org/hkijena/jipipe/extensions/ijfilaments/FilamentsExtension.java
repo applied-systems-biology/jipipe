@@ -104,6 +104,11 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
+    public boolean isBeta() {
+        return true;
+    }
+
+    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeTypeCategory(new FilamentsNodeTypeCategory());
 
