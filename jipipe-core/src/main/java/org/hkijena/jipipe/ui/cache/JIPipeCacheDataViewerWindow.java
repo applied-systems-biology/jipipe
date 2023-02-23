@@ -18,10 +18,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -389,6 +386,16 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             if (virtualData == null) {
                 showErrorUI();
                 return;
+            }
+            if(JIPipeWeakDataReferenceData.class.isAssignableFrom(virtualData.getDataClass())) {
+                // Dereference weak reference data
+                JIPipeWeakDataReferenceData weakDataReferenceData = virtualData.getData(JIPipeWeakDataReferenceData.class, new JIPipeProgressInfo());
+                JIPipeData data = weakDataReferenceData.getDataReference().get();
+                if(data == null) {
+                    showErrorUI();
+                    return;
+                }
+                virtualData = new JIPipeDataItemStore(data);
             }
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
