@@ -384,6 +384,17 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.yaml:snakeyaml:1.29" level="project" />
     <orderEntry type="module" module-name="jipipe-omnipose" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-ij-3d" scope="RUNTIME" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.framagit.mcib3d:mcib3d-core:4.0.87" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:3D_Viewer:4.0.3" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:j3dutils:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:j3dcore:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.gluegen:gluegen-rt:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: antlr:antlr:2.7.7" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.jogl:jogl-all:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.googlecode.combinatoricslib:combinatoricslib:2.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.quickhull3d:quickhull3d:1.0.0" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.framagit.mcib3d:mcib3d-plugins:4.0.63" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij2_:2.3.0.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij_:1.9.0.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij-coremem:2.3.0.4" level="project" />

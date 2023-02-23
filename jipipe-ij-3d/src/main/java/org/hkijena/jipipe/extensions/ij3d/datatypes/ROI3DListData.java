@@ -49,9 +49,16 @@ public class ROI3DListData extends Objects3DPopulation implements JIPipeData {
     }
 
     public ROI3DListData(ROI3DListData other) {
+        setCalibration(other.getScaleXY(), other.getScaleZ(), other.getUnit());
         for (int i = 0; i < other.getNbObjects(); i++) {
             addObject(IJ3DUtils.duplicateObject3D(other.getObject(i)));
         }
+    }
+
+    public ROI3DListData newWithSameCalibration() {
+        ROI3DListData result = new ROI3DListData();
+        setCalibration(getScaleXY(), getScaleZ(), getUnit());
+        return result;
     }
 
     @Override
