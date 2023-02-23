@@ -100,18 +100,22 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                 for (JIPipeDataSlot inputIncomingSourceSlot : graph.getInputIncomingSourceSlots(currentRewireDragSource.getSlot())) {
                     // The slot is an output
                     JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(inputIncomingSourceSlot.getNode());
-                    PointRange slotLocation = nodeUI.getSlotLocation(inputIncomingSourceSlot);
-                    slotLocation.add(nodeUI.getLocation());
-                    paintRewireEdge(g, slotLocation, mousePosition);
+                    if(nodeUI != null) {
+                        PointRange slotLocation = nodeUI.getSlotLocation(inputIncomingSourceSlot);
+                        slotLocation.add(nodeUI.getLocation());
+                        paintRewireEdge(g, slotLocation, mousePosition);
+                    }
                 }
             }
             else {
                 for (JIPipeDataSlot outputOutgoingTargetSlot : graph.getOutputOutgoingTargetSlots(currentRewireDragSource.getSlot())) {
                     // The slot is an input
                     JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(outputOutgoingTargetSlot.getNode());
-                    PointRange slotLocation = nodeUI.getSlotLocation(outputOutgoingTargetSlot);
-                    slotLocation.add(nodeUI.getLocation());
-                    paintRewireEdge(g, slotLocation, mousePosition);
+                    if(nodeUI != null) {
+                        PointRange slotLocation = nodeUI.getSlotLocation(outputOutgoingTargetSlot);
+                        slotLocation.add(nodeUI.getLocation());
+                        paintRewireEdge(g, slotLocation, mousePosition);
+                    }
                 }
             }
         }
