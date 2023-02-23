@@ -36,7 +36,7 @@ import static org.hkijena.jipipe.utils.UIUtils.getStringFromClipboard;
 public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        return !StringUtils.isNullOrEmpty(UIUtils.getStringFromClipboard());
+        return true;
     }
 
     @Override
