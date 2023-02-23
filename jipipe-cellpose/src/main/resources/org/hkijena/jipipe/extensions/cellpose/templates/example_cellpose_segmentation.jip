@@ -63,7 +63,7 @@
       "acknowledgements" : [ ],
       "website" : "https://www.jipipe.org/",
       "license" : "BSD 2-Clause",
-      "citation" : "Ruman Gerst, Zoltan Cseresnyes, Marc Thilo Figge. JIPipe: Visual batch processing for ImageJ, 11 May 2022, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-1641739/v1]",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ ],
       "thumbnail" : {
         "data" : null
@@ -114,7 +114,7 @@
       "acknowledgements" : [ ],
       "website" : "https://www.jipipe.org/",
       "license" : "BSD 2-Clause",
-      "citation" : "Ruman Gerst, Zoltan Cseresnyes, Marc Thilo Figge. JIPipe: Visual batch processing for ImageJ, 11 May 2022, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-1641739/v1]",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ ],
       "thumbnail" : {
         "data" : null
@@ -165,7 +165,7 @@
       "acknowledgements" : [ ],
       "website" : "https://www.jipipe.org/",
       "license" : "BSD 2-Clause",
-      "citation" : "Ruman Gerst, Zoltan Cseresnyes, Marc Thilo Figge. JIPipe: Visual batch processing for ImageJ, 11 May 2022, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-1641739/v1]",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ ],
       "thumbnail" : {
         "data" : null
@@ -258,7 +258,7 @@
       "acknowledgements" : [ ],
       "website" : "https://www.jipipe.org/",
       "license" : "BSD 2-Clause",
-      "citation" : "Ruman Gerst, Zoltan Cseresnyes, Marc Thilo Figge. JIPipe: Visual batch processing for ImageJ, 11 May 2022, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-1641739/v1]",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ ],
       "thumbnail" : {
         "data" : null
@@ -349,7 +349,7 @@
       } ],
       "website" : "https://www.jipipe.org/",
       "license" : "BSD 2-Clause",
-      "citation" : "Ruman Gerst, Zoltan Cseresnyes, Marc Thilo Figge. JIPipe: Visual batch processing for ImageJ, 11 May 2022, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-1641739/v1]",
+      "citation" : "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4",
       "dependency-citations" : [ "Stringer, C., Wang, T., Michaelos, M., & Pachitariu, M. (2021). Cellpose: a generalist algorithm for cellular segmentation. Nature Methods, 18(1), 100-106." ],
       "thumbnail" : {
         "data" : null
