@@ -18,12 +18,15 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
- * An {@link ExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
+ * An {@link AbstractExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
  */
-public class DefaultExpressionParameter extends ExpressionParameter {
+public class DefaultExpressionParameter extends AbstractExpressionParameter {
     private static DefaultExpressionEvaluator EVALUATOR;
+
+    private java.util.Set<ExpressionParameterVariable> additionalUIVariables = new HashSet<>();
 
     public DefaultExpressionParameter() {
     }
@@ -32,7 +35,7 @@ public class DefaultExpressionParameter extends ExpressionParameter {
         super(expression);
     }
 
-    public DefaultExpressionParameter(ExpressionParameter other) {
+    public DefaultExpressionParameter(AbstractExpressionParameter other) {
         super(other);
     }
 
@@ -55,6 +58,14 @@ public class DefaultExpressionParameter extends ExpressionParameter {
     @Override
     public ExpressionEvaluator getEvaluator() {
         return getEvaluatorInstance();
+    }
+
+    public java.util.Set<ExpressionParameterVariable> getAdditionalUIVariables() {
+        return additionalUIVariables;
+    }
+
+    public void setAdditionalUIVariables(java.util.Set<ExpressionParameterVariable> additionalUIVariables) {
+        this.additionalUIVariables = additionalUIVariables;
     }
 
     public static class List extends ListParameter<DefaultExpressionParameter> {

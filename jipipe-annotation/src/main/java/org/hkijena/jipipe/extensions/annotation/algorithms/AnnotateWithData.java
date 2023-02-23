@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Annotate with data", description = "Annotates the incoming data with the other data.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotation", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
@@ -53,12 +53,12 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
         if (mergeLabelAnnotations)
             annotationList.addAll(inputAnnotationSlot.getTextAnnotations(annotationRow));
 
-        getFirstOutputSlot().addData(inputDataSlot.getVirtualData(dataRow),
+        getFirstOutputSlot().addData(inputDataSlot.getDataItemStore(dataRow),
                 annotationList,
                 annotationMergeStrategy);
-        getFirstOutputSlot().setVirtualDataAnnotation(getFirstOutputSlot().getRowCount() - 1,
+        getFirstOutputSlot().setDataAnnotationItemStore(getFirstOutputSlot().getRowCount() - 1,
                 annotationName,
-                inputAnnotationSlot.getVirtualData(annotationRow));
+                inputAnnotationSlot.getDataItemStore(annotationRow));
     }
 
     @JIPipeDocumentation(name = "Generated annotation", description = "The name of the generated data annotation")

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -33,6 +34,7 @@ import java.util.Set;
 @JIPipeDocumentation(name = "Convert to annotation table", description = "Converts data into an annotation table that contains " +
         "all annotations of the data row. You can also add a string representation of the data.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, aliasName = "Annotations to table")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)
 public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
@@ -45,7 +47,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
      */
     public ConvertToAnnotationTable(JIPipeNodeInfo info) {
         super(info);
-        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.Custom);
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
     }
 
     /**
@@ -75,7 +77,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         for (int sourceRow : inputDataRows) {
             output.addRow();
             if (dataColumn >= 0)
-                output.setValueAt(getFirstInputSlot().getVirtualData(sourceRow).getStringRepresentation(), row, dataColumn);
+                output.setValueAt(getFirstInputSlot().getDataItemStore(sourceRow).getStringRepresentation(), row, dataColumn);
             for (JIPipeTextAnnotation annotation : getFirstInputSlot().getTextAnnotations(sourceRow)) {
                 if (annotation != null) {
                     int col = output.addAnnotationColumn(annotation.getName());

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
+import ij.IJ;
 import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -181,6 +182,21 @@ public class PathUtils {
      * @param extensions Should contain the dot
      * @return null if no file was found
      */
+    public static Path findFileByExtensionRecursivelyIn(Path folder, String... extensions) {
+        try {
+            return Files.walk(folder).filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Finds a file in the specified folder with given extension
+     *
+     * @param folder     the path
+     * @param extensions Should contain the dot
+     * @return null if no file was found
+     */
     public static List<Path> findFilesByExtensionIn(Path folder, String... extensions) {
         try {
             return Files.list(folder).filter(p -> Files.isRegularFile(p) && (extensions.length == 0 || Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e)))).collect(Collectors.toList());
@@ -235,6 +251,26 @@ public class PathUtils {
         return null;
     }
 
+    public static Path getImageJDir() {
+        Path imageJDir = Paths.get(StringUtils.nullToEmpty(Prefs.getImageJDir()));
+        if (!imageJDir.isAbsolute())
+            imageJDir = imageJDir.toAbsolutePath();
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return imageJDir;
+    }
+
+    public static Path absoluteToImageJRelative(Path path) {
+        if (!path.isAbsolute())
+            return path;
+        return getImageJDir().relativize(path);
+    }
+
     /**
      * Converts relative paths to absolute paths, relative to the ImageJ directory
      * Absolute paths are left unchanged
@@ -245,8 +281,7 @@ public class PathUtils {
     public static Path relativeToImageJToAbsolute(Path path) {
         if (path.isAbsolute())
             return path;
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        return imageJDir.resolve(path);
+        return getImageJDir().resolve(path);
     }
 
     /**
@@ -292,5 +327,58 @@ public class PathUtils {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Ensures that the file name of the path has one of the provided extensions
+     *
+     * @param path                  the path
+     * @param extension             the extension (should include the dot)
+     * @param alternativeExtensions alternative extensions that are also valid (should include the dot)
+     * @return path with a filename that has the provided extension
+     */
+    public static Path ensureExtension(Path path, String extension, String... alternativeExtensions) {
+        if (path.getFileName().toString().endsWith(extension))
+            return path;
+        for (String ext : alternativeExtensions) {
+            if (path.getFileName().toString().endsWith(ext))
+                return path;
+        }
+        if (path.getParent() != null) {
+            return path.getParent().resolve(path.getFileName() + extension);
+        } else {
+            return Paths.get(path + extension);
+        }
+    }
+
+    /**
+     * Ensures that the parent directories of the path exist.
+     * If the parent directory is null, nothing will be done
+     *
+     * @param path the path
+     */
+    public static void ensureParentDirectoriesExist(Path path) {
+        if (path.getParent() != null) {
+            try {
+                Files.createDirectories(path.getParent());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    /**
+     * Returns the first path if it exists or the alternative path if it doesn't
+     *
+     * @param firstChoice the first choice. can be null.
+     * @param alternative the alternative
+     * @return firstChoice if it is not null and if it does exist, alternative instead
+     */
+    public static Path orElse(Path firstChoice, Path alternative) {
+        if (firstChoice != null && Files.exists(firstChoice)) {
+            return firstChoice;
+        } else {
+            return alternative;
+        }
     }
 }

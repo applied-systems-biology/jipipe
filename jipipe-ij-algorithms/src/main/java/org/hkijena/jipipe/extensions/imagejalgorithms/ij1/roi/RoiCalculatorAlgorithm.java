@@ -35,8 +35,8 @@ import java.util.Map;
         "the whole list, meaning that an AND operation will create the intersection of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
         " preprocess using a ROI splitter algorithm.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class RoiCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private LogicalOperation operation = LogicalOperation.LogicalAnd;
@@ -51,10 +51,7 @@ public class RoiCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public RoiCalculatorAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

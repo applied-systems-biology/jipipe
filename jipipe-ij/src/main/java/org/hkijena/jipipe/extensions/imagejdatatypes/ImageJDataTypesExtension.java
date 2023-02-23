@@ -14,15 +14,21 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
 import ome.xml.model.enums.DimensionOrder;
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToHSBColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToLABColorSpaceConverterAlgorithm;
@@ -66,15 +72,23 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.display.AddToROIManagerData
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.OpenInImageJDataDisplay;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataPreview;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImportImageJPathDataOperation;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataPreview;
+import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreview;
+import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.strings.StringsExtension;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
+import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJExporter;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJImporter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -98,6 +112,229 @@ import java.util.stream.Collectors;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:imagej-integration",
+            JIPipe.getJIPipeVersion(),
+            "ImageJ integration");
+
+    public ImageJDataTypesExtension() {
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, FilesystemExtension.AS_DEPENDENCY);
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_OME);
+    }
+
+    @Override
+    public ImageParameter getThumbnail() {
+        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
+    }
+
+    @Override
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
+        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
+                "Curtis T.",
+                "Rueden",
+                new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                "",
+                "",
+                true,
+                false),
+                new JIPipeAuthorMetadata("",
+                        "Johannes",
+                        "Schindelin",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Mark C.",
+                        "Hiner",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Barry E.",
+                        "DeZonia",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Alison E.",
+                        "Walter",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Ellen T.",
+                        "Arena",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Kevin W.",
+                        "Eliceiri",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        true),
+                new JIPipeAuthorMetadata("",
+                        "Caroline A.",
+                        "Schneider",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        true,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Wayne S.",
+                        "Rasband",
+                        new StringList("Section on Instrumentation, US National Institutes of Health, Bethesda, Maryland, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Melissa",
+                        "Linkert",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology",
+                                "Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711",
+                                "Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        true,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Chris",
+                        "Allan",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK",
+                                "Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Jean-Marie",
+                        "Burel",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Will",
+                        "Moore",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Andrew",
+                        "Patterson",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Brian",
+                        "Loranger",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Josh",
+                        "Moore",
+                        new StringList("Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Carlos",
+                        "Neves",
+                        new StringList("Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Donald",
+                        "MacDonald",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Aleksandra",
+                        "Tarkowska",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Caitlin",
+                        "Sticco",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology",
+                                "Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Emma",
+                        "Hill",
+                        new StringList("The Rockefeller University Press, New York, NY 10065"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Mike",
+                        "Rossner",
+                        new StringList("The Rockefeller University Press, New York, NY 10065"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Jason R.",
+                        "Swedlow",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK",
+                                "Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        false,
+                        true));
+
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -136,6 +373,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerSettingsSheet(ImageJDataTypesSettings.ID,
                 "ImageJ data types",
+                "Settings on how ImageJ data types are imported/exported",
                 UIUtils.getIconFromResources("apps/imagej.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
@@ -259,6 +497,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         // Register data sources
         registerNodeType("import-imagej-roi-from-file", ROIDataFromFile.class);
         registerNodeType("extract-imagej-roi-from-ome-image", ROIDataFromOMEImage.class);
+        registerEnumParameterType("import-imagej-results-table-from-file:file-format", ResultsTableFromFile.FileFormat.class, "File format", "A file format");
         registerNodeType("import-imagej-results-table-from-file", ResultsTableFromFile.class);
         registerNodeType("import-imagej-imgplus-from-file", ImagePlusFromFile.class);
         registerNodeType("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
@@ -285,6 +524,14 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerDatatypeOperation("file", new ImportImageJPathDataOperation());
 
         registerMenuExtension(BioFormatsConfigTool.class);
+
+        registerSettingsSheet(ImageViewerUIRoiDisplaySettings.ID,
+                "Image viewer: ROI display",
+                "Settings for the ROI manager component of the JIPipe image viewer",
+                UIUtils.getIconFromResources("actions/roi.png"),
+                "UI",
+                null,
+                new ImageViewerUIRoiDisplaySettings());
 
     }
 

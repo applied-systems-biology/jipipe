@@ -49,6 +49,11 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
         return false;
     }
 
+    @Override
+    public boolean isUIImportantLabelEnabled() {
+        return false;
+    }
+
     private Set<Object> getCurrentlySelected() {
         Set<Object> result = new HashSet<>();
         for (Map.Entry<Object, JCheckBox> entry : checkBoxMap.entrySet()) {
@@ -126,7 +131,12 @@ public class DynamicSetParameterEditorUI extends JIPipeParameterEditorUI {
 
         JToolBar toolBar = new JToolBar();
         toolBar.add(Box.createHorizontalStrut(4));
-        toolBar.add(new JLabel(getParameterAccess().getName()));
+
+        JLabel nameLabel = new JLabel(getParameterAccess().getName());
+        if (getParameterAccess().isImportant()) {
+            nameLabel.setIcon(UIUtils.getIconFromResources("emblems/important.png"));
+        }
+        toolBar.add(nameLabel);
         toolBar.add(Box.createHorizontalGlue());
 
         collapseToggle = new JToggleButton("Collapse",

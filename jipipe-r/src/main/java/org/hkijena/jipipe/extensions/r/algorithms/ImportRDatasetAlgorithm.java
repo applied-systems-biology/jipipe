@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -9,10 +10,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.r.OptionalREnvironment;
+import org.hkijena.jipipe.extensions.r.RExtension;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
 import org.hkijena.jipipe.extensions.r.RUtils;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -86,6 +89,12 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("dataset")
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
+    }
+
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+        super.onDeserialized(node, issues, notifications);
+        RExtension.createMissingRNotificationIfNeeded(notifications);
     }
 
     public enum Dataset {

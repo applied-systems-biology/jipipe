@@ -19,15 +19,11 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,7 +31,7 @@ import java.util.Set;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Filter ROI by name", description = "Filters the ROI list elements by the name and other basic properties.")
+@JIPipeDocumentation(name = "Filter ROI by properties (expression)", description = "Filters the ROI list elements by the name and other basic properties.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
@@ -71,7 +67,10 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ExpressionVariables parameters = new ExpressionVariables();
         parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
-        for (Roi roi : inputRois) {
+        for (int i = 0; i < inputRois.size(); i++) {
+            Roi roi = inputRois.get(i);
+            parameters.set("num_roi", inputRois.size());
+            parameters.set("index", i);
             parameters.set("name", StringUtils.nullToEmpty(roi.getName()));
             parameters.set("x", roi.getBounds().x);
             parameters.set("y", roi.getBounds().y);
@@ -90,7 +89,7 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filter")
     @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
             "Click the 'f' button to see all available variables you can test.")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettings(variableSource = VariableSource.class, hint = "per ROI")
     public DefaultExpressionParameter getFilters() {
         return filters;
     }
@@ -98,14 +97,6 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filter")
     public void setFilters(DefaultExpressionParameter filters) {
         this.filters = filters;
-    }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            setFilters(new DefaultExpressionParameter("name == \"\""));
-        }
     }
 
     @JIPipeDocumentation(name = "Output empty lists", description = "If enabled, the node will also output empty lists.")
@@ -127,6 +118,8 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             VARIABLES = new HashSet<>();
             VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Name", "Name of the ROI (can be empty)", "name"));
+            VARIABLES.add(new ExpressionParameterVariable("Index", "Index of the ROI (First value is zero)", "index"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of ROI", "Number of ROI in the ROI list", "num_roi"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box X", "Top-left X coordinate of the bounding box around the ROI", "x"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box Y", "Top-left Y coordinate of the bounding box around around the ROI", "y"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box width", "Width of the bounding box around around the ROI", "width"));

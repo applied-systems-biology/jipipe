@@ -22,10 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -37,9 +34,14 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.Intege
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -48,7 +50,7 @@ import java.util.concurrent.Future;
  * This is a simplified version of {@link JIPipeIteratingAlgorithm} that assumes that there is only one or zero input slots.
  * An error is thrown if there are more than one input slots.
  */
-public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
+public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm, JIPipeAdaptiveParametersAlgorithm {
 
     private boolean parallelizationEnabled = true;
     private JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings();
@@ -108,7 +110,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        if (getEffectiveInputSlotCount() > 1)
+        if (getDataInputSlotCount() > 1)
             throw new UserFriendlyRuntimeException("Too many input slots for JIPipeSimpleIteratingAlgorithm!",
                     "Error in source code detected!",
                     "Algorithm '" + getName() + "'",
@@ -130,80 +132,95 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             }
         }
 
-        if (getInputSlots().isEmpty()) {
-            final int row = 0;
-            JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
+        List<JIPipeDataBatch> dataBatches;
+
+        // Generate data batches
+        if (getDataInputSlotCount() == 0) {
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            if (isPassThrough()) {
-                runPassThrough(slotProgress, dataBatch);
-            } else {
-                runIteration(dataBatch, slotProgress);
-            }
+
+            dataBatches = new ArrayList<>();
+            dataBatches.add(dataBatch);
         } else {
 
             boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount())) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new ExpressionVariables())) : null;
 
-            boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
 
-            if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || getFirstInputSlot().getRowCount() <= 1 || hasAdaptiveParameters) {
-                for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                    if (withLimit && !allowedIndices.contains(i))
-                        continue;
+            dataBatches = new ArrayList<>();
+
+            for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
+                if (withLimit && !allowedIndices.contains(i))
+                    continue;
+                if (progressInfo.isCancelled())
+                    return;
+                JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+                dataBatch.setInputData(getFirstInputSlot(), i);
+                dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+                dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeMode.MergeTables);
+                dataBatch.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
+                uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
+
+                dataBatches.add(dataBatch);
+            }
+        }
+
+        // Handle case: All optional input, no data
+        if (dataBatches.isEmpty() && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
+            progressInfo.log("Generating dummy data batch because of the [all inputs empty optional] condition");
+            // Generate a dummy batch
+            JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+            dataBatch.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
+            uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
+            dataBatches.add(dataBatch);
+        }
+
+        // Execute the workload
+        boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
+
+        if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || dataBatches.size() <= 1 || hasAdaptiveParameters) {
+            for (int i = 0; i < dataBatches.size(); i++) {
+                if (progressInfo.isCancelled())
+                    return;
+                JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, dataBatches.size());
+                uploadAdaptiveParameters(dataBatches.get(i), tree, parameterBackups, progressInfo);
+                if (isPassThrough()) {
+                    runPassThrough(slotProgress, dataBatches.get(i));
+                } else {
+                    runIteration(dataBatches.get(i), slotProgress);
+                }
+            }
+        } else {
+            List<Runnable> tasks = new ArrayList<>();
+            for (int i = 0; i < dataBatches.size(); i++) {
+                int dataBatchIndex = i;
+                JIPipeParameterTree finalTree = tree;
+                tasks.add(() -> {
                     if (progressInfo.isCancelled())
                         return;
-                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
-                    JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-                    dataBatch.setInputData(getFirstInputSlot(), i);
-                    dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
-                    dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeMode.MergeTables);
-                    dataBatch.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
-                    uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
+                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, dataBatches.size());
+                    uploadAdaptiveParameters(dataBatches.get(dataBatchIndex), finalTree, parameterBackups, progressInfo);
                     if (isPassThrough()) {
-                        runPassThrough(slotProgress, dataBatch);
+                        runPassThrough(slotProgress, dataBatches.get(dataBatchIndex));
                     } else {
-                        runIteration(dataBatch, slotProgress);
+                        runIteration(dataBatches.get(dataBatchIndex), slotProgress);
                     }
-                }
-            } else {
-                List<Runnable> tasks = new ArrayList<>();
-                for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
-                    if (withLimit && !allowedIndices.contains(i))
-                        continue;
-                    int rowIndex = i;
-                    JIPipeParameterTree finalTree = tree;
-                    tasks.add(() -> {
-                        if (progressInfo.isCancelled())
-                            return;
-                        JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
-                        JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-                        dataBatch.setInputData(getFirstInputSlot(), rowIndex);
-                        dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
-                        dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeMode.MergeTables);
-                        dataBatch.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
-                        uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
-                        if (isPassThrough()) {
-                            runPassThrough(slotProgress, dataBatch);
-                        } else {
-                            runIteration(dataBatch, slotProgress);
-                        }
-                    });
-                }
-                progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
-                for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
-                    try {
-                        Exception exception = batch.get();
-                        if (exception != null)
-                            throw new RuntimeException(exception);
-                    } catch (InterruptedException | ExecutionException e) {
-                        throw new RuntimeException(e);
-                    }
+                });
+            }
+            progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
+            for (Future<Exception> batch : getThreadPool().scheduleBatches(tasks, getParallelizationBatchSize())) {
+                try {
+                    Exception exception = batch.get();
+                    if (exception != null)
+                        throw new RuntimeException(exception);
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
+
     }
 
     private void uploadAdaptiveParameters(JIPipeDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
@@ -246,6 +263,30 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     annotateWithParameter(dataBatch, key, target, newValue);
                 }
             }
+        }
+    }
+
+//    @Override
+//    public Dimension getUIInputSlotIconBaseDimensions(String slotName) {
+//        return new Dimension(16,16);
+//    }
+//
+//    @Override
+//    public ImageIcon getUIInputSlotIcon(String slotName) {
+//        JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
+//        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+//            return UIUtils.getIconInvertedFromResources("actions/1-to-n.png");
+//        }
+//        return super.getUIInputSlotIcon(slotName);
+//    }
+
+    @Override
+    public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
+        super.createUIInputSlotIconDescriptionMenuItems(slotName, target);
+        JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
+        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+            target.add(new ViewOnlyMenuItem("<html>One-to-Many processing<br/><small>The data within this slot is processed one-by-one (1 input can produce N outputs)</small>",
+                    UIUtils.getIconFromResources("actions/1-to-n.png")));
         }
     }
 
@@ -292,7 +333,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled")
+    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
     @Override
     public boolean isParallelizationEnabled() {
         return parallelizationEnabled;
@@ -307,7 +348,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation",
-            collapsed = true,
+            hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/package.png")
     public JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings getDataBatchGenerationSettings() {
@@ -336,7 +377,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
-    @JIPipeParameter(value = "jipipe:adaptive-parameters", collapsed = true,
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {
@@ -349,7 +390,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         JIPipeDataSlot slot = slots.get(0);
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, slot.getRowCount())) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, slot.getRowCount(), new ExpressionVariables())) : null;
         for (int i = 0; i < slot.getRowCount(); i++) {
             if (withLimit && !allowedIndices.contains(i))
                 continue;

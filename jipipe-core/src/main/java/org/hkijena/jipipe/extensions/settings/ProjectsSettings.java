@@ -21,11 +21,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
-import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 /**
  * Remembers the last projects
@@ -38,9 +39,13 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     private PathList recentProjects = new PathList();
     private PathList recentJsonExtensionProjects = new PathList();
     private ProjectTemplateEnum projectTemplate = new ProjectTemplateEnum();
+
+    private StringList projectTemplateDownloadRepositories = new StringList();
     private boolean restoreTabs = true;
 
     public ProjectsSettings() {
+        projectTemplate.setValue(JIPipeProjectTemplate.getFallbackTemplateId());
+        projectTemplateDownloadRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/project-templates/project-templates.json");
     }
 
     public static ProjectsSettings getInstance() {
@@ -111,18 +116,12 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     }
 
     @JIPipeDocumentation(name = "New project template", description = "Template used for creating new projects")
-    @JIPipeParameter("new-project-template")
+    @JIPipeParameter("new-project-template-2")
     public ProjectTemplateEnum getProjectTemplate() {
-        if (projectTemplate != null && projectTemplate.getValue() == null && !projectTemplate.getAllowedValues().isEmpty()) {
-            JIPipeProjectTemplate template = new JIPipeProjectTemplate();
-            template.setStoredAsResource(true);
-            template.setResourcePath(ResourceUtils.getResourcePath("templates/Empty (3 compartments).jip"));
-            projectTemplate.setValue(template);
-        }
         return projectTemplate;
     }
 
-    @JIPipeParameter("new-project-template")
+    @JIPipeParameter("new-project-template-2")
     public void setProjectTemplate(ProjectTemplateEnum projectTemplate) {
         this.projectTemplate = projectTemplate;
     }
@@ -138,10 +137,21 @@ public class ProjectsSettings implements JIPipeParameterCollection {
         this.restoreTabs = restoreTabs;
     }
 
+    @JIPipeDocumentation(name = "Template downloader repositories", description = "List of repositories for the 'Get more templates' feature")
+    @JIPipeParameter("template-download-repositories")
+    public StringList getProjectTemplateDownloadRepositories() {
+        return projectTemplateDownloadRepositories;
+    }
+
+    @JIPipeParameter("template-download-repositories")
+    public void setProjectTemplateDownloadRepositories(StringList projectTemplateDownloadRepositories) {
+        this.projectTemplateDownloadRepositories = projectTemplateDownloadRepositories;
+    }
+
     /**
-     * An enum of {@link JIPipeProjectTemplate}
+     * An enum of strings that point to {@link JIPipeProjectTemplate}
      */
-    public static class ProjectTemplateEnum extends DynamicEnumParameter<JIPipeProjectTemplate> {
+    public static class ProjectTemplateEnum extends DynamicEnumParameter<String> {
         public ProjectTemplateEnum() {
             initialize();
         }
@@ -152,20 +162,27 @@ public class ProjectsSettings implements JIPipeParameterCollection {
         }
 
         private void initialize() {
-            setAllowedValues(JIPipeProjectTemplate.listTemplates());
-        }
-
-        @Override
-        public String renderLabel(JIPipeProjectTemplate value) {
-            if (value != null && value.getMetadata() != null) {
-                return value.getMetadata().getName();
-            } else {
-                return "Empty";
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplateRegistry() != null) {
+                setAllowedValues(new ArrayList<>(JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().keySet()));
             }
         }
 
         @Override
-        public Icon renderIcon(JIPipeProjectTemplate value) {
+        public String renderLabel(String value) {
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplateRegistry() != null) {
+                JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().getOrDefault(value, null);
+                if (template != null) {
+                    return template.getMetadata().getName();
+                } else {
+                    return "<Invalid>";
+                }
+            } else {
+                return value;
+            }
+        }
+
+        @Override
+        public Icon renderIcon(String value) {
             return UIUtils.getIconFromResources("mimetypes/application-jipipe.png");
         }
     }

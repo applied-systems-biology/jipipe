@@ -33,27 +33,24 @@ import java.nio.file.Path;
         "that contain the last path component in their name might be created. " +
         "Duplicate files might be silently overwritten, meaning that the paths should be unique." +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
-@JIPipeInputSlot(JIPipeData.class)
-@JIPipeInputSlot(PathData.class)
-@JIPipeOutputSlot(PathData.class)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data to be exported", autoCreate = true)
+@JIPipeInputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data will be stored", autoCreate = true)
+@JIPipeOutputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data was stored", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportData extends JIPipeIteratingAlgorithm {
 
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+    private boolean splitBySlotName;
 
     public ExportData(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Data", "The data to be exported", JIPipeData.class)
-                .addInputSlot("Path", "The directory where the data will be stored", PathData.class)
-                .addOutputSlot("Path", "The directory where the data was stored", PathData.class, null)
-                .seal()
-                .build());
+        super(info);
         registerSubParameter(exporter);
     }
 
     public ExportData(ExportData other) {
         super(other);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
+        this.splitBySlotName = other.splitBySlotName;
         registerSubParameter(exporter);
     }
 
@@ -79,6 +76,17 @@ public class ExportData extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("exporter")
     public JIPipeDataByMetadataExporter getExporter() {
         return exporter;
+    }
+
+    @JIPipeDocumentation(name = "Split by output name", description = "If enabled, the exporter will attempt to split data by their output name. Has no effect if the exported data table is not an output of a node.")
+    @JIPipeParameter("split-by-slot-name")
+    public boolean isSplitBySlotName() {
+        return splitBySlotName;
+    }
+
+    @JIPipeParameter("split-by-slot-name")
+    public void setSplitBySlotName(boolean splitBySlotName) {
+        this.splitBySlotName = splitBySlotName;
     }
 }
 

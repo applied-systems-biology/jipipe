@@ -14,10 +14,7 @@
 
 package org.hkijena.jipipe.extensions.ijweka.parameters.features;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.WordUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 
 /**
  * Enum of the standard {@link trainableSegmentation.WekaSegmentation} features supported by {@link trainableSegmentation.FeatureStack}

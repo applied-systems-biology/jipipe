@@ -21,15 +21,15 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
  */
 public class EnumParameterTypeInfo implements JIPipeParameterTypeInfo {
 
-    private String id;
-    private Class<? extends Enum<?>> fieldClass;
-    private String name;
-    private String description;
+    private final String id;
+    private final Class<? extends Enum<?>> fieldClass;
+    private final String name;
+    private final String description;
 
     /**
-     * @param id the id
-     * @param fieldClass the field class
-     * @param name the name
+     * @param id          the id
+     * @param fieldClass  the field class
+     * @param name        the name
      * @param description the description
      */
     public EnumParameterTypeInfo(String id, Class<? extends Enum<?>> fieldClass, String name, String description) {

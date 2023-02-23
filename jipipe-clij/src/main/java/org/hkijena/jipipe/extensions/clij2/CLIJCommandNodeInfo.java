@@ -12,6 +12,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
@@ -38,10 +39,12 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     private final BiMap<String, Integer> parameterIdToArgIndexMap = HashBiMap.create();
     private final Set<String> ioInputSlots = new HashSet<>();
     private final Set<OutputTableColumnInfo> outputTableColumnInfos = new HashSet<>();
-    private int numArgs = 0;
     private final JIPipeDynamicParameterCollection nodeParameters = new JIPipeDynamicParameterCollection(false);
-    private String menuPath = "CLIJ";
     private final HTMLText nodeDescription;
+    private int numArgs = 0;
+    private String menuPath = "CLIJ";
+
+    private String aliasMenuPath = "Plugins\nImageJ on GPU (CLIJ2)";
 
     public CLIJCommandNodeInfo(Context context, PluginInfo<CLIJMacroPlugin> pluginInfo, JIPipeProgressInfo moduleProgress) {
         this.nodeId = "clij:" + pluginInfo.getIdentifier();
@@ -51,12 +54,13 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         // Information only available to an instance
         try {
             CLIJMacroPlugin pluginInstance = pluginInfo.createInstance();
-            if(pluginInstance instanceof IsCategorized) {
+            if (pluginInstance instanceof IsCategorized) {
                 menuPath = "CLIJ\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
+                aliasMenuPath += "\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
             }
             String description = "";
             String availableForDimensions = "";
-            if(pluginInstance instanceof OffersDocumentation) {
+            if (pluginInstance instanceof OffersDocumentation) {
                 description = ((OffersDocumentation) pluginInstance).getDescription();
                 availableForDimensions = ((OffersDocumentation) pluginInstance).getAvailableForDimensions();
             }
@@ -70,6 +74,11 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         }
     }
 
+    @Override
+    public List<JIPipeNodeMenuLocation> getAliases() {
+        return Collections.singletonList(new JIPipeNodeMenuLocation(new ImageJNodeTypeCategory(), aliasMenuPath, getName().replace("CLIJ2", "").replace("CLIJ", "")));
+    }
+
     public Set<String> getIoInputSlots() {
         return ioInputSlots;
     }
@@ -80,13 +89,14 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
     /**
      * Based on the run method of {@link net.haesleinhuepf.clij2.AbstractCLIJ2Plugin}
-     * @param instance the instance
+     *
+     * @param instance       the instance
      * @param moduleProgress the progress info
      */
     private void importParameters(CLIJMacroPlugin instance, JIPipeProgressInfo moduleProgress) {
         String[] parameters = instance.getParameterHelpText().split(",");
         Object[] default_values = null;
-        if(instance instanceof AbstractCLIJPlugin) {
+        if (instance instanceof AbstractCLIJPlugin) {
             default_values = ((AbstractCLIJPlugin) instance).getDefaultValues();
         }
         this.numArgs = parameters.length;
@@ -130,7 +140,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
 
-                        if(byRef) {
+                        if (byRef) {
                             // Register as additional output
                             outputTableColumnInfos.add(new OutputTableColumnInfo(i, parameterName, true));
                         }
@@ -148,7 +158,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
 
-                        if(byRef) {
+                        if (byRef) {
                             // Register as additional output
                             outputTableColumnInfos.add(new OutputTableColumnInfo(i, parameterName, true));
                         }
@@ -165,7 +175,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
 
-                        if(byRef) {
+                        if (byRef) {
                             // Register as additional output
                             outputTableColumnInfos.add(new OutputTableColumnInfo(i, parameterName, false));
                         }
@@ -174,7 +184,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                 }
             }
         }
-        if(!outputTableColumnInfos.isEmpty()) {
+        if (!outputTableColumnInfos.isEmpty()) {
             outputSlots.add(new DefaultJIPipeOutputSlot(ResultsTableData.class, "Results table", "", null, true, JIPipeDataSlotRole.Data));
         }
     }
@@ -214,7 +224,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
     private String createNodeName(PluginInfo<CLIJMacroPlugin> pluginInfo) {
         String name = pluginInfo.getName();
-        if(!StringUtils.isNullOrEmpty(name)) {
+        if (!StringUtils.isNullOrEmpty(name)) {
             name = name.replace("_", " ");
             name = WordUtils.capitalizeFully(String.join(" ", org.apache.commons.lang.StringUtils.splitByCharacterTypeCamelCase(name)));
             name = StringUtils.removeDuplicateDelimiters(name, " ");
@@ -223,8 +233,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
             for (int i = 0; i < 5; i++) {
                 name = name.replace(i + " D", i + "D");
             }
-        }
-        else {
+        } else {
             name = pluginInfo.getIdentifier();
         }
         return name;

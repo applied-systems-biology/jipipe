@@ -69,9 +69,18 @@ public class HTMLText {
         if (body == null) {
             int bodyLocation = html.indexOf("<body>");
             if (bodyLocation < 0) {
-                return "";
+                // Does not contain a body tag -> it's directly in <html>
+                int start = "<html>".length();
+                int end = html.indexOf("</html>");
+                if (end < 0) {
+                    body = "";
+                    return body;
+                }
+                body = html.substring(start, end);
+            } else {
+                // Contains a body tag
+                body = html.substring(bodyLocation + "<body>".length()).replace("</body>", "").replace("</html>", "").trim();
             }
-            body = html.substring(bodyLocation + "<body>".length()).replace("</body>", "").replace("</html>", "").trim();
         }
         return body;
     }

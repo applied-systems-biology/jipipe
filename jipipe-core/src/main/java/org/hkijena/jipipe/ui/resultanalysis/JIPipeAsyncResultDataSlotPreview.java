@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -120,18 +121,17 @@ public abstract class JIPipeAsyncResultDataSlotPreview extends JIPipeResultDataS
             Path thumbnailRootPath = slotStoragePath.resolve("thumbnail").resolve(internalPath);
             Path thumbnailMetadataPath = thumbnailRootPath.resolve("thumbnails.json");
 
-            if(Files.exists(thumbnailMetadataPath)) {
+            if (Files.exists(thumbnailMetadataPath)) {
                 try {
                     JIPipeDataThumbnailsMetadata metadata = JsonUtils.readFromFile(thumbnailMetadataPath, JIPipeDataThumbnailsMetadata.class);
                     JIPipeDataThumbnailsMetadata.Thumbnail thumbnail = metadata.selectBestThumbnail(new Dimension(previewSize, previewSize));
-                    if(thumbnail != null) {
+                    if (thumbnail != null) {
                         Path thumbnailImagePath = thumbnailRootPath.resolve(thumbnail.getImageFile());
                         BufferedImage bufferedImage = ImageIO.read(thumbnailImagePath.toFile());
-                        bufferedImage = UIUtils.scaleImageToFit(bufferedImage, previewSize, previewSize);
+                        bufferedImage = BufferedImageUtils.scaleImageToFit(bufferedImage, previewSize, previewSize);
                         return new JLabel(new ImageIcon(bufferedImage));
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

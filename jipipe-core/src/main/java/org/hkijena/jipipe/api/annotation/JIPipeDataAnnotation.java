@@ -4,20 +4,20 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 
 public class JIPipeDataAnnotation implements JIPipeAnnotation {
     private final String name;
-    private final JIPipeVirtualData virtualData;
+    private final JIPipeDataItemStore virtualData;
 
-    public JIPipeDataAnnotation(String name, JIPipeVirtualData virtualData) {
+    public JIPipeDataAnnotation(String name, JIPipeDataItemStore virtualData) {
         this.name = name;
         this.virtualData = virtualData;
     }
 
     public JIPipeDataAnnotation(String name, JIPipeData data) {
         this.name = name;
-        this.virtualData = new JIPipeVirtualData(data);
+        this.virtualData = new JIPipeDataItemStore(data);
     }
 
     /**
@@ -38,7 +38,7 @@ public class JIPipeDataAnnotation implements JIPipeAnnotation {
         return name;
     }
 
-    public JIPipeVirtualData getVirtualData() {
+    public JIPipeDataItemStore getVirtualData() {
         return virtualData;
     }
 

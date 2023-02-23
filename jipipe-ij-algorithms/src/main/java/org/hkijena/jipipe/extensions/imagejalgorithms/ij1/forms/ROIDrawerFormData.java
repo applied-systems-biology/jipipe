@@ -10,13 +10,12 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskToROIDrawerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MaskToROIDrawerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -51,8 +50,7 @@ public class ROIDrawerFormData extends FormData {
                 new PixelInfoPlugin(imageViewerPanel),
                 new LUTManagerPlugin(imageViewerPanel),
                 roiManagerPlugin,
-                maskDrawerPlugin,
-                new MeasurementPlugin(imageViewerPanel)));
+                maskDrawerPlugin));
         if (lazyLoadedImage != null) {
             imageViewerPanel.setImage(lazyLoadedImage);
             roiManagerPlugin.setRois(lazyLoadedROIs, false);

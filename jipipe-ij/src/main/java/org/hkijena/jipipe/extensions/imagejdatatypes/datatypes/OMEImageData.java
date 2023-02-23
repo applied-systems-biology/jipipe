@@ -979,7 +979,13 @@ public class OMEImageData implements JIPipeData {
             int imageWidth = (int) (image.getWidth() * factor);
             int imageHeight = (int) (image.getHeight() * factor);
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
-
+            if (rgbImage.getStackSize() != 1) {
+                // Reduce processing time
+                rgbImage = new ImagePlus("Preview", rgbImage.getProcessor());
+            }
+            if (rgbImage == image) {
+                rgbImage = ImageJUtils.duplicate(rgbImage);
+            }
             // ROI rendering
             if (rois != null && !rois.isEmpty()) {
                 rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
@@ -1041,13 +1047,9 @@ public class OMEImageData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeDataTableDataSource) {
-            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, true);
-            window.setVisible(true);
-            SwingUtilities.invokeLater(window::reloadDisplayedData);
-        } else {
-            getDuplicateImage().show();
-        }
+        CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
+        window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     @Override

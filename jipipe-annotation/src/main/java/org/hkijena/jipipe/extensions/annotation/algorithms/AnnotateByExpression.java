@@ -22,15 +22,13 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -44,6 +42,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customVariables;
     private NamedTextAnnotationGeneratorExpression.List annotations = new NamedTextAnnotationGeneratorExpression.List();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
@@ -52,6 +51,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
      */
     public AnnotateByExpression(JIPipeNodeInfo info) {
         super(info);
+        this.customVariables = new CustomExpressionVariablesParameter(this);
         annotations.addNewInstance();
     }
 
@@ -62,6 +62,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
      */
     public AnnotateByExpression(AnnotateByExpression other) {
         super(other);
+        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
         this.annotations = new NamedTextAnnotationGeneratorExpression.List(other.annotations);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
@@ -77,9 +78,12 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (NamedTextAnnotationGeneratorExpression expression : annotations) {
             ExpressionVariables variableSet = new ExpressionVariables();
-            variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
-            variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
+            variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
+            customVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
+            variableSet.set("data_string", getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
+            variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
             variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
+            variableSet.set("num_rows", getFirstInputSlot().getRowCount());
             dataBatch.addMergedTextAnnotation(expression.generateTextAnnotation(dataBatch.getMergedTextAnnotations().values(), variableSet),
                     annotationMergeStrategy
             );
@@ -89,9 +93,11 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify. ")
     @JIPipeParameter("generated-annotation")
-    @PairParameterSettings(keyLabel = "Value", valueLabel = "Name", singleRow = false)
+    @PairParameterSettings(keyLabel = "Value", valueLabel = "Name")
     @StringParameterSettings(monospace = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public NamedTextAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;
     }
@@ -112,16 +118,11 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            annotations.clear();
-            NamedTextAnnotationGeneratorExpression expression = annotations.addNewInstance();
-            expression.setKey(new AnnotationGeneratorExpression("\"My value\""));
-            expression.setValue("My annotation");
-            getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
-        }
+    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomVariables() {
+        return customVariables;
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {
@@ -140,6 +141,9 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
             VARIABLES.add(new ExpressionParameterVariable("Row",
                     "The row inside the data table",
                     "row"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of rows",
+                    "The number of rows in the data table",
+                    "num_rows"));
         }
 
         @Override

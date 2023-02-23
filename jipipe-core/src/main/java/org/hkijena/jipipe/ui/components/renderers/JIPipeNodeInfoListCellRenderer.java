@@ -15,12 +15,15 @@ package org.hkijena.jipipe.ui.components.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 /**
  * Renderer for {@link JIPipeNodeInfo}
@@ -31,6 +34,8 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel pathLabel;
+
+    private JLabel alternativeLabel;
 
     /**
      * Creates a new renderer
@@ -43,17 +48,20 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidColorIcon(16, 40);
+        nodeColor = new SolidColorIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
+        alternativeLabel = new JLabel();
+        alternativeLabel.setForeground(ModernMetalTheme.PRIMARY6);
+        alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {
             {
                 gridx = 0;
                 gridy = 0;
-                gridheight = 2;
+                gridheight = 3;
             }
         });
         add(nodeIcon, new GridBagConstraints() {
@@ -79,6 +87,14 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
                 weightx = 1;
             }
         });
+        add(alternativeLabel, new GridBagConstraints() {
+            {
+                gridx = 2;
+                gridy = 2;
+                fill = HORIZONTAL;
+                weightx = 1;
+            }
+        });
     }
 
     @Override
@@ -95,6 +111,23 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
             pathLabel.setText(menuPath);
             nameLabel.setText(info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
+
+            if (info.getAliases().isEmpty()) {
+                alternativeLabel.setText("");
+            } else {
+                StringBuilder builder = new StringBuilder();
+                builder.append("Alias: ");
+                List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
+                for (int i = 0; i < alternativeMenuLocations.size(); i++) {
+                    if (i > 0) {
+                        builder.append(", ");
+                    }
+                    JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);
+                    builder.append(location.getCategory().getName()).append(" > ").append(String.join(" > ", location.getMenuPath().split("\n"))).append(" > ").append(StringUtils.orElse(location.getAlternativeName(), info.getName()));
+                }
+                alternativeLabel.setText(builder.toString());
+            }
+
         } else {
             nameLabel.setText("<Null>");
         }

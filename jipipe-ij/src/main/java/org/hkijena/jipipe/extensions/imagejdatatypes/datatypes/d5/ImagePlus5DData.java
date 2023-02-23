@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * 5D image
  */
-@JIPipeDocumentation(name = "5D image")
+@JIPipeDocumentation(name = "5D image", description = "A 5D image")
 @JIPipeNode(menuPath = "Images\n5D")
 @JIPipeHeavyData
 @ImageTypeInfo(numDimensions = 5)

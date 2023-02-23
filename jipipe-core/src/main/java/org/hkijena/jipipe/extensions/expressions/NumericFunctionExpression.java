@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,7 +24,7 @@ import java.util.Set;
 @ExpressionParameterSettings(variableSource = NumericFunctionExpression.VariableSource.class)
 public class NumericFunctionExpression extends DefaultExpressionParameter {
     public NumericFunctionExpression() {
-        super("x");
+        super("default");
     }
 
     public NumericFunctionExpression(String expression) {
@@ -36,9 +35,10 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
         super(other.getExpression());
     }
 
-    public double apply(double x, ExpressionVariables parameters) {
-        parameters.set("x", x);
-        return ((Number) evaluate(parameters)).doubleValue();
+    public double apply(double defaultValue, ExpressionVariables parameters) {
+        parameters.set("x", defaultValue);
+        parameters.set("default", defaultValue);
+        return evaluateToDouble(parameters);
     }
 
     /**
@@ -48,7 +48,7 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
      */
     public void ensureExactValue(boolean exactValue) {
         if (exactValue) {
-            if (getExpression().contains("x"))
+            if (getExpression().contains("x") || getExpression().contains("default"))
                 setExpression("0");
         }
     }
@@ -68,7 +68,8 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
 
         static {
             VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("x", "The input value", "x"));
+            VARIABLES.add(new ExpressionParameterVariable("x", "The current input value [DEPRECATED]", "x"));
+            VARIABLES.add(new ExpressionParameterVariable("default", "The current input value", "default"));
         }
 
         @Override

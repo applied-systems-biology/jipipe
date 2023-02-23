@@ -16,27 +16,40 @@ package org.hkijena.jipipe.api;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
+import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * JSON-serializable project metadata
  */
 public class JIPipeMetadata implements JIPipeParameterCollection {
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private String name = "New project";
     private HTMLText description = new HTMLText("A JIPipe project");
-    private JIPipeAuthorMetadata.List authors = new JIPipeAuthorMetadata.List();
 
+    private HTMLText summary = new HTMLText();
+    private JIPipeAuthorMetadata.List authors = new JIPipeAuthorMetadata.List();
     private JIPipeAuthorMetadata.List acknowledgements = new JIPipeAuthorMetadata.List();
     private String website = "";
     private String license = "";
     private String citation = "";
     private StringList dependencyCitations = new StringList();
+
+    private ImageParameter thumbnail = new ImageParameter();
+
+    private PluginCategoriesEnumParameter.List categories = new PluginCategoriesEnumParameter.List();
 
     /**
      * Creates new empty instance
@@ -51,13 +64,62 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
      */
     public JIPipeMetadata(JIPipeMetadata other) {
         this.name = other.name;
-        this.description = other.description;
+        this.description = new HTMLText(other.description);
+        this.summary = new HTMLText(other.summary);
         this.authors = new JIPipeAuthorMetadata.List(other.authors);
         this.acknowledgements = new JIPipeAuthorMetadata.List(other.acknowledgements);
         this.website = other.website;
         this.license = other.license;
         this.citation = other.citation;
         this.dependencyCitations = new StringList(other.dependencyCitations);
+        this.thumbnail = new ImageParameter(other.thumbnail);
+        this.categories = new PluginCategoriesEnumParameter.List(other.categories);
+    }
+
+    public void addCategory(String category) {
+        if (!getProcessedCategories().contains(category)) {
+            categories.add(new PluginCategoriesEnumParameter(category));
+        }
+    }
+
+    public void addCategories(String... categories) {
+        for (String category : categories) {
+            addCategory(category);
+        }
+    }
+
+    @JIPipeDocumentation(name = "Categories", description = "List of categories that are useful for organization")
+    @JIPipeParameter("categories")
+    @JsonGetter("categories")
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return categories;
+    }
+
+    @JIPipeParameter("categories")
+    @JsonSetter("categories")
+    public void setCategories(PluginCategoriesEnumParameter.List categories) {
+        this.categories = categories;
+    }
+
+    /**
+     * Returns the categories of the metadata; processed for ease of use
+     * If the categories list is empty, "Uncategorized" is returned
+     *
+     * @return the categories
+     */
+    public Set<String> getProcessedCategories() {
+        if (categories.isEmpty()) {
+            return Collections.singleton(PluginCategoriesEnumParameter.CATEGORY_UNCATEGORIZED);
+        } else {
+            Set<String> result = new HashSet<>();
+            for (PluginCategoriesEnumParameter category : getCategories()) {
+                String value = StringUtils.nullToEmpty(category.getValue());
+                value = value.trim();
+                value = WordUtils.capitalize(value);
+                result.add(value);
+            }
+            return result;
+        }
     }
 
     /**
@@ -86,7 +148,6 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
      */
     @JIPipeDocumentation(name = "Description", description = "A description")
     @JIPipeParameter(value = "description", uiOrder = 1)
-    @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("description")
     public HTMLText getDescription() {
         return description;
@@ -101,6 +162,19 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     @JsonSetter("description")
     public void setDescription(HTMLText description) {
         this.description = description;
+    }
+
+    @JIPipeDocumentation(name = "Summary", description = "A short description")
+    @JIPipeParameter(value = "summary", uiOrder = 1)
+    @JsonGetter("summary")
+    public HTMLText getSummary() {
+        return summary;
+    }
+
+    @JIPipeParameter("summary")
+    @JsonGetter("summary")
+    public void setSummary(HTMLText summary) {
+        this.summary = summary;
     }
 
     /**
@@ -127,6 +201,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
 
     /**
      * Gets the list of acknowledged authors
+     *
      * @return list of acknowledged authors
      */
     @JIPipeDocumentation(name = "Acknowledgements", description = "List of authors to acknowledge")
@@ -138,6 +213,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
 
     /**
      * Sets the list of acknowledged authors
+     *
      * @param acknowledgements list of acknowledged authors
      */
     @JsonSetter("acknowledgements")
@@ -222,13 +298,28 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     @JIPipeDocumentation(name = "Dependency citations", description = "A list of external work to cite")
     @JIPipeParameter(value = "dependency-citations", uiOrder = 6)
     @StringParameterSettings(monospace = true)
+    @JsonGetter("dependency-citations")
     public StringList getDependencyCitations() {
         return dependencyCitations;
     }
 
     @JIPipeParameter("dependency-citations")
+    @JsonSetter("dependency-citations")
     public void setDependencyCitations(StringList dependencyCitations) {
         this.dependencyCitations = dependencyCitations;
 
+    }
+
+    @JIPipeDocumentation(name = "Thumbnail", description = "A thumbnail image for various purposes")
+    @JIPipeParameter("thumbnail")
+    @JsonGetter("thumbnail")
+    public ImageParameter getThumbnail() {
+        return thumbnail;
+    }
+
+    @JIPipeParameter("thumbnail")
+    @JsonSetter("thumbnail")
+    public void setThumbnail(ImageParameter thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }

@@ -70,7 +70,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
         super.process(chunks);
         for (Object chunk : chunks) {
             if (chunk instanceof JIPipeProgressInfo.StatusUpdatedEvent) {
-                eventBus.post(new RunUIWorkerProgressEvent(this, (JIPipeProgressInfo.StatusUpdatedEvent) chunk));
+                eventBus.post(new RunWorkerProgressEvent(this, (JIPipeProgressInfo.StatusUpdatedEvent) chunk));
             }
         }
     }
@@ -97,7 +97,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
     }
 
     private void postFinishedEvent() {
-        eventBus.post(new RunUIWorkerFinishedEvent(this));
+        eventBus.post(new RunWorkerFinishedEvent(this));
     }
 
     private void postInterruptedEvent(Throwable e) {
@@ -106,7 +106,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
         run.getProgressInfo().log(e.toString());
         run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
 
-        eventBus.post(new RunUIWorkerInterruptedEvent(this, e));
+        eventBus.post(new RunWorkerInterruptedEvent(this, e));
     }
 
     /**

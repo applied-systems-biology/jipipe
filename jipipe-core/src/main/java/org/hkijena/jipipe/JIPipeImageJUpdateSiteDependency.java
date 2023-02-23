@@ -121,5 +121,12 @@ public class JIPipeImageJUpdateSiteDependency implements JIPipeParameterCollecti
         public List() {
             super(JIPipeImageJUpdateSiteDependency.class);
         }
+
+        public List(List other) {
+            super(JIPipeImageJUpdateSiteDependency.class);
+            for (JIPipeImageJUpdateSiteDependency dependency : other) {
+                add(new JIPipeImageJUpdateSiteDependency(dependency));
+            }
+        }
     }
 }

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -34,13 +35,15 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 
 /**
  * Thresholding node that thresholds via an auto threshold
@@ -48,8 +51,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Auto threshold 2D", description = "Applies an auto-thresholding algorithm. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto Threshold")
 public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private AutoThresholder.Method method = AutoThresholder.Method.Default;
@@ -65,11 +69,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public AutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
@@ -97,116 +97,118 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
-        ImagePlus img = inputData.getDuplicateImage();
-        ROIListData roiInput = null;
-        ImagePlus maskInput = null;
-        AutoThresholder autoThresholder = new AutoThresholder();
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
+            ImagePlus img = inputData.getDuplicateImage();
+            ROIListData roiInput = null;
+            ImagePlus maskInput = null;
+            AutoThresholder autoThresholder = new AutoThresholder();
 
-        switch (sourceArea) {
-            case InsideRoi:
-            case OutsideRoi:
-                roiInput = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                break;
-            case InsideMask:
-            case OutsideMask:
-                maskInput = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
-                break;
-        }
+            switch (sourceArea) {
+                case InsideRoi:
+                case OutsideRoi:
+                    roiInput = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+                    break;
+                case InsideMask:
+                case OutsideMask:
+                    maskInput = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+                    break;
+            }
 
-        ROIListData finalRoiInput = roiInput;
-        ImagePlus finalMaskInput = maskInput;
+            ROIListData finalRoiInput = roiInput;
+            ImagePlus finalMaskInput = maskInput;
 
-        if (thresholdMode == SliceThresholdMode.ApplyPerSlice) {
-            List<Integer> thresholds = new ArrayList<>();
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                ImageProcessor mask = getMask(img.getWidth(),
-                        img.getHeight(),
-                        finalRoiInput,
-                        finalMaskInput,
-                        index
-                );
-                if (!darkBackground)
-                    ip.invert();
-                int[] histogram = getHistogram(ip, mask);
-                int threshold = autoThresholder.getThreshold(method, histogram);
-                ip.threshold(threshold);
-                thresholds.add(threshold);
-            }, progressInfo);
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            if (thresholdAnnotation.isEnabled()) {
+            if (thresholdMode == SliceThresholdMode.ApplyPerSlice) {
+                List<Integer> thresholds = new ArrayList<>();
+                ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                    ImageProcessor mask = getMask(img.getWidth(),
+                            img.getHeight(),
+                            finalRoiInput,
+                            finalMaskInput,
+                            index
+                    );
+                    if (!darkBackground)
+                        ip.invert();
+                    int[] histogram = getHistogram(ip, mask);
+                    int threshold = autoThresholder.getThreshold(method, histogram);
+                    ip.threshold(threshold);
+                    thresholds.add(threshold);
+                }, progressInfo);
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+                if (thresholdAnnotation.isEnabled()) {
+                    ExpressionVariables variableSet = new ExpressionVariables();
+                    variableSet.set("thresholds", thresholds);
+                    String result = thresholdCombinationExpression.evaluate(variableSet) + "";
+                    annotations.add(thresholdAnnotation.createAnnotation(result));
+                }
+                dataBatch.addOutputData(getFirstOutputSlot(),
+                        new ImagePlusGreyscaleMaskData(img),
+                        annotations,
+                        JIPipeTextAnnotationMergeMode.Merge,
+                        progressInfo);
+            } else if (thresholdMode == SliceThresholdMode.CombineSliceStatistics) {
+                int[] combinedHistogram = new int[256];
+                ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                    ImageProcessor mask = getMask(img.getWidth(),
+                            img.getHeight(),
+                            finalRoiInput,
+                            finalMaskInput,
+                            index
+                    );
+                    if (!darkBackground)
+                        ip.invert();
+                    int[] histogram = getHistogram(ip, mask);
+                    for (int i = 0; i < histogram.length; i++) {
+                        combinedHistogram[i] += histogram[i];
+                    }
+                }, progressInfo.resolve("Finding histograms"));
+                int threshold = autoThresholder.getThreshold(method, combinedHistogram);
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+                if (thresholdAnnotation.isEnabled()) {
+                    annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
+                }
+                ImageJUtils.forEachSlice(img, ip -> {
+                    ip.threshold(threshold);
+                }, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(),
+                        new ImagePlusGreyscaleMaskData(img),
+                        annotations,
+                        JIPipeTextAnnotationMergeMode.Merge,
+                        progressInfo);
+            } else if (thresholdMode == SliceThresholdMode.CombineThresholdPerSlice) {
+                List<Integer> thresholds = new ArrayList<>();
+                ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+                    ImageProcessor mask = getMask(img.getWidth(),
+                            img.getHeight(),
+                            finalRoiInput,
+                            finalMaskInput,
+                            index
+                    );
+                    if (!darkBackground)
+                        ip.invert();
+                    int[] histogram = getHistogram(ip, mask);
+                    int threshold = autoThresholder.getThreshold(method, histogram);
+                    thresholds.add(threshold);
+                }, progressInfo.resolve("Finding thresholds"));
+
+                // Combine thresholds
                 ExpressionVariables variableSet = new ExpressionVariables();
                 variableSet.set("thresholds", thresholds);
-                String result = thresholdCombinationExpression.evaluate(variableSet) + "";
-                annotations.add(thresholdAnnotation.createAnnotation(result));
-            }
-            dataBatch.addOutputData(getFirstOutputSlot(),
-                    new ImagePlusGreyscaleMaskData(img),
-                    annotations,
-                    JIPipeTextAnnotationMergeMode.Merge,
-                    progressInfo);
-        } else if (thresholdMode == SliceThresholdMode.CombineSliceStatistics) {
-            int[] combinedHistogram = new int[256];
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                ImageProcessor mask = getMask(img.getWidth(),
-                        img.getHeight(),
-                        finalRoiInput,
-                        finalMaskInput,
-                        index
-                );
-                if (!darkBackground)
-                    ip.invert();
-                int[] histogram = getHistogram(ip, mask);
-                for (int i = 0; i < histogram.length; i++) {
-                    combinedHistogram[i] += histogram[i];
+                Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
+                int threshold = Math.min(255, Math.max(0, combined.intValue()));
+                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+                if (thresholdAnnotation.isEnabled()) {
+                    annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
                 }
-            }, progressInfo.resolve("Finding histograms"));
-            int threshold = autoThresholder.getThreshold(method, combinedHistogram);
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            if (thresholdAnnotation.isEnabled()) {
-                annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
+                ImageJUtils.forEachSlice(img, ip -> {
+                    ip.threshold(threshold);
+                }, progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(),
+                        new ImagePlusGreyscaleMaskData(img),
+                        annotations,
+                        thresholdAnnotationStrategy,
+                        progressInfo);
             }
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachSlice(img, ip -> {
-                ip.threshold(threshold);
-            }, progressInfo);
-            dataBatch.addOutputData(getFirstOutputSlot(),
-                    new ImagePlusGreyscaleMaskData(img),
-                    annotations,
-                    JIPipeTextAnnotationMergeMode.Merge,
-                    progressInfo);
-        } else if (thresholdMode == SliceThresholdMode.CombineThresholdPerSlice) {
-            List<Integer> thresholds = new ArrayList<>();
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
-                ImageProcessor mask = getMask(img.getWidth(),
-                        img.getHeight(),
-                        finalRoiInput,
-                        finalMaskInput,
-                        index
-                );
-                if (!darkBackground)
-                    ip.invert();
-                int[] histogram = getHistogram(ip, mask);
-                int threshold = autoThresholder.getThreshold(method, histogram);
-                thresholds.add(threshold);
-            }, progressInfo.resolve("Finding thresholds"));
-
-            // Combine thresholds
-            ExpressionVariables variableSet = new ExpressionVariables();
-            variableSet.set("thresholds", thresholds);
-            Number combined = (Number) thresholdCombinationExpression.evaluate(variableSet);
-            int threshold = Math.min(255, Math.max(0, combined.intValue()));
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            if (thresholdAnnotation.isEnabled()) {
-                annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
-            }
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachSlice(img, ip -> {
-                ip.threshold(threshold);
-            }, progressInfo);
-            dataBatch.addOutputData(getFirstOutputSlot(),
-                    new ImagePlusGreyscaleMaskData(img),
-                    annotations,
-                    thresholdAnnotationStrategy,
-                    progressInfo);
         }
     }
 

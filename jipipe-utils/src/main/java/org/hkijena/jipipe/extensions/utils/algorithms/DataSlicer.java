@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
 import java.util.HashSet;
@@ -37,10 +38,10 @@ public class DataSlicer extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, getFirstInputSlot().getRowCount()));
+        HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, getFirstInputSlot().getRowCount(), new ExpressionVariables()));
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             if (indices.contains(row)) {
-                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
+                getFirstOutputSlot().addData(getFirstInputSlot().getDataItemStore(row),
                         getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),

@@ -16,11 +16,11 @@ package org.hkijena.jipipe.extensions.settings;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.layout.GraphAutoLayout;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
@@ -32,10 +32,8 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private final SearchSettings searchSettings = new SearchSettings();
     private final AlgorithmFinderSettings algorithmFinderSettings = new AlgorithmFinderSettings();
-    private JIPipeGraphViewMode defaultViewMode = JIPipeGraphViewMode.VerticalCompact;
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
-    private boolean enableLayoutHelper = true;
     private boolean askOnDeleteNode = true;
     private boolean askOnDeleteCompartment = true;
     private boolean askOnDeleteParameter = true;
@@ -43,14 +41,89 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean notifyInvalidDragAndDrop = true;
     private boolean colorSelectedNodeEdges = true;
     private boolean autoLayoutMovesOtherNodes = false;
-    private boolean showRunNodeButton = true;
-    private boolean showSettingsNodeButton = false;
-    private boolean accurateMiniMap = false;
     private boolean drawNodeShadows = true;
     private boolean drawImprovedEdges = true;
+    private boolean drawArrowHeads = true;
+    private boolean layoutAfterAlgorithmFinder = true;
+    private boolean layoutAfterConnect = false;
+    private int autoHideEdgeDistanceThreshold = 512;
+    private boolean autoHideEdgeEnabled = true;
+
+    private boolean autoHideDrawLabels = true;
+
+    private boolean drawLabelsOnHover = true;
+    private double autoHideEdgeOverlapThreshold = 0.5;
+
+    private JIPipeGraphEdge.Visibility defaultEdgeVisibility = JIPipeGraphEdge.Visibility.Smart;
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
+    }
+
+    @JIPipeDocumentation(name = "Draw input labels on hovering nodes", description = "If enabled, display a label for node inputs if it is hovered by the mouse cursor")
+    @JIPipeParameter("draw-labels-on-hover")
+    public boolean isDrawLabelsOnHover() {
+        return drawLabelsOnHover;
+    }
+
+    @JIPipeParameter("draw-labels-on-hover")
+    public void setDrawLabelsOnHover(boolean drawLabelsOnHover) {
+        this.drawLabelsOnHover = drawLabelsOnHover;
+    }
+
+    @JIPipeDocumentation(name = "Draw input labels for hidden edges", description = "If enabled, hidden edges will draw labels (unless the labels are disabled on a slot level)")
+    @JIPipeParameter("auto-hide-draw-labels")
+    public boolean isAutoHideDrawLabels() {
+        return autoHideDrawLabels;
+    }
+
+    @JIPipeParameter("auto-hide-draw-labels")
+    public void setAutoHideDrawLabels(boolean autoHideDrawLabels) {
+        this.autoHideDrawLabels = autoHideDrawLabels;
+    }
+
+    @JIPipeDocumentation(name = "Auto-hide edges", description = "Enabled/disables the automated hiding of edges")
+    @JIPipeParameter("auto-hide-edges-enabled")
+    public boolean isAutoHideEdgeEnabled() {
+        return autoHideEdgeEnabled;
+    }
+
+    @JIPipeParameter("auto-hide-edges-enabled")
+    public void setAutoHideEdgeEnabled(boolean autoHideEdgeEnabled) {
+        this.autoHideEdgeEnabled = autoHideEdgeEnabled;
+    }
+
+    @JIPipeDocumentation(name = "Auto-hide edges overlap threshold", description = "Determines how much overlap with an existing edge is considered as condition for hiding the longer connection")
+    @JIPipeParameter("auto-hide-edge-overlap-threshold")
+    public double getAutoHideEdgeOverlapThreshold() {
+        return autoHideEdgeOverlapThreshold;
+    }
+
+    @JIPipeParameter("auto-hide-edge-overlap-threshold")
+    public void setAutoHideEdgeOverlapThreshold(double autoHideEdgeOverlapThreshold) {
+        this.autoHideEdgeOverlapThreshold = autoHideEdgeOverlapThreshold;
+    }
+
+    @JIPipeDocumentation(name = "Auto-hide edges distance threshold", description = "The minimum distance considered as long distance edge for the auto-hiding feature")
+    @JIPipeParameter("auto-hide-edge-distance-threshold")
+    public int getAutoHideEdgeDistanceThreshold() {
+        return autoHideEdgeDistanceThreshold;
+    }
+
+    @JIPipeParameter("auto-hide-edge-distance-threshold")
+    public void setAutoHideEdgeDistanceThreshold(int longDistanceEdgeThreshold) {
+        this.autoHideEdgeDistanceThreshold = longDistanceEdgeThreshold;
+    }
+
+    @JIPipeDocumentation(name = "Default edge visibility", description = "Determines the default visibility of all newly created edges.")
+    @JIPipeParameter("default-edge-visibility")
+    public JIPipeGraphEdge.Visibility getDefaultEdgeVisibility() {
+        return defaultEdgeVisibility;
+    }
+
+    @JIPipeParameter("default-edge-visibility")
+    public void setDefaultEdgeVisibility(JIPipeGraphEdge.Visibility defaultEdgeVisibility) {
+        this.defaultEdgeVisibility = defaultEdgeVisibility;
     }
 
     @JIPipeDocumentation(name = "Algorithm finder settings", description = "Settings related to the algorithm finder")
@@ -89,33 +162,20 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         this.drawNodeShadows = drawNodeShadows;
     }
 
-    @JIPipeDocumentation(name = "Accurate minimap", description = "If enabled, the minimap shows a screenshot of the whole graph. " +
-            "Please note that this is slower than the standard overview map. To apply this setting, you must re-open the graph or reload the project.")
-    @JIPipeParameter("accurate-mini-map")
-    public boolean isAccurateMiniMap() {
-        return accurateMiniMap;
+    @JIPipeDocumentation(name = "Draw arrow heads", description = "If enabled, draw arrow heads on connection targets")
+    @JIPipeParameter("draw-arrow-heads")
+    public boolean isDrawArrowHeads() {
+        return drawArrowHeads;
     }
 
-    @JIPipeParameter("accurate-mini-map")
-    public void setAccurateMiniMap(boolean accurateMiniMap) {
-        this.accurateMiniMap = accurateMiniMap;
+    @JIPipeParameter("draw-arrow-heads")
+    public void setDrawArrowHeads(boolean drawArrowHeads) {
+        this.drawArrowHeads = drawArrowHeads;
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "Default view mode", description = "Determines how the graph is displayed.")
-    @JIPipeParameter("default-view-mode")
-    public JIPipeGraphViewMode getDefaultViewMode() {
-        return defaultViewMode;
-    }
-
-    @JIPipeParameter("default-view-mode")
-    public void setDefaultViewMode(JIPipeGraphViewMode defaultViewMode) {
-        this.defaultViewMode = defaultViewMode;
-
     }
 
     @JIPipeDocumentation(name = "Switch panning direction",
@@ -131,17 +191,26 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Enable layout helper by default",
-            description = "Auto-layout layout on making data slot connections")
-    @JIPipeParameter("enable-layout-helper")
-    public boolean isEnableLayoutHelper() {
-        return enableLayoutHelper;
+    @JIPipeDocumentation(name = "Layout nodes added by 'Find matching algorithm'", description = "Auto-layout nodes added by the 'Find matching algorithm' feature.")
+    @JIPipeParameter("layout-after-algorithm-find")
+    public boolean isLayoutAfterAlgorithmFinder() {
+        return layoutAfterAlgorithmFinder;
     }
 
-    @JIPipeParameter("enable-layout-helper")
-    public void setEnableLayoutHelper(boolean enableLayoutHelper) {
-        this.enableLayoutHelper = enableLayoutHelper;
+    @JIPipeParameter("layout-after-algorithm-find")
+    public void setLayoutAfterAlgorithmFinder(boolean layoutAfterAlgorithmFinder) {
+        this.layoutAfterAlgorithmFinder = layoutAfterAlgorithmFinder;
+    }
 
+    @JIPipeDocumentation(name = "Layout after connecting nodes", description = "Auto-layout the source/target node after a connection is created")
+    @JIPipeParameter("layout-after-connect")
+    public boolean isLayoutAfterConnect() {
+        return layoutAfterConnect;
+    }
+
+    @JIPipeParameter("layout-after-connect")
+    public void setLayoutAfterConnect(boolean layoutAfterConnect) {
+        this.layoutAfterConnect = layoutAfterConnect;
     }
 
     @JIPipeDocumentation(name = "Auto-layout method",
@@ -233,29 +302,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("auto-layout-moves-other-nodes")
     public void setAutoLayoutMovesOtherNodes(boolean autoLayoutMovesOtherNodes) {
         this.autoLayoutMovesOtherNodes = autoLayoutMovesOtherNodes;
-    }
-
-    @JIPipeDocumentation(name = "Show 'Run' button in node", description = "If enabled, a green 'run' button is shown in each node.")
-    @JIPipeParameter("show-run-node-button")
-    public boolean isShowRunNodeButton() {
-        return showRunNodeButton;
-    }
-
-    @JIPipeParameter("show-run-node-button")
-    public void setShowRunNodeButton(boolean showRunNodeButton) {
-        this.showRunNodeButton = showRunNodeButton;
-    }
-
-    @JIPipeDocumentation(name = "Show 'Context menu' button in nodes", description = "If enabled, a wrench button is shown in each node that " +
-            "opens the context menu. This might be useful for accessibility.")
-    @JIPipeParameter("show-open-context-menu-button")
-    public boolean isShowSettingsNodeButton() {
-        return showSettingsNodeButton;
-    }
-
-    @JIPipeParameter("show-open-context-menu-button")
-    public void setShowSettingsNodeButton(boolean showSettingsNodeButton) {
-        this.showSettingsNodeButton = showSettingsNodeButton;
     }
 
     public static class AlgorithmFinderSettings implements JIPipeParameterCollection {

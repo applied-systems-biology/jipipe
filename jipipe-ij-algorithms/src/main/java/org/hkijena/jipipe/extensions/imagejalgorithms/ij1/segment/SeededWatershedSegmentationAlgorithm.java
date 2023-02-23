@@ -8,12 +8,14 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @JIPipeDocumentation(name = "Seeded watershed", description = "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks. " +
         "The markers need to be labels, so apply a connected components labeling if you only have masks.")
@@ -24,6 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels", autoCreate = true)
 @JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nSegmentation", aliasName = "Marker-controlled Watershed")
 public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Neighborhood2D3D connectivity = Neighborhood2D3D.NoDiagonals;
@@ -50,9 +53,9 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
         ImagePlus inputImage = dataBatch.getInputData("Image", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         ImagePlus seedImage = dataBatch.getInputData("Markers", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         if (applyPerSlice) {
-            ImagePlus resultImage = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
+            ImagePlus resultImage = ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, progressInfo);
-                ImageProcessor seeds = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(seedImage, index);
+                ImageProcessor seeds = ImageJUtils.getSliceZero(seedImage, index);
                 return Watershed.computeWatershed(new ImagePlus("raw", ip), new ImagePlus("marker", seeds), new ImagePlus("mask", mask), connectivity.getNativeValue2D(), getDams, false).getProcessor();
             }, progressInfo);
             resultImage.copyScale(inputImage);

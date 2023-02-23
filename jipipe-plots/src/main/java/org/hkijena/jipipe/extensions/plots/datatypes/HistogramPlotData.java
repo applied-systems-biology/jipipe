@@ -49,6 +49,10 @@ public class HistogramPlotData extends PlotData {
     private OptionalDoubleParameter valueAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY, false);
     private OptionalDoubleParameter valueAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
 
+    private OptionalDoubleParameter binAxisMinimum = new OptionalDoubleParameter(Double.NEGATIVE_INFINITY, false);
+
+    private OptionalDoubleParameter binAxisMaximum = new OptionalDoubleParameter(Double.POSITIVE_INFINITY, false);
+
     /**
      * Creates a new instance
      */
@@ -69,6 +73,10 @@ public class HistogramPlotData extends PlotData {
         this.valueAxisFontSize = other.valueAxisFontSize;
         this.valueAxisMinimum = new OptionalDoubleParameter(other.valueAxisMinimum);
         this.valueAxisMaximum = new OptionalDoubleParameter(other.valueAxisMaximum);
+        this.binAxisMinimum = new OptionalDoubleParameter(other.binAxisMinimum);
+        this.binAxisMaximum = new OptionalDoubleParameter(other.binAxisMaximum);
+        this.bins = other.bins;
+        this.histogramType = other.histogramType;
     }
 
     public static HistogramPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -106,6 +114,7 @@ public class HistogramPlotData extends PlotData {
         chart.getXYPlot().getRangeAxis().setTickLabelFont(new Font(Font.SANS_SERIF, Font.PLAIN, valueAxisFontSize));
 
         calibrateAxis(chart.getXYPlot().getRangeAxis(), getValueAxisMinimum(), getValueAxisMaximum());
+        calibrateAxis(chart.getXYPlot().getDomainAxis(), getBinAxisMinimum(), getBinAxisMaximum());
 
         updateChartProperties(chart);
         return chart;
@@ -155,6 +164,28 @@ public class HistogramPlotData extends PlotData {
     @JIPipeParameter("value-axis-maximum")
     public void setValueAxisMaximum(OptionalDoubleParameter valueAxisMaximum) {
         this.valueAxisMaximum = valueAxisMaximum;
+    }
+
+    @JIPipeDocumentation(name = "Bin axis minimum", description = "Minimum of the bin axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("bin-axis-minimum")
+    public OptionalDoubleParameter getBinAxisMinimum() {
+        return binAxisMinimum;
+    }
+
+    @JIPipeParameter("bin-axis-minimum")
+    public void setBinAxisMinimum(OptionalDoubleParameter binAxisMinimum) {
+        this.binAxisMinimum = binAxisMinimum;
+    }
+
+    @JIPipeDocumentation(name = "Bin axis maximum", description = "Maximum of the bin axis values. If disabled or infinite, the value is calculated automatically.")
+    @JIPipeParameter("bin-axis-maximum")
+    public OptionalDoubleParameter getBinAxisMaximum() {
+        return binAxisMaximum;
+    }
+
+    @JIPipeParameter("bin-axis-maximum")
+    public void setBinAxisMaximum(OptionalDoubleParameter binAxisMaximum) {
+        this.binAxisMaximum = binAxisMaximum;
     }
 
     @JIPipeDocumentation(name = "Bins", description = "Number of bins")

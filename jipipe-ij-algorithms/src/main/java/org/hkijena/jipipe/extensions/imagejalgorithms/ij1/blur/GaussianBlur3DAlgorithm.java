@@ -22,11 +22,12 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
+
 
 /**
  * Wrapper around {@link GaussianBlur}
@@ -34,8 +35,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Gaussian blur 3D", description = "Applies convolution with a Gaussian function in 3D space for smoothing. " +
         "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
 @JIPipeNode(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Gaussian Blur 3D...")
 public class GaussianBlur3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double sigmaX = 1;
@@ -48,11 +50,7 @@ public class GaussianBlur3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public GaussianBlur3DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
-                .addOutputSlot("Output", "", ImagePlusData.class, "Input", REMOVE_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -33,6 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus2DColorRGBData.class, slotName = "LUT", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
 public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean duplicateImage = true;
     private boolean applyToAllPlanes = true;
@@ -55,7 +57,7 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
             data = (ImagePlusData) data.duplicate(progressInfo);
         LUT lut = ImageJUtils.lutFromImage(lutData.getImage());
         ImagePlus image = data.getImage();
-        if (applyToAllPlanes && image.isStack()) {
+        if (applyToAllPlanes && image.hasImageStack()) {
             ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {

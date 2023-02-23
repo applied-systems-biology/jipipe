@@ -2,16 +2,19 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions;
 
 import com.google.common.collect.Sets;
 import ij.ImagePlus;
+import ij.ImageStack;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 /**
  * Algorithm that reorders Hyperstack dimensions
@@ -22,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks", aliasName = "Re-order Hyperstack...")
 public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private HyperstackDimension targetZ = HyperstackDimension.Depth;
@@ -43,17 +47,15 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
 
-        if (!image.isStack()) {
+        if (!image.hasImageStack()) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
             return;
         }
 
-        ImagePlus reorganized = ImageJUtils.duplicate(image);
-        reorganized.setTitle(image.getTitle());
-
-        int depth = reorganized.getNSlices();
-        int channels = reorganized.getNChannels();
-        int frames = reorganized.getNFrames();
+        ImageStack newStack = new ImageStack(image.getWidth(), image.getHeight(), image.getStackSize());
+        int depth = image.getNSlices();
+        int channels = image.getNChannels();
+        int frames = image.getNFrames();
         int newDepth;
         int newChannels;
         int newFrames;
@@ -98,7 +100,56 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 throw new UnsupportedOperationException();
         }
 
+        ImageJUtils.forEachIndexedZCTSlice(image, (ip, sourceIndex) -> {
+            int z, c, t;
+            switch (targetZ) {
+                case Channel:
+                    z = sourceIndex.getC();
+                    break;
+                case Depth:
+                    z = sourceIndex.getZ();
+                    break;
+                case Frame:
+                    z = sourceIndex.getT();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            switch (targetC) {
+                case Channel:
+                    c = sourceIndex.getC();
+                    break;
+                case Depth:
+                    c = sourceIndex.getZ();
+                    break;
+                case Frame:
+                    c = sourceIndex.getT();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            switch (targetT) {
+                case Channel:
+                    t = sourceIndex.getC();
+                    break;
+                case Depth:
+                    t = sourceIndex.getZ();
+                    break;
+                case Frame:
+                    t = sourceIndex.getT();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            int targetStackIndex = new ImageSliceIndex(c, z, t).zeroSliceIndexToOneStackIndex(newChannels, newDepth, newFrames);
+            newStack.setProcessor(ip, targetStackIndex);
+        }, progressInfo);
+
+
+        ImagePlus reorganized = new ImagePlus(image.getTitle(), newStack);
+        reorganized.setTitle(image.getTitle());
         reorganized.setDimensions(newChannels, newDepth, newFrames);
+        reorganized.setCalibration(image.getCalibration());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(reorganized), progressInfo);
     }
 

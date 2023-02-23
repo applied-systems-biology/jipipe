@@ -21,6 +21,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
@@ -29,6 +30,7 @@ import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -49,7 +51,6 @@ public class JIPipeProjectRun implements JIPipeRunnable {
     JIPipeGraph copiedGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private JIPipeFixedThreadPool threadPool;
-    private JIPipeProjectCacheQuery cacheQuery;
 
     /**
      * @param project       The project
@@ -71,13 +72,14 @@ public class JIPipeProjectRun implements JIPipeRunnable {
     /**
      * Loads a JIPipeProjectRun from a folder
      *
-     * @param folder Folder containing the run
+     * @param folder        Folder containing the run
+     * @param notifications notifications for the user
      * @return The loaded run
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
-    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeIssueReport report) throws IOException {
+    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
-        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
+        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report, notifications);
         JIPipeRunSettings configuration = new JIPipeRunSettings();
         configuration.setOutputPath(folder);
         JIPipeProjectRun run = new JIPipeProjectRun(project, configuration);
@@ -167,7 +169,6 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         try {
             progressInfo.log("Running pipeline with " + configuration.getNumThreads() + " threads ...\n");
             threadPool = new JIPipeFixedThreadPool(configuration.getNumThreads());
-            cacheQuery = new JIPipeProjectCacheQuery(project);
             runPipeline();
         } catch (Exception e) {
             progressInfo.log(e.toString());
@@ -185,12 +186,11 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                 threadPool.shutdown();
             }
             threadPool = null;
-            cacheQuery = null;
-        }
 
-        // Clear all slots
-        for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
-            node.clearSlotData();
+            // Clear all slots
+            for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
+                node.clearSlotData();
+            }
         }
 
         // Postprocessing
@@ -293,7 +293,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
                     if (slot.getNode() instanceof JIPipeAlgorithm) {
                         // Add data from source slot
-                        slot.addData(sourceSlot, subProgress);
+                        slot.addDataFromSlot(sourceSlot, subProgress);
                         gc.markCopyOutputToInput(sourceSlot, slot);
                     }
                 }
@@ -336,6 +336,9 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                             group.setInternalStoragePath(Paths.get("loop" + loopNumber));
                             BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
                             group.setIterationMode(loop.getLoopStartNode().getIterationMode());
+                            if (loop.getLoopStartNode().isPassThrough()) {
+                                group.setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+                            }
                             group.setThreadPool(threadPool);
 
                             // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop
@@ -345,7 +348,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                             // Pass input data from inputs of loop into equivalent input of group
                             for (JIPipeDataSlot inputSlot : loop.getLoopStartNode().getInputSlots()) {
                                 JIPipeDataSlot groupInput = loopGraphSlotMap.get(loopGraph.getEquivalentSlot(inputSlot));
-                                groupInput.addData(inputSlot, subProgress);
+                                groupInput.addDataFromSlot(inputSlot, subProgress);
                             }
 
                             // Execute the loop
@@ -357,7 +360,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                                 if (entry.getKey().isOutput()) {
                                     JIPipeDataSlot originalSlot = copiedGraph.getEquivalentSlot(entry.getKey());
                                     JIPipeDataSlot sourceSlot = entry.getValue();
-                                    originalSlot.addData(sourceSlot, subProgress);
+                                    originalSlot.addDataFromSlot(sourceSlot, subProgress);
                                 }
                             }
                         }
@@ -427,10 +430,8 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         } else if (slot.isOutput()) {
             if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode())) {
                 JIPipeGraphNode runAlgorithm = slot.getNode();
-                JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getUUIDInParentGraph());
-                JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm.getUUIDInParentGraph());
                 progressInfo.resolve("GC").log("Caching output slot " + slot.getDisplayName());
-                project.getCache().store(projectAlgorithm, stateId, slot, progressInfo.resolve("GC"));
+                project.getCache().store(runAlgorithm, runAlgorithm.getUUIDInParentGraph(), slot, slot.getName(), progressInfo.resolve("GC"));
             }
             if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(slot.getNode())) {
                 JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", slot.getDisplayName(), JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName()));
@@ -449,7 +450,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         // If enabled try to extract outputs from cache
         boolean dataLoadedFromCache = false;
         if (configuration.isLoadFromCache()) {
-            dataLoadedFromCache = tryLoadFromCache(node, progressInfo, cacheQuery);
+            dataLoadedFromCache = tryLoadFromCache(node, progressInfo);
         }
 
         if (!dataLoadedFromCache) {
@@ -488,35 +489,31 @@ public class JIPipeProjectRun implements JIPipeRunnable {
     /**
      * Attempts to load data from cache
      *
-     * @param algorithm  the target node (inside copy graph)
-     * @param cacheQuery the cache query
+     * @param runAlgorithm  the target node (inside copy graph)
      * @return if successful. This means all output slots were restored.
      */
-    private boolean tryLoadFromCache(JIPipeGraphNode algorithm, JIPipeProgressInfo progressInfo, JIPipeProjectCacheQuery cacheQuery) {
+    private boolean tryLoadFromCache(JIPipeGraphNode runAlgorithm, JIPipeProgressInfo progressInfo) {
         if (!configuration.isLoadFromCache())
             return false;
-        if (!(algorithm instanceof JIPipeAlgorithm))
+        if (!(runAlgorithm instanceof JIPipeAlgorithm))
             return false;
-        JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInParentGraph());
-        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm.getUUIDInParentGraph());
-        Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm.getUUIDInParentGraph(), stateId);
+        Map<String, JIPipeDataTable> cachedData = project.getCache().query(runAlgorithm, runAlgorithm.getUUIDInParentGraph(), progressInfo.resolve("Query cache"));
         if (!cachedData.isEmpty()) {
-            progressInfo.log(String.format("Accessing cache with slots %s via state id %s", String.join(", ",
-                    cachedData.keySet()), stateId));
-            for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+            progressInfo.log("Accessing cache of node " + runAlgorithm.getUUIDInParentGraph() + " (" + runAlgorithm.getDisplayName() + ")");
+            for (JIPipeDataSlot outputSlot : runAlgorithm.getOutputSlots()) {
                 if (!cachedData.containsKey(outputSlot.getName())) {
                     progressInfo.log(String.format("Cache access failed. Missing output slot %s", outputSlot.getName()));
                     return false;
                 }
             }
-            for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
+            for (JIPipeDataSlot outputSlot : runAlgorithm.getOutputSlots()) {
                 if (cachedData.get(outputSlot.getName()).isEmpty()) {
                     // If it's empty, we don't know
                     progressInfo.log(String.format("Cache for slot %s is empty!", outputSlot.getName()));
                     return false;
                 }
                 outputSlot.clearData();
-                outputSlot.addData(cachedData.get(outputSlot.getName()), progressInfo);
+                outputSlot.addDataFromTable(cachedData.get(outputSlot.getName()), progressInfo);
             }
             progressInfo.log("Cache data access successful.");
             return true;

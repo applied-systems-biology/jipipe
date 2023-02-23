@@ -26,7 +26,7 @@ import java.awt.*;
 public class RoiManagerImageJImporterUI extends ImageJDataImporterUI {
     /**
      * @param workbench the workbench
-     * @param importer the importer
+     * @param importer  the importer
      */
     public RoiManagerImageJImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
         super(workbench, importer);

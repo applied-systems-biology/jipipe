@@ -13,13 +13,15 @@
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSlotEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeAdvancedParameterEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeSlotEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -33,39 +35,53 @@ import java.util.Collections;
  */
 public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWorkbenchPanel {
     private final JIPipeGraphEditorUI graphEditorUI;
+    private final JIPipeGraphNode node;
     private JIPipeGraphCanvasUI canvas;
-    private JIPipeGraphNode algorithm;
 
     /**
      * @param graphEditorUI the graph editor
-     * @param algorithm     The algorithm
+     * @param node          The algorithm
      */
-    public JIPipeJsonAlgorithmExporterSingleSelectionPanelUI(JIPipeGraphEditorUI graphEditorUI, JIPipeGraphNode algorithm) {
+    public JIPipeJsonAlgorithmExporterSingleSelectionPanelUI(JIPipeGraphEditorUI graphEditorUI, JIPipeGraphNode node) {
         super(graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.canvas = graphEditorUI.getCanvasUI();
-        this.algorithm = algorithm;
+        this.node = node;
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane tabbedPane = new DocumentTabPane();
+        DocumentTabPane tabbedPane = new DocumentTabPane(false);
 
         ParameterPanel parametersUI = new ParameterPanel(getWorkbench(),
-                algorithm,
-                TooltipUtils.getAlgorithmDocumentation(algorithm.getInfo()),
+                node,
+                TooltipUtils.getAlgorithmDocumentation(node.getInfo()),
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, algorithm);
-        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("actions/database.png"),
+        if (JIPipeAdvancedParameterEditorUI.supports(node)) {
+            tabbedPane.addTab("Advanced parameters", UIUtils.getIconFromResources("actions/configure_toolbars.png"),
+                    new JIPipeAdvancedParameterEditorUI(getWorkbench(), node),
+                    DocumentTabPane.CloseMode.withoutCloseButton,
+                    false);
+        }
+
+        JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
+        tabbedPane.addTab("Slots", UIUtils.getIconFromResources("actions/plug.png"),
                 slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
+
+        if (node instanceof JIPipeDataBatchAlgorithm) {
+            tabbedPane.addTab("Data batches",
+                    UIUtils.getIconFromResources("actions/package.png"),
+                    new ParameterPanel(getWorkbench(), ((JIPipeDataBatchAlgorithm) node).getGenerationSettingsInterface(), null, ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING),
+                    DocumentTabPane.CloseMode.withoutCloseButton);
+        }
 
         add(tabbedPane, BorderLayout.CENTER);
 
@@ -75,14 +91,14 @@ public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWor
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JLabel nameLabel = new JLabel(algorithm.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getInfo())), JLabel.LEFT);
-        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
+        JLabel nameLabel = new JLabel(node.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(node.getInfo())), JLabel.LEFT);
+        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(node.getInfo()));
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
 
         JIPipeGraphEditorUI.installContextActionsInto(toolBar,
-                canvas.getNodeUIsFor(Collections.singleton(algorithm)),
+                canvas.getNodeUIsFor(Collections.singleton(node)),
                 canvas.getContextActions(),
                 canvas);
 
@@ -92,7 +108,7 @@ public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWor
     /**
      * @return The algorithm
      */
-    public JIPipeGraphNode getAlgorithm() {
-        return algorithm;
+    public JIPipeGraphNode getNode() {
+        return node;
     }
 }

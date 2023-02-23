@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -34,14 +33,12 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +49,7 @@ import java.util.stream.Collectors;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Annotate by image statistics (Expression)", description = "Annotates the incoming images by their statistics. The statistics are created via annotations.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
 public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
@@ -134,9 +131,9 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
             // Fetch the pixel buffers
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
-                ImageProcessor ip = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(img, index);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
-                org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
+                ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
             }
 
             // Generate statistics
@@ -167,18 +164,6 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), outputAnnotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
-    }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            annotations.clear();
-            annotations.add(new ExpressionTableColumnGeneratorProcessor("HISTOGRAM_THRESHOLD_OTSU(stat_histogram)", "Otsu threshold"));
-            annotations.add(new ExpressionTableColumnGeneratorProcessor("PERCENTILE(pixels, 30)", "30th percentile"));
-            annotations.add(new ExpressionTableColumnGeneratorProcessor("(stat_max + stat_min) / 2", "Middle gray"));
-            getEventBus().post(new ParameterChangedEvent(this, "annotations"));
-        }
     }
 
     @JIPipeDocumentation(name = "Get statistics from ...", description = "Determines where the algorithm is applied to.")

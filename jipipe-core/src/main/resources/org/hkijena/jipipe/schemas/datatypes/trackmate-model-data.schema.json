@@ -1,0 +1,31 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.",
+  "type": "object",
+  "minProperties": 2,
+  "patternProperties": {
+    "^.tif": {
+      "$ref": "#/$defs/tif",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    },
+    "^.xml": {
+      "$ref": "#/$defs/xml",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  },
+  "$defs": {
+    "tif": {
+      "type": "object",
+      "description": "Image of the track model"
+    },
+    "xml": {
+      "type": "object",
+      "description": "TrackMate model"
+    }
+  }
+}

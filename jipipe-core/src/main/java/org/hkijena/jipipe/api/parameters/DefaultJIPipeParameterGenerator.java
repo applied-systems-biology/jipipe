@@ -106,7 +106,7 @@ public abstract class DefaultJIPipeParameterGenerator implements JIPipeParameter
                 JIPipeIssueReport report = new JIPipeIssueReport();
                 generator.reportValidity(report);
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(this, report, true);
+                    UIUtils.openValidityReportDialog(this, report, "Invalid settings detected", "Please resolve the following issues:", true);
                     return;
                 }
                 this.cancelled = false;

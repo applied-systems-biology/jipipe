@@ -12,11 +12,9 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataImporterRef;
@@ -28,6 +26,7 @@ import javax.swing.*;
 @JIPipeDocumentation(name = "Import from ImageJ", description = "Runs an ImageJ importer. You can select the utilized importer type in the parameters.")
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ImageJDataImporterRef importerType = new ImageJDataImporterRef();
@@ -50,7 +49,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeDataTable dataTable = importerType.getInstance().importData(null, importParameters, progressInfo);
         for (int i = 0; i < dataTable.getRowCount(); i++) {
             dataBatch.addOutputData(getFirstOutputSlot(),
-                    dataTable.getVirtualData(i),
+                    dataTable.getDataItemStore(i),
                     dataTable.getTextAnnotations(i),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     dataTable.getDataAnnotations(i),

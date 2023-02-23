@@ -27,8 +27,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -142,7 +142,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
                 JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
                 for (int row = 0; row < dataTable.getRowCount(); row++) {
                     JIPipeProgressInfo rowSubStatus = subStatus.resolveAndLog("Row", row, dataTable.getRowCount());
-                    String metadataString = exporter.generateMetadataString(dataTable, row, existingMetadata);
+                    String metadataString = exporter.generateName(dataTable, row, existingMetadata);
 
                     Path rowStoragePath = slot.getRowStoragePath(row);
                     Path finalTargetPath = targetPath;
@@ -154,9 +154,9 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
 
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                            String newFileName = metadataString + exporter.getSeparatorString() + file.getFileName().toString();
+                            String newFileName = metadataString + "_" + file.getFileName().toString();
                             String uniqueMetadataPath = file.getParent().resolve(newFileName).toString();
-                            uniqueMetadataPath = StringUtils.makeUniqueString(uniqueMetadataPath, exporter.getSeparatorString(), existingFiles);
+                            uniqueMetadataPath = StringUtils.makeUniqueString(uniqueMetadataPath, "_", existingFiles);
 
                             Path rowInternalPath = rowStoragePath.relativize(file.getParent());
                             Path newTargetPath = finalTargetPath.resolve(rowInternalPath);
@@ -191,7 +191,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
     }
 
     @Subscribe
-    public void onFinished(RunUIWorkerFinishedEvent event) {
+    public void onFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == this) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "The data was successfully exported to " + outputPath + ". Do you want to open the folder?",
@@ -204,7 +204,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
     }
 
     @Subscribe
-    public void onInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == this) {
             JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not export slot data to " + outputPath + ". Please take a look at the log (Tools > Logs) to find out more.", "Export slot data", JOptionPane.ERROR_MESSAGE);
         }

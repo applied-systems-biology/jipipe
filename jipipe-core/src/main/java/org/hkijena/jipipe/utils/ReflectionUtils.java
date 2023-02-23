@@ -64,8 +64,8 @@ public class ReflectionUtils {
     /**
      * Gets the value of a field
      *
-     * @param fieldName    the field name
-     * @param instance the instance
+     * @param fieldName the field name
+     * @param instance  the instance
      * @return the return value
      */
     public static Object getDeclaredFieldValue(String fieldName, Object instance) {
@@ -81,8 +81,8 @@ public class ReflectionUtils {
     /**
      * Gets the value of a field
      *
-     * @param fieldName    the field name
-     * @param klass the class
+     * @param fieldName the field name
+     * @param klass     the class
      * @return the return value
      */
     public static Object getDeclaredStaticFieldValue(String fieldName, Class<?> klass) {
@@ -98,8 +98,8 @@ public class ReflectionUtils {
     /**
      * Gets the value of a field
      *
-     * @param fieldName    the field name
-     * @param klass the class
+     * @param fieldName the field name
+     * @param klass     the class
      * @return the return value
      */
     public static Object getStaticFieldValue(String fieldName, Class<?> klass) {
@@ -115,8 +115,8 @@ public class ReflectionUtils {
     /**
      * Gets the value of a field
      *
-     * @param fieldName    the field name
-     * @param instance the instance
+     * @param fieldName the field name
+     * @param instance  the instance
      * @return the return value
      */
     public static Object getFieldValue(String fieldName, Object instance) {
@@ -248,7 +248,8 @@ public class ReflectionUtils {
         } else {
             try {
                 return ConstructorUtils.invokeConstructor(klass, args);
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                     InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -265,10 +266,7 @@ public class ReflectionUtils {
      */
     public static <E extends Enum> E[] getEnumValues(Class<?> enumClass)
             throws NoSuchFieldException, IllegalAccessException {
-        Field f = enumClass.getDeclaredField("$VALUES");
-        f.setAccessible(true);
-        Object o = f.get(null);
-        return (E[]) o;
+        return (E[]) enumClass.getEnumConstants();
     }
 
     /**

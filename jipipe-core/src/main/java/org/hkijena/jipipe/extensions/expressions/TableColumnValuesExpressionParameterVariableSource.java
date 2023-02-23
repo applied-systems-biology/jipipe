@@ -23,6 +23,7 @@ public class TableColumnValuesExpressionParameterVariableSource implements Expre
 
     static {
         VARIABLES = new HashSet<>();
+        VARIABLES.add(new ExpressionParameterVariable("<Column values>", "The values of all other columns", ""));
         VARIABLES.add(new ExpressionParameterVariable("Table column index", "The column index", "column"));
         VARIABLES.add(new ExpressionParameterVariable("Table column name", "The column name", "column_name"));
         VARIABLES.add(new ExpressionParameterVariable("Column values", "The values of this column as array", "values"));

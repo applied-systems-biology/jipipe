@@ -97,9 +97,9 @@ public class OMEROUtils {
      * Copy of importCandidates in {@link ome.formats.importer.ImportLibrary} that returns the list of uploaded images.
      * This method also throws all exceptions.
      *
-     * @param library the library
-     * @param store the store
-     * @param config the config
+     * @param library    the library
+     * @param store      the store
+     * @param config     the config
      * @param candidates the candidates
      * @return the image instance
      */

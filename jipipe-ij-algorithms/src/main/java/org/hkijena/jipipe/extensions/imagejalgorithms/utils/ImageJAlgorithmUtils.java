@@ -4,6 +4,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import ij.gui.Roi;
+import ij.measure.Calibration;
 import ij.plugin.filter.Analyzer;
 import ij.process.*;
 import inra.ijpb.label.LabelImages;
@@ -17,9 +18,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
+import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 public class ImageJAlgorithmUtils {
@@ -44,7 +47,7 @@ public class ImageJAlgorithmUtils {
         } else if (processor instanceof FloatProcessor) {
             float[] pixels = (float[]) processor.getPixels();
             for (int i = 0; i < pixels.length; i++) {
-                if ((int)pixels[i] == label) {
+                if ((int) pixels[i] == label) {
                     resultPixels[i] = (byte) 255;
                 }
             }
@@ -122,15 +125,16 @@ public class ImageJAlgorithmUtils {
      * @param image        the reference image
      * @param measurements the measurements
      * @param index        the current image index (zero-based)
+     * @param calibration  the calibration (can be null to disable measurements with calibrations)
      * @param progressInfo the progress info
      * @return the measurements
      */
-    public static ResultsTableData measureLabels(ImageProcessor label, ImageProcessor image, ImageStatisticsSetParameter measurements, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
+    public static ResultsTableData measureLabels(ImageProcessor label, ImageProcessor image, ImageStatisticsSetParameter measurements, ImageSliceIndex index, Calibration calibration, JIPipeProgressInfo progressInfo) {
         int measurementsNativeValue = measurements.getNativeValue();
         ImageProcessor mask = new ByteProcessor(label.getWidth(), label.getHeight());
 
         // Ensure the correct type for label
-        label = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.convertToGreyscaleIfNeeded(new ImagePlus("", label)).getProcessor();
+        label = ImageJUtils.convertToGreyscaleIfNeeded(new ImagePlus("", label)).getProcessor();
 
         // Copy image
         image = image.duplicate();
@@ -138,7 +142,7 @@ public class ImageJAlgorithmUtils {
 
         int[] allLabels = LabelImages.findAllLabels(label);
 
-        ResultsTableData result = new ResultsTableData();
+        final ResultsTableData result = new ResultsTableData();
         result.addNumericColumn("label_id");
 
         JIPipePercentageProgressInfo percentageProgress = progressInfo.percentage("Measure labels");
@@ -153,17 +157,17 @@ public class ImageJAlgorithmUtils {
                 if (label instanceof FloatProcessor) {
                     float[] labelBytes = (float[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = (int) (labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = (labelBytes[j]) == id ? (byte)255 : (byte)0;
                     }
                 } else if (label instanceof ShortProcessor) {
                     short[] labelBytes = (short[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = labelBytes[j] == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = (labelBytes[j]) == id ? (byte)255 : (byte)0;
                     }
                 } else if (label instanceof ByteProcessor) {
                     byte[] labelBytes = (byte[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = labelBytes[j] == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = Byte.toUnsignedInt(labelBytes[j]) == id ? (byte)255 : (byte)0;
                     }
                 } else {
                     throw new UnsupportedOperationException("Unknown label type!");
@@ -174,7 +178,10 @@ public class ImageJAlgorithmUtils {
             ImageStatistics statistics = image.getStatistics();
 
             ResultsTableData labelResult = new ResultsTableData();
-            Analyzer analyzer = new Analyzer(new ImagePlus("label=" + id, image), measurementsNativeValue, labelResult.getTable());
+            ImagePlus dummyImage = new ImagePlus("label=" + id, image);
+            if (calibration != null)
+                dummyImage.setCalibration(calibration);
+            Analyzer analyzer = new Analyzer(dummyImage, measurementsNativeValue, labelResult.getTable());
             analyzer.saveResults(statistics, null);
 
             int labelIdColumn = labelResult.addNumericColumn("label_id");
@@ -339,26 +346,48 @@ public class ImageJAlgorithmUtils {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
                 } else {
                     ImagePlus mask = rois.toMask(img.getImage(), true, false, 1);
-                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                    ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                         ip.invert();
                     }, progressInfo.resolve("Invert mask"));
-                    return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                    return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
                 }
             }
             case InsideMask: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
-                return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
             case OutsideMask: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getDuplicateImage();
-                org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                     ip.invert();
                 }, progressInfo.resolve("Invert mask"));
-                return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
         }
         throw new UnsupportedOperationException();
+    }
+
+    public static void setLutFromColorMap(ImagePlus image, ColorMap colorMap, boolean applyToAllPlanes) {
+        LUT lut = colorMap.toLUT();
+        setLut(image, lut, applyToAllPlanes);
+    }
+
+    public static void setLut(ImagePlus image, LUT lut, boolean applyToAllPlanes) {
+        if (applyToAllPlanes && image.hasImageStack()) {
+            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
+            for (int z = 0; z < image.getNSlices(); z++) {
+                for (int c = 0; c < image.getNChannels(); c++) {
+                    for (int t = 0; t < image.getNFrames(); t++) {
+                        image.setPosition(c, z, t);
+                        image.getProcessor().setLut(lut);
+                    }
+                }
+            }
+            image.setPosition(original.getC(), original.getZ(), original.getT());
+        } else {
+            image.getProcessor().setLut(lut);
+        }
     }
 }

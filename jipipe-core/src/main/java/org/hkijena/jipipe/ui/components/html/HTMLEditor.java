@@ -15,6 +15,7 @@ import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.OverlayColorIcon;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -47,10 +48,10 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     private final Set<String> availableFonts = new HashSet<>(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
     private final Map<String, Action> availableEditorKitActions = new HashMap<>();
     private final boolean enableDialogEditor;
+    private final Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
     private JTextPane wysiwygEditorPane;
     private EditorPane htmlEditorPane;
     private HTMLEditorKit wysiwygEditorKit;
-    private Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
     private JComboBox<String> fontSelection;
     private JComboBox<Integer> sizeSelection;
     private ColorChooserButton foregroundColorButton;
@@ -87,10 +88,19 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     }
 
     public void setMode(Mode mode) {
-        this.mode = mode;
-        modeButton.setText(mode.toString());
-        reloadToolbar();
-        reloadEditor();
+        if (mode != this.mode) {
+            if (this.mode == Mode.HTML) {
+                // Copy to wysiwyg
+                wysiwygEditorPane.setText(htmlEditorPane.getText());
+            } else {
+                // Copy to HTML
+                htmlEditorPane.setText(wysiwygEditorPane.getText());
+            }
+            this.mode = mode;
+            modeButton.setText(mode.toString());
+            reloadToolbar();
+            reloadEditor();
+        }
     }
 
     private void reloadEditor() {
@@ -458,7 +468,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     }
 
     private void insertImageFromClipboard() {
-        BufferedImage image = UIUtils.getImageFromClipboard(BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = BufferedImageUtils.getImageFromClipboard(BufferedImage.TYPE_INT_RGB);
         if (image != null) {
             insertImage(image);
         }
@@ -479,7 +489,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
         String base64;
         try {
-            base64 = UIUtils.imageToBase64(image, "png");
+            base64 = BufferedImageUtils.imageToBase64(image, "png");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -517,7 +527,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
                     processor = processor.resize((int) (processor.getWidth() * percentage), (int) (processor.getHeight() * percentage));
                     image = processor.getBufferedImage();
                     try {
-                        base64 = UIUtils.imageToBase64(image, "png");
+                        base64 = BufferedImageUtils.imageToBase64(image, "png");
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

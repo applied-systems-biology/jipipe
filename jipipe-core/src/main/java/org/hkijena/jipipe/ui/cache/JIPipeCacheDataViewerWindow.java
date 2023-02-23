@@ -14,28 +14,27 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -53,11 +52,15 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private final JPanel contentPane = new JPanel(new BorderLayout());
     private JIPipeDataTableDataSource dataSource;
     private JIPipeCachedDataDisplayCacheControl cacheAwareToggle;
-    private WeakReference<JIPipeVirtualData> lastVirtualData;
+    private Store<JIPipeDataItemStore> lastVirtualData;
     private JButton previousRowButton;
     private JButton nextRowButton;
-    private JLabel rowInfoLabel;
-    private Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction;
+    private JButton rowInfoLabel;
+
+    private final JPopupMenu rowInfoLabelMenu = new JPopupMenu();
+    private Function<JIPipeDataItemStore, JIPipeDataItemStore> dataConverterFunction;
+
+    private JLabel standardErrorLabel;
 
     public JIPipeCacheDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         this.workbench = workbench;
@@ -99,7 +102,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         nextRowButton.setToolTipText("<html>Go to next data row<br/>Ctrl+Down</html>");
         nextRowButton.addActionListener(e -> gotoNextRow());
         UIUtils.makeFlat25x25(nextRowButton);
-        rowInfoLabel = new JLabel("?/?");
+        rowInfoLabel = new JButton("?/?");
+        rowInfoLabel.setBorder(null);
+        UIUtils.addReloadablePopupMenuToComponent(rowInfoLabel, rowInfoLabelMenu, this::reloadInfoLabelMenu);
 
         super.setContentPane(contentPane);
         InputMap inputMap = contentPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -120,6 +125,50 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK), "previous-row");
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK), "next-row");
+
+        // Create a standard error label
+        standardErrorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
+    }
+
+    private void reloadInfoLabelMenu() {
+        rowInfoLabelMenu.removeAll();
+        JMenuItem setRowItem = new JMenuItem("Go to row ...", UIUtils.getIconFromResources("actions/go-jump.png"));
+        setRowItem.addActionListener(e -> gotoUserDefinedRow());
+        rowInfoLabelMenu.add(setRowItem);
+
+        int nRow = getDataSource().getDataTable().getRowCount();
+        if (nRow > 0) {
+            rowInfoLabelMenu.addSeparator();
+            JComponent currentMenu = rowInfoLabelMenu;
+            for (int i = 0; i < nRow; i++) {
+                JMenuItem item = new JMenuItem("" + (i + 1));
+                int finalI = i;
+                item.addActionListener(e -> gotoRow(finalI + 1));
+                currentMenu.add(item);
+
+                if (i != nRow - 1 && currentMenu.getComponentCount() >= 10) {
+                    JMenu newMenu = new JMenu("More ...");
+                    currentMenu.add(newMenu);
+                    currentMenu = newMenu;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void dispose() {
+        dataSource = null;
+        super.dispose();
+    }
+
+    /**
+     * Returns a standard error label that simplifies the creation of cache windows.
+     * It must be included into the UI manually
+     *
+     * @return the standard error label
+     */
+    public JLabel getStandardErrorLabel() {
+        return standardErrorLabel;
     }
 
     @Override
@@ -134,6 +183,24 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         revalidate();
         repaint();
     }
+
+    private void gotoUserDefinedRow() {
+        String input = JOptionPane.showInputDialog(this,
+                "Please input the target row (1 is the first item):",
+                getDataSource().getRow() + 1);
+        if (!StringUtils.isNullOrEmpty(input)) {
+            Integer index = NumberUtils.createInteger(input);
+            if (index != null) {
+                gotoRow(index);
+            }
+        }
+    }
+
+    private void gotoRow(int row) {
+        row = Math.max(1, Math.min(getDataSource().getDataTable().getRowCount(), row));
+        setDataSourceRow(row - 1);
+    }
+
 
     private void gotoPreviousRow() {
         int row = getDataSource().getRow() - 1;
@@ -182,6 +249,16 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     /**
+     * The toolbar where the window pin controls are added.
+     * Defaults to getToolBar(). For {@link org.hkijena.jipipe.ui.components.FlexContentPanel}, return getPinToolBar();
+     *
+     * @return the pin toolbar
+     */
+    public JToolBar getPinToolBar() {
+        return getToolBar();
+    }
+
+    /**
      * Returns the toolbar that contains
      *
      * @return the toolbar
@@ -200,13 +277,29 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     /**
      * Instruction to remove the error UI
+     * By default, it will hide the standard error label
      */
-    protected abstract void hideErrorUI();
+    protected void hideErrorUI() {
+        standardErrorLabel.setVisible(false);
+    }
 
     /**
      * Instruction to add the error UI
+     * By default, it will update the standard error label and revalidate the toolbar
      */
-    protected abstract void showErrorUI();
+    protected void showErrorUI() {
+        if (getAlgorithm() != null) {
+            standardErrorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d",
+                    getAlgorithm().getName(),
+                    getSlotName(),
+                    getDataSource().getRow()));
+        } else {
+            standardErrorLabel.setText("No data available");
+        }
+        standardErrorLabel.setVisible(true);
+        getToolBar().revalidate();
+        getToolBar().repaint();
+    }
 
     /**
      * Instruction to load the data from the current data source
@@ -214,7 +307,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
      * @param virtualData  the data to be loaded
      * @param progressInfo the progress info
      */
-    protected abstract void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo);
+    protected abstract void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo);
 
     private void removeDataControls() {
         if (getToolBar() == null)
@@ -230,7 +323,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private void addDataControls() {
         if (getToolBar() == null)
             return;
-        getToolBar().add(alwaysOnTopToggle);
+        getPinToolBar().add(alwaysOnTopToggle);
         if (algorithm != null) {
             cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
             cacheAwareToggle.install();
@@ -262,9 +355,13 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     private void reloadFromCurrentCache() {
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
-        Map<String, JIPipeDataSlot> currentCache = query.getCachedData(algorithm);
-        JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
+        if (!project.getGraph().containsNode(algorithm)) {
+            lastVirtualData = null;
+            showErrorUI();
+            return;
+        }
+        Map<String, JIPipeDataTable> currentCache = project.getCache().query(algorithm, algorithm.getUUIDInParentGraph(), new JIPipeProgressInfo());
+        JIPipeDataTable slot = currentCache.getOrDefault(slotName, null);
         if (slot != null && slot.getRowCount() > dataSource.getRow()) {
             hideErrorUI();
             dataSource = new JIPipeDataTableDataSource(slot, dataSource.getRow(), dataSource.getDataAnnotation());
@@ -277,30 +374,40 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     private void loadFromDataSource() {
         if (dataSource.getDataAnnotation() == null) {
-            JIPipeVirtualData virtualData = dataSource.getDataTable().getVirtualData(dataSource.getRow());
+            JIPipeDataItemStore virtualData = dataSource.getDataTable().getDataItemStore(dataSource.getRow());
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
             if (dataConverterFunction != null)
                 virtualData = dataConverterFunction.apply(virtualData);
             loadData(virtualData, new JIPipeProgressInfo());
-            lastVirtualData = new WeakReference<>(virtualData);
+            lastVirtualData = new WeakStore<>(virtualData);
         } else {
-            JIPipeVirtualData virtualData = dataSource.getDataTable().getVirtualDataAnnotation(dataSource.getRow(), dataSource.getDataAnnotation());
+            JIPipeDataItemStore virtualData = dataSource.getDataTable().getDataAnnotationItemStore(dataSource.getRow(), dataSource.getDataAnnotation());
             if (virtualData == null) {
                 showErrorUI();
                 return;
+            }
+            if(JIPipeWeakDataReferenceData.class.isAssignableFrom(virtualData.getDataClass())) {
+                // Dereference weak reference data
+                JIPipeWeakDataReferenceData weakDataReferenceData = virtualData.getData(JIPipeWeakDataReferenceData.class, new JIPipeProgressInfo());
+                JIPipeData data = weakDataReferenceData.getDataReference().get();
+                if(data == null) {
+                    showErrorUI();
+                    return;
+                }
+                virtualData = new JIPipeDataItemStore(data);
             }
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
             if (dataConverterFunction != null)
                 virtualData = dataConverterFunction.apply(virtualData);
             loadData(virtualData, new JIPipeProgressInfo());
-            lastVirtualData = new WeakReference<>(virtualData);
+            lastVirtualData = new WeakStore<>(virtualData);
         }
     }
 
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isVisible())
             return;
         if (!isDisplayable())
@@ -314,11 +421,11 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         return displayName;
     }
 
-    public Function<JIPipeVirtualData, JIPipeVirtualData> getDataConverterFunction() {
+    public Function<JIPipeDataItemStore, JIPipeDataItemStore> getDataConverterFunction() {
         return dataConverterFunction;
     }
 
-    public void setDataConverterFunction(Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction) {
+    public void setDataConverterFunction(Function<JIPipeDataItemStore, JIPipeDataItemStore> dataConverterFunction) {
         this.dataConverterFunction = dataConverterFunction;
     }
 }

@@ -2,11 +2,9 @@ package org.hkijena.jipipe.api;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
@@ -14,9 +12,6 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
@@ -27,6 +22,7 @@ import java.util.*;
  * An intermediate between copying a node and a proper plugin.
  */
 public class JIPipeNodeTemplate implements JIPipeParameterCollection {
+    public static final String SOURCE_USER = "User";
     private final EventBus eventBus = new EventBus();
     private String name = "Unnamed template";
     private HTMLText description = new HTMLText();
@@ -36,6 +32,8 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
     private JIPipeGraph graph;
     private Color fillColor = MiscellaneousNodeTypeCategory.FILL_COLOR;
     private Color borderColor = MiscellaneousNodeTypeCategory.BORDER_COLOR;
+
+    private String source = SOURCE_USER;
 
     public JIPipeNodeTemplate() {
     }
@@ -72,6 +70,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         this.menuPath = new StringList(other.menuPath);
         this.fillColor = other.fillColor;
         this.borderColor = other.borderColor;
+        this.source = other.source;
     }
 
     @JIPipeDocumentation(name = "Name", description = "Name of the template")
@@ -152,8 +151,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         this.borderColor = borderColor;
     }
 
-    @JIPipeDocumentation(name = "Data", description = "The data contained inside the node template. Must be JSON representation of a single node. " +
-            "Please note that copying a node from the graph yields a list of multiple nodes.")
+    @JIPipeDocumentation(name = "Data", description = "The data contained inside the node template. Must be JSON representation of a graph.")
     @JsonGetter("data")
     @JIPipeParameter(value = "data", uiOrder = 999)
     @StringParameterSettings(monospace = true, multiline = true, visible = false)
@@ -168,20 +166,32 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         this.data = data;
     }
 
-    @JIPipeDocumentation(name = "Paste from clipboard", description = "Sets the node data from clipboard.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/edit-paste.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/edit-paste.png")
-    public void pasteDataFromClipboard(JIPipeWorkbench workbench) {
-        String json = UIUtils.getStringFromClipboard();
-        if (json != null) {
-            try {
-                JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
-                setData(json);
-                triggerParameterChange("data");
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
+    @JIPipeDocumentation(name = "Source", description = "Used for assigning the node templates to a source (e.g., remote repository). You can leave this parameter alone.")
+    @JIPipeParameter(value = "source")
+    @StringParameterSettings(monospace = true)
+    public String getSource() {
+        return source;
     }
+
+    @JIPipeParameter("source")
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    //    @JIPipeDocumentation(name = "Paste from clipboard", description = "Sets the node data from clipboard.")
+//    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/edit-paste.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/edit-paste.png")
+//    public void pasteDataFromClipboard(JIPipeWorkbench workbench) {
+//        String json = UIUtils.getStringFromClipboard();
+//        if (json != null) {
+//            try {
+//                JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
+//                setData(json);
+//                triggerParameterChange("data");
+//            } catch (JsonProcessingException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     /**
      * Gets the node type stored inside the data.
@@ -193,7 +203,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         if (graph == null) {
             try {
                 graph = JsonUtils.readFromString(data, JIPipeGraph.class);
-            } catch (Exception e) {
+            } catch (Throwable e) {
             }
         }
         return graph;

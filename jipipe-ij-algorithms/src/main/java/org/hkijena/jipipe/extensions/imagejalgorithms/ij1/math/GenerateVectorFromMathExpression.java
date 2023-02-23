@@ -204,7 +204,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     @JIPipeDocumentation(name = "Function", description = "Generates a vector. Must return an array of numbers with the required vector components. " +
             "If the vector has one component, it can also return a number.")
     @JIPipeParameter("function")
-    @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class, hint = "per pixel")
     public DefaultExpressionParameter getFunction() {
         return function;
     }

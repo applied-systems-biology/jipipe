@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -9,6 +11,8 @@ import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.data.JIPipeWeakDataReferenceData;
+import org.hkijena.jipipe.api.grapheditortool.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -25,13 +29,20 @@ import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The core extension
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:core", JIPipe.getJIPipeVersion(), "Core");
 
     @Override
     public String getName() {
@@ -41,6 +52,11 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public HTMLText getDescription() {
         return new HTMLText("Provides core data types");
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Collections.emptySet();
     }
 
     @Override
@@ -54,6 +70,9 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("jipipe:data-table",
                 JIPipeDataTable.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-table.png"));
+        registerDatatype("jipipe:weak-reference",
+                JIPipeWeakDataReferenceData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
         registerNodeTypeCategory(new InternalNodeTypeCategory());
         registerNodeTypeCategory(new DataSourceNodeTypeCategory());
         registerNodeTypeCategory(new FileSystemNodeTypeCategory());
@@ -63,6 +82,7 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeTypeCategory(new RoiNodeTypeCategory());
         registerNodeTypeCategory(new AnnotationsNodeTypeCategory());
         registerNodeTypeCategory(new ExportNodeTypeCategory());
+        registerNodeTypeCategory(new ImageJNodeTypeCategory());
 
         // Global data importers
         registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());
@@ -92,6 +112,15 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
                 JIPipeUITheme.class,
                 "Theme",
                 "A theme for the JIPipe GUI");
+
+        registerProjectTemplatesFromResources(JIPipe.RESOURCES, "templates");
+
+        // Graph editors
+        registerGraphEditorTool(JIPipeDefaultGraphEditorTool.class);
+        registerGraphEditorTool(JIPipeConnectGraphEditorTool.class);
+        registerGraphEditorTool(JIPipeMoveNodesGraphEditorTool.class);
+        registerGraphEditorTool(JIPipeCropViewGraphEditorTool.class);
+        registerGraphEditorTool(JIPipeRewireGraphEditorTool.class);
     }
 
     @Override
@@ -111,12 +140,19 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         result.add("Schneider, C. A.; Rasband, W. S. & Eliceiri, K. W. (2012), \"NIH Image to ImageJ: 25 years of image analysis\", " +
                 "Nature methods 9(7): 671-675");
         result.add("Rueden, C., Schindelin, J., Hiner, M. & Eliceiri, K. (2016). SciJava Common [Software]. https://scijava.org/. ");
+        result.add("Papirus Icon Theme: https://github.com/PapirusDevelopmentTeam/papirus-icon-theme (Licensed under GPL-3)");
+        result.add("Breeze Icons: https://github.com/KDE/breeze-icons (Licensed under LGPL-2.1)");
         return result;
     }
 
     @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:core";
+    }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
     }
 
 }

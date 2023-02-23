@@ -22,7 +22,6 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -49,16 +48,10 @@ import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameterEd
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.colors.*;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.FilePathParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathListParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.filesystem.*;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.JIPipeAuthorMetadataParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.JIPipeParameterCollectionParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLTextParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;
@@ -86,7 +79,7 @@ import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTableEdit
 import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 import org.hkijena.jipipe.extensions.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
+import org.hkijena.jipipe.ui.grapheditor.general.layout.GraphAutoLayout;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -304,6 +297,14 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Margin",
                 "Defines a rectangular area within a region",
                 MarginParameterEditorUI.class);
+        registerParameterType("fixed-margin",
+                FixedMargin.class,
+                FixedMargin.List.class,
+                null,
+                null,
+                "Margin (fixed size)",
+                "Places fixed-size objects into an area",
+                FixedMarginEditorUI.class);
         registerParameterType("anchor",
                 Anchor.class,
                 null,
@@ -452,6 +453,17 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 DynamicStringSetParameter.class,
                 "String set selection",
                 "A set of strings from which a subset can be selected");
+        registerParameterType("font-family-enum",
+                FontFamilyParameter.class,
+                FontFamilyParameter::new,
+                p -> new FontFamilyParameter((FontFamilyParameter) p),
+                "Font family",
+                "Available font families",
+                null);
+        registerEnumParameterType("font-style",
+                FontStyleParameter.class,
+                "Font style",
+                "Available font styles");
 
         // Enums
         registerEnumParameterType("color-map",
@@ -479,6 +491,15 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 SortOrder.class,
                 "Sort order",
                 "Available sort orders");
+
+        registerParameterType("plugin-categories-enum",
+                PluginCategoriesEnumParameter.class,
+                PluginCategoriesEnumParameter.List.class,
+                null,
+                null,
+                "Categories",
+                "ImageJ categories",
+                null);
     }
 
     private void registerPairParameters() {
@@ -617,6 +638,11 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "ImageJ exporter (configurable)",
                 "Operation that exports data into ImageJ",
                 ImageJDataExportOperationRefParameterEditorUI.class);
+        registerParameterType("parameter-type",
+                JIPipeParameterTypeInfoRef.class,
+                "Parameter type",
+                "A parameter type",
+                JIPipeParameterTypeInfoRefParameterEditorUI.class);
 
         // Icon types
         registerParameterType("algorithm-type-icon",
@@ -636,10 +662,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Author",
                 "An author with affiliations",
                 JIPipeAuthorMetadataParameterEditorUI.class);
-        registerEnumParameterType("data-by-metadata-exporter:mode",
-                JIPipeDataByMetadataExporter.Mode.class,
-                "Exporter mode",
-                "Allows you to choose between automatic or manual name generation.");
 
         // Node templates
         registerParameterType("node-template",
@@ -650,6 +672,16 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Node template",
                 "Stores a copy of a node",
                 JIPipeNodeTemplateParameterEditorUI.class);
+
+        // File chooser
+        registerParameterType("file-chooser-bookmark",
+                FileChooserBookmark.class,
+                FileChooserBookmarkList.class,
+                null,
+                null,
+                "File chooser bookmark",
+                "Bookmark for a path",
+                null);
     }
 
     private void registerCommonJavaTypes() {
@@ -658,7 +690,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerParameterType("string", String.class, StringList.class, () -> "", s -> s, "String", "A text value", StringParameterEditorUI.class);
         registerParameterType("password", PasswordParameter.class, null, null, "Password", "A password", PasswordParameterEditorUI.class);
         registerParameterType("path", Path.class, PathList.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathParameterEditorUI.class);
-        registerParameterEditor(PathList.class, PathListParameterEditorUI.class);
         registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);
         registerParameterType("color", Color.class, () -> Color.WHITE, c -> c, "Color", "A color", ColorParameterEditorUI.class);
         registerParameterType("color-list", ColorListParameter.class, "Color list", "A list of colors");
@@ -724,5 +755,10 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         module.addSerializer(Rectangle.class, new RectangleSerializer());
         module.addDeserializer(Rectangle.class, new RectangleDeserializer());
         JsonUtils.getObjectMapper().registerModule(module);
+    }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
     }
 }

@@ -19,15 +19,15 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentDragAndDropBehavior;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphCopyNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphCutNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
 import javax.swing.*;
@@ -54,10 +54,10 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
     public JIPipeJsonExtensionGraphUI(JIPipeJsonExtensionWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment) {
         super(workbenchUI, algorithmGraph, compartment, new JIPipeDedicatedGraphHistoryJournal(algorithmGraph));
         initializeDefaultPanel();
-        setPropertyPanel(defaultPanel);
+        setPropertyPanel(defaultPanel, true);
 
         // Set D&D and Copy&Paste behavior
-        getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
+        getCanvasUI().setDragAndDropBehavior(new JIPipeCreateNodesFromDraggedDataDragAndDropBehavior());
         getCanvasUI().setContextActions(Arrays.asList(
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
@@ -131,13 +131,13 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
     protected void updateSelection() {
         super.updateSelection();
         if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel);
+            setPropertyPanel(defaultPanel, true);
         } else if (getSelection().size() == 1) {
             setPropertyPanel(new JIPipeJsonExtensionSingleAlgorithmSelectionPanelUI(this,
-                    getSelection().iterator().next().getNode()));
+                    getSelection().iterator().next().getNode()), true);
         } else {
             setPropertyPanel(new JIPipeJsonExtensionMultiAlgorithmSelectionPanelUI((JIPipeJsonExtensionWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
         }
     }
 }

@@ -27,6 +27,10 @@ import java.util.List;
  */
 public abstract class JIPipePrepackagedDefaultJavaExtension extends JIPipeDefaultJavaExtension {
 
+    public JIPipePrepackagedDefaultJavaExtension() {
+
+    }
+
     @Override
     public List<JIPipeAuthorMetadata> getAuthors() {
         final String HKI = "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany";
@@ -75,6 +79,6 @@ public abstract class JIPipePrepackagedDefaultJavaExtension extends JIPipeDefaul
 
     @Override
     public String getCitation() {
-        return "Ruman Gerst, Zoltan Cseresnyes, Marc Thilo Figge. JIPipe: Visual batch processing for ImageJ, 11 May 2022, PREPRINT (Version 1) available at Research Square [https://doi.org/10.21203/rs.3.rs-1641739/v1]";
+        return "Gerst, R., Cseresnyés, Z. & Figge, M.T. JIPipe: visual batch processing for ImageJ. Nat Methods (2023). https://doi.org/10.1038/s41592-022-01744-4";
     }
 }

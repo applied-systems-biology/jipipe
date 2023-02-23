@@ -105,6 +105,11 @@ public class BooleanParameterEditorUI extends JIPipeParameterEditorUI {
         updateComboBoxDisplay();
     }
 
+    @Override
+    public int getUIControlStyleType() {
+        return CONTROL_STYLE_CHECKBOX;
+    }
+
     private void updateComboBoxDisplay() {
         BooleanParameterSettings settings = getParameterAccess().getAnnotationOfType(BooleanParameterSettings.class);
         if (settings != null) {

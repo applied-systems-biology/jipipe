@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -34,8 +35,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         "If a multi-channel image is provided, the operation is applied to each channel. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nNoise", aliasName = "Remove NaNs...")
 public class RemoveNaNFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double radius = 1;
@@ -46,11 +48,7 @@ public class RemoveNaNFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public RemoveNaNFilter2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, "Input")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

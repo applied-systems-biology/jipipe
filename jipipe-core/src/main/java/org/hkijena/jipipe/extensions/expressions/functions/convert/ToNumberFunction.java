@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -58,6 +59,6 @@ public class ToNumberFunction extends ExpressionFunction {
         else if (value instanceof Boolean)
             return (boolean) value ? 1 : 0;
         else
-            return NumberUtils.createDouble("" + value);
+            return StringUtils.parseDouble(StringUtils.nullToEmpty(value));
     }
 }

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -39,10 +40,13 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage... (of inputs)")
 public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
     private CanvasEqualizer canvasEqualizer = new CanvasEqualizer();
     private JIPipeDataByMetadataExporter labelGenerator = new JIPipeDataByMetadataExporter();
+
+    private JIPipeDataByMetadataExporter sortingLabelGenerator = new JIPipeDataByMetadataExporter();
     private OptionalIntegerParameter rows = new OptionalIntegerParameter();
     private OptionalIntegerParameter columns = new OptionalIntegerParameter();
     private boolean drawLabels = true;
@@ -54,7 +58,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
     public InputImagesToMontage(JIPipeNodeInfo info) {
         super(info);
-        this.getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
+//        this.getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         registerSubParameter(canvasEqualizer);
         registerSubParameter(labelGenerator);
     }
@@ -63,6 +67,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
         super(other);
         this.canvasEqualizer = new CanvasEqualizer(other.canvasEqualizer);
         this.labelGenerator = new JIPipeDataByMetadataExporter(other.labelGenerator);
+        this.sortingLabelGenerator = new JIPipeDataByMetadataExporter(other.sortingLabelGenerator);
         this.rows = new OptionalIntegerParameter(other.rows);
         this.columns = new OptionalIntegerParameter(other.columns);
         this.drawLabels = other.drawLabels;
@@ -79,14 +84,19 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Map<ImagePlus, String> labelledImages = new HashMap<>();
+        Map<ImagePlus, String> sortingLabels = new HashMap<>();
         for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
             labelledImages.put(getFirstInputSlot().getData(row, ImagePlus2DData.class, progressInfo).getImage(),
-                    labelGenerator.generateMetadataString(getFirstInputSlot(), row, new HashSet<>()));
+                    labelGenerator.generateName(getFirstInputSlot(), row, new HashSet<>()));
+        }
+        for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
+            sortingLabels.put(getFirstInputSlot().getData(row, ImagePlus2DData.class, progressInfo).getImage(),
+                    sortingLabelGenerator.generateName(getFirstInputSlot(), row, new HashSet<>()));
         }
         if (labelledImages.isEmpty())
             return;
         List<ImagePlus> input = labelledImages.keySet().stream()
-                .sorted(Comparator.comparing(labelledImages::get, NaturalOrderComparator.INSTANCE)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(sortingLabels::get, NaturalOrderComparator.INSTANCE)).collect(Collectors.toList());
         List<String> labels = input.stream().map(labelledImages::get).collect(Collectors.toList());
 
         // Equalize canvas
@@ -190,6 +200,8 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
         montage.drawString(label, x, y);
     }
 
+
+
     @JIPipeDocumentation(name = "Rows", description = "The number of rows to generate. If disabled, rows are generated automatically.")
     @JIPipeParameter(value = "rows", uiOrder = 10)
     public OptionalIntegerParameter getRows() {
@@ -288,5 +300,11 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
     @JIPipeParameter("label-generator")
     public JIPipeDataByMetadataExporter getLabelGenerator() {
         return labelGenerator;
+    }
+
+    @JIPipeDocumentation(name = "Sorting label generation", description = "Determines how labels for the sorting of images is generated.")
+    @JIPipeParameter("sorting-label-generator")
+    public JIPipeDataByMetadataExporter getSortingLabelGenerator() {
+        return sortingLabelGenerator;
     }
 }

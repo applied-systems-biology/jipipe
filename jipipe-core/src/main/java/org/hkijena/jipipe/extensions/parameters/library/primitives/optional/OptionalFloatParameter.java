@@ -28,6 +28,15 @@ public class OptionalFloatParameter extends OptionalParameter<Float> {
     }
 
     /**
+     * Creates a new instance
+     */
+    public OptionalFloatParameter(boolean enabled, float value) {
+        super(Float.class);
+        setEnabled(enabled);
+        setContent(value);
+    }
+
+    /**
      * Creates a copy
      *
      * @param other the original

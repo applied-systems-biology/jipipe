@@ -42,6 +42,8 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
 
+    private boolean forceFlowGraphSolver = false;
+
     public JIPipeIteratingAlgorithmDataBatchGenerationSettings() {
     }
 
@@ -54,11 +56,23 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
         this.annotationMatchingMethod = other.annotationMatchingMethod;
         this.customAnnotationMatching = new DefaultExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
+        this.forceFlowGraphSolver = other.forceFlowGraphSolver;
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
+    @JIPipeParameter("force-flow-graph-solver")
+    public boolean isForceFlowGraphSolver() {
+        return forceFlowGraphSolver;
+    }
+
+    @JIPipeParameter("force-flow-graph-solver")
+    public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
+        this.forceFlowGraphSolver = forceFlowGraphSolver;
     }
 
     @JIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +

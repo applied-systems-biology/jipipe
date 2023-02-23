@@ -29,7 +29,7 @@ import org.hkijena.jipipe.utils.StringUtils;
  * Algorithm that generates annotations from folder names
  */
 @JIPipeDocumentation(name = "Folders to annotations", description = "Creates an annotation for each path based on its name")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
 @JIPipeInputSlot(value = PathData.class, slotName = "Folders", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Annotated folders", autoCreate = true)
 @JIPipeHidden

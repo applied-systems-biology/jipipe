@@ -26,6 +26,12 @@ public class NamedTextAnnotationGeneratorExpression extends PairParameter<Annota
         setValue("");
     }
 
+    public NamedTextAnnotationGeneratorExpression(AnnotationGeneratorExpression expression, String name) {
+        super(AnnotationGeneratorExpression.class, String.class);
+        setKey(expression);
+        setValue(name);
+    }
+
     public NamedTextAnnotationGeneratorExpression(PairParameter<AnnotationGeneratorExpression, String> other) {
         super(other);
     }

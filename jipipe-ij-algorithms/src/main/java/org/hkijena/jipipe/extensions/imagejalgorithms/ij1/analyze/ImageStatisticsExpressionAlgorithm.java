@@ -24,22 +24,20 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,6 +51,7 @@ import java.util.stream.Collectors;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (custom)")
 public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean applyPerSlice = true;
@@ -142,9 +141,9 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
             // Fetch the pixel buffers
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
-                ImageProcessor ip = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(img, index);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
-                org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
+                ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
             }
 
             // Generate statistics
@@ -178,19 +177,6 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
 
     }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            columns.clear();
-            columns.add(new ExpressionTableColumnGeneratorProcessor("HISTOGRAM_THRESHOLD_OTSU(stat_histogram)", "Otsu threshold"));
-            columns.add(new ExpressionTableColumnGeneratorProcessor("PERCENTILE(pixels, 30)", "30th percentile"));
-            columns.add(new ExpressionTableColumnGeneratorProcessor("(stat_max + stat_min) / 2", "Middle gray"));
-            getEventBus().post(new ParameterChangedEvent(this, "columns"));
-        }
-    }
-
 
     @JIPipeDocumentation(name = "Apply per slice", description = "If true, the operation is applied for each Z-slice separately. If false, all Z-slices are put together.")
     @JIPipeParameter("apply-per-slice")
@@ -234,8 +220,10 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
 
     @JIPipeParameter("roi:target-area")
     public void setTargetArea(ImageROITargetArea targetArea) {
-        this.targetArea = targetArea;
-        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        if (this.targetArea != targetArea) {
+            this.targetArea = targetArea;
+            ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        }
     }
 
     @JIPipeDocumentation(name = "Generated columns", description = "Use these expressions to generate the table columns. The expressions contain statistics, as well as incoming annotations of the current image.")

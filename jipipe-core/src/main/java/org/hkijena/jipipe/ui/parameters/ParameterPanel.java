@@ -13,24 +13,23 @@
 
 package org.hkijena.jipipe.ui.parameters;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
-import org.hkijena.jipipe.utils.DocumentationUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * UI around a {@link JIPipeParameterCollection}
  */
-public class ParameterPanel extends FormPanel implements Contextual {
+public class ParameterPanel extends FormPanel implements Contextual, Disposable {
     /**
      * Flag for {@link ParameterPanel}. Makes that no group headers are created.
      * This includes dynamic parameter group headers that contain buttons for modification.
@@ -76,20 +75,25 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static final int WITHOUT_COLLAPSE = 2048;
 
-    private JIPipeWorkbench workbench;
+    /**
+     * Flags suitable for standalone dialogs
+     */
+    public static final int DEFAULT_DIALOG_FLAGS = WITH_SEARCH_BAR | WITH_DOCUMENTATION | WITH_SCROLLING;
+
+    private final JIPipeWorkbench workbench;
+    private final boolean noGroupHeaders;
+    private final boolean noEmptyGroupHeaders;
+    private final boolean forceTraverse;
+    private final boolean withSearchBar;
+    private final boolean withoutLabelSeparation;
+    private final boolean allowCollapse;
+    private final SearchTextField searchField = new SearchTextField();
+    private final Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
     private Context context;
     private JIPipeParameterCollection displayedParameters;
-    private boolean noGroupHeaders;
-    private boolean noEmptyGroupHeaders;
-    private boolean forceTraverse;
-    private boolean withSearchBar;
-    private boolean withoutLabelSeparation;
-    private boolean allowCollapse;
     private JIPipeParameterTree traversed;
-    private SearchTextField searchField = new SearchTextField();
     private BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> customIsParameterVisible;
     private BiFunction<JIPipeParameterTree, JIPipeParameterCollection, Boolean> customIsParameterCollectionVisible;
-    private Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
 
     /**
      * @param workbench           SciJava context
@@ -116,6 +120,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
+    @Override
+    public void dispose() {
+        clear();
+        traversed = null;
+        displayedParameters = null;
+    }
+
     /**
      * Shows a parameter collection inside a modal dialog
      *
@@ -125,7 +136,19 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * @return if the user clicked "OK"
      */
     public static boolean showDialog(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
-        JDialog dialog = new JDialog(workbench.getWindow());
+        return showDialog(workbench, workbench.getWindow(), parameterCollection, defaultDocumentation, title, flags);
+    }
+
+    /**
+     * Shows a parameter collection inside a modal dialog
+     *
+     * @param workbench           parent component
+     * @param parameterCollection the parameter collection
+     * @param flags               flags for the editor
+     * @return if the user clicked "OK"
+     */
+    public static boolean showDialog(JIPipeWorkbench workbench, Component parent, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         ParameterPanel parameterPanel = new ParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
 
@@ -160,15 +183,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
         dialog.setModal(true);
         dialog.pack();
         dialog.setSize(new Dimension(800, 600));
-        dialog.setLocationRelativeTo(workbench.getWindow());
+        dialog.setLocationRelativeTo(parent);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
 
         return clickedOK.get();
-    }
-
-    private static List<String> getParameterKeysSortedByParameterName(Map<String, JIPipeParameterAccess> parameters, Collection<String> keys) {
-        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
     }
 
     public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access, JIPipeParameterTree tree) {
@@ -359,16 +378,17 @@ public class ParameterPanel extends FormPanel implements Contextual {
                         groupIcon = UIUtils.getIconFromResources("actions/configure.png");
                     }
                 }
-                GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(tree.getSourceDocumentationName(parameterCollection),
-                        groupIcon, leftComponents);
-                addWideToForm(groupHeaderPanel, null);
+                GroupHeaderPanel groupHeaderPanel = addGroupHeader(tree.getSourceDocumentationName(parameterCollection), groupIcon);
+                for (Component leftComponent : leftComponents) {
+                    groupHeaderPanel.addColumn(leftComponent);
+                }
 
                 if (documentation != null && !StringUtils.isNullOrEmpty(DocumentationUtils.getDocumentationDescription(documentation))) {
                     groupHeaderPanel.getDescriptionArea().setVisible(true);
                     groupHeaderPanel.getDescriptionArea().setText(DocumentationUtils.getDocumentationDescription(documentation));
                 }
 
-                for (JIPipeParameterTree.ContextAction action : node.getActions()) {
+                for (JIPipeParameterCollectionContextAction action : node.getActions()) {
                     Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
                     JButton actionButton = new JButton(action.getDocumentation().name(), icon);
                     actionButton.setToolTipText(DocumentationUtils.getDocumentationDescription(action.getDocumentation()));
@@ -378,9 +398,14 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 }
 
                 if (isModifiable) {
-                    JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
-                    addButton.addActionListener(e -> addDynamicParameter((JIPipeDynamicParameterCollection) parameterCollection));
-                    addButton.setToolTipText("Add new parameter");
+                    JButton addButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+                    addButton.addActionListener(e -> {
+                        DynamicParameterEditorDialog dialog = new DynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), workbench, (JIPipeDynamicParameterCollection) parameterCollection);
+                        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+                        dialog.setModal(true);
+                        dialog.setVisible(true);
+                    });
+                    addButton.setToolTipText("Allows to add/remove parameters in this group");
                     UIUtils.makeFlat(addButton);
                     groupHeaderPanel.addColumn(addButton);
                 }
@@ -405,17 +430,39 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
         Comparator<JIPipeParameterEditorUI> comparator;
         if (withoutLabelSeparation) {
-            comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> u.getParameterAccess().getUIOrder())
+            comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> !u.getParameterAccess().isPinned())
+                    .thenComparing((JIPipeParameterEditorUI u) -> u.getParameterAccess().getUIOrder())
+                    .thenComparing(JIPipeParameterEditorUI::getUIControlStyleType)
                     .thenComparing(u -> u.getParameterAccess().getName());
         } else {
-            comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> !u.isUILabelEnabled())
+            comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> !u.getParameterAccess().isPinned())
+                    .thenComparing((JIPipeParameterEditorUI u) -> !u.isUILabelEnabled())
                     .thenComparing(u -> u.getParameterAccess().getUIOrder())
+                    .thenComparing(JIPipeParameterEditorUI::getUIControlStyleType)
                     .thenComparing(u -> u.getParameterAccess().getName());
         }
+
+        boolean pinModeStarted = false;
+
         for (JIPipeParameterEditorUI ui : uiList.stream().sorted(comparator).collect(Collectors.toList())) {
             JIPipeParameterAccess parameterAccess = ui.getParameterAccess();
+
+            if (parameterAccess.isPinned()) {
+                pinModeStarted = true;
+            } else if (pinModeStarted) {
+                // Add some spacing
+                JPanel strut = new JPanel(new BorderLayout());
+                strut.add(new JSeparator(SwingConstants.HORIZONTAL));
+                strut.setBorder(BorderFactory.createEmptyBorder(12, 32, 12, 0));
+                addWideToForm(strut);
+                uiComponents.add(strut);
+                pinModeStarted = false;
+            }
+
             JPanel labelPanel = new JPanel(new BorderLayout());
             MarkdownDocument documentation = generateParameterDocumentation(parameterAccess, tree);
+
+            // Label panel
             if (ui.isUILabelEnabled() || (parameterAccess.isImportant() && ui.isUIImportantLabelEnabled())) {
                 JLabel label = new JLabel();
                 if (ui.isUILabelEnabled())
@@ -429,26 +476,36 @@ public class ParameterPanel extends FormPanel implements Contextual {
             if (!isWithDocumentation()) {
                 ui.setToolTipText("<html>" + documentation.getRenderedHTML() + "</html>");
             }
-            if (isModifiable) {
-                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-                UIUtils.makeBorderlessWithoutMargin(removeButton);
-                removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (JIPipeDynamicParameterCollection) parameterCollection));
-                labelPanel.add(removeButton, BorderLayout.WEST);
-            }
 
+            // Editor if modifiable
+//            if (isModifiable) {
+//                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+//                UIUtils.makeBorderlessWithoutMargin(removeButton);
+//                removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (JIPipeDynamicParameterCollection) parameterCollection));
+//                labelPanel.add(removeButton, BorderLayout.WEST);
+//            }
+
+            // Add to form
+            JComponent wrappedUI = displayedParameters.installUIOverrideParameterEditor(this, ui);
             if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
-                addToForm(ui, labelPanel, documentation);
+                addToForm(wrappedUI, labelPanel, documentation);
                 uiComponents.add(labelPanel);
             } else {
                 if (!parameterAccess.isImportant() || !ui.isUIImportantLabelEnabled()) {
-                    addWideToForm(ui, documentation);
+                    addWideToForm(wrappedUI, documentation);
                 } else {
                     JPanel wrapperPanel = new JPanel(new BorderLayout());
-                    wrapperPanel.add(ui, BorderLayout.CENTER);
+                    wrapperPanel.add(wrappedUI, BorderLayout.CENTER);
                     wrapperPanel.add(labelPanel, BorderLayout.WEST);
                     addWideToForm(wrapperPanel, documentation);
                     uiComponents.add(labelPanel);
                 }
+            }
+
+            // Get the entry
+            FormPanelEntry entry = getEntries().get(getNumRows() - 1);
+            if (entry.getProperties() != null) {
+                uiComponents.add(entry.getProperties());
             }
 
         }
@@ -470,24 +527,88 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
     }
 
+    @Override
+    protected Component createEntryPropertiesComponent(Component component, Component description, int row, MarkdownDocument documentation) {
+        JPanel propertyPanel = new JPanel(new BorderLayout());
+
+        // Help
+        if (documentation != null || component instanceof JIPipeParameterEditorUI) {
+            JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
+            helpButton.setBorder(null);
+            helpButton.addActionListener(e -> {
+                showDocumentation(documentation);
+            });
+            installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
+            propertyPanel.add(helpButton, BorderLayout.WEST);
+        }
+
+        // Options menu
+        if (component instanceof JIPipeParameterEditorUI) {
+            JIPipeParameterEditorUI editorUI = (JIPipeParameterEditorUI) component;
+            JButton optionsButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle4-muted.png"));
+            optionsButton.setBorder(null);
+
+            JPopupMenu optionsMenu = UIUtils.addPopupMenuToComponent(optionsButton);
+
+            JMenuItem copyItem = new JMenuItem("Copy", UIUtils.getIconFromResources("actions/edit-copy.png"));
+            copyItem.addActionListener(e -> {
+                Object parameter = editorUI.getParameter(Object.class);
+                UIUtils.copyToClipboard(JsonUtils.toJsonString(parameter));
+                workbench.sendStatusBarText("Copied parameter '" + editorUI.getParameterAccess().getName() + "' to the clipboard.");
+            });
+            optionsMenu.add(copyItem);
+
+            JMenuItem pasteItem = new JMenuItem("Paste", UIUtils.getIconFromResources("actions/edit-paste.png"));
+            pasteItem.addActionListener(e -> {
+                try {
+                    Object o = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), editorUI.getParameterAccess().getFieldClass());
+                    editorUI.getParameterAccess().set(o);
+                    workbench.sendStatusBarText("Pasted value into parameter '" + editorUI.getParameterAccess().getName() + "'.");
+                } catch (Throwable ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(workbench.getWindow(), "Unable to paste data into parameter '" + editorUI.getParameterAccess().getName() + "'!", "Paste parameter value", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+            optionsMenu.add(pasteItem);
+
+            // Set to default function
+            if (displayedParameters instanceof JIPipeGraphNode) {
+                JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", UIUtils.getIconFromResources("actions/edit-undo.png"));
+                restoreDefaultItem.addActionListener(e -> {
+                    JIPipeParameterCollection defaultCollection = ((JIPipeGraphNode) displayedParameters).getInfo().newInstance();
+                    JIPipeParameterTree defaultTree = new JIPipeParameterTree(defaultCollection);
+                    JIPipeParameterAccess otherAccess = defaultTree.getParameters().getOrDefault(editorUI.getParameterAccess().getKey(), null);
+                    editorUI.getParameterAccess().set(otherAccess.get(Object.class));
+                });
+                optionsMenu.addSeparator();
+                optionsMenu.add(restoreDefaultItem);
+            } else if (ReflectionUtils.hasDefaultConstructor(displayedParameters.getClass())) {
+                JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", UIUtils.getIconFromResources("actions/edit-undo.png"));
+                restoreDefaultItem.addActionListener(e -> {
+                    JIPipeParameterCollection defaultCollection = (JIPipeParameterCollection) ReflectionUtils.newInstance(displayedParameters.getClass());
+                    JIPipeParameterTree defaultTree = new JIPipeParameterTree(defaultCollection);
+                    JIPipeParameterAccess otherAccess = defaultTree.getParameters().getOrDefault(editorUI.getParameterAccess().getKey(), null);
+                    editorUI.getParameterAccess().set(otherAccess.get(Object.class));
+                });
+                optionsMenu.addSeparator();
+                optionsMenu.add(restoreDefaultItem);
+            }
+
+            // Additional options
+            displayedParameters.installUIParameterOptions(this, (JIPipeParameterEditorUI) component, optionsMenu);
+
+            propertyPanel.add(optionsButton, BorderLayout.EAST);
+            installComponentHighlighter(optionsButton, Sets.newHashSet(component, description));
+        }
+
+
+        return propertyPanel;
+    }
+
     private void showCollapse(List<Component> uiComponents, boolean selected) {
         for (Component component : uiComponents) {
             component.setVisible(selected);
         }
-    }
-
-    private void removeDynamicParameter(String key, JIPipeDynamicParameterCollection parameterHolder) {
-        JIPipeMutableParameterAccess parameter = parameterHolder.getParameter(key);
-        if (!GraphEditorUISettings.getInstance().isAskOnDeleteParameter() || JOptionPane.showConfirmDialog(this, "Do you really want to remove the parameter '" + parameter.getName() + "'?",
-                "Remove parameter", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            parameterHolder.removeParameter(key);
-            reloadForm();
-        }
-    }
-
-    private void addDynamicParameter(JIPipeDynamicParameterCollection parameterHolder) {
-        AddDynamicParameterPanel.showDialog(this, parameterHolder);
-        reloadForm();
     }
 
     /**

@@ -72,6 +72,15 @@ public interface JIPipeParameterAccess {
     boolean isImportant();
 
     /**
+     * Returns true if the parameter is pinned to the top
+     *
+     * @return if the parameter is pinned to the top
+     */
+    default boolean isPinned() {
+        return false;
+    }
+
+    /**
      * Gets an annotation for this parameter
      *
      * @param klass Annotation class
@@ -82,13 +91,16 @@ public interface JIPipeParameterAccess {
 
     /**
      * Gets annotations for this parameter (including the field class)
+     * Please note that there is no guarantee that repeatable annotations are resolved properly. This is an oversight of Java and cannot be resolved on our side.
+     * We recommend to check both for the repeatable and container annotations.
+     *
      * @param klass the annotation class
+     * @param <T>   the annotation class
      * @return the list of annotations
-     * @param <T> the annotation class
      */
     default <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
         T annotation = getAnnotationOfType(klass);
-        if(annotation != null)
+        if (annotation != null)
             return Collections.singletonList(annotation);
         else
             return Collections.emptyList();

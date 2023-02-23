@@ -46,7 +46,6 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     private boolean outputSlotsSealed = false;
     private boolean allowInputSlots = true;
     private boolean allowOutputSlots = true;
-    private boolean allowInheritedOutputSlots = false;
     private Set<Class<? extends JIPipeData>> allowedInputSlotTypes;
     private Set<Class<? extends JIPipeData>> allowedOutputSlotTypes;
     private int maxInputSlots = Integer.MAX_VALUE;
@@ -145,12 +144,6 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                 throw new UserFriendlyRuntimeException("Slot already reached the limit of output slots!", "Unable to add slot!",
                         "Algorithm slot configuration",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
-            if (definition.getSlotType() == JIPipeSlotType.Output &&
-                    !allowInheritedOutputSlots && definition.getInheritedSlot() != null &&
-                    !definition.getInheritedSlot().isEmpty())
-                throw new UserFriendlyRuntimeException("Slot configuration does not allow slot inheritance!", "Unable to add slot!",
-                        "Algorithm slot configuration",
-                        "The algorithm is configured to not accept output slots with slot inheritance.", "Contact the authors of the plugin that provides the algorithm.");
         }
         if ((definition.isInput() && hasInputSlot(name)) || (definition.isOutput() && hasOutputSlot(name)))
             throw new UserFriendlyRuntimeException("Slot already exists!", "Unable to add slot!",
@@ -223,6 +216,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
     /**
      * Adds an input slot from an annotation
+     *
      * @param slot the slot annotation
      * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      * @return the slot info
@@ -234,6 +228,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
     /**
      * Adds an input slot from an annotation
+     *
      * @param slot the slot annotation
      * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      * @return the slot info
@@ -253,7 +248,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @return the slot info
      */
     public JIPipeDataSlotInfo addInputSlot(String name, String description, Class<? extends JIPipeData> dataClass, boolean user) {
-        JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(dataClass, JIPipeSlotType.Input, name, description, null);
+        JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(dataClass, JIPipeSlotType.Input, name, description);
         return addSlot(name, info, user);
     }
 
@@ -266,9 +261,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param inherited   inherited slot can be null or '*' or the slot name
      * @param user        if the user triggered this
      * @return the slot info
+     * @deprecated  Inherited slot is non-functional
      */
+    @Deprecated
     public JIPipeDataSlotInfo addOutputSlot(String name, String description, Class<? extends JIPipeData> dataClass, String inherited, boolean user) {
-        JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(dataClass, JIPipeSlotType.Output, name, description, inherited);
+        JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(dataClass, JIPipeSlotType.Output, name, description);
         return addSlot(name, info, user);
     }
 
@@ -343,7 +340,6 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             JIPipeMutableSlotConfiguration other = (JIPipeMutableSlotConfiguration) configuration;
             this.allowedInputSlotTypes = new HashSet<>(other.getAllowedInputSlotTypes());
             this.allowedOutputSlotTypes = new HashSet<>(other.getAllowedOutputSlotTypes());
-            this.allowInheritedOutputSlots = other.isAllowInheritedOutputSlots();
             this.allowInputSlots = other.allowsInputSlots();
             this.allowOutputSlots = other.allowsOutputSlots();
             this.inputSlotsSealed = other.isInputSlotsSealed();
@@ -742,22 +738,6 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         getEventBus().post(new SlotsChangedEvent(this));
     }
 
-    /**
-     * @return If output slots can inherit from input slots
-     */
-    public boolean isAllowInheritedOutputSlots() {
-        return allowInheritedOutputSlots;
-    }
-
-    /**
-     * Enables/Disables if output slots can inherit from input slots
-     *
-     * @param allowInheritedOutputSlots Enables/Disables if output slots can inherit from input slots
-     */
-    public void setAllowInheritedOutputSlots(boolean allowInheritedOutputSlots) {
-        this.allowInheritedOutputSlots = allowInheritedOutputSlots;
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -782,7 +762,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return The builder
          */
         public Builder addInputSlot(String name, String description, Class<? extends JIPipeData> klass) {
-            object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Input, name, description, null), false);
+            object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Input, name, description), false);
             return this;
         }
 
@@ -796,8 +776,19 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return The builder
          */
         public Builder addInputSlot(String name, String description, Class<? extends JIPipeData> klass, boolean optional) {
-            JIPipeDataSlotInfo slot = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Input, name, description, null), false);
+            JIPipeDataSlotInfo slot = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Input, name, description), false);
             slot.setOptional(optional);
+            return this;
+        }
+
+        /**
+         * Adds an input slot from an annotation
+         *
+         * @param annotation the annotation
+         * @return The builder
+         */
+        public Builder addInputSlot(JIPipeInputSlot annotation) {
+            JIPipeDataSlotInfo slot = object.addSlot(annotation.slotName(), new JIPipeDataSlotInfo(annotation), false);
             return this;
         }
 
@@ -812,7 +803,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @return The builder
          */
         public Builder addInputSlot(String name, String description, Class<? extends JIPipeData> klass, boolean optional, boolean userModifiable) {
-            JIPipeDataSlotInfo slot = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Input, name, description, null), false);
+            JIPipeDataSlotInfo slot = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Input, name, description), false);
             slot.setOptional(optional);
             slot.setUserModifiable(userModifiable);
             return this;
@@ -826,12 +817,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @param klass         Slot data class
          * @param inheritedSlot From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
          * @return The builder
+         * @deprecated Slot inheritance is non-functional
          */
+        @Deprecated
         public Builder addOutputSlot(String name, String description, Class<? extends JIPipeData> klass, String inheritedSlot) {
-            object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description, inheritedSlot), false);
-            if (inheritedSlot != null && !inheritedSlot.isEmpty()) {
-                object.setAllowInheritedOutputSlots(true);
-            }
+            object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description), false);
             return this;
         }
 
@@ -844,16 +834,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @param inheritedSlot          From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
          * @param inheritanceConversions Instructions on how to convert inherited slot types.
          * @return The builder
+         * @deprecated Slot inheritance is non-functional
          */
+        @Deprecated
         public Builder addOutputSlot(String name, String description, Class<? extends JIPipeData> klass, String inheritedSlot, Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inheritanceConversions) {
-            JIPipeDataSlotInfo slotDefinition = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description, inheritedSlot), false);
-            for (Map.Entry<Class<? extends JIPipeData>, Class<? extends JIPipeData>> entry : inheritanceConversions.entrySet()) {
-                slotDefinition.getInheritanceConversions().put(JIPipeDataInfo.getInstance(entry.getKey()),
-                        JIPipeDataInfo.getInstance(entry.getValue()));
-            }
-            if (inheritedSlot != null && !inheritedSlot.isEmpty()) {
-                object.setAllowInheritedOutputSlots(true);
-            }
+            object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description), false);
             return this;
         }
 
@@ -867,16 +852,50 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * @param inheritanceConversions Instructions on how to convert inherited slot types.
          * @param userModifiable         Make slot user-modifiable (default true in other overloads)
          * @return The builder
+         * @deprecated Slot inheritance is non-functional
          */
+        @Deprecated
         public Builder addOutputSlot(String name, String description, Class<? extends JIPipeData> klass, String inheritedSlot, Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inheritanceConversions, boolean userModifiable) {
-            JIPipeDataSlotInfo slotDefinition = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description, inheritedSlot), false);
-            for (Map.Entry<Class<? extends JIPipeData>, Class<? extends JIPipeData>> entry : inheritanceConversions.entrySet()) {
-                slotDefinition.getInheritanceConversions().put(JIPipeDataInfo.getInstance(entry.getKey()),
-                        JIPipeDataInfo.getInstance(entry.getValue()));
-            }
-            if (inheritedSlot != null && !inheritedSlot.isEmpty()) {
-                object.setAllowInheritedOutputSlots(true);
-            }
+            JIPipeDataSlotInfo slotDefinition = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description), false);
+            slotDefinition.setUserModifiable(userModifiable);
+            return this;
+        }
+
+        /**
+         * Adds an output slot
+         *
+         * @param name          Unique slot name
+         * @param description   the description
+         * @param klass         Slot data class
+         * @return The builder
+         */
+        public Builder addOutputSlot(String name, String description, Class<? extends JIPipeData> klass) {
+            object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description), false);
+            return this;
+        }
+
+        /**
+         * Adds an output slot from an annotation
+         *
+         * @param annotation the annotation
+         * @return The builder
+         */
+        public Builder addOutputSlot(JIPipeOutputSlot annotation) {
+            object.addSlot(annotation.slotName(), new JIPipeDataSlotInfo(annotation), false);
+            return this;
+        }
+
+        /**
+         * Adds an output slot
+         *
+         * @param name                   Unique slot name
+         * @param description            the description
+         * @param klass                  Slot data class
+         * @param userModifiable         Make slot user-modifiable (default true in other overloads)
+         * @return The builder
+         */
+        public Builder addOutputSlot(String name, String description, Class<? extends JIPipeData> klass, boolean userModifiable) {
+            JIPipeDataSlotInfo slotDefinition = object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description), false);
             slotDefinition.setUserModifiable(userModifiable);
             return this;
         }
@@ -964,17 +983,6 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          */
         public Builder sealOutput() {
             object.outputSlotsSealed = true;
-            return this;
-        }
-
-        /**
-         * Enables/disables if slot inheritance is allowed
-         *
-         * @param enabled Enables/disables if slot inheritance is allowed
-         * @return The builder
-         */
-        public Builder allowOutputSlotInheritance(boolean enabled) {
-            object.setAllowInheritedOutputSlots(enabled);
             return this;
         }
 

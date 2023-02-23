@@ -77,7 +77,7 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
                 JIPipeDataSlot slot = getAlgorithm().getOutputSlots().get(i);
                 if (!containsKey(slot.getName())) {
 
-                    if(getSlotFilter() != null && !getSlotFilter().test(slot))
+                    if (getSlotFilter() != null && !getSlotFilter().test(slot))
                         continue;
 
                     Object newValue;

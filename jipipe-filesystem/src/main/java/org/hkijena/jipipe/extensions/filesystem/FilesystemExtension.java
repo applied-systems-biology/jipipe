@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.filesystem;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
@@ -29,8 +31,10 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.FilesystemDataSlotPreview;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -41,6 +45,23 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:filesystem",
+            JIPipe.getJIPipeVersion(),
+            "Filesystem types and algorithms");
+
+    public static JIPipeResourceManager RESOURCES = new JIPipeResourceManager(FilesystemExtension.class, "org/hkijena/jipipe/extensions/filesystem");
+
+    public FilesystemExtension() {
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_AUTOMATION, PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING);
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -86,6 +107,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerSettingsSheet(FilesystemExtensionSettings.ID,
                 "Filesystem",
+                "Settings for the filesystem nodes",
                 UIUtils.getIconFromResources("actions/document-open-folder.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
@@ -136,6 +158,8 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("annotation-table-to-paths", AnnotationTableToPaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
         registerNodeType("annotate-with-path-properties", AnnotateWithPathProperties.class, UIUtils.getIconURLFromResources("data-types/path.png"));
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
 }

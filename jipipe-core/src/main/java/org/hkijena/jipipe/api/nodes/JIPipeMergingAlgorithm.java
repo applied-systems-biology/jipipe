@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -35,9 +36,14 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.Intege
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -50,7 +56,7 @@ import java.util.concurrent.Future;
 @JIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
         "Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and " +
         "leave 'Data set matching annotations' empty.")
-public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
+public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm, JIPipeAdaptiveParametersAlgorithm {
     private boolean parallelizationEnabled = true;
     private JIPipeMergingAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings();
     private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();
@@ -123,11 +129,12 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 dataBatchGenerationSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
+        builder.setForceFlowGraphSolver(dataBatchGenerationSettings.isForceFlowGraphSolver());
         List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size())) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
@@ -171,7 +178,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
 
         // Special case: No input slots
-        if (getEffectiveInputSlotCount() == 0) {
+        if (getDataInputSlotCount() == 0) {
             if (progressInfo.isCancelled())
                 return;
             final int row = 0;
@@ -309,6 +316,34 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(name, value), JIPipeTextAnnotationMergeMode.Merge);
     }
 
+    @Override
+    public Dimension getUIInputSlotIconBaseDimensions(String slotName) {
+        JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
+        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+            return new Dimension(16, 16);
+        }
+        return super.getUIInputSlotIconBaseDimensions(slotName);
+    }
+
+    @Override
+    public ImageIcon getUIInputSlotIcon(String slotName) {
+        JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
+        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+            return UIUtils.getIconInvertedFromResources("actions/merge-down.png");
+        }
+        return super.getUIInputSlotIcon(slotName);
+    }
+
+    @Override
+    public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
+        super.createUIInputSlotIconDescriptionMenuItems(slotName, target);
+        JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
+        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+            target.add(new ViewOnlyMenuItem("<html>Many-to-Many processing<br/><small>The data within this slot is merged based on annotations (N inputs produce M outputs)</small>",
+                    UIUtils.getIconFromResources("actions/merge-down.png")));
+        }
+    }
+
     /**
      * Runs code on one data row
      *
@@ -330,7 +365,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled")
+    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
     @Override
     public boolean isParallelizationEnabled() {
         return parallelizationEnabled;
@@ -369,7 +404,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
-    @JIPipeParameter(value = "jipipe:adaptive-parameters", collapsed = true,
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {

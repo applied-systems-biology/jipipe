@@ -64,6 +64,7 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Creates a new instance
+     *
      * @param jiPipe the JIPipe instance
      */
     public JIPipeDatatypeRegistry(JIPipe jiPipe) {
@@ -153,9 +154,9 @@ public class JIPipeDatatypeRegistry {
      * @param outputDataType the output data type
      * @return the converted input data. Throws an exception if conversion is not possible
      */
-    public JIPipeData convert(JIPipeData inputData, Class<? extends JIPipeData> outputDataType) {
+    public <T extends JIPipeData> T convert(JIPipeData inputData, Class<T> outputDataType) {
         if (isTriviallyConvertible(inputData.getClass(), outputDataType))
-            return inputData;
+            return (T) inputData;
         else {
             GraphPath<JIPipeDataInfo, DataConverterEdge> path = shortestPath.getPath(JIPipeDataInfo.getInstance(inputData.getClass()), JIPipeDataInfo.getInstance(outputDataType));
             if (path == null) {
@@ -173,7 +174,7 @@ public class JIPipeDatatypeRegistry {
                 }
             }
             assert outputDataType.isAssignableFrom(data.getClass());
-            return data;
+            return (T) data;
         }
     }
 
@@ -545,7 +546,8 @@ public class JIPipeDatatypeRegistry {
                 try {
                     return rendererClass.getConstructor(JIPipeProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class, JIPipeExportedDataAnnotation.class)
                             .newInstance(workbench, table, slot, row, dataAnnotation);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
             } else {

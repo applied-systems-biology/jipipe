@@ -33,7 +33,7 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData modelFileData = dataBatch.getInputData("Model file", FileData.class, progressInfo);
         FileData dataFileData = dataBatch.getInputData("Data file", FileData.class, progressInfo);
-        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             WekaSegmentation segmentation = new WekaSegmentation(processing3D);
             if (dataFileData != null) {
                 segmentation.loadTrainingData(dataFileData.getPath());

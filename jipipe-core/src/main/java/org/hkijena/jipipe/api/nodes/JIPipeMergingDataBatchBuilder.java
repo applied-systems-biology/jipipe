@@ -3,23 +3,16 @@ package org.hkijena.jipipe.api.nodes;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
-import net.imagej.ImageJ;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
-import org.hkijena.jipipe.extensions.strings.StringData;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.interfaces.ShortestPathAlgorithm;
 import org.jgrapht.alg.shortestpath.AllDirectedPaths;
@@ -47,6 +40,8 @@ public class JIPipeMergingDataBatchBuilder {
     private boolean applyMerging = true;
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
+
+    private boolean forceFlowGraphSolver = false;
 
     public JIPipeMergingDataBatchBuilder() {
 
@@ -140,7 +135,7 @@ public class JIPipeMergingDataBatchBuilder {
     public Set<String> getInputAnnotationByFilter(StringQueryExpression expression) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot slot : slots.values()) {
-            result.addAll(slot.getAnnotationColumns());
+            result.addAll(slot.getTextAnnotationColumns());
         }
         return new HashSet<>(expression.queryAll(result, new ExpressionVariables()));
     }
@@ -148,7 +143,7 @@ public class JIPipeMergingDataBatchBuilder {
     public Set<String> getInputAnnotationColumnIntersection(String prefix) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot inputSlot : slots.values()) {
-            Set<String> filtered = inputSlot.getAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
+            Set<String> filtered = inputSlot.getTextAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
             if (result.isEmpty()) {
                 result.addAll(filtered);
             } else {
@@ -161,7 +156,7 @@ public class JIPipeMergingDataBatchBuilder {
     public Set<String> getInputAnnotationColumnUnion(String prefix) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot inputSlot : slots.values()) {
-            Set<String> filtered = inputSlot.getAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
+            Set<String> filtered = inputSlot.getTextAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
             result.addAll(filtered);
         }
         return result;
@@ -178,7 +173,7 @@ public class JIPipeMergingDataBatchBuilder {
             return applySplitAllSolver(progressInfo.resolveAndLog("Split into batches"));
         }
 
-        if (referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeTextAnnotationMatchingMethod.ExactMatch) {
+        if (!forceFlowGraphSolver && referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeTextAnnotationMatchingMethod.ExactMatch) {
             return applyDictionarySolver(progressInfo.resolveAndLog("Dictionary solver"));
         }
 
@@ -581,6 +576,14 @@ public class JIPipeMergingDataBatchBuilder {
 
     public void setCustomAnnotationMatching(DefaultExpressionParameter customAnnotationMatching) {
         this.customAnnotationMatching = customAnnotationMatching;
+    }
+
+    public boolean isForceFlowGraphSolver() {
+        return forceFlowGraphSolver;
+    }
+
+    public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
+        this.forceFlowGraphSolver = forceFlowGraphSolver;
     }
 
     /**

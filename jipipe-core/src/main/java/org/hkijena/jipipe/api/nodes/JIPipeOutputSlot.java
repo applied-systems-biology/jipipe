@@ -52,7 +52,9 @@ public @interface JIPipeOutputSlot {
      * or can be '*' to inherit the type of the first slot
      *
      * @return inherited slot
+     * @deprecated non-functional as of JIPipe version 1.78.0
      */
+    @Deprecated
     String inheritedSlot() default "";
 
     /**
@@ -66,6 +68,7 @@ public @interface JIPipeOutputSlot {
     /**
      * Assigns a role to the slot for internal usage within the node's code.
      * For example, this allows to distinguish data and parametric inputs from each other
+     *
      * @return the role. Leave at Data if there is no special role.
      */
     JIPipeDataSlotRole role() default JIPipeDataSlotRole.Data;

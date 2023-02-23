@@ -13,7 +13,7 @@ public interface ImageJ2JIPipeModuleIOService extends PTService<ImageJ2ModuleIO>
      * Finds the best matching IO handler for the module item
      *
      * @param moduleItem the module item
-     * @param ioType the IO type
+     * @param ioType     the IO type
      * @return the {@link ImageJ2ModuleIO} or null
      */
     ImageJ2ModuleIO findModuleIO(ModuleItem<?> moduleItem, JIPipeSlotType ioType);

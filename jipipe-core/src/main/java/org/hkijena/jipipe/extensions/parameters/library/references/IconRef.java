@@ -47,7 +47,9 @@ public class IconRef {
      * @param other the original
      */
     public IconRef(IconRef other) {
-        this.iconName = other.iconName;
+        if(other != null) {
+            this.iconName = other.iconName;
+        }
     }
 
     public String getIconName() {

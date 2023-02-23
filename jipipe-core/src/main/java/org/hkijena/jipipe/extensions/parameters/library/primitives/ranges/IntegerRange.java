@@ -165,13 +165,14 @@ public class IntegerRange {
     /**
      * Generates the list of integers based on the value. Throws no exceptions.
      *
-     * @param min the min value the integers can have
-     * @param max the max value the integers can have
+     * @param min       the min value the integers can have
+     * @param max       the max value the integers can have
+     * @param variables the variables for the expression-based variant
      * @return null if the format is wrong
      */
-    public List<Integer> tryGetIntegers(int min, int max) {
+    public List<Integer> tryGetIntegers(int min, int max, ExpressionVariables variables) {
         try {
-            return getIntegers(min, max);
+            return getIntegers(min, max, variables);
         } catch (Exception e) {
             return null;
         }
@@ -180,14 +181,14 @@ public class IntegerRange {
     /**
      * Generates the list of integers based on the value
      *
-     * @param min the min value the integers can have
-     * @param max the max value the integers can have
+     * @param min       the min value the integers can have
+     * @param max       the max value the integers can have
+     * @param variables the variables for the expression-based variant
      * @return the generated integers
      * @throws NumberFormatException if the format is wrong
      */
-    public List<Integer> getIntegers(int min, int max) throws NumberFormatException {
+    public List<Integer> getIntegers(int min, int max, ExpressionVariables variables) throws NumberFormatException {
         if (isUseExpression()) {
-            ExpressionVariables variables = new ExpressionVariables();
             variables.set("min", min);
             variables.set("max", max);
             Object result = expression.evaluate(variables);

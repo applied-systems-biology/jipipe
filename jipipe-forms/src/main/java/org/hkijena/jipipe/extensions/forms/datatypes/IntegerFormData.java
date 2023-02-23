@@ -34,7 +34,7 @@ public class IntegerFormData extends ParameterFormData {
     public IntegerFormData(IntegerFormData other) {
         super(other);
         this.value = other.value;
-        this.validationExpression = new StringQueryExpression(other.validationExpression);
+        this.validationExpression = new StringQueryExpression(other.validationExpression.getExpression());
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         annotationIOSettings.getEventBus().register(this);
     }

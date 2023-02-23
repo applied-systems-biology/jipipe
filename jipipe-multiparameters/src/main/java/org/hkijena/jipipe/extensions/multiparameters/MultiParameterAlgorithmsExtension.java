@@ -14,15 +14,13 @@
 package org.hkijena.jipipe.extensions.multiparameters;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.multiparameters.algorithms.AnnotationsToParametersAlgorithm;
-import org.hkijena.jipipe.extensions.multiparameters.algorithms.MergeParametersAlgorithm;
-import org.hkijena.jipipe.extensions.multiparameters.algorithms.ParametersToAnnotationsAlgorithm;
-import org.hkijena.jipipe.extensions.multiparameters.datasources.ExtractParametersAlgorithm;
-import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataDefinition;
-import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
+import org.hkijena.jipipe.extensions.multiparameters.nodes.*;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,6 +32,17 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:multi-parameters-algorithms",
+            JIPipe.getJIPipeVersion(),
+            "Multi parameter algorithms");
+
+    public MultiParameterAlgorithmsExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -55,12 +64,14 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
         JIPipe.getNodes().getEventBus().register(this);
 
         // Register algorithms
-        registerNodeType("parameters-define", ParametersDataDefinition.class);
-        registerNodeType("parameters-define-table", ParametersDataTableDefinition.class);
+        registerNodeType("parameters-define", DefineParametersAlgorithm.class);
+        registerNodeType("parameters-define-table", DefineParametersTableAlgorithm.class);
+        registerNodeType("parameters-define-table-expression", GenerateParametersFromExpressionAlgorithm.class);
         registerNodeType("parameters-from-node", ExtractParametersAlgorithm.class);
 
         registerNodeType("parameters-to-annotations", ParametersToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
         registerNodeType("annotations-to-parameters", AnnotationsToParametersAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
+        registerNodeType("table-to-parameters", DefineParametersFromTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
         registerNodeType("parameters-merge", MergeParametersAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
     }
 
@@ -68,5 +79,6 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
     public String getDependencyId() {
         return "org.hkijena.jipipe:multi-parameters-algorithms";
     }
+
 
 }

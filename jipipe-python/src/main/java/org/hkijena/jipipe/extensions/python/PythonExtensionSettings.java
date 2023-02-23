@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 import java.util.List;
 
@@ -34,7 +35,10 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
     private PythonEnvironment.List presets = new PythonEnvironment.List();
     private JIPipePythonAdapterLibraryEnvironment.List pythonAdapterPresets = new JIPipePythonAdapterLibraryEnvironment.List();
 
+    private StringList easyInstallerRepositories = new StringList();
+
     public PythonExtensionSettings() {
+        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-python.json");
     }
 
     public static PythonExtensionSettings getInstance() {
@@ -70,6 +74,17 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
             return report.isValid();
         }
         return false;
+    }
+
+    @JIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
+    @JIPipeParameter("easy-installer-repositories")
+    public StringList getEasyInstallerRepositories() {
+        return easyInstallerRepositories;
+    }
+
+    @JIPipeParameter("easy-installer-repositories")
+    public void setEasyInstallerRepositories(StringList easyInstallerRepositories) {
+        this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
     @JIPipeDocumentation(name = "Presets", description = "List of presets stored for Python environments.")

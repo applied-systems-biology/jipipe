@@ -230,14 +230,14 @@ public class Margin implements JIPipeParameterCollection {
      * If the rectangle is invalid, null is returned
      *
      * @param availableArea rectangle describing the available area.
-     * @param parameters additional expression variables
+     * @param parameters    additional expression variables
      * @return Rectangle within the area
      */
     public Rectangle getInsideArea(Rectangle availableArea, ExpressionVariables parameters) {
-        final int left_ = (int) left.apply(availableArea.width, parameters);
-        final int top_ = (int) top.apply(availableArea.height, parameters);
-        final int right_ = (int) right.apply(availableArea.width, parameters);
-        final int bottom_ = (int) bottom.apply(availableArea.height, parameters);
+        final int left_ = (int) left.apply(0, parameters);
+        final int top_ = (int) top.apply(0, parameters);
+        final int right_ = (int) right.apply(0, parameters);
+        final int bottom_ = (int) bottom.apply(0, parameters);
         final int width_ = (int) width.apply(availableArea.width, parameters);
         final int height_ = (int) height.apply(availableArea.height, parameters);
         final int aw = availableArea.width;
@@ -316,9 +316,9 @@ public class Margin implements JIPipeParameterCollection {
                 throw new UnsupportedOperationException("Unsupported: " + anchor);
         }
 
-        if (ox < 0 || oy < 0 || ow < 0 || oh < 0) {
-            return null;
-        }
+//        if (ox < 0 || oy < 0 || ow < 0 || oh < 0) {
+//            return null;
+//        }
 
         return new Rectangle(ox + availableArea.x, oy + availableArea.y, ow, oh);
     }

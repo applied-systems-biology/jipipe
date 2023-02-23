@@ -18,9 +18,9 @@ import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSlotEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeSlotEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -51,7 +51,7 @@ public class JIPipeJsonExtensionSingleAlgorithmSelectionPanelUI extends JIPipeJs
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane tabbedPane = new DocumentTabPane();
+        DocumentTabPane tabbedPane = new DocumentTabPane(true);
 
         ParameterPanel parametersUI = new ParameterPanel(getExtensionWorkbenchUI(),
                 algorithm,

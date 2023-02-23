@@ -13,16 +13,13 @@
 
 package org.hkijena.jipipe.ui.running;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
-import java.util.function.Consumer;
+import java.util.*;
 
 /**
  * Queue for {@link JIPipeRunnable}
@@ -65,6 +62,10 @@ public class JIPipeRunnerQueue {
         return false;
     }
 
+    public Queue<JIPipeRunWorker> getQueue() {
+        return new ArrayDeque<>(queue);
+    }
+
     /**
      * @return true if nothing is running and the queue is empty
      */
@@ -92,7 +93,7 @@ public class JIPipeRunnerQueue {
         worker.getEventBus().register(this);
         assignedWorkers.put(run, worker);
         queue.add(worker);
-        eventBus.post(new RunUIWorkerEnqueuedEvent(run, worker));
+        eventBus.post(new RunWorkerEnqueuedEvent(run, worker));
         tryDequeue();
         return worker;
     }
@@ -113,7 +114,7 @@ public class JIPipeRunnerQueue {
     public void tryDequeue() {
         if (currentlyRunningWorker == null && !queue.isEmpty()) {
             currentlyRunningWorker = queue.remove();
-            eventBus.post(new RunUIWorkerStartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
+            eventBus.post(new RunWorkerStartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
             currentlyRunningWorker.execute();
         }
     }
@@ -133,7 +134,9 @@ public class JIPipeRunnerQueue {
                 worker.cancel(true);
             } else {
                 queue.remove(worker);
-                eventBus.post(new RunUIWorkerInterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
+                eventBus.post(new RunWorkerInterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
+
+                worker.getEventBus().unregister(this);
             }
         }
     }
@@ -144,11 +147,13 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+    public void onWorkerFinished(RunWorkerFinishedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
             tryDequeue();
+
+            event.getWorker().getEventBus().unregister(this);
         }
         eventBus.post(event);
     }
@@ -159,11 +164,13 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
             tryDequeue();
+
+            event.getWorker().getEventBus().unregister(this);
         }
         eventBus.post(event);
     }
@@ -174,7 +181,7 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerProgress(RunUIWorkerProgressEvent event) {
+    public void onWorkerProgress(RunWorkerProgressEvent event) {
         eventBus.post(event);
     }
 
@@ -188,7 +195,23 @@ public class JIPipeRunnerQueue {
     /**
      * @return The current run
      */
+    public JIPipeRunWorker getCurrentRunWorker() {
+        return currentlyRunningWorker;
+    }
+
+    /**
+     * @return The current run
+     */
     public JIPipeRunnable getCurrentRun() {
         return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
+    }
+
+    /**
+     * Removes all enqueued (but not running tasks)
+     */
+    public void clearQueue() {
+        for (JIPipeRunWorker worker : ImmutableList.copyOf(queue)) {
+            cancel(worker.getRun());
+        }
     }
 }

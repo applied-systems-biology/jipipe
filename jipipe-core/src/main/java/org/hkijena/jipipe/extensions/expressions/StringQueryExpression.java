@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -38,7 +40,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
         super(expression);
     }
 
-    public StringQueryExpression(ExpressionParameter other) {
+    public StringQueryExpression(StringQueryExpression other) {
         super(other);
     }
 
@@ -49,7 +51,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
      * @return expression result or the expression itself
      */
     public String generate(ExpressionVariables expressionVariables) {
-        if(StringUtils.isNullOrEmpty(getExpression()))
+        if (StringUtils.isNullOrEmpty(getExpression()))
             return "";
         try {
             Object evaluationResult = evaluate(expressionVariables);

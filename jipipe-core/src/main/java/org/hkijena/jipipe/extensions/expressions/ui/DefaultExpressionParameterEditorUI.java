@@ -31,17 +31,16 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.List;
+import java.util.*;
 
 public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI {
 
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
+
+    private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
+    private final Set<ExpressionParameterVariable> variables = new HashSet<>();
     private RSyntaxTextArea expressionEditor;
-    private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
-    private Set<ExpressionParameterVariable> variables = new HashSet<>();
 
     /**
      * Creates new instance
@@ -107,11 +106,25 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
         JPanel borderPanel = new JPanel(new BorderLayout());
         borderPanel.setBackground(UIManager.getColor("TextArea.background"));
-        borderPanel.setBorder(BorderFactory.createEmptyBorder(5, 4, 0, 4));
+        borderPanel.setBorder(BorderFactory.createEmptyBorder(5, 4, 4, 4));
         borderPanel.add(expressionEditor, BorderLayout.CENTER);
+
+        JLabel expressionHintLabel = new JLabel("Expression");
+        expressionHintLabel.setForeground(Color.GRAY);
+        expressionHintLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
+        expressionHintLabel.setBorder(BorderFactory.createEmptyBorder(0,2,4,0));
+        borderPanel.add(expressionHintLabel, BorderLayout.NORTH);
+
         expressionEditorPanel.add(borderPanel, BorderLayout.CENTER);
 
         add(expressionEditorPanel, BorderLayout.CENTER);
+
+        ExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(ExpressionParameterSettings.class);
+        if (settings != null) {
+            if(!StringUtils.isNullOrEmpty(settings.hint())) {
+                expressionHintLabel.setText("Expression: " + settings.hint());
+            }
+        }
     }
 
     private void editInFunctionBuilder() {
@@ -147,7 +160,15 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
                 variables.addAll(variableSource.getVariables(getParameterAccess()));
             }
-            for (ExpressionParameterSettingsVariable variable : getParameterAccess().getAnnotationsOfType(ExpressionParameterSettingsVariable.class)) {
+            List<ExpressionParameterSettingsVariable> variableAnnotations = getParameterAccess().getAnnotationsOfType(ExpressionParameterSettingsVariable.class);
+            if (variableAnnotations.isEmpty()) {
+                // Maybe the repeatable is not resolved
+                ExpressionParameterSettingsVariables container = getParameterAccess().getAnnotationOfType(ExpressionParameterSettingsVariables.class);
+                if (container != null) {
+                    variableAnnotations.addAll(Arrays.asList(container.value()));
+                }
+            }
+            for (ExpressionParameterSettingsVariable variable : variableAnnotations) {
                 if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
                     variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
                 }
@@ -169,5 +190,8 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 }
             }
         }
+        // Read from parameter
+        variables.addAll(getParameter(DefaultExpressionParameter.class).getAdditionalUIVariables());
+
     }
 }

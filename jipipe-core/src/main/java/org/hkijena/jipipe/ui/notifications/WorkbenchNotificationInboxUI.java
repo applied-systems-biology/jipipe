@@ -20,10 +20,10 @@ import java.util.*;
 
 public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
 
-    private FormPanel notificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
-    private FormPanel dismissedNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
-    private FormPanel hiddenNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
-    private List<JIPipeNotification> dismissedNotifications = new ArrayList<>();
+    private final FormPanel notificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    private final FormPanel dismissedNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    private final FormPanel hiddenNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    private final List<JIPipeNotification> dismissedNotifications = new ArrayList<>();
 
     /**
      * @param workbench the workbench
@@ -53,13 +53,13 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
         boolean hasNotifications = false;
         for (JIPipeNotification notification : notificationSet) {
             if (blockedIds.contains(notification.getId())) {
-                hiddenNotificationsPanel.addWideToForm(new NotificationUI(this,
+                hiddenNotificationsPanel.addWideToForm(new WorkbenchNotificationUI(this,
                                 notification,
                                 true,
                                 false),
                         null);
             } else {
-                notificationsPanel.addWideToForm(new NotificationUI(this,
+                notificationsPanel.addWideToForm(new WorkbenchNotificationUI(this,
                                 notification,
                                 false,
                                 false),
@@ -68,7 +68,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
             }
         }
         for (JIPipeNotification notification : dismissedNotifications) {
-            dismissedNotificationsPanel.addWideToForm(new NotificationUI(this,
+            dismissedNotificationsPanel.addWideToForm(new WorkbenchNotificationUI(this,
                             notification,
                             false,
                             true),
@@ -99,7 +99,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane documentTabPane = new DocumentTabPane();
+        DocumentTabPane documentTabPane = new DocumentTabPane(true);
         documentTabPane.getTabbedPane().setTabPlacement(SwingConstants.BOTTOM);
 
         documentTabPane.addTab("Current notifications",
@@ -124,11 +124,13 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onNotificationsChanged(JIPipeNotificationInbox.UpdatedEvent event) {
+    public void onNotificationPushed(JIPipeNotificationInbox.PushedEvent event) {
         updateNotifications();
     }
 
-    public List<JIPipeNotification> getDismissedNotifications() {
-        return dismissedNotifications;
+    @Subscribe
+    public void onNotificationDismissed(JIPipeNotificationInbox.DismissedEvent event) {
+        dismissedNotifications.add(event.getNotification());
+        updateNotifications();
     }
 }

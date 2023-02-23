@@ -7,7 +7,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "If-Else condition", description = "Returns the second parameter if the first is true, otherwise return the third parameter.")
+@JIPipeDocumentation(name = "If-Else condition", description = "Returns the second parameter if the first is true, otherwise return the third parameter. Please note that both if_true and if_false are evaluated. Use IF_ELSE_EXPR if you don't want this.")
 public class IfElseFunction extends ExpressionFunction {
 
     public IfElseFunction() {

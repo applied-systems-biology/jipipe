@@ -52,11 +52,17 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
      */
     @Override
     public ParameterInfo getParameterInfo(int index) {
-        return new ParameterInfo("x" + (index + 1), "", String.class, Number.class);
+        return new ParameterInfo("x" + (index + 1), "Can be a string, number, or collection. Collections are expanded into the parameters (flatten).", String.class, Number.class, Collection.class);
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
+        if (parameters.size() == 1) {
+            Object o = parameters.get(0);
+            if (o instanceof List) {
+                parameters = (List<Object>) o;
+            }
+        }
         if (parameters.stream().anyMatch(o -> o instanceof Collection)) {
             // Requires parameter expansion
             List<Object> unExpanded = parameters;

@@ -6,18 +6,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.*;
 
@@ -77,7 +71,7 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
             String target = weightMap.keySet().iterator().next();
             double available = weightMap.get(target);
             if (available > 0) {
-                getOutputSlot(target).addData(getFirstInputSlot().getVirtualData(row),
+                getOutputSlot(target).addData(getFirstInputSlot().getDataItemStore(row),
                         getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),
@@ -97,16 +91,4 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
         return weights;
     }
 
-    @JIPipeDocumentation(name = "80:20 distribution", description = "Loads example parameters that distributes the outputs 80:20, labeled by Training and Test.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/distribute-randomize.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/distribute-randomize.png")
-    public void setTo80And20Distribution(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Training", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
-            slotConfiguration.addSlot("Test", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
-            weights.get("Training").set(80.0);
-            weights.get("Test").set(20.0);
-        }
-    }
 }

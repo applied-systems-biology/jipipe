@@ -15,13 +15,14 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * An {@link JIPipeGraphNode} that contains a non-empty workload.
@@ -39,8 +41,6 @@ import java.util.Map;
  * Please prefer to use this class or its derivatives if you write your algorithms.
  */
 public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
-
-    private static final StateSerializer STATE_SERIALIZER = new StateSerializer();
     private boolean enabled = true;
     private boolean passThrough = false;
     private JIPipeFixedThreadPool threadPool;
@@ -107,7 +107,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             return;
         if (getOutputSlots().isEmpty())
             return;
-        getFirstOutputSlot().addData(getFirstInputSlot(), progressInfo);
+        getFirstOutputSlot().addDataFromSlot(getFirstInputSlot(), progressInfo);
     }
 
     /**
@@ -135,7 +135,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     @JIPipeDocumentation(name = "Enabled", description = "If disabled, this algorithm will be skipped in a run. " +
             "Please note that this will also disable all algorithms dependent on this algorithm.")
-    @JIPipeParameter(value = "jipipe:algorithm:enabled")
+    @JIPipeParameter(value = "jipipe:algorithm:enabled", pinned = true)
     public boolean isEnabled() {
         return enabled;
     }
@@ -150,7 +150,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             "This is different from enabling/disabling the algorithm as this will not disable dependent algorithms.\n" +
             "Please note that setting this parameter via adaptive parameters (if available) does not always yield the expected result. " +
             "The reason behind this is that pass-through is not trivial for certain nodes. We recommend to use a split node if node execution should be made adaptive.")
-    @JIPipeParameter(value = "jipipe:algorithm:pass-through")
+    @JIPipeParameter(value = "jipipe:algorithm:pass-through", pinned = true)
     public boolean isPassThrough() {
         return passThrough;
     }
@@ -168,22 +168,73 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         return super.isParameterUIVisible(tree, access);
     }
 
-    /**
-     * Returns a unique identifier that represents the state of the algorithm.
-     * Defaults to a JSON-serialized representation using the {@link StateSerializer}.
-     * Override this method if you have external influences.
-     *
-     * @return the state id
-     */
-    public String getStateId() {
-        try (StringWriter writer = new StringWriter()) {
-            try (JsonGenerator generator = JsonUtils.getObjectMapper().getFactory().createGenerator(writer)) {
-                STATE_SERIALIZER.serialize(this, generator, null);
+    @Override
+    public boolean functionallyEquals(Object other) {
+        if(!super.functionallyEquals(other))
+            return false;
+
+        JIPipeGraphNode otherNode = (JIPipeGraphNode) other;
+
+        // Compare slots and their data type (other properties do not matter)
+        for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
+            JIPipeInputDataSlot otherInputSlot = otherNode.getInputSlot(inputSlot.getName());
+            if(otherInputSlot == null || otherInputSlot.getInfo().getDataClass() != inputSlot.getInfo().getDataClass()) {
+                return false;
             }
-            return writer.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
+        for (JIPipeInputDataSlot inputSlot : otherNode.getInputSlots()) {
+            if(getInputSlot(inputSlot.getName()) == null) {
+                return false;
+            }
+        }
+        for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
+            JIPipeDataSlot otherOutputSlot = otherNode.getOutputSlot(outputSlot.getName());
+            if(otherOutputSlot == null || otherOutputSlot.getInfo().getDataClass() != outputSlot.getInfo().getDataClass()) {
+                return false;
+            }
+        }
+        for (JIPipeOutputDataSlot outputSlot : otherNode.getOutputSlots()) {
+            if(getOutputSlot(outputSlot.getName()) == null) {
+                return false;
+            }
+        }
+
+        // Compare functional parameters
+        JIPipeParameterTree here = new JIPipeParameterTree(this);
+        JIPipeParameterTree there = new JIPipeParameterTree(otherNode);
+
+        if(!here.getParameters().keySet().equals(there.getParameters().keySet()))
+            return false;
+
+        for (String key : here.getParameters().keySet()) {
+            Object hereObj = here.getParameters().get(key).get(Object.class);
+            Object thereObj = there.getParameters().get(key).get(Object.class);
+            if(hereObj == null && thereObj == null) {
+                // Continue
+            }
+            else if(hereObj == null || thereObj == null) {
+                // Not equal
+                return false;
+            }
+            else if(Objects.equals(hereObj, thereObj)) {
+                // Continue
+            }
+            else if(hereObj instanceof JIPipeFunctionallyComparable) {
+                if(!((JIPipeFunctionallyComparable) hereObj).functionallyEquals(thereObj)) {
+                    return false;
+                }
+            }
+            else {
+                // Serialization-based comparison (slow, but very portable)
+                String serializedHere = JsonUtils.toJsonString(hereObj);
+                String serializedThere = JsonUtils.toJsonString(thereObj);
+                if(!serializedThere.equals(serializedHere)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -223,44 +274,35 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     /**
-     * Serializer used by getStateId()
-     * It automatically skips name, compartment, description, slot configuration, and UI parameters that are not relevant to the state
+     * Loads an example.
+     * Warning: This method will not ask for confirmation
+     *
+     * @param example the example
      */
-    public static class StateSerializer extends JsonSerializer<JIPipeGraphNode> {
-        @Override
-        public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            // Causes many cache misses
-//            Map<String, String> sources = new HashMap<>();
-//            if (algorithm.getGraph() != null) {
-//                for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-//                    Set<JIPipeDataSlot> sourceSlots = algorithm.getGraph().getSourceSlots(inputSlot);
-//                    if (!sourceSlots.isEmpty()) {
-//                        sources.put(inputSlot.getName(), sourceSlots.getNode().getIdInGraph() + "/" + sourceSlots.getName());
-//                    } else {
-//                        sources.put(inputSlot.getName(), "");
-//                    }
-//                }
-//            }
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("jipipe:node-info-id", algorithm.getInfo().getId());
-//            if (algorithm.getGraph() != null) {
-//                jsonGenerator.writeStringField("jipipe:node-uuid", StringUtils.nullToEmpty(algorithm.getUUIDInGraph()));
-//                jsonGenerator.writeStringField("jipipe:node-alias-id", algorithm.getAliasIdInGraph());
-//            }
-//            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
-            ParameterUtils.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
-            jsonGenerator.writeEndObject();
+    public void loadExample(JIPipeNodeExample example) {
+        JIPipeGraph graph = example.getNodeTemplate().getGraph();
+        JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
+        if (node.getInfo() != getInfo()) {
+            throw new RuntimeException("Cannot load example from wrong node type!");
+        }
+        try (StringWriter writer = new StringWriter()) {
+            try (JsonGenerator generator = JsonUtils.getObjectMapper().createGenerator(writer)) {
+                generator.writeStartObject();
+                ParameterUtils.serializeParametersToJson(node, generator, entry -> !entry.getKey().startsWith("jipipe:"));
+                generator.writeEndObject();
+            }
+            String jsonString = writer.toString();
+            JsonNode node2 = JsonUtils.readFromString(jsonString, JsonNode.class);
+            JIPipeIssueReport report = new JIPipeIssueReport();
+            getSlotConfiguration().setTo(node.getSlotConfiguration());
+            ParameterUtils.deserializeParametersFromJson(this, node2, report);
+            getSlotConfiguration().setTo(node.getSlotConfiguration());
+            if (!report.isValid()) {
+                report.print();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        /**
-         * Returns true if the parameter should be serialized
-         *
-         * @param entry the parameter
-         * @return if the parameter should be serialized
-         */
-        protected boolean serializeParameter(Map.Entry<String, JIPipeParameterAccess> entry) {
-            return !entry.getKey().equals("jipipe:node:name")
-                    && !entry.getKey().equals("jipipe:node:description");
-        }
     }
 }

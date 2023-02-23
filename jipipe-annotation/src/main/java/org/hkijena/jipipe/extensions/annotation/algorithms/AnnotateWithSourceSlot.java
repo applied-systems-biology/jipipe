@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Annotate with source slot", description = "Annotates the data with the name or custom label of the source slot. Please note " +
         "that this node cannot resolve multiple input slots, as, for optimization purposes, the information where data is coming from is deleted.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", inheritedSlot = "Data", autoCreate = true)
 public class AnnotateWithSourceSlot extends JIPipeSimpleIteratingAlgorithm {

@@ -27,14 +27,16 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.scijava.Priority;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 
 /**
  * Segmenter node that thresholds via an auto threshold
@@ -47,8 +49,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
         "Otsu (threshold is the local otsu threshold)\n\n" +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
 public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Method method = Method.Otsu;
@@ -60,11 +63,7 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
      * @param info the info
      */
     public LocalAutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**
@@ -80,11 +79,11 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.radius = other.radius;
     }
 
-    public static void Mean(ImagePlus imp, int radius, int c_value, boolean doIwhite) {
+    public static void Mean(ImageProcessor ip, int radius, int c_value, boolean doIwhite) {
         // See: Image Processing Learning Resourches HIPR2
         // http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm
         ImagePlus Meanimp;
-        ImageProcessor ip = imp.getProcessor(), ipMean;
+        ImageProcessor ipMean;
         byte object;
         byte backg;
 
@@ -112,11 +111,11 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         //imp.updateAndDraw();
     }
 
-    public static void Median(ImagePlus imp, int radius, int c_value, boolean doIwhite) {
+    public static void Median(ImageProcessor ip, int radius, int c_value, boolean doIwhite) {
         // See: Image Processing Learning Resourches HIPR2
         // http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm
         ImagePlus Medianimp;
-        ImageProcessor ip = imp.getProcessor(), ipMedian;
+        ImageProcessor ipMedian;
         byte object;
         byte backg;
 
@@ -141,11 +140,11 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         //imp.updateAndDraw();
     }
 
-    public static void MidGrey(ImagePlus imp, int radius, int c_value, boolean doIwhite) {
+    public static void MidGrey(ImageProcessor ip, int radius, int c_value, boolean doIwhite) {
         // See: Image Processing Learning Resourches HIPR2
         // http://homepages.inf.ed.ac.uk/rbf/HIPR2/adpthrsh.htm
         ImagePlus Maximp, Minimp;
-        ImageProcessor ip = imp.getProcessor(), ipMax, ipMin;
+        ImageProcessor ipMax, ipMin;
         int mid_gray;
         byte object;
         byte backg;
@@ -177,17 +176,16 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         //imp.updateAndDraw();
     }
 
-    public static void Otsu(ImagePlus imp, int radius, int c_value, boolean doIwhite) {
+    public static void Otsu(ImageProcessor ip, int radius, int c_value, boolean doIwhite) {
         // Otsu's threshold algorithm
         // M. Emre Celebi 6.15.2007, Fourier Library https://sourceforge.net/projects/fourier-ipal/
         // ported to ImageJ plugin by G.Landini. Same algorithm as in Auto_Threshold, this time for local circular regions
 
         int[] data;
-        int w = imp.getWidth();
-        int h = imp.getHeight();
+        int w = ip.getWidth();
+        int h = ip.getHeight();
         int position;
         int radiusx2 = radius * 2;
-        ImageProcessor ip = imp.getProcessor();
         byte[] pixels = (byte[]) ip.getPixels();
         byte[] pixelsOut = new byte[pixels.length]; // need this to avoid changing the image data (and further histograms)
         byte object;
@@ -291,23 +289,26 @@ public class LocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if (!darkBackground) {
-            img.getProcessor().invert();
-        }
-        switch (method) {
-            case Mean:
-                Mean(img, radius, modifier, true);
-                break;
-            case Otsu:
-                Otsu(img, radius, modifier, true);
-                break;
-            case Median:
-                Median(img, radius, modifier, true);
-                break;
-            case MidGrey:
-                MidGrey(img, radius, modifier, true);
-                break;
-        }
+        ImageJUtils.forEachIndexedZCTSlice(img, (processor, index) -> {
+            if (!darkBackground) {
+                processor.invert();
+            }
+            switch (method) {
+                case Mean:
+                    Mean(processor, radius, modifier, true);
+                    break;
+                case Otsu:
+                    Otsu(processor, radius, modifier, true);
+                    break;
+                case Median:
+                    Median(processor, radius, modifier, true);
+                    break;
+                case MidGrey:
+                    MidGrey(processor, radius, modifier, true);
+                    break;
+            }
+        }, progressInfo);
+
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

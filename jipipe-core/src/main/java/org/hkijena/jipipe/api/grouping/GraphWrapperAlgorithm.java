@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
@@ -80,7 +81,6 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
         slotConfiguration.setInputSealed(true);
         slotConfiguration.setOutputSealed(true);
-        slotConfiguration.setAllowInheritedOutputSlots(false);
         slotConfiguration.clearInputSlots(false);
         slotConfiguration.clearOutputSlots(false);
         for (Map.Entry<String, JIPipeDataSlotInfo> entry : inputSlotConfiguration.getInputSlots().entrySet()) {
@@ -166,7 +166,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
                 for (Integer row : dataBatch.getInputRows(inputSlot)) {
-                    groupInputSlot.addData(inputSlot.getVirtualData(row),
+                    groupInputSlot.addData(inputSlot.getDataItemStore(row),
                             inputSlot.getTextAnnotations(row),
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             inputSlot.getDataAnnotations(row),
@@ -198,7 +198,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             // Copy into output
             for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                 JIPipeDataSlot groupOutputSlot = getGroupOutput().getOutputSlot(outputSlot.getName());
-                outputSlot.addData(groupOutputSlot, progressInfo);
+                outputSlot.addDataFromSlot(groupOutputSlot, progressInfo);
             }
 
             // Clear all data in the wrapped graph
@@ -210,7 +210,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         // Iterate through own input slots and pass them to the equivalents in group input
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
-            groupInputSlot.addData(inputSlot, progressInfo);
+            groupInputSlot.addDataFromSlot(inputSlot, progressInfo);
         }
 
         // Run the graph
@@ -237,7 +237,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         // Copy into output
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             JIPipeDataSlot groupOutputSlot = getGroupOutput().getOutputSlot(outputSlot.getName());
-            outputSlot.addData(groupOutputSlot, progressInfo);
+            outputSlot.addDataFromSlot(groupOutputSlot, progressInfo);
         }
 
         // Clear all data in the wrapped graph
@@ -309,7 +309,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             dataBatches.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size())) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
             if (withLimit) {
                 List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < dataBatches.size(); i++) {

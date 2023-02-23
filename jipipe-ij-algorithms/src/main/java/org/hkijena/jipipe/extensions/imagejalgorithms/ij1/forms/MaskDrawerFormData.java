@@ -8,13 +8,13 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskDrawerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MaskDrawerPlugin;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -45,8 +45,7 @@ public class MaskDrawerFormData extends FormData {
         imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin(imageViewerPanel),
                 new PixelInfoPlugin(imageViewerPanel),
                 new LUTManagerPlugin(imageViewerPanel),
-                maskDrawerPlugin,
-                new MeasurementPlugin(imageViewerPanel)));
+                maskDrawerPlugin));
         if (lazyLoadedImage != null) {
             imageViewerPanel.setImage(lazyLoadedImage);
             maskDrawerPlugin.setMask(lazyLoadedMask);
@@ -132,7 +131,7 @@ public class MaskDrawerFormData extends FormData {
     public void loadData(JIPipeMergingDataBatch dataBatch) {
         int row = dataBatches.indexOf(dataBatch);
         ImagePlus referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).get(0).getImage();
-        ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusData.class, new JIPipeProgressInfo()).getImage();
+        ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusGreyscaleMaskData.class, new JIPipeProgressInfo()).getImage();
 
         if (imageViewerPanel != null) {
             imageViewerPanel.setImage(referenceImage);

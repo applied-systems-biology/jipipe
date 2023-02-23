@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import de.biomedical_imaging.ij.steger.OverlapOption;
 import ij.process.AutoThresholder;
 import inra.ijpb.binary.ChamferWeights;
@@ -23,30 +24,25 @@ import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
 import inra.ijpb.morphology.Strel3D;
 import inra.ijpb.morphology.directional.DirectionalFilter;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.*;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.forms.FormsExtension;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.AnalyzeSkeleton2D3DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.AnnotateByImageStatisticsExpressionAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.ImageStatisticsExpressionAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByExpressionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.colocalization.Coloc2Node;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.HistogramContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ImageToTableAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.TableToImageAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByImage2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByParameter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources.ImageStackFromFolder;
@@ -64,10 +60,15 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms.DrawROIAlgorithm
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.filter.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.ChangeImageMetadataFromExpressionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.ExtractImageMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.RemoveImageMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.SetImageMetadataFromTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.RenderJIPipeProjectAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
@@ -78,25 +79,56 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFi
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEBlockFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEGaussianFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.PMCCBlockFlowAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.ExtractOverlayAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.RemoveOverlayAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.RenderOverlayAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.SetOverlayAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.assemble.AssembleExtractedROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.assemble.ExtractFromROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.convert.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawOvalRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawRectangleRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawScaleBarRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawTextRoiAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.generate.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.CountROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.AddRoiListsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.MergeRoiListsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.ExtractROIMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.RemoveROIMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetROIMetadataFromTableAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetRoiMetadataByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.register.RegisterRoiToImageByBrightnessAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm2;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortRoiListByExpressionsAndMeasurementsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.split.ExplodeRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.split.SplitRoiAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.ClassicWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.RidgeDetector2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.SeededWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ColorThresholdExpression2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualHSBThreshold2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualLABThreshold2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualRGBThreshold2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.iterative.IterativeThresholdByROIStatistics2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatistics;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SourceWrapMode;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
@@ -124,17 +156,21 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumnSortOrder;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.strings.StringsExtension;
+import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+import sc.fiji.coloc.algorithms.AutoThresholdRegression;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Extension that adds ImageJ2 algorithms
@@ -142,327 +178,357 @@ import java.util.Map;
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
-    /**
-     * Conversion rules from mask data types to their respective 8-bit types
-     */
-    public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> REMOVE_MASK_QUALIFIER =
-            ImmutableMap.of(
-                    ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class,
-                    ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale8UData.class,
-                    ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale8UData.class,
-                    ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale8UData.class,
-                    ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale8UData.class);
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(ImageJAlgorithmsExtension.class, "org/hkijena/jipipe/extensions/imagejalgorithms");
 
     /**
-     * Conversion rules that convert any input data type into their respective mask data type
+     * Dependency instance to be used for creating the set of dependencies
      */
-    public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> ADD_MASK_QUALIFIER = getMaskQualifierMap();
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:imagej-algorithms",
+            JIPipe.getJIPipeVersion(),
+            "ImageJ algorithms");
 
-    /**
-     * Conversion rules that convert color types into greyscale
-     */
-    public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_GRAYSCALE_CONVERSION = getToGrayscaleConversion();
-
-    /**
-     * Conversion rules that convert color types into colored images
-     */
-    public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_COLOR_RGB_CONVERSION = getToColorRgbConversion();
-
-    /**
-     * Conversion rules that convert color types into colored images
-     */
-    public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_GRAYSCALE32F_CONVERSION = getToGrayscale32FConversion();
-
-    /**
-     * Conversion rules convert higher-dimensional data to a lower-dimensional counterpart.
-     * 2D data remains 2D data.
-     */
-    public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> DECREASE_DIMENSION_CONVERSION = getDecreaseDimensionConversion();
-
-    /**
-     * Conversion rules convert higher-dimensional data to their 2D counterparts
-     */
-    public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_2D_CONVERSION = get2DConversion();
-
-    /**
-     * Conversion rules convert data to their 3D counterparts
-     */
-    public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_3D_CONVERSION = get3DConversion();
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get3DConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlus3DData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlusGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlusGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus3DData.class);
-        result.put(ImagePlus2DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus2DColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlus2DColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus3DData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus3DData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        return result;
+    public ImageJAlgorithmsExtension() {
     }
 
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get2DConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlus2DData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlusGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlusGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus2DData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus2DData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus2DData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        return result;
+    @Override
+    public ImageParameter getThumbnail() {
+        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
     }
 
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getDecreaseDimensionConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlus3DData.class, ImagePlus2DData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class);
-        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus2DGreyscale16UData.class);
-        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus2DColorHSBData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus3DData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus3DGreyscale16UData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus3DColorHSBData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus4DData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus4DGreyscaleData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus4DGreyscale16UData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus4DColorHSBData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus4DColorRGBData.class);
-
-        return result;
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, FormsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
     }
 
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getMaskQualifierMap() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscaleMaskData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscaleMaskData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscaleMaskData.class);
-        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscaleMaskData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscaleMaskData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscaleMaskData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscaleMaskData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscaleMaskData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscaleMaskData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleMaskData.class);
-
-        return result;
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_ANALYSIS,
+                PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING, PluginCategoriesEnumParameter.CATEGORY_MONTAGE, PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_FIJI,
+                PluginCategoriesEnumParameter.CATEGORY_IMAGE_SCIENCE, PluginCategoriesEnumParameter.CATEGORY_NOISE, PluginCategoriesEnumParameter.CATEGORY_TRANSFORM, PluginCategoriesEnumParameter.CATEGORY_BINARY, PluginCategoriesEnumParameter.CATEGORY_OBJECT_DETECTION, PluginCategoriesEnumParameter.CATEGORY_FEATURE_EXTRACTION,
+                PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION);
     }
 
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToGrayscale32FConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscale32FData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscale32FData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscale32FData.class);
-        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscale32FData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscale32FData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscale32FData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscale32FData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscale32FData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscale32FData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscale32FData.class);
-
-        return result;
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToGrayscaleConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlusGreyscaleData.class);
-        result.put(ImagePlusColorHSBData.class, ImagePlusGreyscaleData.class);
-        result.put(ImagePlusColorRGBData.class, ImagePlusGreyscaleData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus2DColorHSBData.class, ImagePlus2DGreyscaleData.class);
-        result.put(ImagePlus2DColorRGBData.class, ImagePlus2DGreyscaleData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus3DColorHSBData.class, ImagePlus3DGreyscaleData.class);
-        result.put(ImagePlus3DColorRGBData.class, ImagePlus3DGreyscaleData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus4DGreyscaleData.class);
-        result.put(ImagePlus4DColorHSBData.class, ImagePlus4DGreyscaleData.class);
-        result.put(ImagePlus4DColorRGBData.class, ImagePlus4DGreyscaleData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus5DGreyscaleData.class);
-        result.put(ImagePlus5DColorHSBData.class, ImagePlus5DGreyscaleData.class);
-        result.put(ImagePlus5DColorRGBData.class, ImagePlus5DGreyscaleData.class);
-
-        return result;
-    }
-
-    private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> getToColorRgbConversion() {
-        Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
-
-        result.put(ImagePlusData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscaleData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscale8UData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscale16UData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscale32FData.class, ImagePlusColorRGBData.class);
-        result.put(ImagePlusGreyscaleMaskData.class, ImagePlusColorRGBData.class);
-
-        result.put(ImagePlus2DData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscaleData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscale8UData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscale16UData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscale32FData.class, ImagePlus2DColorRGBData.class);
-        result.put(ImagePlus2DGreyscaleMaskData.class, ImagePlus2DColorRGBData.class);
-
-        result.put(ImagePlus3DData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscaleData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscale8UData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscale16UData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscale32FData.class, ImagePlus3DColorRGBData.class);
-        result.put(ImagePlus3DGreyscaleMaskData.class, ImagePlus3DColorRGBData.class);
-
-        result.put(ImagePlus4DData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscaleData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscale8UData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscale16UData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscale32FData.class, ImagePlus4DColorRGBData.class);
-        result.put(ImagePlus4DGreyscaleMaskData.class, ImagePlus4DColorRGBData.class);
-
-        result.put(ImagePlus5DData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscaleData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscale8UData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscale16UData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscale32FData.class, ImagePlus5DColorRGBData.class);
-        result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DColorRGBData.class);
-
-        return result;
+    @Override
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
+        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
+                "Curtis T.",
+                "Rueden",
+                new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                "",
+                "",
+                true,
+                false),
+                new JIPipeAuthorMetadata("",
+                        "Johannes",
+                        "Schindelin",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Mark C.",
+                        "Hiner",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Barry E.",
+                        "DeZonia",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Alison E.",
+                        "Walter",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Ellen T.",
+                        "Arena",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Kevin W.",
+                        "Eliceiri",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        true,
+                        true),
+                new JIPipeAuthorMetadata("",
+                        "Caroline A.",
+                        "Schneider",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        true,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Wayne S.",
+                        "Rasband",
+                        new StringList("Section on Instrumentation, US National Institutes of Health, Bethesda, Maryland, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Melissa",
+                        "Linkert",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology",
+                                "Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711",
+                                "Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        true,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Chris",
+                        "Allan",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK",
+                                "Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Jean-Marie",
+                        "Burel",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Will",
+                        "Moore",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Andrew",
+                        "Patterson",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Brian",
+                        "Loranger",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Josh",
+                        "Moore",
+                        new StringList("Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Carlos",
+                        "Neves",
+                        new StringList("Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Donald",
+                        "MacDonald",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Aleksandra",
+                        "Tarkowska",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Caitlin",
+                        "Sticco",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, Department of Molecular Biology",
+                                "Department of Biomedical Engineering, Graduate School, University of Wisconsin at Madison, Madison, WI 53711"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Emma",
+                        "Hill",
+                        new StringList("The Rockefeller University Press, New York, NY 10065"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Mike",
+                        "Rossner",
+                        new StringList("The Rockefeller University Press, New York, NY 10065"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Jason R.",
+                        "Swedlow",
+                        new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee DD1 5EH, Scotland, UK",
+                                "Glencoe Software, Inc., Seattle, WA 98101"),
+                        "",
+                        "",
+                        false,
+                        true),
+                new JIPipeAuthorMetadata("",
+                        "David",
+                        "Legland",
+                        new StringList("UR1268 Biopolymers, Interactions and Assemblies, INRA, Nantes, France",
+                                "UR1268 Biopolymers, Interactions and Assemblies, INRA, Nantes, France",
+                                "UMR782 Food Process Engineering and Microbiology, INRA, AgroParisTech, Thiverval-Grignon, France"),
+                        "",
+                        "",
+                        true,
+                        true),
+                new JIPipeAuthorMetadata("",
+                        "Ignacio",
+                        "Arganda-Carreras",
+                        new StringList("Institut Jean-Pierre Bourgin, INRA, AgroParisTech, CNRS, Université Paris-Saclay, Versailles, Cedex, RD10, 78026, France",
+                                "Basque Foundation for Science, Ikerbasque, Bilbao, 48013, Spain",
+                                "Computer Science and Artificial Intelligence Department, Basque Country University (UPV/EHU), Donostia-San Sebastian, 20018, Spain",
+                                "Donostia International Physics Center (DIPC), Donostia-San Sebastian, 20018, Spain"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Philippe",
+                        "Andrey",
+                        new StringList("Institut Jean-Pierre Bourgin, INRA, AgroParisTech, CNRS, Université Paris-Saclay, Versailles, Cedex, RD10, 78026, France",
+                                "Sorbonne Universités, UPMC Univ Paris 06, UFR 927, Paris, France"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Michael R.",
+                        "Berthold",
+                        new StringList("Department of Computer and Information Science, Universität Konstanz, Konstanz, Germany"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Ilya G.",
+                        "Goldberg",
+                        new StringList("National Institute on Aging, National Institutes of Health, Baltimore, Maryland, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Luis",
+                        "Ibáñez",
+                        new StringList("Kitware Inc., New York, New York, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "B S.",
+                        "Manjunath",
+                        new StringList("Department of Electrical and Computer Engineering, Center for Bio-image",
+                                "Informatics, University of California Santa Barbara, Santa Barbara, California, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Maryann E.",
+                        "Martone",
+                        new StringList("National Center for Microscopy and Imaging Research, University of California San Diego, La Jolla, California, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Robert F.",
+                        "Murphy",
+                        new StringList("Lane Center for Computational Biology, Carnegie Mellon University, Pittsburgh, Pennsylvania, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Hanchuan",
+                        "Peng",
+                        new StringList("Janelia Farm Research Campus, Howard Hughes Medical Institute, Ashburn, Virginia, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Anne L.",
+                        "Plant",
+                        new StringList("Biochemical Science Division, National Institute of Standards and Technology, Gaithersburg, Maryland, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Badrinath",
+                        "Roysam",
+                        new StringList("Department of Electrical and Computer Engineering, University of Houston, Houston, Texas, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Nico",
+                        "Stuurman",
+                        new StringList("Department of Cellular and Molecular Pharmacology, University of California, San Francisco, San Francisco, California, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Anne E.",
+                        "Carpenter",
+                        new StringList("Imaging Platform, Broad Institute of Harvard and the Massachusetts Institute of Technology, Cambridge, Massachusetts, USA"),
+                        "", "", false, true),
+                new JIPipeAuthorMetadata("",
+                        "Christian",
+                        "Steger",
+                        new StringList("Graz University of Technology Institute of Technical Informatics Graz,Austria"),
+                        "", "", true, false),
+                new JIPipeAuthorMetadata("",
+                        "Erik",
+                        "Meijering",
+                        new StringList("School of Computer Science and Engineering & Graduate School of Biomedical Engineering, University of New South Wales, Sydney, Australia"),
+                        "", "", true, true));
     }
 
     @Override
@@ -535,6 +601,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerLabelAlgorithms();
         registerSegmentationAlgorithms();
         registerCalibrationAlgorithms();
+        registerColocalizationAlgorithms();
+        registerMetadataAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElement2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
@@ -552,11 +620,33 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+
+
+        //// Register examples
+        registerNodeExamplesFromResources(RESOURCES, "examples");
+        registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    private void registerMetadataAlgorithms() {
+        registerNodeType("ij1-image-extract-metadata", ExtractImageMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
+        registerNodeType("ij1-image-set-metadata-from-table", SetImageMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
+        registerNodeType("ij1-image-remove-metadata", RemoveImageMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-image-set-properties-from-expressions", ChangeImageMetadataFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
+    }
+
+    private void registerColocalizationAlgorithms() {
+        registerEnumParameterType("ij1-colocalization-coloc2:auto-threshold-regression-implementation",
+                AutoThresholdRegression.Implementation.class, "Auto threshold regression implementation", "Coloc2 Auto threshold regression");
+        registerNodeType("ij1-colocalization-coloc2", Coloc2Node.class, UIUtils.getIconURLFromResources("actions/color-gradient.png"));
     }
 
     private void registerCalibrationAlgorithms() {
+        registerEnumParameterType("ij1-calibration-draw-scale-bar:location", ScaleBarGenerator.ScaleBarPosition.class, "Scale bar location", "Location of the scale bar");
+
         registerNodeType("ij1-calibration-set-physical-dimensions", SetPhysicalDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
         registerNodeType("ij1-calibration-set-physical-dimensions-from-expressions", SetPhysicalDimensionsByExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-set-physical-dimensions-from-annotations", SetPhysicalDimensionsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-draw-scale-bar", DrawScaleBarAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
     }
 
     private void registerSegmentationAlgorithms() {
@@ -575,6 +665,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-labels-get-label-boundaries", GetLabelBoundariesAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-stroke.png"));
         registerNodeType("ij1-labels-remove-border-labels", RemoveBorderLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-replace-labels", ReplaceLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
+        registerNodeType("ij1-labels-replace-labels-by-table", ReplaceLabelsByTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
         registerNodeType("ij1-labels-merge-labels", MergeLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-labels-filter-labels-by-id", FilterLabelsByIdAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-filter-filter-by-expression-2d", FilterLabelsByExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
@@ -591,12 +682,24 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-labels-filter-by-overlap", FilterLabelsByOverlapAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-overlap-statistics", OverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
         registerNodeType("ij1-labels-annotate-with-overlap-statistics", AnnotateWithOverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
+        registerNodeType("ij1-labels-merge-small-labels", MergeSmallLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-merge-labels-to-thickness", MergeLabelsToThicknessAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-filter-labels-by-thickness", FilterLabelsByThicknessAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
     }
 
     private void registerConverterAlgorithms() {
         registerNodeType("ij-convert-image", ConvertImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
+        registerNodeType("ij-convert-image-to-8-bit", ConvertImageTo8BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-8u.png"));
+        registerNodeType("ij-convert-image-to-16-bit", ConvertImageTo16BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-16u.png"));
+        registerNodeType("ij-convert-image-to-32-bit", ConvertImageTo32BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-32f.png"));
+        registerNodeType("ij-convert-image-to-hsb-colors", ConvertImageToHSBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));
+        registerNodeType("ij-convert-image-to-lab-colors", ConvertImageToLABAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-lab.png"));
         registerNodeType("ij1-convert-image-to-table", ImageToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-table-to-image", TableToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-convert-image-to-matrix", ImageToMatrixAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-convert-matrix-to-image", MatrixToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-convert-table-column-to-image", TableColumnToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-convert-image-to-table-column", ImageToTableColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
     }
 
     private void registerFormAlgorithms() {
@@ -623,6 +726,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("iji-export-image-to-web:directory-slot", ExportImage2Algorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-table", ExportTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-table-as-xlsx", ExportTableAsXLSXAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
 
         registerNodeType("ij-import-from-imagej", RunImageJImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
         registerNodeType("ij-export-to-imagej", RunImageJExporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
@@ -719,20 +823,27 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-split-into-connected-components", SplitRoiConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-roi-explode", ExplodeRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-roi-merge", MergeRoiListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-roi-combine", AddRoiListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-roi-calculator", RoiCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-outline", OutlineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-crop.png"));
+        registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
         registerNodeType("ij1-roi-statistics", RoiStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-roi-count", CountROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-slice", SliceROIListAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-roi-filter-by-name", FilterRoiByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-roi-color-statistics", ColorRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
         registerNodeType("ij1-roi-color-by-name", ColorRoiByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
         registerNodeType("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
+        registerNodeType("ij1-roi-sort-and-extract-statistics-2", SortAndExtractRoiByStatisticsAlgorithm2.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
+        registerNodeType("ij1-roi-sort-by-statistics-expression", SortRoiListByExpressionsAndMeasurementsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-scale", ScaleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
+        registerNodeType("ij1-roi-rotate", RotateRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
         registerNodeType("ij1-roi-set-properties-from-annotation", ChangeRoiPropertiesFromAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-set-properties-from-expressions", ChangeRoiPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
@@ -749,16 +860,33 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-assemble-from-roi", AssembleExtractedROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-image.png"));
         registerNodeType("ij1-roi-to-annotations", RoiPropertiesToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("ij1-roi-filter-by-overlap", FilterROIByOverlapAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
-        registerNodeType("ij1-roi-generate-name", GenerateROINameAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("ij1-roi-generate-name", ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("ij1-roi-filter-roi-lists", FilterROIListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-roi-dimension-reorder", ReorderRoiDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-roi-generate-missing", GenerateMissingRoiListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-roi-remove-overlay", RemoveOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/editclear.png"));
+        registerNodeType("ij1-roi-render-overlay", RenderOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
         registerNodeType("ij1-roi-set-overlay", SetOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("ij1-roi-extract-overlay", ExtractOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("ij1-roi-to-labels-expression", ROIToLabelsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
         registerNodeType("ij1-roi-to-labels-name", ROIToLabelsByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-roi-flood-fill", RoiFloodFillAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-roi-extract-metadata", ExtractROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
+        registerNodeType("ij1-roi-set-metadata-from-table", SetROIMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
+        registerNodeType("ij1-roi-set-metadata-from-statistics-expression", SetRoiMetadataByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
+        registerNodeType("ij1-roi-remove-metadata", RemoveROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
+        registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
+        registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
+        registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-text.png"));
+        registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+
+//        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_search.png"));
+
+        registerEnumParameterType("ij1-roi-flood-fill:mode",
+                RoiFloodFillAlgorithm.Mode.class,
+                "Magic wand mode",
+                "Determines how the flood fill behaves");
         registerEnumParameterType("ij1-roi-from-table-rectangular:anchor",
                 TableToRectangularROIAlgorithm.Anchor.class,
                 "Anchor",
@@ -826,6 +954,13 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-analyze-image-statistics-expression", ImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-analyze-annotate-by-image-statistics-expression", AnnotateByImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-analyze-statistics-histogram", HistogramGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-key-value-avg", KeyValueAveragesGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-histogram-key-value", KeyValueHistogramGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-value", KeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-value-fast", FastKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-value-fast-avg", AverageKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-partition-key-value", KeyValueThresholdPartitionGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-partition-key-value-avg", KeyValueThresholdPartitionAveragesGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
 
         registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
                 "Multichannel mode", "Available modes");
@@ -843,12 +978,14 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-dimensions-stacks-to-dimension", StackToDimensionMergerAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
         registerNodeType("ij1-dimensions-stackinverter", StackInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-previous.png"));
         registerNodeType("ij1-dimensions-zproject", ZProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
+        registerNodeType("ij1-dimensions-zproject-2", NewZProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
         registerNodeType("ij1-dimensions-stack2montage", StackToMontageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-montage2stack", MontageToStackAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-reorder", ReorderDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-dimensions-stack-combine", StackCombinerAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-dimensions-inpput2montage", InputImagesToMontage.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-reslice", ResliceAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
+        registerNodeType("ij1-dimensions-merge-2d-to-hyperstack", Merge2DToHyperstackAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
 
         registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
                 "Method", "Available methods");
@@ -875,10 +1012,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-threshold-local-auto2d-contrast", ContrastLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-hessian2d", HessianSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-hough2d", HoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-hough2d-fast", FastHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("threshold-hough2d", CircularHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("threshold-hough2d-fast", FastCircularHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-by-annotation", ThresholdByAnnotation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("threshold-iterative-by-roi-statistics-2d", IterativeThresholdByROIStatistics2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
 
         registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
                 "Auto threshold method", "Available methods");
@@ -929,6 +1067,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-binary-volume-opening-2d", VolumeOpening2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-binary-volume-opening-3d", VolumeOpening3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-binary-conditional-invert", ConditionalInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
+        registerNodeType("ij1-binary-hough-lines", LinesHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
     }
 
     private void registerMorphologyAlgorithms() {
@@ -942,6 +1081,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-morph-reconstruct-2d", MorphologicalReconstruction2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-morph-reconstruct-3d", MorphologicalReconstruction3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-morph-find-holes-3d", FindHoles2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-randomize.png"));
+        registerNodeType("ij1-morph-grayscale-attribute-filtering-2d", GrayscaleAttributeFiltering2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-morph-grayscale-attribute-filtering-3d", GrayscaleAttributeFiltering3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
                 "Operation", "Available operations");
@@ -951,9 +1092,18 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Structure element", "Available shapes");
         registerEnumParameterType("ij1-morph:strel-3d", Strel3D.Shape.class,
                 "Structure element (3D)", "Available shapes");
+        registerEnumParameterType("ij1-morph-grayscale-attribute-filtering-2d:operation", GrayscaleAttributeFiltering2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-morph-grayscale-attribute-filtering-3d:operation", GrayscaleAttributeFiltering3DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-morph-grayscale-attribute-filtering-2d:attribute", GrayscaleAttributeFiltering2DAlgorithm.Attribute.class,
+                "Attributes", "Available filter attributes");
+        registerEnumParameterType("ij1-morph-grayscale-attribute-filtering-3d:attribute", GrayscaleAttributeFiltering3DAlgorithm.Attribute.class,
+                "Attributes", "Available filter attributes");
     }
 
     private void registerMathAlgorithms() {
+        registerNodeType("ij1-math-round-32f", RoundFloatImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-math2d", ApplyMath2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-transform2d", ApplyTransform2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-math2d-expression", ApplyMathExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
@@ -1034,6 +1184,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-contrast-clahe", CLAHEContrastEnhancer.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-calibrate", DisplayRangeCalibrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
+        registerNodeType("ij1-contrast-apply-displayed-contrast", ApplyDisplayContrastAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
 
         registerEnumParameterType(HistogramContrastEnhancerAlgorithm.Method.class.getCanonicalName(), HistogramContrastEnhancerAlgorithm.Method.class,
@@ -1051,18 +1202,22 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerColorAlgorithms() {
-        registerParameterType("ij1-color-overlay-channels:channel", OverlayChannelsAlgorithm.Channel.class, "Channel settings", "Settings for a channel");
+        registerParameterType("ij1-color-overlay-channels:channel", OverlayImagesAlgorithm.Channel.class, "Channel settings", "Settings for a channel");
+        registerParameterType("ij1-color-blend-images:layer", BlendImagesAlgorithm.Layer.class, "Layer settings", "Settings for a layer");
+        registerEnumParameterType("ij1-color-blend-images:blend-mode", BlendImagesAlgorithm.BlendMode.class, "Layer blend mode", "Blend mode for the layer");
 
         registerNodeType("ij1-color-invert", InvertColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
         registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-color-overlay-channels", OverlayChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-color-overlay-channels", OverlayImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-color-blend-images", BlendImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-color-arrange-channels", ArrangeChannelsAlgorithm.class);
         registerNodeType("ij1-color-split-channels", SplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("ij1-color-split-channels-2", NewSplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-color-combine-rgb", CombineChannelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
         registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/channelmixer.png"));
         registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
         registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
-        registerNodeType("ij1-color-to-rgb", ToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-to-rgb", RenderImageToRGBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij1-color-to-greyscale-expression", ColorToGreyscaleExpression2D.class, UIUtils.getIconURLFromResources("actions/color-picker-grey.png"));
 
         registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.annotation.datasources;
 
-import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -21,13 +20,12 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
-
-import java.io.IOException;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 /**
  * Imports {@link AnnotationTableData} from a file
  */
-@JIPipeDocumentation(name = "Annotation table from file")
+@JIPipeDocumentation(name = "Import annotation table")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Annotation table", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
@@ -52,11 +50,7 @@ public class AnnotationTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
-        try {
-            ResultsTable resultsTable = ResultsTable.open(fileData.getPath().toString());
-            dataBatch.addOutputData(getFirstOutputSlot(), new AnnotationTableData(resultsTable), progressInfo);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ResultsTableData resultsTableData = ResultsTableData.fromCSV(fileData.toPath());
+        dataBatch.addOutputData(getFirstOutputSlot(), new AnnotationTableData(resultsTableData), progressInfo);
     }
 }

@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheStateTreeCellRenderer;
+import org.hkijena.jipipe.ui.cache.cachetree.JIPipeCacheStateTreeCellRenderer;
 import org.hkijena.jipipe.ui.theme.ArrowLessScrollBarUI;
 import org.hkijena.jipipe.utils.UIUtils;
 

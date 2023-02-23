@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.quickrun;
 
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -84,7 +85,6 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     }
 
     private Set<JIPipeGraphNode> findPredecessorsWithoutCache() {
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
         Set<JIPipeGraphNode> predecessors = new HashSet<>();
         Set<JIPipeGraphNode> handledNodes = new HashSet<>();
         Stack<JIPipeGraphNode> stack = new Stack<>();
@@ -101,9 +101,9 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                     if (!predecessorNode.getInfo().isRunnable())
                         continue;
                     JIPipeGraphNode projectPredecessorNode = project.getGraph().getEquivalentAlgorithm(predecessorNode);
-                    Map<String, JIPipeDataSlot> cache = query.getCachedData(projectPredecessorNode);
+                    Map<String, JIPipeDataTable> slotMap = project.getCache().query(projectPredecessorNode, projectPredecessorNode.getUUIDInParentGraph(), progressInfo);
 
-                    if (cache.isEmpty()) {
+                    if (slotMap.isEmpty()) {
                         // The cache is empty -> This is now a predecessor and must be executed.
                         // Continue to search for its predecessors
                         predecessors.add(predecessorNode);
@@ -111,9 +111,9 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                     } else {
                         // If the cache is not empty, end searching this branch (we are satisfied)
                         // We will copy over the values
-                        for (Map.Entry<String, JIPipeDataSlot> cacheEntry : cache.entrySet()) {
+                        for (Map.Entry<String, JIPipeDataTable> cacheEntry : slotMap.entrySet()) {
                             JIPipeDataSlot outputSlot = predecessorNode.getOutputSlot(cacheEntry.getKey());
-                            outputSlot.addData(cacheEntry.getValue(), progressInfo);
+                            outputSlot.addDataFromTable(cacheEntry.getValue(), progressInfo);
                         }
                     }
                 }
@@ -126,6 +126,11 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
     @Override
     public void run() {
+
+        // Remove outdated cache if needed
+        if (GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
+            project.getCache().clearOutdated(getProgressInfo().resolveAndLog("Remove outdated cache"));
+        }
 
         // Disable all algorithms that are not dependencies of the benched algorithm
         Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
@@ -151,7 +156,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
-            getProject().getCache().clear(targetNode.getUUIDInParentGraph());
+            getProject().getCache().softClear(targetNode.getUUIDInParentGraph(), progressInfo);
         }
 
         // Run the internal graph runner
@@ -166,12 +171,6 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                 outputSlot.clearData();
             }
         }
-
-        // Remove outdated cache if needed
-        if (GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
-            project.getCache().autoClean(true, true, getProgressInfo().resolveAndLog("Remove outdated cache"));
-        }
-
     }
 
     /**

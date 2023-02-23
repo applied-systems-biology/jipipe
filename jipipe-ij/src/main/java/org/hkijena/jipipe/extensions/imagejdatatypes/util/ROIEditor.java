@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Parameters to edit ROI and transform {@link Roi} via the settings (no-destructive)
@@ -43,9 +43,9 @@ public class ROIEditor implements JIPipeParameterCollection {
     private boolean centerScale;
 
     public ROIEditor() {
-        
+
     }
-    
+
     public ROIEditor(Roi roi) {
         this.roiName = roi.getName();
         this.positionX = roi.getXBase();
@@ -57,7 +57,7 @@ public class ROIEditor implements JIPipeParameterCollection {
         this.lineColor = roi.getStrokeColor() == null ? Color.YELLOW : roi.getStrokeColor();
         this.lineWidth = roi.getStrokeWidth();
     }
-    
+
     @Override
     public EventBus getEventBus() {
         return eventBus;
@@ -198,7 +198,7 @@ public class ROIEditor implements JIPipeParameterCollection {
     public void setCenterScale(boolean centerScale) {
         this.centerScale = centerScale;
     }
-    
+
     public Roi applyToRoi(Roi target) {
         Roi roi = (Roi) target.clone();
         roi.setPosition(positionC, positionZ, positionT);

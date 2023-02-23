@@ -13,13 +13,12 @@
 
 package org.hkijena.jipipe.ui.settings;
 
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParametersUI;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -95,13 +94,11 @@ public class JIPipeProjectSettingsUI extends JPanel implements JIPipeProjectWork
                     ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
             splitPane.setRightComponent(parameterPanel);
         } else if (id.equals("PARAMETERS")) {
-            FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
-                    FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
-            GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE, false);
-            graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            parameterUI.addWideToForm(graphNodeParametersUI, null);
-            parameterUI.addVerticalGlue();
-            splitPane.setRightComponent(parameterUI);
+            GraphNodeParameterReferenceGroupCollectionEditorUI graphNodeParameterReferenceGroupCollectionEditorUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(),
+                    getPipelineParameters().getExportedParameters(),
+                    MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
+                    false);
+            splitPane.setRightComponent(graphNodeParameterReferenceGroupCollectionEditorUI);
         } else if (id.equals("MISC")) {
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                     new JIPipeParameterTree(getProject().getMetadata()),

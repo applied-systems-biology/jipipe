@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -35,7 +36,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -43,8 +44,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Manual threshold 2D (32-bit)", description = "Thresholds the image with a manual threshold. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
 public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private float minThreshold = 0;
@@ -59,11 +61,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
      * @param info the info
      */
     public ManualThreshold32F2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**
@@ -97,14 +95,14 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
                 inputImage.getNFrames(),
                 8);
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
                     : outputImage.getProcessor());
             for (int i = 0; i < ip.getPixelCount(); i++) {
                 float v = ip.getf(i);
                 if (v > maxThreshold)
                     targetProcessor.set(i, 0);
-                else if (v <= minThreshold)
+                else if (v < minThreshold)
                     targetProcessor.set(i, 0);
                 else
                     targetProcessor.set(i, 255);

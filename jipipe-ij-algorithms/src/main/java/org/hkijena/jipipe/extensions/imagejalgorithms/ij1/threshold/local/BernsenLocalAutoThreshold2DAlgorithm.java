@@ -24,13 +24,15 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 
 /**
  * Segmenter node that thresholds via an auto threshold
@@ -40,10 +42,11 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.\n\n" +
         "Bernsen recommends a radius of 15 and a contrast threshold of 15.")
 @JIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 @JIPipeCitation("Bernsen J. (1986) \"Dynamic Thresholding of Grey-Level Images\" Proc. of the 8th Int. Conf. on Pattern Recognition, pp. 1251-1255")
 @JIPipeCitation("Sezgin M. and Sankur B. (2004) \"Survey over Image Thresholding Techniques and Quantitative Performance Evaluation\" Journal of Electronic Imaging, 13(1): 146-165")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
 public class BernsenLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean darkBackground = true;
@@ -54,11 +57,7 @@ public class BernsenLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
      * @param info the info
      */
     public BernsenLocalAutoThreshold2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**
@@ -73,7 +72,7 @@ public class BernsenLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         this.radius = other.radius;
     }
 
-    public static void Bernsen(ImagePlus imp, int radius, double contrast_threshold, boolean doIwhite) {
+    public static void Bernsen(ImageProcessor ip, int radius, double contrast_threshold, boolean doIwhite) {
         // Bernsen recommends WIN_SIZE = 31 and CONTRAST_THRESHOLD = 15.
         //  1) Bernsen J. (1986) "Dynamic Thresholding of Grey-Level Images"
         //    Proc. of the 8th Int. Conf. on Pattern Recognition, pp. 1251-1255
@@ -84,7 +83,7 @@ public class BernsenLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         // Ported to ImageJ plugin from E Celebi's fourier_0.8 routines
         // This version uses a circular local window, instead of a rectagular one
         ImagePlus Maximp, Minimp;
-        ImageProcessor ip = imp.getProcessor(), ipMax, ipMin;
+        ImageProcessor ipMax, ipMin;
         int local_contrast;
         int mid_gray;
         byte object;
@@ -167,10 +166,12 @@ public class BernsenLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if (!darkBackground) {
-            img.getProcessor().invert();
-        }
-        Bernsen(img, radius, contrastThreshold, true);
+        ImageJUtils.forEachIndexedZCTSlice(img, (processor, index) -> {
+            if (!darkBackground) {
+                processor.invert();
+            }
+            Bernsen(processor, radius, contrastThreshold, true);
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

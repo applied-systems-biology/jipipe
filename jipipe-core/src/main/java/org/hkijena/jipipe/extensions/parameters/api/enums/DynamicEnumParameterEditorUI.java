@@ -15,8 +15,10 @@ package org.hkijena.jipipe.extensions.parameters.api.enums;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.PickDynamicEnumValueDialog;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -30,6 +32,8 @@ import java.util.function.Supplier;
 public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
 
     private JComboBox<Object> comboBox;
+    private boolean isComboBox;
+    private JButton currentlyDisplayed;
 
     /**
      * @param workbench       workbench
@@ -49,42 +53,78 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         DynamicEnumParameter<Object> parameter = getParameter(DynamicEnumParameter.class);
-        if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
-            comboBox.setSelectedItem(parameter.getValue());
+        if (isComboBox) {
+            if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
+                comboBox.setSelectedItem(parameter.getValue());
+            }
+        } else {
+            currentlyDisplayed.setIcon(parameter.renderIcon(parameter.getValue()));
+            currentlyDisplayed.setToolTipText(parameter.renderTooltip(parameter.getValue()));
+            currentlyDisplayed.setText(parameter.renderLabel(parameter.getValue()));
         }
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
 
+        EnumParameterSettings enumSettings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
+        if (enumSettings != null) {
+            isComboBox = !enumSettings.searchable();
+        }
+
         DynamicEnumParameter<Object> parameter = getParameter(DynamicEnumParameter.class);
         Object[] values;
         if (parameter.getAllowedValues() != null) {
             values = parameter.getAllowedValues().toArray();
         } else {
-            DynamicEnumParameterSettings settings = getParameterAccess().getAnnotationOfType(DynamicEnumParameterSettings.class);
-            if (settings != null) {
-                Supplier<List<Object>> supplier = (Supplier<List<Object>>) ReflectionUtils.newInstance(settings.supplier());
+            DynamicEnumParameterSettings dynamicEnumSettings = getParameterAccess().getAnnotationOfType(DynamicEnumParameterSettings.class);
+            if (dynamicEnumSettings != null) {
+                Supplier<List<Object>> supplier = (Supplier<List<Object>>) ReflectionUtils.newInstance(dynamicEnumSettings.supplier());
                 values = supplier.get().toArray();
             } else {
                 values = new Object[0];
                 System.err.println("In " + this + ": " + getParameterAccess().getFieldClass() + " not provided with a generator supplier!");
             }
         }
-        comboBox = new JComboBox<>(values);
-        comboBox.setSelectedItem(parameter.getValue());
-        comboBox.addActionListener(e -> {
-            parameter.setValue(comboBox.getSelectedItem());
-            setParameter(parameter, false);
-        });
-        comboBox.setRenderer(new Renderer(parameter));
-        add(comboBox, BorderLayout.CENTER);
+
+        if (isComboBox) {
+            comboBox = new JComboBox<>(values);
+            comboBox.setEditable(parameter.isEditable());
+            comboBox.setSelectedItem(parameter.getValue());
+            comboBox.addActionListener(e -> {
+                parameter.setValue(comboBox.getSelectedItem());
+                setParameter(parameter, false);
+            });
+            comboBox.setRenderer(new Renderer(parameter));
+            add(comboBox, BorderLayout.CENTER);
+        } else {
+            currentlyDisplayed = new JButton();
+            currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
+            currentlyDisplayed.addActionListener(e -> pickEnum());
+            UIUtils.makeFlat(currentlyDisplayed);
+            add(currentlyDisplayed, BorderLayout.CENTER);
+
+            JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+            UIUtils.makeFlat(selectButton);
+            selectButton.setToolTipText("Select value");
+            selectButton.addActionListener(e -> pickEnum());
+            add(selectButton, BorderLayout.EAST);
+        }
+    }
+
+    private void pickEnum() {
+        DynamicEnumParameter target = getParameterAccess().get(DynamicEnumParameter.class);
+        Object selected = PickDynamicEnumValueDialog.showDialog(getWorkbench().getWindow(), target, target.getValue(), "Select value");
+        if (selected != null) {
+            target.setValue(selected);
+            setParameter(target, true);
+        }
     }
 
     /**
      * Renders items in enum parameters
      */
-    private static class Renderer extends JLabel implements ListCellRenderer<Object> {
+    public static class Renderer extends JLabel implements ListCellRenderer<Object> {
 
         private final DynamicEnumParameter<Object> parameter;
 

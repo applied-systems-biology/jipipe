@@ -38,6 +38,9 @@ import java.nio.file.Path;
 public class OMEROProjectReferenceData implements JIPipeData {
     private long projectId;
 
+    public OMEROProjectReferenceData() {
+    }
+
     public OMEROProjectReferenceData(long projectId) {
         this.projectId = projectId;
     }

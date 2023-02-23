@@ -15,22 +15,21 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
-import org.hkijena.jipipe.api.JIPipeProjectCacheState;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
+import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Manages the cache for a specific data slot.
@@ -70,70 +69,53 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
     private void reloadContextMenu() {
         contextMenu.removeAll();
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
-        JIPipeProjectCacheState currentState = query.getCachedId(getDataSlot().getNode().getUUIDInParentGraph());
 
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(getDataSlot().getNode().getUUIDInParentGraph());
-        if (stateMap != null) {
-            JMenuItem openCurrent = createOpenStateButton(stateMap, currentState, "Open current snapshot");
-            if (openCurrent != null) {
-                contextMenu.add(openCurrent);
-            }
-            JMenu previousMenu = new JMenu("All snapshots");
-            previousMenu.setIcon(UIUtils.getIconFromResources("actions/clock.png"));
-            for (JIPipeProjectCacheState state : stateMap.keySet().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList())) {
-                JMenuItem item = createOpenStateButton(stateMap, state, "Open snapshot from " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
-                        state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-                if (item != null) {
-                    previousMenu.add(item);
-                }
-            }
-            if (previousMenu.getItemCount() > 0) {
-                contextMenu.add(previousMenu);
-                contextMenu.addSeparator();
-            }
-        }
+        JMenuItem openInNewWindow = new JMenuItem("Open in new window (this node)", UIUtils.getIconFromResources("actions/link.png"));
+        openInNewWindow.setToolTipText("Opens the cache in a new window.");
+        openInNewWindow.addActionListener(e -> openCacheInNewWindow());
+        contextMenu.add(openInNewWindow);
 
-        JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
+        JMenuItem openInNewTab = new JMenuItem("Open in new tab (this node)", UIUtils.getIconFromResources("actions/tab_new.png"));
+        openInNewTab.setToolTipText("Opens the cache in a new tab.");
+        openInNewTab.addActionListener(e -> openCacheInNewTab());
+        contextMenu.add(openInNewTab);
+
+        contextMenu.addSeparator();
+
+        JMenuItem clearAll = new JMenuItem("Clear all (this node)", UIUtils.getIconFromResources("actions/delete.png"));
+        clearAll.setToolTipText("Removes all cached items for this node.");
+        clearAll.addActionListener(e -> getProject().getCache().clearAll(dataSlot.getNode().getUUIDInParentGraph(), false, new JIPipeProgressInfo()));
+        contextMenu.add(clearAll);
+
+        JMenuItem clearOutdated = new JMenuItem("Clear outdated (this node)", UIUtils.getIconFromResources("actions/clear-brush.png"));
         clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                 "This includes items where the algorithm parameters have been changed.");
-        clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
+        clearOutdated.addActionListener(e -> JIPipeRunnerQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache())));
         contextMenu.add(clearOutdated);
-
-        JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
-        clearAll.setToolTipText("Removes all cached items for this node.");
-        clearAll.addActionListener(e -> getProject().getCache().clear(dataSlot.getNode().getUUIDInParentGraph()));
-        contextMenu.add(clearAll);
     }
 
-    private JMenuItem createOpenStateButton(Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap, JIPipeProjectCacheState state, String label) {
-        Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(state, null);
-        if (slotMap == null)
-            return null;
-        JIPipeDataSlot cachedSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
-        if (cachedSlot == null)
-            return null;
-
-        JMenuItem item = new JMenuItem(label);
-        item.setIcon(UIUtils.getIconFromResources("actions/camera.png"));
-        item.setToolTipText("Opens the currently cached data as table");
-        item.addActionListener(e -> openData(state));
-        return item;
-    }
-
-    private void openData(JIPipeProjectCacheState state) {
-//        JIPipeExtendedDataTableInfoUI cacheTable = new JIPipeExtendedDataTableInfoUI(getProjectWorkbench(), cachedSlot);
-//        String tabName = getDataSlot().getAlgorithm().getName() + "/" + getDataSlot().getName() + " @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
-//                state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-
+    private void openCacheInNewTab() {
         JIPipeCacheBrowserUI cacheTable = new JIPipeCacheBrowserUI(getProjectWorkbench());
-        cacheTable.getTree().selectDataSlot(state, getDataSlot());
+        cacheTable.getTree().selectDataSlot(getDataSlot());
         getWorkbench().getDocumentTabPane().addTab("Cache browser",
                 UIUtils.getIconFromResources("actions/database.png"),
                 cacheTable,
                 DocumentTabPane.CloseMode.withSilentCloseButton,
                 true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
+    }
+
+    private void openCacheInNewWindow() {
+        JIPipeAlgorithmCacheBrowserUI browserUI = new JIPipeAlgorithmCacheBrowserUI((JIPipeProjectWorkbench) getWorkbench(), getDataSlot().getNode(), graphUI);
+        JFrame frame = new JFrame("Cache browser: " + getDataSlot().getNode().getName());
+        frame.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenUtilityWindowsAlwaysOnTop());
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setContentPane(browserUI);
+        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.pack();
+        frame.setSize(640, 480);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     }
 
     public JIPipeDataSlot getDataSlot() {
@@ -146,25 +128,22 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable())
             return;
         updateStatus();
     }
 
     private void updateStatus() {
-        JIPipeProjectCache cache = getProject().getCache();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode().getUUIDInParentGraph());
+        JIPipeCache cache = getProject().getCache();
+        Map<String, JIPipeDataTable> slotMap = cache.query(getDataSlot().getNode(), getDataSlot().getNode().getUUIDInParentGraph(), new JIPipeProgressInfo());
         int dataRows = 0;
-        if (stateMap != null) {
-            for (Map<String, JIPipeDataSlot> slotMap : stateMap.values()) {
-                JIPipeDataSlot equivalentSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
-                if (equivalentSlot != null) {
-                    dataRows += equivalentSlot.getRowCount();
-                }
+        if (slotMap != null) {
+            JIPipeDataTable equivalentSlot = slotMap.getOrDefault(getDataSlot().getName(), null);
+            if (equivalentSlot != null) {
+                dataRows += equivalentSlot.getRowCount();
             }
         }
-
         cacheButton.setVisible(dataRows > 0);
     }
 }

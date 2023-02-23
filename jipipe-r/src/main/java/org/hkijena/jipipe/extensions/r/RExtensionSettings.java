@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 import java.util.List;
 
@@ -34,11 +35,15 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
     private REnvironment environment = new REnvironment();
     private REnvironment.List presets = new REnvironment.List();
 
+    private StringList easyInstallerRepositories = new StringList();
+
     public RExtensionSettings() {
+        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-r.json");
     }
 
     public static RExtensionSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, RExtensionSettings.class);
+
     }
 
     /**
@@ -112,6 +117,17 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
     @JIPipeParameter("presets")
     public void setPresets(REnvironment.List presets) {
         this.presets = presets;
+    }
+
+    @JIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
+    @JIPipeParameter("easy-installer-repositories")
+    public StringList getEasyInstallerRepositories() {
+        return easyInstallerRepositories;
+    }
+
+    @JIPipeParameter("easy-installer-repositories")
+    public void setEasyInstallerRepositories(StringList easyInstallerRepositories) {
+        this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
     @Override

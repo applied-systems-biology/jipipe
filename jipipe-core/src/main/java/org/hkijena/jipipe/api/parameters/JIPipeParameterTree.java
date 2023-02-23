@@ -20,7 +20,6 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -30,7 +29,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -60,11 +58,10 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     public static final int IGNORE_CUSTOM = 4;
 
     private final EventBus eventBus = new EventBus();
-    private Node root = new Node(null, null);
     private final BiMap<JIPipeParameterCollection, Node> nodeMap = HashBiMap.create();
     private final BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
     private final PriorityQueue<JIPipeParameterAccess> parametersByPriority = new PriorityQueue<>(JIPipeParameterAccess::comparePriority);
-
+    private Node root = new Node(null, null);
     private boolean ignoreReflectionParameters = false;
     private boolean ignoreCustomParameters = false;
     private boolean forceReflection = false;
@@ -211,8 +208,9 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
                 }
             }
-            target.actions.add(new ContextAction(source, method, iconURL, documentationAnnotation));
+            target.actions.add(new JIPipeReflectionParameterCollectionContextAction(source, method, iconURL, documentationAnnotation));
         }
+        target.actions.addAll(source.getContextActions());
     }
 
     private void addParameter(String initialKey, JIPipeParameterAccess parameterAccess, Node parent) {
@@ -268,6 +266,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 parameterAccess.setPriority(pair.getPriority());
                 parameterAccess.setPersistence(pair.getPersistence());
                 parameterAccess.setImportant(pair.isImportant());
+                parameterAccess.setPinned(pair.isPinned());
 
                 addParameter(entry.getKey(), parameterAccess, parent);
             }
@@ -297,6 +296,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     childNode.setIconURL(entry.getValue().getIconURL());
                     childNode.setDarkIconURL(entry.getValue().getIconDarkURL());
                     childNode.setResourceClass(entry.getValue().getResourceClass());
+                    childNode.setFunctional(entry.getValue().isFunctional());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -559,6 +559,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             return getterAnnotation.important() || setterAnnotation.important();
         }
 
+        public boolean isFunctional() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            if (setter == null)
+                return getterAnnotation.functional();
+            JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
+            return getterAnnotation.functional() || setterAnnotation.functional();
+        }
+
         public boolean isHidden() {
             JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
             if (setter == null)
@@ -592,6 +600,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 return getterAnnotation.shortKey();
             JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
             return setterAnnotation.shortKey();
+        }
+
+        public boolean isPinned() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            if (getterAnnotation.pinned())
+                return true;
+            JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
+            return setterAnnotation.pinned();
         }
 
         public int getUIOrder() {
@@ -633,61 +649,23 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         }
     }
 
-    public static class ContextAction implements Consumer<JIPipeWorkbench> {
-        private Object target;
-        private Method function;
-        private URL iconURL;
-        private JIPipeDocumentation documentation;
-
-        public ContextAction(Object target, Method function, URL iconURL, JIPipeDocumentation documentation) {
-            this.target = target;
-            this.function = function;
-            this.iconURL = iconURL;
-            this.documentation = documentation;
-        }
-
-        public Object getTarget() {
-            return target;
-        }
-
-        public Method getFunction() {
-            return function;
-        }
-
-        public JIPipeDocumentation getDocumentation() {
-            return documentation;
-        }
-
-        public URL getIconURL() {
-            return iconURL;
-        }
-
-        @Override
-        public void accept(JIPipeWorkbench workbench) {
-            try {
-                function.invoke(target, workbench);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     /**
      * A node
      */
     public static class Node {
-        private Node parent;
+        private final Node parent;
         private JIPipeParameterCollection collection;
         private String key;
         private boolean hidden;
+
+        private boolean functional;
         private String name;
         private HTMLText description = new HTMLText();
         private int order;
         private int uiOrder;
         private BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
         private BiMap<String, Node> children = HashBiMap.create();
-        private List<ContextAction> actions = new ArrayList<>();
-        private Set<String> uiExcludedSubParameters = new HashSet<>();
+        private List<JIPipeParameterCollectionContextAction> actions = new ArrayList<>();
         private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
         private boolean collapsed;
         private String iconURL;
@@ -836,11 +814,11 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             this.uiOrder = uiOrder;
         }
 
-        public List<ContextAction> getActions() {
+        public List<JIPipeParameterCollectionContextAction> getActions() {
             return actions;
         }
 
-        public void setActions(List<ContextAction> actions) {
+        public void setActions(List<JIPipeParameterCollectionContextAction> actions) {
             this.actions = actions;
         }
 
@@ -850,6 +828,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
         public void setPersistence(JIPipeParameterPersistence persistence) {
             this.persistence = persistence;
+        }
+
+        public boolean isFunctional() {
+            return functional;
+        }
+
+        public void setFunctional(boolean functional) {
+            this.functional = functional;
         }
     }
 }

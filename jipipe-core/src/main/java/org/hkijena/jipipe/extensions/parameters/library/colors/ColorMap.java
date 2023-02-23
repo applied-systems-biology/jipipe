@@ -21,6 +21,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * All available color maps
@@ -116,13 +117,28 @@ public enum ColorMap {
     thal,
     Thermal,
     unionjack,
-    Yellow_Hot;
+    Yellow_Hot,
+    redgreen,
+    magenta,
+    yellow,
+    cyan,
+    blue,
+    green,
+    red,
+    _3_3_2_rgb,
+    spectrum,
+    ice,
+    fire;
 
     private final BufferedImage mapImage;
 
     ColorMap() {
         try {
-            this.mapImage = ImageIO.read(ResourceUtils.getPluginResourceAsStream("colormaps/" + name() + ".png"));
+            InputStream stream = ResourceUtils.getPluginResourceAsStream("colormaps/" + name() + ".png");
+            if (stream == null) {
+                throw new RuntimeException("Unable to find colormap " + name());
+            }
+            this.mapImage = ImageIO.read(stream);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -139,7 +155,7 @@ public enum ColorMap {
      * @return the color
      */
     public Color apply(double value) {
-        int pixel = (int) ((mapImage.getWidth() - 1)* Math.max(0, Math.min(1, value)));
+        int pixel = (int) ((mapImage.getWidth() - 1) * Math.max(0, Math.min(1, value)));
         return new Color(mapImage.getRGB(pixel, 0));
     }
 

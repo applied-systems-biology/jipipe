@@ -18,15 +18,17 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
-import org.hkijena.jipipe.ui.cache.JIPipeExtendedMultiDataTableInfoUI;
+import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
+import org.hkijena.jipipe.ui.datatable.JIPipeExtendedMultiDataTableUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.data.OwningStore;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Browser for a Data batch, similar to the cache browser
@@ -79,14 +81,14 @@ public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
         for (JIPipeDataSlot slot : slots) {
             filtered.add(slot.slice(dataBatch.getInputRows(slot)));
         }
-        JIPipeExtendedMultiDataTableInfoUI ui = new JIPipeExtendedMultiDataTableInfoUI(getWorkbench(), filtered, false);
+        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getWorkbench(), filtered.stream().map(OwningStore::new).collect(Collectors.toList()), false);
         splitPane.setRightComponent(ui);
         revalidate();
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
         JIPipeDataTable filtered = dataSlot.slice(dataBatch.getInputSlotRows().get(dataSlot));
-        JIPipeExtendedDataTableInfoUI ui = new JIPipeExtendedDataTableInfoUI(getWorkbench(), filtered, true);
+        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getWorkbench(), new OwningStore<>(filtered), true);
         splitPane.setRightComponent(ui);
         revalidate();
     }

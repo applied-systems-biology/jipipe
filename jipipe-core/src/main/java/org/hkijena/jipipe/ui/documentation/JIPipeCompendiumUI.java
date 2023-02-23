@@ -53,7 +53,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
     public JIPipeCompendiumUI(MarkdownDocument defaultDocument) {
         this.defaultDocument = defaultDocument;
         initialize();
-        reloadAlgorithmList();
+        reloadList();
         itemList.setSelectedValue(null, false);
     }
 
@@ -75,7 +75,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         toolBar.setFloatable(false);
 
         searchField = new SearchTextField();
-        searchField.addActionListener(e -> reloadAlgorithmList());
+        searchField.addActionListener(e -> reloadList());
         toolBar.add(searchField);
 
         JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
@@ -154,7 +154,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
      */
     protected abstract List<T> getFilteredItems();
 
-    private void reloadAlgorithmList() {
+    public void reloadList() {
         DefaultListModel<T> model = new DefaultListModel<>();
         for (T item : getFilteredItems()) {
             model.addElement(item);
@@ -196,19 +196,17 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
      * @param item the algorithm. if null, the compendium documentation is shown
      */
     public void selectItem(T item) {
+        if (item == null)
+            return;
         if (item != itemList.getSelectedValue()) {
             itemList.setSelectedValue(item, true);
         }
-        if (item != null) {
-            MarkdownDocument document = compendiumCache.getOrDefault(item, null);
-            if (document == null) {
-                document = generateCompendiumFor(item, true);
-                compendiumCache.put(item, document);
-            }
-            markdownReader.setDocument(document);
-        } else {
-            markdownReader.setDocument(defaultDocument);
+        MarkdownDocument document = compendiumCache.getOrDefault(item, null);
+        if (document == null) {
+            document = generateCompendiumFor(item, true);
+            compendiumCache.put(item, document);
         }
+        markdownReader.setDocument(document);
     }
 
     /**

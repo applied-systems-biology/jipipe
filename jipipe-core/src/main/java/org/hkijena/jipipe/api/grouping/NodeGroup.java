@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -53,7 +53,7 @@ import java.util.Map;
 public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection {
 
     private NodeGroupContents contents;
-    private GraphNodeParameters exportedParameters = new GraphNodeParameters();
+    private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
     private boolean showLimitedParameters = false;
 
     /**
@@ -74,7 +74,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
      */
     public NodeGroup(NodeGroup other) {
         super(other);
-        this.exportedParameters = new GraphNodeParameters(other.exportedParameters);
+        this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
         this.exportedParameters.getEventBus().register(this);
         this.showLimitedParameters = other.showLimitedParameters;
         initializeContents();
@@ -144,13 +144,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
                 // Set group input/output
                 if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
-                    if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                        getGroupInput().setLocationWithin("", new Point(minX - 3, minY - 3), viewMode.name());
-                        getGroupOutput().setLocationWithin("", new Point(maxX + 3, maxY), viewMode.name());
-                    } else {
-                        getGroupInput().setLocationWithin("", new Point(minX, minY - 5), viewMode.name());
-                        getGroupOutput().setLocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
-                    }
+                    getGroupInput().setLocationWithin("", new Point(minX, minY - 5), viewMode.name());
+                    getGroupOutput().setLocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
                 }
             }
         }
@@ -232,13 +227,13 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     }
 
     @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
-    @JIPipeParameter("exported-parameters")
-    public GraphNodeParameters getExportedParameters() {
+    @JIPipeParameter(value = "exported-parameters", functional = false)
+    public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
     }
 
     @JIPipeParameter("exported-parameters")
-    public void setExportedParameters(GraphNodeParameters exportedParameters) {
+    public void setExportedParameters(GraphNodeParameterReferenceGroupCollection exportedParameters) {
         this.exportedParameters = exportedParameters;
         this.exportedParameters.setGraph(getWrappedGraph());
         this.exportedParameters.getEventBus().register(this);
@@ -255,7 +250,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     @JIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
             "The data batch generation will also be hidden. This can be useful for educational pipelines.")
-    @JIPipeParameter("show-limited-parameters")
+    @JIPipeParameter(value = "show-limited-parameters", functional = false)
     public boolean isShowLimitedParameters() {
         return showLimitedParameters;
     }
@@ -304,7 +299,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         this.exportedParameters.setGraph(getWrappedGraph());
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
 //        result.put("jipipe:data-batch-generation", getBatchGenerationSettings());
-        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(false), false));
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(false, null), false));
         return result;
     }
 
@@ -335,7 +330,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
             "<li>The wrapped graph can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +
             "or a merging data batch (multiple items per slot).</li>" +
             "</ul>")
-    @JIPipeParameter("iteration-mode")
+    @JIPipeParameter(value = "iteration-mode", functional = false)
     public IterationMode getIterationMode() {
         return super.getIterationMode();
     }

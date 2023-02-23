@@ -125,7 +125,7 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
             if (!code.toString().contains("import sys")) {
                 code.append("import sys\n");
             }
-            code.append("sys.path.append(\"").append(MacroUtils.escapeString(getLibraryDirectory().toAbsolutePath().toString())).append("\")\n");
+            code.append("sys.path.append(\"").append(MacroUtils.escapeString(PathUtils.relativeToImageJToAbsolute(getLibraryDirectory()).toString())).append("\")\n");
         }
     }
 

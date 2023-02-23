@@ -100,7 +100,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         this.settingsPanel = new JPanel(new BorderLayout());
         settingsContainer.add(settingsPanel, BorderLayout.CENTER);
 
-        tabPane = new DocumentTabPane();
+        tabPane = new DocumentTabPane(true);
         setContentPane(tabPane);
 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, settingsContainer, AutoResizeSplitPane.RATIO_1_TO_3);
@@ -386,7 +386,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         JIPipeIssueReport report = new JIPipeIssueReport();
         currentRunSettingsPanel.getRun().reportValidity(report);
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, false);
+            UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
             return;
         }
         String parameters = getRun().getParametersString();
@@ -407,7 +407,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         JIPipeIssueReport report = new JIPipeIssueReport();
         currentRunSettingsPanel.getRun().reportValidity(report);
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, false);
+            UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
             return;
         }
         if (!keepWindowToggle.isSelected())

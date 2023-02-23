@@ -36,6 +36,8 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JI
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
 
+    private boolean forceFlowGraphSolver = false;
+
     public JIPipeMissingDataGeneratorDataBatchGenerationSettings() {
     }
 
@@ -46,11 +48,23 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings implements JI
         this.allowMerging = other.allowMerging;
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
+        this.forceFlowGraphSolver = other.forceFlowGraphSolver;
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
+    @JIPipeParameter("force-flow-graph-solver")
+    public boolean isForceFlowGraphSolver() {
+        return forceFlowGraphSolver;
+    }
+
+    @JIPipeParameter("force-flow-graph-solver")
+    public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
+        this.forceFlowGraphSolver = forceFlowGraphSolver;
     }
 
     @JIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +

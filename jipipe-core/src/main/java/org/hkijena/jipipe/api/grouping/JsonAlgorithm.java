@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.parameters.*;
@@ -30,7 +30,7 @@ import java.util.*;
  */
 public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection {
 
-    private GraphNodeParameters exportedParameters = new GraphNodeParameters();
+    private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
     /**
      * Creates a new instance
@@ -39,7 +39,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
      */
     public JsonAlgorithm(JsonNodeInfo info) {
         super(info, new JIPipeGraph(info.getGraph()));
-        exportedParameters = new GraphNodeParameters(info.getExportedParameters());
+        exportedParameters = new GraphNodeParameterReferenceGroupCollection(info.getExportedParameters());
     }
 
     /**
@@ -90,7 +90,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
 
     }
 
-    public GraphNodeParameters getExportedParameters() {
+    public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
     }
 
@@ -114,7 +114,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
         this.exportedParameters.setGraph(getWrappedGraph());
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
 //        result.put("jipipe:data-batch-generation", getBatchGenerationSettings());
-        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(false), true));
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(false, null), true));
         return result;
     }
 

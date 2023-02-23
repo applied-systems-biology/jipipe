@@ -34,7 +34,9 @@ import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -50,7 +52,7 @@ import java.util.stream.Collectors;
  * A JSON-serializable extension
  */
 @JsonDeserialize(as = JIPipeJsonExtension.class, using = JIPipeJsonExtension.Deserializer.class)
-public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDependency, JIPipeValidatable {
+public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeExtension, JIPipeValidatable {
     private EventBus eventBus = new EventBus();
     private String id;
     private String version = "1.0.0";
@@ -66,6 +68,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
      * Creates a new instance
      */
     public JIPipeJsonExtension() {
+        metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")));
     }
 
     /**
@@ -181,7 +184,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
     /**
      * @return The dependencies of this extension
      */
-    @JsonGetter("dependencies")
+    @Override
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();
         for (JIPipeNodeInfo info : getNodeInfos()) {

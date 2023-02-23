@@ -13,22 +13,16 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.parameters.AdaptiveParameterBuilder;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,8 +30,7 @@ import java.util.Set;
 /**
  * Settings class that allows users to generate expressions with adaptive parameters
  */
-public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterCollection {
     private boolean enabled = true;
     private StringQueryExpressionAndStringPairParameter.List overriddenParameters = new StringQueryExpressionAndStringPairParameter.List();
     private boolean attachParameterAnnotations = true;
@@ -57,11 +50,6 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
         this.parameterAnnotationsUseInternalNames = other.parameterAnnotationsUseInternalNames;
         this.parameterAnnotationsPrefix = other.parameterAnnotationsPrefix;
         this.node = other.node;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Enable adaptive parameters", description = "If enabled, you can use custom expressions to generate parameters. Please note that this will disable parallelization.")
@@ -136,23 +124,23 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
         this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
     }
 
-    @JIPipeDocumentation(name = "Add", description = "Adds an adaptive parameter.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/list-add.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/list-add.png")
-    public void addAdaptiveParameterAssistant(JIPipeWorkbench parent) {
-        AdaptiveParameterBuilder dialog = new AdaptiveParameterBuilder(parent, getNode() != null ? getNode() : this);
-        dialog.setModal(true);
-        dialog.setSize(800, 600);
-        dialog.revalidate();
-        dialog.repaint();
-        dialog.setLocationRelativeTo(parent.getWindow());
-        dialog.setVisible(true);
-        if (!dialog.isCanceled() && dialog.getCurrentParameterAccess() != null) {
-            DefaultExpressionParameter parameter = dialog.build();
-            String uniqueKey = dialog.getParameterTree().getUniqueKey(dialog.getCurrentParameterAccess());
-            overriddenParameters.add(new StringQueryExpressionAndStringPairParameter(parameter.getExpression(), uniqueKey));
-            triggerParameterChange("overridden-parameters");
-        }
-    }
+//    @JIPipeDocumentation(name = "Add", description = "Adds an adaptive parameter.")
+//    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/list-add.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/list-add.png")
+//    public void addAdaptiveParameterAssistant(JIPipeWorkbench parent) {
+//        AdaptiveParameterBuilder dialog = new AdaptiveParameterBuilder(parent, getNode() != null ? getNode() : this);
+//        dialog.setModal(true);
+//        dialog.setSize(800, 600);
+//        dialog.revalidate();
+//        dialog.repaint();
+//        dialog.setLocationRelativeTo(parent.getWindow());
+//        dialog.setVisible(true);
+//        if (!dialog.isCanceled() && dialog.getCurrentParameterAccess() != null) {
+//            DefaultExpressionParameter parameter = dialog.build();
+//            String uniqueKey = dialog.getParameterTree().getUniqueKey(dialog.getCurrentParameterAccess());
+//            overriddenParameters.add(new StringQueryExpressionAndStringPairParameter(parameter.getExpression(), uniqueKey));
+//            triggerParameterChange("overridden-parameters");
+//        }
+//    }
 
     public JIPipeGraphNode getNode() {
         return node;

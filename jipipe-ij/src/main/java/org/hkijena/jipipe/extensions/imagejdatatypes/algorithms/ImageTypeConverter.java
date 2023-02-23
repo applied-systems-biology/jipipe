@@ -34,8 +34,8 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 /**
  * Converts ImageJ data type into each other
  */
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ImageTypeConverter extends JIPipeAlgorithm {
@@ -71,12 +71,7 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
     @JIPipeParameter("output-type")
     public void setOutputType(JIPipeDataInfoRef outputType) {
         if (outputType == null || outputType.getInfo() == null) {
-            outputType = new JIPipeDataInfoRef(ImagePlusData.class);
-        }
-        if (outputType.getInfo() != this.outputType.getInfo()) {
-            this.outputType = outputType;
-            getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-            triggerSlotsChangedEvent();
+            this.outputType = new JIPipeDataInfoRef(ImagePlusData.class);
         }
     }
 

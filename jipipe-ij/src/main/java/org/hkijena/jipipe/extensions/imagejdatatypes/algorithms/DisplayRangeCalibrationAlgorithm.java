@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -30,12 +31,11 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Brightness/Contrast...")
 public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ImageJCalibrationMode calibrationMode = ImageJCalibrationMode.AutomaticImageJ;
     private double customMin = 0;
     private double customMax = 1;
-    private boolean duplicateImage = true;
-    private boolean applyToAllPlanes = true;
 
     public DisplayRangeCalibrationAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -46,31 +46,13 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
         this.calibrationMode = other.calibrationMode;
         this.customMin = other.customMin;
         this.customMax = other.customMax;
-        this.duplicateImage = other.duplicateImage;
-        this.applyToAllPlanes = other.applyToAllPlanes;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-        if (duplicateImage)
-            data = (ImagePlusData) data.duplicate(progressInfo);
-        ImagePlus image = data.getImage();
-        if (applyToAllPlanes && image.isStack()) {
-            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
-            for (int z = 0; z < image.getNSlices(); z++) {
-                for (int c = 0; c < image.getNChannels(); c++) {
-                    for (int t = 0; t < image.getNFrames(); t++) {
-                        image.setPosition(c, z, t);
-                        ImageJUtils.calibrate(image, calibrationMode, customMin, customMax);
-                    }
-                }
-            }
-            image.setPosition(original.getC(), original.getZ(), original.getT());
-        } else {
-            ImageJUtils.calibrate(image, calibrationMode, customMin, customMax);
-        }
-        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
+        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
+        ImageJUtils.calibrate(image, calibrationMode, customMin, customMax);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
@@ -105,28 +87,4 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
     public void setCustomMax(double customMax) {
         this.customMax = customMax;
     }
-
-    @JIPipeDocumentation(name = "Duplicate image", description = "As the calibration does not change any image data, you can disable creating a duplicate.")
-    @JIPipeParameter("duplicate-image")
-    public boolean isDuplicateImage() {
-        return duplicateImage;
-    }
-
-    @JIPipeParameter("duplicate-image")
-    public void setDuplicateImage(boolean duplicateImage) {
-        this.duplicateImage = duplicateImage;
-    }
-
-    @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all image planes are recalibrated, not only the one of the current plane.")
-    @JIPipeParameter("apply-to-all-planes")
-    public boolean isApplyToAllPlanes() {
-        return applyToAllPlanes;
-    }
-
-    @JIPipeParameter("apply-to-all-planes")
-    public void setApplyToAllPlanes(boolean applyToAllPlanes) {
-        this.applyToAllPlanes = applyToAllPlanes;
-    }
-
-
 }

@@ -36,14 +36,15 @@ import java.util.*;
 @JsonSerialize(using = JIPipeDataInfo.Serializer.class, keyUsing = JIPipeDataInfo.Serializer.class)
 @JsonDeserialize(using = JIPipeDataInfo.Deserializer.class, keyUsing = JIPipeDataInfo.KeyDeserializer.class)
 public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
-    private static Map<Class<? extends JIPipeData>, JIPipeDataInfo> cache = new HashMap<>();
-
+    private static final Map<Class<? extends JIPipeData>, JIPipeDataInfo> cache = new HashMap<>();
     private final Class<? extends JIPipeData> dataClass;
     private final String name;
     private final String description;
     private final String menuPath;
     private final boolean hidden;
     private final boolean heavy;
+
+    private final boolean common;
     private final HTMLText storageDocumentation;
     private final String storageSchema;
     private List<String> additionalCitations = new ArrayList<>();
@@ -55,6 +56,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         this.menuPath = JIPipeData.getMenuPathOf(dataClass);
         this.hidden = JIPipeData.isHidden(dataClass);
         this.heavy = JIPipeData.isHeavy(dataClass);
+        this.common = JIPipeData.isCommon(dataClass);
         this.storageDocumentation = JIPipeData.getStorageDocumentation(dataClass);
         this.storageSchema = JIPipeData.getStorageSchema(dataClass);
         // Load additional citations
@@ -153,6 +155,10 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
 
     @Override
     public int compareTo(JIPipeDataInfo o) {
+        if (common && !o.common)
+            return -1;
+        if (o.common && !common)
+            return 1;
         return name.compareTo(o.name);
     }
 

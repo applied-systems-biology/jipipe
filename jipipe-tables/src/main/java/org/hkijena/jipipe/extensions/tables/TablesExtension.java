@@ -13,33 +13,82 @@
 
 package org.hkijena.jipipe.extensions.tables;
 
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.annotation.AnnotationsExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.tables.algorithms.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
+import org.hkijena.jipipe.extensions.tables.nodes.*;
+import org.hkijena.jipipe.extensions.tables.nodes.annotations.AddAnnotationColumnsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.annotations.AnnotateByTablePropertiesAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.annotations.AnnotateDataWithTableValues;
+import org.hkijena.jipipe.extensions.tables.nodes.annotations.ConvertAnnotationTableToAnnotatedTables;
+import org.hkijena.jipipe.extensions.tables.nodes.columns.*;
+import org.hkijena.jipipe.extensions.tables.nodes.filter.FilterTableRowsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.filter.FilterTablesAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.filter.SliceTableRowsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeColumnsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeTableColumnsSimpleAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeTableColumnsSupplementAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeTableRowsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.rows.AddMissingRowsInSeriesAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.rows.ApplyExpressionPerRowAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.rows.SortTableRowsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.split.SplitTableByColumnsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.split.SplitTableIntoColumnsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.split.SplitTableIntoRowsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.transform.HistogramAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.transform.MeltTableAlgorithm;
 import org.hkijena.jipipe.extensions.tables.operations.converting.*;
 import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
 import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.*;
+import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnConversionParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
+import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.*;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.util.Set;
 
 /**
  * Standard set of table operations
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:table-operations",
+            JIPipe.getJIPipeVersion(),
+            "Standard table operations");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(TablesExtension.class, "org/hkijena/jipipe/extensions/tables");
+
+    public TablesExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_STATISTICS, PluginCategoriesEnumParameter.CATEGORY_DATA_PROCESSING);
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, AnnotationsExtension.AS_DEPENDENCY);
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -79,6 +128,8 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerParameters();
         registerAlgorithms();
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     private void registerColumnSources() {
@@ -123,9 +174,11 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-split-into-rows", SplitTableIntoRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-merge-from-columns", MergeColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-merge-tables", MergeTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("table-merge-columns-supplement", MergeTableColumnsSupplementAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-split-by-columns", SplitTableByColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-filter", FilterTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("table-filter-2", FilterTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("table-slice-rows", SliceTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("table-sort", SortTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("table-sort-columns", SortTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("table-add-annotation-columns", AddAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));
@@ -136,13 +189,16 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("tables-from-expression", GenerateTableFromExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("define-tables", DefineTablesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
         registerNodeType("table-rename-columns-expression", ModifyTableColumnNamesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerNodeType("table-merge-columns", MergeTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("table-merge-columns", MergeTableColumnsSimpleAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-annotate-by-merged-columns", ColumnsToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
+        registerNodeType("annotate-data-with-table-values", AnnotateDataWithTableValues.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
         registerNodeType("table-column-to-string", ColumnToStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-column-to-numeric", ColumnToNumericAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
-        registerNodeType("table-process-columns", ProcessColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("table-process-columns", ApplyExpressionToColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-melt", MeltTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-annotate-with-properties", AnnotateByTablePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("table-add-missing-rows-in-series", AddMissingRowsInSeriesAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort-ascending.png"));
+        registerNodeType("table-convert-to-histogram-key-value", HistogramAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
     }
 
     private void registerParameters() {
@@ -165,6 +221,10 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Results table",
                 "A table",
                 ResultsTableDataParameterEditorUI.class);
+
+        // Operators
+        registerParameterType("integrating-table-column-operator", TableColumnIntegrationParameter.class, "Column integration operation", "Operation that integrates columns");
+        registerParameterType("converting-table-column-operator", TableColumnConversionParameter.class, "Column converting operation", "Operation that converts columns");
 
         // Processors
         registerParameterType("integrating-table-column-processor",

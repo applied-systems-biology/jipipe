@@ -45,9 +45,15 @@ public class ProcessesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("apps/utilities-terminal.png"));
         registerSettingsSheet(ProcessesExtensionSettings.ID,
                 "Processes",
+                "Setup external processes to be used in the 'Run process' nodes",
                 UIUtils.getIconFromResources("apps/utilities-terminal.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 extensionSettings);
+    }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
     }
 }

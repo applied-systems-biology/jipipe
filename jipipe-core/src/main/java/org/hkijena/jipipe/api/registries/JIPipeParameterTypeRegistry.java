@@ -113,7 +113,8 @@ public class JIPipeParameterTypeRegistry {
         }
         try {
             return uiClass.getConstructor(JIPipeWorkbench.class, JIPipeParameterAccess.class).newInstance(workbench, parameterAccess);
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }

@@ -14,11 +14,10 @@
 package org.hkijena.jipipe.ui.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -37,7 +36,9 @@ import java.util.stream.Collectors;
 public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
 
     private final JTree tree = new JTree();
-    private final Map<String, TreeNode> nodePathMap = new HashMap<>();
+    private final Map<String, DefaultMutableTreeNode> nodePathMap = new HashMap<>();
+
+    private final Map<JIPipeSettingsRegistry.Sheet, DefaultMutableTreeNode> sheetToNodeMap = new HashMap<>();
 
     /**
      * Creates a new instance
@@ -52,7 +53,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
     private void initialize() {
         setLayout(new BorderLayout());
         tree.setCellRenderer(new SettingsCategoryNodeRenderer());
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
+        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(tree), new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
 
         Map<String, List<JIPipeSettingsRegistry.Sheet>> byCategory =
@@ -76,6 +77,7 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
                 SettingsCategoryNode subCategoryNode = new SettingsCategoryNode(Collections.singletonList(sheet), sheet.getName(), sheet.getIcon());
                 node.add(subCategoryNode);
                 nodePathMap.put("/" + category + "/" + sheet.getName(), subCategoryNode);
+                sheetToNodeMap.put(sheet, subCategoryNode);
             }
             rootNode.add(node);
             nodes.add(node);
@@ -83,26 +85,46 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
         }
         tree.setModel(new DefaultTreeModel(rootNode));
         tree.addTreeSelectionListener(e -> {
-            if (tree.getLastSelectedPathComponent() instanceof SettingsCategoryNode) {
-                SettingsCategoryNode node = (SettingsCategoryNode) tree.getLastSelectedPathComponent();
-                JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree();
-                for (JIPipeSettingsRegistry.Sheet sheet : node.sheets) {
-                    traversedParameterCollection.add(sheet.getParameterCollection(), sheet.getName(), null);
-                    traversedParameterCollection.setSourceDocumentation(sheet.getParameterCollection(), new JIPipeDefaultDocumentation(sheet.getName(), null));
-                }
-
-                ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
-                        traversedParameterCollection,
-                        MarkdownDocument.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
-                        ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
-                splitPane.setRightComponent(parameterPanel);
-            }
+            onTreeNodeSelected(splitPane);
         });
         if (!nodes.isEmpty()) {
             SettingsCategoryNode node = nodes.get(0);
             tree.getSelectionModel().setSelectionPath(new TreePath(((DefaultTreeModel) tree.getModel()).getPathToRoot(node)));
         }
         UIUtils.expandAllTree(tree);
+    }
+
+    private void onTreeNodeSelected(JSplitPane splitPane) {
+        if (tree.getLastSelectedPathComponent() instanceof SettingsCategoryNode) {
+            SettingsCategoryNode node = (SettingsCategoryNode) tree.getLastSelectedPathComponent();
+
+            if (node.sheets.isEmpty()) {
+                splitPane.setRightComponent(UIUtils.createInfoLabel("No settings available", "There are no settings within the category '" + node.label + "'"));
+            } else if (node.sheets.size() == 1) {
+                JIPipeSettingsRegistry.Sheet sheet = node.sheets.get(0);
+                ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+                        sheet.getParameterCollection(),
+                        MarkdownDocument.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
+                        ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
+                splitPane.setRightComponent(parameterPanel);
+            } else {
+                FormPanel formPanel = new FormPanel(FormPanel.WITH_SCROLLING);
+                formPanel.addWideToForm(new JLabel("<html><h1>" + node.label + "</h1></html>", UIUtils.getIcon32FromResources("actions/configure.png"), SwingConstants.LEFT));
+                node.sheets.stream().sorted(Comparator.comparing(JIPipeSettingsRegistry.Sheet::getName)).forEach(sheet -> {
+                    JButton goToCategoryButton = new JButton("<html><span style=\"font-size: 16px;\">" + sheet.getName() + "</span><br/>" + sheet.getDescription() + "</html>", sheet.getIcon());
+                    goToCategoryButton.setHorizontalAlignment(SwingConstants.LEFT);
+//                    goToCategoryButton.setVerticalAlignment(SwingConstants.TOP);
+//                    goToCategoryButton.setVerticalTextPosition(SwingConstants.TOP);
+                    goToCategoryButton.addActionListener(e2 -> {
+                        tree.getSelectionModel().setSelectionPath(new TreePath(sheetToNodeMap.get(sheet).getPath()));
+                    });
+                    formPanel.addWideToForm(goToCategoryButton);
+                });
+                formPanel.addVerticalGlue();
+                splitPane.setRightComponent(formPanel);
+            }
+
+        }
     }
 
     public void selectNode(String path) {

@@ -13,17 +13,16 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut;
 
-import ij.ImagePlus;
-import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 
 @JIPipeDocumentation(name = "Set LUT (color map)", description = "Sets the LUT of the image from a predefined color map. " +
@@ -31,6 +30,7 @@ import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
 public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean duplicateImage = true;
     private ColorMap colorMap = ColorMap.viridis;
@@ -52,22 +52,7 @@ public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate(progressInfo);
-        LUT lut = colorMap.toLUT();
-        ImagePlus image = data.getImage();
-        if (applyToAllPlanes && image.isStack()) {
-            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
-            for (int z = 0; z < image.getNSlices(); z++) {
-                for (int c = 0; c < image.getNChannels(); c++) {
-                    for (int t = 0; t < image.getNFrames(); t++) {
-                        image.setPosition(c, z, t);
-                        image.getProcessor().setLut(lut);
-                    }
-                }
-            }
-            image.setPosition(original.getC(), original.getZ(), original.getT());
-        } else {
-            image.getProcessor().setLut(lut);
-        }
+        ImageJAlgorithmUtils.setLutFromColorMap(data.getImage(), colorMap, applyToAllPlanes);
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 

@@ -29,6 +29,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -38,7 +40,10 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParamet
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -55,14 +60,14 @@ import java.util.stream.Collectors;
  * Use {@link JIPipeAlgorithm} as base class to indicate a non-optional workload.
  */
 @JsonSerialize(using = JIPipeGraphNode.Serializer.class)
-public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection {
-    private JIPipeNodeInfo info;
-    private JIPipeSlotConfiguration slotConfiguration;
+public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection, JIPipeFunctionallyComparable {
     private final List<JIPipeInputDataSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputDataSlot> outputSlots = new ArrayList<>();
     private final BiMap<String, JIPipeInputDataSlot> inputSlotMap = HashBiMap.create();
     private final BiMap<String, JIPipeOutputDataSlot> outputSlotMap = HashBiMap.create();
     private final EventBus eventBus = new EventBus();
+    private JIPipeNodeInfo info;
+    private JIPipeSlotConfiguration slotConfiguration;
     private Map<String, Map<String, Point>> locations = new HashMap<>();
     private Path internalStoragePath;
     private Path storagePath;
@@ -89,31 +94,27 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             for (JIPipeInputSlot slot : getClass().getAnnotationsByType(JIPipeInputSlot.class)) {
                 if (slot.autoCreate()) {
                     created = true;
-                    builder.addInputSlot(slot.slotName(), slot.description(), slot.value(), slot.optional());
+                    builder.addInputSlot(slot);
                 }
             }
             for (JIPipeOutputSlot slot : getClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
                 if (slot.autoCreate()) {
-                    if (!slot.inheritedSlot().isEmpty())
-                        builder.allowOutputSlotInheritance(true);
                     created = true;
-                    builder.addOutputSlot(slot.slotName(), slot.description(), slot.value(), slot.inheritedSlot());
+                    builder.addOutputSlot(slot);
                 }
             }
 
-            if(!created) {
+            if (!created) {
                 for (JIPipeInputSlot slot : info.getInputSlots()) {
                     if (slot.autoCreate()) {
                         created = true;
-                        builder.addInputSlot(slot.slotName(), slot.description(), slot.value(), slot.optional());
+                        builder.addInputSlot(slot);
                     }
                 }
                 for (JIPipeOutputSlot slot : info.getOutputSlots()) {
                     if (slot.autoCreate()) {
-                        if (!StringUtils.isNullOrEmpty(slot.inheritedSlot()))
-                            builder.allowOutputSlotInheritance(true);
                         created = true;
-                        builder.addOutputSlot(slot.slotName(), slot.description(), slot.value(), slot.inheritedSlot());
+                        builder.addOutputSlot(slot);
                     }
                 }
             }
@@ -157,7 +158,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         slotConfiguration.getEventBus().register(this);
     }
 
-    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeIssueReport issues) {
+    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
         String id = node.get("jipipe:node-info-id").asText();
         if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
             System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
@@ -169,7 +170,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
         JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
         JIPipeGraphNode algorithm = info.newInstance();
-        algorithm.fromJson(node, issues.resolve("Nodes").resolve(id));
+        algorithm.fromJson(node, issues.resolve("Nodes").resolve(id), notifications);
         return (T) algorithm;
     }
 
@@ -197,7 +198,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
         if (changed) {
             eventBus.post(new JIPipeGraph.NodeSlotsChangedEvent(this));
-            updateSlotInheritance();
         }
     }
 
@@ -241,7 +241,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return changed;
     }
 
-    private <T extends JIPipeDataSlot> boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeDataSlotInfo> entry, BiMap<String,T> slotMap, List<T> slots) {
+    private <T extends JIPipeDataSlot> boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeDataSlotInfo> entry, BiMap<String, T> slotMap, List<T> slots) {
         JIPipeDataSlot existing = slotMap.getOrDefault(entry.getKey(), null);
         if (existing != null) {
             if (!Objects.equals(existing.getInfo(), entry.getValue())) {
@@ -267,9 +267,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return Copy
      */
     protected JIPipeSlotConfiguration copySlotConfiguration(JIPipeGraphNode other) {
-        JIPipeDefaultMutableSlotConfiguration configuration = JIPipeDefaultMutableSlotConfiguration.builder().build();
-        configuration.setTo(other.slotConfiguration);
-        return configuration;
+        return other.slotConfiguration.duplicate();
     }
 
     /**
@@ -288,7 +286,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return algorithm name
      */
-    @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999)
+    @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999, pinned = true, functional = false)
     @JIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
@@ -308,14 +306,14 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name")) {
+        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name", "jipipe:node:bookmarked")) {
             return false;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
-    @JIPipeParameter("jipipe:node:bookmarked")
+    @JIPipeParameter(value = "jipipe:node:bookmarked", pinned = true, functional = false)
     public boolean isBookmarked() {
         return bookmarked;
     }
@@ -430,6 +428,20 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
+     * Returns true if this node and the other node are functionally equal (i.e. they have the same functional parameters).
+     * For non-functional nodes, this determines if the {@link JIPipeNodeInfo} is equal
+     * @param other the other node
+     * @return if the nodes are functionally equal
+     */
+    @Override
+    public boolean functionallyEquals(Object other) {
+        if(other instanceof JIPipeGraphNode) {
+            return getInfo() == ((JIPipeGraphNode) other).getInfo();
+        }
+        return false;
+    }
+
+    /**
      * Gets the location map (writable) as map from compartment UUID to visual mode to location
      *
      * @return map from compartment UUID to visual mode to location
@@ -444,7 +456,14 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param locations map from compartment UUID to visual mode to location
      */
     public void setLocations(Map<String, Map<String, Point>> locations) {
-        this.locations = locations;
+        this.locations.clear();
+        for (Map.Entry<String, Map<String, Point>> entry : locations.entrySet()) {
+            Map<String, Point> pointMap = new HashMap<>();
+            for (Map.Entry<String, Point> stringPointEntry : entry.getValue().entrySet()) {
+                pointMap.put(stringPointEntry.getKey(), new Point(stringPointEntry.getValue()));
+            }
+            this.locations.put(entry.getKey(), pointMap);
+        }
     }
 
     /**
@@ -529,11 +548,13 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Loads this algorithm from JSON
+     * Please do not override this method if absolutely necessary. Use onDeserialized() to add methods after deserialization
      *
-     * @param node   The JSON data to load from
-     * @param issues issues during deserializing
+     * @param node          The JSON data to load from
+     * @param issues        issues during deserializing. these should be severe issues (missing parameters etc.). if you want to notify the user about potential issues that can be acted upon, use the notification inbox
+     * @param notifications additional notifications for the user. these can be acted upon
      */
-    public void fromJson(JsonNode node, JIPipeIssueReport issues) {
+    public void fromJson(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
         if (node.has("jipipe:slot-configuration"))
             slotConfiguration.fromJson(node.get("jipipe:slot-configuration"));
         if (node.has("jipipe:ui-grid-location")) {
@@ -551,6 +572,20 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
         // Deserialize algorithm-specific parameters
         ParameterUtils.deserializeParametersFromJson(this, node, issues);
+
+        // Run postprocess command
+        onDeserialized(node, issues, notifications);
+    }
+
+    /**
+     * Override this method to add operations to be run after deserialization from JSON
+     *
+     * @param node          the JSON node where the data was loaded
+     * @param issues        issues during deserialization. if you want to notify the user about potential issues that can be acted upon, use the notification inbox
+     * @param notifications additional notifications for the user. these can be acted upon
+     */
+    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+
     }
 
     /**
@@ -659,6 +694,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Gets all input slots that have the specified role
+     *
      * @param role the role
      * @return the list of input slots with the role. order is according to getInputSlots()
      */
@@ -668,6 +704,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Gets all input slots that have the specified role
+     *
      * @param role the role
      * @return the list of input slots with the role. order is according to getOutputSlots()
      */
@@ -743,7 +780,11 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return The UUID within getGraph()
      */
     public UUID getUUIDInParentGraph() {
-        return parentGraph.getUUIDOf(this);
+        if (parentGraph != null) {
+            return parentGraph.getUUIDOf(this);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -773,7 +814,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     @JIPipeDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
-    @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999)
+    @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999, pinned = true, functional = false)
     public HTMLText getCustomDescription() {
         if (customDescription == null)
             customDescription = new HTMLText();
@@ -792,6 +833,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Returns the current project directory.
+     *
      * @return the project directory. Null if none was set.
      */
     public Path getProjectDirectory() {
@@ -800,6 +842,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Sets the project directory. Can be null.
+     *
      * @param projectDirectory the project directory. can be null.
      */
     public void setProjectDirectory(Path projectDirectory) {
@@ -824,6 +867,19 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     public void setBaseDirectory(Path baseDirectory) {
         this.baseDirectory = baseDirectory;
         eventBus.post(new BaseDirectoryChangedEvent(baseDirectory));
+    }
+
+    /**
+     * Called when the node is being archived into the specified storage.
+     * The function is called on the copy of the node
+     *
+     * @param projectStorage         the storage where the data will be archived. storage where the project itself is located.
+     * @param wrappedExternalStorage storage where wrapped external files are put
+     * @param progressInfo           the progress info
+     * @param originalBaseDirectory current project directory
+     */
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+        // Do nothing
     }
 
     /**
@@ -862,88 +918,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
-     * Called by an {@link JIPipeGraph} when a slot was connected. Triggers update of slot inheritance.
-     *
-     * @param event The event generated by the graph
-     */
-    public void onSlotConnected(JIPipeGraph.NodeConnectedEvent event) {
-        updateSlotInheritance();
-    }
-
-    private Class<? extends JIPipeData> getExpectedSlotDataType(JIPipeDataSlotInfo slotDefinition, JIPipeDataSlot slotInstance) {
-        String inheritedSlotName = slotDefinition.getInheritedSlot();
-        if (inheritedSlotName == null || inheritedSlotName.isEmpty())
-            return slotInstance.getAcceptedDataType();
-        if ("*".equals(inheritedSlotName) && !getInputSlots().isEmpty()) {
-            inheritedSlotName = getInputSlotOrder().get(0);
-        }
-
-        JIPipeDataSlot inheritedSlot = inputSlotMap.getOrDefault(inheritedSlotName, null);
-        if (inheritedSlot == null || inheritedSlot.getSlotType() != JIPipeSlotType.Input)
-            return slotInstance.getAcceptedDataType();
-
-        // Inherit from the inherited slot if there is no graph connection
-        Set<JIPipeDataSlot> sourceSlots = parentGraph.getInputIncomingSourceSlots(inheritedSlot);
-        Class<? extends JIPipeData> inheritedType;
-        if (sourceSlots.isEmpty())
-            inheritedType = JIPipeDataSlotInfo.applyInheritanceConversion(slotDefinition, inheritedSlot.getAcceptedDataType());
-        else
-            inheritedType = JIPipeDataSlotInfo.applyInheritanceConversion(slotDefinition, sourceSlots.iterator().next().getAcceptedDataType());
-
-        // Check if the inherited type is even compatible with the actual type
-        if (slotDefinition.getDataClass().isAssignableFrom(inheritedType))
-            return inheritedType;
-        else
-            return slotDefinition.getDataClass();
-    }
-
-    /**
-     * Updates the inheritance: Passes traits from input slots to output slots while modifying the results depending on
-     * the trait configuration.
-     */
-    public void updateSlotInheritance() {
-        if (parentGraph != null) {
-            boolean modified = false;
-            for (Map.Entry<String, JIPipeDataSlotInfo> entry : getSlotConfiguration().getOutputSlots().entrySet()) {
-                JIPipeDataSlot slotInstance = outputSlotMap.getOrDefault(entry.getKey(), null);
-                if (slotInstance == null || slotInstance.getSlotType() != JIPipeSlotType.Output)
-                    continue;
-
-                Class<? extends JIPipeData> expectedSlotDataType = getExpectedSlotDataType(entry.getValue(), slotInstance);
-                if (slotInstance.getAcceptedDataType() != expectedSlotDataType) {
-                    slotInstance.setAcceptedDataType(expectedSlotDataType);
-                    triggerSlotsChangedEvent();
-                    modified = true;
-                }
-            }
-            if (modified) {
-                Set<JIPipeGraphNode> algorithms = new HashSet<>();
-                for (JIPipeDataSlot slot : getOutputSlots()) {
-                    for (JIPipeDataSlot targetSlot : parentGraph.getOutputOutgoingTargetSlots(slot)) {
-                        algorithms.add(targetSlot.getNode());
-                    }
-                }
-                for (JIPipeGraphNode algorithm : algorithms) {
-                    algorithm.updateSlotInheritance();
-                }
-            }
-        }
-    }
-
-    /**
      * Triggers an event that indicates that the slots have changed
      */
     public void triggerSlotsChangedEvent() {
         eventBus.post(new JIPipeGraph.NodeSlotsChangedEvent(this));
-    }
-
-    /**
-     * Called by the {@link JIPipeGraph} to trigger slot inheritance updates when a slot is disconnected
-     *
-     * @param event The generated event
-     */
-    public void onSlotDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
-        updateSlotInheritance();
     }
 
     /**
@@ -971,7 +949,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @param subParameter the sub-parameter
      */
-    protected void registerSubParameter(JIPipeParameterCollection subParameter) {
+    public void registerSubParameter(JIPipeParameterCollection subParameter) {
         subParameter.getEventBus().register(this);
     }
 
@@ -1076,30 +1054,12 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return true;
     }
 
-    /**
-     * Sets/unsets virtual mode for all output slots
-     *
-     * @param virtual      virtual mode
-     * @param apply        apply the setting
-     * @param progressInfo progress for applying. Can be null if apply is false.
-     */
-    public void setAllSlotsVirtual(boolean virtual, boolean apply, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot slot : getInputSlots()) {
-            slot.getInfo().setVirtual(virtual);
-            if (apply)
-                slot.applyVirtualState(progressInfo);
-        }
-        for (JIPipeDataSlot slot : getOutputSlots()) {
-            slot.getInfo().setVirtual(virtual);
-            if (apply)
-                slot.applyVirtualState(progressInfo);
-        }
-    }
-
     public boolean isVisibleIn(UUID compartmentUUIDInGraph) {
         UUID currentCompartmentUUID = getCompartmentUUIDInParentGraph();
         if (Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID))
             return true;
+        if(parentGraph == null)
+            return false;
         return parentGraph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
     }
 
@@ -1202,6 +1162,36 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 }
             }
         }
+    }
+
+    /**
+     * An icon that is displayed on the right-hand side of the input slot
+     * Can be null
+     * @param slotName the slot name
+     * @return the icon or null
+     */
+    public ImageIcon getUIInputSlotIcon(String slotName) {
+        return null;
+    }
+
+    /**
+     * Explanations added to the slot menu
+     * Can be null
+     * @param slotName the slot name
+     * @param target the list of menu items
+     */
+    public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
+    }
+
+    /**
+     * Size of the icon returned by getUIInputSlotIcon
+     * Should be at most 16x16
+     * Defaults to 12x12
+     * @param slotName the slot name
+     * @return the icon size
+     */
+    public Dimension getUIInputSlotIconBaseDimensions(String slotName) {
+        return new Dimension(12, 12);
     }
 
     /**

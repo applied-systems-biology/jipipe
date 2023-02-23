@@ -50,11 +50,17 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerMenuExtension(RebuildAliasIdsTool.class);
         registerMenuExtension(DissolveCompartmentsTool.class);
         registerMenuExtension(OpenImageJConsoleTool.class);
+        registerMenuExtension(RestartJIPipeTool.class);
     }
 
     @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:tools";
+    }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
     }
 
 }

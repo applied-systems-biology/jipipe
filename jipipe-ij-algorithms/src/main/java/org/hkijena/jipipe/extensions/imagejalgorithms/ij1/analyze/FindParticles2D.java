@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
@@ -54,10 +55,10 @@ import java.util.List;
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
-
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "The mask where particles are extracted from. White pixels are foreground.", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The extracted ROI", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true, description = "The measurements of the ROI")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles...")
 public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.POSITIVE_INFINITY;
@@ -71,16 +72,13 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private ImageStatisticsSetParameter statisticsParameters = new ImageStatisticsSetParameter();
     private Neighborhood2D neighborhood = Neighborhood2D.EightConnected;
 
+    private boolean measureInPhysicalUnits = true;
+
     /**
      * @param info algorithm info
      */
     public FindParticles2D(JIPipeNodeInfo info) {
-        super(info,
-                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Mask", "The mask where particles are extracted from. White pixels are foreground.", ImagePlusGreyscaleMaskData.class)
-                        .addOutputSlot("ROI", "The extracted ROI", ROIListData.class, null)
-                        .addOutputSlot("Measurements", "The measurements of the ROI", ResultsTableData.class, null)
-                        .seal()
-                        .build());
+        super(info);
         this.annotationType.setContent("Image index");
     }
 
@@ -101,12 +99,13 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.blackBackground = other.blackBackground;
         this.includeHoles = other.includeHoles;
         this.neighborhood = other.neighborhood;
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.statisticsParameters = new ImageStatisticsSetParameter(other.statisticsParameters);
     }
 
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
             "Each measurement will be assigned to one or multiple output table columns. <br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
-    @JIPipeParameter("measurements")
+    @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getStatisticsParameters() {
         return statisticsParameters;
     }
@@ -120,7 +119,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
 
-        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             // Update the analyzer to extract the measurements we want
             statisticsParameters.updateAnalyzer();
 
@@ -153,6 +152,10 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                             minParticleCircularity,
                             maxParticleCircularity);
                     ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
+                    // Copy calibration
+                    {
+                        sliceImage.copyScale(inputData.getImage());
+                    }
                     analyzer.analyze(sliceImage, ip);
 
                     // Override for "Slice"
@@ -198,6 +201,9 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                             minParticleCircularity,
                             maxParticleCircularity);
                     ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
+                    if (measureInPhysicalUnits) {
+                        sliceImage.copyScale(inputData.getImage());
+                    }
                     analyzer.analyze(sliceImage, ip);
 
                     // Override for "Slice"
@@ -224,6 +230,17 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 dataBatch.addOutputData("Measurements", mergedResultsTable, progressInfo);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
     @JIPipeParameter(value = "min-particle-size", uiOrder = -20)

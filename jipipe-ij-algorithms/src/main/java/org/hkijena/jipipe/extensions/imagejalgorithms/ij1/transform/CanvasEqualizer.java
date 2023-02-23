@@ -21,8 +21,10 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
@@ -64,10 +66,10 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
 
         variables.set("width", wNew);
         variables.set("height", hNew);
-        if(!xAxis.isEmpty())
-            wNew =  (int) xAxis.evaluateToNumber(variables);
-        if(!yAxis.isEmpty())
-            hNew =  (int) yAxis.evaluateToNumber(variables);
+        if (!xAxis.isEmpty())
+            wNew = (int) xAxis.evaluateToNumber(variables);
+        if (!yAxis.isEmpty())
+            hNew = (int) yAxis.evaluateToNumber(variables);
 
         List<ImagePlus> result = new ArrayList<>();
         for (ImagePlus imp : input) {
@@ -123,7 +125,7 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
                     break;
             }
 
-            if (imp.isStack()) {
+            if (imp.hasImageStack()) {
                 ImagePlus resultImage = new ImagePlus(imp.getTitle() + "_Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff));
                 resultImage.setDimensions(imp.getNChannels(), imp.getNSlices(), imp.getNFrames());
                 resultImage.copyScale(imp);
@@ -168,7 +170,7 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
     @JIPipeParameter("x-axis-expression")
     @ExpressionParameterSettingsVariable(key = "width", name = "Width", description = "Calculated width of the output image")
     @ExpressionParameterSettingsVariable(key = "height", name = "Height", description = "Calculated height of the output image")
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getxAxis() {
         return xAxis;
     }
@@ -182,7 +184,7 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
     @JIPipeParameter("y-axis-expression")
     @ExpressionParameterSettingsVariable(key = "width", name = "Width", description = "Calculated width of the output image")
     @ExpressionParameterSettingsVariable(key = "height", name = "Height", description = "Calculated height of the output image")
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getyAxis() {
         return yAxis;
     }

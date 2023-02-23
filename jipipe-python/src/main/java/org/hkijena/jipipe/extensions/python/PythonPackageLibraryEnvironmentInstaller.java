@@ -83,9 +83,10 @@ public abstract class PythonPackageLibraryEnvironmentInstaller<T extends PythonP
         if (!configure())
             return;
 
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
         environment.setLibraryDirectory(getConfiguration().getInstallationPath());
-        if (Files.exists(getConfiguration().getInstallationPath())) {
-            PathUtils.deleteDirectoryRecursively(getConfiguration().getInstallationPath(),
+        if (Files.exists(installationPath)) {
+            PathUtils.deleteDirectoryRecursively(installationPath,
                     progressInfo.resolve("Cleanup"));
         }
         environment.install(getProgressInfo());
@@ -115,8 +116,9 @@ public abstract class PythonPackageLibraryEnvironmentInstaller<T extends PythonP
                 boolean result = ParameterPanel.showDialog(getWorkbench(), configuration, new MarkdownDocument("# Install Python library\n\n" +
                                 "Please review the settings on the left-hand side. Click OK to install the library."), "Download & install " + getEnvironmentName(),
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-                if (result && Files.exists(getConfiguration().installationPath)) {
-                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + getConfiguration().getInstallationPath().toAbsolutePath()
+                Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+                if (result && Files.exists(installationPath)) {
+                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + installationPath
                             + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         result = false;
                     }

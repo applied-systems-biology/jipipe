@@ -14,32 +14,30 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 
 /**
  * Merges the input slot tables into one data slot
  */
-@JIPipeDocumentation(name = "Merge data slots", description = "Merges the data rows from all input slots into one output slot")
+@JIPipeDocumentation(name = "Merge inputs", description = "Structural node that indicates that all inputs are merged into a single output. Please note that JIPipe nodes accept multiple inputs. " +
+        "This node is not needed outside structuring the pipeline.")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(JIPipeData.class)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class MergeDataSlots extends JIPipeAlgorithm {
 
     /**
      * @param info the algorithm info
      */
     public MergeDataSlots(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .restrictOutputSlotCount(1)
-                .build());
+        super(info);
     }
 
     /**
@@ -53,28 +51,6 @@ public class MergeDataSlots extends JIPipeAlgorithm {
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot outputSlot = getFirstOutputSlot();
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            outputSlot.addData(inputSlot, progressInfo);
-        }
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (getOutputSlots().isEmpty()) {
-            report.reportIsInvalid("No output slot!",
-                    "The result is put into the output slot.",
-                    "Please add an output slot that is compatible to the input data.", this);
-        } else {
-            JIPipeDataSlot outputSlot = getFirstOutputSlot();
-            for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                if (!outputSlot.getAcceptedDataType().isAssignableFrom(inputSlot.getAcceptedDataType())) {
-                    report.resolve("Slots").resolve(inputSlot.getName())
-                            .reportIsInvalid("Input slot is incompatible!",
-                                    "Output data must fit to the input data.",
-                                    "Please add an output slot that is compatible to the input data.", this);
-                }
-            }
-        }
+        getFirstOutputSlot().addDataFromSlot(getFirstInputSlot(), progressInfo);
     }
 }

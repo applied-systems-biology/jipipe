@@ -24,7 +24,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter filter = new DefaultExpressionParameter("count > 0");
     private boolean includeAnnotations = true;
-    private boolean outputEmptyLists = false;
+    private boolean outputEmptyLists = true;
 
     public FilterROIListsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -86,7 +86,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filter", description = "The filter expression used to test ROI lists. Must return a boolean.")
     @JIPipeParameter("filter")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettings(variableSource = VariableSource.class, hint = "per ROI list")
     public DefaultExpressionParameter getFilter() {
         return filter;
     }

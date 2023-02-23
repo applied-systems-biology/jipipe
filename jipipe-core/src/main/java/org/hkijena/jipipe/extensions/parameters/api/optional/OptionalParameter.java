@@ -94,6 +94,7 @@ public abstract class OptionalParameter<T> {
 
     /**
      * Returns the content if enabled, otherwise the default value
+     *
      * @param defaultValue the default value
      * @return the content if enabled, otherwise the default value
      */

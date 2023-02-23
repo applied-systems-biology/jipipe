@@ -13,19 +13,27 @@
 
 package org.hkijena.jipipe.extensions.utils;
 
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
+import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
+import org.hkijena.jipipe.extensions.multiparameters.MultiParameterAlgorithmsExtension;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.utils.algorithms.*;
+import org.hkijena.jipipe.extensions.utils.algorithms.datatable.*;
 import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByCountAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByPercentageAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.meta.GetJIPipeSlotFolderAlgorithm;
@@ -38,12 +46,34 @@ import org.hkijena.jipipe.extensions.utils.contextmenu.ParameterExplorerContextM
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.extensions.utils.datatypes.PathDataToJIPipeOutputConverter;
 import org.hkijena.jipipe.extensions.utils.display.ImportJIPipeProjectDataOperation;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
+import java.util.Set;
+
 @Plugin(type = JIPipeJavaExtension.class)
 public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:utils",
+            JIPipe.getJIPipeVersion(),
+            "Utilities");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(UtilitiesExtension.class, "org/hkijena/jipipe/extensions/utils");
+
+    public UtilitiesExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DATA_PROCESSING, PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, FilesystemExtension.AS_DEPENDENCY, MultiParameterAlgorithmsExtension.AS_DEPENDENCY);
+    }
+
     @Override
     public StringList getDependencyCitations() {
         return new StringList();
@@ -61,19 +91,20 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerEnumParameterType("set-virtual-state:state", SetVirtualStateAlgorithm.VirtualState.class, "Data storage location", "Determines where the data should be stored.");
-        registerNodeType("set-virtual-state", SetVirtualStateAlgorithm.class, UIUtils.getIconURLFromResources("devices/media-memory.png"));
-
         registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), new OpenPathDataOperation(), new CopyPathDataOperation(), new ImportJIPipeProjectDataOperation());
         registerDatatypeConversion(new PathDataToJIPipeOutputConverter());
 
         registerNodeType("merge-data-to-table", MergeDataToTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));
         registerNodeType("extract-table-to-data", ExtractTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data.png"));
+        registerNodeType("data-table-annotate-with-properties", AnnotateWithDataTableProperties.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));
+        registerNodeType("data-table-pull-annotations", PullDataTableAnnotations.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("data-table-push-annotations", PushDataTableAnnotations.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
 
         registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
         registerNodeType("node-group", NodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
         registerNodeType("converter", ConverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
-        registerNodeType("sort-rows-by-annotation", SortRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
+        registerNodeType("sort-rows-by-annotation", SortRowsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
+        registerNodeType("sort-rows-by-expression", SortRowsByExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
         registerNodeType("jipipe-run-project", RunJIPipeProjectAlgorithm.class, UIUtils.getIconURLFromResources("actions/run-build.png"));
         registerNodeType("jipipe-project-parameters", JIPipeProjectParameterDefinition.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
         registerNodeType("jipipe-project-parameters-from-paths", PathsToJIPipeProjectParametersAlgorithm.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
@@ -91,6 +122,9 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("run-process-iterating", RunProcessIteratingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
         registerNodeType("run-process-merging", RunProcessMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
 
+        registerNodeType("sleep", SleepAlgorithm.class, UIUtils.getIconURLFromResources("actions/clock.png"));
+        registerNodeType("duplicate", DuplicateDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-duplicate.png"));
+
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
         commentNodeInfo.setRunnable(false);
@@ -98,6 +132,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         // Parameter explorer
         registerContextMenuAction(new ParameterExplorerContextMenuAction());
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     @Override

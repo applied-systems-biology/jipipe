@@ -79,26 +79,32 @@ public class CLIJImageData implements JIPipeData {
 
     @Override
     public void close() {
-        image.close();
+        try {
+            image.close();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+        }
         image = null;
     }
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeDataTableDataSource) {
-            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, true);
-            window.setCustomDataLoader(new CLIJImageViewerCustomDataLoader());
-            window.setVisible(true);
-            SwingUtilities.invokeLater(window::reloadDisplayedData);
-        } else {
-            pull().getImage().show();
-        }
+        CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
+        window.setCustomDataLoader(new CLIJImageViewerCustomDataLoader());
+        window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     @Override
     public Component preview(int width, int height) {
         ImagePlusData data = pull();
-        return data.preview(width, height);
+        if(data != null) {
+            return data.preview(width, height);
+        }
+        else {
+            return null;
+        }
     }
 
     /**

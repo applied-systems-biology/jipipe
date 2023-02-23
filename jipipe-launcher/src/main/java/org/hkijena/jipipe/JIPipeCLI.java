@@ -9,6 +9,8 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
@@ -103,9 +105,10 @@ public class JIPipeCLI {
             jiPipe.initialize(extensionSettings, issues);
 
             JIPipeIssueReport projectIssues = new JIPipeIssueReport();
+            JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             JIPipeProject project;
             try {
-                project = JIPipeProject.loadProject(projectFile, projectIssues);
+                project = JIPipeProject.loadProject(projectFile, projectIssues, notifications);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -141,6 +144,17 @@ public class JIPipeCLI {
 
             project.reportValidity(projectIssues);
             projectIssues.print();
+
+            if (!notifications.isEmpty()) {
+                System.err.println("The following notifications were generated:");
+                for (JIPipeNotification notification : notifications.getNotifications()) {
+                    System.err.println("- " + notification.getHeading() + " [" + notification.getId() + "]");
+                    System.err.println("  " + notification.getDescription());
+                    if (!notification.getActions().isEmpty()) {
+                        System.err.println("  -->> GUI actions detected. Please run the JIPipe GUI to execute them");
+                    }
+                }
+            }
 
             JIPipeRunSettings settings = new JIPipeRunSettings();
             settings.setNumThreads(numThreads);

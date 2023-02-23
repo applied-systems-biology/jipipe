@@ -13,8 +13,12 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
+import org.hkijena.jipipe.extensions.settings.DownloadSettings;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,6 +27,7 @@ import java.io.OutputStream;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -40,6 +45,61 @@ public class WebUtils {
     }
 
     public static void download(URL url, Path outputFile, String label, JIPipeProgressInfo progressInfo) {
+        boolean useExternalDownloader;
+        if (JIPipe.isInstantiated()) {
+            DownloadSettings settings = null;
+            try {
+                settings = DownloadSettings.getInstance();
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+            if (settings != null) {
+                useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport().isValid();
+                try {
+                    if (!useExternalDownloader) {
+                        downloadNative(url, outputFile, label, progressInfo);
+                    } else {
+                        ProcessEnvironment process = settings.getExternalDownloaderProcess();
+                        ExpressionVariables variables = new ExpressionVariables();
+                        variables.set("output_file", outputFile.toAbsolutePath().toString());
+                        variables.set("url", url.toString());
+                        ProcessUtils.runProcess(process, variables, progressInfo);
+                    }
+
+                    if (Files.isRegularFile(outputFile)) {
+                        return; // We are done here if it finishes
+                    } else {
+                        if (!useExternalDownloader) {
+                            throw new RuntimeException("Output file " + outputFile + " does not exist!");
+                        }
+                        progressInfo.log("Output file " + outputFile + " does not exist!");
+                        progressInfo.log("Falling back to native downloader");
+                    }
+
+                } catch (Throwable ex) {
+                    if (!useExternalDownloader) {
+                        throw ex;
+                    }
+                    progressInfo.log("Error: " + ex);
+                    progressInfo.log("Falling back to native downloader");
+                }
+            } else {
+                progressInfo.log("Falling back to native downloader");
+            }
+        }
+        // Fall back to native downloader
+        downloadNative(url, outputFile, label, progressInfo);
+    }
+
+    /**
+     * The native download method written in Java
+     *
+     * @param url          the URL
+     * @param outputFile   the output file
+     * @param label        the label
+     * @param progressInfo the progress info
+     */
+    public static void downloadNative(URL url, Path outputFile, String label, JIPipeProgressInfo progressInfo) {
         DecimalFormat df = new DecimalFormat("0.00");
         df.setGroupingUsed(false);
         df.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.ENGLISH));

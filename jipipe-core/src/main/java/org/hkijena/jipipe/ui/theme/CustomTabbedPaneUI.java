@@ -745,8 +745,6 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
     }
 
     /**
-     *
-     *
      * @since 1.6
      */
     protected int getBaselineOffset() {

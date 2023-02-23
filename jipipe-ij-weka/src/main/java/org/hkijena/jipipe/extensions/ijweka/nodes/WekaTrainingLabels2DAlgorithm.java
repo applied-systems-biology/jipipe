@@ -15,7 +15,6 @@ import org.hkijena.jipipe.extensions.ijweka.parameters.collections.WekaFeature2D
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature2D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleMaskData;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 import weka.classifiers.AbstractClassifier;
@@ -41,6 +40,7 @@ public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(featureSettings);
         registerSubParameter(classifierSettings);
     }
+
     public WekaTrainingLabels2DAlgorithm(WekaTrainingLabels2DAlgorithm other) {
         super(other);
         this.featureSettings = other.featureSettings;
@@ -51,7 +51,7 @@ public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-                // Setup parameters
+        // Setup parameters
         ArrayList<String> selectedFeatureNames = featureSettings.getTrainingFeatures().getValues().stream().map(WekaFeature2D::name).collect(Collectors.toCollection(ArrayList::new));
         Classifier classifier = (new WekaClassifierParameter(getClassifierSettings().getClassifier())).getClassifier(); // This will make a copy of the classifier
 
@@ -60,11 +60,11 @@ public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus labelImage = dataBatch.getInputData("Labels", ImagePlus2DGreyscaleData.class, progressInfo).getDuplicateImage();
 
         int numLabels = LabelImages.findAllLabels(labelImage).length;
-        if(labelImage.getProcessor().getStats().min == 0) {
+        if (labelImage.getProcessor().getStats().min == 0) {
             numLabels += 1;
         }
 
-        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
             WekaSegmentation wekaSegmentation = new WekaSegmentation(trainingImage);
             wekaSegmentation.setClassifier((AbstractClassifier) classifier);
             wekaSegmentation.setDoClassBalance(getClassifierSettings().isBalanceClasses());
@@ -76,7 +76,7 @@ public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
             wekaSegmentation.setMaximumSigma(featureSettings.getMaxSigma());
             wekaSegmentation.setUseNeighbors(featureSettings.isUseNeighbors());
 
-            while(wekaSegmentation.getNumOfClasses() < numLabels) {
+            while (wekaSegmentation.getNumOfClasses() < numLabels) {
                 wekaSegmentation.addClass();
             }
 

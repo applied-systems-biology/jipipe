@@ -52,14 +52,15 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private JIPipeSlotType slotType;
     private SearchTextField searchField;
     private JList<JIPipeDataInfo> datatypeList;
-    private JComboBox<String> inheritedSlotList;
     private JTextField nameEditor;
     private JIPipeDataInfo selectedInfo;
     private JButton confirmButton;
     private JDialog dialog;
     private Set<JIPipeDataInfo> availableTypes;
-    private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
     private JCheckBox optionalInputEditor = new JCheckBox();
+
+    private JScrollPane listScrollPane;
+    private JXTextField descriptionEditor;
 
     /**
      * @param algorithm      the target algorithm
@@ -76,13 +77,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
         setInitialName();
         if (lastSelectedType != null && availableTypes.contains(lastSelectedType)) {
             datatypeList.setSelectedValue(lastSelectedType, true);
+        }
+        SwingUtilities.invokeLater(() -> {
             nameEditor.requestFocusInWindow();
             nameEditor.selectAll();
-        }
-        if (availableTypes.size() == 1) {
-            nameEditor.requestFocusInWindow();
-            nameEditor.selectAll();
-        }
+        });
     }
 
     /**
@@ -124,7 +123,6 @@ public class AddAlgorithmSlotPanel extends JPanel {
     }
 
     private void initialize() {
-        JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         setLayout(new BorderLayout());
 
         JPanel listPanel = new JPanel(new BorderLayout());
@@ -138,8 +136,8 @@ public class AddAlgorithmSlotPanel extends JPanel {
                 setSelectedInfo(datatypeList.getSelectedValue());
             }
         });
-        JScrollPane scrollPane = new JScrollPane(datatypeList);
-        listPanel.add(scrollPane, BorderLayout.CENTER);
+        listScrollPane = new JScrollPane(datatypeList);
+        listPanel.add(listScrollPane, BorderLayout.CENTER);
         add(listPanel, BorderLayout.WEST);
 
         // Create form located at the bottom
@@ -163,30 +161,14 @@ public class AddAlgorithmSlotPanel extends JPanel {
         });
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
 
+        // Description editor
+        descriptionEditor = new JXTextField();
+        formPanel.addToForm(descriptionEditor, new JLabel("Description"));
+
         if (slotType == JIPipeSlotType.Input) {
             optionalInputEditor.setText("Optional input");
             optionalInputEditor.setToolTipText("If enabled, the input slot does not require an incoming edge. The node then will receive an empty data table.");
             formPanel.addWideToForm(optionalInputEditor, null);
-        }
-        if (slotType == JIPipeSlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
-            formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("actions/configure.png"));
-            inheritedSlotList = new JComboBox<>();
-            inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(algorithm));
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-            model.addElement("");
-            model.addElement("*");
-            for (String id : algorithm.getInputSlotOrder()) {
-                model.addElement(id);
-            }
-            inheritedSlotList.setModel(model);
-            inheritedSlotList.setSelectedIndex(0);
-            formPanel.addToForm(inheritedSlotList, new JLabel("Inherited slot"), null);
-            inheritedSlotList.setToolTipText("Inherits the slot type from an input slot. This will adapt to which data is currently connected.");
-
-            InheritanceConversionEditorUI inheritanceConversionEditorUI
-                    = new InheritanceConversionEditorUI(inheritanceConversions);
-            inheritanceConversionEditorUI.setBorder(BorderFactory.createEtchedBorder());
-            formPanel.addToForm(inheritanceConversionEditorUI, new JLabel("Inheritance conversions"), null);
         }
         formPanel.addVerticalGlue();
         add(formPanel, BorderLayout.CENTER);
@@ -245,19 +227,13 @@ public class AddAlgorithmSlotPanel extends JPanel {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         JIPipeDataSlotInfo slotDefinition;
         if (slotType == JIPipeSlotType.Input) {
-            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, "", null);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, StringUtils.nullToEmpty(descriptionEditor.getText()));
             slotDefinition.setOptional(optionalInputEditor.isSelected());
         } else if (slotType == JIPipeSlotType.Output) {
-            String inheritedSlot = null;
-            if (inheritedSlotList != null && inheritedSlotList.getSelectedItem() != null) {
-                inheritedSlot = inheritedSlotList.getSelectedItem().toString();
-            }
-
-            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, "", inheritedSlot);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, StringUtils.nullToEmpty(descriptionEditor.getText()));
         } else {
             throw new UnsupportedOperationException();
         }
-        slotDefinition.setInheritanceConversions(inheritanceConversions);
 
         if (getHistoryJournal() != null) {
             getHistoryJournal().snapshotBeforeAddSlot(algorithm, slotDefinition, algorithm.getCompartmentUUIDInParentGraph());
@@ -343,13 +319,20 @@ public class AddAlgorithmSlotPanel extends JPanel {
         setSelectedInfo(null);
         List<JIPipeDataInfo> availableTypes = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeDataInfo> listModel = new DefaultListModel<>();
+        if (lastSelectedType != null && availableTypes.contains(lastSelectedType)) {
+            listModel.addElement(lastSelectedType);
+        }
         for (JIPipeDataInfo type : availableTypes) {
+            if (lastSelectedType != null && availableTypes.contains(lastSelectedType) && type == lastSelectedType) {
+                continue;
+            }
             listModel.addElement(type);
         }
         datatypeList.setModel(listModel);
         if (!listModel.isEmpty()) {
             datatypeList.setSelectedIndex(0);
         }
+        UIUtils.invokeScrollToTop(listScrollPane);
     }
 
     public JIPipeDataInfo getSelectedInfo() {

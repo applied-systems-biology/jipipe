@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -69,9 +69,9 @@ public class JIPipeProjectTabMetadata {
         for (String id : openTabs) {
             restoreTab(id, tabIds, workbench);
         }
-        if(!StringUtils.isNullOrEmpty(selectedTab)) {
+        if (!StringUtils.isNullOrEmpty(selectedTab)) {
             DocumentTabPane.DocumentTab tab = tabIds.getOrDefault(selectedTab, null);
-            if(tab != null) {
+            if (tab != null) {
                 workbench.getDocumentTabPane().switchToTab(tab);
             }
         }

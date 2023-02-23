@@ -14,9 +14,13 @@
 package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
-import java.util.HashSet;
-import java.util.Set;
+import javax.swing.*;
+import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Interfaced for a parameterized object
@@ -77,6 +81,39 @@ public interface JIPipeParameterCollection {
     }
 
     /**
+     * Adds a listener to the change of a parameter of the specified key.
+     * Wrapper around creating an anonymous object
+     *
+     * @param key      the parameter key
+     * @param consumer the listener
+     */
+    default void addParameterChangeListener(String key, Consumer<ParameterChangedEvent> consumer) {
+        getEventBus().register(new Object() {
+            @Subscribe
+            public void onParameterChanged(ParameterChangedEvent event) {
+                if (Objects.equals(key, event.getKey())) {
+                    consumer.accept(event);
+                }
+            }
+        });
+    }
+
+    /**
+     * Adds a listener to the change of any parameter.
+     * Wrapper around creating an anonymous object
+     *
+     * @param consumer the listener
+     */
+    default void addParameterChangeListener(Consumer<ParameterChangedEvent> consumer) {
+        getEventBus().register(new Object() {
+            @Subscribe
+            public void onParameterChanged(ParameterChangedEvent event) {
+                consumer.accept(event);
+            }
+        });
+    }
+
+    /**
      * Sets a parameter and triggers the associated events
      *
      * @param key   the parameter key
@@ -113,11 +150,44 @@ public interface JIPipeParameterCollection {
     }
 
     /**
+     * List of context actions that are added to this collection.
+     * Does no influence the creation of context actions via {@link JIPipeContextAction}
+     *
+     * @return list of context actions
+     */
+    default List<JIPipeParameterCollectionContextAction> getContextActions() {
+        return Collections.emptyList();
+    }
+
+    /**
      * Gets the event bus that posts events about the parameters
      *
      * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
      */
     EventBus getEventBus();
+
+    /**
+     * Allows to install additional operations into the context menu of each parameter (triangle menu next to the help)
+     * Please note that the root parameter collection handles this task for all sub-parameters
+     * @param parameterPanel the parameter panel
+     * @param parameterEditorUI the currently handled parameter editor
+     * @param menu the menu
+     */
+    default void installUIParameterOptions(ParameterPanel parameterPanel, JIPipeParameterEditorUI parameterEditorUI, JPopupMenu menu) {
+
+    }
+
+    /**
+     * Allows to replace the UI that is inserted into the parameter panel with a different component
+     * Labels are not affected
+     * Please note that the root parameter collection handles this task for all sub-parameters
+     * @param parameterPanel the parameter panel
+     * @param parameterEditorUI the currently handled parameter editor
+     * @return the component to be inserted into the parameter panel
+     */
+    default JComponent installUIOverrideParameterEditor(ParameterPanel parameterPanel, JIPipeParameterEditorUI parameterEditorUI) {
+        return parameterEditorUI;
+    }
 
     /**
      * Triggered when a parameter holder's parameters are changed

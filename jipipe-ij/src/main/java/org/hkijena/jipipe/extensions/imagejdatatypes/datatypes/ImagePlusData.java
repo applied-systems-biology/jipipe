@@ -15,8 +15,11 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Overlay;
+import ij.gui.Roi;
 import ij.process.*;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeCommonData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -32,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -39,6 +43,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -49,6 +54,7 @@ import java.util.Collections;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
         "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
 @ImageTypeInfo
+@JIPipeCommonData
 public class ImagePlusData implements JIPipeData {
 
     private ImagePlus image;
@@ -117,13 +123,27 @@ public class ImagePlusData implements JIPipeData {
                     "Please contact the JIPipe developers about this issue.");
         }
         String fileName = targetFile.toString().toLowerCase();
+        ImagePlus outputImage;
         if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
             OMEImageData omeImageData = OMEImageData.importData(storage, progressInfo);
-            return omeImageData.getImage();
+            outputImage = omeImageData.getImage();
         } else {
             progressInfo.log("ImageJ import " + targetFile);
-            return IJ.openImage(targetFile.toString());
+            outputImage = IJ.openImage(targetFile.toString());
         }
+        if (outputImage.getOverlay() == null || outputImage.getOverlay().size() == 0) {
+            // Import ROI
+            Path roiFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".roi", ".zip");
+            if (roiFile != null) {
+                ROIListData rois = ROIListData.importData(storage, progressInfo.resolve("Import ROI"));
+                Overlay overlay = new Overlay();
+                for (Roi roi : rois) {
+                    overlay.add(roi);
+                }
+                outputImage.setOverlay(overlay);
+            }
+        }
+        return outputImage;
     }
 
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -275,6 +295,13 @@ public class ImagePlusData implements JIPipeData {
                 Path outputPath = storage.getFileSystemPath().resolve(name + ".tif");
                 IJ.saveAsTiff(image, outputPath.toString());
             }
+            if (image.getOverlay() != null) {
+                ROIListData rois = new ROIListData();
+                for (Roi roi : image.getOverlay()) {
+                    rois.add(roi);
+                }
+                rois.exportData(storage, name, forceName, progressInfo.resolve("Save ROI"));
+            }
         } else {
             imageSource.saveTo(storage.getFileSystemPath(), name, forceName, progressInfo);
         }
@@ -313,13 +340,9 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeDataTableDataSource) {
-            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, true);
-            window.setVisible(true);
-            SwingUtilities.invokeLater(window::reloadDisplayedData);
-        } else {
-            getDuplicateImage().show();
-        }
+        CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
+        window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     @Override
@@ -327,17 +350,44 @@ public class ImagePlusData implements JIPipeData {
         if (image != null) {
             double factorX = 1.0 * width / image.getWidth();
             double factorY = 1.0 * height / image.getHeight();
-            double factor = Math.max(factorX, factorY);
+            double factor = Math.min(factorX, factorY);
             boolean smooth = factor < 0;
-            int imageWidth = (int) (image.getWidth() * factor);
-            int imageHeight = (int) (image.getHeight() * factor);
+            int imageWidth = (int) Math.max(1, image.getWidth() * factor);
+            int imageHeight = (int) Math.max(1, image.getHeight() * factor);
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+            if (rgbImage.getStackSize() != 1) {
+                // Reduce processing time
+                rgbImage = new ImagePlus("Preview", rgbImage.getProcessor().duplicate()); // The duplicate is important (calibration!)
+            }
+            if (rgbImage == image) {
+                rgbImage = ImageJUtils.duplicate(rgbImage);
+            }
+//            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
+//                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
+//            }
+            if(rgbImage.getType() != ImagePlus.COLOR_RGB) {
+                // Copy LUT
+                rgbImage.setLut(image.getProcessor().getLut());
+
+                // Render to RGB
+                rgbImage = ImageJUtils.renderToRGBWithLUTIfNeeded(rgbImage, new JIPipeProgressInfo());
+            }
+            else {
+                // Convert to RGB if necessary (HSB, LAB, ...)
+                getColorSpace().convertToRGB(rgbImage, new JIPipeProgressInfo());
+            }
 
             // ROI rendering
-            if (image.getRoi() != null) {
-                rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
-                ROIListData rois = new ROIListData();
+            ROIListData rois = new ROIListData();
+            if (image.getRoi() != null)
                 rois.add(image.getRoi());
+            if (image.getOverlay() != null) {
+                rois.addAll(Arrays.asList(image.getOverlay().toArray()));
+            }
+            if (!rois.isEmpty()) {
+                if(rgbImage == image || rgbImage.getProcessor() == image.getProcessor()) {
+                    rgbImage = ImageJUtils.duplicate(rgbImage);
+                }
                 rois.draw(rgbImage.getProcessor(),
                         new ImageSliceIndex(0, 0, 0),
                         false,

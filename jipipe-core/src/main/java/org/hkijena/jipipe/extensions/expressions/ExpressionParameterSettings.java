@@ -21,7 +21,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Controls the behavior of an {@link ExpressionParameter}.
+ * Controls the behavior of an {@link AbstractExpressionParameter}.
  * Attach it to the getter or setter within a {@link org.hkijena.jipipe.api.parameters.JIPipeParameterCollection}
  */
 @Target({ElementType.METHOD, ElementType.TYPE})
@@ -37,5 +37,13 @@ public @interface ExpressionParameterSettings {
      *
      * @return the variable source class
      */
+    @Deprecated
     Class<? extends ExpressionParameterVariableSource> variableSource() default UndefinedExpressionParameterVariableSource.class;
+
+    /**
+     * Hint displayed in the UI.
+     * Should explain what the expression does or when it is applied
+     * @return the hint
+     */
+    String hint() default "";
 }

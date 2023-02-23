@@ -57,6 +57,8 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     private int uiOrder;
     private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
 
+    private boolean pinned;
+
     /**
      * Creates a new instance
      */
@@ -78,8 +80,12 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.persistence = other.getPersistence();
         this.uiOrder = other.getUIOrder();
         this.priority = other.getPriority();
+        for (Annotation annotation : other.getAnnotations()) {
+            annotationMap.put(annotation.annotationType(), annotation);
+        }
         JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass);
         this.value = info.duplicate(other.get(fieldClass)); // Deep copy
+        this.pinned = other.isPinned();
     }
 
     /**
@@ -113,6 +119,12 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.priority = other.priority;
         this.persistence = other.persistence;
         this.uiOrder = other.uiOrder;
+        this.pinned = other.pinned;
+    }
+
+    @Override
+    public boolean isPinned() {
+        return pinned;
     }
 
     @Override
@@ -186,7 +198,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         Collection<Annotation> collection = annotationMap.get(klass);
-        if(collection.isEmpty())
+        if (collection.isEmpty())
             return null;
         return (T) collection.iterator().next();
     }
@@ -281,13 +293,13 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         return annotationMap;
     }
 
-    @Override
-    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
-        return annotationMap.get(klass).stream().map(ann -> (T)ann).collect(Collectors.toList());
-    }
-
     public void setAnnotationMap(Multimap<Class<? extends Annotation>, Annotation> annotationMap) {
         this.annotationMap = annotationMap;
+    }
+
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return annotationMap.get(klass).stream().map(ann -> (T) ann).collect(Collectors.toList());
     }
 
     @JsonGetter("short-key")

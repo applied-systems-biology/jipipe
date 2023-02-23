@@ -19,6 +19,7 @@ import net.imagej.updater.util.AvailableSites;
 import net.imagej.updater.util.UpdaterUtil;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -38,7 +39,7 @@ public class RefreshRepositoryRun implements JIPipeRunnable {
         UpdaterUtil.useSystemProxies();
         Authenticator.setDefault(new SwingAuthenticator());
 
-        filesCollection = new FilesCollection(JIPipeImageJPluginManager.getImageJRoot().toFile());
+        filesCollection = new FilesCollection(CoreImageJUtils.getImageJUpdaterRoot().toFile());
         AvailableSites.initializeAndAddSites(filesCollection);
 
         // Look for conflicts

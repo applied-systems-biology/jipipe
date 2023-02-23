@@ -90,9 +90,9 @@ def add_table(table, data_slot: DataSlot, text_annotations: dict = None, data_an
     print("Writing table to " + str(file_name))
     from pandas import DataFrame
     if type(table) is DataFrame:
-        table.to_csv(file_name)
+        table.to_csv(file_name, index=False)
     else:
-        DataFrame(data=table).to_csv(file_name)
+        DataFrame(data=table).to_csv(file_name, index=False)
     return row
 
 

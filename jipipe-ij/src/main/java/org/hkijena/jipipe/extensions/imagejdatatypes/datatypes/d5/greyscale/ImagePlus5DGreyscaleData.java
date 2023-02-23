@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * Greyscale 5D image
  */
-@JIPipeDocumentation(name = "5D image (greyscale)")
+@JIPipeDocumentation(name = "5D image (greyscale)", description = "A greyscale image")
 @JIPipeNode(menuPath = "Images\n5D\nGreyscale")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 5)

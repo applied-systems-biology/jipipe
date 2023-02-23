@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * 8-bit greyscale 2D image
  */
-@JIPipeDocumentation(name = "2D image (8 bit)")
+@JIPipeDocumentation(name = "2D image (8 bit)", description = "An 8-bit greyscale image")
 @JIPipeNode(menuPath = "Images\n2D\nGreyscale")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8, numDimensions = 2)

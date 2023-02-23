@@ -139,7 +139,7 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
                 }
                 result = JsonUtils.toJsonString(values);
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             result = e;
         }
         resultOutput.append("<tr><td>Output</td><td><pre>").append(HtmlEscapers.htmlEscaper().escape("" + result)).append("</pre></td></tr></table>");

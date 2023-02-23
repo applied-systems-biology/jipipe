@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -30,6 +32,7 @@ import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -130,6 +133,48 @@ public class PathDataSource extends JIPipeAlgorithm {
                     "The file '" + getAbsolutePath() + "' does not exist.",
                     "Please provide a valid input path.",
                     this);
+    }
+
+    @Override
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+        Path source = getAbsolutePath();
+        if(source == null || !Files.exists(source)) {
+            if(isNeedsToExist()) {
+                throw new RuntimeException("Path " + getPath() + " does not exist!");
+            }
+            progressInfo.log("Unable to archive: " + getPath());
+        }
+        else {
+            Path target;
+            if(source.startsWith(originalBaseDirectory)) {
+                // The data is located in the project directory. We can directly copy the file.
+                Path relativePath = originalBaseDirectory.relativize(source);
+                target = projectStorage.getFileSystemPath().resolve(relativePath);
+            }
+            else {
+                // The data is located outside the project directory. Needs to be copied into a unique directory.
+                target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(getPath().getFileName());
+            }
+
+            if(Files.exists(target)) {
+                progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
+                return;
+            }
+
+            progressInfo.log("Copy " + source + " -> " + target);
+            try {
+                Files.createDirectories(target.getParent());
+                if(Files.isRegularFile(source)) {
+                    Files.copy(source, target);
+                }
+                else {
+                    FileUtils.copyDirectory(source.toFile(), target.toFile());
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            setPath(target);
+        }
     }
 
     @Override

@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -20,8 +19,19 @@ public class NodeToolBoxTransferHandler extends TransferHandler {
     protected Transferable createTransferable(JComponent c) {
         if (c instanceof JList) {
             JIPipeGraph graph = new JIPipeGraph();
-            for (JIPipeNodeInfo info : ((JList<JIPipeNodeInfo>) c).getSelectedValuesList()) {
-                graph.insertNode(info.newInstance());
+            for (Object obj : ((JList<?>) c).getSelectedValuesList()) {
+                if (obj instanceof JIPipeNodeInfo) {
+                    JIPipeNodeInfo info = (JIPipeNodeInfo) obj;
+                    graph.insertNode(info.newInstance());
+                } else if (obj instanceof JIPipeNodeExample) {
+                    JIPipeNodeExample example = (JIPipeNodeExample) obj;
+                    JIPipeNodeInfo info = example.getNodeInfo();
+                    JIPipeGraphNode node = info.newInstance();
+                    if (node instanceof JIPipeAlgorithm) {
+                        ((JIPipeAlgorithm) node).loadExample(example);
+                    }
+                    graph.insertNode(node);
+                }
             }
             String json = JsonUtils.toJsonString(graph);
             return new Transferable() {

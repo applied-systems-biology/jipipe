@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
@@ -45,12 +45,16 @@ import org.hkijena.jipipe.ui.components.PlotReader;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Priority;
 
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -68,7 +72,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     private List<JIPipePlotSeriesBuilder> seriesBuilders = new ArrayList<>();
     private boolean isRebuilding = false;
     private PlotReader plotReader;
-    private DocumentTabPane sideBar = new DocumentTabPane();
+    private DocumentTabPane sideBar = new DocumentTabPane(false);
 
     /**
      * @param workbench the workbench
@@ -79,6 +83,25 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         rebuildPlot();
         installDefaultDataSources();
         this.eventBus.register(this);
+    }
+
+    /**
+     * Creates a new plot editor in a new window
+     *
+     * @param workbench the workbench
+     * @param title     the title
+     * @return the table editor component
+     */
+    public static PlotEditor openWindow(JIPipeWorkbench workbench, String title) {
+        JFrame window = new JFrame(title);
+        window.getContentPane().setLayout(new BorderLayout());
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        PlotEditor editor = new PlotEditor(workbench);
+        window.getContentPane().add(editor, BorderLayout.CENTER);
+        window.setSize(1024, 768);
+        window.setLocationRelativeTo(workbench.getWindow());
+        window.setVisible(true);
+        return editor;
     }
 
     public JToolBar getToolBar() {
@@ -123,19 +146,27 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     }
 
     private void savePlot() {
-        Path path = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot");
-        if (path != null) {
-            if (PathUtils.ensureEmptyFolder(this, path)) {
-                getCurrentPlot().exportData(new JIPipeFileSystemWriteDataStorage(new JIPipeProgressInfo(), path), path.getFileName().toString(), false, new JIPipeProgressInfo());
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot", UIUtils.EXTENSION_FILTER_ZIP);
+        if (UIUtils.checkAndAskIfFileExists(this, path, "Save plot")) {
+            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+            try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
+                getCurrentPlot().exportData(storage, path.getFileName().toString(), false, progressInfo);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
 
     private void openPlot() {
-        Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot");
+        Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
-            PlotData plotData = PlotData.importData(new JIPipeFileSystemReadDataStorage(new JIPipeProgressInfo(), path), PlotData.class, new JIPipeProgressInfo());
-            importExistingPlot(plotData);
+            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+            try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
+                PlotData plotData = PlotData.importData(storage, progressInfo);
+                importExistingPlot(plotData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -241,10 +272,10 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         }
 
 
-        getEventBus().post(new ParameterStructureChangedEvent(this));
         getEventBus().post(new ParameterChangedEvent(this, "series"));
         getEventBus().post(new ParameterChangedEvent(this, "available-data"));
         currentPlot.getEventBus().register(this);
+        triggerParameterStructureChange();
         rebuildPlot();
     }
 

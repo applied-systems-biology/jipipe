@@ -17,16 +17,15 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
-import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.batchassistant.DataBatchStatusData;
@@ -36,9 +35,12 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -52,7 +54,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeAlgorithm algorithm;
     private final Runnable runTestBench;
     private final JIPipeParameterCollection batchSettings;
-    private final Multimap<String, JIPipeDataSlot> currentCache = HashMultimap.create();
+    private final Multimap<String, Store<JIPipeDataTable>> currentCache = HashMultimap.create();
     AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
     private JPanel batchPanel;
     private JPanel errorPanel;
@@ -63,7 +65,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private JIPipeGraphNode batchesNodeCopy;
     private boolean autoRefresh = true;
     private DataBatchGeneratorWorker lastWorker = null;
-    private DataBatchTableUI2 batchTable;
+    private DataBatchAssistantDataTableUI batchTable;
 
 
     /**
@@ -90,27 +92,19 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             errorLabel.setText("No input slots");
             return;
         }
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
             Set<JIPipeDataSlot> sourceSlots = algorithm.getParentGraph().getInputIncomingSourceSlots(inputSlot);
             if (!sourceSlots.isEmpty()) {
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode().getUUIDInParentGraph());
-                    if (sourceCaches == null || sourceCaches.isEmpty()) {
+                    Map<String, JIPipeDataTable> sourceCache = getProject().getCache().query(sourceSlot.getNode(), sourceSlot.getNode().getUUIDInParentGraph(), new JIPipeProgressInfo());
+                    if (sourceCache == null || sourceCache.isEmpty()) {
                         errorLabel.setText("No cached data available");
                         currentCache.clear();
                         return;
                     }
-                    Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode().getUUIDInParentGraph()), null);
-                    if (sourceCache != null) {
-                        JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
-                        if (cache != null) {
-                            currentCache.put(inputSlot.getName(), cache);
-                        } else {
-                            currentCache.clear();
-                            errorLabel.setText("No up-to-date cached data available");
-                            return;
-                        }
+                    JIPipeDataTable cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
+                    if (cache != null) {
+                        currentCache.put(inputSlot.getName(), new WeakStore<>(cache));
                     } else {
                         currentCache.clear();
                         errorLabel.setText("No up-to-date cached data available");
@@ -158,8 +152,13 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchesNodeCopy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
         for (JIPipeDataSlot inputSlot : batchesNodeCopy.getDataInputSlots()) {
-            for (JIPipeDataSlot cacheSlot : currentCache.get(inputSlot.getName())) {
-                inputSlot.addData(cacheSlot, new JIPipeProgressInfo());
+            for (Store<JIPipeDataTable> cacheSlotReference : currentCache.get(inputSlot.getName())) {
+                JIPipeDataTable cacheSlot = cacheSlotReference.get();
+                if(cacheSlot == null) {
+                    batchPreviewNumberLabel.setText("Cache was cleared! Aborted.");
+                    return;
+                }
+                inputSlot.addDataFromTable(cacheSlot, new JIPipeProgressInfo());
             }
         }
         // Generate dry-run
@@ -198,14 +197,14 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                     status.put("Slot", inputSlot.getName());
                     status.put("Status", "Slot contains no data!");
                 } else if (dataList.size() == 1) {
-                    singletonData = dataList.get(0);
+                    singletonData = new JIPipeWeakDataReferenceData(dataList.get(0));
 
                     status.put("Slot", inputSlot.getName());
                     status.put("Status", "Contains 1 item.");
                 } else {
                     JIPipeDataTable list = new JIPipeDataTable(JIPipeData.class);
                     for (JIPipeData datum : dataList) {
-                        list.addData(datum, progressInfo);
+                        list.addData(new JIPipeWeakDataReferenceData(datum), progressInfo);
                     }
                     singletonData = list;
                     hasMultiple = true;
@@ -263,7 +262,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchPreviewOverview.setFloatable(false);
         batchPanel.add(batchPreviewOverview, BorderLayout.NORTH);
 
-        this.batchTable = new DataBatchTableUI2(getWorkbench(), new JIPipeDataTable(JIPipeData.class));
+        this.batchTable = new DataBatchAssistantDataTableUI(getWorkbench(), new JIPipeDataTable(JIPipeData.class));
         batchPanel.add(batchTable, BorderLayout.CENTER);
     }
 
@@ -271,7 +270,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                 ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface(),
                 null,
-                ParameterPanel.WITH_SCROLLING);
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_NO_UI);
         splitPane.setTopComponent(parameterPanel);
     }
 
@@ -322,10 +321,20 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
-        if (!isDisplayable())
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
+        if (!isDisplayable()) {
+            clearCaches();
             return;
+        }
         updateStatus();
+    }
+
+    private void clearCaches() {
+        currentCache.clear();
+        if(batchesNodeCopy != null) {
+            batchesNodeCopy.clearSlotData();
+        }
+        batchTable.setDataTable(new JIPipeDataTable(JIPipeData.class));
     }
 
     /**
@@ -335,8 +344,10 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
-        if (!isDisplayable())
+        if (!isDisplayable()) {
+            clearCaches();
             return;
+        }
         updateStatus();
     }
 

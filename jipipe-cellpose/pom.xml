@@ -4,14 +4,14 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.74.0-SNAPSHOT</version>
+        <version>1.79.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-cellpose</artifactId>
-    <version>1.74.0-SNAPSHOT</version>
+    <version>1.79.0-SNAPSHOT</version>
 
     <name>jipipe-cellpose</name>
-    <description>JIPipe CellPose Integration</description>
+    <description>JIPipe Cellpose Integration</description>
     <inceptionYear>2021</inceptionYear>
     <url>https://www.jipipe.org/</url>
 
@@ -79,26 +79,6 @@
 
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-core</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-ij-algorithms</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-python</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
-            </dependency>
             <dependency>
                 <groupId>fr.inra.ijpb</groupId>
                 <artifactId>MorphoLibJ_</artifactId>

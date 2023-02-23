@@ -15,27 +15,29 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_GRAYSCALE32F_CONVERSION;
+
+
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -43,9 +45,10 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Image calculator 2D", description = "Applies a mathematical operation between two images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1", autoCreate = true, description = "The first operand")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2", autoCreate = true, description = "The second operand")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, description = "The calculation result")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator...")
 public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Operation operation = Operation.Difference;
@@ -58,13 +61,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public ImageCalculator2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input 1", "The first operand", ImagePlusData.class)
-                .addInputSlot("Input 2", "The second operand", ImagePlusData.class)
-                .addOutputSlot("Output", "The calculation result", ImagePlusData.class, "Input 1")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         operands = new InputSlotMapParameterCollection(Operand.class, this, this::getNewOperand, false);
         operands.updateSlots();
         registerSubParameter(operands);
@@ -102,14 +99,14 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData leftOperand = null;
-        ImagePlusData rightOperand = null;
+        ImagePlus leftOperand = null;
+        ImagePlus rightOperand = null;
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
             if (operand == Operand.LeftOperand) {
-                leftOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo);
+                leftOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo).getImage();
             } else if (operand == Operand.RightOperand) {
-                rightOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo);
+                rightOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo).getImage();
             }
         }
 
@@ -120,11 +117,27 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
             throw new NullPointerException("Right operand is null!");
         }
 
+        // Ensure same size
+        if (!ImageJUtils.imagesHaveSameSize(leftOperand, rightOperand)) {
+            throw new UserFriendlyRuntimeException("Input images do not have the same size!",
+                    "Input images do not have the same size!",
+                    getDisplayName(),
+                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels.",
+                    "Please check the input images.");
+        }
+
         // Make both of the inputs the same type
-        rightOperand = (ImagePlusData) JIPipe.getDataTypes().convert(rightOperand, leftOperand.getClass());
+        if (floatingPointOutput) {
+            leftOperand = ImageJUtils.convertToGrayscale32FIfNeeded(leftOperand);
+            rightOperand = ImageJUtils.convertToGrayscale32FIfNeeded(rightOperand);
+        } else {
+            rightOperand = ImageJUtils.convertToBitDepthIfNeeded(rightOperand, leftOperand.getBitDepth());
+        }
 
         ImageCalculator calculator = new ImageCalculator();
-        ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand.getImage(), rightOperand.getImage());
+        ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand, rightOperand);
+        img.copyScale(leftOperand);
+        img.setDimensions(leftOperand.getNChannels(), leftOperand.getNSlices(), leftOperand.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
@@ -165,7 +178,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Generate 32-bit floating point output", description = "Determines whether to keep the input data type or generate a 32-bit floating point output.")
-    @JIPipeParameter("floating-point-output")
+    @JIPipeParameter(value = "floating-point-output", important = true)
     public boolean isFloatingPointOutput() {
         return floatingPointOutput;
     }
@@ -173,17 +186,6 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("floating-point-output")
     public void setFloatingPointOutput(boolean floatingPointOutput) {
         this.floatingPointOutput = floatingPointOutput;
-
-        JIPipeDataSlotInfo definition = getFirstOutputSlot().getInfo();
-        if (floatingPointOutput) {
-            getFirstOutputSlot().setAcceptedDataType(ImagePlusGreyscale32FData.class);
-            definition.setInheritanceConversionsFromRaw(TO_GRAYSCALE32F_CONVERSION);
-        } else {
-            getFirstOutputSlot().setAcceptedDataType(ImagePlusData.class);
-            definition.setInheritanceConversionsFromRaw(REMOVE_MASK_QUALIFIER);
-        }
-        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
-        updateSlotInheritance();
     }
 
     /**

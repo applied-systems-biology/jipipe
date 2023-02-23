@@ -26,11 +26,16 @@ import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
@@ -39,6 +44,8 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,9 +53,9 @@ import java.util.Objects;
  * UI for a row
  */
 public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
-    private final JIPipeDataTable dataTable;
+    private final Store<JIPipeDataTable> dataTableStore;
     private final int row;
-    private final List<JIPipeDataAnnotation> dataAnnotations;
+    private final List<Store<JIPipeDataAnnotation>> dataAnnotationStores;
     private final List<JIPipeDataDisplayOperation> displayOperations;
     private JButton dataAnnotationsButton;
     private JButton textAnnotationsButton;
@@ -57,18 +64,21 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
      * Creates a new instance
      *
      * @param workbench the workbench
-     * @param dataTable the slot
+     * @param dataTableStore the data table store
      * @param row       the row
      */
-    public JIPipeDataTableRowUI(JIPipeWorkbench workbench, JIPipeDataTable dataTable, int row) {
+    public JIPipeDataTableRowUI(JIPipeWorkbench workbench, Store<JIPipeDataTable> dataTableStore, int row) {
         super(workbench);
-        this.dataTable = dataTable;
+        this.dataTableStore = dataTableStore;
         this.row = row;
-        this.dataAnnotations = dataTable.getDataAnnotations(row);
-        Class<? extends JIPipeData> dataClass = dataTable.getDataClass(row);
+        this.dataAnnotationStores = new ArrayList<>();
+        for (JIPipeDataAnnotation dataAnnotation : dataTableStore.get().getDataAnnotations(row)) {
+            dataAnnotationStores.add(new WeakStore<>(dataAnnotation));
+        }
+        Class<? extends JIPipeData> dataClass = dataTableStore.get().getDataClass(row);
         String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
         displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
-        this.initialize();
+        this.initialize(dataTableStore.get());
     }
 
     public static JIPipeDataDisplayOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
@@ -94,23 +104,26 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         return null;
     }
 
-    private void initialize() {
+    private void initialize(JIPipeDataTable dataTable) {
+
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(Box.createHorizontalGlue());
 
-        if (dataAnnotations.size() > 0) {
+        if (dataAnnotationStores.size() > 0) {
             dataAnnotationsButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
             JPopupMenu menu = UIUtils.addPopupMenuToComponent(dataAnnotationsButton);
 
-            for (JIPipeDataAnnotation dataAnnotation : dataAnnotations) {
-                JMenu subMenu = new JMenu(dataAnnotation.getName());
-                subMenu.setIcon(JIPipe.getDataTypes().getIconFor(dataAnnotation.getDataClass()));
-                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataAnnotation.getDataClass());
+            for (Store<JIPipeDataAnnotation> store : dataAnnotationStores) {
+                JMenu subMenu = new JMenu(store.get().getName());
+                subMenu.setIcon(JIPipe.getDataTypes().getIconFor(store.get().getDataClass()));
+                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(store.get().getDataClass());
                 List<JIPipeDataDisplayOperation> displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
                 for (JIPipeDataDisplayOperation displayOperation : displayOperations) {
                     JMenuItem item = new JMenuItem(displayOperation.getName(), displayOperation.getIcon());
                     item.setToolTipText(displayOperation.getDescription());
-                    item.addActionListener(e -> runDisplayOperation(displayOperation, dataAnnotation));
+                    item.addActionListener(e -> {
+                        runDisplayOperation(displayOperation, store.get());
+                    });
                     subMenu.add(item);
                 }
                 menu.add(subMenu);
@@ -119,10 +132,16 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
             add(dataAnnotationsButton);
         }
 
-        if (!dataTable.getTextAnnotations(row).isEmpty()) {
+        List<JIPipeTextAnnotation> textAnnotations = dataTable.getTextAnnotations(row);
+        if (!textAnnotations.isEmpty()) {
             textAnnotationsButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
             JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(textAnnotationsButton);
-            for (JIPipeTextAnnotation annotation : dataTable.getTextAnnotations(row)) {
+            {
+                JMenuItem toTableItem = new JMenuItem("Display as table", UIUtils.getIconFromResources("data-types/results-table.png"));
+                toTableItem.addActionListener(e -> displayAnnotationsAsTable(textAnnotations));
+                annotationMenu.add(toTableItem);
+            }
+            for (JIPipeTextAnnotation annotation : textAnnotations) {
                 JMenu entryMenu = new JMenu(annotation.getName());
                 entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
 
@@ -197,139 +216,122 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         }
     }
 
+    private void displayAnnotationsAsTable(List<JIPipeTextAnnotation> textAnnotations) {
+        if(dataTableStore.isPresent()) {
+            JIPipeDataTable dataTable = dataTableStore.get();
+            ResultsTableData data = new ResultsTableData();
+            data.addStringColumn("Name");
+            data.addStringColumn("Value");
+            textAnnotations.stream().sorted(Comparator.comparing(JIPipeTextAnnotation::getName, NaturalOrderComparator.INSTANCE)).forEach(annotation -> {
+                int row = data.addRow();
+                data.setValueAt(annotation.getName(), row, "Name");
+                data.setValueAt(annotation.getValue(), row, "Value");
+            });
+
+            String displayName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") +
+                    "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
+            TableEditor.openWindow(getWorkbench(), data, displayName + " [Annotations]");
+        }
+    }
+
     private void exportAsFolder() {
-        Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(),
-                FileChooserSettings.LastDirectoryKey.Data,
-                "Export " + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") +
-                        "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
-        if (path != null) {
-            try {
-                Files.createDirectories(path);
-                JIPipeRunnable runnable = new JIPipeRunnable() {
-                    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-
-                    @Override
-                    public JIPipeProgressInfo getProgressInfo() {
-                        return progressInfo;
-                    }
-
-                    @Override
-                    public String getTaskLabel() {
-                        return "Export";
-                    }
-
-                    @Override
-                    public void run() {
-                        JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
-                        data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo);
-                    }
-
-                    @Override
-                    public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-                        this.progressInfo = progressInfo;
-                    }
-
-
-                };
-                JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
-            } catch (Exception e) {
-                UIUtils.openErrorDialog(getWorkbench().getWindow(), e);
+        if(dataTableStore.isPresent()) {
+            JIPipeDataTable dataTable = dataTableStore.get();
+            Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(),
+                    FileChooserSettings.LastDirectoryKey.Data,
+                    "Export " + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") +
+                            "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
+            if (path != null) {
+                try {
+                    Files.createDirectories(path);
+                    JIPipeRunnable runnable = new ExportAsFolderRun(row, dataTable, path);
+                    JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+                } catch (Exception e) {
+                    UIUtils.openErrorDialog(getWorkbench().getWindow(), e);
+                }
             }
         }
     }
 
     private void exportToFolder() {
-        Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(),
-                FileChooserSettings.LastDirectoryKey.Data,
-                "Export " + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") + "/"
-                        + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
-        if (path != null) {
-            JIPipeRunnable runnable = new JIPipeRunnable() {
-                private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-
-                @Override
-                public JIPipeProgressInfo getProgressInfo() {
-                    return progressInfo;
-                }
-
-                @Override
-                public String getTaskLabel() {
-                    return "Export";
-                }
-
-                @Override
-                public void run() {
-                    JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
-                    data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path.getParent()), path.getFileName().toString(), true, progressInfo);
-                }
-
-                @Override
-                public void setProgressInfo(JIPipeProgressInfo progressInfo) {
-                    this.progressInfo = progressInfo;
-                }
-
-
-            };
-            JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+        JIPipeDataTable dataTable = dataTableStore.get();
+        if(dataTable != null) {
+            Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(),
+                    FileChooserSettings.LastDirectoryKey.Data,
+                    "Export " + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") + "/"
+                            + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row);
+            if (path != null) {
+                JIPipeRunnable runnable = new ExportToFolderRun(row, dataTable, path);
+                JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
+            }
         }
     }
 
     private void runDisplayOperation(JIPipeDataDisplayOperation operation, JIPipeDataAnnotation dataAnnotation) {
-        try (BusyCursor cursor = new BusyCursor(this)) {
-            JIPipeData data = dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo());
-            String displayName;
-            String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
-            String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
-            if (!StringUtils.isNullOrEmpty(nodeName))
-                displayName = nodeName + "/" + slotName + "/" + row + "/$" + dataAnnotation.getName();
-            else
-                displayName = slotName + "/" + row + "/$" + dataAnnotation.getName();
+        JIPipeDataTable dataTable = dataTableStore.get();
+        if(dataTable != null) {
+            try (BusyCursor cursor = new BusyCursor(this)) {
+                JIPipeData data = dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo());
+                String displayName;
+                String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
+                String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
+                if (!StringUtils.isNullOrEmpty(nodeName))
+                    displayName = nodeName + "/" + slotName + "/" + row + "/$" + dataAnnotation.getName();
+                else
+                    displayName = slotName + "/" + row + "/$" + dataAnnotation.getName();
 
-            operation.display(data, displayName, getWorkbench(), new JIPipeDataTableDataSource(dataTable, row, dataAnnotation.getName()));
+                operation.display(data, displayName, getWorkbench(), new JIPipeDataTableDataSource(dataTable, row, dataAnnotation.getName()));
+            }
         }
     }
 
     private void runDisplayOperation(JIPipeDataDisplayOperation operation) {
-        try (BusyCursor cursor = new BusyCursor(this)) {
-            JIPipeData data = dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());
-            String displayName;
-            String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
-            String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
-            if (!StringUtils.isNullOrEmpty(nodeName))
-                displayName = nodeName + "/" + slotName + "/" + row;
-            else
-                displayName = slotName + "/" + row;
-            operation.display(data, displayName, getWorkbench(), new JIPipeDataTableDataSource(dataTable, row));
-            if (GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
-                String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
-                DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
-                if (parameter != null && !Objects.equals(operation.getId(), parameter.getValue())) {
-                    parameter.setValue(operation.getId());
-                    DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
-                    JIPipe.getSettings().save();
+        JIPipeDataTable dataTable = dataTableStore.get();
+        if(dataTable != null) {
+            try (BusyCursor cursor = new BusyCursor(this)) {
+                JIPipeData data = dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());
+                String displayName;
+                String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
+                String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
+                if (!StringUtils.isNullOrEmpty(nodeName))
+                    displayName = nodeName + "/" + slotName + "/" + row;
+                else
+                    displayName = slotName + "/" + row;
+                operation.display(data, displayName, getWorkbench(), new JIPipeDataTableDataSource(dataTable, row));
+                if (GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
+                    String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
+                    DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
+                    if (parameter != null && !Objects.equals(operation.getId(), parameter.getValue())) {
+                        parameter.setValue(operation.getId());
+                        DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
+                        JIPipe.getSettings().save();
+                    }
                 }
             }
         }
     }
 
     private JIPipeDataDisplayOperation getMainOperation() {
-        if (!displayOperations.isEmpty()) {
-            JIPipeDataDisplayOperation result = displayOperations.get(0);
-            String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
-            DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
-            if (parameter != null) {
-                String defaultName = parameter.getValue();
-                for (JIPipeDataDisplayOperation operation : displayOperations) {
-                    if (Objects.equals(operation.getId(), defaultName)) {
-                        result = operation;
-                        break;
+        JIPipeDataTable dataTable = dataTableStore.get();
+        if(dataTable != null) {
+            if (!displayOperations.isEmpty()) {
+                JIPipeDataDisplayOperation result = displayOperations.get(0);
+                String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
+                DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
+                if (parameter != null) {
+                    String defaultName = parameter.getValue();
+                    for (JIPipeDataDisplayOperation operation : displayOperations) {
+                        if (Objects.equals(operation.getId(), defaultName)) {
+                            result = operation;
+                            break;
+                        }
                     }
                 }
+                if (result == null) {
+                    result = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).get("jipipe:show");
+                }
+                return result;
             }
-            if (result == null) {
-                result = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).get("jipipe:show");
-            }
-            return result;
         }
         return null;
     }
@@ -343,15 +345,15 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     public JIPipeDataTable getDataTable() {
-        return dataTable;
+        return dataTableStore.get();
     }
 
     public int getRow() {
         return row;
     }
 
-    public List<JIPipeDataAnnotation> getDataAnnotations() {
-        return dataAnnotations;
+    public List<Store<JIPipeDataAnnotation>> getDataAnnotationStores() {
+        return dataAnnotationStores;
     }
 
     public List<JIPipeDataDisplayOperation> getDisplayOperations() {
@@ -375,19 +377,112 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
      * @param dataAnnotationColumn column index of the data column in the data table. if outside the range, silently will run the default data operation instead
      */
     public void handleDefaultActionOrDisplayDataAnnotation(int dataAnnotationColumn) {
-        if (dataAnnotationColumn >= 0 && dataAnnotationColumn < dataTable.getDataAnnotationColumns().size()) {
-            JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(getRow(), dataTable.getDataAnnotationColumns().get(dataAnnotationColumn));
-            JIPipeDataDisplayOperation operation = getMainOperation(dataAnnotation.getDataClass());
-            runDisplayOperation(operation, dataAnnotation);
-        } else {
-            handleDefaultAction();
+        JIPipeDataTable dataTable = dataTableStore.get();
+        if(dataTable != null) {
+            if (dataAnnotationColumn >= 0 && dataAnnotationColumn < dataTable.getDataAnnotationColumns().size()) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(getRow(), dataTable.getDataAnnotationColumns().get(dataAnnotationColumn));
+                JIPipeDataDisplayOperation operation = getMainOperation(dataAnnotation.getDataClass());
+                runDisplayOperation(operation, dataAnnotation);
+            } else {
+                handleDefaultAction();
+            }
         }
     }
 
     private void copyString() {
-        String string = "" + dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());
-        StringSelection selection = new StringSelection(string);
-        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-        clipboard.setContents(selection, selection);
+        JIPipeDataTable dataTable = dataTableStore.get();
+        if(dataTable != null) {
+            String string = "" + dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());
+            StringSelection selection = new StringSelection(string);
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(selection, selection);
+        }
+    }
+
+    private static class ExportAsFolderRun implements JIPipeRunnable {
+
+        private final int row;
+
+        private JIPipeDataTable dataTable;
+        private final Path path;
+        private JIPipeProgressInfo progressInfo;
+
+        public ExportAsFolderRun(int row, JIPipeDataTable dataTable, Path path) {
+            this.row = row;
+            this.dataTable = dataTable;
+            this.path = path;
+            progressInfo = new JIPipeProgressInfo();
+        }
+
+        @Override
+        public JIPipeProgressInfo getProgressInfo() {
+            return progressInfo;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Export";
+        }
+
+        @Override
+        public void run() {
+            try {
+                JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
+                data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo);
+            }
+            finally {
+                dataTable = null;
+            }
+        }
+
+        @Override
+        public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+            this.progressInfo = progressInfo;
+        }
+
+
+    }
+
+    private static class ExportToFolderRun implements JIPipeRunnable {
+
+        private final int row;
+        private JIPipeDataTable dataTable;
+        private final Path path;
+        private JIPipeProgressInfo progressInfo;
+
+        public ExportToFolderRun(int row, JIPipeDataTable dataTable, Path path) {
+            this.row = row;
+            this.dataTable = dataTable;
+            this.path = path;
+            progressInfo = new JIPipeProgressInfo();
+        }
+
+        @Override
+        public JIPipeProgressInfo getProgressInfo() {
+            return progressInfo;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Export";
+        }
+
+        @Override
+        public void run() {
+            try {
+                JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
+                data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path.getParent()), path.getFileName().toString(), true, progressInfo);
+            }
+            finally {
+                dataTable = null;
+            }
+        }
+
+        @Override
+        public void setProgressInfo(JIPipeProgressInfo progressInfo) {
+            this.progressInfo = progressInfo;
+        }
+
+
     }
 }

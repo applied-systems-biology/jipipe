@@ -13,9 +13,8 @@
 
 package org.hkijena.jipipe.ui.tableeditor;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
@@ -24,30 +23,28 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.TableViewerUISettings;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.layouts.ModifiedFlowLayout;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.FlexContentWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
+import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
-import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.JXTable;
-import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,39 +52,27 @@ import java.util.stream.Collectors;
 /**
  * Spreadsheet UI
  */
-public class TableEditor extends JIPipeWorkbenchPanel {
+public class TableEditor extends FlexContentWorkbenchPanel {
     private static final int MAX_UNDO = 10;
     private final TableViewerUISettings settings;
-    private final JToolBar toolBar = new JToolBar();
-    private final DocumentTabPane sideBar = new DocumentTabPane();
+    private final Stack<ResultsTableData> undoBuffer = new Stack<>();
     private ResultsTableData tableModel;
     private JXTable jxTable;
-    private Stack<ResultsTableData> undoBuffer = new Stack<>();
     private boolean isRebuildingSelection = false;
-    private FormPanel palettePanel;
-    private JPanel currentPaletteGroup;
-    private JButton convertSelectedCellsButton;
-    private JPopupMenu convertSelectedCellsMenu;
-    private FormPanel.GroupHeaderPanel rowPaletteGroup;
-    private FormPanel.GroupHeaderPanel columnPaletteGroup;
-    private FormPanel.GroupHeaderPanel selectionPaletteGroup;
-    private Component currentContentPanel;
-    private JToggleButton enableSideBarButton = new JToggleButton();
 
     /**
      * @param workbench  the workbench
      * @param tableModel the table
      */
     public TableEditor(JIPipeWorkbench workbench, ResultsTableData tableModel) {
-        super(workbench);
+        super(workbench, WITH_RIBBON);
         if (JIPipe.getInstance() != null) {
             settings = TableViewerUISettings.getInstance();
         } else {
-            settings = null;
+            settings = new TableViewerUISettings();
         }
         this.tableModel = tableModel;
         initialize();
-        updateSideBar();
         setTableModel(tableModel);
     }
 
@@ -116,79 +101,31 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     public static TableEditor openWindow(JIPipeWorkbench workbench, ResultsTableData tableData, String title) {
         JFrame window = new JFrame(title);
         window.getContentPane().setLayout(new BorderLayout());
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         TableEditor editor = new TableEditor(workbench, tableData);
         window.getContentPane().add(editor, BorderLayout.CENTER);
         window.setSize(1024, 768);
         window.setLocationRelativeTo(workbench.getWindow());
         window.setVisible(true);
+        SwingUtilities.invokeLater(editor::repaint);
         return editor;
+    }
+
+    public static void main(String[] args) {
+        JIPipeUITheme.ModernLight.install();
+        JFrame frame = new JFrame();
+        JIPipeWorkbench workbench = new JIPipeDummyWorkbench();
+        TableEditor editor = new TableEditor(workbench, ResultsTableData.fromCSV(Paths.get("/data/JIPipe/metadata.csv")));
+        frame.setContentPane(editor);
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
 
-        // Add toolbar buttons
-
-        toolBar.setFloatable(false);
-
-        JButton openButton = new JButton("Open", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        {
-            JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(openButton);
-
-            JMenuItem importDataCSV = new JMenuItem("from CSV table (*.csv)", UIUtils.getIconFromResources("data-types/results-table.png"));
-            importDataCSV.addActionListener(e -> importDataCSV());
-            exportPopup.add(importDataCSV);
-
-            JMenuItem importDataImageJ = new JMenuItem("from ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
-            importDataImageJ.addActionListener(e -> importDataImageJ());
-            exportPopup.add(importDataImageJ);
-        }
-        toolBar.add(openButton);
-
-        JButton exportButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
-        {
-            JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(exportButton);
-
-            JMenuItem exportAsCSV = new JMenuItem("as CSV table (*.csv)", UIUtils.getIconFromResources("data-types/results-table.png"));
-            exportAsCSV.addActionListener(e -> exportTableAsCSV());
-            exportPopup.add(exportAsCSV);
-        }
-        toolBar.add(exportButton);
-
-        JButton cloneDataButton = new JButton("Clone", UIUtils.getIconFromResources("data-types/results-table.png"));
-        cloneDataButton.addActionListener(e -> cloneDataToNewTab());
-        toolBar.add(cloneDataButton);
-
-        toolBar.addSeparator();
-
-        JButton undoButton = new JButton("Undo", UIUtils.getIconFromResources("actions/undo.png"));
-        undoButton.addActionListener(e -> undo());
-        toolBar.add(undoButton);
-
-        toolBar.add(Box.createHorizontalGlue());
-
-        JButton createPlotButton = new JButton("Create plot", UIUtils.getIconFromResources("actions/office-chart-line.png"));
-        createPlotButton.addActionListener(e -> createNewPlot());
-        toolBar.add(createPlotButton);
-
-        enableSideBarButton.setIcon(UIUtils.getIconFromResources("actions/sidebar.png"));
-        enableSideBarButton.setToolTipText("Show side bar with additional tools");
-        if (settings != null) {
-            enableSideBarButton.setSelected(settings.isShowSideBar());
-        } else {
-            enableSideBarButton.setSelected(true);
-        }
-        enableSideBarButton.addActionListener(e -> {
-            if (settings != null) {
-                settings.setShowSideBar(enableSideBarButton.isSelected());
-            }
-            updateSideBar();
-        });
-        toolBar.add(enableSideBarButton);
-
-        add(toolBar, BorderLayout.NORTH);
-
-        initializePalettePanel();
+        // Generate ribbon
+        initializeRibbon();
 
         jxTable = new JXTable();
         jxTable.setModel(tableModel);
@@ -197,150 +134,103 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         jxTable.setDefaultRenderer(String.class, new Renderer(this));
         jxTable.setDefaultRenderer(Double.class, new Renderer(this));
+        jxTable.setDefaultEditor(Double.class, new NumberEditor());
         jxTable.packAll();
 
-        jxTable.getSelectionModel().addListSelectionListener(listSelectionEvent -> updateConvertMenu());
+        getContentPanel().add(jxTable.getTableHeader(), BorderLayout.NORTH);
+        getContentPanel().add(new JScrollPane(jxTable), BorderLayout.CENTER);
+
+        rebuildLayout();
     }
 
-    private void initializePalettePanel() {
-        // Create palette
-        palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/table-analyzer.md", new HashMap<>()),
-                FormPanel.WITH_SCROLLING);
-        JXPanel contentPanel = palettePanel.getContentPanel();
-        // This is needed for our flow layout
-        contentPanel.setScrollableWidthHint(ScrollableSizeHint.HORIZONTAL_STRETCH);
-        contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
-
-        rowPaletteGroup = addPaletteGroup("Rows", UIUtils.getIconFromResources("actions/stock_select-row.png"));
-        addActionToPalette("Add",
-                "Adds an empty row at the end of the table.",
-                UIUtils.getIconFromResources("actions/edit-table-insert-row-below.png"),
-                this::addRow);
-        addSeparatorToPalette();
-        addActionToPalette("Remove",
-                "Remove selected rows",
-                UIUtils.getIconFromResources("actions/edit-table-delete-row.png"),
-                this::removeSelectedRows);
-
-        columnPaletteGroup = addPaletteGroup("Columns", UIUtils.getIconFromResources("actions/stock_select-column.png"));
-        addActionToPalette("Add numeric",
-                "Adds an empty numeric column with a custom name to the table.",
-                UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"),
-                () -> addColumn(false));
-        addActionToPalette("Add string",
-                "Adds an empty string column with a custom name to the table.",
-                UIUtils.getIconFromResources("actions/edit-table-insert-column-right.png"),
-                () -> addColumn(true));
-        addActionToPalette("Duplicate",
-                "Copies the selected column into a new one.",
-                UIUtils.getIconFromResources("actions/edit-copy.png"),
-                this::copyColumn);
-        addActionToPalette("Combine",
-                "Creates a new column that contains the values of the selected columns assigned by the pattern colum0=row0, column1=row0, ... for each row.",
-                UIUtils.getIconFromResources("actions/statistics.png"),
-                this::addNewCombinedColumn);
-        addSeparatorToPalette();
-        addActionToPalette("Rename",
-                "Renames the selected column",
-                UIUtils.getIconFromResources("actions/tag.png"),
-                this::renameColumn);
-        addSeparatorToPalette();
-        addActionToPalette("Remove",
-                "Remove selected columns",
-                UIUtils.getIconFromResources("actions/edit-table-delete-column.png"),
-                this::removeSelectedColumns);
-        addActionToPalette("To numeric",
-                "Converts to numeric column. If a string value could not be converted, it is replaced by zero",
-                UIUtils.getIconFromResources("actions/edit-select-number.png"),
-                this::selectedColumnsToNumeric);
-        addActionToPalette("To string",
-                "Converts to string column.",
-                UIUtils.getIconFromResources("actions/edit-select-text.png"),
-                this::selectedColumnsToString);
-
-        selectionPaletteGroup = addPaletteGroup("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"));
-        addActionToPalette("Whole row",
-                "Expands the selection to the whole row",
-                UIUtils.getIconFromResources("actions/stock_select-row.png"),
-                this::selectWholeRow);
-        addActionToPalette("Whole column",
-                "Expands the selection to the whole column",
-                UIUtils.getIconFromResources("actions/stock_select-column.png"),
-                this::selectWholeColumn);
-        addSeparatorToPalette();
-        addActionToPalette("Invert",
-                "Inverts the selection",
-                UIUtils.getIconFromResources("actions/edit-select-invert.png"),
-                this::invertSelection);
-        addActionToPalette("Select equivalent",
-                "Select all rows that contain the selection of values",
-                UIUtils.getIconFromResources("actions/filter.png"),
-                this::selectEquivalent);
-
-        addPaletteGroup("View", UIUtils.getIconFromResources("actions/find.png"));
-
-        addActionToPalette("Autosize columns",
-                "Resizes the selected columns, so they fit their contents.",
-                UIUtils.getIconFromResources("actions/itmages-resize.png"),
-                this::autoSizeColumns);
-
-        addPaletteGroup("Data", UIUtils.getIconFromResources("data-types/results-table.png"));
-        addActionToPalette("Import",
-                "Merges another JIPipe table into the current one",
-                UIUtils.getIconFromResources("data-types/results-table.png"),
-                this::mergeTables);
-        addActionToPalette("Integrate",
-                "Collapses the table into a one-row table by applying an integration operation on each column..",
-                UIUtils.getIconFromResources("actions/statistics.png"),
-                this::integrateColumns);
-        addSeparatorToPalette();
-        convertSelectedCellsButton = addActionToPalette("Convert cells",
-                "Converts the values in the selected cells",
-                UIUtils.getIconFromResources("actions/formula.png"),
-                () -> {
-                });
-        convertSelectedCellsMenu = UIUtils.addPopupMenuToComponent(convertSelectedCellsButton);
-        addActionToPalette("To ImageJ",
-                "Exports the table to ImageJ",
-                UIUtils.getIconFromResources("apps/imagej.png"),
-                this::exportToImageJ);
-        palettePanel.addVerticalGlue();
-
-        sideBar.addTab("Table",
-                UIUtils.getIconFromResources("actions/table.png"),
-                palettePanel,
-                DocumentTabPane.CloseMode.withoutCloseButton);
+    private void initializeRibbon() {
+        Ribbon ribbon = getRibbon();
+        ribbon.setNumRows(2);
+        initializeTableRibbonTask(ribbon);
+        initializeSelectRibbonTask(ribbon);
+        initializeColumnsRibbonTask(ribbon);
+        initializeRowsRibbonTask(ribbon);
+        initializeViewRibbonTask(ribbon);
+        ribbon.rebuildRibbon();
     }
 
-    private void updateSideBar() {
-        if (currentContentPanel != null) {
-            remove(currentContentPanel);
+    private void initializeRowsRibbonTask(Ribbon ribbon) {
+        Ribbon.Task rowsTask = ribbon.addTask("Rows");
+        Ribbon.Band addBand = rowsTask.addBand("Add/Delete");
+
+        addBand.add(new LargeButtonAction("Add row", "Adds a new row", UIUtils.getIcon32FromResources("actions/edit-table-insert-row-below.png"), this::addRow));
+        addBand.add(new LargeButtonAction("Delete selection", "Deletes the selected rows", UIUtils.getIcon32FromResources("actions/delete.png"), this::removeSelectedRows));
+    }
+
+    private void initializeSelectRibbonTask(Ribbon ribbon) {
+        Ribbon.Task selectTask = ribbon.addTask("Select");
+        Ribbon.Band generalBand = selectTask.addBand("General");
+        Ribbon.Band rowsBand = selectTask.addBand("Rows");
+        Ribbon.Band columnsBand = selectTask.addBand("Columns");
+
+        generalBand.add(new LargeButtonAction("Invert selection", "Inverts the selection", UIUtils.getIcon32FromResources("actions/edit-select-invert.png"), this::invertSelection));
+
+        rowsBand.add(new LargeButtonAction("Select whole row", "Expands the selection to the whole row", UIUtils.getIcon32FromResources("actions/stock_select-row.png"), this::selectWholeRow));
+        rowsBand.add(new LargeButtonAction("Select equivalent rows", "Select all rows that contain the selection of values", UIUtils.getIcon32FromResources("actions/view-filter.png"), this::selectEquivalent));
+
+        columnsBand.add(new LargeButtonAction("Select whole column", "Expands the selection to the whole column", UIUtils.getIcon32FromResources("actions/stock_select-column.png"), this::selectWholeColumn));
+    }
+
+    private void initializeViewRibbonTask(Ribbon ribbon) {
+        Ribbon.Task viewTask = ribbon.addTask("View");
+        Ribbon.Band columnBand = viewTask.addBand("Columns");
+        columnBand.add(new LargeButtonAction("Auto-size columns", "Resizes the selected columns, so they fit their contents.", UIUtils.getIcon32FromResources("actions/resizecol.png"), this::autoSizeColumns));
+    }
+
+    private void initializeColumnsRibbonTask(Ribbon ribbon) {
+        Ribbon.Task columnsTask = ribbon.addTask("Columns");
+        Ribbon.Band addBand = columnsTask.addBand("Add/Delete");
+        Ribbon.Band modifyBand = columnsTask.addBand("Modify");
+
+        addBand.add(new LargeButtonAction("New string column", "Adds a new string column", UIUtils.getIcon32FromResources("actions/edit-table-insert-column-right.png"), () -> addColumn(true)));
+        addBand.add(new LargeButtonAction("New numeric column", "Adds a new numeric column", UIUtils.getIcon32FromResources("actions/edit-table-insert-column-right.png"), () -> addColumn(false)));
+        addBand.add(new SmallButtonAction("Duplicate", "Duplicates the selected columns", UIUtils.getIconFromResources("actions/edit-duplicate.png"), this::copyColumn));
+        addBand.add(new SmallButtonAction("Delete", "Deletes the selected columns", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedColumns));
+
+        modifyBand.add(new LargeButtonAction("Rename", "Renames the selected column", UIUtils.getIcon32FromResources("actions/tag.png"), this::renameColumn));
+//        modifyBand.add(new LargeButtonAction("Combine", "Creates a new column that contains the values of the selected columns assigned by the pattern colum0=row0, column1=row0, ... for each row.", UIUtils.getIcon32FromResources("actions/rabbitvcs-merge.png"), this::addNewCombinedColumn));
+        modifyBand.add(new SmallButtonAction("To string column", "Converts the column to a string column", UIUtils.getIcon16FromResources("actions/edit-select-text.png"), this::selectedColumnsToString));
+        modifyBand.add(new SmallButtonAction("To numeric column", "Converts the column to a numeric column", UIUtils.getIcon16FromResources("actions/edit-select-number.png"), this::selectedColumnsToNumeric));
+    }
+
+    private void initializeTableRibbonTask(Ribbon ribbon) {
+        Ribbon.Task tableTask = ribbon.addTask("Table");
+        Ribbon.Band generalBand = tableTask.addBand("General");
+        Ribbon.Band fileBand = tableTask.addBand("File");
+        Ribbon.Band importExportBand = tableTask.addBand("Import/Export");
+        Ribbon.Band dataBand = tableTask.addBand("Data");
+
+        generalBand.add(new LargeButtonAction("Undo", "Reverts the last operation", UIUtils.getIcon32FromResources("actions/edit-undo.png"), this::undo));
+
+        fileBand.add(new LargeButtonAction("Open", "Opens a table from a file", UIUtils.getIcon32FromResources("actions/fileopen.png"), this::openTableFromFile));
+        fileBand.add(new LargeButtonAction("Save", "Saves the table to a file", UIUtils.getIcon32FromResources("actions/document-save.png"), this::exportTableToFile));
+
+        importExportBand.add(new LargeButtonAction("Clone", "Creates a copy of the table in a new window", UIUtils.getIcon32FromResources("actions/entry-clone.png"), this::cloneTableToNewWindow));
+        importExportBand.add(new SmallButtonAction("From ImageJ", "Imports a table from ImageJ", UIUtils.getIcon16FromResources("apps/imagej.png"), this::importTableFromImageJ));
+        importExportBand.add(new SmallButtonAction("To ImageJ", "Exports the table to ImageJ", UIUtils.getIcon16FromResources("apps/imagej.png"), this::exportTableToImageJ));
+
+        dataBand.add(new LargeButtonAction("Integrate", "Collapses the table into a one-row table by applying an integration operation on each column", UIUtils.getIcon32FromResources("actions/statistics.png"), this::integrateColumns));
+        {
+            LargeButtonAction convertButton = new LargeButtonAction("Apply function", "Applies a function to the selected table cells", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"), () -> {
+            });
+            JPopupMenu convertMenu = new JPopupMenu();
+            UIUtils.addReloadablePopupMenuToComponent(convertButton.getButton(), convertMenu, () -> updateConvertMenu(convertButton.getButton(), convertMenu));
+            dataBand.add(convertButton);
         }
-        if (enableSideBarButton.isSelected()) {
-            JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                    new JScrollPane(jxTable),
-                    sideBar, AutoResizeSplitPane.RATIO_3_TO_1);
-            add(splitPane, BorderLayout.CENTER);
-            currentContentPanel = splitPane;
-        } else {
-            JScrollPane scrollPane = new JScrollPane(jxTable);
-            add(scrollPane, BorderLayout.CENTER);
-            currentContentPanel = scrollPane;
-        }
-        revalidate();
-        repaint();
+        dataBand.add(new LargeButtonAction("Plot", "Creates a plot from this table", UIUtils.getIcon32FromResources("actions/labplot-xy-plot-two-axes.png"), this::createNewPlot));
     }
 
-    public JToolBar getToolBar() {
-        return toolBar;
-    }
-
-    private void exportToImageJ() {
+    private void exportTableToImageJ() {
         JIPipe.getImageJAdapters().getDefaultExporterFor(ResultsTableData.class).exportData(tableModel,
                 new ImageJExportParameters(true, false, false, "" + tableModel), new JIPipeProgressInfo());
     }
 
-    private void importDataImageJ() {
+    private void importTableFromImageJ() {
         JIPipeOpenTableFromImageJDialogUI dialog = new JIPipeOpenTableFromImageJDialogUI(getWorkbench());
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
@@ -387,42 +277,23 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void importDataCSV() {
-        Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
+    private void openTableFromFile() {
+        Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (fileName != null) {
-            ResultsTableData tableData = ResultsTableData.fromCSV(fileName);
+            ResultsTableData tableData;
+            if (UIUtils.EXTENSION_FILTER_XLSX.accept(fileName.toFile())) {
+                tableData = ResultsTableData.fromXLSX(fileName).values().iterator().next();
+            } else {
+                tableData = ResultsTableData.fromCSV(fileName);
+            }
             tableModel = tableData;
             jxTable.setModel(tableData);
             jxTable.packAll();
         }
     }
 
-    private JButton addActionToPalette(String name, String description, Icon icon, Runnable action) {
-        JButton button = new JButton(name, icon);
-        button.setToolTipText(description);
-        UIUtils.makeFlat(button);
-        button.setVerticalTextPosition(SwingConstants.BOTTOM);
-        button.setHorizontalTextPosition(SwingConstants.CENTER);
-        button.addActionListener(e -> action.run());
-//        palettePanel.addWideToForm(button, new MarkdownDocument(description));
-        currentPaletteGroup.add(button);
-        return button;
-    }
-
-    private FormPanel.GroupHeaderPanel addPaletteGroup(String name, Icon icon) {
-        FormPanel.GroupHeaderPanel groupHeaderPanel = palettePanel.addGroupHeader(name, icon);
-        currentPaletteGroup = new JPanel();
-        currentPaletteGroup.setLayout(new ModifiedFlowLayout(FlowLayout.LEFT));
-        palettePanel.addWideToForm(currentPaletteGroup, null);
-        return groupHeaderPanel;
-    }
-
-    private void addSeparatorToPalette() {
-//        palettePanel.addWideToForm(Box.createVerticalStrut(8), null);
-        currentPaletteGroup.add(Box.createVerticalStrut(8));
-    }
-
-    private void mergeTables() {
+    private void mergeTablesFromDifferentWindows() {
+        // TODO: Currently non-functional
         JIPipeMergeTablesDialogUI dialog = new JIPipeMergeTablesDialogUI(this);
         dialog.pack();
         dialog.setSize(800, 600);
@@ -433,13 +304,8 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     }
 
     private void createNewPlot() {
-        PlotEditor plotBuilderUI = new PlotEditor(getWorkbench());
+        PlotEditor plotBuilderUI = PlotEditor.openWindow(getWorkbench(), "Plot");
         plotBuilderUI.importData(tableModel, getWorkbench().getDocumentTabPane().findTabNameFor(this));
-        getWorkbench().getDocumentTabPane().addTab("Plot",
-                UIUtils.getIconFromResources("data-types/data-type-plot.png"),
-                plotBuilderUI,
-                DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void integrateColumns() {
@@ -509,7 +375,6 @@ public class TableEditor extends JIPipeWorkbenchPanel {
                 }
 
                 isRebuildingSelection = false;
-                updateConvertMenu();
             }
         }
     }
@@ -529,7 +394,6 @@ public class TableEditor extends JIPipeWorkbenchPanel {
             }
             isRebuildingSelection = false;
         }
-        updateConvertMenu();
     }
 
     private void selectWholeColumn() {
@@ -540,15 +404,11 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         jxTable.addColumnSelectionInterval(0, tableModel.getColumnCount() - 1);
     }
 
-    private void cloneDataToNewTab() {
-        getWorkbench().getDocumentTabPane().addTab("Table",
-                UIUtils.getIconFromResources("data-types/results-table.png"),
-                new TableEditor(getWorkbench(), new ResultsTableData(tableModel)),
-                DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        getWorkbench().getDocumentTabPane().switchToLastTab();
+    private void cloneTableToNewWindow() {
+        openWindow(getWorkbench(), new ResultsTableData(tableModel), "Cloned table");
     }
 
-    private void updateConvertMenu() {
+    private void updateConvertMenu(JButton convertSelectedCellsButton, JPopupMenu convertSelectedCellsMenu) {
         if (isRebuildingSelection)
             return;
         convertSelectedCellsMenu.removeAll();
@@ -668,13 +528,11 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         jxTable.setModel(new DefaultTableModel());
         jxTable.setModel(tableModel);
         jxTable.packAll();
-        updateSelectionStatistics();
     }
 
     private void addRow() {
         tableModel.addRow();
         refreshTable();
-        updateSelectionStatistics();
     }
 
     private void removeSelectedColumns() {
@@ -709,17 +567,6 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void updateSelectionStatistics() {
-        if (rowPaletteGroup != null) {
-            int count = tableModel != null ? tableModel.getRowCount() : 0;
-            rowPaletteGroup.getTitleLabel().setText(count > 0 ? "Rows (" + count + ")" : "Rows");
-        }
-        if (columnPaletteGroup != null) {
-            int count = tableModel != null ? tableModel.getColumnCount() : 0;
-            columnPaletteGroup.getTitleLabel().setText(count > 0 ? "Columns (" + count + ")" : "Columns");
-        }
-    }
-
     /**
      * Creates a new 'Undo' point
      */
@@ -730,39 +577,13 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         undoBuffer.push(new ResultsTableData(tableModel));
     }
 
-    private void exportTableAsCSV() {
-        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
+    private void exportTableToFile() {
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
-            try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(selectedPath.toFile()))) {
-                String[] rowBuffer = new String[tableModel.getColumnCount()];
-
-                for (int column = 0; column < tableModel.getColumnCount(); ++column) {
-                    rowBuffer[column] = tableModel.getColumnName(column);
-                }
-
-                writer.write(Joiner.on(',').join(rowBuffer).getBytes(Charsets.UTF_8));
-                writer.write("\n".getBytes(Charsets.UTF_8));
-
-                for (int row = 0; row < tableModel.getRowCount(); ++row) {
-                    for (int column = 0; column < tableModel.getColumnCount(); ++column) {
-                        if (tableModel.getValueAt(row, column) instanceof Boolean) {
-                            rowBuffer[column] = (Boolean) tableModel.getValueAt(row, column) ? "TRUE" : "FALSE";
-                        } else if (tableModel.getValueAt(row, column) instanceof Number) {
-                            rowBuffer[column] = tableModel.getValueAt(row, column).toString();
-                        } else {
-                            String content = "" + tableModel.getValueAt(row, column);
-                            content = content.replace("\"", "\"\"");
-                            if (content.contains(",")) {
-                                content = "\"" + content + "\"";
-                            }
-                            rowBuffer[column] = content;
-                        }
-                    }
-                    writer.write(Joiner.on(',').join(rowBuffer).getBytes(Charsets.UTF_8));
-                    writer.write("\n".getBytes(Charsets.UTF_8));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            if (UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
+                tableModel.saveAsXLSX(selectedPath);
+            } else {
+                tableModel.saveAsCSV(selectedPath);
             }
         }
     }
@@ -775,18 +596,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         this.tableModel = tableModel;
         jxTable.setModel(new ResultsTableData());
         jxTable.setModel(tableModel);
-        if (tableModel != null) {
-            tableModel.addTableModelListener(e -> {
-                if (e.getSource() == tableModel)
-                    updateSelectionStatistics();
-            });
-        }
-        updateSelectionStatistics();
         SwingUtilities.invokeLater(this::autoSizeColumns);
-    }
-
-    public DocumentTabPane getSideBar() {
-        return sideBar;
     }
 
     /**
@@ -824,6 +634,59 @@ public class TableEditor extends JIPipeWorkbenchPanel {
             }
 
             return this;
+        }
+    }
+
+    public static class NumberEditor extends DefaultCellEditor {
+
+        private Object value;
+
+        public NumberEditor() {
+            super(new JTextField());
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return value;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            JTextField textField = (JTextField) getComponent();
+            boolean success = true;
+
+            try {
+                String editingValue = StringUtils.nullToEmpty(super.getCellEditorValue());
+                editingValue = editingValue.replace(',', '.').replace(" ", "");
+                if (NumberUtils.isCreatable(editingValue)) {
+                    value = NumberUtils.createDouble(editingValue);
+                }
+                else if(StringUtils.isNullOrEmpty(editingValue)) {
+                    value = 0d;
+                }
+                else if(editingValue.toLowerCase().startsWith("-inf")) {
+                    value = Double.NEGATIVE_INFINITY;
+                }
+                else if(editingValue.toLowerCase().startsWith("inf")) {
+                    value = Double.POSITIVE_INFINITY;
+                }
+                else if(editingValue.equalsIgnoreCase("na") || editingValue.equalsIgnoreCase("nan")) {
+                    value = Double.NaN;
+                }
+                else {
+                    success = false;
+                }
+            } catch (NumberFormatException exception) {
+                success = false;
+            }
+
+            if (success) {
+                textField.setBorder(UIManager.getBorder("TextField.border"));
+                return super.stopCellEditing();
+            } else {
+                textField.setBorder(new LineBorder(Color.red));
+                return false;
+            }
         }
     }
 }

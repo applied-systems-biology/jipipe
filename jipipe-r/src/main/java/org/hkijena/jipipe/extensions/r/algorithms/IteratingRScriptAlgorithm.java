@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -11,22 +12,18 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.r.OptionalREnvironment;
+import org.hkijena.jipipe.extensions.r.RExtension;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
 import org.hkijena.jipipe.extensions.r.RUtils;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -118,6 +115,12 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("override-environment")
     public void setOverrideEnvironment(OptionalREnvironment overrideEnvironment) {
         this.overrideEnvironment = overrideEnvironment;
+    }
+
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+        super.onDeserialized(node, issues, notifications);
+        RExtension.createMissingRNotificationIfNeeded(notifications);
     }
 
     @Override
@@ -247,71 +250,5 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("annotation-merge-strategy")
     public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
-    }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            Object result = JOptionPane.showInputDialog(parent.getWindow(), "Please select the example:",
-                    "Load example", JOptionPane.PLAIN_MESSAGE, null, Examples.values(), Examples.LoadIris);
-            if (result instanceof Examples) {
-                ((Examples) result).apply(this);
-            }
-        }
-    }
-
-    private enum Examples {
-        LoadIris("Load IRIS data set", "library(datasets)\n\nJIPipe.AddOutputDataFrame(slot=\"Table\", data=iris)",
-                new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", "", null, false, JIPipeDataSlotRole.Data)
-        }),
-        PlotIris("Plot IRIS data set", "library(datasets)\n" +
-                "\n" +
-                "# Generate the output file name\n" +
-                "png.file.name <- JIPipe.AddOutputPNGImagePath(slot=\"Plot\")\n\n" +
-                "# Use standard R functions. Write into this file.\n" +
-                "png(png.file.name, width = 800, height = 600)\n" +
-                "plot(iris$Petal.Length, iris$Petal.Width, pch=21, bg=c(\"red\",\"green3\",\"blue\")[unclass(iris$Species)], main=\"Edgar Anderson's Iris Data\")\n" +
-                "dev.off()\n" +
-                "\n" +
-                "# JIPipe will automatically load the data",
-                new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", "", null, false, JIPipeDataSlotRole.Data)
-        }),
-        SummarizeTable("Summarize table", "input <- JIPipe.GetInputAsDataFrame(\"Input\")\n" +
-                "JIPipe.AddOutputDataFrame(slot=\"Output\", data=summary(input))",
-                new JIPipeInputSlot[]{new DefaultJIPipeInputSlot(ResultsTableData.class, "Input", "", false, false, JIPipeDataSlotRole.Data)},
-                new JIPipeOutputSlot[]{new DefaultJIPipeOutputSlot(ResultsTableData.class, "Output", "", null, false, JIPipeDataSlotRole.Data)});
-
-        private final String name;
-        private final String code;
-        private final JIPipeInputSlot[] inputSlots;
-        private final JIPipeOutputSlot[] outputSlots;
-
-        Examples(String name, String code, JIPipeInputSlot[] inputSlots, JIPipeOutputSlot[] outputSlots) {
-            this.name = name;
-            this.code = code;
-            this.inputSlots = inputSlots;
-            this.outputSlots = outputSlots;
-        }
-
-        public void apply(IteratingRScriptAlgorithm algorithm) {
-            ParameterUtils.setParameter(algorithm, "script", new RScriptParameter(code));
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            for (JIPipeInputSlot inputSlot : inputSlots) {
-                slotConfiguration.addInputSlot(inputSlot.slotName(), inputSlot.description(), inputSlot.value(), true);
-            }
-            for (JIPipeOutputSlot outputSlot : outputSlots) {
-                slotConfiguration.addOutputSlot(outputSlot.slotName(), outputSlot.description(), outputSlot.value(), null, true);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
     }
 }

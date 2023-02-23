@@ -35,7 +35,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
 
     private final RuntimeSettings runtimeSettings = RuntimeSettings.getInstance();
     private JIPipeProjectRun currentRun;
-    private Timer timer = new Timer(RuntimeSettings.getInstance().getRealTimeRunDelay(), e -> scheduleRun());
+    private final Timer timer = new Timer(RuntimeSettings.getInstance().getRealTimeRunDelay(), e -> scheduleRun());
 
     /**
      * @param workbenchUI The workbench UI
@@ -104,7 +104,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         if (!runtimeSettings.isRealTimeRunEnabled()) {
             return;
         }
-        getProject().getCache().autoClean(true, true, new JIPipeProgressInfo());
+        getProject().getCache().clearOutdated(new JIPipeProgressInfo());
         if (currentRun != null)
             JIPipeRunnerQueue.getInstance().cancel(currentRun);
         currentRun = null;
@@ -119,26 +119,28 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         JIPipeRunnerQueue.getInstance().enqueue(currentRun);
     }
 
-    @Subscribe
-    public void onRunStarted(RunUIWorkerStartedEvent event) {
-        if (event.getRun() == currentRun) {
-            if (!runtimeSettings.isRealTimeRunEnabled()) {
-                return;
-            }
-        }
-    }
+//    @Subscribe
+//    public void onRunStarted(RunWorkerStartedEvent event) {
+//        if (event.getRun() == currentRun) {
+//            if (!runtimeSettings.isRealTimeRunEnabled()) {
+//                return;
+//            }
+//        }
+//    }
 
     @Subscribe
-    public void onRunFinished(RunUIWorkerFinishedEvent event) {
+    public void onRunFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == currentRun) {
             getWorkbench().sendStatusBarText("Real-time: Update finished");
+            currentRun = null;
         }
     }
 
     @Subscribe
-    public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
+    public void onRunCancelled(RunWorkerInterruptedEvent event) {
         if (event.getRun() == currentRun) {
             getWorkbench().sendStatusBarText("Real-time: Update failed");
+            currentRun = null;
         }
     }
 

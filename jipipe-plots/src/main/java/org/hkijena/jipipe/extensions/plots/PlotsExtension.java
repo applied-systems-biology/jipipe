@@ -13,27 +13,41 @@
 
 package org.hkijena.jipipe.extensions.plots;
 
+import com.google.common.eventbus.Subscribe;
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DataTableImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataOperation;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.plots.converters.PlotToTableConverter;
 import org.hkijena.jipipe.extensions.plots.datatypes.*;
+import org.hkijena.jipipe.extensions.plots.nodes.PlotTables2AlgorithmInfo;
+import org.hkijena.jipipe.extensions.plots.nodes.PlotTablesAlgorithm;
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnum;
 import org.hkijena.jipipe.extensions.plots.parameters.UIPlotDataSeriesColumnEnumParameterEditorUI;
 import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.OpenPlotInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.PlotDataSlotPreview;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
+import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.lang.reflect.Modifier;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Provides a standard selection of plots
@@ -41,11 +55,26 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = JIPipeJavaExtension.class)
 public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:plots",
+            JIPipe.getJIPipeVersion(),
+            "Standard plots");
     public static JIPipeDataOperation[] STANDARD_DATA_OPERATIONS = {
             new OpenPlotInJIPipeDataOperation(),
             new OpenInNativeApplicationDataImportOperation("Open *.png", "Opens the rendered PNG image", new String[]{".png"}),
             new OpenInNativeApplicationDataImportOperation("Open *.svg", "Opens the rendered SVG image", new String[]{".svg"})
     };
+
+    public PlotsExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION, PluginCategoriesEnumParameter.CATEGORY_PLOTTING);
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY);
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -84,6 +113,15 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 PlotDataSlotPreview.class,
                 STANDARD_DATA_OPERATIONS);
         registerDatatypeConversion(new PlotToTableConverter());
+
+        // Register any existing plot data types
+        for (Map.Entry<String, Class<? extends JIPipeData>> entry : jiPipe.getDatatypeRegistry().getRegisteredDataTypes().entrySet()) {
+            tryRegisterPlotCreatorNode(entry.getKey());
+        }
+
+        // Register listener for future operations
+        jiPipe.getDatatypeRegistry().getEventBus().register(this);
+
 
         // Register
         registerDatatype("plot-histogram",
@@ -168,6 +206,21 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Data column",
                 "A data column to be plot",
                 UIPlotDataSeriesColumnEnumParameterEditorUI.class);
+    }
+
+    @Subscribe
+    public void onPlotTypeRegistered(JIPipe.DatatypeRegisteredEvent event) {
+        Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(event.getId());
+        tryRegisterPlotCreatorNode(event.getId());
+    }
+
+    private void tryRegisterPlotCreatorNode(String datatypeId) {
+        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(datatypeId);
+        if (!PlotData.class.isAssignableFrom(dataInfo.getDataClass()))
+            return;
+        if (Modifier.isAbstract(dataInfo.getDataClass().getModifiers()))
+            return;
+        registerNodeType(new PlotTables2AlgorithmInfo(dataInfo), UIUtils.getIconURLFromResources("actions/office-chart-area.png"));
     }
 
     @Override

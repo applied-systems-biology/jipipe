@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables", aliasName = "Apply LUT")
 public class ApplyLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public ApplyLUTAlgorithm(JIPipeNodeInfo info) {
@@ -44,13 +46,8 @@ public class ApplyLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
-        ImageStack stack = new ImageStack(data.getImage().getWidth(), data.getImage().getHeight(), data.getImage().getStackSize());
-        ImageJUtils.forEachIndexedZCTSlice(data.getImage(), (sourceProcessor, index) -> {
-            ImageProcessor duplicate = sourceProcessor.duplicate();
-            ColorProcessor rgb = new ColorProcessor(duplicate.getBufferedImage());
-            stack.setProcessor(rgb, index.zeroSliceIndexToOneStackIndex(data.getImage()));
-        }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(new ImagePlus(data.getImage().getTitle(), stack)), progressInfo);
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
+        ImagePlus outputData = ImageJUtils.renderToRGBWithLUTIfNeeded(inputData.getImage(), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(outputData), progressInfo);
     }
 }

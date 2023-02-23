@@ -7,35 +7,33 @@
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/license" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="jipipe-core" />
-    <orderEntry type="library" name="Maven: net.imagej:imagej:2.5.0" level="project" />
-    <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.34.2" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej:2.9.0" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.35.0" level="project" />
     <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-launcher:6.0.2" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-notebook:0.7.1" level="project" />
     <orderEntry type="library" name="Maven: org.knowm.xchart:xchart:3.5.4" level="project" />
     <orderEntry type="library" name="Maven: de.erichseifert.vectorgraphics2d:VectorGraphics2D:0.13" level="project" />
-    <orderEntry type="library" name="Maven: net.imagej:imagej-ops:0.46.1" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej-ops:0.48.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-mesh:0.8.1" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.12.1" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm-fft:0.2.1" level="project" />
     <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:parsington:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scripting-javascript:0.5.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.10.2" level="project" />
     <orderEntry type="library" name="Maven: org.ojalgo:ojalgo:45.1.1" level="project" />
     <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
-    <orderEntry type="library" name="Maven: net.imagej:imagej-updater:0.10.6" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej-updater:0.11.0" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
-    <orderEntry type="library" name="Maven: io.scif:scifio:0.43.1" level="project" />
+    <orderEntry type="library" name="Maven: io.scif:scifio:0.43.2" level="project" />
     <orderEntry type="library" name="Maven: io.scif:scifio-jai-imageio:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:scijava-common:2.88.1" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:scijava-common:2.89.0" level="project" />
     <orderEntry type="library" name="Maven: org.bushe:eventbus:1.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-mesh-io:0.1.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.smurn:jply:0.2.0" level="project" />
@@ -50,14 +48,13 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-plugins-uploader-webdav:0.3.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.jackrabbit:jackrabbit-webdav:2.21.7" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.httpcomponents:httpclient:4.5.13" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: commons-codec:commons-codec:1.14" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.httpcomponents:httpcore:4.4.14" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-scripting:0.8.3" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-beanshell:0.3.4" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache-extras.beanshell:bsh:2.0b6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-beanshell:0.4.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache-extras.beanshell:bsh:2.1.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-clojure:0.1.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.clojure:clojure:1.8.0" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-groovy:0.4.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scripting-groovy:0.4.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.groovy:groovy:3.0.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.groovy:groovy-jsr223:3.0.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.codehaus.groovy:groovy-dateutil:3.0.4" level="project" />
@@ -132,34 +129,35 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.markdownj:markdownj:0.3.0-1.0.2b4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scijava-plugins-text-plain:0.1.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.12.0" level="project" />
-    <orderEntry type="library" name="Maven: net.imglib2:imglib2-ij:2.0.0-beta-46" level="project" />
+    <orderEntry type="library" name="Maven: net.imglib2:imglib2-ij:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2:5.12.0" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-cache:1.0.0-beta-16" level="project" />
     <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-optional:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: net.imagej:ij:1.53r" level="project" />
-    <orderEntry type="library" name="Maven: net.imagej:imagej-legacy:0.38.1" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:ij:1.53t" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:imagej-legacy:0.39.2" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:ij1-patcher:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-realtransform:3.1.2" level="project" />
-    <orderEntry type="library" name="Maven: jitk:jitk-tps:3.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.24" level="project" />
+    <orderEntry type="library" name="Maven: jitk:jitk-tps:3.0.3" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.25" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-roi:0.12.1" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-search:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.9.0" level="project" />
     <orderEntry type="library" name="Maven: org.ocpsoft.prettytime:prettytime:4.0.1.Final" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-table:0.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-ui-awt:0.1.7" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:scijava-ui-swing:0.14.0" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:scijava-ui-swing:0.17.1" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-plot:0.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:swing-checkbox-tree:1.0.2" level="project" />
+    <orderEntry type="library" name="Maven: com.formdev:flatlaf:2.4" level="project" />
     <orderEntry type="library" name="Maven: net.sourceforge.jdatepicker:jdatepicker:1.3.2" level="project" />
     <orderEntry type="library" name="Maven: com.fifesoft:autocomplete:3.1.5" level="project" />
     <orderEntry type="library" name="Maven: com.fifesoft:languagesupport:3.1.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.mozilla:rhino:1.7.6" level="project" />
     <orderEntry type="library" name="Maven: com.fifesoft:rsyntaxtextarea:3.1.6" level="project" />
-    <orderEntry type="library" name="Maven: org.javassist:javassist:3.28.0-GA" level="project" />
     <orderEntry type="library" name="Maven: com.miglayout:miglayout-swing:5.2" level="project" />
     <orderEntry type="library" name="Maven: com.miglayout:miglayout-core:5.2" level="project" />
+    <orderEntry type="library" name="Maven: org.javassist:javassist:3.28.0-GA" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-ui-swing:0.23.3" level="project" />
     <orderEntry type="library" name="Maven: org.jhotdraw:jhotdraw:7.6.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-ui-awt:0.3.1" level="project" />
@@ -194,7 +192,6 @@
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-ext-autolink:0.62.2" level="project" />
     <orderEntry type="library" name="Maven: org.nibor.autolink:autolink:0.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-pdf-converter:0.62.2" level="project" />
-    <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.11.3" level="project" />
     <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-core:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:pdfbox:2.0.16" level="project" />
@@ -214,18 +211,30 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-text:1.9" level="project" />
     <orderEntry type="library" name="Maven: org.jfree:jfreechart:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.jfree:jfreesvg:3.4" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:script-editor:0.7.7" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:script-editor:0.7.8" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scripting-java:0.4.1" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:minimaven:2.2.2" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:batch-processor:0.4.1" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:2.7" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:batch-processor:0.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.12" level="project" />
     <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.github.vatbub:mslinks:1.0.5" level="project" />
     <orderEntry type="library" name="Maven: com.fathzer:javaluator:3.0.3" level="project" />
-    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.5.2" level="project" />
+    <orderEntry type="library" name="Maven: net.java.dev.jna:jna:5.12.1" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-compress:1.21" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.poi:poi:5.2.0" level="project" />
+    <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.14" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-collections4:4.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.commons:commons-math3:3.6.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.7" level="project" />
+    <orderEntry type="library" name="Maven: com.zaxxer:SparseBitSet:1.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.17.1" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml:5.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml-lite:5.2.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.xmlbeans:xmlbeans:5.0.3" level="project" />
+    <orderEntry type="library" name="Maven: xml-apis:xml-apis:1.4.01" level="project" />
+    <orderEntry type="library" name="Maven: com.github.virtuald:curvesapi:1.06" level="project" />
+    <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.7.2" level="project" />
     <orderEntry type="library" name="Maven: org.python:jython-slim:2.7.2" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr:3.5.2" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:ST4:4.0.8" level="project" />

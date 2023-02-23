@@ -39,6 +39,8 @@ public class PickEnumValueDialog extends JDialog {
     private JList<Object> itemJList;
     private Object selectedItem;
     private JButton confirmButton;
+
+    private JScrollPane scrollPane;
     private boolean canceled = true;
 
     public PickEnumValueDialog(Window parent, List<Object> availableItems, EnumItemInfo itemInfo, Object preSelected) {
@@ -88,7 +90,7 @@ public class PickEnumValueDialog extends JDialog {
                 }
             }
         });
-        JScrollPane scrollPane = new JScrollPane(itemJList);
+        scrollPane = new JScrollPane(itemJList);
         add(scrollPane, BorderLayout.CENTER);
         initializeButtonPanel();
     }
@@ -167,6 +169,7 @@ public class PickEnumValueDialog extends JDialog {
                 itemJList.setSelectedIndex(0);
             }
         }
+        UIUtils.invokeScrollToTop(scrollPane);
     }
 
     public Object getSelectedItem() {

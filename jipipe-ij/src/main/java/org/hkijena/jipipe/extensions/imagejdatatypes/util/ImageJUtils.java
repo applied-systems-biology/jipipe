@@ -13,8 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
+import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TFloatArrayList;
@@ -23,27 +22,37 @@ import gnu.trove.list.array.TShortArrayList;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import ij.*;
+import ij.gui.ImageCanvas;
 import ij.gui.Overlay;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.AVI_Writer;
+import ij.plugin.filter.Convolver;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -56,6 +65,150 @@ import java.util.stream.Collectors;
  * Utility functions for ImageJ
  */
 public class ImageJUtils {
+
+    /**
+     * Returns the properties of a {@link Roi} as map
+     *
+     * @param roi the roi
+     * @return the properties
+     */
+    public static Map<String, String> getRoiProperties(Roi roi) {
+        Properties props = new Properties();
+        String properties = roi.getProperties();
+        if (!StringUtils.isNullOrEmpty(properties)) {
+            try {
+                InputStream is = new ByteArrayInputStream(properties.getBytes(StandardCharsets.UTF_8));
+                props.load(is);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        HashMap<String, String> map = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+            map.put("" + entry.getKey(), "" + entry.getValue());
+        }
+        return map;
+    }
+
+    /**
+     * Returns the persistent properties of a {@link ImagePlus} as map
+     *
+     * @param imagePlus the image
+     * @return the properties
+     */
+    public static Map<String, String> getImageProperties(ImagePlus imagePlus) {
+        HashMap<String, String> map = new HashMap<>();
+        if(imagePlus.getImageProperties() != null) {
+            for (Map.Entry<Object, Object> entry : imagePlus.getImageProperties().entrySet()) {
+                map.put("" + entry.getKey(), "" + entry.getValue());
+            }
+        }
+        return map;
+    }
+
+    /**
+     * Sets the properties of a {@link Roi} from a map
+     *
+     * @param roi        the roi
+     * @param properties the properties
+     */
+    public static void setRoiProperties(Roi roi, Map<String, String> properties) {
+        Properties props = new Properties();
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            props.setProperty(StringUtils.nullToEmpty(entry.getKey()).replace(' ', '_').replace('=', '_').replace(':', '_'), entry.getValue());
+        }
+        try {
+            StringWriter writer = new StringWriter();
+            props.store(writer, null);
+            writer.flush();
+            roi.setProperties(writer.toString());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the properties of a {@link ImagePlus} from a map
+     *
+     * @param imagePlus        the image
+     * @param properties the properties
+     */
+    public static void setImageProperties(ImagePlus imagePlus, Map<String, String> properties) {
+        ImmutableList<Map.Entry<String, String>> copyOf = ImmutableList.copyOf(properties.entrySet());
+        String[] props = new String[copyOf.size() * 2];
+        for (int i = 0; i < copyOf.size(); i++) {
+            Map.Entry<String, String> entry = copyOf.get(i);
+            props[2 * i] = StringUtils.nullToEmpty(entry.getKey()).replace(' ', '_').replace('=', '_').replace(':', '_');
+            props[2 * i + 1] = entry.getValue();
+        }
+        imagePlus.setProperties(props);
+    }
+
+    /**
+     * Returns the lowest ImageJ image type that can contain all images.
+     * If any of the images is RGB, 24 bit will be returned
+     *
+     * @param images the images
+     * @return the consensus bit depth. 0 if images is empty
+     */
+    public static int getConsensusBitDepth(Collection<ImagePlus> images) {
+        int type = 0;
+        for (ImagePlus image : images) {
+            if (image.getBitDepth() == 24) {
+                type = 24;
+                break;
+            } else {
+                type = Math.max(type, image.getBitDepth());
+            }
+        }
+        return type;
+    }
+
+    public static List<ImagePlus> convertToConsensusBitDepthIfNeeded(Collection<ImagePlus> images) {
+        List<ImagePlus> result = new ArrayList<>();
+        int bitDepth = getConsensusBitDepth(images);
+        for (ImagePlus image : images) {
+            result.add(convertToBitDepthIfNeeded(image, bitDepth));
+        }
+        return result;
+    }
+
+    public static ImagePlus convertToBitDepthIfNeeded(ImagePlus imagePlus, int bitDepth) {
+        switch (bitDepth) {
+            case 8:
+                return convertToGreyscale8UIfNeeded(imagePlus);
+            case 16:
+                return convertToGrayscale16UIfNeeded(imagePlus);
+            case 32:
+                return convertToGrayscale32FIfNeeded(imagePlus);
+            case 24:
+                return convertToColorRGBIfNeeded(imagePlus);
+            default:
+                return imagePlus;
+
+        }
+    }
+
+    /**
+     * Returns the general {@link ImagePlusData} class for a bit depth
+     *
+     * @param bitDepth the bit depth
+     * @return the class. if bit depth is invalid, {@link ImagePlusData} is returned
+     */
+    public static Class<? extends ImagePlusData> bitDepthToImagePlusDataType(int bitDepth) {
+        switch (bitDepth) {
+            case 8:
+                return ImagePlusGreyscale8UData.class;
+            case 16:
+                return ImagePlusGreyscale16UData.class;
+            case 32:
+                return ImagePlusGreyscale32FData.class;
+            case 24:
+                return ImagePlusColorRGBData.class;
+            default:
+                return ImagePlusData.class;
+        }
+    }
 
     /**
      * Faster version of the duplicate() method in {@link ImagePlus}.
@@ -93,7 +246,6 @@ public class ImageJUtils {
             }
             copyStack.addSlice(stack.getSliceLabel(i), targetProcessor);
         }
-        IJ.showProgress(1.0);
         ImagePlus imp2 = imp.createImagePlus();
         imp2.setStack("DUP_" + imp.getTitle(), copyStack);
         String info = (String) imp.getProperty("Info");
@@ -114,6 +266,18 @@ public class ImageJUtils {
         Overlay overlay = imp.getOverlay();
         if (overlay != null && !imp.getHideOverlay())
             imp2.setOverlay(overlay);
+
+        // Copy the LUT
+        if(imp.getType() != ImagePlus.COLOR_RGB) {
+            imp2.setLut(imp.getProcessor().getLut());
+            if(imp2.hasImageStack()) {
+                imp2.getStack().setColorModel(imp.getStack().getColorModel());
+            }
+        }
+
+        // Calibrate
+        calibrate(imp2, ImageJCalibrationMode.Custom, min, max);
+
         return imp2;
     }
 
@@ -289,7 +453,7 @@ public class ImageJUtils {
      * @return the processor
      */
     public static ImageProcessor getSliceZero(ImagePlus img, ImageSliceIndex index) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             return img.getStack().getProcessor(img.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
         } else {
             if (index.getZ() != 0 || index.getC() != 0 || index.getT() != 0)
@@ -305,7 +469,7 @@ public class ImageJUtils {
      * @return the processor
      */
     public static ImageProcessor getSliceZero(ImagePlus img, int c, int z, int t) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             return img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1));
         } else {
             if (z != 0 || c != 0 || t != 0)
@@ -317,7 +481,8 @@ public class ImageJUtils {
     /**
      * Copies the hyperstack dimensions from one image to another
      * src and target must have the same number of slices!
-     * @param src the source image
+     *
+     * @param src    the source image
      * @param target the target image
      */
     public static void copyHyperstackDimensions(ImagePlus src, ImagePlus target) {
@@ -381,6 +546,32 @@ public class ImageJUtils {
     }
 
     /**
+     * Creates a dummy canvas that contains the appropriate magnification settings
+     *
+     * @param image      the image
+     * @param renderArea the area where the image will be rendered
+     * @return the canvas
+     */
+    public static ImageCanvas createZoomedDummyCanvas(ImagePlus image, Rectangle renderArea) {
+        double magnification = 1.0 * renderArea.width / image.getWidth();
+        return createZoomedDummyCanvas(image, magnification);
+    }
+
+    /**
+     * Creates a dummy canvas that contains the appropriate magnification settings
+     *
+     * @param image         the image
+     * @param magnification the magnification. See {@link ImageCanvas} for the minimum and maximum values
+     * @return the canvas
+     */
+    public static ImageCanvas createZoomedDummyCanvas(ImagePlus image, double magnification) {
+        ImageCanvas canvas = new ImageCanvas(image);
+        canvas.setMagnification(magnification);
+        canvas.setSize((int) (image.getWidth() * magnification), (int) (image.getHeight() * magnification));
+        return canvas;
+    }
+
+    /**
      * Returns an image that has the specified size by copying
      *
      * @param target     the target image
@@ -393,6 +584,11 @@ public class ImageJUtils {
     public static ImagePlus ensureSize(ImagePlus target, int nChannels, int nSlices, int nFrames, boolean copySlices) {
         if (target.getNChannels() == nChannels && target.getNSlices() == nSlices && target.getNFrames() == nFrames)
             return target;
+        if (target.getStackSize() == nChannels * nSlices * nFrames) {
+            // Use the native ImageJ function
+            target.setDimensions(nChannels, nSlices, nFrames);
+            return target;
+        }
         if (nChannels * nSlices * nFrames == 1) {
             return new ImagePlus(target.getTitle(), target.getProcessor());
         } else {
@@ -555,10 +751,10 @@ public class ImageJUtils {
      * @param progressInfo the progress
      */
     public static void forEachSlice(ImagePlus img, Consumer<ImageProcessor> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
-            for (int i = 0; i < img.getStack().size(); ++i) {
-                ImageProcessor ip = img.getStack().getProcessor(i + 1);
-                progressInfo.resolveAndLog("Slice", i, img.getStackSize());
+        if (img.hasImageStack()) {
+            for (int i = 0; i < img.getImageStackSize(); ++i) {
+                ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
+                progressInfo.resolveAndLog("Slice", i, img.getImageStackSize());
                 function.accept(ip);
             }
         } else {
@@ -601,6 +797,9 @@ public class ImageJUtils {
      * @param background color for zero pixels
      */
     public static void maskToBufferedImage(ImageProcessor mask, BufferedImage target, Color foreground, Color background) {
+        if (mask.getWidth() != target.getWidth() || mask.getHeight() != target.getHeight()) {
+            mask = mask.resize(target.getWidth(), target.getHeight(), false);
+        }
         byte[] sourcePixels = (byte[]) mask.getPixels();
         byte[] targetPixels = ((DataBufferByte) target.getRaster().getDataBuffer()).getData();
 
@@ -633,33 +832,6 @@ public class ImageJUtils {
             ImageProcessor sourceProcessor = ImageJUtils.getSliceZero(src, index);
             targetProcessor.copyBits(sourceProcessor, 0, 0, Blitter.COPY);
         }, progressInfo);
-    }
-
-    /**
-     * Copy a {@link BufferedImage}
-     *
-     * @param bi the image
-     * @return the copy
-     */
-    public static BufferedImage copyBufferedImage(BufferedImage bi) {
-        ColorModel cm = bi.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(null);
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-    }
-
-    /**
-     * Copy a {@link BufferedImage}
-     *
-     * @param bi the image
-     * @return the copy
-     */
-    public static BufferedImage copyBufferedImageToARGB(BufferedImage bi) {
-        BufferedImage result = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = result.createGraphics();
-        graphics.drawImage(bi, 0, 0, null);
-        graphics.dispose();
-        return result;
     }
 
     /**
@@ -768,11 +940,11 @@ public class ImageJUtils {
      * @param progressInfo the progress
      */
     public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             for (int i = 0; i < img.getStack().size(); ++i) {
                 if (progressInfo.isCancelled())
                     return;
-                ImageProcessor ip = img.getStack().getProcessor(i + 1);
+                ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
                 progressInfo.resolveAndLog("Slice", i, img.getStackSize());
                 function.accept(ip, i);
             }
@@ -789,7 +961,7 @@ public class ImageJUtils {
      * @param progressInfo the progress
      */
     public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             int iterationIndex = 0;
             for (int t = 0; t < img.getNFrames(); t++) {
                 for (int z = 0; z < img.getNSlices(); z++) {
@@ -807,6 +979,34 @@ public class ImageJUtils {
             function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
         }
     }
+
+    /**
+     * Runs the function for each Z, C, and T slice.
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedZCTSliceWithProgress(ImagePlus img, TriConsumer<ImageProcessor, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.hasImageStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    for (int c = 0; c < img.getNChannels(); c++) {
+                        if (progressInfo.isCancelled())
+                            return;
+                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
+                        JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).resolve("z=" + z + ", c=" + c + ", t=" + t);
+                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        function.accept(processor, new ImageSliceIndex(c, z, t), stackProgress);
+                    }
+                }
+            }
+        } else {
+            function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0), progressInfo);
+        }
+    }
+
 
     /**
      * Sets the slice of an image to the processor based on the index. Handles all configurations of images.
@@ -828,35 +1028,35 @@ public class ImageJUtils {
     /**
      * Runs the function for each Z, C, and T slice.
      *
-     * @param img          the image
+     * @param sourceImage  the image
      * @param function     the function. The indices are ZERO-based. Should return the result slice for this index
      * @param progressInfo the progress
      */
-    public static ImagePlus generateForEachIndexedZCTSlice(ImagePlus img, BiFunction<ImageProcessor, ImageSliceIndex, ImageProcessor> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
-            ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());
+    public static ImagePlus generateForEachIndexedZCTSlice(ImagePlus sourceImage, BiFunction<ImageProcessor, ImageSliceIndex, ImageProcessor> function, JIPipeProgressInfo progressInfo) {
+        if (sourceImage.hasImageStack()) {
+            ImageStack stack = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight(), sourceImage.getStackSize());
             int iterationIndex = 0;
-            for (int t = 0; t < img.getNFrames(); t++) {
-                for (int z = 0; z < img.getNSlices(); z++) {
-                    for (int c = 0; c < img.getNChannels(); c++) {
+            for (int t = 0; t < sourceImage.getNFrames(); t++) {
+                for (int z = 0; z < sourceImage.getNSlices(); z++) {
+                    for (int c = 0; c < sourceImage.getNChannels(); c++) {
                         if (progressInfo.isCancelled())
                             return null;
-                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        int index = sourceImage.getStackIndex(c + 1, z + 1, t + 1);
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, sourceImage.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+                        ImageProcessor processor = sourceImage.getImageStack().getProcessor(index);
                         ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(c, z, t));
                         stack.setProcessor(resultProcessor, index);
                     }
                 }
             }
-            ImagePlus resultImage = new ImagePlus(img.getTitle(), stack);
-            resultImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-            resultImage.copyScale(img);
+            ImagePlus resultImage = new ImagePlus(sourceImage.getTitle(), stack);
+            resultImage.setDimensions(sourceImage.getNChannels(), sourceImage.getNSlices(), sourceImage.getNFrames());
+            resultImage.copyScale(sourceImage);
             return resultImage;
         } else {
-            ImageProcessor processor = function.apply(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
-            ImagePlus resultImage = new ImagePlus(img.getTitle(), processor);
-            resultImage.copyScale(img);
+            ImageProcessor processor = function.apply(sourceImage.getProcessor(), new ImageSliceIndex(0, 0, 0));
+            ImagePlus resultImage = new ImagePlus(sourceImage.getTitle(), processor);
+            resultImage.copyScale(sourceImage);
             return resultImage;
         }
     }
@@ -870,6 +1070,7 @@ public class ImageJUtils {
      * @param function     the function. The indices are ZERO-based
      * @param progressInfo the progress
      */
+    @Deprecated
     public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
         int iterationIndex = 0;
         for (int t = 0; t < img.getNFrames(); t++) {
@@ -1016,6 +1217,7 @@ public class ImageJUtils {
         if (image.getType() == ImagePlus.COLOR_RGB || image.getType() == ImagePlus.COLOR_256)
             return image;
         if (image.getNChannels() == 3) {
+            image = duplicate(image);
             if (image.getType() != ImagePlus.GRAY8) {
                 ImageConverter ic = new ImageConverter(image);
                 ic.convertToGray8();
@@ -1050,7 +1252,7 @@ public class ImageJUtils {
         return image;
     }
 
-    public static LUT createLUTFromGradient(List<GradientStop> stops) {
+    public static LUT createLUTFromGradient(List<ColorUtils.GradientStop> stops) {
 //        MultipleGradientPaint paint = new LinearGradientPaint(0, 0, 128, 1, fractions, colors);
 //        BufferedImage img = new BufferedImage(256,1, BufferedImage.TYPE_INT_RGB);
 //        Graphics2D graphics = (Graphics2D) img.getGraphics();
@@ -1062,23 +1264,23 @@ public class ImageJUtils {
 //            e.printStackTrace();
 //        }
         stops.sort(Comparator.naturalOrder());
-        if (stops.get(0).position > 0)
-            stops.add(0, new GradientStop(0, stops.get(0).getColor()));
-        if (stops.get(stops.size() - 1).position < 1)
-            stops.add(new GradientStop(1, stops.get(stops.size() - 1).getColor()));
+        if (stops.get(0).getPosition() > 0)
+            stops.add(0, new ColorUtils.GradientStop(0, stops.get(0).getColor()));
+        if (stops.get(stops.size() - 1).getPosition() < 1)
+            stops.add(new ColorUtils.GradientStop(1, stops.get(stops.size() - 1).getColor()));
         byte[] reds = new byte[256];
         byte[] greens = new byte[256];
         byte[] blues = new byte[256];
         int currentFirstStop = 0;
         int currentLastStop = 1;
         int startIndex = 0;
-        int endIndex = (int) (255 * stops.get(currentLastStop).position);
+        int endIndex = (int) (255 * stops.get(currentLastStop).getPosition());
         for (int i = 0; i < 256; i++) {
             if (i != 255 && i >= endIndex) {
                 startIndex = i;
                 ++currentFirstStop;
                 ++currentLastStop;
-                endIndex = (int) (255 * stops.get(currentLastStop).position);
+                endIndex = (int) (255 * stops.get(currentLastStop).getPosition());
             }
             Color currentStart = stops.get(currentFirstStop).getColor();
             Color currentEnd = stops.get(currentLastStop).getColor();
@@ -1096,6 +1298,23 @@ public class ImageJUtils {
             blues[i] = (byte) b;
         }
         return new LUT(reds, greens, blues);
+    }
+
+    public static Map<ImageSliceIndex, DisplayRange> readCalibration(ImagePlus imagePlus) {
+        Map<ImageSliceIndex, DisplayRange> result = new HashMap<>();
+        ImageJUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
+            result.put(index, new DisplayRange(ip.getMin(), ip.getMax()));
+        }, new JIPipeProgressInfo());
+        return result;
+    }
+
+    public static void writeCalibration(ImagePlus imagePlus, Map<ImageSliceIndex, DisplayRange> calibrationMap) {
+        ImageJUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
+            DisplayRange displayRange = calibrationMap.getOrDefault(index, null);
+            if(displayRange != null) {
+                ip.setMinAndMax(displayRange.getDisplayedMin(), displayRange.getDisplayedMax());
+            }
+        }, new JIPipeProgressInfo());
     }
 
     public static void calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
@@ -1197,7 +1416,7 @@ public class ImageJUtils {
     }
 
     /**
-     * Calibrates the image. Ported from {@link ij.plugin.frame.ContrastAdjuster}
+     * Calibrates the image (all processors). Ported from {@link ij.plugin.frame.ContrastAdjuster}
      *
      * @param imp             the image
      * @param calibrationMode the calibration mode
@@ -1205,61 +1424,11 @@ public class ImageJUtils {
      * @param customMax       custom max value (only used if calibrationMode is Custom)
      */
     public static void calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
-        double min = calibrationMode.getMin();
-        double max = calibrationMode.getMax();
-        if (calibrationMode == ImageJCalibrationMode.Custom) {
-            min = customMin;
-            max = customMax;
-        } else if (calibrationMode == ImageJCalibrationMode.AutomaticImageJ) {
-            ImageStatistics stats = imp.getRawStatistics();
-            int limit = stats.pixelCount / 10;
-            int[] histogram = stats.histogram;
-            int threshold = stats.pixelCount / 5000;
-            int i = -1;
-            boolean found = false;
-            int count;
-            do {
-                i++;
-                count = histogram[i];
-                if (count > limit) count = 0;
-                found = count > threshold;
-            } while (!found && i < 255);
-            int hmin = i;
-            i = 256;
-            do {
-                i--;
-                count = histogram[i];
-                if (count > limit) count = 0;
-                found = count > threshold;
-            } while (!found && i > 0);
-            int hmax = i;
-            if (hmax >= hmin) {
-                min = stats.histMin + hmin * stats.binSize;
-                max = stats.histMin + hmax * stats.binSize;
-                if (min == max) {
-                    min = stats.min;
-                    max = stats.max;
-                }
-            } else {
-                int bitDepth = imp.getBitDepth();
-                if (bitDepth == 16 || bitDepth == 32) {
-                    imp.resetDisplayRange();
-                    min = imp.getDisplayRangeMin();
-                    max = imp.getDisplayRangeMax();
-                }
-            }
-        } else if (calibrationMode == ImageJCalibrationMode.MinMax) {
-            ImageStatistics stats = imp.getRawStatistics();
-            min = stats.min;
-            max = stats.max;
+        ImageProcessor ip = imp.getProcessor();
+        ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
+        if(imp.hasImageStack()) {
+          imp.getImageStack().update(ip);
         }
-
-        boolean rgb = imp.getType() == ImagePlus.COLOR_RGB;
-        int channels = imp.getNChannels();
-        if (channels != 7 && rgb)
-            imp.setDisplayRange(min, max, channels);
-        else
-            imp.setDisplayRange(min, max);
     }
 
     public static ImageStack expandImageStackCanvas(ImageStack stackOld, Color backgroundColor, int wNew, int hNew, int xOff, int yOff) {
@@ -1349,7 +1518,7 @@ public class ImageJUtils {
                 yOff = yC;
                 break;
         }
-        if (imp.isStack()) {
+        if (imp.hasImageStack()) {
             ImagePlus resultImage = new ImagePlus(imp.getTitle() + "_Expanded", expandImageStackCanvas(imp.getImageStack(), backgroundColor, newWidth, newHeight, xOff, yOff));
             resultImage.copyScale(imp);
             return resultImage;
@@ -1476,7 +1645,7 @@ public class ImageJUtils {
     }
 
     public static void removeLUT(ImagePlus image, boolean applyToAllPlanes) {
-        if (applyToAllPlanes && image.isStack()) {
+        if (applyToAllPlanes && image.hasImageStack()) {
             ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {
@@ -1722,46 +1891,96 @@ public class ImageJUtils {
         assertImageDimensions(image, 5);
     }
 
-    public static class GradientStop implements Comparable<GradientStop> {
-        private Color color;
-        private float position;
-
-        public GradientStop() {
+    public static void drawStringLabel(ImagePlus imp, ImageProcessor ip, String label, Rectangle r, Color foreground, Color background, Font font, boolean drawBackground) {
+        int size = font.getSize();
+        ImageCanvas ic = imp.getCanvas();
+        if (ic != null) {
+            double mag = ic.getMagnification();
+            if (mag < 1.0)
+                size /= mag;
         }
-
-        public GradientStop(float position, Color color) {
-            this.position = position;
-            this.color = color;
+        if (size == 9 && r.width > 50 && r.height > 50)
+            size = 12;
+        ip.setFont(new Font(font.getName(), font.getStyle(), size));
+        int w = ip.getStringWidth(label);
+        int x = r.x + r.width / 2 - w / 2;
+        int y = r.y + r.height / 2 + Math.max(size / 2, 6);
+        FontMetrics metrics = ip.getFontMetrics();
+        int h = metrics.getHeight();
+        if (drawBackground) {
+            ip.setColor(background);
+            ip.setRoi(x - 1, y - h + 2, w + 1, h - 3);
+            ip.fill();
+            ip.resetRoi();
         }
+        ip.setColor(foreground);
+        ip.drawString(label, x, y);
+    }
 
-        public GradientStop(GradientStop other) {
-            this.position = other.position;
-            this.color = other.color;
+    /**
+     * Uses reflection to manually set the canvas of a {@link Roi}
+     * Please note that the image of the Roi will be set.
+     *
+     * @param roi       the ROI
+     * @param imagePlus the image
+     * @param canvas    the canvas
+     */
+    public static void setRoiCanvas(Roi roi, ImagePlus imagePlus, ImageCanvas canvas) {
+        // First set the image
+        roi.setImage(imagePlus);
+        // We have to set the canvas or overlay rendering will fail
+        try {
+            Field field = Roi.class.getDeclaredField("ic");
+            field.setAccessible(true);
+            field.set(roi, canvas);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
         }
+    }
 
-        @JsonGetter("position")
-        public float getPosition() {
-            return position;
+    /**
+     * Renders a non-RGB image to RGB, including LUT
+     *
+     * @param inputImage   the input image
+     * @param progressInfo the progress info
+     * @return the output image
+     */
+    public static ImagePlus renderToRGBWithLUTIfNeeded(ImagePlus inputImage, JIPipeProgressInfo progressInfo) {
+        if (inputImage.getType() == ImagePlus.COLOR_RGB)
+            return inputImage;
+        ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
+        forEachIndexedZCTSlice(inputImage, (ip, slice) -> {
+            ColorProcessor colorProcessor = new ColorProcessor(ip.getBufferedImage());
+            stack.setProcessor(colorProcessor, slice.zeroSliceIndexToOneStackIndex(inputImage));
+        }, progressInfo);
+        ImagePlus outputImage = new ImagePlus(inputImage.getTitle(), stack);
+        outputImage.copyScale(inputImage);
+        outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        return outputImage;
+//        return ImageJUtils.convertToColorRGBIfNeeded(inputImage);
+    }
+
+    public static void convolveSlice(Convolver convolver, int kernelWidth, int kernelHeight, float[] kernel, ImageProcessor imp) {
+        if(imp instanceof ColorProcessor) {
+            // Split into channels and convolve individually
+            FloatProcessor c0 = imp.toFloat(0, null);
+            FloatProcessor c1 = imp.toFloat(1, null);
+            FloatProcessor c2 = imp.toFloat(2, null);
+            convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
+            convolver.convolve(c1, kernel, kernelWidth, kernelHeight);
+            convolver.convolve(c2, kernel, kernelWidth, kernelHeight);
+            imp.setPixels(0, c0);
+            imp.setPixels(1, c1);
+            imp.setPixels(2, c2);
         }
-
-        @JsonSetter("position")
-        public void setPosition(float position) {
-            this.position = position;
+        else if(imp instanceof FloatProcessor) {
+            convolver.convolve(imp, kernel, kernelWidth, kernelHeight);
         }
-
-        @JsonGetter("color")
-        public Color getColor() {
-            return color;
-        }
-
-        @JsonSetter("color")
-        public void setColor(Color color) {
-            this.color = color;
-        }
-
-        @Override
-        public int compareTo(GradientStop o) {
-            return Float.compare(position, o.position);
+        else {
+            // Convolve directly
+            FloatProcessor c0 = imp.toFloat(0, null);
+            convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
+            imp.setPixels(0, c0);
         }
     }
 }

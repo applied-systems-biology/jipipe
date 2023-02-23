@@ -25,8 +25,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -70,7 +75,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
      *
      * @return the number of input slots that are not parameter slots.
      */
-    public int getEffectiveInputSlotCount() {
+    public int getDataInputSlotCount() {
         int effectiveSlotSize = getInputSlots().size();
         if (parameterSlotAlgorithmSettings.isHasParameterSlot())
             --effectiveSlotSize;
@@ -102,7 +107,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
     @JIPipeDocumentation(name = "Multi-parameter settings", description = "This algorithm supports running with multiple parameter sets. Just enable 'Multiple parameters' and " +
             "connect parameter data to the newly created slot. The algorithm is then automatically repeated for all parameter sets.")
-    @JIPipeParameter(value = "jipipe:parameter-slot-algorithm", collapsed = true,
+    @JIPipeParameter(value = "jipipe:parameter-slot-algorithm", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/wrench.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/wrench.png")
     public JIPipeParameterSlotAlgorithmSettings getParameterSlotAlgorithmSettings() {
@@ -127,6 +132,28 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
             return getInputSlot(SLOT_PARAMETERS);
         else
             return null;
+    }
+
+    @Override
+    public Dimension getUIInputSlotIconBaseDimensions(String slotName) {
+        return new Dimension(16,16);
+    }
+
+    @Override
+    public ImageIcon getUIInputSlotIcon(String slotName) {
+        if(slotName.equals(SLOT_PARAMETERS)) {
+            return UIUtils.getIconInvertedFromResources("actions/reload.png");
+        }
+        return super.getUIInputSlotIcon(slotName);
+    }
+
+    @Override
+    public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
+        super.createUIInputSlotIconDescriptionMenuItems(slotName, target);
+        if(slotName.equals(SLOT_PARAMETERS)) {
+            target.add(new ViewOnlyMenuItem("<html>Repeated per parameter<br/><small>The workload of the node is repeated for each parameter item</small>",
+                    UIUtils.getIconFromResources("actions/reload.png")));
+        }
     }
 
     @Override
@@ -226,6 +253,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                     JIPipeDataSlotInfo slot = slotConfiguration.addSlot(SLOT_PARAMETERS,
                             new JIPipeDataSlotInfo(ParametersData.class, JIPipeSlotType.Input),
                             false);
+                    slot.setRole(JIPipeDataSlotRole.Parameters);
                     slot.setUserModifiable(false);
                 }
             } else {

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.ui.components.icons.ThrobberIcon;
+import org.hkijena.jipipe.ui.components.icons.JIPipeRunThrobberIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,7 +32,6 @@ public class JIPipeRunExecuterUI extends JPanel {
     private JScrollPane logScrollPane;
     private JTextArea log;
     private JDialog dialog;
-    private ThrobberIcon throbberIcon;
 
     /**
      * @param run The runnable
@@ -58,7 +57,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.setModal(true);
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+            public void onWorkerFinished(RunWorkerFinishedEvent event) {
                 if (event.getRun() == run)
                     dialog.setVisible(false);
             }
@@ -85,8 +84,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         progressBar.setStringPainted(true);
 
         JLabel throbberLabel = new JLabel();
-        throbberIcon = new ThrobberIcon(throbberLabel, UIUtils.getIconFromResources("status/throbber.png"), 80, 24);
-        throbberLabel.setIcon(throbberIcon);
+        throbberLabel.setIcon(new JIPipeRunThrobberIcon(throbberLabel));
         buttonPanel.add(throbberLabel);
         buttonPanel.add(Box.createHorizontalStrut(8));
 
@@ -109,7 +107,6 @@ public class JIPipeRunExecuterUI extends JPanel {
      * Starts the run
      */
     public void startRun() {
-        throbberIcon.stop();
         JIPipeRunnerQueue.getInstance().enqueue(run);
         progressBar.setString("Waiting until other processes are finished ...");
         progressBar.setIndeterminate(true);
@@ -119,14 +116,12 @@ public class JIPipeRunExecuterUI extends JPanel {
      * Cancels the run
      */
     public void requestCancelRun() {
-        throbberIcon.stop();
         cancelButton.setEnabled(false);
         JIPipeRunnerQueue.getInstance().cancel(run);
     }
 
     private void switchToCloseButtonIfPossible() {
         if (dialog != null) {
-            throbberIcon.stop();
             cancelButton.setEnabled(false);
             cancelButton.setVisible(false);
             closeButton.setVisible(true);
@@ -141,7 +136,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+    public void onWorkerFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
@@ -154,19 +149,17 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == run) {
-            throbberIcon.stop();
             switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
         }
     }
 
     @Subscribe
-    public void onWorkerStart(RunUIWorkerStartedEvent event) {
+    public void onWorkerStart(RunWorkerStartedEvent event) {
         if (event.getRun() == run) {
             cancelButton.setEnabled(true);
-            throbberIcon.start();
         }
     }
 
@@ -176,7 +169,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerProgress(RunUIWorkerProgressEvent event) {
+    public void onWorkerProgress(RunWorkerProgressEvent event) {
         if (event.getRun() == run) {
             progressBar.setIndeterminate(false);
             progressBar.setMaximum(event.getStatus().getMaxProgress());

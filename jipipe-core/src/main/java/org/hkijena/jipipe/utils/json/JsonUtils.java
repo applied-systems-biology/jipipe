@@ -20,10 +20,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -59,7 +58,7 @@ public class JsonUtils {
 
     public static void saveToFile(Object obj, Path targetFile) {
         try {
-            objectMapper.writeValue(targetFile.toFile(), obj);
+            getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(targetFile.toFile(), obj);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -67,7 +66,7 @@ public class JsonUtils {
 
     public static <T> T readFromString(String json, Class<T> klass) {
         try {
-            return objectMapper.readerFor(klass).readValue(json);
+            return getObjectMapper().readerFor(klass).readValue(json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +74,7 @@ public class JsonUtils {
 
     public static <T> T readFromFile(Path file, Class<T> klass) {
         try {
-            return objectMapper.readerFor(klass).readValue(file.toFile());
+            return getObjectMapper().readerFor(klass).readValue(file.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -83,7 +82,7 @@ public class JsonUtils {
 
     public static String toJsonString(Object data) {
         try {
-            return objectMapper.writerFor(data.getClass()).writeValueAsString(data);
+            return getObjectMapper().writerFor(data.getClass()).writeValueAsString(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +90,7 @@ public class JsonUtils {
 
     public static String toPrettyJsonString(Object data) {
         try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
+            return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -126,14 +125,12 @@ public class JsonUtils {
         @Override
         public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             String s = p.readValueAs(String.class);
-            if(StringUtils.isNullOrEmpty(s)) {
+            if (StringUtils.isNullOrEmpty(s)) {
                 return Paths.get("");
-            }
-            else {
+            } else {
                 try {
                     return Paths.get(s.replace('\\', '/'));
-                }
-                catch (InvalidPathException e) {
+                } catch (InvalidPathException e) {
                     return Paths.get("");
                 }
             }

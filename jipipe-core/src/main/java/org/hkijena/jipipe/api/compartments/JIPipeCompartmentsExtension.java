@@ -25,7 +25,6 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -63,5 +62,10 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
 
         registerDatatype("jipipe:compartment-output", JIPipeCompartmentOutputData.class,
                 ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png"));
+    }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
     }
 }

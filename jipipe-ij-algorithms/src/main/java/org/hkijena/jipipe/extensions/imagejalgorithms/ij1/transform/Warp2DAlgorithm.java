@@ -155,7 +155,7 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJUtils.forEachIndexedZCTSlice(img, (inputProcessor, index) -> {
             // Get the result processor
             ImageProcessor resultProcessor;
-            if (result.isStack())
+            if (result.hasImageStack())
                 resultProcessor = result.getStack().getProcessor(result.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
             else
                 resultProcessor = result.getProcessor();

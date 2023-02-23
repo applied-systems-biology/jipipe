@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -31,8 +32,9 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
  */
 @JIPipeDocumentation(name = "Divide by maximum", description = "Divides greyscale pixel values by the global maximum across all slices.")
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath")
 public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean recalibrate = true;
@@ -44,10 +46,7 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public DivideByMaximumAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, null)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**
@@ -70,7 +69,7 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         double[] max = new double[]{Double.NEGATIVE_INFINITY};
-        ImageJUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStatistics().max, max[0]), progressInfo);
+        ImageJUtils.forEachSlice(img, ip -> max[0] = Math.max(ip.getStats().max, max[0]), progressInfo);
         ImageJUtils.forEachSlice(img, ip -> ip.multiply(1.0 / max[0]), progressInfo);
         if (recalibrate) {
             ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 1);

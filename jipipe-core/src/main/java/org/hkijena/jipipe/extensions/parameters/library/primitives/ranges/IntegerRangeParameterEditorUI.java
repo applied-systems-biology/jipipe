@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -122,7 +123,7 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
         IntegerRange rangeString = getParameter(IntegerRange.class);
         try {
             if (!rangeString.isUseExpression()) {
-                rangeString.getIntegers(0, 0);
+                rangeString.getIntegers(0, 0, new ExpressionVariables());
             }
             rangeStringEditor.setBorder(BorderFactory.createEtchedBorder());
             rangeStringEditor.setToolTipText("Valid!");
@@ -136,6 +137,11 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
         @Override
         public Class<? extends ExpressionParameterVariableSource> variableSource() {
             return IntegerRange.VariableSource.class;
+        }
+
+        @Override
+        public String hint() {
+            return "";
         }
 
         @Override

@@ -13,10 +13,9 @@
 
 package org.hkijena.jipipe;
 
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.apache.commons.compress.utils.Sets;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
@@ -26,6 +25,7 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -37,34 +37,43 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterTypeInfo;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
-import org.hkijena.jipipe.utils.DocumentationUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.VersionUtils;
+import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.scijava.service.AbstractService;
 
 import javax.swing.*;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of {@link JIPipeJavaExtension}
@@ -81,11 +90,55 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         metadata = new JIPipeMetadata();
         metadata.setName(getName());
         metadata.setDescription(getDescription());
+        metadata.setSummary(getSummary());
         metadata.setAuthors(new JIPipeAuthorMetadata.List(getAuthors()));
         metadata.setDependencyCitations(new StringList(getDependencyCitations()));
         metadata.setCitation(getCitation());
         metadata.setLicense(getLicense());
         metadata.setWebsite(getWebsite());
+        metadata.setThumbnail(getThumbnail());
+        metadata.setAcknowledgements(getAcknowledgements());
+        metadata.setCategories(getCategories());
+    }
+
+    /**
+     * The categories of this extension (see {@link PluginCategoriesEnumParameter} for predefined values)
+     *
+     * @return the categories
+     */
+    public PluginCategoriesEnumParameter.List getCategories() {
+        PluginCategoriesEnumParameter.List result = new PluginCategoriesEnumParameter.List();
+        if (isCoreExtension()) {
+            result.add(new PluginCategoriesEnumParameter("Core"));
+        }
+        return result;
+    }
+
+    /**
+     * Returns additionally cited authors
+     *
+     * @return the authors
+     */
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
+        return new JIPipeAuthorMetadata.List();
+    }
+
+    /**
+     * Returns the thumbnail
+     *
+     * @return the thumbnail
+     */
+    public ImageParameter getThumbnail() {
+        if (isCoreExtension()) {
+            return new ImageParameter(ResourceUtils.getPluginResource("core-extension-thumbnail-default.png"));
+        } else {
+            return new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png"));
+        }
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY);
     }
 
     /**
@@ -116,6 +169,15 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     public abstract HTMLText getDescription();
 
     /**
+     * A short summary
+     *
+     * @return a short summary
+     */
+    public HTMLText getSummary() {
+        return getDescription();
+    }
+
+    /**
      * @return The extension authors
      */
     public abstract List<JIPipeAuthorMetadata> getAuthors();
@@ -130,10 +192,6 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public abstract String getLicense();
 
-    /**
-     * @return The extension logo
-     */
-    public abstract URL getLogo();
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
@@ -596,6 +654,21 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
+     * Registers a new settings sheet
+     *
+     * @param id                  unique ID
+     * @param name                sheet name
+     * @param description         sheet description
+     * @param icon                sheet icon
+     * @param category            sheet category (if null defaults to "General")
+     * @param categoryIcon        category icon (if null defaults to a predefined icon)
+     * @param parameterCollection the settings
+     */
+    public void registerSettingsSheet(String id, String name, String description, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
+        registry.getSettingsRegistry().register(id, name, description, icon, category, categoryIcon, parameterCollection);
+    }
+
+    /**
      * Registers an arbitrary utility associated to a category class.
      * There can be multiple utilities per category
      * The exact type of utility class depends on the utility implementation
@@ -605,6 +678,117 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerUtility(Class<?> categoryClass, Class<?> utilityClass) {
         registry.getUtilityRegistry().register(categoryClass, utilityClass);
+    }
+
+    /**
+     * Registers a node template as example for a node.
+     * Silently fails if the template does not contain exactly one node
+     *
+     * @param template the template
+     */
+    public void registerNodeExample(JIPipeNodeTemplate template) {
+        registry.getNodeRegistry().scheduleRegisterExample(template);
+    }
+
+    /**
+     * Registers node examples from plugin resources via a {@link JIPipeResourceManager}.
+     * Will detect *.json files and attempt to load them (fails silently)
+     *
+     * @param resourceManager the resource manager
+     * @param subDirectory    the directory within the resource manager's base path
+     */
+    public void registerNodeExamplesFromResources(JIPipeResourceManager resourceManager, String subDirectory) {
+        registerNodeExamplesFromResources(resourceManager.getResourceClass(), JIPipeResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
+    }
+
+    /**
+     * Registers node examples from plugin resources.
+     * Will detect *.json files and attempt to load them (fails silently)
+     *
+     * @param resourceClass the resource class
+     * @param directory     the directory within the resources
+     */
+    public void registerNodeExamplesFromResources(Class<?> resourceClass, String directory) {
+        JIPipe.getInstance().getProgressInfo().log("Scanning for node examples within " + resourceClass + " -> " + directory);
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forClass(resourceClass))
+                .setScanners(new ResourcesScanner()));
+
+        Set<String> jsonResources = reflections.getResources(Pattern.compile(".*\\.json"));
+        jsonResources = jsonResources.stream().map(s -> {
+            if (!s.startsWith("/"))
+                return "/" + s;
+            else
+                return s;
+        }).collect(Collectors.toSet());
+        for (String resource : jsonResources) {
+            if (resource.startsWith(directory)) {
+                JIPipe.getInstance().getProgressInfo().log("Loading node template list " + resource);
+                try {
+                    try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
+                        JIPipeNodeTemplate.List templates = JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplate.List.class).readValue(stream);
+                        for (JIPipeNodeTemplate template : templates) {
+                            registerNodeExample(template);
+                        }
+                    }
+                } catch (Throwable throwable) {
+                    JIPipe.getInstance().getProgressInfo().log("Error: " + throwable + " @ " + resource);
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers project templates from plugin resources via a {@link JIPipeResourceManager}.
+     * Will detect *.jip files and attempt to load them (fails silently)
+     *
+     * @param resourceManager the resource manager
+     * @param subDirectory    the directory within the resource manager's base path
+     */
+    public void registerProjectTemplatesFromResources(JIPipeResourceManager resourceManager, String subDirectory) {
+        registerProjectTemplatesFromResources(resourceManager.getResourceClass(), JIPipeResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
+    }
+
+    /**
+     * Registers project templates from plugin resources
+     * Will detect *.jip files and attempt to load them (fails silently)
+     *
+     * @param resourceClass the resource class
+     * @param directory     the directory within the resources
+     */
+    public void registerProjectTemplatesFromResources(Class<?> resourceClass, String directory) {
+        JIPipe.getInstance().getProgressInfo().log("Scanning for project templates within " + resourceClass + " -> " + directory);
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forClass(resourceClass))
+                .setScanners(new ResourcesScanner()));
+
+        Set<String> jsonResources = reflections.getResources(Pattern.compile(".*\\.jip"));
+        jsonResources = jsonResources.stream().map(s -> {
+            if (!s.startsWith("/"))
+                return "/" + s;
+            else
+                return s;
+        }).collect(Collectors.toSet());
+        for (String resource : jsonResources) {
+            if (resource.startsWith(directory)) {
+                JIPipe.getInstance().getProgressInfo().log("Loading project template " + resource);
+                try {
+                    try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
+                        String id = "resource:/" + getDependencyId() + "/" + resource;
+                        JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(stream);
+                        JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
+                        JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, null, null);
+                        registry.getProjectTemplateRegistry().register(template);
+                    }
+                } catch (Throwable throwable) {
+                    JIPipe.getInstance().getProgressInfo().log("Error: " + throwable + " @ " + resource);
+                }
+            }
+        }
+    }
+
+    public void registerGraphEditorTool(Class<? extends JIPipeGraphEditorTool> klass) {
+        registry.getGraphEditorToolRegistry().register(klass);
     }
 
     /**

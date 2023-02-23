@@ -16,6 +16,7 @@ import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -27,15 +28,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class REnvironment extends ExternalEnvironment {
+    public static final String ENVIRONMENT_ID = "r";
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
     private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
     public REnvironment() {
-        if (SystemUtils.IS_OS_LINUX) {
-            RExecutablePath = Paths.get("/usr/bin/R");
-            RScriptExecutablePath = Paths.get("/usr/bin/Rscript");
+        if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
+            RExecutablePath = PathUtils.orElse(Paths.get("/usr/local/bin/R"), Paths.get("/usr/bin/R"));
+            RScriptExecutablePath = PathUtils.orElse(Paths.get("/usr/local/bin/Rscript"), Paths.get("/usr/bin/Rscript"));
         }
     }
 

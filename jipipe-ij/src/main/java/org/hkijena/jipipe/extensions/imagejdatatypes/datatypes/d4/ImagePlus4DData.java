@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * 4D image
  */
-@JIPipeDocumentation(name = "4D image")
+@JIPipeDocumentation(name = "4D image", description = "A 4D image")
 @JIPipeNode(menuPath = "Images\n4D")
 @JIPipeHeavyData
 @ImageTypeInfo(numDimensions = 4)

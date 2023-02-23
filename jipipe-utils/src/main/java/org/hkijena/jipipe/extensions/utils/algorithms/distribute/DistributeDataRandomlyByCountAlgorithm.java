@@ -28,6 +28,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
                 .addInputSlot("Input", "", JIPipeData.class)
                 .sealInput()
                 .build());
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
         counts = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 1, false);
         counts.updateSlots();
         registerSubParameter(counts);
@@ -58,7 +59,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
             int available = countMap.get(target);
             if (available > 0) {
                 // Add output with restoring annotations
-                getOutputSlot(target).addData(getFirstInputSlot().getVirtualData(row),
+                getOutputSlot(target).addData(getFirstInputSlot().getDataItemStore(row),
                         getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),

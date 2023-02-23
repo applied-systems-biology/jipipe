@@ -15,6 +15,8 @@ package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -31,19 +33,33 @@ public interface JIPipeNodeInfo {
     /**
      * Gets the registered algorithms, grouped by their menu paths
      *
-     * @param infos The infos to group
+     * @param category the targeted category
+     * @param infos    The infos to group
      * @return Map from menu path to algorithms with this menu path
      */
-    static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(Set<JIPipeNodeInfo> infos) {
+    static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> infos) {
         Map<String, Set<JIPipeNodeInfo>> result = new HashMap<>();
         for (JIPipeNodeInfo info : infos) {
-            String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
-            Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
-            if (group == null) {
-                group = new HashSet<>();
-                result.put(menuPath, group);
+            if (Objects.equals(info.getCategory().getId(), category.getId())) {
+                String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
+                Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
+                if (group == null) {
+                    group = new HashSet<>();
+                    result.put(menuPath, group);
+                }
+                group.add(info);
             }
-            group.add(info);
+            for (JIPipeNodeMenuLocation location : info.getAliases()) {
+                if (Objects.equals(location.getCategory().getId(), category.getId())) {
+                    String menuPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
+                    Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
+                    if (group == null) {
+                        group = new HashSet<>();
+                        result.put(menuPath, group);
+                    }
+                    group.add(info);
+                }
+            }
         }
 
         return result;
@@ -65,6 +81,15 @@ public interface JIPipeNodeInfo {
      * @return The ID
      */
     String getId();
+
+    /**
+     * If the node is of category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}, allows to re-assign them to a new menu
+     * If {@link JIPipeEmptyData} is returned, no re-assignment is applied
+     * @return the re-assigned data type menu or {@link JIPipeEmptyData}
+     */
+    default Class<? extends JIPipeData> getDataSourceMenuLocation() {
+        return JIPipeEmptyData.class;
+    }
 
     /**
      * The algorithm class that is generated
@@ -201,5 +226,23 @@ public interface JIPipeNodeInfo {
      */
     default URL getIconURL() {
         return JIPipe.getNodes().getIconURLFor(this);
+    }
+
+    /**
+     * A menu location that points towards the primary menu
+     *
+     * @return the primary menu location
+     */
+    default JIPipeNodeMenuLocation getPrimaryMenuLocation() {
+        return new JIPipeNodeMenuLocation(getCategory(), getMenuPath(), "");
+    }
+
+    /**
+     * A list of alternative menu locations
+     *
+     * @return alternative menu locations. might be empty.
+     */
+    default List<JIPipeNodeMenuLocation> getAliases() {
+        return Collections.emptyList();
     }
 }

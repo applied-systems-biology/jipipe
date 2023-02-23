@@ -14,20 +14,23 @@
 package org.hkijena.jipipe.extensions.annotation;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.annotation.algorithms.*;
 import org.hkijena.jipipe.extensions.annotation.datasources.AnnotationTableFromFile;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -36,6 +39,19 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(AnnotationsExtension.class, "org/hkijena/jipipe/extensions/annotation");
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:annotations",
+            JIPipe.getJIPipeVersion(),
+            "Annotation data types and algorithms");
+
+    public AnnotationsExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_ANNOTATION);
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -73,6 +89,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
                 SimplifyAnnotationsAlgorithm.AnnotationRemovalMode.class,
                 "Combined annotation action",
                 "Determines how combined annotations are processed.");
+        registerParameterType("annotate-split-by-annotation:filter", AnnotationFilterExpression.class, "Annotation filter", "A filter expression");
 
         registerNodeType("merge-slots", MergeDataSlots.class);
         registerNodeType("annotation-table-from-file", AnnotationTableFromFile.class);
@@ -80,6 +97,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("annotate-set-single", SetSingleAnnotation.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("annotate-remove", RemoveAnnotationAlgorithm.class, UIUtils.getIconURLFromResources("actions/entry-delete.png"));
         registerNodeType("annotate-split-by-annotation", SplitByAnnotation.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("annotate-filter-by-annotation", FilterByAnnotation.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("data-to-annotation-table", ConvertToAnnotationTable.class, UIUtils.getIconURLFromResources("data-types/annotation-table.png"));
         registerNodeType("annotate-with-data-string", AnnotateWithDataString.class, UIUtils.getIconURLFromResources("data-types/data-type.png"));
         registerNodeType("extract-and-replace-annotation", ExtractAndReplaceAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
@@ -99,6 +117,9 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("rename-data-annotation", RenameDataAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
         registerNodeType("annotate-with-source-slot", AnnotateWithSourceSlot.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
         registerNodeType("simplify-annotations", SimplifyAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
+        registerNodeType("overwrite-annotations", OverwriteAnnotations.class, UIUtils.getIconURLFromResources("actions/editcopy.png"));
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     @Override

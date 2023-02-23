@@ -41,18 +41,18 @@ public class JIPipeZIPReadDataStorage implements JIPipeReadDataStorage {
         initialize();
     }
 
+    private JIPipeZIPReadDataStorage(JIPipeProgressInfo progressInfo, Path zipFilePath, Path internalPath) {
+        this.zipFilePath = zipFilePath;
+        this.progressInfo = progressInfo;
+        this.internalPath = internalPath;
+    }
+
     private void initialize() {
         try {
             zipFile = new ZipFile(zipFilePath.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private JIPipeZIPReadDataStorage(JIPipeProgressInfo progressInfo, Path zipFilePath, Path internalPath) {
-        this.zipFilePath = zipFilePath;
-        this.progressInfo = progressInfo;
-        this.internalPath = internalPath;
     }
 
     @Override
@@ -68,7 +68,7 @@ public class JIPipeZIPReadDataStorage implements JIPipeReadDataStorage {
     @Override
     public Path getFileSystemPath() {
         Path path = getOrCreateTemporaryStorageRoot().resolve(getInternalPath());
-        if(!Files.isDirectory(path)) {
+        if (!Files.isDirectory(path)) {
             try {
                 Files.createDirectories(path);
             } catch (IOException e) {
@@ -79,10 +79,10 @@ public class JIPipeZIPReadDataStorage implements JIPipeReadDataStorage {
     }
 
     private Path getOrCreateTemporaryStorageRoot() {
-        if(parent != null) {
+        if (parent != null) {
             return parent.getOrCreateTemporaryStorageRoot();
         }
-        if(temporaryStorage == null) {
+        if (temporaryStorage == null) {
             temporaryStorage = RuntimeSettings.generateTempDirectory("zip");
             progressInfo.log("Temporary storage requested: " + temporaryStorage);
             try {
@@ -127,17 +127,17 @@ public class JIPipeZIPReadDataStorage implements JIPipeReadDataStorage {
 
     @Override
     public Collection<Path> list() {
-         List<Path> result = new ArrayList<>();
-         String name = FilenameUtils.separatorsToUnix(internalPath.toString()) + "/";
-         if(name.equals("/"))
-             name = "";
+        List<Path> result = new ArrayList<>();
+        String name = FilenameUtils.separatorsToUnix(internalPath.toString()) + "/";
+        if (name.equals("/"))
+            name = "";
         String finalName = name;
         zipFile.stream().forEach(entry -> {
-            if(entry.getName().startsWith(finalName)) {
+            if (entry.getName().startsWith(finalName)) {
                 result.add(Paths.get(entry.getName()));
             }
-         });
-         return result;
+        });
+        return result;
     }
 
     @Override
@@ -153,7 +153,7 @@ public class JIPipeZIPReadDataStorage implements JIPipeReadDataStorage {
     @Override
     public void close() throws IOException {
 
-        if(parent != null) {
+        if (parent != null) {
             parent.close();
             return;
         }
@@ -162,7 +162,7 @@ public class JIPipeZIPReadDataStorage implements JIPipeReadDataStorage {
         zipFile.close();
 
         // Remove temporary files
-        if(temporaryStorage != null) {
+        if (temporaryStorage != null) {
             PathUtils.deleteDirectoryRecursively(temporaryStorage, progressInfo.resolve("Cleaning temporary files"));
         }
     }

@@ -59,7 +59,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         String s = formatNumber(getCurrentValue());
-        if (!Objects.equals(s, numberField.getText()))
+        if (!Objects.equals(s, numberField.getText()) && !numberField.hasFocus())
             numberField.setText(s);
     }
 
@@ -164,7 +164,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
                 getParameterAccess().getFieldClass() == double.class || getParameterAccess().getFieldClass() == Double.class) {
             if (StringUtils.isNullOrEmpty(text))
                 return false;
-            return text.toLowerCase().startsWith("-inf") || text.toLowerCase().startsWith("inf");
+            return text.toLowerCase().startsWith("-inf") || text.toLowerCase().startsWith("inf") || text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na");
         }
         return false;
     }
@@ -180,6 +180,8 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
                 return Double.NEGATIVE_INFINITY;
             if (text.toLowerCase().startsWith("inf"))
                 return Double.POSITIVE_INFINITY;
+            if(text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na"))
+                return Double.NaN;
         }
         return 0;
     }

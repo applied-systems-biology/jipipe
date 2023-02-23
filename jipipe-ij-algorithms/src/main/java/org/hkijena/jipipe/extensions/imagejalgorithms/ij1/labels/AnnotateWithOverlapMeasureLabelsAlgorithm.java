@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
@@ -41,13 +42,14 @@ import java.util.List;
         "<li>False Positive Error</li>" +
         "</ul>")
 @JIPipeCitation("See https://imagej.net/plugins/morpholibj#label-overlap-measures for the formulas")
-@JIPipeNode(menuPath = "Generate", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@JIPipeNode(menuPath = "For images", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", autoCreate = true)
 @JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nAnalyze", aliasName = "Label Overlap Measures (to annotations)")
 public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter totalOverlapAnnotation = new OptionalAnnotationNameParameter("Total overlap", false);

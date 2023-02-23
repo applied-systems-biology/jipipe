@@ -1,18 +1,12 @@
 package org.hkijena.jipipe.extensions.core.data;
 
-import com.google.common.base.Charsets;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.extensions.strings.StringData;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.texteditor.JIPipeTextEditor;
-import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class OpenTextInJIPipeDataOperation implements JIPipeDataDisplayOperation {
 

@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -20,9 +21,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
@@ -39,6 +39,7 @@ import java.util.Set;
 @JIPipeInputSlot(value = FolderData.class, slotName = "Output directory", autoCreate = true, description = "Relative to the working directory of the current slot. Convert to absolute path to allow writing outside the output directory.")
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
@@ -84,44 +85,46 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
             outputPath = outputDirectory;
         }
 
-        // Generate subfolder
-        Path subFolder = exporter.generateSubFolder(imageSlot, dataBatch.getInputSlotRows().get(imageSlot));
-        if (subFolder != null) {
-            outputPath = outputPath.resolve(subFolder);
+        // Generate the path
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+
+        // If absolute -> use the path, otherwise use output directory
+        if (generatedPath.isAbsolute()) {
+            outputPath = generatedPath;
+        } else {
+            outputPath = outputPath.resolve(generatedPath);
         }
 
-        try {
-            Files.createDirectories(outputPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        ImagePlus image = dataBatch.getInputData(imageSlot, ImagePlusData.class, progressInfo).getImage();
-        String baseName = exporter.generateMetadataString(imageSlot, dataBatch.getInputSlotRows().get(imageSlot), existingMetadata);
+        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         Path outputFile;
         switch (fileFormat) {
             case JPEG: {
-                outputFile = outputPath.resolve(baseName + ".jpg");
+                outputFile = PathUtils.ensureExtension(outputPath, ".jpg", ".jpeg");
+                PathUtils.ensureParentDirectoriesExist(outputFile);
                 IJ.saveAs(image, "jpeg", outputFile.toString());
             }
             break;
             case PNG: {
-                outputFile = outputPath.resolve(baseName + ".png");
+                outputFile = PathUtils.ensureExtension(outputPath, ".png");
+                PathUtils.ensureParentDirectoriesExist(outputFile);
                 IJ.saveAs(image, "png", outputFile.toString());
             }
             break;
             case TIFF: {
-                outputFile = outputPath.resolve(baseName + ".tif");
+                outputFile = PathUtils.ensureExtension(outputPath, ".tif", ".tiff");
+                PathUtils.ensureParentDirectoriesExist(outputFile);
                 IJ.saveAs(image, "tiff", outputFile.toString());
             }
             break;
             case BMP: {
-                outputFile = outputPath.resolve(baseName + ".bmp");
+                outputFile = PathUtils.ensureExtension(outputPath, ".bmp");
+                PathUtils.ensureParentDirectoriesExist(outputFile);
                 IJ.saveAs(image, "bmp", outputFile.toString());
             }
             break;
             case AVI: {
-                outputFile = outputPath.resolve(baseName + ".avi");
+                outputFile = PathUtils.ensureExtension(outputPath, ".avi");
+                PathUtils.ensureParentDirectoriesExist(outputFile);
                 ImageJUtils.writeImageToMovie(image, movieAnimatedDimension, movieFrameTime, outputFile, aviCompression, jpegQuality, progressInfo.detachProgress());
             }
             break;

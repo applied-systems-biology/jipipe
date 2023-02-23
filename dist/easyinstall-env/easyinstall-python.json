@@ -1,0 +1,26 @@
+{
+  "name": "Python",
+  "files": [
+    {
+      "name": "Python (Windows)",
+      "install-dir": "easyinstall-python",
+      "description": "Installs a small Python distribution. It comes pre-installed with numpy, scikit-image, scikit-learn, tifffile, and pandas",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-python3.8-prepackaged-win.zip",
+      "operating-systems": ["windows"]
+    },
+    {
+      "name": "Python (Linux)",
+      "install-dir": "easyinstall-python",
+      "description": "Installs a small Python distribution. It comes pre-installed with numpy, scikit-image, scikit-learn, tifffile, and pandas. The package was generated on Ubuntu 22.04.",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-python3.8-prepackaged-linux-ubuntu22.04.tar.gz",
+      "operating-systems": ["linux"]
+    },
+    {
+      "name": "Python (macOS, Intel)",
+      "install-dir": "easyinstall-python",
+      "description": "Installs a small Python distribution. It comes pre-installed with numpy, scikit-image, scikit-learn, tifffile, and pandas. The package was generated on macOS 12.4 (Intel).",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-python3.8-prepackaged-macos-intel.tar.gz",
+      "operating-systems": ["macos"]
+    }
+  ]
+}

@@ -5,13 +5,17 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
+import org.hkijena.jipipe.ui.components.AddParameterDialog;
+import org.hkijena.jipipe.ui.components.FlexContentPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
+import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -29,9 +33,12 @@ public class ParameterTableEditorWindow extends JFrame {
     private final JIPipeWorkbench workbench;
     private final JIPipeParameterAccess parameterAccess;
     private final ParameterTable parameterTable;
+    private final JLabel emptyColumnsLabel = new JLabel("<html><strong>This table has no columns</strong><br/>Import a parameter type from an existing node or define a new column.</html>",
+            UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
+    private final JLabel emptyRowsLabel = new JLabel("<html><strong>This table has no rows</strong><br/>Click the 'Add' button insert rows.</html>",
+            UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
     private JXTable table;
     private FormPanel palettePanel;
-    private JPanel currentPaletteGroup;
 
     private ParameterTableEditorWindow(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
         this.workbench = workbench;
@@ -53,27 +60,38 @@ public class ParameterTableEditorWindow extends JFrame {
         ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
         if (window == null) {
             window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
+            window.pack();
             window.setSize(1024, 768);
             window.setLocationRelativeTo(parent);
             window.setTitle(parameterAccess.getName());
             window.setVisible(true);
+            window.revalidate();
+            window.repaint();
             OPEN_WINDOWS.put(parameterTable, window);
             return window;
         } else {
             window.toFront();
+            window.revalidate();
             window.repaint();
         }
         return window;
     }
 
     private void initialize() {
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
+        FlexContentPanel contentPanel = new FlexContentPanel();
+        getContentPane().add(contentPanel, BorderLayout.CENTER);
 
-        // Create form panel
+        // Create palette panel and add to sidebar
         palettePanel = new FormPanel(MarkdownDocument.fromPluginResource("documentation/documentation-parameter-table.md", new HashMap<>()),
                 FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING | FormPanel.DOCUMENTATION_BELOW);
+        contentPanel.getSideBar().addTab("Edit value", UIUtils.getIconFromResources("actions/edit.png"), palettePanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        // Create table panel
+        // Init info labels
+        emptyRowsLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        emptyColumnsLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
+        // Create table panel and set as main content
         table = new JXTable();
         table.setRowHeight(32);
         table.setCellSelectionEnabled(true);
@@ -82,10 +100,54 @@ public class ParameterTableEditorWindow extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.getSelectionModel().addListSelectionListener(e -> updateParameters());
         table.getColumnModel().getSelectionModel().addListSelectionListener(e -> updateParameters());
+        contentPanel.getContentPanel().add(UIUtils.boxVertical(emptyColumnsLabel, emptyRowsLabel, table.getTableHeader()), BorderLayout.NORTH);
+        contentPanel.getContentPanel().add(new JScrollPane(table), BorderLayout.CENTER);
 
-        // Create split pane
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(table), palettePanel, AutoResizeSplitPane.RATIO_3_TO_1);
-        add(splitPane, BorderLayout.CENTER);
+        // Init the ribbon
+        initializeRibbon(contentPanel.getRibbon());
+    }
+
+    private void initializeRibbon(Ribbon ribbon) {
+        Ribbon.Task tableTask = ribbon.addTask("Table");
+        Ribbon.Band selectBand = tableTask.addBand("Select");
+        Ribbon.Band columnBand = tableTask.addBand("Parameter types (columns)");
+        Ribbon.Band rowBand = tableTask.addBand("Parameter sets (rows)");
+
+        // Select
+        selectBand.add(new LargeButtonAction("Whole column", "Selects the whole column", UIUtils.getIcon32FromResources("actions/stock_select-column.png"), this::selectWholeColumn));
+        selectBand.add(new LargeButtonAction("Whole row", "Selects the whole row", UIUtils.getIcon32FromResources("actions/stock_select-row.png"), this::selectWholeRow));
+
+        // Columns
+        columnBand.add(new LargeButtonAction("Import from node", "Imports a parameter setting from an existing node", UIUtils.getIcon32FromResources("actions/gtk-color-picker.png"), this::importColumnFromAlgorithm));
+        columnBand.add(new SmallButtonAction("Define ...", "Defines a parameter type from scratch", UIUtils.getIconFromResources("actions/add.png"), this::addCustomColumn));
+        columnBand.add(new SmallButtonAction("Delete", "Deletes the selected columns", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedColumns));
+
+        // Rows
+        rowBand.add(new LargeButtonAction("Add", "Adds a new parameter set/row into the table", UIUtils.getIcon32FromResources("actions/add.png"), this::addRow));
+        {
+            LargeButtonAction action = new LargeButtonAction("Generate", "Generates new rows", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"));
+            JPopupMenu menu = new JPopupMenu();
+            UIUtils.addReloadablePopupMenuToComponent(action.getButton(), menu, () -> {
+                int[] selectedColumns = getSelectedColumns(true);
+                createGenerateMenuFor(selectedColumns, menu);
+            });
+            rowBand.add(action);
+        }
+        {
+            SmallButtonAction action = new SmallButtonAction("Replace", "Replaces the selected values by generated values", UIUtils.getIconFromResources("actions/edit.png"));
+            JPopupMenu menu = new JPopupMenu();
+            UIUtils.addReloadablePopupMenuToComponent(action.getButton(), menu, () -> {
+                menu.removeAll();
+                int[] selectedColumns = getSelectedColumns(true);
+                if (selectedColumns.length > 0) {
+                    createReplaceMenuFor(selectedColumns[0], menu);
+                }
+            });
+            rowBand.add(action);
+        }
+        rowBand.add(new SmallButtonAction("Delete", "Deletes the selected rows", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedRows));
+
+        ribbon.rebuildRibbon();
     }
 
     private void reload() {
@@ -104,7 +166,9 @@ public class ParameterTableEditorWindow extends JFrame {
         // Selection control
         if (selectedRows.length > 0) {
             if (selectedColumns.length > 1) {
-                palettePanel.addGroupHeader("Please select only one column", UIUtils.getIconFromResources("emblems/warning.png"));
+                palettePanel.addGroupHeader("Edit multiple parameters", UIUtils.getIconFromResources("actions/document-edit.png"));
+                palettePanel.addWideToForm(new JLabel("<html><strong>Please select only one column</strong><br/>Currently, you can only edit one parameter type.</html>",
+                        UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT));
             } else if (selectedColumns.length == 1) {
                 if (selectedRows.length == 1) {
                     palettePanel.addGroupHeader("Edit parameter", UIUtils.getIconFromResources("actions/document-edit.png"));
@@ -132,92 +196,40 @@ public class ParameterTableEditorWindow extends JFrame {
                                 "and will replace the parameter of given identifier if used in a parameter input slot.",
                         parameterTable.getColumnInfo(selectedColumns[0]).getKey())));
             }
+        } else {
+            palettePanel.addGroupHeader("Edit parameter", UIUtils.getIconFromResources("actions/document-edit.png"));
+            palettePanel.addWideToForm(new JLabel("<html><strong>Nothing selected</strong><br/>To edit a parameter value, select it in the table.</html>",
+                    UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT));
         }
 
-        // Column controls
-        addPaletteGroup("Columns (" + parameterTable.getColumnCount() + ")", parameterTable.getColumnCount() == 0 ?
-                UIUtils.getIconFromResources("emblems/warning.png") : UIUtils.getIconFromResources("actions/view-column.png"));
-        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-            addActionToPalette("Import",
-                    "Adds a column from an existing node.",
-                    UIUtils.getIconFromResources("actions/add.png"),
-                    this::importColumnFromAlgorithm);
-        }
-        addActionToPalette("Define",
-                "Defines a custom column (advanced users).",
-                UIUtils.getIconFromResources("actions/code-context.png"),
-                this::addCustomColumn);
-        if (selectedColumns.length > 0) {
-            addSeparatorToPalette();
-            addActionToPalette("Remove",
-                    "Remove selected columns",
-                    UIUtils.getIconFromResources("actions/edit-table-delete-column.png"),
-                    this::removeSelectedColumns);
-        }
-
-        //Row controls
-        addPaletteGroup("Rows (" + parameterTable.getRowCount() + ")", parameterTable.getRowCount() == 0 ?
-                UIUtils.getIconFromResources("emblems/warning.png") : UIUtils.getIconFromResources("actions/object-rows.png"));
-
-        addActionToPalette("Add",
-                "Adds an empty row at the end of the table.",
-                UIUtils.getIconFromResources("actions/add.png"),
-                this::addRow);
-        if (selectedColumns.length == 1) {
-            JPopupMenu generateMenu = new JPopupMenu();
-            createGenerateMenuFor(selectedColumns[0], generateMenu);
-            if (generateMenu.getComponentCount() > 0) {
-                JButton generateButton = addActionToPalette("Generate new",
-                        "Generates new rows",
-                        UIUtils.getIconFromResources("actions/tools-wizard.png"),
-                        () -> {
-                        });
-                UIUtils.addPopupMenuToComponent(generateButton, generateMenu);
-            }
-        }
-        if (selectedRows.length > 0 && selectedColumns.length == 1) {
-            JPopupMenu generateMenu = new JPopupMenu();
-            createReplaceMenuFor(selectedColumns[0], generateMenu);
-            if (generateMenu.getComponentCount() > 0) {
-                JButton generateButton = addActionToPalette("Replace selection by generated",
-                        "Generates parameter values and replaces the selected items by these values",
-                        UIUtils.getIconFromResources("actions/tools-wizard.png"),
-                        () -> {
-                        });
-                UIUtils.addPopupMenuToComponent(generateButton, generateMenu);
-            }
-        }
-        if (selectedRows.length > 0) {
-            addSeparatorToPalette();
-            addActionToPalette("Remove",
-                    "Remove selected rows",
-                    UIUtils.getIconFromResources("actions/edit-table-delete-row.png"),
-                    this::removeSelectedRows);
-        }
-
-
-        // Selection controls
-        addPaletteGroup("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"));
-        addActionToPalette("Whole row",
-                "Expands the selection to the whole row",
-                UIUtils.getIconFromResources("actions/stock_select-row.png"),
-                this::selectWholeRow);
-        addActionToPalette("Whole column",
-                "Expands the selection to the whole column",
-                UIUtils.getIconFromResources("actions/stock_select-column.png"),
-                this::selectWholeColumn);
+        emptyColumnsLabel.setVisible(table.getModel().getColumnCount() <= 0);
+        emptyRowsLabel.setVisible(table.getModel().getRowCount() <= 0);
 
         palettePanel.addVerticalGlue();
     }
 
-    private void createGenerateMenuFor(int selectedColumn, JPopupMenu generateMenu) {
-        for (JIPipeParameterGenerator generator : JIPipe.getParameterTypes()
-                .getGeneratorsFor(parameterTable.getColumn(selectedColumn).getFieldClass())) {
-            JMenuItem generateRowItem = new JMenuItem(generator.getName());
-            generateRowItem.setToolTipText(generator.getDescription());
-            generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
-            generateRowItem.addActionListener(e -> generateNewRows(selectedColumn, generator));
-            generateMenu.add(generateRowItem);
+    private void createGenerateMenuFor(int[] selectedColumns, JPopupMenu generateMenu) {
+        generateMenu.removeAll();
+        if (parameterTable.getColumnCount() == 0) {
+            return;
+        }
+        if (selectedColumns == null || selectedColumns.length == 0) {
+            selectedColumns = new int[parameterTable.getColumnCount()];
+            for (int i = 0; i < parameterTable.getColumnCount(); i++) {
+                selectedColumns[i] = i;
+            }
+        }
+        for (int selectedColumn : selectedColumns) {
+            JMenu columnMenu = new JMenu(getParameterTable().getColumnName(selectedColumn));
+            for (JIPipeParameterGenerator generator : JIPipe.getParameterTypes()
+                    .getGeneratorsFor(parameterTable.getColumn(selectedColumn).getFieldClass())) {
+                JMenuItem generateRowItem = new JMenuItem(generator.getName());
+                generateRowItem.setToolTipText(generator.getDescription());
+                generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
+                generateRowItem.addActionListener(e -> generateNewRows(selectedColumn, generator));
+                columnMenu.add(generateRowItem);
+            }
+            generateMenu.add(columnMenu);
         }
     }
 
@@ -313,7 +325,7 @@ public class ParameterTableEditorWindow extends JFrame {
     private void importColumnFromAlgorithm() {
         if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             JIPipeGraph graph = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph();
-            JIPipeParameterTree globalTree = graph.getParameterTree(false);
+            JIPipeParameterTree globalTree = graph.getParameterTree(false, null);
 
             List<Object> importedParameters = ParameterTreeUI.showPickerDialog(getWorkbench().getWindow(), globalTree, "Import parameter");
             for (Object importedParameter : importedParameters) {
@@ -358,7 +370,7 @@ public class ParameterTableEditorWindow extends JFrame {
         JIPipeDynamicParameterCollection collection = new JIPipeDynamicParameterCollection();
         collection.setAllowedTypes(JIPipe.getParameterTypes()
                 .getRegisteredParameters().values().stream().map(JIPipeParameterTypeInfo::getFieldClass).collect(Collectors.toSet()));
-        AddDynamicParameterPanel.showDialog(this, collection);
+        AddParameterDialog.showDialog(workbench, this, collection);
         for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
             if (parameterTable.containsColumn(entry.getKey()))
                 continue;

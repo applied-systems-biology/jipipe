@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 public class NodeTemplateSettings implements JIPipeParameterCollection {
 
@@ -13,6 +14,12 @@ public class NodeTemplateSettings implements JIPipeParameterCollection {
 
     private final EventBus eventBus = new EventBus();
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
+
+    private StringList nodeTemplateDownloadRepositories = new StringList();
+
+    public NodeTemplateSettings() {
+        nodeTemplateDownloadRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/node-templates/node-templates.json");
+    }
 
     public static NodeTemplateSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, NodeTemplateSettings.class);
@@ -36,6 +43,17 @@ public class NodeTemplateSettings implements JIPipeParameterCollection {
     @JIPipeParameter("node-templates")
     public void setNodeTemplates(JIPipeNodeTemplate.List nodeTemplates) {
         this.nodeTemplates = nodeTemplates;
+    }
+
+    @JIPipeDocumentation(name = "Template downloader repositories", description = "List of repositories for the 'Get more templates' feature")
+    @JIPipeParameter("template-download-repositories")
+    public StringList getNodeTemplateDownloadRepositories() {
+        return nodeTemplateDownloadRepositories;
+    }
+
+    @JIPipeParameter("template-download-repositories")
+    public void setNodeTemplateDownloadRepositories(StringList projectTemplateDownloadRepositories) {
+        this.nodeTemplateDownloadRepositories = projectTemplateDownloadRepositories;
     }
 
     /**

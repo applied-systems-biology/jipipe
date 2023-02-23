@@ -26,6 +26,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -33,36 +35,39 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 
 /**
  * Applies Bright spots segmentation
  */
 @JIPipeDocumentation(name = "Bright spots segmentation 2D", description = "Applies thresholding by applying a background subtraction, auto thresholding, and " +
-        "various morphological operations. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        "various morphological operations. If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
+        "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
+        "<ol>" +
+        "<li>Subtract background (rolling ball): default radius = 20</li>" +
+        "<li>Auto threshold 2D</li>" +
+        "<li>Morphological dilation</li>" +
+        "<li>Morphological hole filling</li>" +
+        "<li>Morphological erosion</li>" +
+        "<li>Optional: Gaussian blur</li>" +
+        "</ol>")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 
 
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-
-
+@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int rollingBallRadius = 20;
     private int dilationErodeSteps = 2;
     private double gaussianSigma = 3;
-    private AutoThreshold2DAlgorithm autoThresholding;
+    private final AutoThreshold2DAlgorithm autoThresholding;
 
     /**
      * @param info the info
      */
     public BrightSpotsSegmentation2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipe.getNodes().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
@@ -77,6 +82,14 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
         this.dilationErodeSteps = other.dilationErodeSteps;
         this.gaussianSigma = other.gaussianSigma;
         this.autoThresholding = (AutoThreshold2DAlgorithm) other.autoThresholding.getInfo().duplicate(other.autoThresholding);
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(access.getSource() == autoThresholding && "source-area".equals(access.getKey())) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     @Override

@@ -2,7 +2,7 @@
 
 This window allows you to edit a list of parameters that is displayed as table.
 
-<h3>Navigating the graph</h3>
+<h3>Navigating the table</h3>
 <table>
 <tr><td><img src="resource://icons/actions/edit-table-delete-row.png"/></td><td>Each row represents a parameter set.</td></tr>
 <tr><td><img src="resource://icons/actions/edit-table-delete-column.png"/></td><td>Each column is assigned to one parameter.</td></tr>

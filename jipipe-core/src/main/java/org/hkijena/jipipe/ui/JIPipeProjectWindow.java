@@ -15,12 +15,16 @@ package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import net.imagej.updater.UpdateSite;
+import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -31,12 +35,18 @@ import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
 import org.hkijena.jipipe.ui.project.*;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -95,7 +105,16 @@ public class JIPipeProjectWindow extends JFrame {
         JIPipeProject project = null;
         if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
             try {
-                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
+                String id = ProjectsSettings.getInstance().getProjectTemplate().getValue();
+                if (StringUtils.isNullOrEmpty(id) || !JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(id)) {
+                    id = JIPipeProjectTemplate.getFallbackTemplateId();
+                    ProjectsSettings.getInstance().getProjectTemplate().setValue(id);
+                    JIPipe.getInstance().getSettingsRegistry().save();
+                }
+                JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().get(id);
+                JIPipeIssueReport report = new JIPipeIssueReport();
+                JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+                project = template.loadAsProject(report, notifications);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -118,7 +137,7 @@ public class JIPipeProjectWindow extends JFrame {
     public static JIPipeProjectWindow newWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         JIPipeProjectWindow frame = new JIPipeProjectWindow(context, project, showIntroduction, isNewProject);
         frame.pack();
-        frame.setSize(1024, 768);
+        frame.setSize(1280, 800);
         frame.setVisible(true);
 //        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         return frame;
@@ -155,8 +174,13 @@ public class JIPipeProjectWindow extends JFrame {
         }
     }
 
+    private void unloadProject() {
+        projectUI.unload();
+    }
+
     @Override
     public void dispose() {
+        unloadProject();
         OPEN_WINDOWS.remove(this);
         WINDOWS_EVENTS.post(new WindowClosedEvent(this));
         super.dispose();
@@ -193,21 +217,11 @@ public class JIPipeProjectWindow extends JFrame {
      * Creates a new project from template
      */
     public void newProjectFromTemplate() {
-        JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(this);
+        JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(projectUI, this);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
         if (dialog.getSelectedTemplate() != null) {
-            try {
-                JIPipeProject project = dialog.getSelectedTemplate().load();
-                JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
-                if (window == null)
-                    return;
-                window.projectSavePath = null;
-                window.updateTitle();
-                window.getProjectUI().sendStatusBarText("Created new project");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            newProjectFromTemplate(dialog.getSelectedTemplate());
         }
     }
 
@@ -215,16 +229,74 @@ public class JIPipeProjectWindow extends JFrame {
      * Creates a new project from template
      */
     public void newProjectFromTemplate(JIPipeProjectTemplate template) {
-        try {
-            JIPipeProject project = template.load();
-            JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
-            if (window == null)
-                return;
-            window.projectSavePath = null;
-            window.updateTitle();
-            window.getProjectUI().sendStatusBarText("Created new project");
-        } catch (IOException e) {
-            e.printStackTrace();
+        Path loadZipTarget = null;
+        if (template.getZipFile() != null && Files.isRegularFile(template.getZipFile())) {
+            try {
+                double sizeMB = Files.size(template.getZipFile()) / 1024.0 / 1024.0;
+                int result = JOptionPane.showOptionDialog(this,
+                        "The template contains " + Precision.round(sizeMB, 2) + " MB of data.\nYou can choose to either load only the " +
+                                "pipeline or extract the template project and related data into a directory.",
+                        "Load template",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Load with data", "Load only pipeline", "Cancel"},
+                        "Load with data");
+                switch (result) {
+                    case JOptionPane.CANCEL_OPTION:
+                        return;
+                    case JOptionPane.NO_OPTION:
+                        break;
+                    case JOptionPane.YES_OPTION:
+                        loadZipTarget = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Load template: Choose an empty directory");
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (loadZipTarget != null) {
+            ExtractTemplateZipFileRun run = new ExtractTemplateZipFileRun(template, loadZipTarget);
+            Path finalLoadZipTarget = loadZipTarget;
+            JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+                @Subscribe
+                public void onRunFinished(RunWorkerFinishedEvent event) {
+                    if (event.getRun() == run) {
+                        SwingUtilities.invokeLater(() -> {
+                            Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
+                            if (projectFile == null) {
+                                JOptionPane.showMessageDialog(JIPipeProjectWindow.this,
+                                        "No project file in " + finalLoadZipTarget,
+                                        "Load template",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                            openProject(projectFile);
+                        });
+                    }
+                }
+            });
+            JIPipeRunExecuterUI.runInDialog(this, run);
+        } else {
+            try {
+                JIPipeIssueReport report = new JIPipeIssueReport();
+                JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+                JIPipeProject project = template.loadAsProject(report, notifications);
+                JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
+                if (window == null)
+                    return;
+                window.projectSavePath = null;
+                window.updateTitle();
+                window.getProjectUI().sendStatusBarText("Created new project");
+                if (!notifications.isEmpty()) {
+                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                }
+                if (!report.isValid()) {
+                    UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                            "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -252,6 +324,8 @@ public class JIPipeProjectWindow extends JFrame {
     public void openProject(Path path) {
         if (Files.isRegularFile(path)) {
             JIPipeIssueReport report = new JIPipeIssueReport();
+            JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+            notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
@@ -272,14 +346,14 @@ public class JIPipeProjectWindow extends JFrame {
                         }
                     }
                 }
-                Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+                Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
-                    if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
+                    if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
                         return;
                 }
 
                 JIPipeProject project = new JIPipeProject();
-                project.fromJson(jsonData, report);
+                project.fromJson(jsonData, report, notifications);
                 project.setWorkDirectory(path.getParent());
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open project", project, false, false);
                 if (window == null)
@@ -288,29 +362,39 @@ public class JIPipeProjectWindow extends JFrame {
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
                 ProjectsSettings.getInstance().addRecentProject(path);
+                if (!notifications.isEmpty()) {
+                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                }
+                FileChooserSettings.getInstance().setLastDirectoryBy(FileChooserSettings.LastDirectoryKey.Projects, path.getParent());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(this, report, false);
+                UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                        "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
         } else if (Files.isDirectory(path)) {
             JIPipeIssueReport report = new JIPipeIssueReport();
+            JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+            notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
                 Path parameterFilePath = path.resolve("project.jip");
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-                Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+                Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
-                    if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
+                    if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                         return;
                 }
 
-                JIPipeProjectRun run = JIPipeProjectRun.loadFromFolder(path, report);
+                JIPipeProjectRun run = JIPipeProjectRun.loadFromFolder(path, report, notifications);
                 run.getProject().setWorkDirectory(path);
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", run.getProject(), false, false);
                 if (window == null)
                     return;
+
+                FileChooserSettings.getInstance().setLastDirectoryBy(FileChooserSettings.LastDirectoryKey.Projects, path);
+
                 window.projectSavePath = path.resolve("project.jip");
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
@@ -338,15 +422,19 @@ public class JIPipeProjectWindow extends JFrame {
                     window.getProjectUI().getDocumentTabPane().switchToLastTab();
                 } else if (selectedOption == JOptionPane.NO_OPTION) {
                     // Load into cache with a run
-                    JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path));
+                    JIPipeRunExecuterUI.runInDialog(this, new LoadResultDirectoryIntoCacheRun(projectUI, project, path, true));
                 }
-
+                if (!notifications.isEmpty()) {
+                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(this, report, false);
+                UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                        "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
+
         }
     }
 
@@ -392,7 +480,7 @@ public class JIPipeProjectWindow extends JFrame {
             getProject().saveProject(tempFile);
 
             // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile, new JIPipeIssueReport());
+            JIPipeProject.loadProject(tempFile, new JIPipeIssueReport(), new JIPipeNotificationInbox());
 
             // Overwrite the target file
             if (Files.exists(savePath))
@@ -467,8 +555,8 @@ public class JIPipeProjectWindow extends JFrame {
     /**
      * Saves the project and cache
      */
-    public void saveProjectAndCache() {
-        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Save project and cache");
+    public void saveProjectAndCacheToDirectory(String title, boolean addAsRecentProject) {
+        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, title);
         if (directory == null)
             return;
         try {
@@ -485,7 +573,25 @@ public class JIPipeProjectWindow extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        SaveProjectAndCacheRun run = new SaveProjectAndCacheRun(projectUI, project, directory);
+        SaveProjectAndCacheToDirectoryRun run = new SaveProjectAndCacheToDirectoryRun(projectUI, project, directory, addAsRecentProject);
+        JIPipeRunExecuterUI.runInDialog(this, run);
+    }
+
+    /**
+     * Saves the project and cache
+     */
+    public void saveProjectAndCacheToZIP(String title) {
+        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, title, UIUtils.EXTENSION_FILTER_ZIP);
+        if(file == null)
+            return;
+        if(Files.exists(file)) {
+            try {
+                Files.delete(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        SaveProjectAndCacheToZipRun run = new SaveProjectAndCacheToZipRun(projectUI, project, file);
         JIPipeRunExecuterUI.runInDialog(this, run);
     }
 }

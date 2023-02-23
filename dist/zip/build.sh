@@ -99,6 +99,10 @@ if [ ! -e "./dependencies/jgrapht-core-1.4.0.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/jgrapht-core-1.4.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-core/1.4.0/jgrapht-core-1.4.0.jar
 fi
+if [ ! -e "./dependencies/jgrapht-io-1.4.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jgrapht-io-1.4.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/jgrapht/jgrapht-io/1.4.0/jgrapht-io-1.4.0.jar
+fi
 if [ ! -e "./dependencies/autolink-0.10.0.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/autolink-0.10.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/nibor/autolink/autolink/0.10.0/autolink-0.10.0.jar
@@ -191,6 +195,26 @@ if [ ! -e "./dependencies/jackson-dataformat-yaml-2.12.5.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/jackson-dataformat-yaml-2.12.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.12.5/jackson-dataformat-yaml-2.12.5.jar
 fi
+if [ ! -e "./dependencies/poi-5.2.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/poi-5.2.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi/5.2.0/poi-5.2.0.jar
+fi
+if [ ! -e "./dependencies/poi-ooxml-5.2.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/poi-ooxml-5.2.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi-ooxml/5.2.0/poi-ooxml-5.2.0.jar
+fi
+if [ ! -e "./dependencies/poi-ooxml-lite-5.2.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/poi-ooxml-lite-5.2.0.jar https://repo1.maven.org/maven2/org/apache/poi/poi-ooxml-lite/5.2.0/poi-ooxml-lite-5.2.0.jar
+fi
+if [ ! -e "./dependencies/xmlbeans-5.0.3.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/xmlbeans-5.0.3.jar https://maven.scijava.org/service/local/repositories/sonatype/content/org/apache/xmlbeans/xmlbeans/5.0.3/xmlbeans-5.0.3.jar
+fi
+if [ ! -e "./dependencies/log4j-api-2.17.1.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/log4j-api-2.17.1.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/logging/log4j/log4j-api/2.17.1/log4j-api-2.17.1.jar
+fi
 if [ ! -e "./dependencies/LICENSE_OMERO.txt" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_OMERO.txt https://github.com/ome/omero-insight/blob/master/LICENSE.txt
@@ -238,8 +262,9 @@ fi
 
 rm -r package
 mkdir package
-for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-weka jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-launcher jipipe-ij-updater-cli; do
+for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-weka jipipe-ij-multi-template-matching jipipe-ij-trackmate jipipe-ij-filaments jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-omnipose jipipe-launcher; do
 	cp -v ../../$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/$component-$JIPIPE_VERSION.jar
+	cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package/$component-$JIPIPE_VERSION.jar
 done
 
 cp -rv ./dependencies ./package/dependencies

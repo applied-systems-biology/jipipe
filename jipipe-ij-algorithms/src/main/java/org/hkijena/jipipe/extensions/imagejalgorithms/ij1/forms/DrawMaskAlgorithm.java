@@ -62,9 +62,9 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         List<JIPipeMergingDataBatch> dataBatches;
 
         // No input slots -> Nothing to do
-        if (getEffectiveInputSlotCount() == 0) {
+        if (getDataInputSlotCount() == 0) {
             return;
-        } else if (getEffectiveInputSlotCount() == 1) {
+        } else if (getDataInputSlotCount() == 1) {
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 if (progressInfo.isCancelled())
@@ -108,7 +108,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
 
         // Create the form
         JIPipeDataSlot formsSlot = JIPipeDataSlot.createSingletonSlot(new MaskDrawerFormData(dataBatches, this), this);
-        formsSlot.addAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw mask"), true);
+        formsSlot.addTextAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw mask"), true);
 
         // Form user input
         progressInfo.log("Waiting for user input ...");

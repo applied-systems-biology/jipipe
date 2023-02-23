@@ -15,24 +15,18 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.plugin.ChannelArranger;
 import ij.plugin.ChannelSplitter;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -41,21 +35,22 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.*;
 
 /**
- * Wrapper around {@link ChannelArranger}
+ * Wrapper around {@link ChannelSplitter}
  */
-@JIPipeDocumentation(name = "Split channels", description = "Splits multichannel images into multiple greyscale images. " +
-        "This operation is applied for each 2D image slice.")
+@JIPipeDocumentation(name = "Split channels (deprecated)", description = "Splits multichannel images into multiple greyscale images. " +
+        "This operation is applied for each 2D image slice. <strong>This node is deprecated. Please use the new 'Split channels' node</strong>")
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels")
+@JIPipeHidden
+@Deprecated
 public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final OutputSlotMapParameterCollection channelToSlotAssignment;
@@ -74,7 +69,6 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "", ImagePlusData.class)
                 .restrictOutputTo(JIPipe.getDataTypes().findDataTypesByInterfaces(ImagePlusData.class))
-                .allowOutputSlotInheritance(false)
                 .sealInput()
                 .build());
         channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 0, false);
@@ -299,31 +293,5 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("slot-name-annotation-column")
     public void setAnnotationColumnSlotName(String annotationColumnSlotName) {
         this.annotationColumnSlotName = annotationColumnSlotName;
-    }
-
-    @JIPipeDocumentation(name = "3 channel split", description = "Loads example parameters that splits three channels.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
-    public void setTo3ChannelExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearOutputSlots(true);
-            for (int i = 0; i < 3; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output), true);
-                channelToSlotAssignment.setValue("C" + (i + 1), i);
-            }
-        }
-    }
-
-    @JIPipeDocumentation(name = "2 channel split", description = "Loads example parameters that splits two channels.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
-    public void setTo2ChannelExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearOutputSlots(true);
-            for (int i = 0; i < 2; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output), true);
-                channelToSlotAssignment.setValue("C" + (i + 1), i);
-            }
-        }
     }
 }

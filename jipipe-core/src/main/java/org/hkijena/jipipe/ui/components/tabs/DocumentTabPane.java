@@ -28,13 +28,12 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
+import org.scijava.Disposable;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.List;
 import java.util.*;
 import java.util.function.Supplier;
@@ -43,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * {@link JTabbedPane} with larger tabs, ability to close tabs, singleton tabs that are hidden instead of being closed
  */
-public class DocumentTabPane extends JPanel {
+public class DocumentTabPane extends JPanel implements Disposable {
 
     /**
      * List of open tabs
@@ -62,14 +61,22 @@ public class DocumentTabPane extends JPanel {
     private DnDTabbedPane tabbedPane;
     private boolean enableTabContextMenu = true;
 
+    private Border tabPanelBorder = BorderFactory.createEmptyBorder(4, 0, 4, 0);
+    private boolean scrollable;
+
+    public DocumentTabPane() {
+        this(true);
+    }
+
     /**
      * Creates a new instance
      */
-    public DocumentTabPane() {
-        initialize();
+    public DocumentTabPane(boolean scrollable) {
+        this.scrollable = scrollable;
+        initialize(scrollable);
     }
 
-    private void initialize() {
+    private void initialize(boolean scrollable) {
         setLayout(new BorderLayout());
         tabbedPane = new DnDTabbedPane();
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -88,7 +95,6 @@ public class DocumentTabPane extends JPanel {
                     if (tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
                         Component component = tabbedPane.getTabComponentAt(tabIndex);
                         DocumentTab tab = getTabContainingTabComponent(component);
-                        System.out.println(tab.getPopupMenu());
                         if (tab.getPopupMenu() != null) {
                             tab.getPopupMenu().show(e.getComponent(), e.getX(), e.getY());
                         }
@@ -100,6 +106,61 @@ public class DocumentTabPane extends JPanel {
             tabbedPane.setUI(new CustomTabbedPaneUI());
         }
         add(tabbedPane, BorderLayout.CENTER);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                updateCompactTabs();
+            }
+        });
+    }
+
+    public boolean isScrollable() {
+        return scrollable;
+    }
+
+    public void setScrollable(boolean scrollable) {
+        this.scrollable = scrollable;
+        if (scrollable) {
+            for (DocumentTab tab : tabs) {
+                tab.getTabComponent().setCompactMode(false);
+            }
+        } else {
+            updateCompactTabs();
+        }
+    }
+
+    private void updateCompactTabs() {
+        if (scrollable)
+            return;
+        Insets tabInsets = UIManager.getInsets("TabbedPane.tabInsets");
+        int sumWidth = 0;
+        for (DocumentTab tab : tabs) {
+            int width = tabInsets.left + tabInsets.right + 3;
+            DocumentTabComponent tabComponent = tab.getTabComponent();
+            width += tabComponent.getPreferredSize().width;
+            if (tabComponent.isCompactMode()) {
+                FontMetrics fontMetrics = tabComponent.getTitleLabel().getFontMetrics(tabComponent.getTitleLabel().getFont());
+                width += fontMetrics.stringWidth(tab.title);
+            }
+            sumWidth += width;
+        }
+        boolean changed = false;
+        if (sumWidth > getWidth() - 64) {
+            for (DocumentTab tab : tabs) {
+                if (!tab.getTabComponent().isCompactMode())
+                    changed = true;
+                tab.getTabComponent().setCompactMode(true);
+            }
+        } else {
+            for (DocumentTab tab : tabs) {
+                if (tab.getTabComponent().isCompactMode())
+                    changed = true;
+                tab.getTabComponent().setCompactMode(false);
+            }
+        }
+        if (changed) {
+            revalidate();
+        }
     }
 
     public BiMap<String, SingletonTab> getSingletonTabs() {
@@ -122,6 +183,16 @@ public class DocumentTabPane extends JPanel {
             }
             tabHistory.add(tab);
         }
+    }
+
+    @Override
+    public void dispose() {
+        for (DocumentTab tab : tabs) {
+            if(tab.content instanceof Disposable) {
+                ((Disposable) tab.content).dispose();
+            }
+        }
+        closeAllTabs(true);
     }
 
     /**
@@ -158,6 +229,14 @@ public class DocumentTabPane extends JPanel {
         return tabs.stream().filter(tab -> klass.isAssignableFrom(tab.getContent().getClass())).collect(Collectors.toList());
     }
 
+    public Border getTabPanelBorder() {
+        return tabPanelBorder;
+    }
+
+    public void setTabPanelBorder(Border tabPanelBorder) {
+        this.tabPanelBorder = tabPanelBorder;
+    }
+
     /**
      * Adds a new tab
      *
@@ -173,34 +252,11 @@ public class DocumentTabPane extends JPanel {
         title = StringUtils.makeUniqueString(title, " ", tabs.stream().map(DocumentTab::getTitle).collect(Collectors.toList()));
 
         // Create tab panel
-        JPanel tabPanel = new JPanel();
-
-        tabPanel.setOpaque(false);
-
-//        if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {
-//            tabPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, Color.GRAY),
-//                    BorderFactory.createEmptyBorder(4, 4, 2, 4)));
-//        } else {
-//            tabPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-//        }
-        tabPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-
-        tabPanel.setLayout(new BoxLayout(tabPanel, BoxLayout.LINE_AXIS));
-        JLabel titleLabel = new JLabel(title, icon, JLabel.LEFT);
-        tabPanel.add(titleLabel);
-        tabPanel.add(Box.createHorizontalGlue());
+        DocumentTabComponent tabPanel = new DocumentTabComponent(this, title, icon);
 
         JPopupMenu popupMenu = new JPopupMenu();
-//        tabPanel.setComponentPopupMenu(popupMenu);
-
-        DocumentTab tab = new DocumentTab(title, icon, tabPanel, component, closeMode, popupMenu);
-
-        tab.getEventBus().register(new Object() {
-            @Subscribe
-            public void onPropertyChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                titleLabel.setText(tab.getTitle());
-            }
-        });
+        DocumentTab tab = new DocumentTab(this, title, icon, tabPanel, component, closeMode, popupMenu);
+        tabPanel.setDocumentTab(tab); // Important: connects all events
 
         JMenuItem closeItem = new JMenuItem("Close", UIUtils.getIconFromResources("actions/tab-close.png"));
         closeItem.addActionListener(e -> closeTab(tab));
@@ -232,11 +288,6 @@ public class DocumentTabPane extends JPanel {
             JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             closeButton.setToolTipText("Close tab");
             closeButton.setBorder(null);
-//            if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {
-//                closeButton.setBackground(new Color(242, 242, 242));
-//            } else {
-//                closeButton.setBackground(Color.WHITE);
-//            }
             closeButton.setBackground(UIManager.getColor("TextArea.background"));
 
             closeButton.setOpaque(false);
@@ -252,10 +303,9 @@ public class DocumentTabPane extends JPanel {
             JMenuItem renameButton = new JMenuItem("Rename", UIUtils.getIconFromResources("actions/tag.png"));
             UIUtils.makeBorderlessWithoutMargin(renameButton);
             renameButton.addActionListener(e -> {
-                String newName = JOptionPane.showInputDialog(this, "Rename tab '" + titleLabel.getText() + "' to ...", titleLabel.getText());
+                String newName = JOptionPane.showInputDialog(this, "Rename tab '" + tab.getTitle() + "' to ...", tab.getTitle());
                 if (newName != null && !newName.isEmpty()) {
                     tab.setTitle(newName);
-                    titleLabel.setText(newName);
                 }
             });
             popupMenu.add(renameButton);
@@ -433,6 +483,7 @@ public class DocumentTabPane extends JPanel {
             tabbedPane.setSelectedComponent(tabHistory.get(tabHistory.size() - 1).getContent());
         }
         tabbedPane.remove(tab.getContent());
+        updateCompactTabs();
     }
 
     /**
@@ -553,10 +604,11 @@ public class DocumentTabPane extends JPanel {
     }
 
     private void addTab(DocumentTab tab) {
-        tabbedPane.addTab(tab.getTitle(), tab.getIcon(), tab.getContent());
+        tabbedPane.addTab(tab.getTitle(), tab.getIcon(), tab.getContent(), tab.getTitle());
         tabbedPane.setTabComponentAt(getTabCount() - 1, tab.getTabComponent());
         tabs.add(tab);
         tabHistory.add(tab);
+        updateCompactTabs();
     }
 
     /**
@@ -685,19 +737,90 @@ public class DocumentTabPane extends JPanel {
         }
     }
 
+    public static class DocumentTabComponent extends JPanel {
+        private final Border tabPanelBorder;
+        private final Icon icon;
+        private DocumentTab documentTab;
+        private JLabel titleLabel;
+
+        private boolean compactMode;
+
+        public DocumentTabComponent(DocumentTabPane documentTabPane, String title, Icon icon) {
+            this.tabPanelBorder = documentTabPane.tabPanelBorder;
+            this.icon = icon;
+            this.initialize();
+        }
+
+        private void initialize() {
+            // Basics
+            setOpaque(false);
+            setBorder(tabPanelBorder);
+            setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
+
+            // Title label
+            titleLabel = new JLabel("", icon, JLabel.LEFT);
+            add(titleLabel);
+            add(Box.createHorizontalGlue());
+        }
+
+        public JLabel getTitleLabel() {
+            return titleLabel;
+        }
+
+        public boolean isCompactMode() {
+            return compactMode;
+        }
+
+        public void setCompactMode(boolean compactMode) {
+            this.compactMode = compactMode;
+            updateContents();
+        }
+
+        public void updateContents() {
+            if (compactMode) {
+                titleLabel.setText("");
+//                setToolTipText(documentTab.getTitle());
+            } else if (documentTab != null) {
+                titleLabel.setText(documentTab.title);
+//                setToolTipText(null);
+            }
+        }
+
+        public DocumentTab getDocumentTab() {
+            return documentTab;
+        }
+
+        public void setDocumentTab(DocumentTab documentTab) {
+            if (this.documentTab != null) {
+                this.documentTab.eventBus.unregister(this);
+            }
+            this.documentTab = documentTab;
+            documentTab.eventBus.register(this);
+            updateContents();
+        }
+
+        @Subscribe
+        public void onRenamed(TabRenamedEvent event) {
+            updateContents();
+        }
+    }
+
     /**
      * Encapsulates a tab
      */
     public static class DocumentTab implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
+
+        private final DocumentTabPane documentTabPane;
         private final Icon icon;
-        private final Component tabComponent;
+        private final DocumentTabComponent tabComponent;
         private final Component content;
         private final CloseMode closeMode;
         private final JPopupMenu popupMenu;
         private String title;
 
-        private DocumentTab(String title, Icon icon, Component tabComponent, Component content, CloseMode closeMode, JPopupMenu popupMenu) {
+        private DocumentTab(DocumentTabPane documentTabPane, String title, Icon icon, DocumentTabComponent tabComponent, Component content, CloseMode closeMode, JPopupMenu popupMenu) {
+            this.documentTabPane = documentTabPane;
             this.title = title;
             this.icon = icon;
             this.tabComponent = tabComponent;
@@ -714,13 +837,18 @@ public class DocumentTabPane extends JPanel {
         @JIPipeParameter("title")
         public void setTitle(String title) {
             this.title = title;
+            eventBus.post(new TabRenamedEvent(documentTabPane, this));
+        }
+
+        public DocumentTabPane getDocumentTabPane() {
+            return documentTabPane;
         }
 
         public Icon getIcon() {
             return icon;
         }
 
-        public Component getTabComponent() {
+        public DocumentTabComponent getTabComponent() {
             return tabComponent;
         }
 
@@ -739,6 +867,24 @@ public class DocumentTabPane extends JPanel {
 
         public JPopupMenu getPopupMenu() {
             return popupMenu;
+        }
+    }
+
+    public static class TabRenamedEvent {
+        private final DocumentTabPane documentTabPane;
+        private final DocumentTab tab;
+
+        public TabRenamedEvent(DocumentTabPane documentTabPane, DocumentTab tab) {
+            this.documentTabPane = documentTabPane;
+            this.tab = tab;
+        }
+
+        public DocumentTabPane getDocumentTabPane() {
+            return documentTabPane;
+        }
+
+        public DocumentTab getTab() {
+            return tab;
         }
     }
 }

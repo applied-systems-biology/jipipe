@@ -6,9 +6,9 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -16,10 +16,9 @@ import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameter
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -30,6 +29,7 @@ import java.util.Set;
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
@@ -63,10 +63,9 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            if(relativeToProjectDir && getProjectDirectory() != null) {
+            if (relativeToProjectDir && getProjectDirectory() != null) {
                 outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
-            }
-            else {
+            } else {
                 outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
             }
         } else {
@@ -74,41 +73,32 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Generate subfolder
-        Path subFolder = exporter.generateSubFolder(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-        if (subFolder != null) {
-            outputPath = outputPath.resolve(subFolder);
-        }
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
-        try {
-            Files.createDirectories(outputPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        // If absolute -> use the path, otherwise use output directory
+        if (generatedPath.isAbsolute()) {
+            outputPath = generatedPath;
+        } else {
+            outputPath = outputPath.resolve(generatedPath);
         }
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
-        String baseName = exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         if (exportAsROIFile && rois.size() > 1) {
             Set<String> existing = new HashSet<>();
+            final String baseName = outputPath.getFileName().toString();
             for (Roi roi : rois) {
-                ROIListData singleton = new ROIListData();
-                singleton.add(roi);
                 String roiName;
                 if (!StringUtils.isNullOrEmpty(roi.getName())) {
                     roiName = StringUtils.makeUniqueString(baseName + "_" + roi.getName(), "_", existing);
                 } else {
                     roiName = StringUtils.makeUniqueString(baseName, "_", existing);
                 }
-                singleton.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), roiName, true, progressInfo);
-                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(roiName + ".roi")), progressInfo);
+                ROIListData.saveSingleRoi(roi, PathUtils.ensureExtension(outputPath.getParent().resolve(roiName), ".roi"));
             }
         } else {
-            rois.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), baseName, true, progressInfo);
-            if (rois.size() == 1) {
-                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(baseName + ".roi")), progressInfo);
-            } else {
-                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(baseName + ".zip")), progressInfo);
-            }
+            rois.saveToRoiOrZip(outputPath);
         }
     }
 

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * Mask 4D image
  */
-@JIPipeDocumentation(name = "4D image (mask)")
+@JIPipeDocumentation(name = "4D image (mask)", description = "An 8-bit binary image")
 @JIPipeNode(menuPath = "Images\n4D\nGreyscale")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8, numDimensions = 4)

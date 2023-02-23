@@ -15,20 +15,13 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources;
 
 import ij.IJ;
 import ij.ImagePlus;
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -37,12 +30,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
-import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,11 +41,12 @@ import java.util.List;
  */
 @JIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(FileData.class)
-@JIPipeOutputSlot(ImagePlusData.class)
+@JIPipeInputSlot(value = FileData.class, slotName = "Files", description = "The image file", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", description = "Imported image", autoCreate = true)
 @JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (image)")
 public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
@@ -68,12 +59,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      * @param info algorithm info
      */
     public ImagePlusFromFile(JIPipeNodeInfo info) {
-        super(info,
-                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Files", "The image file", FileData.class)
-                        .addOutputSlot("Image", "Imported image", ImagePlusData.class, null)
-                        .sealOutput()
-                        .sealInput()
-                        .build());
+        super(info);
         titleAnnotation.setContent("Image title");
     }
 
@@ -105,19 +91,19 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-            importer.setAllSlotsVirtual(false, false, null);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
         } else {
-            image = IJ.openImage(fileName.toString());
+            try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+                image = IJ.openImage(fileName.toString());
+            }
         }
         if (image == null) {
             // Try Bioformats again?
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-            importer.setAllSlotsVirtual(false, false, null);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
@@ -165,37 +151,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
-        boolean enableVirtual = VirtualDataSettings.getInstance().isVirtualMode();
-        if (enableVirtual && !removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isNewDataVirtual()) {
-            // Alternative path for virtual data to get rid of load-saving-load
-            // Only works for something that is directly compatible to the row storage format (TIFF)
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>(dataBatch.getMergedTextAnnotations().values());
-            if (titleAnnotation.isEnabled()) {
-                annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
-            }
-            Path targetPath = VirtualDataSettings.generateTempDirectory("virtual");
-            if (!SystemUtils.IS_OS_WINDOWS) {
-                // Create a symlink
-                try {
-                    Files.createSymbolicLink(targetPath.resolve("image.tif"), fileData.toPath());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                // Make a copy
-                try {
-                    Files.copy(fileData.toPath(), targetPath.resolve("image.tif"), StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            JIPipeVirtualData virtualData = new JIPipeVirtualData(generatedImageType.getInfo().getDataClass(), targetPath, "VIRTUAL: " + fileData.toPath().getFileName());
-            getFirstOutputSlot().addData(virtualData,
-                    annotations,
-                    JIPipeTextAnnotationMergeMode.Merge,
-                    new ArrayList<>(dataBatch.getMergedDataAnnotations().values()),
-                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
-        } else if (deferLoading) {
+        if (deferLoading) {
             ImagePlusData outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(),
                     new ImagePlusFromFileImageSource(fileData.toPath(), removeLut, removeOverlay));
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();

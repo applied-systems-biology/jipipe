@@ -27,13 +27,21 @@ public class WekaFeature3DSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private WekaFeatureSet3D trainingFeatures = new WekaFeatureSet3D();
-    /** use neighborhood flag */
+    /**
+     * use neighborhood flag
+     */
     private boolean useNeighbors = false;
-    /** expected membrane thickness (in pixels) */
+    /**
+     * expected membrane thickness (in pixels)
+     */
     private int membraneSize = 1;
-    /** size of the patch to use to enhance membranes (in pixels, NxN) */
+    /**
+     * size of the patch to use to enhance membranes (in pixels, NxN)
+     */
     private int membranePatchSize = 19;
-    /** number of rotating angles for membrane, Kuwahara and Gabor features */
+    /**
+     * number of rotating angles for membrane, Kuwahara and Gabor features
+     */
     private float minSigma = 1;
     private float maxSigma = 16;
 

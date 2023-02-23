@@ -37,7 +37,7 @@ import java.awt.*;
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "Image (HSB)")
+@JIPipeDocumentation(name = "Image (HSB)", description = "A colored image (HSB colors)")
 @JIPipeNode(menuPath = "Images\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = HSBColorSpace.class, pixelType = Integer.class, bitDepth = 24)

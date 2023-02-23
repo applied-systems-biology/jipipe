@@ -207,7 +207,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
             slot.clearData();
             JIPipeDataTable dataTable = entry.getValue().apply(null, progressInfo.resolve(entry.getKey()));
             for (int row = 0; row < dataTable.getRowCount(); row++) {
-                slot.addData(dataTable.getVirtualData(row).duplicate(progressInfo),
+                slot.addData(dataTable.getDataItemStore(row).duplicate(progressInfo),
                         dataTable.getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         dataTable.getDataAnnotations(row),

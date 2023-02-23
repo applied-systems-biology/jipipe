@@ -11,12 +11,12 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchBrowserUI;
-import org.hkijena.jipipe.ui.batchassistant.DataBatchTableUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.datatable.JIPipeSimpleDataBatchTableUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -36,15 +36,15 @@ public class FormsDialog extends JFrame {
     private final List<JIPipeDataSlot> dataBatchForms = new ArrayList<>();
     private final JIPipeDataSlot originalForms;
     private boolean cancelled = false;
-    private DataBatchTableUI dataBatchTableUI;
-    private DocumentTabPane tabPane = new DocumentTabPane();
+    private JIPipeSimpleDataBatchTableUI dataBatchTableUI;
+    private final DocumentTabPane tabPane = new DocumentTabPane(true);
     private String lastTab = "";
-    private List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
-    private JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
-    private JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
-    private JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
-    private JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
-    private MarkdownDocument documentation;
+    private final List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
+    private final JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
+    private final JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
+    private final JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
+    private final JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
+    private final MarkdownDocument documentation;
 
     public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot originalForms, String tabAnnotation) {
         this.originalForms = originalForms;
@@ -66,6 +66,12 @@ public class FormsDialog extends JFrame {
         // Initialize UI
         initialize();
         gotoNextBatch();
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        dataBatchTableUI.dispose();
     }
 
     private JIPipeDataSlot createFormsInstanceFor(int index, JIPipeProgressInfo progressInfo) {
@@ -153,7 +159,7 @@ public class FormsDialog extends JFrame {
     private void initialize() {
         JPanel contentPanel = new JPanel(new BorderLayout());
 
-        dataBatchTableUI = new DataBatchTableUI(dataBatchList);
+        dataBatchTableUI = new JIPipeSimpleDataBatchTableUI(dataBatchList);
         dataBatchTableUI.getTable().setDefaultRenderer(Integer.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
         dataBatchTableUI.getTable().setDefaultRenderer(String.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
         JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, tabPane, AutoResizeSplitPane.RATIO_1_TO_3);
@@ -577,7 +583,7 @@ public class FormsDialog extends JFrame {
                     "they are marked immutable.", "Copy settings", JOptionPane.WARNING_MESSAGE);
         }
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, true);
+            UIUtils.openValidityReportDialog(this, report, "Errors while copying settings", "The following issues were detected while copying the data:", true);
         }
     }
 

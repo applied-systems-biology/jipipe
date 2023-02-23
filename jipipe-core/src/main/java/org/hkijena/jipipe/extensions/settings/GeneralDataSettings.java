@@ -23,9 +23,9 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     private IntegerAndIntegerPairParameter.List exportedPreviewSizes = new IntegerAndIntegerPairParameter.List();
 
     public GeneralDataSettings() {
-        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(64,64));
-        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(128,128));
-        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(256,256));
+        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(64, 64));
+        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(128, 128));
+        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(256, 256));
     }
 
     public static GeneralDataSettings getInstance() {

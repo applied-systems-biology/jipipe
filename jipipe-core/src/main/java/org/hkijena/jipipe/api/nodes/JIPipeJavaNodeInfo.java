@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -32,7 +34,9 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -55,6 +59,8 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setDescription(getDescriptionOf(nodeClass));
         setCategory(getCategoryOf(nodeClass));
         setMenuPath(getMenuPathOf(nodeClass));
+        setDataSourceMenuLocation(getDataSourceMenuLocationOf(nodeClass));
+        setAliases(getAliasesOf(nodeClass));
         if (nodeClass.getAnnotation(JIPipeHidden.class) != null) {
             setHidden(true);
         }
@@ -113,13 +119,43 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @param klass The algorithm class
      * @return The menu path
      */
-    static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
+    public static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
         JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();
         } else {
             return "";
         }
+    }
+
+    /**
+     * Returns the alternative assignment to another data source type menu for a node
+     * Only applicable if the node is of node category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}
+     * {@link JIPipeEmptyData} means that no re-assignment should be applied
+     *
+     * @param klass The data class
+     * @return The menu path of the data class
+     */
+    static Class<? extends JIPipeData> getDataSourceMenuLocationOf(Class<? extends JIPipeGraphNode> klass) {
+        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
+        if (annotations.length > 0) {
+            return annotations[0].dataSourceMenuLocation();
+        } else {
+            return JIPipeEmptyData.class;
+        }
+    }
+    /**
+     * Gets alternative menu locations
+     *
+     * @param klass node class
+     * @return locations
+     */
+    public static List<JIPipeNodeMenuLocation> getAliasesOf(Class<? extends JIPipeGraphNode> klass) {
+        List<JIPipeNodeMenuLocation> result = new ArrayList<>();
+        for (JIPipeNodeAlias location : klass.getAnnotationsByType(JIPipeNodeAlias.class)) {
+            result.add(new JIPipeNodeMenuLocation((JIPipeNodeTypeCategory) ReflectionUtils.newInstance(location.nodeTypeCategory()), location.menuPath(), location.aliasName()));
+        }
+        return result;
     }
 
     private void initializeSlots() {
@@ -151,7 +187,8 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     public JIPipeGraphNode newInstance() {
         try {
             return getInstanceClass().getConstructor(JIPipeNodeInfo.class).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
                     "Undefined", "There is a programming error in an algorithm's code.",
                     "Please contact the developer of the plugin that created the algorithm.");

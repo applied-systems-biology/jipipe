@@ -13,27 +13,52 @@
 
 package org.hkijena.jipipe.extensions.forms;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.apache.commons.compress.utils.Sets;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.forms.algorithms.*;
+import org.hkijena.jipipe.extensions.forms.algorithms.generators.*;
 import org.hkijena.jipipe.extensions.forms.datatypes.*;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.strings.StringsExtension;
+import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Extension that adds forms
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:forms",
+            JIPipe.getJIPipeVersion(),
+            "Forms");
+
+    public FormsExtension() {
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_INTERACTIVE, PluginCategoriesEnumParameter.CATEGORY_USER_INTERFACE);
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY);
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -42,7 +67,7 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyId() {
-        return "forms";
+        return "org.hkijena.jipipe:forms";
     }
 
     @Override

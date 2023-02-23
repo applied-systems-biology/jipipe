@@ -22,7 +22,7 @@ public enum JIPipeColumMatching {
             case Intersection:
                 return "Use column set intersection";
             case PrefixHashUnion:
-                return "Use columns prefixed with '#' (union)";
+                return "Use columns prefixed with '#' (union, default)";
             case PrefixHashIntersection:
                 return "Use columns prefixed with '#' (intersection)";
             case MergeAll:

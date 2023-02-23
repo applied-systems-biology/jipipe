@@ -47,10 +47,10 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object
     /**
      * Creates a copy
      *
-     * @param value the original
+     * @param other the original
      */
-    public TableColumnIntegrationParameter(TableColumnIntegrationParameter value) {
-        super(value);
+    public TableColumnIntegrationParameter(TableColumnIntegrationParameter other) {
+        super(other.getValue());
     }
 
     @Override

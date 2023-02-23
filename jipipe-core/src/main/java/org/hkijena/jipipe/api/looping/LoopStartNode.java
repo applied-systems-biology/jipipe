@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
             "<li>Pass through: Disables looping. The node behaves as a regular IO interface.</li>" +
             "<li>The loop can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +
             "or a merging data batch (multiple items per slot).</li>" +
-            "</ul>")
+            "</ul><br/>" +
+            "<strong>Automatically assumed to be 'Pass through', if the node is set to 'Pass through'</strong>")
     @JIPipeParameter("iteration-mode")
     public GraphWrapperAlgorithm.IterationMode getIterationMode() {
         return iterationMode;
@@ -92,11 +94,12 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
                     batchGenerationSettings.getCustomColumns());
             builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
             builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
+            builder.setForceFlowGraphSolver(batchGenerationSettings.isForceFlowGraphSolver());
             List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
             dataBatches.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size())) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
             if (withLimit) {
                 List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < dataBatches.size(); i++) {

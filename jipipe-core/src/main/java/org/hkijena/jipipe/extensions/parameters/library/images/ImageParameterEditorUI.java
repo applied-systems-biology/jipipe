@@ -7,6 +7,7 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.pickers.JIPipeIconPickerDialog;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -55,7 +56,7 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
         String picked = JIPipeIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), IconRefParameterEditorUI.getAvailableIcons());
         if (picked != null) {
             ImageIcon icon = UIUtils.getIconFromResources(picked);
-            BufferedImage bufferedImage = UIUtils.toBufferedImage(icon.getImage(), BufferedImage.TYPE_INT_ARGB);
+            BufferedImage bufferedImage = BufferedImageUtils.toBufferedImage(icon.getImage(), BufferedImage.TYPE_INT_ARGB);
             importImage(bufferedImage);
         }
     }
@@ -92,7 +93,7 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
         }
         if (scale != 1.0) {
             Image scaledInstance = image.getScaledInstance((int) (image.getWidth() * scale), (int) (image.getHeight() * scale), Image.SCALE_DEFAULT);
-            image = UIUtils.toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
+            image = BufferedImageUtils.toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
         }
 
         ImageParameter parameter = new ImageParameter();

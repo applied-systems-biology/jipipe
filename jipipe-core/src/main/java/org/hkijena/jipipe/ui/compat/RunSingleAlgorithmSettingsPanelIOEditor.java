@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.Map;
@@ -46,7 +46,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
     }
 
     private void initialize() {
-        DocumentTabPane propertyPanel = new DocumentTabPane();
+        DocumentTabPane propertyPanel = new DocumentTabPane(true);
         propertyPanel.addTab("Inputs",
                 UIUtils.getIconFromResources("data-types/slot.png"),
                 inputsPanel,
@@ -55,7 +55,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
                 UIUtils.getIconFromResources("data-types/slot.png"),
                 outputsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
-        setPropertyPanel(propertyPanel);
+        setPropertyPanel(propertyPanel, true);
     }
 
     public RunSingleAlgorithmSettingsPanel getSettingsPanel() {

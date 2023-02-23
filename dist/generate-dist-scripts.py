@@ -40,6 +40,7 @@ with open("zip/build.sh", "w") as f:
     # Copy component jars
     wl("for component in " + " ".join(json_data["jipipe-modules"]) + "; do")
     wl("cp -v ../../$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar package/$component-$JIPIPE_VERSION.jar", tab=1)
+    wl("cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package/$component-$JIPIPE_VERSION.jar", tab=1)
     wl("done")
     wl()
 

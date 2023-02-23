@@ -71,7 +71,7 @@ public class TemplateProjectListCellRenderer extends JPanel implements ListCellR
     public Component getListCellRendererComponent(JList<? extends JIPipeProjectTemplate> list, JIPipeProjectTemplate value, int index, boolean isSelected, boolean cellHasFocus) {
 
         if (value != null) {
-            nameLabel.setText(value.getMetadata().getName());
+            nameLabel.setText(value.getFixedName());
             pathLabel.setText(value.getMetadata().getTemplateDescription());
             openButton.setVisible(isSelected);
         } else {

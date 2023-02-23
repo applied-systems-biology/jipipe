@@ -34,20 +34,8 @@ public class ResultsTableDataParameterEditorUI extends JIPipeParameterEditorUI {
     }
 
     private void editParameters() {
-        ResultsTableData parameters = getParameter(ResultsTableData.class);
-        for (DocumentTabPane.DocumentTab tab : getWorkbench().getDocumentTabPane().getTabs()) {
-            if (tab.getContent() instanceof TableEditor) {
-                if (((TableEditor) tab.getContent()).getTableModel() == parameters) {
-                    getWorkbench().getDocumentTabPane().switchToContent(tab.getContent());
-                    return;
-                }
-            }
-        }
-        getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName(),
-                UIUtils.getIconFromResources("data-types/results-table.png"),
-                new TableEditor(getWorkbench(), parameters),
-                DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        getWorkbench().getDocumentTabPane().switchToLastTab();
+        ResultsTableData table = getParameter(ResultsTableData.class);
+        TableEditor.openWindow(getWorkbench(), table, "Edit table");
     }
 
     @Override

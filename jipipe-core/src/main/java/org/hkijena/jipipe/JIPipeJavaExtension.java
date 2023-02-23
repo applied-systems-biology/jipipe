@@ -14,17 +14,30 @@
 package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.Context;
 import org.scijava.plugin.SciJavaPlugin;
 
 import javax.swing.*;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
 /**
  * A Java extension
  */
-public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
+public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeExtension {
+
+    /**
+     * URL pointing to the logo of the extension
+     * Note: This is currently unused and only kept for backwards compatibility. Please instead use the thumbnail property of the metadata to provide thumbnails for the extension manager.
+     *
+     * @return the logo URL
+     */
+    @Deprecated
+    default URL getLogo() {
+        return ResourceUtils.getPluginResource("logo-400.png");
+    }
 
     /**
      * Returns the registry
@@ -59,7 +72,7 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
     /**
      * Returns icons that will be displayed in the splash screen.
      * They must have a size of 32x32.
-     * There can only be at most 45 icons
+     * There can only be at most 45 icons, so please do not over-do it
      *
      * @return the icons
      */

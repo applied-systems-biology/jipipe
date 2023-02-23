@@ -7,7 +7,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import javax.swing.*;
 import java.awt.*;
 import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 
@@ -23,7 +22,7 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
     private int logStart = 0;
 
     public IJLogToJIPipeProgressInfoPump(JIPipeProgressInfo target) {
-        this.timer = new Timer(250, e->copyLog());
+        this.timer = new Timer(250, e -> copyLog());
         timer.setRepeats(true);
         this.target = target;
         initialize();
@@ -35,7 +34,7 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
             Field logPanelField = IJ.class.getDeclaredField("logPanel");
             logPanelField.setAccessible(true);
             logTextPanel = (TextPanel) logPanelField.get(null);
-            if(logTextPanel == null) {
+            if (logTextPanel == null) {
                 target.log("Unable to hook into IJ.log(): Is null");
                 return;
             }
@@ -48,7 +47,7 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
                 logStart = logTextPanel.getText().length();
                 target.log("IJ.Log() starts at " + logStart);
                 Window windowAncestor = SwingUtilities.getWindowAncestor(logTextPanel);
-                if(windowAncestor != null) {
+                if (windowAncestor != null) {
                     windowAncestor.setVisible(false);
                 }
             });
@@ -61,14 +60,14 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
     }
 
     private void copyLog() {
-        if(target.isCancelled()) {
+        if (target.isCancelled()) {
             timer.stop();
             return;
         }
         String log = logTextPanel.getText();
-        if(log.length() > logStart) {
+        if (log.length() > logStart) {
             String newText = log.substring(logStart);
-            if(!StringUtils.isNullOrEmpty(newText)) {
+            if (!StringUtils.isNullOrEmpty(newText)) {
                 for (String entry : newText.split("\n")) {
                     target.log(entry);
                 }
@@ -79,9 +78,20 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
 
     @Override
     public void close() {
-        if(timer.isRunning())
+        if (timer.isRunning())
             copyLog();
         target.log("Ending IJ.log() hook");
         timer.stop();
+
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                Window windowAncestor = SwingUtilities.getWindowAncestor(logTextPanel);
+                if (windowAncestor != null) {
+                    windowAncestor.setVisible(false);
+                }
+            });
+        } catch (Throwable e) {
+            target.log("Unable to close IJ.log() window: " + e);
+        }
     }
 }

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
@@ -29,8 +29,12 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
 
     private final EventBus eventBus = new EventBus();
     private boolean showSideBar = true;
-    private int defaultAnimationSpeed = 250;
+    private int defaultAnimationSpeed = 75;
     private boolean alwaysClearROIs = true;
+
+    private double zoomBaseSpeed = 0.05;
+
+    private double zoomDynamicSpeed = 0.1;
 
     public static ImageViewerUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ImageViewerUISettings.class);
@@ -67,6 +71,28 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("default-animation-speed")
     public void setDefaultAnimationSpeed(int defaultAnimationSpeed) {
         this.defaultAnimationSpeed = defaultAnimationSpeed;
+    }
+
+    @JIPipeDocumentation(name = "Zoom base speed", description = "Determines the base speed of zoom operations. The higher, the faster the zoom. The default is 1.05")
+    @JIPipeParameter("zoom-base-speed")
+    public double getZoomBaseSpeed() {
+        return zoomBaseSpeed;
+    }
+
+    @JIPipeParameter("zoom-base-speed")
+    public void setZoomBaseSpeed(double zoomBaseSpeed) {
+        this.zoomBaseSpeed = zoomBaseSpeed;
+    }
+
+    @JIPipeDocumentation(name = "Zoom dynamic speed", description = "Determines the dynamic speed of zoom operations, which is added to the base speed based on the scroll wheel speed. The higher, the faster the dynamic zoom. The default is 0.1")
+    @JIPipeParameter("zoom-dynamic-speed")
+    public double getZoomDynamicSpeed() {
+        return zoomDynamicSpeed;
+    }
+
+    @JIPipeParameter("zoom-dynamic-speed")
+    public void setZoomDynamicSpeed(double zoomDynamicSpeed) {
+        this.zoomDynamicSpeed = zoomDynamicSpeed;
     }
 
     @Override

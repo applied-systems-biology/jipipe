@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
@@ -29,10 +30,8 @@ import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameter
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -46,6 +45,7 @@ import java.util.Set;
 @JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter")
 public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
@@ -84,24 +84,20 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
             outputPath = outputDirectory;
         }
 
-        // Generate subfolder
-        Path subFolder = exporter.generateSubFolder(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-        if (subFolder != null) {
-            outputPath = outputPath.resolve(subFolder);
+        // Generate the path
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+
+        // If absolute -> use the path, otherwise use output directory
+        if (generatedPath.isAbsolute()) {
+            outputPath = generatedPath;
+        } else {
+            outputPath = outputPath.resolve(generatedPath);
         }
 
-        try {
-            Files.createDirectories(outputPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // Postprocess path
+        outputPath = PathUtils.ensureExtension(outputPath, ".ome.tif", "ome.tiff");
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
-        String baseName = StringUtils.nullToEmpty(exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata));
-        if (!baseName.endsWith(".ome.tif") && !baseName.endsWith(".ome.tiff")) {
-            baseName = baseName + ".ome.tif";
-        }
-
-        outputPath = outputPath.resolve(baseName);
 
         OMEImageData input = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
         OMEImageData.OMEExport(input, outputPath, exporterSettings);

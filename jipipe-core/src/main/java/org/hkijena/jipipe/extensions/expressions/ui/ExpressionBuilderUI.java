@@ -57,7 +57,7 @@ public class ExpressionBuilderUI extends JPanel {
     private List<ExpressionOperatorEntry> operatorEntryList;
     private List<ExpressionConstantEntry> constantEntryList;
     private RSyntaxTextArea expressionEditor;
-    private DocumentTabPane tabPane = new DocumentTabPane();
+    private DocumentTabPane tabPane = new DocumentTabPane(true);
     private ExpressionBuilderInserterUI lastVariableInserter;
 
     public ExpressionBuilderUI(String expression, Set<ExpressionParameterVariable> variables) {
@@ -396,22 +396,23 @@ public class ExpressionBuilderUI extends JPanel {
                 if (!inserterUI.isInserterCommitted() && inserterUI.parametersWereEdited()) {
                     int result = JOptionPane.showOptionDialog(this,
                             "You still have uncommitted values in the function builder.\n" +
-                                    "Do you want to replace the existing expression or insert the function into the expression?",
+                                    "Do you want to replace the existing expression or insert the function into the expression?\n" +
+                                    "You can also ignore the uncommitted changes.",
                             "Expression builder",
-                            JOptionPane.YES_NO_CANCEL_OPTION,
+                            JOptionPane.DEFAULT_OPTION,
                             JOptionPane.QUESTION_MESSAGE,
                             null,
-                            new Object[]{"Insert", "Replace", "Cancel"},
+                            new Object[]{"Ignore", "Insert", "Replace", "Cancel"},
                             "New window");
                     switch (result) {
-                        case JOptionPane.YES_OPTION:
+                        case 1:
                             insertCurrentlyInsertedValue();
                             break;
-                        case JOptionPane.NO_OPTION:
+                        case 2:
                             expressionEditor.setText("");
                             insertCurrentlyInsertedValue();
                             break;
-                        default:
+                        case 3:
                             return false;
                     }
                 }

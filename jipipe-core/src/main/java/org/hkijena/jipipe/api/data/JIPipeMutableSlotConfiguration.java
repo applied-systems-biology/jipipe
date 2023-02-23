@@ -23,8 +23,6 @@ public interface JIPipeMutableSlotConfiguration extends JIPipeSlotConfiguration 
 
     Set<Class<? extends JIPipeData>> getAllowedOutputSlotTypes();
 
-    boolean isAllowInheritedOutputSlots();
-
     boolean allowsInputSlots();
 
     boolean allowsOutputSlots();

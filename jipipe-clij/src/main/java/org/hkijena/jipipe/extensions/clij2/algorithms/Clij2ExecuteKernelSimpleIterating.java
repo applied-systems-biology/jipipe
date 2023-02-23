@@ -22,23 +22,22 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.clij2.CLIJExtension;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.python.core.PyArray;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
@@ -64,7 +63,6 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
                 .restrictOutputTo(CLIJImageData.class)
                 .build());
         registerSubParameter(scriptParameters);
-        setPreprocessingScriptToExample();
     }
 
     public Clij2ExecuteKernelSimpleIterating(Clij2ExecuteKernelSimpleIterating other) {
@@ -75,65 +73,6 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         this.outputSizes = new StringAndStringPairParameter.List(other.outputSizes);
         registerSubParameter(scriptParameters);
-    }
-
-    private void setPreprocessingScriptToExample() {
-        preprocessingScript.setCode("from org.hkijena.jipipe.extensions.clij2.datatypes import CLIJImageData\n" +
-                "\n" +
-                "# By default, we will generate outputs based on the (first) input slot\n" +
-                "input_buffer = data_batch.getInputData(input_slot, CLIJImageData).getImage()\n" +
-                "\n" +
-                "# Create output buffers\n" +
-                "cl_output_buffers = { }\n" +
-                "for name in output_slot_map:\t\n" +
-                "\toutput_buffer = clij2.create(input_buffer)\n" +
-                "\tcl_output_buffers[name] = output_buffer\n" +
-                "\n" +
-                "# output and global dimensions\n" +
-                "cl_dimensions = input_buffer.getDimensions()\n" +
-                "cl_global_sizes = input_buffer.getDimensions()");
-    }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("src", new JIPipeDataSlotInfo(CLIJImageData.class, JIPipeSlotType.Input), true);
-            slotConfiguration.addSlot("dst", new JIPipeDataSlotInfo(CLIJImageData.class, JIPipeSlotType.Output), true);
-            kernelScript.setCode("__kernel void flip_2d (\n" +
-                    "    IMAGE_src_TYPE  src,\n" +
-                    "    IMAGE_dst_TYPE  dst,\n" +
-                    "    const          int        flipx,\n" +
-                    "    const          int        flipy\n" +
-                    ")\n" +
-                    "{\n" +
-                    "  const sampler_t intsampler  = CLK_NORMALIZED_COORDS_FALSE | CLK_ADDRESS_NONE | CLK_FILTER_NEAREST;\n" +
-                    "\n" +
-                    "  const int x = get_global_id(0);\n" +
-                    "  const int y = get_global_id(1);\n" +
-                    "\n" +
-                    "  const int width = get_global_size(0);\n" +
-                    "  const int height = get_global_size(1);\n" +
-                    "\n" +
-                    "  const int2 pos = (int2)(flipx?(width-1-x):x,\n" +
-                    "                          flipy?(height-1-y):y);\n" +
-                    "\n" +
-                    "  const float value = READ_IMAGE(src, intsampler, pos).x;\n" +
-                    "\n" +
-                    "  WRITE_IMAGE (dst, (int2)(x,y), CONVERT_dst_PIXEL_TYPE(value));\n" +
-                    "}");
-            getEventBus().post(new ParameterChangedEvent(this, "kernel"));
-            setKernelFunction("flip_2d");
-            getEventBus().post(new ParameterChangedEvent(this, "kernel-program-name"));
-            setPreprocessingScriptToExample();
-            scriptParameters.clear();
-            scriptParameters.addParameter("flipx", Boolean.class).setName("Flip X");
-            scriptParameters.addParameter("flipy", Boolean.class).setName("Flip Y");
-            scriptParameters.triggerParameterUIChange();
-        }
     }
 
     @Override
@@ -162,6 +101,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         if (!getNonParameterInputSlots().isEmpty()) {
             pythonInterpreter.set("input_slot", getFirstInputSlot());
         }
+        pythonInterpreter.set("progress_info", progressInfo);
         pythonInterpreter.exec(preprocessingScript.getCode(getProjectDirectory()));
 
         // Fetch constants

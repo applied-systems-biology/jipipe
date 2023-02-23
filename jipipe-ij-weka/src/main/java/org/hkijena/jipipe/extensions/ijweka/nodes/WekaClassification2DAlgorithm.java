@@ -74,7 +74,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
         unTileImage2DAlgorithm.setImageHeightAnnotation(new OptionalAnnotationNameParameter("img_height", true));
 
         ImageStack stack = new ImageStack(image.getWidth(), image.getHeight(), image.getNSlices() * image.getNChannels() * image.getNChannels());
-        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImagePlus wholeSlice = new ImagePlus(image.getTitle() + " " + index, ip);
                 ImagePlus classified;
@@ -103,7 +103,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
 
                         // Merge tiles
                         unTileImage2DAlgorithm.clearSlotData();
-                        unTileImage2DAlgorithm.getFirstInputSlot().addFromTable(tileTable, progressInfo);
+                        unTileImage2DAlgorithm.getFirstInputSlot().addDataFromTable(tileTable, progressInfo);
                         unTileImage2DAlgorithm.run(progressInfo.resolve("Merge tiles"));
 
                         classified = unTileImage2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();

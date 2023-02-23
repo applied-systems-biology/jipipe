@@ -26,4 +26,28 @@ public interface JIPipeValidatable {
      */
     void reportValidity(JIPipeIssueReport report);
 
+    /**
+     * Generates a report for this object
+     *
+     * @return the report
+     */
+    default JIPipeIssueReport generateValidityReport() {
+        JIPipeIssueReport report = new JIPipeIssueReport();
+        reportValidity(report);
+        return report;
+    }
+
+//    @Override
+//    boolean isValid();
+//
+//    @Override
+//    default List<ValidityProblem> getProblems() {
+//        JIPipeIssueReport report = new JIPipeIssueReport();
+//        reportValidity(report);
+//        List<ValidityProblem> list = new ArrayList<>();
+//        for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
+//            list.add(new ValidityProblem(entry.getKey() + ": " + entry.getValue().toString()));
+//        }
+//        return list;
+//    }
 }

@@ -30,8 +30,12 @@ import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -43,10 +47,7 @@ import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataImp
 import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataImporterRef;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.ImageJMacro;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
 import java.awt.*;
@@ -79,6 +80,7 @@ import java.util.Map;
 @JIPipeOutputSlot(ImagePlusData.class)
 @JIPipeOutputSlot(ROIListData.class)
 @JIPipeOutputSlot(ResultsTableData.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMacros", aliasName = "Run...")
 public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
@@ -92,11 +94,10 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     };
     private final List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
     private final List<Window> initiallyOpenedWindows = new ArrayList<>();
-    private ImageJMacro code = new ImageJMacro();
-    private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(true, ALLOWED_PARAMETER_CLASSES);
     private final InputSlotMapParameterCollection inputToImageJExporters;
     private final OutputSlotMapParameterCollection outputFromImageJImporters;
-
+    private ImageJMacro code = new ImageJMacro();
+    private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(true, ALLOWED_PARAMETER_CLASSES);
     private int importDelay = 1000;
 
     private int exportDelay = 250;
@@ -106,7 +107,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public MacroWrapperAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .allowOutputSlotInheritance(true)
                 .build());
         this.macroParameters.getEventBus().register(this);
 
@@ -194,7 +194,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             prepareInputData(dataBatch, progressInfo);
 
             // Add delay
-            if(exportDelay > 0) {
+            if (exportDelay > 0) {
                 try {
                     progressInfo.log("Waiting " + exportDelay + "ms before executing the code");
                     Thread.sleep(exportDelay);
@@ -206,6 +206,13 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             StringBuilder finalCode = new StringBuilder();
             // Inject annotations
             finalCode.append("function getJIPipeAnnotation(key) {\n");
+            for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
+                finalCode.append("if (key == \"").append(MacroUtils.escapeString(entry.getKey())).append("\") { return \"").append(MacroUtils.escapeString(entry.getValue().getValue())).append("\"; }\n");
+            }
+            finalCode.append("return \"\";\n");
+            finalCode.append("}\n\n");
+            // Inject annotations
+            finalCode.append("function getJIPipeTextAnnotation(key) {\n");
             for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
                 finalCode.append("if (key == \"").append(MacroUtils.escapeString(entry.getKey())).append("\") { return \"").append(MacroUtils.escapeString(entry.getValue().getValue())).append("\"; }\n");
             }
@@ -262,13 +269,13 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             finalCode.append("\n").append(code.getCode(getProjectDirectory()));
 
 
-            try(IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            try (IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
                 progressInfo.log("Executing macro: \n\n" + finalCode);
 
                 Interpreter interpreter = new Interpreter();
                 interpreter.run(finalCode.toString());
 
-                if(importDelay > 0) {
+                if (importDelay > 0) {
                     try {
                         progressInfo.log("Waiting " + importDelay + "ms before importing results back into JIPipe");
                         Thread.sleep(importDelay);
@@ -282,8 +289,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-        finally {
+        } finally {
             clearData(progressInfo.resolve("Cleanup"));
         }
     }
@@ -294,15 +300,13 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJDataImporter importer;
             ImageJImportParameters parameters = new ImageJImportParameters(outputSlot.getName());
 
-            if(configuration instanceof ImageJDataImporterRef) {
+            if (configuration instanceof ImageJDataImporterRef) {
                 importer = ((ImageJDataImporterRef) configuration).getInstance();
-            }
-            else if(configuration instanceof ImageJDataImportOperationRef) {
+            } else if (configuration instanceof ImageJDataImportOperationRef) {
                 ImageJDataImportOperationRef operationRef = (ImageJDataImportOperationRef) configuration;
                 importer = operationRef.getInstance();
                 operationRef.configure(parameters);
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unknown parameter: " + parameters);
             }
 
@@ -354,27 +358,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Input), true);
-            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output), true);
-            this.code.setCode("// To add variables, click the [+] button below.\n" +
-                    "// They will be created automatically before this code fragment.\n\n" +
-                    "// Each input image slot creates a window with its name.\n" +
-                    "// You have to select it, first\n" +
-                    "selectWindow(\"Input\");\n\n" +
-                    "// Apply your operations here\n\n" +
-                    "// JIPipe extracts output images based on their window name\n" +
-                    "rename(\"Output\");\n");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     /**
      * Loads input data, so it can be discovered by ImageJ
      */
@@ -390,15 +373,13 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJExportParameters parameters = new ImageJExportParameters(true, false, false, inputSlot.getName());
             ImageJDataExporter exporter;
 
-            if(configuration instanceof ImageJDataExporterRef) {
+            if (configuration instanceof ImageJDataExporterRef) {
                 exporter = ((ImageJDataExporterRef) configuration).getInstance();
-            }
-            else if(configuration instanceof ImageJDataExportOperationRef) {
+            } else if (configuration instanceof ImageJDataExportOperationRef) {
                 ImageJDataExportOperationRef operationRef = (ImageJDataExportOperationRef) configuration;
                 exporter = operationRef.getInstance();
                 operationRef.configure(parameters);
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unknown parameter: " + configuration);
             }
 
@@ -443,7 +424,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             "the select() function or comparable functions. You have have one results table input which " +
             "can be addressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
             "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name. " +
-            "Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.")
+            "Annotations can also be accessed via a function getJIPipeAnnotation(key) or getJIPipeTextAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.")
     @JIPipeParameter("code")
     public ImageJMacro getCode() {
         return code;

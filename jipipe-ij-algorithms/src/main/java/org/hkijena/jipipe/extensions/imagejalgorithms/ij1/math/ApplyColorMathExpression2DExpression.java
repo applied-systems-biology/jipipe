@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -31,6 +32,7 @@ import java.util.List;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Math")
 @JIPipeInputSlot(value = ImagePlusColorData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusColorData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, color)")
 public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingAlgorithm {
 
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();

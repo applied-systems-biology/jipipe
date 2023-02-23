@@ -15,15 +15,17 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementDrawerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementDrawerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
@@ -58,7 +60,6 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         pluginList.add(new ROIManagerPlugin(imageViewerPanel));
         pluginList.add(new AnimationSpeedPlugin(imageViewerPanel));
         pluginList.add(new MeasurementDrawerPlugin(imageViewerPanel));
-        pluginList.add(new MeasurementPlugin(imageViewerPanel));
         pluginList.add(new AnnotationInfoPlugin(imageViewerPanel, this));
         imageViewerPanel.setPlugins(pluginList);
         setContentPane(imageViewerPanel);
@@ -113,7 +114,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
         ROIListData rois = new ROIListData();
         if (customDataLoader != null) {
@@ -184,6 +185,12 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+        imageViewerPanel.dispose();
+    }
+
     /**
      * Used to override the data loading behavior
      */
@@ -210,9 +217,10 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         /**
          * The data loading operation.
          * It should set the values of the current class
-         * @param virtualData the virtual data
+         *
+         * @param virtualData  the virtual data
          * @param progressInfo the progress info
          */
-        public abstract void load(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo);
+        public abstract void load(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo);
     }
 }

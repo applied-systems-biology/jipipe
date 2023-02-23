@@ -18,7 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.parameters.*;
 
 import java.util.HashMap;
@@ -33,7 +33,7 @@ public class JIPipeProjectInfoParameters implements JIPipeParameterCollection, J
 
     private final EventBus eventBus = new EventBus();
     private JIPipeProject project;
-    private GraphNodeParameters exportedParameters = new GraphNodeParameters();
+    private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
     public JIPipeProjectInfoParameters() {
         this.exportedParameters.getEventBus().register(this);
@@ -45,12 +45,12 @@ public class JIPipeProjectInfoParameters implements JIPipeParameterCollection, J
     }
 
     @JIPipeParameter(value = "exported-parameters", hidden = true)
-    public GraphNodeParameters getExportedParameters() {
+    public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
     }
 
     @JIPipeParameter("exported-parameters")
-    public void setExportedParameters(GraphNodeParameters parameters) {
+    public void setExportedParameters(GraphNodeParameterReferenceGroupCollection parameters) {
         this.exportedParameters = parameters;
         this.exportedParameters.getEventBus().register(this);
     }
@@ -60,7 +60,7 @@ public class JIPipeProjectInfoParameters implements JIPipeParameterCollection, J
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
         if (project != null) {
             this.exportedParameters.setGraph(project.getGraph());
-            result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getProject().getGraph().getParameterTree(false), false));
+            result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getProject().getGraph().getParameterTree(false, null), false));
         }
         return result;
     }

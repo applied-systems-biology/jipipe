@@ -66,7 +66,7 @@ public class PythonUtils {
         code.append("jipipe_annotations = {}\n");
         for (JIPipeTextAnnotation annotation : annotations) {
             code.append("jipipe_annotations[\"").append(MacroUtils.escapeString(annotation.getName())).append("\"] = ")
-                    .append("\"").append(annotation.getValue()).append("\"\n");
+                    .append("\"").append(MacroUtils.escapeString(StringUtils.nullToEmpty(annotation.getValue()))).append("\"\n");
         }
     }
 
@@ -121,7 +121,7 @@ public class PythonUtils {
             } else if (o instanceof DoubleList) {
                 value = "[" + ((DoubleList) o).stream().map(i -> i + "").collect(Collectors.joining(", ")) + "]";
             } else if (o instanceof IntegerRange) {
-                value = "[" + ((IntegerRange) o).getIntegers(0, 0).stream().map(i -> i + "").collect(Collectors.joining(", ")) + "]";
+                value = "[" + ((IntegerRange) o).getIntegers(0, 0, new ExpressionVariables()).stream().map(i -> i + "").collect(Collectors.joining(", ")) + "]";
             } else if (o instanceof StringList) {
                 value = "[" + ((StringList) o).stream().map(s -> "\"" + MacroUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + "]";
             }
@@ -303,7 +303,7 @@ public class PythonUtils {
      * @param progressInfo the progress info
      */
     public static void runPython(Path scriptFile, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
-        Path pythonExecutable = environment.getExecutablePath();
+        Path pythonExecutable = PathUtils.relativeToImageJToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
@@ -361,13 +361,14 @@ public class PythonUtils {
     /**
      * Runs Python with a set of arguments
      *
-     * @param arguments    the arguments
-     * @param environment  the environment
-     * @param libraryPaths additional library paths
-     * @param progressInfo the progress info
+     * @param arguments                      the arguments
+     * @param environment                    the environment
+     * @param libraryPaths                   additional library paths
+     * @param additionalEnvironmentVariables additional environment variables
+     * @param progressInfo                   the progress info
      */
-    public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
-        Path pythonExecutable = environment.getExecutablePath();
+    public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, Map<String, String> additionalEnvironmentVariables, JIPipeProgressInfo progressInfo) {
+        Path pythonExecutable = PathUtils.relativeToImageJToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();

@@ -17,8 +17,20 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.util;
  * Available ways to address the shape of a {@link ij.gui.Roi}
  */
 public enum RoiOutline {
-    Polygon,
-    ClosedPolygon,
-    ConvexHull,
-    BoundingRectangle
+    Polygon("Polygon"),
+    ClosedPolygon("Closed polygon"),
+    ConvexHull("Convex hull"),
+    BoundingRectangle("Bounding rectangle"),
+    MinimumBoundingRectangle("Minimum bounding rectangle");
+
+    private final String label;
+
+    RoiOutline(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String toString() {
+        return label;
+    }
 }

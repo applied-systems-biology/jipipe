@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 
@@ -122,10 +123,22 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
+    protected boolean canAutoPassThrough() {
+        return false;
+    }
+
+    @Override
+    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+        for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
+            getOutputSlot(inputSlot.getName()).addDataFromSlot(inputSlot, progressInfo);
+        }
+    }
+
+    @Override
     public void run(JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            outputSlot.addData(inputSlot, progressInfo);
+            outputSlot.addDataFromSlot(inputSlot, progressInfo);
         }
     }
 }

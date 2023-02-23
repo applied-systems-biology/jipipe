@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.python;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
@@ -22,6 +24,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.algorithms.*;
@@ -31,6 +35,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -44,6 +50,21 @@ import java.util.List;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:python",
+            JIPipe.getJIPipeVersion(),
+            "Python integration");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(PythonExtension.class, "org/hkijena/jipipe/extensions/python");
+
+    public PythonExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
+        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/python.png")));
+    }
+
     private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
         PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
@@ -68,10 +89,62 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
+    private static void easyInstallPython(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        PythonEasyInstaller installer = new PythonEasyInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
     private static void openSettingsPage(JIPipeWorkbench workbench) {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/Python integration");
+    }
+
+    public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
+        if (!PythonExtensionSettings.pythonSettingsAreValid()) {
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":python-not-configured");
+            notification.setHeading("Python is not configured");
+            notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
+                    "existing Python installation or let JIPipe install a Python distribution for you. " +
+                    "Click 'Install Python' to let JIPipe setup a Python distribution automatically. " +
+                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.\n\n" +
+                    "For more information, please visit https://www.jipipe.org/installation/third-party/python/");
+            notification.getActions().add(new JIPipeNotificationAction("Install Python",
+                    "Installs a pre-packaged Python distribution",
+                    UIUtils.getIconFromResources("actions/browser-download.png"),
+                    PythonExtension::easyInstallPython));
+            notification.getActions().add(new JIPipeNotificationAction("Configure Python",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    PythonExtension::openSettingsPage));
+            inbox.push(notification);
+        }
+    }
+
+    public static void createOldLibJIPipePythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
+        if (!PythonExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().isNewestVersion()) {
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":old-python-adapter");
+            notification.setHeading("Old library version");
+            notification.setDescription("JIPipe has detected that the installed version of the JIPipe Python adapter library is outdated. " +
+                    "Please click the button below to install the newest version.");
+            notification.getActions().add(new JIPipeNotificationAction("Install newest version",
+                    "Installs the newest version of the Python library",
+                    UIUtils.getIconFromResources("actions/run-install.png"),
+                    PythonExtension::installPythonAdapterLibrary));
+            notification.getActions().add(new JIPipeNotificationAction("Configure",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    PythonExtension::openSettingsPage));
+            inbox.push(notification);
+        }
+    }
+
+    @Override
+    public boolean isBeta() {
+        return true;
     }
 
     @Override
@@ -91,7 +164,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironment(PythonEnvironment.class,
                 PythonEnvironment.List.class,
                 settings,
-                "python",
+                PythonEnvironment.ENVIRONMENT_ID,
                 "Python environment",
                 "A Python environment",
                 UIUtils.getIconFromResources("apps/python.png"));
@@ -107,7 +180,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironment(JIPipePythonAdapterLibraryEnvironment.class,
                 JIPipePythonAdapterLibraryEnvironment.List.class,
                 settings,
-                "jipipe-python-adapter-library",
+                JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
                 "JIPipe Python adapter library",
                 "Additional library for Python",
                 UIUtils.getIconFromResources("actions/plugins.png"));
@@ -121,6 +194,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "A Python environment type");
         registerSettingsSheet(PythonExtensionSettings.ID,
                 "Python integration",
+                "Connect existing Python installations to JIPipe or automatically install a new Python environment if none is available",
                 UIUtils.getIconFromResources("apps/python.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
@@ -130,6 +204,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PythonEasyInstaller.class, UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-normal.png"));
 
         registerNodeType("python-script", JythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
@@ -138,42 +213,14 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("cpython-script", PythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("cpython-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("cpython-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     @Override
     public void postprocess() {
-        if (!PythonExtensionSettings.pythonSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
-            notification.setHeading("Python is not configured");
-            notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
-                    "existing Python installation or let JIPipe install a Python distribution for you. " +
-                    "Click 'Install Python' to let JIPipe setup a Python distribution automatically. " +
-                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.");
-            notification.getActions().add(new JIPipeNotificationAction("Install Python",
-                    "Installs a portable Python distribution",
-                    UIUtils.getIconFromResources("actions/browser-download.png"),
-                    PythonExtension::installPython));
-            notification.getActions().add(new JIPipeNotificationAction("Configure Python",
-                    "Opens the applications settings page",
-                    UIUtils.getIconFromResources("actions/configure.png"),
-                    PythonExtension::openSettingsPage));
-            JIPipeNotificationInbox.getInstance().push(notification);
-        }
-        if (!PythonExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().isNewestVersion()) {
-            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":old-python-adapter");
-            notification.setHeading("Old library version");
-            notification.setDescription("JIPipe has detected that the installed version of the JIPipe Python adapter library is outdated. " +
-                    "Please click the button below to install the newest version.");
-            notification.getActions().add(new JIPipeNotificationAction("Install newest version",
-                    "Installs the newest version of the Python library",
-                    UIUtils.getIconFromResources("actions/run-install.png"),
-                    PythonExtension::installPythonAdapterLibrary));
-            notification.getActions().add(new JIPipeNotificationAction("Configure",
-                    "Opens the applications settings page",
-                    UIUtils.getIconFromResources("actions/configure.png"),
-                    PythonExtension::openSettingsPage));
-            JIPipeNotificationInbox.getInstance().push(notification);
-        }
+        createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
+        createOldLibJIPipePythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 
     @Override

@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.scijava.plugin.PluginInfo;
 
 import java.util.HashSet;
@@ -29,6 +30,8 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
     private Set<JIPipeImageJUpdateSiteDependency> missingImageJSites = new HashSet<>();
     private Set<PluginInfo<JIPipeJavaExtension>> erroneousPlugins = new HashSet<>();
     private Set<Class<? extends JIPipeData>> erroneousDataTypes = new HashSet<>();
+
+    private Set<JIPipeParameterTypeInfo> erroneousParameterTypes = new HashSet<>();
     private Set<JIPipeNodeInfo> erroneousNodes = new HashSet<>();
 
     @Override
@@ -59,6 +62,13 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
                             "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
                             dataType.getCanonicalName());
         }
+        for (JIPipeParameterTypeInfo parameterType : erroneousParameterTypes) {
+            report.resolve("Parameter types").resolve(parameterType.getFieldClass().getCanonicalName())
+                    .reportIsInvalid("Invalid parameter type '" + parameterType.getId() + "'",
+                            "There was an error while loading a parameter type.",
+                            "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
+                            parameterType.getFieldClass().getCanonicalName());
+        }
     }
 
     public Set<JIPipeImageJUpdateSiteDependency> getMissingImageJSites() {
@@ -75,6 +85,14 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
 
     public void setErroneousPlugins(Set<PluginInfo<JIPipeJavaExtension>> erroneousPlugins) {
         this.erroneousPlugins = erroneousPlugins;
+    }
+
+    public Set<JIPipeParameterTypeInfo> getErroneousParameterTypes() {
+        return erroneousParameterTypes;
+    }
+
+    public void setErroneousParameterTypes(Set<JIPipeParameterTypeInfo> erroneousParameterTypes) {
+        this.erroneousParameterTypes = erroneousParameterTypes;
     }
 
     public Set<JIPipeNodeInfo> getErroneousNodes() {

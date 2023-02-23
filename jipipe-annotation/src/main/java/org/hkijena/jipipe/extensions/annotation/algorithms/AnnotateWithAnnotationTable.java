@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -20,8 +21,8 @@ import java.util.*;
 /**
  * Algorithm that merges the annotations of all inputs and outputs the data with the shared annotations
  */
-@JIPipeDocumentation(name = "Annotate by annotation table", description = "Merges matching annotations from an annotation table into the data set.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeDocumentation(name = "Annotate by annotation table", description = "Merges matching annotations from an annotation table into the data set. Note: Please use 'Annotate with table values' if you intend to copy information from a table into the annotation set of a data.")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Annotations", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", autoCreate = true, inheritedSlot = "Data")
@@ -71,11 +72,13 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
                 tableMergeSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(tableMergeSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(tableMergeSettings.getAnnotationMatchingMethod());
+        builder.setForceFlowGraphSolver(tableMergeSettings.isForceFlowGraphSolver());
+        builder.setForceFlowGraphSolver(tableMergeSettings.isForceFlowGraphSolver());
         List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = tableMergeSettings.getLimit().isEnabled();
         IntegerRange limit = tableMergeSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size())) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
@@ -102,7 +105,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         JIPipeInputDataSlot dataInputSlot = getInputSlot("Data");
 
         // Create a dummy slot where we put the annotations
-        JIPipeInputDataSlot dummy = new JIPipeInputDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "dummy", "", null),this);
+        JIPipeInputDataSlot dummy = new JIPipeInputDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "dummy", ""), this);
         JIPipeDataSlot annotationSlot = getInputSlot("Annotations");
         for (int i = 0; i < annotationSlot.getRowCount(); i++) {
             AnnotationTableData data = annotationSlot.getData(i, AnnotationTableData.class, progressInfo);
@@ -169,7 +172,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
     @Override
     protected void runPassThrough(JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(getInputSlot("Data"), progressInfo);
+        getFirstOutputSlot().addDataFromSlot(getInputSlot("Data"), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Replace all existing annotations", description = "If enabled, existing annotations will not be carried over into the output.")

@@ -24,22 +24,16 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.CoreImageJUtils;
+import org.hkijena.jipipe.utils.NetworkUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.scijava.util.AppUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -73,70 +67,6 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
         if (refresh)
             refreshUpdater();
-    }
-
-    public static Path getImageJRoot() {
-        String imagejDirProperty = System.getProperty("imagej.dir");
-        final File imagejRoot = imagejDirProperty != null ? new File(imagejDirProperty) :
-                AppUtils.getBaseDirectory("ij.dir", FilesCollection.class, "updater");
-        return imagejRoot.toPath();
-    }
-
-    /**
-     * Taken from {@link ImageJUpdater}
-     * Check whether we can connect to the Internet. If we cannot connect, we will
-     * not be able to update.
-     *
-     * @throws IOException if anything goes wrong.
-     */
-    private static void testNetworkConnection() throws IOException {
-        // NB: Remember initial static state, to be reset afterward.
-        final boolean followRedirects = HttpURLConnection.getFollowRedirects();
-
-        try {
-            HttpURLConnection.setFollowRedirects(false);
-            final URL url = new URL("http://imagej.net/");
-            final URLConnection urlConn = url.openConnection();
-            if (!(urlConn instanceof HttpURLConnection)) {
-                throw new IOException("Unexpected connection type: " + //
-                        urlConn.getClass().getName());
-            }
-            final HttpURLConnection httpConn = (HttpURLConnection) urlConn;
-
-            // Perform some sanity checks.
-            final int code = httpConn.getResponseCode();
-            if (code != 301) {
-                throw new IOException("Unexpected response code: " + code);
-            }
-            final String message = httpConn.getResponseMessage();
-            if (!"Moved Permanently".equals(message)) {
-                throw new IOException("Unexpected response message: " + message);
-            }
-            final long length = httpConn.getContentLengthLong();
-            if (length < 250 || length > 500) {
-                throw new IOException("Unexpected response length: " + length);
-            }
-
-            // Header looks reasonable; now let's check the content to be sure.
-            final byte[] content = new byte[(int) length];
-            try (final DataInputStream din = //
-                         new DataInputStream(httpConn.getInputStream())) {
-                din.readFully(content);
-            }
-            final String s = new String(content, "UTF-8");
-            if (!s.matches("(?s).*<html>.*" +
-                    "<head>.*<title>301 Moved Permanently</title>.*</head>.*" + //
-                    "<body>.*<h1>Moved Permanently</h1>.*" + //
-                    "<a href=\"http://imagej.net/Welcome\">" + //
-                    ".*</body></html>.*")) {
-                throw new IOException("Unexpected response:\n" + s);
-            }
-        } finally {
-            // NB: Reset static state back to previous.
-            if (followRedirects != HttpURLConnection.getFollowRedirects()) {
-                HttpURLConnection.setFollowRedirects(followRedirects);
-            }
-        }
     }
 
     private void initialize() {
@@ -220,16 +150,16 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         messagePanel.clear();
         if (ImageJUpdater.isDebian()) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "You are using the Debian packaged version of ImageJ. " +
-                    "You should update ImageJ with your system's usual package manager instead.", null);
+                    "You should update ImageJ with your system's usual package manager instead.");
             return;
         }
-        if (!hasInternetConnection()) {
+        if (!NetworkUtils.hasInternetConnection()) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "Cannot connect to the Internet. Do you have a network connection? " +
-                    "Are your proxy settings correct? See also http://forum.imagej.net/t/5070", null);
+                    "Are your proxy settings correct? See also http://forum.imagej.net/t/5070");
             return;
         }
-        if (Files.exists(getImageJRoot().resolve("update"))) {
-            messagePanel.addMessage(MessagePanel.MessageType.Warning, "We recommend to restart ImageJ, as some updates were applied.", null);
+        if (Files.exists(CoreImageJUtils.getImageJUpdaterRoot().resolve("update"))) {
+            messagePanel.addMessage(MessagePanel.MessageType.Warning, "We recommend to restart ImageJ, as some updates were applied.");
         }
 
         refreshRepositoryRun = new RefreshRepositoryRun();
@@ -267,21 +197,21 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onOperationInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onOperationInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.", null);
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.");
             getWorkbench().sendStatusBarText("Could not refresh ImageJ plugin information from online resources");
         } else if (event.getRun() == activateUpdateSiteRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during activation of update sites.", null);
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during activation of update sites.");
             getWorkbench().sendStatusBarText("Could not activate update sites");
         } else if (event.getRun() == applyRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during installation.", null);
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during installation.");
             getWorkbench().sendStatusBarText("Could not apply changes");
         }
     }
 
     @Subscribe
-    public void onOperationFinished(RunUIWorkerFinishedEvent event) {
+    public void onOperationFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             getWorkbench().sendStatusBarText("Refreshed ImageJ plugin information from online resources");
             if (refreshRepositoryRun.getFilesCollection() != null) {
@@ -312,9 +242,9 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
                         activateStagedUpdateSites();
                     }
                     updateSitesToAddAndActivate.clear();
-                    messagePanel.addMessage(MessagePanel.MessageType.Info, "Activated " + activated + " update sites. Click 'Apply changes' to install the files.", null);
+                    messagePanel.addMessage(MessagePanel.MessageType.Info, "Activated " + activated + " update sites. Click 'Apply changes' to install the files.");
                 } else {
-                    messagePanel.addMessage(MessagePanel.MessageType.Error, "Could not activate update sites.", null);
+                    messagePanel.addMessage(MessagePanel.MessageType.Error, "Could not activate update sites.");
                 }
             }
             managerUI.setMainPanelContent(null);
@@ -347,15 +277,6 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
             messagePanel.addMessage(MessagePanel.MessageType.Warning,
                     "There are " + conflicts.size() + " conflicts. Please resolve them.",
                     resolveConflictsButton);
-        }
-    }
-
-    private boolean hasInternetConnection() {
-        try {
-            testNetworkConnection();
-            return true;
-        } catch (final SecurityException | IOException exc) {
-            return false;
         }
     }
 

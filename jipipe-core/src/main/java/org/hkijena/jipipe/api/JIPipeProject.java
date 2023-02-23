@@ -28,20 +28,23 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
+import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -52,8 +55,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A JIPipe project.
@@ -71,23 +74,23 @@ public class JIPipeProject implements JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();
 
-    private JIPipeGraph graph = new JIPipeGraph();
-    private JIPipeGraph compartmentGraph = new JIPipeGraph();
-    private BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
+    private final JIPipeGraph graph = new JIPipeGraph();
+    private final JIPipeGraph compartmentGraph = new JIPipeGraph();
+    private final BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private Map<String, Object> additionalMetadata = new HashMap<>();
     private Path workDirectory;
-    private JIPipeProjectCache cache;
+    private final JIPipeLocalProjectMemoryCache cache;
     private boolean isCleaningUp;
     private boolean isLoading;
-    private JIPipeProjectHistoryJournal historyJournal;
+    private final JIPipeProjectHistoryJournal historyJournal;
 
     /**
      * A JIPipe project
      */
     public JIPipeProject() {
         this.historyJournal = new JIPipeProjectHistoryJournal(this);
-        this.cache = new JIPipeProjectCache(this);
+        this.cache = new JIPipeLocalProjectMemoryCache(this);
         this.metadata.setDescription(new HTMLText(MarkdownDocument.fromPluginResource("documentation/new-project-template.md", new HashMap<>()).getRenderedHTML()));
         this.graph.attach(JIPipeProject.class, this);
         this.graph.attach(JIPipeGraphType.Project);
@@ -105,9 +108,22 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
+        return loadProject(fileName, report, new JIPipeNotificationInbox());
+    }
+
+    /**
+     * Loads a project from a file
+     *
+     * @param fileName      JSON file
+     * @param report        issue report
+     * @param notifications notifications for the user
+     * @return Loaded project
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
+    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
         JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(jsonData, report);
+        project.fromJson(jsonData, report, notifications);
         project.setWorkDirectory(fileName.getParent());
         return project;
     }
@@ -216,7 +232,7 @@ public class JIPipeProject implements JIPipeValidatable {
         mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, this);
     }
 
-    public JIPipeProjectCache getCache() {
+    public JIPipeLocalProjectMemoryCache getCache() {
         return cache;
     }
 
@@ -245,7 +261,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * Adds an existing compartment instance
      *
      * @param compartment Compartment
-     * @param uuid the UUID of the compartment
+     * @param uuid        the UUID of the compartment
      * @return The compartment
      */
     public JIPipeProjectCompartment addCompartment(JIPipeProjectCompartment compartment, UUID uuid) {
@@ -316,16 +332,52 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         // Remove invalid connections in the project graph
+        List<JIPipeGraphConnection> toDisconnect = new ArrayList<>();
         for (JIPipeGraphEdge edge : ImmutableList.copyOf(graph.getGraph().edgeSet())) {
             if (graph.getGraph().containsEdge(edge)) {
                 JIPipeDataSlot source = graph.getGraph().getEdgeSource(edge);
                 JIPipeDataSlot target = graph.getGraph().getEdgeTarget(edge);
                 if (!source.getNode().isVisibleIn(target.getNode().getCompartmentUUIDInParentGraph())) {
-                    graph.disconnect(source, target, false);
-                    changed = true;
+                    toDisconnect.add(graph.getConnection(source, target));
                 }
             }
         }
+
+        // Apply fixes
+        Set<UUID> fixedCompartments = new HashSet<>();
+        for (JIPipeGraphConnection connection : toDisconnect) {
+            JIPipeDataSlot source = connection.getSource();
+            JIPipeDataSlot target = connection.getTarget();
+            if(fixedCompartments.contains(target.getNode().getCompartmentUUIDInParentGraph())) {
+                continue;
+            }
+            if(source.getNode() instanceof JIPipeCompartmentOutput) {
+                if (!(target.getNode() instanceof IOInterfaceAlgorithm) || !source.getNode().getOutputSlotMap().keySet().equals(target.getNode().getInputSlotMap().keySet())) {
+                    // Place IOInterface at the same location as the compartment output
+                    IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
+                    ioInterfaceAlgorithm.getSlotConfiguration().setTo(source.getNode().getSlotConfiguration());
+                    ioInterfaceAlgorithm.setLocations(source.getNode().getLocations());
+                    graph.insertNode(ioInterfaceAlgorithm, target.getNode().getCompartmentUUIDInParentGraph());
+
+                    for (JIPipeOutputDataSlot outputSlot : source.getNode().getOutputSlots()) {
+                        for (JIPipeDataSlot outputOutgoingTargetSlot : graph.getOutputOutgoingTargetSlots(outputSlot)) {
+                            if(Objects.equals(outputOutgoingTargetSlot.getNode().getCompartmentUUIDInParentGraph(), target.getNode().getCompartmentUUIDInParentGraph())) {
+                                graph.connect(ioInterfaceAlgorithm.getOutputSlot(outputSlot.getName()), outputOutgoingTargetSlot);
+                            }
+                        }
+                    }
+
+                    fixedCompartments.add(target.getNode().getCompartmentUUIDInParentGraph());
+                }
+            }
+        }
+
+
+        for (JIPipeGraphConnection connection : toDisconnect) {
+            graph.disconnect(connection, false);
+            changed = true;
+        }
+
 
         if (changed)
             graph.getEventBus().post(new JIPipeGraph.GraphChangedEvent(graph));
@@ -384,6 +436,47 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param compartment The compartment
      */
     public void removeCompartment(JIPipeProjectCompartment compartment) {
+
+        JIPipeCompartmentOutput outputNode = compartment.getOutputNode();
+
+        // Search for all targets of the compartment and convert this output into an IOInterface
+        for (JIPipeDataSlot outputOutgoingTargetSlot : compartmentGraph.getOutputOutgoingTargetSlots(compartment.getFirstOutputSlot())) {
+            if (outputOutgoingTargetSlot.getNode() instanceof JIPipeProjectCompartment) {
+                JIPipeProjectCompartment targetCompartment = (JIPipeProjectCompartment) outputOutgoingTargetSlot.getNode();
+
+                // Check for the special case: all target nodes of the output are IOInterface with the same set of slots
+                boolean needsFixing = false;
+                for (JIPipeOutputDataSlot outputSlot : outputNode.getOutputSlots()) {
+                    for (JIPipeDataSlot outgoingTargetSlot : graph.getOutputOutgoingTargetSlots(outputSlot)) {
+                        if(outgoingTargetSlot.getNode() instanceof IOInterfaceAlgorithm &&
+                                outgoingTargetSlot.getNode().getInputSlotMap().keySet().equals(outputNode.getOutputSlotMap().keySet())) {
+                            // Do nothing
+                        }
+                        else {
+                            needsFixing = true;
+                        }
+                    }
+                }
+
+                if(needsFixing) {
+                    IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
+                    ioInterfaceAlgorithm.setCustomName(outputNode.getName());
+                    ioInterfaceAlgorithm.getSlotConfiguration().setTo(outputNode.getSlotConfiguration());
+                    ioInterfaceAlgorithm.setLocations(outputNode.getLocations());
+                    graph.insertNode(ioInterfaceAlgorithm, targetCompartment.getProjectCompartmentUUID());
+
+                    for (JIPipeOutputDataSlot outputSlot : outputNode.getOutputSlots()) {
+                        for (JIPipeDataSlot outgoingTargetSlot : graph.getOutputOutgoingTargetSlots(outputSlot)) {
+                            graph.connect(ioInterfaceAlgorithm.getOutputSlot(outputSlot.getName()), outgoingTargetSlot);
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+        // Delete the compartment
         UUID compartmentId = compartment.getProjectCompartmentUUID();
         graph.removeCompartment(compartmentId);
         compartments.remove(compartmentId);
@@ -428,10 +521,10 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * @return All project dependencies
      */
-    public Set<JIPipeDependency> getDependencies() {
+    public Set<JIPipeDependency> getSimplifiedMinimalDependencies() {
         Set<JIPipeDependency> dependencies = graph.getDependencies();
         dependencies.addAll(compartmentGraph.getDependencies());
-        return dependencies;
+        return JIPipeDependency.simplifyAndMinimize(dependencies, true);
     }
 
     /**
@@ -469,7 +562,7 @@ public class JIPipeProject implements JIPipeValidatable {
         generator.writeStringField("jipipe:project-type", "project");
         generator.writeNumberField("jipipe:project-format-version", CURRENT_PROJECT_FORMAT_VERSION);
         generator.writeObjectField("metadata", metadata);
-        generator.writeObjectField("dependencies", getDependencies().stream().map(JIPipeMutableDependency::new).collect(Collectors.toList()));
+        generator.writeObjectField("dependencies", getSimplifiedMinimalDependencies());
         if (!getAdditionalMetadata().isEmpty()) {
             generator.writeObjectFieldStart("additional-metadata");
             for (Map.Entry<String, Object> entry : getAdditionalMetadata().entrySet()) {
@@ -498,9 +591,10 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Loads the project from JSON
      *
-     * @param jsonNode the node
+     * @param jsonNode      the node
+     * @param notifications notifications for the user
      */
-    public void fromJson(JsonNode jsonNode, JIPipeIssueReport report) throws IOException {
+    public void fromJson(JsonNode jsonNode, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
         try {
             isLoading = true;
 
@@ -529,10 +623,10 @@ public class JIPipeProject implements JIPipeValidatable {
             }
 
             // We must first load the graph, as we can infer compartments later
-            graph.fromJson(jsonNode.get("graph"), new JIPipeIssueReport());
+            graph.fromJson(jsonNode.get("graph"), new JIPipeIssueReport(), notifications);
 
             // read compartments
-            compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), new JIPipeIssueReport());
+            compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), new JIPipeIssueReport(), notifications);
 
             // Fix legacy nodes
             for (Map.Entry<UUID, String> entry : graph.getNodeLegacyCompartmentIDs().entrySet()) {
@@ -723,6 +817,33 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
+     * Gets all examples for a node type ID.
+     * Includes project templates
+     *
+     * @param nodeTypeId the ID
+     * @return the examples
+     */
+    public List<JIPipeNodeExample> getNodeExamples(String nodeTypeId) {
+        List<JIPipeNodeExample> result = new ArrayList<>(JIPipe.getNodes().getNodeExamples(nodeTypeId));
+        for (JIPipeNodeTemplate nodeTemplate : NodeTemplateSettings.getInstance().getNodeTemplates()) {
+            JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
+            if (Objects.equals(example.getNodeId(), nodeTypeId)) {
+                example.setSourceInfo("From node templates (global)");
+                result.add(example);
+            }
+        }
+        for (JIPipeNodeTemplate nodeTemplate : metadata.getNodeTemplates()) {
+            JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
+            example.setSourceInfo("From node templates (project)");
+            if (Objects.equals(example.getNodeId(), nodeTypeId)) {
+                result.add(example);
+            }
+        }
+        result.sort(Comparator.comparing((JIPipeNodeExample example) -> example.getNodeTemplate().getName(), NaturalOrderComparator.INSTANCE));
+        return result;
+    }
+
+    /**
      * Serializes a project
      */
     public static class Serializer extends JsonSerializer<JIPipeProject> {
@@ -741,7 +862,7 @@ public class JIPipeProject implements JIPipeValidatable {
         public JIPipeProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeProject project = new JIPipeProject();
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            project.fromJson(node, new JIPipeIssueReport());
+            project.fromJson(node, new JIPipeIssueReport(), new JIPipeNotificationInbox());
             return project;
         }
     }

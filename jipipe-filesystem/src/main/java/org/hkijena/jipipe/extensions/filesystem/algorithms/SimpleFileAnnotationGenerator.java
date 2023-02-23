@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.StringUtils;
  * Generates annotations from filenames
  */
 @JIPipeDocumentation(name = "Files to annotations", description = "Creates an annotation for each file based on its file name")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Annotated files", autoCreate = true)
 @JIPipeHidden

@@ -122,7 +122,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                     for (JIPipeDataSlot sourceSlot : sourceSlots) {
                         if (slot.getNode() instanceof JIPipeAlgorithm) {
                             // Add data from source slot
-                            slot.addData(sourceSlot, subProgress);
+                            slot.addDataFromSlot(sourceSlot, subProgress);
                             gc.markCopyOutputToInput(sourceSlot, slot);
                         }
                     }
@@ -157,6 +157,9 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                         group.setInternalStoragePath(Paths.get("loop" + loopNumber));
                         BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
                         group.setIterationMode(loop.getLoopStartNode().getIterationMode());
+                        if (loop.getLoopStartNode().isPassThrough()) {
+                            group.setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+                        }
                         group.setThreadPool(threadPool);
 
                         // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop
@@ -166,7 +169,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                         // Pass input data from inputs of loop into equivalent input of group
                         for (JIPipeDataSlot inputSlot : loop.getLoopStartNode().getInputSlots()) {
                             JIPipeDataSlot groupInput = loopGraphSlotMap.get(loopGraph.getEquivalentSlot(inputSlot));
-                            groupInput.addData(inputSlot, subProgress);
+                            groupInput.addDataFromSlot(inputSlot, subProgress);
                         }
 
                         // Execute the loop
@@ -178,7 +181,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                             if (entry.getKey().isOutput()) {
                                 JIPipeDataSlot originalSlot = algorithmGraph.getEquivalentSlot(entry.getKey());
                                 JIPipeDataSlot sourceSlot = entry.getValue();
-                                originalSlot.addData(sourceSlot, subProgress);
+                                originalSlot.addDataFromSlot(sourceSlot, subProgress);
                             }
                         }
 

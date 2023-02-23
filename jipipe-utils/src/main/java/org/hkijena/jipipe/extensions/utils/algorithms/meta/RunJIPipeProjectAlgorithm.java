@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -65,7 +66,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeIssueReport report = new JIPipeIssueReport();
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile, report);
+            project = JIPipeProject.loadProject(projectFile, report, new JIPipeNotificationInbox());
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e,
                     "Could not load project!",

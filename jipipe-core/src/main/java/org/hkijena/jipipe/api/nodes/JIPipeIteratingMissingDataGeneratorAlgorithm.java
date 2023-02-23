@@ -24,12 +24,13 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ParameterUtils;
 
@@ -104,11 +105,12 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                 dataBatchGenerationSettings.getCustomColumns());
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
+        builder.setForceFlowGraphSolver(dataBatchGenerationSettings.isForceFlowGraphSolver());
         List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size())) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
@@ -133,9 +135,9 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
         List<JIPipeMergingDataBatch> dataBatches;
 
         // No input slots -> Nothing to do
-        if (getEffectiveInputSlotCount() == 0) {
+        if (getDataInputSlotCount() == 0) {
             return;
-        } else if (getEffectiveInputSlotCount() == 1) {
+        } else if (getDataInputSlotCount() == 1) {
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 if (progressInfo.isCancelled())
@@ -210,7 +212,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
     @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled")
+    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
     @Override
     public boolean isParallelizationEnabled() {
         return parallelizationEnabled;
@@ -224,7 +226,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
 
     @JIPipeDocumentation(name = "Keep original annotations", description = "If enabled, outputs that were not generated " +
             "keep their original annotations. Otherwise the merged annotations from the data batch are used.")
-    @JIPipeParameter("keep-original-annotations")
+    @JIPipeParameter(value = "keep-original-annotations", pinned = true)
     public boolean isKeepOriginalAnnotations() {
         return keepOriginalAnnotations;
     }
@@ -269,7 +271,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
             } else {
                 if (keepOriginalAnnotations) {
                     for (int row : rows) {
-                        JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
+                        JIPipeDataItemStore virtualData = inputSlot.getDataItemStore(row);
                         List<JIPipeTextAnnotation> annotations = inputSlot.getTextAnnotations(row);
                         outputSlot.addData(virtualData,
                                 annotations,
@@ -279,7 +281,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                     }
                 } else {
                     for (int row : rows) {
-                        JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
+                        JIPipeDataItemStore virtualData = inputSlot.getDataItemStore(row);
                         dataBatch.addOutputData(outputSlot, virtualData);
                     }
                 }

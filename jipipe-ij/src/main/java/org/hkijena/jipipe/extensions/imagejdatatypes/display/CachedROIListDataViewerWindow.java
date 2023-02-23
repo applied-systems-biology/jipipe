@@ -16,15 +16,16 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementDrawerPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementDrawerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -58,7 +59,6 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
         pluginList.add(new ROIManagerPlugin(imageViewerPanel));
         pluginList.add(new AnimationSpeedPlugin(imageViewerPanel));
         pluginList.add(new MeasurementDrawerPlugin(imageViewerPanel));
-        pluginList.add(new MeasurementPlugin(imageViewerPanel));
         pluginList.add(new AnnotationInfoPlugin(imageViewerPanel, this));
         imageViewerPanel.setPlugins(pluginList);
         setContentPane(imageViewerPanel);
@@ -99,9 +99,9 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
-        ROIListData data = (ROIListData) virtualData.getData(progressInfo);
+        ROIListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROIListData.class);
         int width;
         int height;
         int numZ = 1;

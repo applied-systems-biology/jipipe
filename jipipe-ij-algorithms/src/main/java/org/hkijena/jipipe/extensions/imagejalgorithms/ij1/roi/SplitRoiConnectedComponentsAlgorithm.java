@@ -16,18 +16,11 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -48,9 +41,10 @@ import java.util.*;
 
 @JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @JIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Components")
-public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgorithm {
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Components", autoCreate = true)
+public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private DimensionOperation dimensionZOperation = DimensionOperation.Split;
     private DimensionOperation dimensionCOperation = DimensionOperation.Merge;
     private DimensionOperation dimensionTOperation = DimensionOperation.Follow;
@@ -61,9 +55,10 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
     private boolean splitAtJunctions = false;
     private boolean trySolveJunctions = true;
 
+    private boolean measureInPhysicalUnits = true;
+
     public SplitRoiConnectedComponentsAlgorithm(JIPipeNodeInfo info) {
-        super(info, ROIListData.class, "Components");
-        this.setPreferAssociatedImage(false);
+        super(info);
     }
 
     public SplitRoiConnectedComponentsAlgorithm(SplitRoiConnectedComponentsAlgorithm other) {
@@ -77,11 +72,12 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         this.splitAtJunctions = other.splitAtJunctions;
         this.trySolveJunctions = other.trySolveJunctions;
         this.graphPostprocessing = new DefaultExpressionParameter(other.graphPostprocessing);
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData input = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ROIListData input = (ROIListData) dataBatch.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
         DefaultUndirectedGraph<Integer, DefaultEdge> graph = new DefaultUndirectedGraph<>(DefaultEdge.class);
         for (int i = 0; i < input.size(); i++) {
             // Add to graph
@@ -106,21 +102,13 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         ImagePlus referenceImage = null;
         if (withFiltering) {
             // Generate measurements
-            Map<ImagePlusData, ROIListData> referenceImages = getReferenceImage(dataBatch, progressInfo);
-            if (referenceImages.size() != 1) {
-                throw new UserFriendlyRuntimeException("Require unique reference image!",
-                        "Algorithm " + getName(),
-                        "Different reference images!",
-                        "For the statistics, each ROI must be associated to the same image. This is not the case.",
-                        "Try to remove the images associated to the ROI.");
-            }
-            ImagePlusData referenceImageData = referenceImages.keySet().iterator().next();
-            if(referenceImageData != null) {
+            ImagePlusData referenceImageData = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+            if (referenceImageData != null) {
                 referenceImage = referenceImageData.getImage();
                 // This is needed, as measuring messes with the image
                 referenceImage = ImageJUtils.duplicate(referenceImage);
             }
-            measurements = input.measure(referenceImage, overlapFilterMeasurements, false);
+            measurements = input.measure(referenceImage, overlapFilterMeasurements, false, measureInPhysicalUnits);
         }
         int currentProgress = 0;
         int currentProgressPercentage = 0;
@@ -133,6 +121,9 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 if (newProgressPercentage != currentProgressPercentage) {
                     subProgress.log(newProgressPercentage + "%");
                     currentProgressPercentage = newProgressPercentage;
+                }
+                if (progressInfo.isCancelled()) {
+                    return;
                 }
                 Roi roi1 = input.get(i);
                 Roi roi2 = input.get(j);
@@ -349,7 +340,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         // Measure overlap
         temp.clear();
         temp.add(overlap);
-        ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, false);
+        ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, false, measureInPhysicalUnits);
         for (int col = 0; col < overlapMeasurements.getColumnCount(); col++) {
             variableSet.set("Overlap." + overlapMeasurements.getColumnName(col), overlapMeasurements.getValueAt(0, col));
         }
@@ -385,16 +376,6 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             return roi;
         }
         return null;
-    }
-
-    @Override
-    public boolean isPreferAssociatedImage() {
-        return super.isPreferAssociatedImage();
-    }
-
-    @Override
-    public void setPreferAssociatedImage(boolean preferAssociatedImage) {
-        super.setPreferAssociatedImage(preferAssociatedImage);
     }
 
     @JIPipeDocumentation(name = "Dimension Z", description = "Operation for the Z (Slice) dimension. ")
@@ -494,6 +475,17 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
     @JIPipeParameter("try-solve-junctions")
     public void setTrySolveJunctions(boolean trySolveJunctions) {
         this.trySolveJunctions = trySolveJunctions;
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
     @JIPipeDocumentationDescription(description = "There are three different modes: <ul><li>Followed dimensions will be tracked</li>" +

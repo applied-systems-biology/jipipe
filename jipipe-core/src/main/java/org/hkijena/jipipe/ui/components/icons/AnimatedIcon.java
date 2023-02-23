@@ -73,7 +73,7 @@ public class AnimatedIcon implements Icon {
             opacity = 0;
             opacityStep = -opacityStep;
         }
-        if (parent != null) {
+        if (parent != null && parent.isDisplayable() && parent.isVisible()) {
             parent.repaint();
             parent.getToolkit().sync();
         }

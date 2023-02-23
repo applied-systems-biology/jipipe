@@ -22,8 +22,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources.ImagePlusFromFile;
@@ -31,11 +32,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -48,10 +46,12 @@ import java.util.stream.Collectors;
 /**
  * Loads an image data from a file via IJ.openFile()
  */
-@JIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
+@JIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. " +
+        "The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(FolderData.class)
-@JIPipeOutputSlot(ImagePlusData.class)
+@JIPipeInputSlot(value = FolderData.class, slotName = "Folder", description = "One or multiple directories", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", description = "The imported image(s)", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport", aliasName = "Image Sequence...")
 public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
@@ -66,12 +66,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
      * @param info algorithm info
      */
     public ImageStackFromFolder(JIPipeNodeInfo info) {
-        super(info,
-                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Folder", "", FolderData.class)
-                        .addOutputSlot("Image", "", ImagePlusData.class, null)
-                        .sealOutput()
-                        .sealInput()
-                        .build());
+        super(info);
     }
 
     /**
@@ -118,7 +113,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             // Slicing
             if (!StringUtils.isNullOrEmpty(slicesToImport.getValue())) {
                 List<Path> inputFilesSliced = new ArrayList<>();
-                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size())) {
+                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size(), new ExpressionVariables())) {
                     if (ignoreInvalidSlices && index < 0 || index >= inputFiles.size()) {
                         continue;
                     }
@@ -211,15 +206,6 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filter-expression")
     public void setFilterExpression(PathQueryExpression filterExpression) {
         this.filterExpression = filterExpression;
-    }
-
-    @JIPipeDocumentation(name = "Filter only *.tif", description = "Sets the filter, so only *.tif files are returned.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            setFilterExpression(new PathQueryExpression("STRING_MATCHES_GLOB(name, \"*.tif\")"));
-            getEventBus().post(new ParameterChangedEvent(this, "filter-expression"));
-        }
     }
 
     @JIPipeDocumentation(name = "Slices to import", description = "Determines which files should be imported based on the sorted and filtered list of files. The first index is 0. Duplicates are allowed." +

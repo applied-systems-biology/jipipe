@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.expressions;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +30,12 @@ public class ExpressionVariables extends HashMap<String, Object> {
     public void putAnnotations(Map<String, JIPipeTextAnnotation> mergedTextAnnotations) {
         for (Entry<String, JIPipeTextAnnotation> entry : mergedTextAnnotations.entrySet()) {
             put(entry.getKey(), entry.getValue().getValue());
+        }
+    }
+
+    public void putAnnotations(List<JIPipeTextAnnotation> textAnnotations) {
+        for (JIPipeTextAnnotation textAnnotation : textAnnotations) {
+            put(textAnnotation.getName(), textAnnotation.getValue());
         }
     }
 }

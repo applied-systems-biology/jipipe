@@ -88,7 +88,19 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 .3f, .2f,
                 PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2)});
 
+        final Font defaultFont = new Font(Font.DIALOG, Font.PLAIN, 12);
+
         Object[] defaults = new Object[]{
+                // Since new Fiji version
+                "Button.font", defaultFont,
+                "ToggleButton.font", defaultFont,
+                "CheckBox.font", defaultFont,
+                "Label.font", defaultFont,
+                "List.font", defaultFont,
+                "Panel.font", defaultFont,
+                "ScrollPane.font", defaultFont,
+                "TabbedPane.font", defaultFont,
+
                 "Button.background", LIGHT_GRAY,
                 "Button.rollover", Boolean.TRUE,
                 "Button.toolBarBorderBackground", INACTIVE_CONTROL_TEXT_COLOR,
@@ -224,7 +236,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
 
                 "ToggleButton.background", LIGHT_GRAY,
                 "ToggleButton.border", BUTTON_BORDER,
-                "ToggleButton.select", PRIMARY5,
+                "ToggleButton.select", PRIMARY1,
 
                 "TextField.inactiveForeground", PRIMARY1,
 

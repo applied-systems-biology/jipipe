@@ -21,18 +21,11 @@ import ij.ImageStack;
 import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -66,10 +59,11 @@ import java.util.Comparator;
 @JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Tagged skeletons", description = "End-point voxels are displayed in blue, slab voxels in orange and junction voxels in purple")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Label image of the skeletons")
 @JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Largest shortest paths", description = "The largest shortest path (in magenta)")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nSkeleton", aliasName = "Analyze Skeleton (2D/3D)")
 public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", null, true);
-    public static final JIPipeDataSlotInfo REFERENCE_INPUT_SLOT = new JIPipeDataSlotInfo(ImagePlus3DGreyscale8UData.class, JIPipeSlotType.Input, "Reference", "Original grayscale input image (for lowest pixel intensity pruning mode)", null, true);
+    public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
+    public static final JIPipeDataSlotInfo REFERENCE_INPUT_SLOT = new JIPipeDataSlotInfo(ImagePlus3DGreyscale8UData.class, JIPipeSlotType.Input, "Reference", "Original grayscale input image (for lowest pixel intensity pruning mode)", true);
 
     public static final JIPipeDataSlotInfo SKELETONS_TABLE_OUTPUT_SLOT = new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, "Skeletons", "Table of all skeletons");
 
@@ -80,11 +74,9 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
     public static final JIPipeDataSlotInfo LABELS_IMAGE_OUTPUT_SLOT = new JIPipeDataSlotInfo(ImagePlusGreyscale32FData.class, JIPipeSlotType.Output, "Labels", "Label image of the skeletons");
 
     public static final JIPipeDataSlotInfo LSP_IMAGE_OUTPUT_SLOT = new JIPipeDataSlotInfo(ImagePlusGreyscale8UData.class, JIPipeSlotType.Output, "Largest shortest paths", "The largest shortest path (in magenta)");
-
+    private final OutputParameters outputParameters;
     private CycleRemovalMethod pruneCyclesMethod = CycleRemovalMethod.None;
     private EndRemovalMethod pruneEndsMethod = EndRemovalMethod.None;
-
-    private final OutputParameters outputParameters;
 
     public AnalyzeSkeleton2D3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -109,10 +101,10 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus referenceImage = null;
 
         // Get the excluded ROI
-        if(pruneEndsMethod == EndRemovalMethod.ExcludeROI) {
+        if (pruneEndsMethod == EndRemovalMethod.ExcludeROI) {
             ROIListData roi = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-            if(roi != null && !roi.isEmpty()) {
-                if(roi.size() == 1)
+            if (roi != null && !roi.isEmpty()) {
+                if (roi.size() == 1)
                     excludeRoi = roi.get(0);
                 else {
                     roi = new ROIListData(roi);
@@ -123,9 +115,9 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Get reference image
-        if(pruneCyclesMethod == CycleRemovalMethod.LowestIntensityBranch || pruneCyclesMethod == CycleRemovalMethod.LowestIntensityVoxel) {
+        if (pruneCyclesMethod == CycleRemovalMethod.LowestIntensityBranch || pruneCyclesMethod == CycleRemovalMethod.LowestIntensityVoxel) {
             ImagePlus3DGreyscale8UData imageData = dataBatch.getInputData("Reference", ImagePlus3DGreyscale8UData.class, progressInfo);
-            if(imageData != null) {
+            if (imageData != null) {
                 referenceImage = imageData.getImage();
             }
         }
@@ -135,26 +127,26 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         SkeletonResult result = analyzeSkeleton.run(pruneCyclesMethod.getNativeValue(), pruneEndsMethod != EndRemovalMethod.None, true, referenceImage, true, true, excludeRoi);
 
         // Extract Skeletons
-        if(outputParameters.isOutputSkeletonTable()) {
+        if (outputParameters.isOutputSkeletonTable()) {
             ResultsTable skeletonsTable = calculateSkeletonTable(result);
             dataBatch.addOutputData("Skeletons", new ResultsTableData(skeletonsTable), progressInfo);
         }
 
         // Extract Branches
-        if(outputParameters.isOutputBranchTable()) {
+        if (outputParameters.isOutputBranchTable()) {
             ResultsTable branchesTable = calculateBranchesTable(skeleton, analyzeSkeleton, result);
             dataBatch.addOutputData("Branches", new ResultsTableData(branchesTable), progressInfo);
         }
 
         // Extract Tagged skeletons
-        if(outputParameters.isOutputTaggedSkeletons()) {
+        if (outputParameters.isOutputTaggedSkeletons()) {
             ImagePlus taggedSkeletons = generateTaggedSkeletons(skeleton, analyzeSkeleton);
             ImageJUtils.copyHyperstackDimensions(skeleton, taggedSkeletons);
             dataBatch.addOutputData("Tagged skeletons", new ImagePlusGreyscale8UData(taggedSkeletons), progressInfo);
         }
 
         // Extract Labels
-        if(outputParameters.isOutputSkeletonLabels()) {
+        if (outputParameters.isOutputSkeletonLabels()) {
             ImagePlus labeledSkeletons = new ImagePlus("Labeled skeletons", analyzeSkeleton.getLabeledSkeletons());
             IJ.run(labeledSkeletons, "Fire", null);
             ImageJUtils.copyHyperstackDimensions(skeleton, labeledSkeletons);
@@ -162,7 +154,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Extract Largest shortest paths
-        if(outputParameters.isOutputLargestShortestPaths()) {
+        if (outputParameters.isOutputLargestShortestPaths()) {
             ImagePlus largestShortestPaths = generateShortPathImage(skeleton, analyzeSkeleton);
             IJ.run(largestShortestPaths, "Fire", null);
             ImageJUtils.copyHyperstackDimensions(skeleton, largestShortestPaths);
@@ -219,37 +211,34 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         Graph[] graph = result.getGraph();
 
         final String[] extra_head = {"Branch", "Skeleton ID",
-                "Branch length","V1 x", "V1 y",
-                "V1 z","V2 x","V2 y", "V2 z", "Euclidean distance","running average length", "average intensity (inner 3rd)", "average intensity"};
+                "Branch length", "V1 x", "V1 y",
+                "V1 z", "V2 x", "V2 y", "V2 z", "Euclidean distance", "running average length", "average intensity (inner 3rd)", "average intensity"};
 
 
         // Edge comparator (by branch length)
-        Comparator<Edge> comp = new Comparator<Edge>(){
-            public int compare(Edge o1, Edge o2)
-            {
+        Comparator<Edge> comp = new Comparator<Edge>() {
+            public int compare(Edge o1, Edge o2) {
                 final double diff = o1.getLength() - o2.getLength();
-                if(diff < 0)
+                if (diff < 0)
                     return 1;
-                else if(diff == 0)
+                else if (diff == 0)
                     return 0;
                 else
                     return -1;
             }
-            public boolean equals(Object o)
-            {
+
+            public boolean equals(Object o) {
                 return false;
             }
         };
         // Display branch information for each tree
-        for(int i = 0 ; i < numOfTrees; i++)
-        {
+        for (int i = 0; i < numOfTrees; i++) {
             final ArrayList<Edge> listEdges = graph[i].getEdges();
             // Sort branches by length
             listEdges.sort(comp);
-            for(final Edge e : listEdges)
-            {
+            for (final Edge e : listEdges) {
                 extra_rt.incrementCounter();
-                extra_rt.addValue(extra_head[1], i+1);
+                extra_rt.addValue(extra_head[1], i + 1);
                 extra_rt.addValue(extra_head[2], e.getLength());
                 extra_rt.addValue(extra_head[3], e.getV1().getPoints().get(0).x * imRef.getCalibration().pixelWidth);
                 extra_rt.addValue(extra_head[4], e.getV1().getPoints().get(0).y * imRef.getCalibration().pixelHeight);
@@ -269,8 +258,8 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ResultsTable calculateSkeletonTable(SkeletonResult result) {
 
-        final String[] head = {"Skeleton", "# Branches","# Junctions", "# End-point voxels",
-                "# Junction voxels","# Slab voxels","Average Branch Length",
+        final String[] head = {"Skeleton", "# Branches", "# Junctions", "# End-point voxels",
+                "# Junction voxels", "# Slab voxels", "Average Branch Length",
                 "# Triple points", "# Quadruple points", "Maximum Branch Length",
                 "Longest Shortest Path", "spx", "spy", "spz"};
 
@@ -291,10 +280,9 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             rt.addStringColumn(s);
         }
 
-        for(int i = 0 ; i < result.getNumOfTrees(); i++)
-        {
-           rt.addRow();
-           rt.setValueAt(i + 1, i, "Skeleton");
+        for (int i = 0; i < result.getNumOfTrees(); i++) {
+            rt.addRow();
+            rt.setValueAt(i + 1, i, "Skeleton");
             rt.setValueAt(numberOfBranches[i], i, "# Branches");
             rt.setValueAt(numberOfJunctions[i], i, "# Junctions");
             rt.setValueAt(numberOfEndPoints[i], i, "# End-point voxels");
@@ -304,7 +292,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             rt.setValueAt(numberOfTriplePoints[i], i, "# Triple points");
             rt.setValueAt(numberOfQuadruplePoints[i], i, "# Quadruple points");
             rt.setValueAt(maximumBranchLength[i], i, "Maximum Branch Length");
-            if(null != shortestPathList) {
+            if (null != shortestPathList) {
                 rt.setValueAt(shortestPathList.get(i), i, "Longest Shortest Path");
                 rt.setValueAt(spStartPosition[i][0], i, "spx");
                 rt.setValueAt(spStartPosition[i][1], i, "spy");
@@ -350,7 +338,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
         @Override
         public String toString() {
-            if(this == ExcludeROI)
+            if (this == ExcludeROI)
                 return "Exclude ROI";
             return name();
         }
@@ -369,6 +357,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         LowestIntensityBranch(3);
 
         private final int nativeValue;
+
         CycleRemovalMethod(int nativeValue) {
 
             this.nativeValue = nativeValue;
@@ -396,8 +385,8 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static class OutputParameters implements JIPipeParameterCollection {
 
-        private AnalyzeSkeleton2D3DAlgorithm parent;
         private final EventBus eventBus = new EventBus();
+        private AnalyzeSkeleton2D3DAlgorithm parent;
         private boolean outputSkeletonTable = false;
         private boolean outputBranchTable = false;
         private boolean outputTaggedSkeletons = false;
@@ -466,6 +455,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         public boolean isOutputSkeletonLabels() {
             return outputSkeletonLabels;
         }
+
         @JIPipeParameter("output-skeleton-labels")
         public void setOutputSkeletonLabels(boolean outputSkeletonLabels) {
             this.outputSkeletonLabels = outputSkeletonLabels;

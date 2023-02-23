@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
@@ -42,8 +43,9 @@ import java.awt.*;
 @JIPipeDocumentation(name = "Scale 2D image", description = "Scales a 2D image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image", aliasName = "Scale... (2D)")
 public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;
@@ -60,11 +62,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public TransformScale2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
-                .addOutputSlot("Output", "", ImagePlusData.class, "Input")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         xAxis.setEnabled(true);
         yAxis.setEnabled(true);
     }
@@ -170,7 +168,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             progressInfo.log("Image already has the target size. No scaling needed.");
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         } else {
-            if (img.isStack()) {
+            if (img.hasImageStack()) {
                 ImageStack result = new ImageStack(sx, sy, img.getStackSize());
                 int finalSx = sx;
                 int finalSy = sy;

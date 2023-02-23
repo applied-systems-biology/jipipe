@@ -30,6 +30,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
@@ -40,23 +42,30 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.util.Vector;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 
 /**
  * Segments using a Hessian
  */
 @JIPipeDocumentation(name = "Hessian segmentation 2D", description = "Segments by applying a Hessian and morphological postprocessing. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
+        "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
+        "<ol>" +
+        "<li>Calculate Hessian</li>" +
+        "<li>Morphological Internal Gradient</li>" +
+        "<li>Auto Threshold 2D</li>" +
+        "<li>Despeckle</li>" +
+        "</ol>")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double smoothing = 1.0;
     private double gradientRadius = 1;
     private boolean compareAbsolute = true;
     private EigenvalueSelection2D eigenvalueSelection = EigenvalueSelection2D.Largest;
-    private AutoThreshold2DAlgorithm autoThresholding;
+    private final AutoThreshold2DAlgorithm autoThresholding;
     private boolean applyInternalGradient = true;
     private boolean applyDespeckle = true;
     private int despeckleIterations = 2;
@@ -65,11 +74,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
      * @param info the algorithm info
      */
     public HessianSegmentation2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipe.getNodes().getInfoById("ij1-threshold-auto2d").newInstance();
     }
 
@@ -88,6 +93,14 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.applyInternalGradient = other.applyInternalGradient;
         this.applyDespeckle = other.applyDespeckle;
         this.despeckleIterations = other.despeckleIterations;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(access.getSource() == autoThresholding && "source-area".equals(access.getKey())) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     private ImagePlus applyHessian(ImagePlus input) {

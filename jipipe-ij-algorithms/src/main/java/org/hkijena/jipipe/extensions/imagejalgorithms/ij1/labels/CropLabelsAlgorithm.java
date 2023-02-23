@@ -23,8 +23,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
@@ -38,6 +40,7 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 @JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Crop Label")
 public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalIntegerRange labelIdLimit = new OptionalIntegerRange();
@@ -93,7 +96,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         TIntHashSet knownLabels = new TIntHashSet(LabelImages.findAllLabels(inputImage));
         if (labelIdLimit.isEnabled()) {
-            for (Integer i : labelIdLimit.getContent().getIntegers(0, 0)) {
+            for (Integer i : labelIdLimit.getContent().getIntegers(0, 0, new ExpressionVariables())) {
                 if (!knownLabels.contains(i))
                     continue;
                 ImagePlus cropped = LabelImages.cropLabel(inputImage, i, border);

@@ -56,6 +56,7 @@ import java.util.Arrays;
 @JIPipeNode(menuPath = "Edges", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", autoCreate = true)
+
 public class CannyEdgeDetectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final static float GAUSSIAN_CUT_OFF = 0.005f;

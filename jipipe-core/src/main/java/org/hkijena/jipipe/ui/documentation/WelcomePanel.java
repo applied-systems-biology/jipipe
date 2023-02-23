@@ -13,31 +13,34 @@
 
 package org.hkijena.jipipe.ui.documentation;
 
+import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.registries.JIPipeProjectTemplateRegistry;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.components.ImageFrame;
+import org.hkijena.jipipe.ui.components.RoundedButtonUI;
 import org.hkijena.jipipe.ui.components.renderers.TemplateProjectListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.DotSlideshow;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.ui.project.templatedownloader.ProjectTemplateDownloaderRun;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.HashMap;
+import java.awt.image.BufferedImage;
 import java.util.jar.Attributes;
 
 /**
@@ -57,11 +60,17 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         initialize();
         refreshTemplateProjects();
+        JIPipe.getInstance().getEventBus().register(this);
+    }
+
+    @Subscribe
+    public void onTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
+        refreshTemplateProjects();
     }
 
     private void refreshTemplateProjects() {
         DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
-        for (JIPipeProjectTemplate template : JIPipeProjectTemplate.listTemplates()) {
+        for (JIPipeProjectTemplate template : JIPipe.getInstance().getProjectTemplateRegistry().getSortedRegisteredTemplates()) {
             if (templateSearch.test(template.getMetadata().getName() + " " + template.getMetadata().getTemplateDescription())) {
                 model.addElement(template);
             }
@@ -75,55 +84,214 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, AutoResizeSplitPane.RATIO_1_TO_3);
 
-        initializeHeaderPanel();
-        initRecentProjectsAndTemplates();
-        initContent();
+        initializeRecentProjectsAndTemplates(splitPane);
+        initializeHero(splitPane);
+
+        add(splitPane, BorderLayout.CENTER);
     }
 
-    private void initContent() {
-        if (!GeneralUISettings.getInstance().isShowIntroductionTour())
-            return;
+    private void initializeHero(AutoResizeSplitPane splitPane) {
+        BufferedImage backgroundImage;
+        try {
+            if (UIUtils.DARK_THEME) {
+                backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("welcome-hero-dark.png"));
+            } else {
+                backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("welcome-hero.png"));
+            }
+        }
+        catch (Throwable e) {
+            backgroundImage = null;
+        }
+        JPanel heroPanel = new ImageFrame(backgroundImage, false, ImageFrame.Mode.Cover, true);
+        heroPanel.setLayout(new BoxLayout(heroPanel, BoxLayout.Y_AXIS));
 
-        JPanel tourPanel = new JPanel();
-        tourPanel.setLayout(new BoxLayout(tourPanel, BoxLayout.Y_AXIS));
-        JPanel tourContentPanel = new JPanel(new BorderLayout());
-        tourContentPanel.setAlignmentY(JComponent.CENTER_ALIGNMENT);
-        tourContentPanel.setAlignmentX(JComponent.CENTER_ALIGNMENT);
-        tourContentPanel.setBorder(new RoundedLineBorder(Color.GRAY, 1, 3, true));
-        tourContentPanel.setMaximumSize(new Dimension(800, 650));
-//        tourContentPanel.setMinimumSize(new Dimension(800,600));
-        tourContentPanel.setPreferredSize(new Dimension(800, 650));
-        tourContentPanel.setBackground(UIManager.getColor("TextArea.background"));
-        tourPanel.add(Box.createVerticalGlue());
-        tourPanel.add(tourContentPanel);
-        tourPanel.add(Box.createVerticalGlue());
-        add(tourPanel, BorderLayout.CENTER);
+        heroPanel.add(Box.createVerticalGlue());
+        initializeHeroLogo(heroPanel);
+        initializeHeroActions(heroPanel);
+        heroPanel.add(Box.createVerticalStrut(16));
+        initializeHeroSecondaryActions(heroPanel);
+        heroPanel.add(Box.createVerticalGlue());
+        initializeHeroBottomPanel(heroPanel);
 
-        DotSlideshow slideshow = new DotSlideshow();
-        MarkdownReader slideWelcome = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_welcome.md", new HashMap<>()));
-        slideWelcome.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
-        slideshow.addSlide(slideWelcome, "Welcome to JIPipe");
-
-        MarkdownReader slideOrganization = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_organization.md", new HashMap<>()));
-        slideOrganization.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
-        slideshow.addSlide(slideOrganization, "Organizing your pipeline");
-
-        MarkdownReader slideNodes = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_nodes.md", new HashMap<>()));
-        slideNodes.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
-        slideshow.addSlide(slideNodes, "Adding nodes");
-
-        MarkdownReader slidesRunning = new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/introduction_running.md", new HashMap<>()));
-        slidesRunning.setBorder(BorderFactory.createLineBorder(UIManager.getColor("TextArea.background"), 16));
-        slideshow.addSlide(slidesRunning, "Running your pipeline");
-
-        slideshow.showSlide("Welcome to JIPipe");
-
-        tourContentPanel.add(slideshow, BorderLayout.CENTER);
+        splitPane.setRightComponent(heroPanel);
     }
 
-    private void initRecentProjectsAndTemplates() {
-        DocumentTabPane tabPane = new DocumentTabPane();
+    private void initializeHeroSecondaryActions(JPanel heroPanel) {
+        JPanel actionPanel = new JPanel();
+        actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
+        actionPanel.setOpaque(false);
+
+        actionPanel.add(Box.createHorizontalGlue());
+
+        JTextPane textPane = UIUtils.makeBorderlessReadonlyTextPane("<html>... or <a href=\"https://www.jipipe.org/tutorials/\">learn</a> how to use JIPipe (online tutorials)" +
+                "</html>", false);
+        textPane.setMaximumSize(new Dimension(300,40));
+        actionPanel.add(textPane);
+
+        actionPanel.add(Box.createHorizontalGlue());
+
+        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE,  32));
+        heroPanel.add(actionPanel);
+    }
+
+    private void initializeHeroActions(JPanel heroPanel) {
+        JPanel actionPanel = new JPanel();
+        actionPanel.setLayout(new BoxLayout(actionPanel, BoxLayout.X_AXIS));
+        actionPanel.setOpaque(false);
+
+        actionPanel.add(Box.createHorizontalGlue());
+
+        Color colorSuccess = new Color(0x5CB85C);
+        Color colorHover = new Color(0x4f9f4f);
+
+        JButton startNowButton = new JButton("Start building");
+        startNowButton.setBackground(colorSuccess);
+        startNowButton.setForeground(Color.WHITE);
+        startNowButton.setUI(new RoundedButtonUI(8, colorHover, colorHover));
+        startNowButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 28));
+        startNowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,4,4,4), BorderFactory.createEmptyBorder(16,16,16,16)));
+        startNowButton.addActionListener(e -> doActionStartNow());
+        actionPanel.add(startNowButton);
+
+        actionPanel.add(Box.createHorizontalStrut(8));
+
+        JButton openButton = new JButton("Open a project");
+        openButton.setOpaque(false);
+        openButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 28));
+        openButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12,12,12,12)));
+        openButton.addActionListener(e -> doActionOpenProject());
+        actionPanel.add(openButton);
+
+        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE,  120));
+
+        actionPanel.add(Box.createHorizontalGlue());
+        heroPanel.add(actionPanel);
+    }
+
+    private void doActionOpenProject() {
+        getProjectWorkbench().getProjectWindow().openProject();
+    }
+
+    private void doActionStartNow() {
+        DocumentTabPane documentTabPane = getProjectWorkbench().getDocumentTabPane();
+        documentTabPane.closeTab(documentTabPane.getSingletonTabInstances().get(JIPipeProjectWorkbench.TAB_INTRODUCTION));
+
+        // Search for a compartment tab
+        for (DocumentTabPane.DocumentTab tab : documentTabPane.getTabs()) {
+            if(tab.getContent() instanceof JIPipePipelineGraphEditorUI)   {
+                documentTabPane.switchToTab(tab);
+                return;
+            }
+        }
+
+        // No compartment found! Open a new one
+        JIPipeProject project = getProjectWorkbench().getProject();
+        JIPipeProjectCompartment compartment;
+        if(project.getCompartments().isEmpty()) {
+            // Create a new one
+            compartment = project.addCompartment("Analysis");
+        }
+        else {
+            compartment = project.getCompartments().values().iterator().next();
+        }
+        getProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
+    }
+
+    private void initializeHeroBottomPanel(JPanel heroPanel) {
+
+        JPanel bottomPanel = new JPanel(new BorderLayout());
+        bottomPanel.setOpaque(false);
+        bottomPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 200));
+
+        initializeHeroLinksPanel(bottomPanel);
+        initializeHeroTechnicalInfoPanel(bottomPanel);
+
+        heroPanel.add(bottomPanel);
+    }
+
+    private void initializeHeroLinksPanel(JPanel bottomPanel) {
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.setOpaque(false);
+
+        toolBar.add(Box.createHorizontalStrut(8));
+
+        JButton openWebsiteButton = new JButton("Visit our website", UIUtils.getIconFromResources("actions/web-browser.png"));
+        openWebsiteButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
+        openWebsiteButton.setToolTipText("https://www.jipipe.org/");
+        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/"));
+        openWebsiteButton.setOpaque(false);
+        openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
+        toolBar.add(openWebsiteButton);
+        toolBar.add(Box.createHorizontalStrut(4));
+
+        JButton openCommunityButton = new JButton("Community", UIUtils.getIconFromResources("actions/im-irc.png"));
+        openCommunityButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
+        openCommunityButton.setToolTipText("https://forum.image.sc/tag/jipipe");
+        openCommunityButton.addActionListener(e -> UIUtils.openWebsite("https://forum.image.sc/tag/jipipe"));
+        openCommunityButton.setOpaque(false);
+        openCommunityButton.setBackground(new Color(0, 0, 0, 0));
+        toolBar.add(openCommunityButton);
+        toolBar.add(Box.createHorizontalStrut(4));
+
+        JButton openSourceCodeButton = new JButton("Source code", UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));
+        openSourceCodeButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
+        openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/");
+        openSourceCodeButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/"));
+        openSourceCodeButton.setOpaque(false);
+        openSourceCodeButton.setBackground(new Color(0, 0, 0, 0));
+        toolBar.add(openSourceCodeButton);
+        toolBar.add(Box.createHorizontalStrut(4));
+
+        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("actions/bug.png"));
+        reportIssueButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
+        reportIssueButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/issues");
+        reportIssueButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/issues"));
+        reportIssueButton.setOpaque(false);
+        reportIssueButton.setBackground(new Color(0, 0, 0, 0));
+        toolBar.add(reportIssueButton);
+        toolBar.add(Box.createHorizontalStrut(4));
+
+        bottomPanel.add(toolBar, BorderLayout.WEST);
+
+    }
+
+    private void initializeHeroTechnicalInfoPanel(JPanel bottomPanel) {
+
+        FormPanel technicalInfo = new FormPanel(null, FormPanel.NONE);
+        technicalInfo.setOpaque(false);
+        technicalInfo.getContentPanel().setOpaque(false);
+
+        technicalInfo.addVerticalGlue();
+
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
+        Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
+        if (manifestAttributes != null) {
+            String implementationDateString = manifestAttributes.getValue("Implementation-Date");
+            technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "N/A")), new JLabel("Build time"), null);
+        }
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "N/A")), new JLabel("ImageJ"), null);
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "N/A")), new JLabel("Java"), null);
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipe.getNodes().getRegisteredNodeInfos().size() + " algorithms"), new JLabel("Registered node types"), null);
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
+
+        technicalInfo.setMaximumSize(new Dimension(300, 200));
+
+        bottomPanel.add(technicalInfo, BorderLayout.EAST);
+    }
+
+    private void initializeHeroLogo(JPanel heroPanel) {
+        ImageFrame logoPanel = new ImageFrame(UIUtils.getLogo(), false, ImageFrame.Mode.Fit, true);
+        logoPanel.setScaleFactor(0.7);
+        logoPanel.setOpaque(false);
+        heroPanel.add(logoPanel);
+    }
+
+    private void initializeRecentProjectsAndTemplates(AutoResizeSplitPane splitPane) {
+        DocumentTabPane tabPane = new DocumentTabPane(true);
 
         // Recent projects list
         initRecentProjects(tabPane);
@@ -131,12 +299,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         // Template list
         initTemplateList(tabPane);
 
-        tabPane.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.DARK_GRAY));
-
-        if (!GeneralUISettings.getInstance().isShowIntroductionTour())
-            add(tabPane, BorderLayout.CENTER);
-        else
-            add(tabPane, BorderLayout.WEST);
+        splitPane.setLeftComponent(tabPane);
     }
 
     private void initTemplateList(DocumentTabPane tabPane) {
@@ -166,8 +329,15 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         // Init search
         templateSearch.addActionListener(e -> refreshTemplateProjects());
 
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.add(templateSearch);
+        JButton downloadTemplatesButton = new JButton("Get more templates", UIUtils.getIconFromResources("actions/browser-download.png"));
+        downloadTemplatesButton.addActionListener(e -> downloadTemplates());
+        toolBar.add(downloadTemplatesButton);
+
         panel.add(templateListScrollPane, BorderLayout.CENTER);
-        panel.add(templateSearch, BorderLayout.NORTH);
+        panel.add(toolBar, BorderLayout.NORTH);
 
         tabPane.addTab("Example projects & templates",
                 UIUtils.getIconFromResources("actions/graduation-cap.png"),
@@ -175,108 +345,15 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton);
     }
 
+    private void downloadTemplates() {
+        JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new ProjectTemplateDownloaderRun(getWorkbench()));
+    }
+
     private void initRecentProjects(DocumentTabPane tabPane) {
         tabPane.addTab("Recent projects",
                 UIUtils.getIconFromResources("actions/view-calendar-time-spent.png"),
                 new RecentProjectsListPanel(getProjectWorkbench()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
-    }
-
-    private void initializeHeaderPanel() {
-        JPanel headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), false);
-        headerPanel.setLayout(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
-        headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
-        JLabel logo = new JLabel(new ImageIcon(UIUtils.getLogo400()));
-        logo.setBorder(BorderFactory.createEmptyBorder(0, 32, 0, 0));
-        headerPanel.add(logo, BorderLayout.WEST);
-
-        FormPanel technicalInfo = new FormPanel(null, FormPanel.NONE);
-        technicalInfo.setOpaque(false);
-        technicalInfo.getContentPanel().setOpaque(false);
-
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
-        Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
-        if (manifestAttributes != null) {
-            String implementationDateString = manifestAttributes.getValue("Implementation-Date");
-            technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(implementationDateString, "N/A")), new JLabel("Build time"), null);
-        }
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(IJ.getVersion(), "N/A")), new JLabel("ImageJ"), null);
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(System.getProperty("java.version"), "N/A")), new JLabel("Java"), null);
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipe.getNodes().getRegisteredNodeInfos().size() + " algorithms"), new JLabel("Registered algorithms"), null);
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
-        technicalInfo.addVerticalGlue();
-
-        headerPanel.add(technicalInfo, BorderLayout.EAST);
-
-        initializeToolbar(headerPanel);
-
-        add(headerPanel, BorderLayout.NORTH);
-    }
-
-    private void initializeToolbar(JPanel topPanel) {
-        JPanel toolBar = new JPanel();
-        toolBar.setBorder(BorderFactory.createEmptyBorder(0, 32, 8, 0));
-        toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
-        toolBar.setOpaque(false);
-
-        JButton openWebsiteButton = new JButton("Visit our website", UIUtils.getIconFromResources("actions/web-browser.png"));
-        openWebsiteButton.setToolTipText("https://www.jipipe.org/");
-        openWebsiteButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/"));
-        openWebsiteButton.setOpaque(false);
-        openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openWebsiteButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton openTutorialsButton = new JButton("Tutorials", UIUtils.getIconFromResources("actions/graduation-cap.png"));
-        openTutorialsButton.setToolTipText("https://www.jipipe.org/tutorials");
-        openTutorialsButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/tutorials"));
-        openTutorialsButton.setOpaque(false);
-        openTutorialsButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openTutorialsButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton openExamplesButton = new JButton("Examples", UIUtils.getIconFromResources("actions/flask.png"));
-        openExamplesButton.setToolTipText("https://www.jipipe.org/examples");
-        openExamplesButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/examples"));
-        openExamplesButton.setOpaque(false);
-        openExamplesButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openExamplesButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton openDocumentationButton = new JButton("Documentation", UIUtils.getIconFromResources("actions/help-info.png"));
-        openDocumentationButton.setToolTipText("https://www.jipipe.org/documentation");
-        openDocumentationButton.addActionListener(e -> UIUtils.openWebsite("https://www.jipipe.org/documentation"));
-        openDocumentationButton.setOpaque(false);
-        openDocumentationButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openDocumentationButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton openCommunityButton = new JButton("Community", UIUtils.getIconFromResources("actions/im-irc.png"));
-        openCommunityButton.setToolTipText("https://forum.image.sc/tag/jipipe");
-        openCommunityButton.addActionListener(e -> UIUtils.openWebsite("https://forum.image.sc/tag/jipipe"));
-        openCommunityButton.setOpaque(false);
-        openCommunityButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openCommunityButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton openSourceCodeButton = new JButton("Source code", UIUtils.getIconFromResources("actions/dialog-xml-editor.png"));
-        openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/");
-        openSourceCodeButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/"));
-        openSourceCodeButton.setOpaque(false);
-        openSourceCodeButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openSourceCodeButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton reportIssueButton = new JButton("Report issue", UIUtils.getIconFromResources("actions/bug.png"));
-        reportIssueButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/issues");
-        reportIssueButton.addActionListener(e -> UIUtils.openWebsite("https://github.com/applied-systems-biology/jipipe/issues"));
-        reportIssueButton.setOpaque(false);
-        reportIssueButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(reportIssueButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        topPanel.add(toolBar, BorderLayout.SOUTH);
     }
 
 }

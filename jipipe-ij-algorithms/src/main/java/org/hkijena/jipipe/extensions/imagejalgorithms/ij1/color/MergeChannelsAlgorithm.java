@@ -27,25 +27,18 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -54,10 +47,11 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels...")
 public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private static final RGBStackMerge RGB_STACK_MERGE = new RGBStackMerge();
-    private InputSlotMapParameterCollection channelColorAssignment;
+    private final InputSlotMapParameterCollection channelColorAssignment;
     private boolean createComposite = false;
 
     /**
@@ -66,10 +60,9 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public MergeChannelsAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(TO_COLOR_RGB_CONVERSION.keySet())
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(ImagePlusGreyscaleData.class)
                 .restrictInputSlotCount(ChannelColor.values().length)
-                .addOutputSlot("Output", "", ImagePlusData.class, "Input", TO_COLOR_RGB_CONVERSION)
-                .allowOutputSlotInheritance(true)
+                .addOutputSlot("Output", "", ImagePlusData.class)
                 .sealOutput()
                 .build());
         channelColorAssignment = new InputSlotMapParameterCollection(ChannelColor.class, this, this::getNewChannelColor, false);
@@ -114,7 +107,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
                 ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
-                    images[i] = new ImagePlusGreyscale8UData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage()).getImage();
+                    images[i] = new ImagePlusGreyscaleData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage()).getImage();
                     if (firstImage == null)
                         firstImage = images[i];
                 }
@@ -285,31 +278,6 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     public void setCreateComposite(boolean createComposite) {
         this.createComposite = createComposite;
     }
-
-    @JIPipeDocumentation(name = "3 channel merge", description = "Loads example parameters that merge three channels.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
-    public void setTo3ChannelExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            for (int i = 0; i < 3; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Input), true);
-            }
-        }
-    }
-
-    @JIPipeDocumentation(name = "2 channel merge", description = "Loads example parameters that merge two channels.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
-    public void setTo2ChannelExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            for (int i = 0; i < 2; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Input), true);
-            }
-        }
-    }
-
 
     /**
      * Color a slice can be mapped to

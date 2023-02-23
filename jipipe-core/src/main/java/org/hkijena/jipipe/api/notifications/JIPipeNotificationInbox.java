@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.api.notifications;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import java.util.Collections;
 import java.util.Set;
@@ -41,23 +43,89 @@ public class JIPipeNotificationInbox {
     }
 
     public void dismissAll() {
+        ImmutableList<JIPipeNotification> copy = ImmutableList.copyOf(notifications);
         notifications.clear();
+        for (JIPipeNotification notification : copy) {
+            eventBus.post(new DismissedEvent(this, notification));
+        }
         eventBus.post(new UpdatedEvent(this));
     }
 
     public void push(JIPipeNotification notification) {
         notification.setInbox(this);
         notifications.add(notification);
+        eventBus.post(new PushedEvent(this, notification));
         eventBus.post(new UpdatedEvent(this));
     }
 
     public void dismiss(JIPipeNotification notification) {
         notifications.remove(notification);
+        eventBus.post(new DismissedEvent(this, notification));
         eventBus.post(new UpdatedEvent(this));
+    }
+
+    public void dismiss(String id) {
+        ImmutableList.copyOf(notifications).stream().filter(notification -> notification.getId().equals(id)).forEach(this::dismiss);
     }
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public boolean isEmpty() {
+        return notifications.isEmpty();
+    }
+
+    /**
+     * Connects all dismisses in this notification inbox to another notification inbox
+     *
+     * @param inbox the target
+     */
+    public void connectDismissTo(JIPipeNotificationInbox inbox) {
+        if (inbox == this)
+            return;
+        eventBus.register(new Object() {
+            @Subscribe
+            public void onDismissed(DismissedEvent event) {
+                inbox.dismiss(event.notification.getId());
+            }
+        });
+    }
+
+    public static class PushedEvent {
+        private final JIPipeNotificationInbox inbox;
+        private final JIPipeNotification notification;
+
+        public PushedEvent(JIPipeNotificationInbox inbox, JIPipeNotification notification) {
+            this.inbox = inbox;
+            this.notification = notification;
+        }
+
+        public JIPipeNotificationInbox getInbox() {
+            return inbox;
+        }
+
+        public JIPipeNotification getNotification() {
+            return notification;
+        }
+    }
+
+    public static class DismissedEvent {
+        private final JIPipeNotificationInbox inbox;
+        private final JIPipeNotification notification;
+
+        public DismissedEvent(JIPipeNotificationInbox inbox, JIPipeNotification notification) {
+            this.inbox = inbox;
+            this.notification = notification;
+        }
+
+        public JIPipeNotificationInbox getInbox() {
+            return inbox;
+        }
+
+        public JIPipeNotification getNotification() {
+            return notification;
+        }
     }
 
     /**

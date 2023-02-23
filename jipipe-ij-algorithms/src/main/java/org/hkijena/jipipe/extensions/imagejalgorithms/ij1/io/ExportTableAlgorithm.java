@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -14,20 +15,20 @@ import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Export table", description = "Exports a results table to CSV")
+@JIPipeDocumentation(name = "Export table", description = "Exports a results table to CSV/XLSX")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
@@ -61,36 +62,38 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            if(relativeToProjectDir && getProjectDirectory() != null) {
+            if (relativeToProjectDir && getProjectDirectory() != null) {
                 outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
-            }
-            else {
+            } else {
                 outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
             }
         } else {
             outputPath = outputDirectory;
         }
 
-        // Generate subfolder
-        Path subFolder = exporter.generateSubFolder(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-        if (subFolder != null) {
-            outputPath = outputPath.resolve(subFolder);
-        }
+        // Generate the path
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
-        try {
-            Files.createDirectories(outputPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        // If absolute -> use the path, otherwise use output directory
+        if (generatedPath.isAbsolute()) {
+            outputPath = generatedPath;
+        } else {
+            outputPath = outputPath.resolve(generatedPath);
         }
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        String baseName = exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         Path outputFile;
         switch (fileFormat) {
             case CSV: {
-                outputFile = outputPath.resolve(baseName + ".csv");
+                outputFile = PathUtils.ensureExtension(outputPath, ".csv");
                 table.saveAsCSV(outputPath);
+            }
+            break;
+            case XLSX: {
+                outputFile = PathUtils.ensureExtension(outputPath, ".xlsx");
+                table.saveAsXLSX(outputPath);
             }
             break;
             default:
@@ -144,6 +147,7 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     public enum FileFormat {
-        CSV
+        CSV,
+        XLSX
     }
 }

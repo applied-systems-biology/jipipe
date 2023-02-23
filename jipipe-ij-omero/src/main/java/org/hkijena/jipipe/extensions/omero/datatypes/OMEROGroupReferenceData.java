@@ -38,6 +38,9 @@ import java.nio.file.Path;
 public class OMEROGroupReferenceData implements JIPipeData {
     private long groupId;
 
+    public OMEROGroupReferenceData() {
+    }
+
     public OMEROGroupReferenceData(long groupId) {
         this.groupId = groupId;
     }

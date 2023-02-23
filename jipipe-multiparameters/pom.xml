@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.74.0-SNAPSHOT</version>
+        <version>1.79.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-multiparameters</artifactId>
-    <version>1.74.0-SNAPSHOT</version>
+    <version>1.79.0-SNAPSHOT</version>
 
     <name>jipipe-multiparameters</name>
     <description>JIPipe Parameter Data Processing</description>
@@ -76,16 +76,6 @@
         <license.copyrightOwners>N/A</license.copyrightOwners>
         <license.projectName>JIPipe-Multi-Parameters</license.projectName>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-core</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>

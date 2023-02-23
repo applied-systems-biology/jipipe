@@ -9,21 +9,19 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndices;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,6 +31,7 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks")
 public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter expressionZ = new DefaultExpressionParameter("z");
@@ -46,12 +45,16 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalAnnotationNameParameter annotateC = new OptionalAnnotationNameParameter("C", true);
     private OptionalAnnotationNameParameter annotateT = new OptionalAnnotationNameParameter("T", true);
 
+    private final CustomExpressionVariablesParameter customFilterVariables;
+
     public ExpressionSlicerAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
     }
 
     public ExpressionSlicerAlgorithm(ExpressionSlicerAlgorithm other) {
         super(other);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
         this.expressionC = new DefaultExpressionParameter(other.expressionC);
         this.expressionZ = new DefaultExpressionParameter(other.expressionZ);
         this.expressionT = new DefaultExpressionParameter(other.expressionT);
@@ -71,6 +74,8 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Collect indices
         List<ImageSliceIndices> imageSliceIndicesList = new ArrayList<>();
         ExpressionVariables parameters = new ExpressionVariables();
+        parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
+        customFilterVariables.writeToVariables(parameters, true, "custom.", true, "custom");
         parameters.set("width", img.getWidth());
         parameters.set("height", img.getHeight());
         parameters.set("size_z", img.getNSlices());
@@ -187,10 +192,20 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
+    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomFilterVariables() {
+        return customFilterVariables;
+    }
+
     @JIPipeDocumentation(name = "Generate Z slices", description = "Expression that is executed for each Z/C/T slice and generates an array of slice indices (or a single slice index) that " +
             "determine which Z indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-z")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getExpressionZ() {
         return expressionZ;
     }
@@ -204,6 +219,9 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "determine which C indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-c")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getExpressionC() {
         return expressionC;
     }
@@ -217,6 +235,9 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "determine which T indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-t")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getExpressionT() {
         return expressionT;
     }
@@ -301,74 +322,6 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("annotate-t")
     public void setAnnotateT(OptionalAnnotationNameParameter annotateT) {
         this.annotateT = annotateT;
-    }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            Object result = JOptionPane.showInputDialog(parent.getWindow(), "Please select the example:",
-                    "Load example", JOptionPane.PLAIN_MESSAGE, null, Examples.values(), Examples.SplitSlices);
-            if (result instanceof Examples) {
-                ((Examples) result).apply(this);
-            }
-        }
-    }
-
-    private enum Examples {
-        SplitSlices("Split all slices",
-                "z",
-                "c",
-                "t",
-                true,
-                true,
-                true),
-        EverySecondZSlice("Remove every second Z slice",
-                "MAKE_SEQUENCE(0, size_z, 2)",
-                "c",
-                "t",
-                false,
-                false,
-                false),
-        OverlappingSlices("Split Z (overlapping)",
-                "ARRAY(z, z+1)",
-                "c",
-                "t",
-                true,
-                false,
-                false);
-
-        private final String name;
-        private final String expressionZ;
-        private final String expressionC;
-        private final String expressionT;
-        private final boolean iterateZ;
-        private final boolean iterateC;
-        private final boolean iterateT;
-
-        Examples(String name, String expressionZ, String expressionC, String expressionT, boolean iterateZ, boolean iterateC, boolean iterateT) {
-            this.name = name;
-            this.expressionZ = expressionZ;
-            this.expressionC = expressionC;
-            this.expressionT = expressionT;
-            this.iterateZ = iterateZ;
-            this.iterateC = iterateC;
-            this.iterateT = iterateT;
-        }
-
-        public void apply(ExpressionSlicerAlgorithm algorithm) {
-            ParameterUtils.setParameter(algorithm, "expression-z", new DefaultExpressionParameter(expressionZ));
-            ParameterUtils.setParameter(algorithm, "expression-c", new DefaultExpressionParameter(expressionC));
-            ParameterUtils.setParameter(algorithm, "expression-t", new DefaultExpressionParameter(expressionT));
-            ParameterUtils.setParameter(algorithm, "iterate-per-z", iterateZ);
-            ParameterUtils.setParameter(algorithm, "iterate-per-c", iterateC);
-            ParameterUtils.setParameter(algorithm, "iterate-per-t", iterateT);
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

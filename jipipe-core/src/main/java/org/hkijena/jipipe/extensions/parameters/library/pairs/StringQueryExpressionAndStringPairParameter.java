@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.pairs;
 
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
@@ -22,6 +23,10 @@ import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
  * A parameter that renames a matching string into another string
  */
 @PairParameterSettings(singleRow = false)
+@JIPipeDocumentationDescription(description = "The string selection parameter has two modes: " +
+        "(1) Selecting an existing string, and (2) Matching an existing strings by boolean operators<br/>" +
+        "<ol><li>Type in the string in double quotes. Example: <pre>\"hello world\"</pre></li>" +
+        "<li>The function iterates through all strings. It should return TRUE for one of them. You will have a variable 'value' available within the expression. Example: <pre>value CONTAINS \"hello\"</pre></li></ol>")
 public class StringQueryExpressionAndStringPairParameter extends PairParameter<StringQueryExpression, String> {
 
     /**

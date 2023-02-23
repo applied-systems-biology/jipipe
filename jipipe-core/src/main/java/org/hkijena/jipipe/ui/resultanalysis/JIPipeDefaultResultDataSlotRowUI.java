@@ -25,8 +25,11 @@ import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImport
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
@@ -35,6 +38,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -110,6 +114,11 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
         if (!getRow().getTextAnnotations().isEmpty()) {
             JButton annotationButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
             JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(annotationButton);
+            {
+                JMenuItem toTableItem = new JMenuItem("Display as table", UIUtils.getIconFromResources("data-types/results-table.png"));
+                toTableItem.addActionListener(e -> displayAnnotationsAsTable(getRow().getTextAnnotations()));
+                annotationMenu.add(toTableItem);
+            }
             for (JIPipeTextAnnotation annotation : getRow().getTextAnnotations()) {
                 JMenu entryMenu = new JMenu(annotation.getName());
                 entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
@@ -178,6 +187,19 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 add(menuButton);
             }
         }
+    }
+
+    private void displayAnnotationsAsTable(List<JIPipeTextAnnotation> textAnnotations) {
+        ResultsTableData data = new ResultsTableData();
+        data.addStringColumn("Name");
+        data.addStringColumn("Value");
+        textAnnotations.stream().sorted(Comparator.comparing(JIPipeTextAnnotation::getName, NaturalOrderComparator.INSTANCE)).forEach(annotation -> {
+            int row = data.addRow();
+            data.setValueAt(annotation.getName(), row, "Name");
+            data.setValueAt(annotation.getValue(), row, "Value");
+        });
+
+        TableEditor.openWindow(getWorkbench(), data, getDisplayName() + " [Annotations]");
     }
 
     private void exportAsFolder() {

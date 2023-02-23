@@ -21,7 +21,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -94,7 +95,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
     @Override
     public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
-        return annotations.get(klass).stream().map(ann -> (T)ann).collect(Collectors.toList());
+        return annotations.get(klass).stream().map(ann -> (T) ann).collect(Collectors.toList());
     }
 
     @Override

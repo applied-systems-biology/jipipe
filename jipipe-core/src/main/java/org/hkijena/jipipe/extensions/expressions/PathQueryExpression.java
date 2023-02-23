@@ -33,7 +33,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
         super(expression);
     }
 
-    public PathQueryExpression(ExpressionParameter other) {
+    public PathQueryExpression(AbstractExpressionParameter other) {
         super(other);
     }
 

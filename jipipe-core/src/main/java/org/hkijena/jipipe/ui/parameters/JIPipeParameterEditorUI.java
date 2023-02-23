@@ -19,16 +19,22 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
+import org.scijava.Disposable;
 
 import java.util.Objects;
 
 /**
  * A UI for a parameter type
  */
-public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual {
-    private final JIPipeParameterAccess parameterAccess;
+public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual, Disposable {
+    public static final int CONTROL_STYLE_PANEL = 1;
+    public static final int CONTROL_STYLE_LIST = 2;
+    public static final int CONTROL_STYLE_CHECKBOX = 4;
+
+    private JIPipeParameterAccess parameterAccess;
     private Context context;
     private int preventReload = 0;
     private boolean reloadScheduled = false;
@@ -126,6 +132,18 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
     }
 
     /**
+     * Returns the "style" of the control.
+     * This is only utilized for the automated ordering within {@link ParameterPanel}
+     * Controls with the same style are grouped together to ensure a consistent visual style (reduce clutter)
+     * Please note that the grouping enforced by isUILabelEnabled() has precedence
+     *
+     * @return the UI control style for {@link ParameterPanel} (sorting only)
+     */
+    public int getUIControlStyleType() {
+        return CONTROL_STYLE_PANEL;
+    }
+
+    /**
      * Reloads the value from the stored parameter
      */
     public abstract void reload();
@@ -137,6 +155,9 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      */
     @Subscribe
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if(parameterAccess == null) {
+            return;
+        }
         if (!isDisplayable()) {
             try {
                 parameterAccess.getSource().getEventBus().unregister(this);
@@ -151,6 +172,19 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
                 --preventReload;
             }
         }
+    }
+
+    @Override
+    public void dispose() {
+        if(parameterAccess != null) {
+            try {
+                parameterAccess.getSource().getEventBus().unregister(this);
+            }
+            catch (IllegalArgumentException e) {
+            }
+        }
+        UIUtils.removeAllWithDispose(this);
+        parameterAccess = null;
     }
 
     @Override

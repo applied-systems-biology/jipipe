@@ -23,16 +23,13 @@ import loci.plugins.in.ImporterOptions;
 import loci.plugins.util.WindowTools;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -44,6 +41,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerL
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.roi.RectangleList;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.awt.*;
@@ -55,12 +53,13 @@ import java.util.List;
  * BioFormats importer wrapper
  */
 @JIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
-@JIPipeInputSlot(value = FileData.class, slotName = "Files")
-@JIPipeOutputSlot(value = OMEImageData.class, slotName = "Image")
+@JIPipeInputSlot(value = FileData.class, slotName = "Input", description = "The image file(s)", autoCreate = true)
+@JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", description = "The imported data", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Importer")
 public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEColorMode colorMode = OMEColorMode.Default;
@@ -84,11 +83,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public BioFormatsImporter(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "The image file", FileData.class)
-                .addOutputSlot("Output", "The imported data", OMEImageData.class, null)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         seriesToImport.add(0);
     }
 
@@ -154,7 +149,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
             options.setCropRegion(i, new Region(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
         }
 
-        try {
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             ImportProcess process = new ImportProcess(options);
             if (!process.execute()) {
                 throw new NullPointerException();

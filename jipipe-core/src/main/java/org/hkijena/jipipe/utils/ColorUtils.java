@@ -13,8 +13,13 @@
 
 package org.hkijena.jipipe.utils;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
+
 import java.awt.*;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ColorUtils {
@@ -229,6 +234,104 @@ public class ColorUtils {
             return new Color(rgb.getRed(), rgb.getGreen(), rgb.getBlue(), alpha);
         } else {
             return Color.decode(s);
+        }
+    }
+
+    public static Color setAlpha(Color color, int alpha) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+    }
+
+    public static Color[] renderGradient(List<GradientStop> stops, int numColors) {
+        stops.sort(Comparator.naturalOrder());
+        if (stops.get(0).position > 0)
+            stops.add(0, new GradientStop(0, stops.get(0).getColor()));
+        if (stops.get(stops.size() - 1).position < 1)
+            stops.add(new GradientStop(1, stops.get(stops.size() - 1).getColor()));
+        int[] reds = new int[numColors + 1];
+        int[] greens = new int[numColors + 1];
+        int[] blues = new int[numColors + 1];
+        int currentFirstStop = 0;
+        int currentLastStop = 1;
+        int startIndex = 0;
+        int endIndex = (int) (numColors * stops.get(currentLastStop).position);
+        for (int i = 0; i < numColors + 1; i++) {
+            if (i != numColors && i >= endIndex) {
+                startIndex = i;
+                ++currentFirstStop;
+                ++currentLastStop;
+                endIndex = (int) (numColors * stops.get(currentLastStop).position);
+            }
+            Color currentStart = stops.get(currentFirstStop).getColor();
+            Color currentEnd = stops.get(currentLastStop).getColor();
+            int r0 = currentStart.getRed();
+            int g0 = currentStart.getGreen();
+            int b0 = currentStart.getBlue();
+            int r1 = currentEnd.getRed();
+            int g1 = currentEnd.getGreen();
+            int b1 = currentEnd.getBlue();
+            int r = (int) (r0 + (r1 - r0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            int g = (int) (g0 + (g1 - g0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            int b = (int) (b0 + (b1 - b0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            reds[i] = r;
+            greens[i] = g;
+            blues[i] = b;
+        }
+        Color[] result = new Color[numColors];
+        for (int i = 0; i < numColors; i++) {
+            result[i] = new Color(reds[i], greens[i], blues[i]);
+        }
+        return result;
+    }
+
+    public static Color multiplyHSB(Color color, float factorH, float factorS, float factorB) {
+        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        return Color.getHSBColor(Math.max(0, Math.min(1, hsb[0] * factorH)), Math.max(0, Math.min(1, hsb[1] * factorS)), Math.max(0, Math.min(1, hsb[2] * factorB)));
+    }
+
+    public static Color mix(Color first, Color second, double percentage) {
+        return new Color((first.getRed() + second.getRed()) / 2, (first.getGreen() + second.getGreen()) / 2, (first.getBlue() + second.getBlue()) / 2);
+    }
+
+    public static class GradientStop implements Comparable<GradientStop> {
+        private Color color;
+        private float position;
+
+        public GradientStop() {
+        }
+
+        public GradientStop(float position, Color color) {
+            this.position = position;
+            this.color = color;
+        }
+
+        public GradientStop(GradientStop other) {
+            this.position = other.position;
+            this.color = other.color;
+        }
+
+        @JsonGetter("position")
+        public float getPosition() {
+            return position;
+        }
+
+        @JsonSetter("position")
+        public void setPosition(float position) {
+            this.position = position;
+        }
+
+        @JsonGetter("color")
+        public Color getColor() {
+            return color;
+        }
+
+        @JsonSetter("color")
+        public void setColor(Color color) {
+            this.color = color;
+        }
+
+        @Override
+        public int compareTo(GradientStop o) {
+            return Float.compare(position, o.position);
         }
     }
 }

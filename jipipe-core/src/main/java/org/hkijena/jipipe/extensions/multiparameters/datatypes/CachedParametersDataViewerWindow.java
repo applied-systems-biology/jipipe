@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.multiparameters.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -73,7 +73,7 @@ public class CachedParametersDataViewerWindow extends JIPipeCacheDataViewerWindo
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         ParametersData data = virtualData.getData(ParametersData.class, progressInfo);
         viewer.setParametersData(data);
     }

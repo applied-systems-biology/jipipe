@@ -90,10 +90,6 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("data-type")
     public void setDataType(JIPipeDataInfoRef dataType) {
         this.dataType = dataType;
-        if (dataType.getInfo() != null)
-            getFirstOutputSlot().setAcceptedDataType(dataType.getInfo().getDataClass());
-        else
-            getFirstOutputSlot().setAcceptedDataType(JIPipeData.class);
     }
 
     @Override

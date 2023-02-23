@@ -21,11 +21,12 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
+import org.hkijena.jipipe.extensions.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -42,12 +43,12 @@ import java.util.Map;
         "[node-id]/[node parameter key]")
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class JIPipeProjectParameterDefinition extends ParametersDataTableDefinition {
+public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgorithm {
     public JIPipeProjectParameterDefinition(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public JIPipeProjectParameterDefinition(ParametersDataTableDefinition other) {
+    public JIPipeProjectParameterDefinition(DefineParametersTableAlgorithm other) {
         super(other);
     }
 
@@ -57,7 +58,7 @@ public class JIPipeProjectParameterDefinition extends ParametersDataTableDefinit
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
-                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeIssueReport());
+                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeIssueReport(), new JIPipeNotificationInbox());
                 JIPipeProjectInfoParameters infoParameters = project.getPipelineParameters();
                 getParameterTable().clear();
                 JIPipeParameterTree tree = new JIPipeParameterTree(infoParameters);

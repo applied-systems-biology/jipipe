@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
+import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +35,7 @@ import java.util.Set;
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
-@ExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariableSource.class)
+@ExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariableSource.class, hint = "table column/data")
 @PairParameterSettings(keyLabel = "Column source", valueLabel = "Column name/value")
 @JIPipeDocumentationDescription(description = "This parameter can be used to either select an existing column from a table or to generate a new column by providing a value for each row." +
         "<ul>" +
@@ -95,6 +97,16 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
             Object[] rawData = new Object[table.getRowCount()];
             boolean isNumeric = true;
             boolean success = true;
+
+            // Write statistics into variables
+            for (int col = 0; col < table.getColumnCount(); col++) {
+                TableColumn column = table.getColumnReference(col);
+                if (column.isNumeric()) {
+                    variables.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
+                } else {
+                    variables.set("all." + column.getLabel(), new ArrayList<>(Arrays.asList(column.getDataAsString(column.getRows()))));
+                }
+            }
             try {
                 variables.set("num_rows", table.getRowCount());
                 for (int row = 0; row < table.getRowCount(); row++) {
@@ -142,6 +154,13 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         report.checkNonEmpty(getValue().getExpression(), this);
     }
 
+    @Override
+    public DefaultExpressionParameter getValue() {
+        // Add the UI variables
+        super.getValue().getAdditionalUIVariables().addAll(VariableSource.VARIABLES);
+        return super.getValue();
+    }
+
     public enum TableSourceType {
         Generate,
         ExistingColumn;
@@ -151,7 +170,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         public String toString() {
             switch (this) {
                 case Generate:
-                    return "Generate data";
+                    return "Generate (apply expression per row)";
                 case ExistingColumn:
                     return "Select existing column";
                 default:
@@ -161,12 +180,13 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {
-        private final static Set<ExpressionParameterVariable> VARIABLES;
+        public final static Set<ExpressionParameterVariable> VARIABLES;
 
         static {
             VARIABLES = new HashSet<>();
             VARIABLES.add(new ExpressionParameterVariable("value", "For selecting columns: Contains the currently selected column. Return TRUE if the column should be selected.", "value"));
-            VARIABLES.add(new ExpressionParameterVariable("<Other column values>", "For generating columns: The values of the other columns are available as variables", ""));
+            VARIABLES.add(new ExpressionParameterVariable("<Column>", "For generating columns: The value of the column in the current row", ""));
+            VARIABLES.add(new ExpressionParameterVariable("all.<Column>", "For generating columns: All values of a column", ""));
             VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
             VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
         }

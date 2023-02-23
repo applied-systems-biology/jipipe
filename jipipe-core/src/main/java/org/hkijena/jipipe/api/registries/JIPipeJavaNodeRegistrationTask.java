@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import java.net.URL;
 
@@ -27,10 +28,10 @@ import java.net.URL;
  */
 public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistrationTask {
 
-    private JIPipeDependency source;
-    private String id;
-    private Class<? extends JIPipeGraphNode> nodeClass;
-    private URL icon;
+    private final JIPipeDependency source;
+    private final String id;
+    private final Class<? extends JIPipeGraphNode> nodeClass;
+    private final URL icon;
     private boolean alreadyRegistered = false;
 
     /**
@@ -39,7 +40,7 @@ public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistratio
      * @param id        The id
      * @param nodeClass The algorithm class
      * @param source    The dependency the registers the algorithm
-     * @param icon the icon
+     * @param icon      the icon
      */
     public JIPipeJavaNodeRegistrationTask(String id, Class<? extends JIPipeGraphNode> nodeClass, JIPipeDependency source, URL icon) {
         this.source = source;
@@ -62,8 +63,12 @@ public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistratio
         alreadyRegistered = true;
         JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo(id, nodeClass);
         JIPipe.getNodes().register(info, source);
-        if (icon != null)
-            JIPipe.getNodes().registerIcon(info, icon);
+        if (nodeClass.getAnnotation(Deprecated.class) != null) {
+            JIPipe.getNodes().registerIcon(info, UIUtils.getIconURLFromResources("emblems/deprecated.png"));
+        } else {
+            if (icon != null)
+                JIPipe.getNodes().registerIcon(info, icon);
+        }
     }
 
     @Override

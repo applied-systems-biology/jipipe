@@ -17,7 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.ui.components.BackgroundPanel;
+import org.hkijena.jipipe.ui.components.ImageFrame;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -118,7 +118,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
 
     private void initializeHeaderPanel() {
         JPanel headerPanel;
-        headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), true);
+        headerPanel = new ImageFrame(UIUtils.getHeaderPanelBackground(), true, ImageFrame.Mode.FitHeight, false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));

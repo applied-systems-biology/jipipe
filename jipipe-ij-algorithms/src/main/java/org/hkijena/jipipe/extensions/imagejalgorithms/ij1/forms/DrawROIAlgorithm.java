@@ -14,7 +14,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -63,9 +62,9 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
         List<JIPipeMergingDataBatch> dataBatches;
 
         // No input slots -> Nothing to do
-        if (getEffectiveInputSlotCount() == 0) {
+        if (getDataInputSlotCount() == 0) {
             return;
-        } else if (getEffectiveInputSlotCount() == 1) {
+        } else if (getDataInputSlotCount() == 1) {
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 if (progressInfo.isCancelled())
@@ -101,7 +100,7 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
 
         // Create the form
         JIPipeDataSlot formsSlot = JIPipeDataSlot.createSingletonSlot(new ROIDrawerFormData(dataBatches, this), this);
-        formsSlot.addAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw ROIs"), true);
+        formsSlot.addTextAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw ROIs"), true);
 
         // Form user input
         progressInfo.log("Waiting for user input ...");

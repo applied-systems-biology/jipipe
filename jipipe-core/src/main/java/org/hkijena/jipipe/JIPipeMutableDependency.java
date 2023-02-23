@@ -23,7 +23,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A JSON-serializable {@link JIPipeDependency}.
@@ -35,12 +37,20 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     private String dependencyId;
     private String dependencyVersion = "1.0.0";
     private List<JIPipeImageJUpdateSiteDependency> imageJUpdateSiteDependencies = new ArrayList<>();
+
+    private Set<JIPipeDependency> dependencies = new HashSet<>();
     private List<JIPipeImageJUpdateSiteDependency> imageJUpdateSites = new ArrayList<>();
 
     /**
      * Creates a new instance
      */
     public JIPipeMutableDependency() {
+    }
+
+    public JIPipeMutableDependency(String dependencyId, String dependencyVersion, String name) {
+        this.dependencyId = dependencyId;
+        this.dependencyVersion = dependencyVersion;
+        this.metadata.setName(name);
     }
 
     /**
@@ -52,6 +62,9 @@ public class JIPipeMutableDependency implements JIPipeDependency {
         this.metadata = new JIPipeMetadata(other.getMetadata());
         this.dependencyId = other.getDependencyId();
         this.dependencyVersion = other.getDependencyVersion();
+        for (JIPipeDependency dependency : other.getDependencies()) {
+            this.dependencies.add(new JIPipeMutableDependency(dependency));
+        }
     }
 
     @Override
@@ -140,5 +153,15 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     @JsonSetter("ij:update-site-providers")
     public void setImageJUpdateSites(List<JIPipeImageJUpdateSiteDependency> imageJUpdateSites) {
         this.imageJUpdateSites = imageJUpdateSites;
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return dependencies;
+    }
+
+    @JsonSetter("dependencies")
+    public void setDependencies(Set<JIPipeDependency> dependencies) {
+        this.dependencies = dependencies;
     }
 }

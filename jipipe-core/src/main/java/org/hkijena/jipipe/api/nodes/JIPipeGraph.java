@@ -27,10 +27,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -38,6 +35,7 @@ import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.looping.LoopEndNode;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -63,7 +61,7 @@ import java.util.stream.Collectors;
  */
 @JsonSerialize(using = JIPipeGraph.Serializer.class)
 @JsonDeserialize(using = JIPipeGraph.Deserializer.class)
-public class JIPipeGraph implements JIPipeValidatable {
+public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyComparable {
 
     private DefaultDirectedGraph<JIPipeDataSlot, JIPipeGraphEdge> graph = new DefaultDirectedGraph<>(JIPipeGraphEdge.class);
     private BiMap<UUID, String> nodeAliasIds = HashBiMap.create();
@@ -571,19 +569,23 @@ public class JIPipeGraph implements JIPipeValidatable {
         graph.addEdge(source, target, new JIPipeGraphEdge(userCanDisconnect));
         postChangedEvent();
         getEventBus().post(new NodeConnectedEvent(this, source, target));
-        source.getNode().onSlotConnected(new NodeConnectedEvent(this, source, target));
-        target.getNode().onSlotConnected(new NodeConnectedEvent(this, source, target));
     }
 
     /**
      * Extracts all parameters as tree.
      *
-     * @param useAliasIds if enabled, paths will use alias Ids instead of UUIDs
+     * @param useAliasIds            if enabled, paths will use alias Ids instead of UUIDs
+     * @param restrictToCompartments if not null or empty, restrict to specific compartments
      * @return the tree
      */
-    public JIPipeParameterTree getParameterTree(boolean useAliasIds) {
+    public JIPipeParameterTree getParameterTree(boolean useAliasIds, Set<UUID> restrictToCompartments) {
         JIPipeParameterTree tree = new JIPipeParameterTree();
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
+            if (restrictToCompartments != null && !restrictToCompartments.isEmpty()) {
+                UUID compartmentUUID = entry.getValue().getCompartmentUUIDInParentGraph();
+                if (!restrictToCompartments.contains(compartmentUUID))
+                    continue;
+            }
             String id;
             if (useAliasIds)
                 id = getAliasIdOf(entry.getValue());
@@ -658,6 +660,8 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return The output slot that generates data for the input. Null if no source exists.
      */
     public Set<JIPipeDataSlot> getInputIncomingSourceSlots(JIPipeDataSlot target) {
+        if (!graph.containsVertex(target))
+            return Collections.emptySet();
         if (target.isInput()) {
             Set<JIPipeGraphEdge> edges = graph.incomingEdgesOf(target);
             Set<JIPipeDataSlot> result = new HashSet<>();
@@ -677,6 +681,8 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return All slots that receive data from the output slot
      */
     public Set<JIPipeDataSlot> getOutputOutgoingTargetSlots(JIPipeDataSlot source) {
+        if (!graph.containsVertex(source))
+            return Collections.emptySet();
         if (source.isOutput()) {
             Set<JIPipeGraphEdge> edges = graph.outgoingEdgesOf(source);
             Set<JIPipeDataSlot> result = new HashSet<>();
@@ -751,8 +757,6 @@ public class JIPipeGraph implements JIPipeValidatable {
             graph.removeEdge(source, target);
             getEventBus().post(new NodeDisconnectedEvent(this, source, target));
             postChangedEvent();
-            source.getNode().onSlotDisconnected(new NodeDisconnectedEvent(this, source, target));
-            target.getNode().onSlotDisconnected(new NodeDisconnectedEvent(this, source, target));
             return true;
         }
         return false;
@@ -886,15 +890,16 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Loads this graph from JSON
      *
-     * @param jsonNode JSON data
-     * @param issues   issues reported during deserializing
+     * @param jsonNode      JSON data
+     * @param issues        issues reported during deserializing
+     * @param notifications notifications for the user
      */
-    public void fromJson(JsonNode jsonNode, JIPipeIssueReport issues) {
+    public void fromJson(JsonNode jsonNode, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
         if (!jsonNode.has("nodes"))
             return;
 
         // Load nodes
-        nodesFromJson(jsonNode, issues);
+        nodesFromJson(jsonNode, issues, notifications);
 
         // Load edges
         edgesFromJson(jsonNode, issues);
@@ -994,7 +999,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
     }
 
-    public void nodesFromJson(JsonNode jsonNode, JIPipeIssueReport issues) {
+    public void nodesFromJson(JsonNode jsonNode, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
         for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("nodes").fields())) {
             JsonNode currentNodeJson = entry.getValue();
 
@@ -1037,7 +1042,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
                 JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
                 JIPipeGraphNode node = info.newInstance();
-                node.fromJson(currentNodeJson, issues.resolve("Nodes").resolve(id));
+                node.fromJson(currentNodeJson, issues.resolve("Nodes").resolve(id), notifications);
                 insertNode(nodeUUID, node, compartmentUUID);
 //                System.out.println("Insert: " + algorithm + " alias " + aliasId + " in compartment " + compartmentUUID);
                 if (aliasId != null) {
@@ -1059,20 +1064,24 @@ public class JIPipeGraph implements JIPipeValidatable {
      * The input is not copied!
      *
      * @param otherGraph The other graph
-     * @return A map from ID in source graph to algorithm in target graph
+     * @return A map from old UUID in source graph to the node in the target graph
      */
     public Map<UUID, JIPipeGraphNode> mergeWith(JIPipeGraph otherGraph) {
-        Map<UUID, JIPipeGraphNode> insertedNodes = new HashMap<>();
+        Map<UUID, JIPipeGraphNode> oldToNewMapping = new HashMap<>();
+        Map<UUID, JIPipeGraphNode> newToNewMapping = new HashMap<>();
         for (JIPipeGraphNode node : otherGraph.getGraphNodes()) {
+            UUID oldUUID = node.getUUIDInParentGraph();
             UUID newId = insertNode(node, otherGraph.getCompartmentUUIDOf(node));
-            insertedNodes.put(newId, node);
+            oldToNewMapping.put(oldUUID, node);
+            newToNewMapping.put(newId, node);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : otherGraph.getSlotEdges()) {
-            JIPipeGraphNode copySource = insertedNodes.get(edge.getKey().getNode().getUUIDInParentGraph());
-            JIPipeGraphNode copyTarget = insertedNodes.get(edge.getValue().getNode().getUUIDInParentGraph());
+            // Info: the parent graph was now set by the target graph
+            JIPipeGraphNode copySource = newToNewMapping.get(edge.getKey().getNode().getUUIDInParentGraph());
+            JIPipeGraphNode copyTarget = newToNewMapping.get(edge.getValue().getNode().getUUIDInParentGraph());
             connect(copySource.getOutputSlotMap().get(edge.getKey().getName()), copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
-        return insertedNodes;
+        return oldToNewMapping;
     }
 
     /**
@@ -1139,8 +1148,13 @@ public class JIPipeGraph implements JIPipeValidatable {
         return Collections.unmodifiableList(result);
     }
 
+    public JIPipeGraphConnection getConnection(JIPipeDataSlot source, JIPipeDataSlot target) {
+        JIPipeGraphEdge edge = graph.getEdge(source, target);
+        return new JIPipeGraphConnection(this, source, target, edge);
+    }
+
     /**
-     * Returns all predecessor algorithms of an algorithm. The predecessors are ordered according to the list of traversed algorithms (topological order)
+     * Returns ALL predecessor algorithms of an algorithm. The predecessors are ordered according to the list of traversed algorithms (topological order)
      *
      * @param target    the target algorithm
      * @param traversed list of algorithms to sort by (usually this is in topological order)
@@ -1815,6 +1829,39 @@ public class JIPipeGraph implements JIPipeValidatable {
         return this.nodeUUIDs.containsKey(nodeUUID);
     }
 
+    @Override
+    public boolean functionallyEquals(Object other) {
+        if(other instanceof JIPipeGraph) {
+            JIPipeGraph otherGraph = (JIPipeGraph) other;
+            if(graph.vertexSet().size() != otherGraph.graph.vertexSet().size())
+                return false;
+            if(graph.edgeSet().size() != otherGraph.graph.edgeSet().size())
+                return false;
+
+            // Compare nodes by UUID (if we find the same UUID, we can be sure) as UUIDs are unlikely to collide
+            for (Map.Entry<UUID, JIPipeGraphNode> hereEntry : nodeUUIDs.entrySet()) {
+                JIPipeGraphNode thisNode = hereEntry.getValue();
+                JIPipeGraphNode otherNode = otherGraph.getNodeByUUID(hereEntry.getKey());
+                if(otherNode != null && !thisNode.functionallyEquals(otherNode)) {
+                    return false;
+                }
+            }
+
+            // TODO: Comparison of edges (outside the edge set)
+
+            return true;
+        }
+        return false;
+    }
+
+    public void disconnect(JIPipeGraphConnection connection, boolean user) {
+        disconnect(connection.getSource(), connection.getTarget(), user);
+    }
+
+    public void disconnect(JIPipeGraphConnection connection) {
+        disconnect(connection.getSource(), connection.getTarget(), true);
+    }
+
     /**
      * Serializes an {@link JIPipeGraph}
      */
@@ -1880,7 +1927,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         @Override
         public JIPipeGraph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeGraph graph = new JIPipeGraph();
-            graph.fromJson(jsonParser.readValueAsTree(), new JIPipeIssueReport());
+            graph.fromJson(jsonParser.readValueAsTree(), new JIPipeIssueReport(), new JIPipeNotificationInbox());
             return graph;
         }
     }

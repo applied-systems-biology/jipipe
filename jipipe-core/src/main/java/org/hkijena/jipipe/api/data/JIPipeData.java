@@ -40,12 +40,13 @@ import java.util.stream.Collectors;
  * Additionally, there must be an annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
  * The static importData(@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
  * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
- *
- * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeVirtualData} were adapted to handle the close() automatically.
+ * <p>
+ * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeDataItemStore} were adapted to handle the close() automatically.
  */
-@JIPipeDocumentation(name = "Data", description = "Generic data")
+@JIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@JIPipeCommonData
 public interface JIPipeData extends Closeable, AutoCloseable {
 
     /**
@@ -112,6 +113,17 @@ public interface JIPipeData extends Closeable, AutoCloseable {
     static boolean isHeavy(Class<? extends JIPipeData> klass) {
         return klass.getAnnotationsByType(JIPipeHeavyData.class).length > 0;
     }
+
+    /**
+     * Returns true if this data is commonly used (only for UI)
+     *
+     * @param klass Data class
+     * @return If this data is commonly used
+     */
+    static boolean isCommon(Class<? extends JIPipeData> klass) {
+        return klass.getAnnotationsByType(JIPipeCommonData.class).length > 0;
+    }
+
 
     /**
      * Returns the storage documentation for the data type or null if none was provided.
@@ -277,7 +289,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
                     BufferedImage image = new BufferedImage(trueWidth, trueHeight, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g = (Graphics2D) image.getGraphics();
                     component.print(g);
-                    try(OutputStream stream = storage.write(size.width + "x" + size.height + ".png")) {
+                    try (OutputStream stream = storage.write(size.width + "x" + size.height + ".png")) {
                         ImageIO.write(image, "PNG", stream);
                         metadata.getThumbnails().add(new JIPipeDataThumbnailsMetadata.Thumbnail(size.width + "x" + size.height, size, Paths.get(size.width + "x" + size.height + ".png"), new ArrayList<>()));
                     } catch (IOException e) {
@@ -288,7 +300,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
                 e.printStackTrace();
             }
         }
-        if(!metadata.getThumbnails().isEmpty()) {
+        if (!metadata.getThumbnails().isEmpty()) {
             storage.writeJSON(Paths.get("thumbnails.json"), metadata);
         }
     }

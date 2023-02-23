@@ -11,8 +11,9 @@ import org.hkijena.jipipe.extensions.expressions.functions.control.*;
 import org.hkijena.jipipe.extensions.expressions.functions.convert.*;
 import org.hkijena.jipipe.extensions.expressions.functions.datetime.*;
 import org.hkijena.jipipe.extensions.expressions.functions.filesystem.*;
-import org.hkijena.jipipe.extensions.expressions.functions.math.ClampFunction;
-import org.hkijena.jipipe.extensions.expressions.functions.math.PercentageFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.functions.DefineUserFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.functions.EvaluateUserFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.math.*;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityConvertFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetUnitFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetValueFunction;
@@ -20,6 +21,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.statistics.*;
 import org.hkijena.jipipe.extensions.expressions.functions.string.*;
 import org.hkijena.jipipe.extensions.expressions.functions.util.PrintFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.variables.*;
+import org.hkijena.jipipe.extensions.expressions.functions.vector.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -223,6 +225,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new StringToUpperCaseFunction());
         registerExpressionFunction(new StringSliceFunction());
         registerExpressionFunction(new StringSliceBeforeFunction());
+        registerExpressionFunction(new StringTruncateFunction());
         registerExpressionFunction(new ClampFunction());
         registerExpressionFunction(new GetVariableKeysFunction());
         registerExpressionFunction(new GetVariableValuesFunction());
@@ -235,7 +238,8 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new SwitchFunction());
         registerExpressionFunction(new CaseFunction());
         registerExpressionFunction(new PercentageFunction());
-
+        registerExpressionFunction(new SummarizeAnnotationsMapFunction());
+        registerExpressionFunction(new RoundToDecimalsFunction());
         registerExpressionFunction(new CreateRGBColorFunction());
         registerExpressionFunction(new CreateHSBColorFunction());
         registerExpressionFunction(new CreateLABColorFunction());
@@ -254,5 +258,30 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new SetMissingVariableFunction());
         registerExpressionFunction(new SetVariableFunction());
         registerExpressionFunction(new SetVariableIfFunction());
+        registerExpressionFunction(new RandomFunction());
+        registerExpressionFunction(new SliceFunction());
+        registerExpressionFunction(new ExpressionSequenceFunction());
+        registerExpressionFunction(new IfElseExprFunction());
+        registerExpressionFunction(new SetVariablesFunction());
+        registerExpressionFunction(new DefineUserFunction());
+        registerExpressionFunction(new EvaluateUserFunction());
+        registerExpressionFunction(new CumulativeTransformArrayFunction());
+        registerExpressionFunction(new TransformArrayFunction());
+        registerExpressionFunction(new DoubleToStringFunction());
+        registerExpressionFunction(new StringFormatFunction());
+        registerExpressionFunction(new ToNumber2Function());
+        registerExpressionFunction(new VectorAddFunction());
+        registerExpressionFunction(new VectorEuclideanNormFunction());
+        registerExpressionFunction(new VectorManhattanNormFunction());
+        registerExpressionFunction(new VectorMaximumNormFunction());
+        registerExpressionFunction(new VectorMultiplyScalarFunction());
+        registerExpressionFunction(new VectorNormalizeFunction());
+        registerExpressionFunction(new VectorScalarProductFunction());
+        registerExpressionFunction(new VectorSubtractFunction());
+    }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
     }
 }

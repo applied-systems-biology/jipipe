@@ -47,7 +47,7 @@ public class MarkdownDocument {
     private String renderedHTML;
 
     public MarkdownDocument() {
-       this("");
+        this("");
     }
 
     /**

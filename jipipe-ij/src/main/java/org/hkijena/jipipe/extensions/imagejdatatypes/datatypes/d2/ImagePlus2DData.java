@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * 2D image
  */
-@JIPipeDocumentation(name = "2D image")
+@JIPipeDocumentation(name = "2D image", description = "A 2D image")
 @JIPipeNode(menuPath = "Images\n2D")
 @JIPipeHeavyData
 @ImageTypeInfo(numDimensions = 2)

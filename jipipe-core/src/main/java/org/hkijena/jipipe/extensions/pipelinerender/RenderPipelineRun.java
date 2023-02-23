@@ -13,9 +13,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 
@@ -300,23 +300,13 @@ public class RenderPipelineRun implements JIPipeRunnable {
         int componentStartB;
         int componentEndB;
 
-        if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            buffer = viewMode.getGridWidth() * scaleFactor;
-            sourceA = sourcePoint.x;
-            targetA = targetPoint.x;
-            sourceB = sourcePoint.y;
-            targetB = targetPoint.y;
-            componentStartB = sourceBounds.y;
-            componentEndB = sourceBounds.y + sourceBounds.height;
-        } else {
-            buffer = (viewMode.getGridHeight() / 2) * scaleFactor;
-            sourceA = sourcePoint.y;
-            targetA = targetPoint.y;
-            sourceB = sourcePoint.x;
-            targetB = targetPoint.x;
-            componentStartB = sourceBounds.x;
-            componentEndB = sourceBounds.x + sourceBounds.width;
-        }
+        buffer = (viewMode.getGridHeight() / 2) * scaleFactor;
+        sourceA = sourcePoint.y;
+        targetA = targetPoint.y;
+        sourceB = sourcePoint.x;
+        targetB = targetPoint.x;
+        componentStartB = sourceBounds.x;
+        componentEndB = sourceBounds.x + sourceBounds.width;
 
         int a0 = sourceA;
         int b0 = sourceB;
@@ -326,13 +316,13 @@ public class RenderPipelineRun implements JIPipeRunnable {
         TIntArrayList xCoords = new TIntArrayList(8);
         TIntArrayList yCoords = new TIntArrayList(8);
 
-        addElbowPolygonCoordinate(a0, b0, 1.0, 0, 0, xCoords, yCoords, viewMode);
+        addElbowPolygonCoordinate(a0, b0, 1.0, 0, 0, xCoords, yCoords);
 
         // Target point is above the source. We have to navigate around it
         if (sourceA > targetA) {
             // Add some space in major direction
             a1 += buffer;
-            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords, viewMode);
+            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords);
 
             // Go left or right
             if (targetB <= b1) {
@@ -340,41 +330,36 @@ public class RenderPipelineRun implements JIPipeRunnable {
             } else {
                 b1 = componentEndB + buffer;
             }
-            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords, viewMode);
+            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords);
 
             // Go to target height
             a1 = Math.max(0, targetA - buffer);
-            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords, viewMode);
+            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords);
         } else if (sourceB != targetB) {
             // Add some space in major direction
             int dA = targetA - sourceA;
             a1 = Math.min(sourceA + buffer, sourceA + dA / 2);
-            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords, viewMode);
+            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords);
         }
 
         // Target point X is shifted
         if (b1 != targetB) {
             b1 = targetB;
-            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords, viewMode);
+            addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords);
         }
 
         // Go to end point
         a1 = targetA;
-        addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords, viewMode);
+        addElbowPolygonCoordinate(a1, b1, 1.0, 0, 0, xCoords, yCoords);
 
         // Draw the polygon
         g.drawPolyline(xCoords.toArray(), yCoords.toArray(), xCoords.size());
     }
 
-    private void addElbowPolygonCoordinate(int a1, int b1, double scale, int viewX, int viewY, TIntList xCoords, TIntList yCoords, JIPipeGraphViewMode viewMode) {
+    private void addElbowPolygonCoordinate(int a1, int b1, double scale, int viewX, int viewY, TIntList xCoords, TIntList yCoords) {
         int x2, y2;
-        if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            x2 = (int) (a1 * scale) + viewX;
-            y2 = (int) (b1 * scale) + viewY;
-        } else {
-            x2 = (int) (b1 * scale) + viewX;
-            y2 = (int) (a1 * scale) + viewY;
-        }
+        x2 = (int) (b1 * scale) + viewX;
+        y2 = (int) (a1 * scale) + viewY;
         xCoords.add(x2);
         yCoords.add(y2);
     }

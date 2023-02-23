@@ -28,19 +28,29 @@ import java.util.Set;
  */
 public class MessagePanel extends FormPanel {
 
-    private Set<String> existingMessages = new HashSet<>();
+    private final Set<String> existingMessages = new HashSet<>();
 
     public MessagePanel() {
         super(null, FormPanel.NONE);
     }
 
-    public void addMessage(MessageType type, String message, JButton actionButton) {
+    public Message addMessage(MessageType type, String message, JButton... actionButtons) {
         if (!existingMessages.contains(message)) {
-            addWideToForm(new Message(this, type, message, actionButton), null);
+            Message instance = new Message(this, type, message, actionButtons);
+            addWideToForm(instance, null);
             revalidate();
             repaint();
             existingMessages.add(message);
+            return instance;
         }
+        return null;
+    }
+
+    public void removeMessage(Message message) {
+        getContentPanel().remove(message);
+        existingMessages.remove(message.text);
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -68,13 +78,13 @@ public class MessagePanel extends FormPanel {
         private final MessagePanel parent;
         private final MessageType type;
         private final String text;
-        private final JButton actionButton;
+        private final JButton[] actionButtons;
 
-        public Message(MessagePanel parent, MessageType type, String text, JButton actionButton) {
+        public Message(MessagePanel parent, MessageType type, String text, JButton[] actionButtons) {
             this.parent = parent;
             this.type = type;
             this.text = text;
-            this.actionButton = actionButton;
+            this.actionButtons = actionButtons;
             this.setOpaque(false);
             initialize();
         }
@@ -87,12 +97,13 @@ public class MessagePanel extends FormPanel {
 
             add(messageTextArea);
             add(Box.createHorizontalGlue());
-            if (actionButton != null) {
-                add(actionButton);
-                add(Box.createHorizontalStrut(8));
-                actionButton.addActionListener(e -> closeMessage());
+            for (JButton actionButton : actionButtons) {
+                if (actionButton != null) {
+                    add(actionButton);
+                    add(Box.createHorizontalStrut(8));
+                    actionButton.addActionListener(e -> closeMessage());
+                }
             }
-
             JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             UIUtils.makeFlat25x25(closeButton);
             closeButton.addActionListener(e -> {

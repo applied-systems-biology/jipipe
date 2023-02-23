@@ -22,7 +22,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * {@link JIPipeParameterAccess} generated from reflection
@@ -40,6 +39,17 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     private int uiOrder;
     private boolean important;
     private JIPipeParameterPersistence persistence;
+
+    private boolean pinned;
+
+    @Override
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
 
     @Override
     public String getKey() {

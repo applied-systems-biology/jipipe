@@ -33,17 +33,17 @@ public class JIPipeCachedDataDisplayCacheControl {
     }
 
     @Subscribe
-    public void onRunnerFinished(RunUIWorkerFinishedEvent event) {
+    public void onRunnerFinished(RunWorkerFinishedEvent event) {
         updateRunnerQueueStatus();
     }
 
     @Subscribe
-    public void onRunnerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onRunnerInterrupted(RunWorkerInterruptedEvent event) {
         updateRunnerQueueStatus();
     }
 
     @Subscribe
-    public void onRunnerStarted(RunUIWorkerStartedEvent event) {
+    public void onRunnerStarted(RunWorkerStartedEvent event) {
         updateRunnerQueueStatus();
     }
 
@@ -84,7 +84,7 @@ public class JIPipeCachedDataDisplayCacheControl {
         cacheAwareToggle.setSelected(true);
         menu.add(cacheAwareToggle);
 
-        runnerQueue = new JIPipeRunnerQueueUI();
+        runnerQueue = new JIPipeRunnerQueueUI(workbench);
     }
 
     public void installRefreshOnActivate(Runnable refreshFunction) {

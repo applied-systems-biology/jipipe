@@ -14,12 +14,11 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
-import ij.IJ;
-import ij.Prefs;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
@@ -27,10 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.extensions.settings.*;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
@@ -39,21 +35,22 @@ import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.data.VirtualDataControl;
-import org.hkijena.jipipe.ui.documentation.DownloadOfflineManualRun;
+import org.hkijena.jipipe.ui.data.MemoryOptionsControl;
 import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.ui.documentation.WelcomePanel;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
-import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
-import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
-import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.ui.extensions.JIPipeModernPluginManagerUI;
+import org.hkijena.jipipe.ui.extensions.legacy.JIPipePluginValidityCheckerPanel;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.notifications.NotificationButton;
 import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
+import org.hkijena.jipipe.ui.project.LoadResultDirectoryIntoCacheRun;
+import org.hkijena.jipipe.ui.project.LoadResultZipIntoCacheRun;
 import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
@@ -67,16 +64,13 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * UI around an {@link JIPipeProject}
@@ -98,7 +92,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private final JIPipeProject project;
     private final Context context;
     private final RealTimeProjectRunner realTimeProjectRunner;
-    private final VirtualDataControl virtualDataControl;
+    private final MemoryOptionsControl memoryOptionsControl;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
     private final NotificationButton notificationButton = new NotificationButton(this);
     public DocumentTabPane documentTabPane;
@@ -119,7 +113,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.project = project;
         this.context = context;
         this.realTimeProjectRunner = new RealTimeProjectRunner(this);
-        this.virtualDataControl = new VirtualDataControl(this);
+        this.memoryOptionsControl = new MemoryOptionsControl(this);
         initialize(showIntroduction, isNewProject);
         project.getEventBus().register(this);
         JIPipe.getInstance().getEventBus().register(this);
@@ -221,7 +215,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         // Initialize JIPipe logger
         JIPipeLogs.getInstance();
 
-        documentTabPane = new DocumentTabPane();
+        documentTabPane = new DocumentTabPane(true);
         documentTabPane.registerSingletonTab(TAB_INTRODUCTION,
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),
@@ -255,7 +249,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         documentTabPane.registerSingletonTab(TAB_PLUGIN_MANAGER,
                 "Plugin manager",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                () -> new JIPipePluginManagerUIPanel(this),
+                () -> new JIPipeModernPluginManagerUI(this),
                 DocumentTabPane.SingletonTabMode.Hidden);
         validityCheckerPanel = new ReloadableValidityChecker(project);
         documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,
@@ -373,13 +367,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
 
         // Virtual control
-        JToggleButton virtualControlToggle = virtualDataControl.createToggleButton();
-        UIUtils.makeFlatH25(virtualControlToggle);
-        virtualControlToggle.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
-
-        statusBar.add(virtualControlToggle);
-        JButton optionsButton = virtualDataControl.createOptionsButton();
-        UIUtils.makeFlat25x25(optionsButton);
+        JButton optionsButton = memoryOptionsControl.createOptionsButton();
+        UIUtils.makeFlatH25(optionsButton);
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
         statusBar.add(new MemoryStatusUI());
@@ -477,9 +466,24 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         saveProjectAndCache.setToolTipText("Saves the project and all current cached data into a folder.");
         saveProjectAndCache.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         saveProjectAndCache.addActionListener(e -> {
-            window.saveProjectAndCache();
+            saveProjectAndCache("Save project and cache", true);
         });
         projectMenu.add(saveProjectAndCache);
+
+        // "Restore cache" entry
+        JMenuItem restoreCache = new JMenuItem("Restore cache ...", UIUtils.getIconFromResources("actions/document-import.png"));
+        restoreCache.setToolTipText("Restores the cache of the current project from a directory or ZIP file.");
+        restoreCache.addActionListener(e -> {
+            restoreCacheFromZIPOrDirectory();
+        });
+        projectMenu.add(restoreCache);
+
+        JMenuItem archiveProjectButton = new JMenuItem("Archive project ...", UIUtils.getIconFromResources("actions/archive.png"));
+        archiveProjectButton.setToolTipText("Copies the project and all data into a ZIP file or directory");
+        archiveProjectButton.addActionListener(e -> {
+            archiveProject();
+        });
+        projectMenu.add(archiveProjectButton);
 
         // "Export as algorithm" entry
         JMenuItem exportProjectAsAlgorithmButton = new JMenuItem("Export as custom algorithm", UIUtils.getIconFromResources("actions/document-export.png"));
@@ -551,15 +555,17 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         managePluginsButton.addActionListener(e -> managePlugins());
         pluginsMenu.add(managePluginsButton);
 
-        pluginsMenu.addSeparator();
+        JMenu pluginsImageJMenu = new JMenu("ImageJ");
 
         JMenuItem manageImageJPlugins = new JMenuItem("Manage ImageJ plugins (via JIPipe)", UIUtils.getIconFromResources("apps/imagej.png"));
         manageImageJPlugins.addActionListener(e -> manageImageJPlugins(true));
-        pluginsMenu.add(manageImageJPlugins);
+        pluginsImageJMenu.add(manageImageJPlugins);
 
         JMenuItem manageImageJPluginsViaUpdater = new JMenuItem("Run ImageJ updater", UIUtils.getIconFromResources("apps/imagej.png"));
         manageImageJPluginsViaUpdater.addActionListener(e -> manageImageJPlugins(false));
-        pluginsMenu.add(manageImageJPluginsViaUpdater);
+        pluginsImageJMenu.add(manageImageJPluginsViaUpdater);
+
+        pluginsMenu.add(pluginsImageJMenu);
 
         UIUtils.installMenuExtension(this, pluginsMenu, JIPipeMenuExtensionTarget.ProjectPluginsMenu, true);
 
@@ -592,10 +598,12 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         menu.add(realtimeToggleButton);
 
         // Cache monitor
-        menu.add(new JIPipeCacheManagerUI(this));
+        JIPipeCacheManagerUI cacheManagerUI = new JIPipeCacheManagerUI(this);
+        UIUtils.makeFlat(cacheManagerUI);
+        menu.add(cacheManagerUI);
 
         // Queue monitor
-        menu.add(new JIPipeRunnerQueueUI());
+        menu.add(new JIPipeRunnerQueueUI(this));
 
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
@@ -613,7 +621,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
 
         JMenuItem offlineManual = new JMenuItem("Manual", UIUtils.getIconFromResources("actions/help.png"));
-        offlineManual.setToolTipText("Opens the offline manual in a browser. If the manual is not available, it will be downloaded.");
+        offlineManual.setToolTipText("Opens the online manual in a browser.");
         offlineManual.addActionListener(e -> openManual());
         helpMenu.add(offlineManual);
 
@@ -659,41 +667,128 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     private void openManual() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        Path indexFile = imageJDir.resolve("jipipe").resolve("offline-manual").resolve("docs").resolve("index.html");
-        DownloadOfflineManualRun run = new DownloadOfflineManualRun();
-        if (!Files.exists(indexFile)) {
-            if (JOptionPane.showConfirmDialog(this, "The manual needs to be downloaded, first." +
-                            "\nDo you want to download it now?\n\n" +
-                            "This needs to be only done once.\n\n" +
-                            "URL: " + DownloadOfflineManualRun.DOWNLOAD_URL,
-                    "Open manual",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
-                return;
-            }
-            JIPipeRunExecuterUI.runInDialog(getWindow(), run);
-        }
-        if (Files.exists(indexFile)) {
-            try {
-                Desktop.getDesktop().open(indexFile.toFile());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "The manual does not exist!",
-                    "Open manual",
-                    JOptionPane.ERROR_MESSAGE);
+        try {
+            Desktop.getDesktop().browse(URI.create("https://www.jipipe.org/"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    private void archiveProject() {
+        if(getProject().getWorkDirectory() == null) {
+            JOptionPane.showMessageDialog(this, "Please save the project once before using the archive function.", "Archive project", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        int option = JOptionPane.showOptionDialog(this,
+                "You can archive the project as directory or ZIP file. Please choose the most convenient option.\nPlease note that the archiving function cannot currently handle projects that involve advanced path processing.",
+                "Archive project",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{"ZIP file", "Directory", "Cancel"},
+                "ZIP file");
+        switch (option) {
+            case JOptionPane.YES_OPTION:
+                archiveProjectAsZIP();
+                break;
+            case JOptionPane.NO_OPTION:
+                archiveProjectAsDirectory();
+                break;
+        }
+    }
+
+    private void archiveProjectAsDirectory() {
+        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as directory");
+        if(directory != null) {
+            JIPipeRunExecuterUI.runInDialog(this, new ArchiveProjectToDirectoryRun(getProject(), directory));
+        }
+    }
+
+    private void archiveProjectAsZIP() {
+        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
+        if(file != null) {
+            JIPipeRunExecuterUI.runInDialog(this, new ArchiveProjectToZIPRun(getProject(), file));
+        }
+    }
+
+    public void saveProjectAndCache(String title, boolean addAsRecentProject) {
+        int option = JOptionPane.showOptionDialog(this,
+                "You can save cached data as directory or ZIP file. Please choose the most convenient option.",
+                title,
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{"ZIP file", "Directory", "Cancel"},
+                "ZIP file");
+        switch (option) {
+            case JOptionPane.YES_OPTION:
+                saveProjectAndCacheToZIP(title);
+                break;
+            case JOptionPane.NO_OPTION:
+                saveProjectAndCacheToDirectory(title, addAsRecentProject);
+                break;
+        }
+    }
+
+    public void saveProjectAndCacheToDirectory(String title, boolean addAsRecentProject) {
+        window.saveProjectAndCacheToDirectory(title, addAsRecentProject);
+    }
+
+    public void saveProjectAndCacheToZIP(String title) {
+        window.saveProjectAndCacheToZIP(title);
+    }
+
+
+    public void restoreCacheFromZIPOrDirectory() {
+        Path path = FileChooserSettings.openPath(this, FileChooserSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
+        if(path != null) {
+            if(Files.isRegularFile(path)) {
+                // Load into cache with a run
+                JIPipeRunExecuterUI.runInDialog(this, new LoadResultZipIntoCacheRun(this, project, path, true));
+            }
+            else {
+                // Load into cache with a run
+                JIPipeRunExecuterUI.runInDialog(this, new LoadResultDirectoryIntoCacheRun(this, project, path, true));
+            }
+        }
+    }
+
+//    private void openManual() {
+//        Path imageJDir = Paths.get(Prefs.getImageJDir());
+//        if (!Files.isDirectory(imageJDir)) {
+//            try {
+//                Files.createDirectories(imageJDir);
+//            } catch (IOException e) {
+//                IJ.handleException(e);
+//            }
+//        }
+//        Path indexFile = imageJDir.resolve("jipipe").resolve("offline-manual").resolve("docs").resolve("index.html");
+//        DownloadOfflineManualRun run = new DownloadOfflineManualRun();
+//        if (!Files.exists(indexFile)) {
+//            if (JOptionPane.showConfirmDialog(this, "The manual needs to be downloaded, first." +
+//                            "\nDo you want to download it now?\n\n" +
+//                            "This needs to be only done once.\n\n" +
+//                            "URL: " + DownloadOfflineManualRun.DOWNLOAD_URL,
+//                    "Open manual",
+//                    JOptionPane.YES_NO_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                return;
+//            }
+//            JIPipeRunExecuterUI.runInDialog(getWindow(), run);
+//        }
+//        if (Files.exists(indexFile)) {
+//            try {
+//                Desktop.getDesktop().open(indexFile.toFile());
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        } else {
+//            JOptionPane.showMessageDialog(this,
+//                    "The manual does not exist!",
+//                    "Open manual",
+//                    JOptionPane.ERROR_MESSAGE);
+//        }
+//    }
 
     private void openProjectFolder() {
         if (getProject().getWorkDirectory() == null || !Files.isDirectory(getProject().getWorkDirectory())) {
@@ -725,7 +820,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         }
     }
 
-    private void openCacheBrowser() {
+    public void openCacheBrowser() {
         JIPipeCacheBrowserUI cacheTable = new JIPipeCacheBrowserUI(this);
         getDocumentTabPane().addTab("Cache browser",
                 UIUtils.getIconFromResources("actions/database.png"),
@@ -742,7 +837,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         JIPipeIssueReport report = new JIPipeIssueReport();
         report.report(getProject().getGraph());
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, false);
+            UIUtils.openValidityReportDialog(this, report, "Error while exporting", "There seem to be various issues with the project. Please resolve these and try to export the project again.", false);
             return;
         }
         NodeGroup nodeGroup = new NodeGroup(new JIPipeGraph(getProject().getGraph()), true, false, true);
@@ -829,6 +924,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         return window;
     }
 
+    public JIPipeProjectWindow getProjectWindow() {
+        return window;
+    }
+
     /**
      * Triggered when a compartment is deleted.
      * Closes corresponding tabs.
@@ -866,5 +965,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     @Override
     public JIPipeNotificationInbox getNotificationInbox() {
         return notificationInbox;
+    }
+
+    public void unload() {
+        project.getCache().clearAll(new JIPipeProgressInfo());
     }
 }

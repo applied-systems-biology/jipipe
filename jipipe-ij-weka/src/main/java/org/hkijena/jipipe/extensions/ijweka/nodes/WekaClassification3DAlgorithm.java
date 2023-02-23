@@ -1,25 +1,16 @@
 package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
-import org.hkijena.jipipe.extensions.ijweka.parameters.collections.WekaTiling2DSettings;
 import org.hkijena.jipipe.extensions.ijweka.parameters.collections.WekaTiling3DSettings;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.TileImage2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.UnTileImage2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
@@ -58,16 +49,15 @@ public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus wholeImage = image.getDuplicateImage();
         ImagePlus classified;
 
-        if(tilingSettings.isApplyTiling()) {
+        if (tilingSettings.isApplyTiling()) {
             int tilesX = (int) Math.ceil(1.0 * image.getWidth() / tilingSettings.getTileSizeX());
             int tilesY = (int) Math.ceil(1.0 * image.getHeight() / tilingSettings.getTileSizeY());
             int tilesZ = (int) Math.ceil(1.0 * image.getNSlices() / tilingSettings.getTileSizeZ());
-            try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+            try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
                 classified = segmentation.applyClassifier(wholeImage, new int[]{tilesX, tilesY, tilesZ}, numThreads.getContentOrDefault(0), outputProbabilityMaps);
             }
-        }
-        else {
-            try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+        } else {
+            try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
                 classified = segmentation.applyClassifier(wholeImage, numThreads.getContentOrDefault(0), outputProbabilityMaps);
             }
         }

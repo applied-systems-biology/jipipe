@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParamet
  * Generates annotations from filenames
  */
 @JIPipeDocumentation(name = "Extract & replace annotations", description = "Algorithm that allows you to extract parts of an annotation and either " +
-        "replace the existing annotation or put the results into a new one.")
+        "replace the existing annotation or put the results into a new one. If you require more flexibility, please use 'Set/Edit annotations', which provide customizable mathematical expressions for generating or editing annotations.")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)

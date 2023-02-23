@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import ij.IJ;
 import org.apache.commons.lang3.SystemUtils;
@@ -25,24 +26,30 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
+import org.hkijena.jipipe.ui.components.VerticalToolBar;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
+import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.ui.theme.DarkModernMetalTheme;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
+import org.scijava.Disposable;
 
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
@@ -52,13 +59,19 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -79,6 +92,9 @@ import java.util.stream.Collectors;
 public class UIUtils {
 
     public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
+
+    public static final FileNameExtensionFilter EXTENSION_FILTER_TSV = new FileNameExtensionFilter("TSV table (*.tsv)", "tsv");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_XLSX = new FileNameExtensionFilter("Excel table (*.xlsx)", "xlsx");
     public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
     public static final FileNameExtensionFilter EXTENSION_FILTER_IMAGEIO_IMAGES = new FileNameExtensionFilter("Image file (*.png, *.jpg, *.jpeg, *.bmp)", "png", "jpg", "jpeg", "bmp");
     public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");
@@ -100,23 +116,18 @@ public class UIUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_AVI = new FileNameExtensionFilter("Video file (*.avi)", "avi");
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
+
+    public static final Map<String, ImageIcon> ICON_INVERTED_FROM_RESOURCES_CACHE = new HashMap<>();
     public static boolean DARK_THEME = false;
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
 
-    public static BufferedImage scaleImageToFit(BufferedImage image, int maxWidth, int maxHeight) {
-        double scale = 1.0;
-        if (maxWidth > 0) {
-            scale = 1.0 * maxWidth / image.getWidth();
-        }
-        if (maxHeight > 0) {
-            scale = Math.min(1.0 * maxHeight / image.getHeight(), scale);
-        }
-        if (scale != 1.0) {
-            Image scaledInstance = image.getScaledInstance((int) (image.getWidth() * scale), (int) (image.getHeight() * scale), Image.SCALE_SMOOTH);
-            image = UIUtils.toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
-        }
-        return image;
+    public static JLabel createInfoLabel(String text, String subtext) {
+        JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subtext + "</html>",
+                UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
+        label.setAlignmentX(0f);
+        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        return label;
     }
 
     public static void registerHyperlinkHandler(JTextPane content) {
@@ -191,8 +202,14 @@ public class UIUtils {
      */
     public static void packDataTable(JXTable table) {
         int max = Math.max(-1, GeneralDataSettings.getInstance().getMaxTableColumnSize());
-        for (int c = 0; c < table.getColumnCount(); c++)
-            table.packColumn(c, -1, max);
+        for (int c = 0; c < table.getColumnCount(); c++) {
+            try {
+                table.packColumn(c, -1, max);
+            }
+            catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -440,6 +457,73 @@ public class UIUtils {
         return popupMenu;
     }
 
+    /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target target button
+     * @return the popup menu
+     */
+    public static JPopupMenu addRightClickPopupMenuToComponent(AbstractButton target) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    popupMenu.revalidate();
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
+            }
+        });
+        target.addActionListener(e -> {
+            try {
+                if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+                        || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
+                        || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
+                        || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
+                    popupMenu.revalidate();
+                    popupMenu.show(target, 0, target.getHeight());
+                }
+            } catch (IllegalComponentStateException e1) {
+            }
+        });
+        return popupMenu;
+    }
+
+    /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target target button
+     * @return the popup menu
+     */
+    public static JPopupMenu addRightClickPopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu) {
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    popupMenu.revalidate();
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
+            }
+        });
+        target.addActionListener(e -> {
+            try {
+                if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+                        || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
+                        || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
+                        || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
+                    popupMenu.revalidate();
+                    popupMenu.show(target, 0, target.getHeight());
+                }
+            } catch (IllegalComponentStateException e1) {
+            }
+        });
+        return popupMenu;
+    }
+
     public static JSeparator createVerticalSeparator() {
         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
         separator.setMaximumSize(new Dimension(1, Integer.MAX_VALUE));
@@ -448,6 +532,69 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIcon16FromResources(String iconName) {
+        return getIconFromResources(iconName);
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIconInvertedFromResources(String iconName) {
+        String path = "icons/" + iconName;
+        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResourceInverted(path));
+            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIconInverted32FromResources(String iconName) {
+        String path = "icons-32/" + iconName;
+        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResourceInverted(path));
+            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIconInverted12FromResources(String iconName) {
+        String path = "icons-12/" + iconName;
+        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResourceInverted(path));
+            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -464,6 +611,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -480,6 +628,24 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIcon12FromResources(String iconName) {
+        String path = "icons-12/" + iconName;
+        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResource(path));
+            ICON_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -496,6 +662,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -512,6 +679,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -528,6 +696,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -687,6 +856,21 @@ public class UIUtils {
         }
     }
 
+    public static JLabel createJLabel(String text, Icon icon) {
+        return createJLabel(text, icon, 12);
+    }
+
+    public static JLabel createJLabel(String text, int fontSize) {
+        return createJLabel(text, null, fontSize);
+    }
+
+    public static JLabel createJLabel(String text, Icon icon, int fontSize) {
+        JLabel label = new JLabel(text);
+        label.setIcon(icon);
+        label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
+        return label;
+    }
+
     /**
      * Asks the user how to open a project: In the current window or a new window
      *
@@ -703,6 +887,28 @@ public class UIUtils {
                 null,
                 new Object[]{"This window", "New window", "Cancel"},
                 "New window");
+    }
+
+    /**
+     * Checks if a file exists and asks the user if it should be overwritten
+     *
+     * @param parent the parent component
+     * @param path   the path. can be null, will return false
+     * @param title  the title
+     * @return true if the path is OK or the user confirmed, otherwise false
+     */
+    public static boolean checkAndAskIfFileExists(Component parent, Path path, String title) {
+        if (path != null) {
+            if (Files.isRegularFile(path)) {
+                return JOptionPane.showConfirmDialog(parent,
+                        "The file '" + path + "' already exists. Do you want to overwrite the file?",
+                        title,
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE) != JOptionPane.NO_OPTION;
+            }
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -754,19 +960,73 @@ public class UIUtils {
         dialog.setVisible(true);
     }
 
+    public static void openNotificationsDialog(JIPipeWorkbench workbench, Component parent, JIPipeNotificationInbox notifications, String title, String infoText, boolean autoClose) {
+
+        if (autoClose && notifications.isEmpty()) {
+            return;
+        }
+
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
+
+        GenericNotificationInboxUI inboxUI = new GenericNotificationInboxUI(workbench, notifications);
+        contentPanel.add(inboxUI, BorderLayout.CENTER);
+
+        JPanel messagePanel = new JPanel(new GridBagLayout());
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
+        messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-warning.png")),
+                new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
+        messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
+                new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
+        contentPanel.add(messagePanel, BorderLayout.NORTH);
+
+        JDialog dialog = new JDialog();
+        dialog.setTitle(title);
+        dialog.setContentPane(contentPanel);
+        dialog.setModal(false);
+        dialog.pack();
+        dialog.setSize(new Dimension(800, 600));
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+
+        if (autoClose) {
+            notifications.getEventBus().register(new Object() {
+                @Subscribe
+                public void onUpdated(JIPipeNotificationInbox.UpdatedEvent event) {
+                    if (notifications.isEmpty()) {
+                        dialog.setVisible(false);
+                    }
+                }
+            });
+        }
+    }
+
     /**
      * Opens a dialog showing a validity report
      *
-     * @param parent the parent component
-     * @param report the report
-     * @param modal  make the dialog modal
+     * @param parent   the parent component
+     * @param report   the report
+     * @param title    the title
+     * @param infoText the info text
+     * @param modal    make the dialog modal
      */
-    public static void openValidityReportDialog(Component parent, JIPipeIssueReport report, boolean modal) {
+    public static void openValidityReportDialog(Component parent, JIPipeIssueReport report, String title, String infoText, boolean modal) {
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
+
         JIPipeValidityReportUI ui = new JIPipeValidityReportUI(false);
         ui.setReport(report);
+        contentPanel.add(ui, BorderLayout.CENTER);
+
+        JPanel messagePanel = new JPanel(new GridBagLayout());
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
+        messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-error.png")),
+                new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
+        messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
+                new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
+        contentPanel.add(messagePanel, BorderLayout.NORTH);
+
         JDialog dialog = new JDialog();
-        dialog.setTitle("Error");
-        dialog.setContentPane(ui);
+        dialog.setTitle(title);
+        dialog.setContentPane(contentPanel);
         dialog.setModal(modal);
         dialog.pack();
         dialog.setSize(new Dimension(800, 600));
@@ -822,25 +1082,6 @@ public class UIUtils {
         return Collections.emptyList();
     }
 
-    public static String imageToBase64(BufferedImage image, String type) throws IOException {
-        String imageString;
-        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-            ImageIO.write(image, type, bos);
-            byte[] imageBytes = bos.toByteArray();
-            BASE64Encoder encoder = new BASE64Encoder();
-            imageString = encoder.encode(imageBytes);
-        }
-        return imageString;
-    }
-
-    public static BufferedImage base64ToImage(String imageString) throws IOException {
-        BASE64Decoder decoder = new BASE64Decoder();
-        byte[] bytes = decoder.decodeBuffer(imageString);
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
-            return ImageIO.read(bis);
-        }
-    }
-
     /**
      * Shows a component in a JIPipe-styled dialog with OK and Cancel button
      *
@@ -889,49 +1130,6 @@ public class UIUtils {
         dialog.setVisible(true);
 
         return clickedOK.get();
-    }
-
-    /**
-     * Converts a given Image into a BufferedImage
-     *
-     * @param img  The Image to be converted
-     * @param type the output image type
-     * @return The converted BufferedImage
-     */
-    public static BufferedImage toBufferedImage(Image img, int type) {
-        if (img instanceof BufferedImage) {
-            return (BufferedImage) img;
-        }
-
-        // Create a buffered image with transparency
-        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), type);
-
-        // Draw the image on to the buffered image
-        Graphics2D bGr = bimage.createGraphics();
-        bGr.drawImage(img, 0, 0, null);
-        bGr.dispose();
-
-        // Return the buffered image
-        return bimage;
-    }
-
-    /**
-     * Get an image off the system clipboard.
-     *
-     * @param type the image type
-     * @return Returns an Image if successful; otherwise returns null.
-     */
-    public static BufferedImage getImageFromClipboard(int type) {
-        Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
-        if (transferable != null && transferable.isDataFlavorSupported(DataFlavor.imageFlavor)) {
-            try {
-                Image image = (Image) transferable.getTransferData(DataFlavor.imageFlavor);
-                return toBufferedImage(image, type);
-            } catch (UnsupportedFlavorException | IOException e) {
-                return null;
-            }
-        }
-        return null;
     }
 
     /**
@@ -1204,19 +1402,69 @@ public class UIUtils {
     }
 
     /**
+     * Utility method for setting the font and color of a JTextPane. The
+     * result is roughly equivalent to calling setFont(...) and
+     * setForeground(...) on an AWT TextArea.
+     */
+    public static void setJTextPaneFont(JTextPane jtp, Font font, Color c) {
+        // Start with the current input attributes for the JTextPane. This
+        // should ensure that we do not wipe out any existing attributes
+        // (such as alignment or other paragraph attributes) currently
+        // set on the text area.
+        MutableAttributeSet attrs = jtp.getInputAttributes();
+
+        // Set the font family, size, and style, based on properties of
+        // the Font object. Note that JTextPane supports a number of
+        // character attributes beyond those supported by the Font class.
+        // For example, underline, strike-through, super- and sub-script.
+        StyleConstants.setFontFamily(attrs, font.getFamily());
+        StyleConstants.setFontSize(attrs, font.getSize());
+        StyleConstants.setItalic(attrs, (font.getStyle() & Font.ITALIC) != 0);
+        StyleConstants.setBold(attrs, (font.getStyle() & Font.BOLD) != 0);
+
+        // Set the font color
+        StyleConstants.setForeground(attrs, c);
+
+        // Retrieve the pane's document object
+        StyledDocument doc = jtp.getStyledDocument();
+
+        // Replace the style for the entire document. We exceed the length
+        // of the document by 1 so that text entered at the end of the
+        // document uses the attributes.
+        doc.setCharacterAttributes(0, doc.getLength() + 1, attrs, false);
+    }
+
+    /**
      * Creates a readonly text pane (that can do HTML)
      *
-     * @param text text
+     * @param text   text
+     * @param opaque if the area should be opaque
      * @return text area
      */
-    public static JTextPane makeBorderlessReadonlyTextPane(String text) {
+    public static JTextPane makeBorderlessReadonlyTextPane(String text, boolean opaque) {
         JTextPane textPane = new JTextPane();
         textPane.setBorder(BorderFactory.createEtchedBorder());
         textPane.setEditable(false);
+        textPane.setOpaque(opaque);
         textPane.setContentType("text/html");
         textPane.setText(text);
         textPane.setBorder(null);
+        addHyperlinkListener(textPane);
         return textPane;
+    }
+
+    private static void addHyperlinkListener(JTextPane textPane) {
+        textPane.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(e.getURL().toURI());
+                    } catch (Exception e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -1367,6 +1615,71 @@ public class UIUtils {
         return label;
     }
 
+    public static JPanel boxVertical(Component... components) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        for (Component component : components) {
+            if (component != null) {
+                panel.add(component);
+            }
+        }
+        return panel;
+    }
+
+    public static JPanel boxHorizontal(Component... components) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        for (Component component : components) {
+            if (component != null) {
+                panel.add(component);
+            }
+        }
+        return panel;
+    }
+
+    public static JPanel gridVertical(Component... components) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        for (int i = 0; i < components.length; i++) {
+            Component component = components[i];
+            if (component != null) {
+                panel.add(component, new GridBagConstraints(0, i, 1, 1, 1, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
+            }
+        }
+        return panel;
+    }
+
+    public static void setTreeExpandedState(JTree tree, boolean expanded) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        setNodeExpandedState(tree, node, expanded);
+    }
+
+    public static void setNodeExpandedState(JTree tree, DefaultMutableTreeNode node, boolean expanded) {
+        ArrayList<DefaultMutableTreeNode> list = Collections.list(node.children());
+        for (DefaultMutableTreeNode treeNode : list) {
+            setNodeExpandedState(tree, treeNode, expanded);
+        }
+        if (!expanded && node.isRoot()) {
+            return;
+        }
+        TreePath path = new TreePath(node.getPath());
+        if (expanded) {
+            tree.expandPath(path);
+        } else {
+            tree.collapsePath(path);
+        }
+    }
+
+    public static JPanel gridHorizontal(Component... components) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        for (int i = 0; i < components.length; i++) {
+            Component component = components[i];
+            if (component != null) {
+                panel.add(component, new GridBagConstraints(i, 0, 1, 1, 0, 1, GridBagConstraints.WEST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
+            }
+        }
+        return panel;
+    }
+
 
     /**
      * Installs an extension menu
@@ -1456,6 +1769,32 @@ public class UIUtils {
         }
     }
 
+    /**
+     * Adds a separator if there is at least one component in the menu and the last item is not a separator
+     * @param menu the menu
+     */
+    public static void addSeparatorIfNeeded(JPopupMenu menu) {
+        if(menu.getComponentCount() == 0)
+            return;
+        Component lastComponent = menu.getComponent(menu.getComponentCount() - 1);
+        if(lastComponent instanceof JSeparator)
+            return;
+        menu.addSeparator();
+    }
+
+    /**
+     * Adds a separator if there is at least one component in the menu and the last item is not a separator
+     * @param menu the menu
+     */
+    public static void addSeparatorIfNeeded(JMenu menu) {
+        if(menu.getComponentCount() == 0)
+            return;
+        Component lastComponent = menu.getComponent(menu.getComponentCount() - 1);
+        if(lastComponent instanceof JSeparator)
+            return;
+        menu.addSeparator();
+    }
+
     public static boolean confirmResetParameters(JIPipeWorkbench parent, String title) {
         return JOptionPane.showConfirmDialog(parent.getWindow(),
                 "This will reset most of the properties. Continue?",
@@ -1475,6 +1814,94 @@ public class UIUtils {
                     "The connection is not valid. Please check if it a loop/cycle.",
                     "Unable to connect slots",
                     JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public static void invokeScrollToTop(JScrollPane scrollPane) {
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getVerticalScrollBar().setValue(0);
+        });
+    }
+
+    public static void redirectDragEvents(Component component, Component target) {
+        component.setFocusable(false);
+        DragThroughMouseListener listener = new DragThroughMouseListener(component, target);
+        component.addMouseListener(listener);
+        component.addMouseMotionListener(listener);
+    }
+
+    public static JMenuItem createMenuItem(String label, String description, Icon icon, Runnable action) {
+        JMenuItem item = new JMenuItem(label, icon);
+        item.setToolTipText(description);
+        item.addActionListener(e -> action.run());
+        return item;
+    }
+
+    public static void drawStringVerticallyCentered(Graphics2D g2, String text, int x, int y, FontMetrics fontMetrics) {
+        int metricHeight = fontMetrics.getAscent() - fontMetrics.getLeading();
+        g2.drawString(text, x, y + metricHeight / 2);
+    }
+
+    public static void removeAllWithDispose(JComponent component) {
+        for (Component child : component.getComponents()) {
+            if(child instanceof Disposable) {
+                ((Disposable) child).dispose();
+            }
+        }
+        component.removeAll();
+    }
+
+    public static Map<?, ?> getDesktopRenderingHints() {
+        Map<?, ?> result = (Map<?, ?>) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
+        if(result == null) {
+            return Collections.emptyMap();
+        }
+        else {
+            return result;
+        }
+    }
+
+    public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
+        private final Component component;
+        private final Component target;
+
+        public DragThroughMouseListener(Component component, Component target) {
+            this.component = component;
+            this.target = target;
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
         }
     }
 }

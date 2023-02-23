@@ -24,15 +24,10 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -72,7 +67,7 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path archiveFile = dataBatch.getInputData("Archive", FileData.class, progressInfo).toPath();
-        try(JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, archiveFile)) {
+        try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, archiveFile)) {
             JIPipeDataTable dataTable = JIPipeDataTable.importData(storage, progressInfo.resolve("Import"));
             for (int row = 0; row < dataTable.getRowCount(); row++) {
                 List<JIPipeTextAnnotation> textAnnotationList = ignoreImportedTextAnnotations ? Collections.emptyList() : dataTable.getTextAnnotations(row);

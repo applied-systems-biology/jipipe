@@ -29,17 +29,21 @@ import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeCompartmentGraphDragAndDropBehavior;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
-import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.RunAndShowResultsAction;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineMultiAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineSingleAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.compartments.dragdrop.JIPipeCompartmentGraphDragAndDropBehavior;
+import org.hkijena.jipipe.ui.grapheditor.compartments.properties.JIPipeMultiCompartmentSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.compartments.properties.JIPipeSingleCompartmentSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -63,13 +67,15 @@ import java.util.stream.Collectors;
 public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     private JPanel defaultPanel;
 
+    private boolean disableUpdateOnSelection = false;
+
     /**
      * @param workbenchUI The workbench UI
      */
     public JIPipeCompartmentsGraphEditorUI(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI, workbenchUI.getProject().getCompartmentGraph(), null, workbenchUI.getProject().getHistoryJournal());
         initializeDefaultPanel();
-        setPropertyPanel(defaultPanel);
+        setPropertyPanel(defaultPanel, true);
 
         getCanvasUI().setDragAndDropBehavior(new JIPipeCompartmentGraphDragAndDropBehavior());
         List<NodeUIContextAction> actions = Arrays.asList(
@@ -81,6 +87,14 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
                 new GraphCompartmentCutNodeUIContextAction(),
                 new GraphCompartmentCopyNodeUIContextAction(),
                 new GraphCompartmentPasteNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new RunAndShowResultsNodeUIContextAction(),
+                new UpdateCacheNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new RunAndShowIntermediateResultsNodeUIContextAction(),
+                new UpdateCacheShowIntermediateNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new ClearCacheNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new ExportCompartmentAsJsonNodeUIContextAction(),
                 new ExportCompartmentToNodeUIContextAction(),
@@ -112,7 +126,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
         splitPane.setTopComponent(minimap);
 
-        DocumentTabPane bottomPanel = new DocumentTabPane();
+        DocumentTabPane bottomPanel = new DocumentTabPane(false);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()));
@@ -149,23 +163,25 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     @Override
     protected void updateSelection() {
         super.updateSelection();
+        if (disableUpdateOnSelection)
+            return;
         if (getSelection().isEmpty()) {
-            setPropertyPanel(defaultPanel);
+            setPropertyPanel(defaultPanel, true);
         } else if (getSelection().size() == 1) {
             JIPipeGraphNode node = getSelection().iterator().next().getNode();
             if (node instanceof JIPipeProjectCompartment) {
                 setPropertyPanel(new JIPipeSingleCompartmentSelectionPanelUI(this,
-                        (JIPipeProjectCompartment) node));
+                        (JIPipeProjectCompartment) node), true);
             } else {
-                setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, node));
+                setPropertyPanel(new JIPipePipelineSingleAlgorithmSelectionPanelUI(this, node), true);
             }
         } else {
             if (getSelection().stream().allMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
                 setPropertyPanel(new JIPipeMultiCompartmentSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(),
-                        getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()));
+                        getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()), true);
             } else {
-                setPropertyPanel(new JIPipeMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
-                        getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
+                setPropertyPanel(new JIPipePipelineMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
+                        getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
             }
         }
     }
@@ -266,6 +282,40 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     public void onOpenCompartment(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getNode() instanceof JIPipeProjectCompartment) {
             getProjectWorkbench().getOrOpenPipelineEditorTab((JIPipeProjectCompartment) event.getUi().getNode(), true);
+        }
+    }
+
+    /**
+     * Listens to events of algorithms requesting some action
+     *
+     * @param event the event
+     */
+    @Subscribe
+    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
+        if (event.getAction() instanceof RunAndShowResultsAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleCompartmentSelectionPanelUI panel = new JIPipeSingleCompartmentSelectionPanelUI(this,
+                    (JIPipeProjectCompartment) event.getUi().getNode());
+            setPropertyPanel(panel, true);
+            panel.executeQuickRun(true,
+                    false,
+                    true,
+                    ((RunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+        } else if (event.getAction() instanceof UpdateCacheAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleCompartmentSelectionPanelUI panel = new JIPipeSingleCompartmentSelectionPanelUI(this,
+                    (JIPipeProjectCompartment) event.getUi().getNode());
+            setPropertyPanel(panel, true);
+            panel.executeQuickRun(false,
+                    true,
+                    false,
+                    ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+                    ((UpdateCacheAction) event.getAction()).isOnlyPredecessors());
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }
 }

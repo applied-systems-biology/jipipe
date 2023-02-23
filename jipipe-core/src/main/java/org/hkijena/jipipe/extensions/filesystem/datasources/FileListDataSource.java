@@ -17,23 +17,33 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
+
+import static org.antlr.runtime.misc.Stats.getAbsoluteFileName;
 
 /**
  * Provides an input file
@@ -79,6 +89,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
     @JIPipeParameter("file-names")
     @JIPipeDocumentation(name = "Files")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly)
+    @ListParameterSettings(withScrollBar = true)
     public PathList getFiles() {
         return files;
     }
@@ -108,14 +119,85 @@ public class FileListDataSource extends JIPipeAlgorithm {
     public PathList getAbsoluteFileNames() {
         PathList result = new PathList();
         for (Path fileName : files) {
-            if (fileName == null)
+            if (fileName == null) {
                 result.add(null);
-            else if (currentWorkingDirectory != null)
+            } else if (currentWorkingDirectory != null && !fileName.isAbsolute()) {
                 result.add(currentWorkingDirectory.resolve(fileName));
-            else
+            } else {
                 result.add(fileName);
+            }
         }
         return result;
+    }
+
+    /**
+     * @return Relative file names (if available)
+     */
+    public PathList getRelativeFileNames() {
+        PathList result = new PathList();
+        for (Path fileName : files) {
+            if (fileName == null)
+                result.add(null);
+            else if (currentWorkingDirectory != null && fileName.isAbsolute() && fileName.startsWith(currentWorkingDirectory)) {
+                result.add(currentWorkingDirectory.relativize(fileName));
+            } else {
+                result.add(fileName);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+        PathList relativeFileNames = getRelativeFileNames();
+        PathList absoluteFileNames = getAbsoluteFileNames();
+        PathList newPaths = new PathList();
+        Set<String> externalFileNames = new HashSet<>();
+
+        for (int i = 0; i < relativeFileNames.size(); i++) {
+            Path source = absoluteFileNames.get(i);
+            if(source == null || !Files.isRegularFile(source)) {
+                throw new RuntimeException("File " + relativeFileNames.get(i) + " does not exist!");
+            }
+            else {
+                Path target;
+                if(source.startsWith(originalBaseDirectory)) {
+                    // The data is located in the project directory. We can directly copy the file.
+                    Path relativePath = originalBaseDirectory.relativize(source);
+                    target = projectStorage.getFileSystemPath().resolve(relativePath);
+                }
+                else {
+                    // The data is located outside the project directory. Needs to be copied into a unique directory.
+                    String externalFileName = relativeFileNames.get(i).getFileName().toString();
+                    if(!externalFileNames.contains(externalFileName)) {
+                        // Not yet in external storage. Add it
+                        target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(externalFileName);
+                        externalFileNames.add(externalFileName);
+                    }
+                    else {
+                        // We need to make a new target dir (UUID)
+                        progressInfo.log("Warning: Duplicate file name in external storage (" + externalFileName + "). Creating new UUID sub-storage in " + getAliasIdInParentGraph());
+                        target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).resolve(UUID.randomUUID().toString()).getFileSystemPath().resolve(externalFileName);
+                        externalFileNames.add(externalFileName);
+                    }
+                }
+
+                if(Files.exists(target)) {
+                    progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
+                    continue;
+                }
+
+                progressInfo.log("Copy " + source + " -> " + target);
+                try {
+                    Files.createDirectories(target.getParent());
+                    Files.copy(source, target);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                newPaths.add(target);
+            }
+        }
+        setFiles(newPaths);
     }
 
     @Override
@@ -133,6 +215,18 @@ public class FileListDataSource extends JIPipeAlgorithm {
                         this);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
+    public void convertPathsToAbsolute() {
+        setParameter("file-names", getAbsoluteFileNames());
+    }
+
+    @JIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
+    public void convertPathsToRelative() {
+        setParameter("file-names", getRelativeFileNames());
     }
 
     @Override

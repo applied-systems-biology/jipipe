@@ -31,6 +31,10 @@ import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import ij.util.Tools;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hkijena.jipipe.api.JIPipeCommonData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -44,21 +48,22 @@ import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
 import org.hkijena.jipipe.extensions.tables.display.CachedTableViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Whitelist;
 import org.python.core.PyDictionary;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -74,6 +79,7 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
+@JIPipeCommonData
 public class ResultsTableData implements JIPipeData, TableModel {
 
     private static final char commaSubstitute = 0x08B3;
@@ -297,10 +303,11 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @param model the model
      * @return the results table
      */
-    public static ResultsTableData fromTableModel(TableModel model) {
+    public static ResultsTableData stringModelFromTableModel(TableModel model) {
         ResultsTableData resultsTableData = new ResultsTableData();
         for (int col = 0; col < model.getColumnCount(); col++) {
-            resultsTableData.addColumn(model.getColumnName(col), true);
+            String newColumnName = StringUtils.makeUniqueString(model.getColumnName(col), " ", resultsTableData.getColumnNames());
+            resultsTableData.addColumn(newColumnName, true);
         }
         for (int row = 0; row < model.getRowCount(); row++) {
             resultsTableData.addRow();
@@ -309,6 +316,130 @@ public class ResultsTableData implements JIPipeData, TableModel {
             }
         }
         return resultsTableData;
+    }
+
+    /**
+     * Imports a table from a table model and column model
+     *
+     * @param model               the table model
+     * @param columnModel         the column model (can be null)
+     * @param stripColumnNameHtml if enabled, remove HTML from column names
+     * @return the table
+     */
+    public static ResultsTableData fromTableModel(TableModel model, TableColumnModel columnModel, boolean stripColumnNameHtml) {
+        ResultsTableData resultsTableData = new ResultsTableData();
+        for (int col = 0; col < model.getColumnCount(); col++) {
+            String requestedName;
+            if (columnModel != null) {
+                requestedName = StringUtils.nullToEmpty(columnModel.getColumn(col).getIdentifier());
+                if (requestedName.isEmpty()) {
+                    requestedName = model.getColumnName(col);
+                }
+            } else {
+                requestedName = model.getColumnName(col);
+            }
+            if (stripColumnNameHtml) {
+                requestedName = Jsoup.clean(requestedName, new Whitelist());
+            }
+            String newColumnName = StringUtils.makeUniqueString(requestedName, " ", resultsTableData.getColumnNames());
+            resultsTableData.addColumn(newColumnName, false);
+        }
+        for (int row = 0; row < model.getRowCount(); row++) {
+            resultsTableData.addRow();
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                resultsTableData.setValueAt(model.getValueAt(row, col), row, col);
+            }
+        }
+        return resultsTableData;
+    }
+
+    public static Map<String, ResultsTableData> fromXLSX(Path xlsxFile) {
+        Map<String, ResultsTableData> output = new HashMap<>();
+        try (Workbook workbook = new XSSFWorkbook(xlsxFile.toFile())) {
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                Sheet sheet = workbook.getSheetAt(i);
+                ResultsTableData tableData = new ResultsTableData();
+                boolean hasHeader = false;
+                for (Row row : sheet) {
+                    if (hasHeader) {
+                        for (Cell cell : row) {
+                            if (cell.getCellType() == CellType.NUMERIC) {
+                                tableData.setValueAt(cell.getNumericCellValue(), row.getRowNum() - 1, cell.getColumnIndex());
+                            } else {
+                                tableData.setValueAt(cell.getStringCellValue(), row.getRowNum() - 1, cell.getColumnIndex());
+                            }
+                        }
+                    } else {
+                        for (Cell cell : row) {
+                            String columnName = StringUtils.makeUniqueString(cell.getStringCellValue(), "-", tableData.getColumnNames());
+                            tableData.addNumericColumn(columnName);
+                        }
+                        hasHeader = true;
+                    }
+                }
+
+                output.put(sheet.getSheetName(), tableData);
+            }
+        } catch (IOException | InvalidFormatException e) {
+            throw new RuntimeException(e);
+        }
+        return output;
+    }
+
+    /**
+     * Creates a valid XLSX sheet name from a string
+     *
+     * @param name     the string. if null or empty, will be assumed to be "Sheet"
+     * @param existing existing names
+     * @return valid sheet name
+     */
+    public static String createXLSXSheetName(String name, Collection<String> existing) {
+        if (StringUtils.isNullOrEmpty(name))
+            name = "Sheet";
+        name = name.replace('\0', ' ');
+        name = name.replace('\3', ' ');
+        name = name.replace(':', ' ');
+        name = name.replace('\\', ' ');
+        name = name.replace('*', ' ');
+        name = name.replace('?', ' ');
+        name = name.replace('/', ' ');
+        name = name.replace('[', ' ');
+        name = name.replace(']', ' ');
+        name = name.trim();
+        while (name.startsWith("'"))
+            name = name.substring(1);
+        while (name.endsWith("'"))
+            name = name.substring(0, name.length() - 1);
+        name = name.trim();
+        if (StringUtils.isNullOrEmpty(name))
+            name = "Sheet";
+
+        // Shorten to 31-character limit
+        if (name.length() > 31)
+            name = name.substring(0, 32);
+
+        // Make unique
+        String uniqueName = StringUtils.makeUniqueString(name, " ", existing);
+        while (uniqueName.length() > 31) {
+            name = name.substring(0, name.length() - 1);
+            uniqueName = StringUtils.makeUniqueString(name, " ", existing);
+        }
+        return uniqueName;
+    }
+
+    /**
+     * Adds missing columns from the other table
+     *
+     * @param other the other table
+     */
+    public void copyColumnSchemaFrom(ResultsTableData other) {
+        for (int col = 0; col < other.getColumnCount(); col++) {
+            String name = other.getColumnName(col);
+            boolean stringColumn = other.isStringColumn(col);
+            if (!getColumnNames().contains(name)) {
+                addColumn(name, stringColumn);
+            }
+        }
     }
 
     private void importDataColumns(Map<String, TableColumn> columns) {
@@ -374,6 +505,49 @@ public class ResultsTableData implements JIPipeData, TableModel {
         JLabel label = new JLabel(text);
         label.setSize(label.getPreferredSize());
         return label;
+    }
+
+    /**
+     * Saves the table as Excel file
+     *
+     * @param path the path
+     */
+    public void saveAsXLSX(Path path) {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Data");
+            saveToXLSXSheet(sheet);
+            workbook.write(Files.newOutputStream(path));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Saves the table data to an Excel sheet
+     *
+     * @param sheet the sheet
+     */
+    public void saveToXLSXSheet(Sheet sheet) {
+        {
+            Row xlsxRow = sheet.createRow(0);
+            for (int col = 0; col < getColumnCount(); col++) {
+                Cell xlsxCell = xlsxRow.createCell(col, CellType.STRING);
+                xlsxCell.setCellValue(getColumnName(col));
+            }
+        }
+        for (int row = 0; row < getRowCount(); row++) {
+            Row xlsxRow = sheet.createRow(row + 1);
+            for (int col = 0; col < getColumnCount(); col++) {
+                Cell xlsxCell = xlsxRow.createCell(col, isNumericColumn(col) ? CellType.NUMERIC : CellType.STRING);
+                if (isNumericColumn(col))
+                    xlsxCell.setCellValue(getValueAsDouble(row, col));
+                else
+                    xlsxCell.setCellValue(getValueAsString(row, col));
+            }
+        }
+        for (int i = 0; i < getColumnCount(); i++) {
+            sheet.autoSizeColumn(i);
+        }
     }
 
     /**
@@ -558,6 +732,17 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * Returns a column as vector.
      * This is a reference.
      *
+     * @param columnName the column name
+     * @return the column
+     */
+    public TableColumn getColumnReference(String columnName) {
+        return new TableColumnReference(this, getColumnIndex(columnName));
+    }
+
+    /**
+     * Returns a column as vector.
+     * This is a reference.
+     *
      * @param index the column index
      * @return the column
      */
@@ -632,15 +817,8 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeDataTableDataSource) {
-//            CacheAwareTableEditor.show(workbench, (JIPipeDataTableDataSource) source, displayName);
-            CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, false);
-            window.setVisible(true);
-        } else {
-            workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),
-                    new TableEditor(workbench, (ResultsTableData) duplicate(new JIPipeProgressInfo())), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-            workbench.getDocumentTabPane().switchToLastTab();
-        }
+        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        window.setVisible(true);
     }
 
     public ResultsTable getTable() {
@@ -974,7 +1152,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
                 continue;
             String name = StringUtils.makeUniqueString(column.getLabel(), ".", existing);
             existing.add(name);
-            addColumn(name, column);
+            addColumn(name, column, true);
         }
     }
 
@@ -1058,12 +1236,16 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * Adds a column with the given name.
      * If the column already exists, the method returns the existing index
      *
-     * @param name column name. cannot be empty.
-     * @param data the data
+     * @param name       column name. cannot be empty.
+     * @param data       the data
+     * @param extendRows if true, add rows if needed to contain all non-generated information in the column
      * @return the column index (this includes any existing column) or -1 if the creation was not possible
      */
-    public int addColumn(String name, TableColumn data) {
+    public int addColumn(String name, TableColumn data, boolean extendRows) {
         int col = addColumn(name, !data.isNumeric());
+        if (extendRows && data.getRows() > getRowCount()) {
+            addRows(data.getRows() - getRowCount());
+        }
 //        System.out.println(name + ": " + col + " / " + getColumnCount());
         for (int row = 0; row < getRowCount(); row++) {
             if (data.isNumeric()) {
@@ -1167,8 +1349,19 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * Adds a new row and returns a {@link RowBuilder} for setting values conveniently
      *
      * @return the row builder
+     * @deprecated Use addAndModifyRow() instead
      */
+    @Deprecated
     public RowBuilder addRowBuilder() {
+        return new RowBuilder(this, addRow());
+    }
+
+    /**
+     * Adds a new row and returns a {@link RowBuilder} for setting values conveniently
+     *
+     * @return the row builder
+     */
+    public RowBuilder addAndModifyRow() {
         return new RowBuilder(this, addRow());
     }
 
@@ -1325,6 +1518,27 @@ public class ResultsTableData implements JIPipeData, TableModel {
         return result;
     }
 
+    /**
+     * Extracts rows
+     *
+     * @param start the first row index (inclusive)
+     * @param end   the last row index (exclusive)
+     * @return table with rows within [start, end)
+     */
+    public ResultsTableData getRows(int start, int end) {
+        ResultsTableData result = new ResultsTableData();
+        for (int col = 0; col < getColumnCount(); col++) {
+            result.addColumn(getColumnName(col), !isNumericColumn(col));
+        }
+        for (int row = start; row < end; row++) {
+            int targetRow = result.addRow();
+            for (int col = 0; col < getColumnCount(); col++) {
+                result.setValueAt(getValueAt(row, col), targetRow, col);
+            }
+        }
+        return result;
+    }
+
     public ResultsTableData getRow(int row) {
         return getRows(Collections.singleton(row));
     }
@@ -1373,6 +1587,13 @@ public class ResultsTableData implements JIPipeData, TableModel {
         public RowBuilder set(int columnIndex, Object value) {
             tableData.setValueAt(value, row, columnIndex);
             return this;
+        }
+
+        /**
+         * Does nothing
+         */
+        public void build() {
+
         }
 
         public ResultsTableData getTableData() {

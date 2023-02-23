@@ -16,6 +16,7 @@ package org.hkijena.jipipe.utils;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -76,6 +77,15 @@ public class TooltipUtils {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
+        if (!info.getAliases().isEmpty()) {
+            builder.append("<p>");
+            for (JIPipeNodeMenuLocation location : info.getAliases()) {
+                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
+            }
+            builder.append("</p><br/>\n\n");
+        }
+
+
         // Write description
         String description = info.getDescription().wrap(50).getBody();
         if (description != null && !description.isEmpty())
@@ -114,6 +124,9 @@ public class TooltipUtils {
                 builder.append("<tr><td><strong>Refer to/Also cite</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
             }
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
+            if (source instanceof JIPipeJavaExtension && ((JIPipeJavaExtension) source).isBeta()) {
+                builder.append("<tr><td><strong>Plugin status</strong></td><td>The plugin is currently in beta-testing. There might be extensive changes in future updates.</td></tr>");
+            }
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {
                 builder.append("<tr><td><strong>Plugin author</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(author.getFirstName() + " " + author.getLastName())).append("</td></tr>");
             }
@@ -134,6 +147,14 @@ public class TooltipUtils {
         JIPipeNodeInfo info = node.getInfo();
         StringBuilder builder = new StringBuilder();
         builder.append("<h1>").append(info.getName()).append("</h1>\n\n");
+
+        if (!info.getAliases().isEmpty()) {
+            builder.append("<p>");
+            for (JIPipeNodeMenuLocation location : info.getAliases()) {
+                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
+            }
+            builder.append("</p><br/>\n\n");
+        }
 
         // Write description
         String description = info.getDescription().getBody();
@@ -183,6 +204,9 @@ public class TooltipUtils {
                 builder.append("<tr><td><strong>Refer to/Also cite</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
             }
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
+            if (source instanceof JIPipeJavaExtension && ((JIPipeJavaExtension) source).isBeta()) {
+                builder.append("<tr><td><strong>Plugin status</strong></td><td>The plugin is currently in beta-testing. There might be extensive changes in future updates.</td></tr>");
+            }
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {
                 builder.append("<tr><td><strong>Plugin author</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(author.getFirstName() + " " + author.getLastName())).append("</td></tr>");
             }
@@ -211,6 +235,14 @@ public class TooltipUtils {
         builder.append("<html>");
         if (withTitle)
             builder.append("<u><strong>").append(info.getName()).append("</strong></u><br/>");
+
+        if (!info.getAliases().isEmpty()) {
+            builder.append("<p>");
+            for (JIPipeNodeMenuLocation location : info.getAliases()) {
+                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
+            }
+            builder.append("</p><br/>\n\n");
+        }
 
         // Write description
         String description = info.getDescription().wrap(50).getBody();

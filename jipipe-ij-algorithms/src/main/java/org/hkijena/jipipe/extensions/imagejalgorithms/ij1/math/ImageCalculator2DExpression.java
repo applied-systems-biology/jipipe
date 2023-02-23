@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -27,6 +28,7 @@ import java.util.Map;
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator... (expression)")
 public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     private DefaultExpressionParameter expression = new DefaultExpressionParameter("(I1 + I2) / 2");
@@ -117,7 +119,7 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Expression", description = "The mathematical expression that is applied to each pixel position in the input images. Additionally to the " +
             "positional variables, there are variables available that are named according to the input slots and contain the current pixel value of this slot.")
     @JIPipeParameter("expression")
-    @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class, hint = "per pixel")
     public DefaultExpressionParameter getExpression() {
         return expression;
     }

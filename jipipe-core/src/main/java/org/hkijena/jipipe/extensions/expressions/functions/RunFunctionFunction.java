@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Run function", description = "Decomposes an array into parameters of a function and applies the function.")
+@JIPipeDocumentation(name = "Apply built-in function to array", description = "Decomposes an array into parameters of a function and applies the built-in function. Please note that user-defined functions are not supported.")
 public class RunFunctionFunction extends ExpressionFunction {
     public RunFunctionFunction() {
-        super("RUN_FUNCTION", 2);
+        super("APPLY_FUNCTION_TO_ARRAY", 2);
     }
 
     @Override

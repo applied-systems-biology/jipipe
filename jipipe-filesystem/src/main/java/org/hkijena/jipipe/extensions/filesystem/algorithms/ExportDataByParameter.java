@@ -45,6 +45,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     private Path outputDirectory = Paths.get("exported-data");
     private boolean relativeToProjectDir = false;
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+    private boolean splitBySlotName;
 
     public ExportDataByParameter(JIPipeNodeInfo info) {
         super(info);
@@ -56,6 +57,7 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
         this.outputDirectory = other.outputDirectory;
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.relativeToProjectDir = other.relativeToProjectDir;
+        this.splitBySlotName = other.splitBySlotName;
         registerSubParameter(exporter);
     }
 
@@ -63,10 +65,9 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            if(relativeToProjectDir && getProjectDirectory() != null) {
+            if (relativeToProjectDir && getProjectDirectory() != null) {
                 outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
-            }
-            else {
+            } else {
                 outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
             }
         } else {
@@ -117,5 +118,16 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     @JIPipeParameter("exporter")
     public JIPipeDataByMetadataExporter getExporter() {
         return exporter;
+    }
+
+    @JIPipeDocumentation(name = "Split by output name", description = "If enabled, the exporter will attempt to split data by their output name. Has no effect if the exported data table is not an output of a node.")
+    @JIPipeParameter("split-by-slot-name")
+    public boolean isSplitBySlotName() {
+        return splitBySlotName;
+    }
+
+    @JIPipeParameter("split-by-slot-name")
+    public void setSplitBySlotName(boolean splitBySlotName) {
+        this.splitBySlotName = splitBySlotName;
     }
 }

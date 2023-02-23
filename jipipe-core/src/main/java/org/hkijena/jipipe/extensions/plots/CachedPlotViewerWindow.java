@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.plots;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
@@ -89,7 +89,7 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         annotationInfoPanel.displayAnnotations(getDataSource());
         PlotData data = (PlotData) virtualData.getData(progressInfo);
         PlotData duplicate = (PlotData) data.duplicate(progressInfo);

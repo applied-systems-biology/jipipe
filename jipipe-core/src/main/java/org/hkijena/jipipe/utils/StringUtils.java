@@ -15,12 +15,15 @@ package org.hkijena.jipipe.utils;
 
 import com.google.common.html.HtmlEscapers;
 import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
+import java.awt.*;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -35,8 +38,24 @@ public class StringUtils {
 
     }
 
+    /**
+     * If the string is longer than maxWidth, limit it to fit within maxWidth
+     * with an ellipsis (...). Will always return at least the string "..."
+     */
+    public static String limitWithEllipsis(String str, int maxWidth, FontMetrics metrics) {
+        int strWidth = metrics.stringWidth(str);
+        if (strWidth <= maxWidth)
+            return str;
+        for (int len = str.length() - 1; len > 0; len--) {
+            String subStr = str.substring(0, len) + "...";
+            if (metrics.stringWidth(subStr) <= maxWidth)
+                return subStr;
+        }
+        return "...";
+    }
+
     public static String removeDuplicateDelimiters(String string, String delimiter) {
-        while(string.contains(delimiter + delimiter)) {
+        while (string.contains(delimiter + delimiter)) {
             string = string.replace(delimiter + delimiter, delimiter);
         }
         return string;
@@ -466,5 +485,95 @@ public class StringUtils {
             }
         }
         return comparisonResult;
+    }
+
+    /**
+     * Attempts to parse a string as double.
+     * If not successful, return the string
+     * @param str the string
+     * @return the number or the string
+     */
+    public static Object tryParseDoubleOrReturnString(String str) {
+        str = StringUtils.nullToEmpty(str);
+        str = str.replace(',', '.').replace(" ", "");
+        double value;
+        if (NumberUtils.isCreatable(str)) {
+            value = NumberUtils.createDouble(str);
+        }
+        else if(StringUtils.isNullOrEmpty(str)) {
+            value = 0d;
+        }
+        else if(str.toLowerCase().startsWith("-inf")) {
+            value = Double.NEGATIVE_INFINITY;
+        }
+        else if(str.toLowerCase().startsWith("inf")) {
+            value = Double.POSITIVE_INFINITY;
+        }
+        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+            value = Double.NaN;
+        }
+        else {
+            return str;
+        }
+        return value;
+    }
+
+    public static double parseDouble(String str) {
+        str = StringUtils.nullToEmpty(str);
+        str = str.replace(',', '.').replace(" ", "");
+        double value;
+        if (NumberUtils.isCreatable(str)) {
+            value = NumberUtils.createDouble(str);
+        }
+        else if(StringUtils.isNullOrEmpty(str)) {
+            value = 0d;
+        }
+        else if(str.toLowerCase().startsWith("-inf")) {
+            value = Double.NEGATIVE_INFINITY;
+        }
+        else if(str.toLowerCase().startsWith("inf")) {
+            value = Double.POSITIVE_INFINITY;
+        }
+        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+            value = Double.NaN;
+        }
+        else {
+           throw new NumberFormatException("String is not a number: " + str);
+        }
+        return value;
+    }
+
+    public static float parseFloat(String str) {
+        str = StringUtils.nullToEmpty(str);
+        str = str.replace(',', '.').replace(" ", "");
+        float value;
+        if (NumberUtils.isCreatable(str)) {
+            value = NumberUtils.createFloat(str);
+        }
+        else if(StringUtils.isNullOrEmpty(str)) {
+            value = 0f;
+        }
+        else if(str.toLowerCase().startsWith("-inf")) {
+            value = Float.NEGATIVE_INFINITY;
+        }
+        else if(str.toLowerCase().startsWith("inf")) {
+            value = Float.POSITIVE_INFINITY;
+        }
+        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+            value = Float.NaN;
+        }
+        else {
+            throw new NumberFormatException("String is not a number: " + str);
+        }
+        return value;
+    }
+
+    public static double objectToDouble(Object o) {
+        if(o instanceof Number) {
+            return ((Number) o).doubleValue();
+        }
+        else {
+            return StringUtils.parseDouble(StringUtils.nullToEmpty(o));
+        }
     }
 }
