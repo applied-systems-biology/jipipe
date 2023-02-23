@@ -14,16 +14,15 @@
 
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.generate;
 
-import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentLocation;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.extensions.ijfilaments.util.NonSpatialPoint3d;
+import org.hkijena.jipipe.extensions.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -35,7 +34,7 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Binary skeleton to 2D filaments", description = "Applies a simple algorithm that converts a binary skeleton into a filament. This algorithm only supports 2D data and will apply the processing per Z/C/T slice.")
 @JIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Skeleton", autoCreate = true)
-@JIPipeOutputSlot(value = FilamentsData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", autoCreate = true)
+@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", autoCreate = true)
 public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public SkeletonToFilaments2DAlgorithm(JIPipeNodeInfo info) {
@@ -49,7 +48,7 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus skeleton = dataBatch.getInputData("Skeleton", ImagePlusData.class, progressInfo).getImage();
-        FilamentsData filamentsData = new FilamentsData();
+        Filaments3DData filamentsData = new Filaments3DData();
 
         ImageJUtils.forEachIndexedZCTSlice(skeleton, (ip, index) -> {
             Map<Point, FilamentVertex> vertexMap = new HashMap<>();
@@ -61,7 +60,8 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 for (int x = 0; x < width; x++) {
                     if (ip.get(x, y) > 0) {
                         FilamentVertex vertex = new FilamentVertex();
-                        vertex.setCentroid(new FilamentLocation(x, y, index.getZ(), index.getC(), index.getT()));
+                        vertex.setSpatialLocation(new Point3d(x, y, index.getZ()));
+                        vertex.setNonSpatialLocation(new NonSpatialPoint3d(index.getC(), index.getT()));
                         filamentsData.addVertex(vertex);
                         vertexMap.put(new Point(x, y), vertex);
                     }

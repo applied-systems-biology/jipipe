@@ -9,11 +9,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdgeVariableSource;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.HashSet;
@@ -22,8 +20,8 @@ import java.util.Set;
 
 @JIPipeDocumentation(name = "Filter filament edges", description = "Filters filament edges by various properties")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
@@ -42,8 +40,8 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
-        FilamentsData outputData = new FilamentsData(inputData);
+        Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
+        Filaments3DData outputData = new Filaments3DData(inputData);
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());

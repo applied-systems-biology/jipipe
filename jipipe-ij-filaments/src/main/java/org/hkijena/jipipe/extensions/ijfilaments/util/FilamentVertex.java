@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.scijava.vecmath.Vector3d;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -15,7 +14,9 @@ public class FilamentVertex {
 
     private UUID uuid = UUID.randomUUID();
 
-    private FilamentLocation centroid = new FilamentLocation();
+    private Point3d spatialLocation = new Point3d();
+
+    private NonSpatialPoint3d nonSpatialLocation = new NonSpatialPoint3d();
 
     private double thickness = 1;
 
@@ -28,20 +29,31 @@ public class FilamentVertex {
     }
 
     public FilamentVertex(FilamentVertex other) {
-        this.centroid = new FilamentLocation(other.centroid);
+        this.spatialLocation = new Point3d(other.spatialLocation);
+        this.nonSpatialLocation = new NonSpatialPoint3d(other.nonSpatialLocation);
         this.thickness = other.thickness;
         this.metadata = new HashMap<>(other.metadata);
         this.color = other.color;
     }
 
-    @JsonGetter("centroid")
-    public FilamentLocation getCentroid() {
-        return centroid;
+    @JsonGetter("spatial-location")
+    public Point3d getSpatialLocation() {
+        return spatialLocation;
     }
 
-    @JsonSetter("centroid")
-    public void setCentroid(FilamentLocation centroid) {
-        this.centroid = centroid;
+    @JsonSetter("spatial-location")
+    public void setSpatialLocation(Point3d spatialLocation) {
+        this.spatialLocation = spatialLocation;
+    }
+
+    @JsonGetter("non-spatial-location")
+    public NonSpatialPoint3d getNonSpatialLocation() {
+        return nonSpatialLocation;
+    }
+
+    @JsonSetter("non-spatial-location")
+    public void setNonSpatialLocation(NonSpatialPoint3d nonSpatialLocation) {
+        this.nonSpatialLocation = nonSpatialLocation;
     }
 
     @JsonGetter("thickness")

@@ -6,37 +6,24 @@ import org.scijava.vecmath.Vector3d;
 
 import java.util.Objects;
 
-public class FilamentLocation {
+public class Point3d {
     private int x;
     private int y;
     private int z;
-    private int c = -1;
 
-    private int t = -1;
-
-    public FilamentLocation() {
+    public Point3d() {
     }
 
-    public FilamentLocation(int x, int y, int z) {
+    public Point3d(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public FilamentLocation(int x, int y, int z, int c, int t) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.c = c;
-        this.t = t;
-    }
-
-    public FilamentLocation(FilamentLocation other) {
+    public Point3d(Point3d other) {
         this.x = other.x;
         this.y = other.y;
         this.z = other.z;
-        this.c = other.c;
-        this.t = other.t;
     }
 
     @JsonGetter("x")
@@ -69,37 +56,17 @@ public class FilamentLocation {
         this.z = z;
     }
 
-    @JsonGetter("c")
-    public int getC() {
-        return c;
-    }
-
-    @JsonSetter("c")
-    public void setC(int c) {
-        this.c = c;
-    }
-
-    @JsonGetter("t")
-    public int getT() {
-        return t;
-    }
-
-    @JsonSetter("t")
-    public void setT(int t) {
-        this.t = t;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        FilamentLocation that = (FilamentLocation) o;
-        return x == that.x && y == that.y && z == that.z && c == that.c && t == that.t;
+        Point3d point3d = (Point3d) o;
+        return x == point3d.x && y == point3d.y && z == point3d.z;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y, z, c, t);
+        return Objects.hash(x, y, z);
     }
 
     /**
@@ -108,18 +75,9 @@ public class FilamentLocation {
      * @param other the other location
      * @return the euclidean distance
      */
-    public double distanceTo(FilamentLocation other) {
-        int z1 = other.z;
-        int c1 = other.c;
-        int t1 = other.t;
-        if(z1 < 0)
-            z1 = z;
-        if(c1 < 0)
-            c1 = c;
-        if(t1 < 0)
-            t1 = t;
+    public double distanceTo(Point3d other) {
         return Math.sqrt(Math.pow(x - other.getX(), 2) + Math.pow(y - other.getY(), 2)
-                + Math.pow(z - z1, 2) + Math.pow(c - c1, 2) + Math.pow(t - t1, 2));
+                + Math.pow(z - other.getZ(), 2));
     }
 
     public Vector3d toVector3d() {
@@ -130,17 +88,5 @@ public class FilamentLocation {
         Vector3d vector3d = toVector3d();
         vector3d.normalize();
         return vector3d;
-    }
-
-    public boolean sameZ(FilamentLocation other) {
-        return z == other.z || z < 0 || other.z < 0;
-    }
-
-    public boolean sameC(FilamentLocation other) {
-        return c == other.c || c < 0 || other.c < 0;
-    }
-
-    public boolean sameT(FilamentLocation other) {
-        return t == other.t || t < 0 || other.t < 0;
     }
 }

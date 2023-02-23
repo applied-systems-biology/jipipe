@@ -4,25 +4,23 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 
 @JIPipeDocumentation(name = "Smooth filaments", description = "Applies a smoothing operation that is based around downscaling the locations and applying the 'Remove duplicate vertices' operation. The positions are then restored.")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
-@JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private double factorXY = 5;
-    private double factorZ = 0;
-    private double factorC = 0;
-    private double factorT = 0;
+    private double factorX = 5;
 
+    private double factorY = 5;
+    private double factorZ = 0;
     private boolean enforceSameComponent = true;
 
     private DefaultExpressionParameter locationMergingFunction = new DefaultExpressionParameter("AVG(values)");
@@ -33,33 +31,43 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public SmoothFilamentsAlgorithm(SmoothFilamentsAlgorithm other) {
         super(other);
-        this.factorXY = other.factorXY;
+        this.factorX = other.factorX;
+        this.factorY = other.factorY;
         this.factorZ = other.factorZ;
-        this.factorC = other.factorC;
-        this.factorT = other.factorT;
         this.locationMergingFunction = new DefaultExpressionParameter(other.locationMergingFunction);
         this.enforceSameComponent = other.enforceSameComponent;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
-        FilamentsData outputData = new FilamentsData(inputData);
+        Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
+        Filaments3DData outputData = new Filaments3DData(inputData);
 
-        outputData.smooth(factorXY, factorZ, factorC, factorT, enforceSameComponent, locationMergingFunction);
+        outputData.smooth(factorX, factorY, factorZ, enforceSameComponent, locationMergingFunction);
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Factor (X/Y)", description = "The smoothing factor in the X/Y plane. Set to zero to disable smoothing")
-    @JIPipeParameter(value = "factor-xy", uiOrder = -10)
-    public double getFactorXY() {
-        return factorXY;
+    @JIPipeDocumentation(name = "Factor (X)", description = "The smoothing factor in the X coordinate. Set to zero to disable smoothing")
+    @JIPipeParameter("factor-x")
+    public double getFactorX() {
+        return factorX;
     }
 
-    @JIPipeParameter("factor-xy")
-    public void setFactorXY(double factorXY) {
-        this.factorXY = factorXY;
+    @JIPipeParameter("factor-x")
+    public void setFactorX(double factorX) {
+        this.factorX = factorX;
+    }
+
+    @JIPipeDocumentation(name = "Factor (Y)", description = "The smoothing factor in the Y coordinate. Set to zero to disable smoothing")
+    @JIPipeParameter("factor-y")
+    public double getFactorY() {
+        return factorY;
+    }
+
+    @JIPipeParameter("factor-y")
+    public void setFactorY(double factorY) {
+        this.factorY = factorY;
     }
 
     @JIPipeDocumentation(name = "Factor (Z)", description = "The smoothing factor in the Z plane. Set to zero to disable smoothing")
@@ -71,28 +79,6 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("factor-z")
     public void setFactorZ(double factorZ) {
         this.factorZ = factorZ;
-    }
-
-    @JIPipeDocumentation(name = "Factor (C)", description = "The smoothing factor in the channel (C) plane. Set to zero to disable smoothing")
-    @JIPipeParameter("factor-c")
-    public double getFactorC() {
-        return factorC;
-    }
-
-    @JIPipeParameter("factor-c")
-    public void setFactorC(double factorC) {
-        this.factorC = factorC;
-    }
-
-    @JIPipeDocumentation(name = "Factor (T)", description = "The smoothing factor in the time (t) plane. Set to zero to disable smoothing")
-    @JIPipeParameter("factor-t")
-    public double getFactorT() {
-        return factorT;
-    }
-
-    @JIPipeParameter("factor-t")
-    public void setFactorT(double factorT) {
-        this.factorT = factorT;
     }
 
     @JIPipeDocumentation(name = "Location merging function", description = "A function that determines how multiple coordinates are merged together")

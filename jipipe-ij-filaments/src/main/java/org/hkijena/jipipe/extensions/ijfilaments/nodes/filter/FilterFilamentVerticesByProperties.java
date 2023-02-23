@@ -4,13 +4,12 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -21,8 +20,8 @@ import java.util.Set;
 
 @JIPipeDocumentation(name = "Filter filament vertices", description = "Filters filament vertices by various properties")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
@@ -41,8 +40,8 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
-        FilamentsData outputData = new FilamentsData(inputData);
+        Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
+        Filaments3DData outputData = new Filaments3DData(inputData);
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());

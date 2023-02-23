@@ -20,7 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
@@ -102,7 +102,7 @@ public class CachedFilamentsDataViewerWindow extends JIPipeCacheDataViewerWindow
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
-        FilamentsData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), FilamentsData.class);
+        Filaments3DData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), Filaments3DData.class);
         ROIListData rois = data.toRoi(false, true, true, true);
         int width;
         int height;

@@ -4,11 +4,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 public class FilamentVertexVariableSource implements ExpressionParameterVariableSource {
@@ -27,7 +25,7 @@ public class FilamentVertexVariableSource implements ExpressionParameterVariable
         VARIABLES.add(new ExpressionParameterVariable("Degree", "The degree (number of edges) of the vertex", "degree"));
     }
 
-    public static void writeToVariables(FilamentsData graph, FilamentVertex vertex, ExpressionVariables variables, String prefix) {
+    public static void writeToVariables(Filaments3DData graph, FilamentVertex vertex, ExpressionVariables variables, String prefix) {
         graph.measureVertex(vertex, variables, prefix);
     }
 

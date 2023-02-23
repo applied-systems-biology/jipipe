@@ -18,7 +18,7 @@ import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsToRoiDataTypeConverter;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsToRoiAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentEdgesByProperties;
@@ -107,7 +107,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeTypeCategory(new FilamentsNodeTypeCategory());
 
-        registerDatatype("filaments", FilamentsData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
+        registerDatatype("filaments", Filaments3DData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());
 
         registerNodeType("filaments-from-json", ImportFilamentsFromJsonAlgorithm.class);

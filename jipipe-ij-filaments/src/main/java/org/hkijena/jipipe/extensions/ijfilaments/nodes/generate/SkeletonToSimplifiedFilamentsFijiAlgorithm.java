@@ -23,9 +23,9 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentLocation;
+import org.hkijena.jipipe.extensions.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.AnalyzeSkeleton2D3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
@@ -44,7 +44,7 @@ import java.util.Map;
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Skeleton", autoCreate = true)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "ROI to exclude on pruning ends")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
-@JIPipeOutputSlot(value = FilamentsData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", autoCreate = true)
+@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", autoCreate = true)
 public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
@@ -95,7 +95,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
         SkeletonResult result = analyzeSkeleton.run(pruneCyclesMethod.getNativeValue(), pruneEndsMethod != AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod.None, true, referenceImage, true, true, excludeRoi);
 
         // Generate filaments
-        FilamentsData filamentsData = new FilamentsData();
+        Filaments3DData filamentsData = new Filaments3DData();
         for (Graph graph : result.getGraph()) {
             Map<Vertex, FilamentVertex> vertexMapping = new IdentityHashMap<>();
             for (Vertex vertex : graph.getVertices()) {
@@ -113,7 +113,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
                 z /= numPoints;
 
                 FilamentVertex filamentVertex = new FilamentVertex();
-                filamentVertex.setCentroid(new FilamentLocation((int)Math.round(x), (int)Math.round(y), (int)Math.round(z)));
+                filamentVertex.setSpatialLocation(new Point3d((int)Math.round(x), (int)Math.round(y), (int)Math.round(z)));
                 vertexMapping.put(vertex, filamentVertex);
                 filamentsData.addVertex(filamentVertex);
             }

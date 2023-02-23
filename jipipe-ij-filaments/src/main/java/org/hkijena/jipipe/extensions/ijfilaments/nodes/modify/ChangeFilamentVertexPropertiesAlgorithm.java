@@ -4,13 +4,12 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -19,8 +18,8 @@ import java.util.Map;
 
 @JIPipeDocumentation(name = "Change filament vertex properties", description = "Allows to override various properties of the filament vertices")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter centroidX = new DefaultExpressionParameter("default");
@@ -53,8 +52,8 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
-        FilamentsData outputData = new FilamentsData(inputData);
+        Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
+        Filaments3DData outputData = new Filaments3DData(inputData);
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
@@ -68,24 +67,24 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
             FilamentVertexVariableSource.writeToVariables(outputData, vertex, variables, "");
 
             // Centroid X
-            variables.set("default", vertex.getCentroid().getX());
-            vertex.getCentroid().setX(centroidX.evaluateToInteger(variables));
+            variables.set("default", vertex.getSpatialLocation().getX());
+            vertex.getSpatialLocation().setX(centroidX.evaluateToInteger(variables));
 
             // Centroid Y
-            variables.set("default", vertex.getCentroid().getY());
-            vertex.getCentroid().setY(centroidY.evaluateToInteger(variables));
+            variables.set("default", vertex.getSpatialLocation().getY());
+            vertex.getSpatialLocation().setY(centroidY.evaluateToInteger(variables));
 
             // Centroid Z
-            variables.set("default", vertex.getCentroid().getZ());
-            vertex.getCentroid().setZ(centroidZ.evaluateToInteger(variables));
+            variables.set("default", vertex.getSpatialLocation().getZ());
+            vertex.getSpatialLocation().setZ(centroidZ.evaluateToInteger(variables));
 
             // Centroid C
-            variables.set("default", vertex.getCentroid().getC());
-            vertex.getCentroid().setC(centroidC.evaluateToInteger(variables));
+            variables.set("default", vertex.getNonSpatialLocation().getChannel());
+            vertex.getNonSpatialLocation().setChannel(centroidC.evaluateToInteger(variables));
 
             // Centroid T
-            variables.set("default", vertex.getCentroid().getT());
-            vertex.getCentroid().setT(centroidT.evaluateToInteger(variables));
+            variables.set("default", vertex.getNonSpatialLocation().getFrame());
+            vertex.getNonSpatialLocation().setFrame(centroidT.evaluateToInteger(variables));
 
             // Thickness
             variables.set("default", vertex.getThickness());

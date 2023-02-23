@@ -8,17 +8,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.UUID;
 
-public class FilamentsDataDeserializer extends JsonDeserializer<FilamentsData> {
+public class FilamentsDataDeserializer extends JsonDeserializer<Filaments3DData> {
     @Override
-    public FilamentsData deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-        FilamentsData graph = new FilamentsData();
+    public Filaments3DData deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        Filaments3DData graph = new Filaments3DData();
         JsonNode root = jsonParser.readValueAsTree();
         BiMap<String, FilamentVertex> vertexMap = HashBiMap.create();
         for (Map.Entry<String, JsonNode> vertexEntry : ImmutableList.copyOf(root.get("vertices").fields())) {

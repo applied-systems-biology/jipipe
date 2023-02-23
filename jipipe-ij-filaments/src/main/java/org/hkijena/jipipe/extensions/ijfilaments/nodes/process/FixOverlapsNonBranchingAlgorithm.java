@@ -11,13 +11,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdgeVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentUnconnectedEdgeVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -33,9 +31,9 @@ import java.util.stream.Collectors;
 @JIPipeDocumentation(name = "Fix overlapping filaments (non-branching)", description = "Algorithm that attempts to fix filaments that are merged together by junctions. " +
         "Please note that this operation assumes that all filaments are non-branching.")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
-@JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", optional = true, autoCreate = true)
-@JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
+@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean enforceSameComponent = true;
@@ -219,8 +217,8 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData inputData = dataBatch.getInputData("Input", FilamentsData.class, progressInfo);
-        FilamentsData outputData = new FilamentsData(inputData);
+        Filaments3DData inputData = dataBatch.getInputData("Input", Filaments3DData.class, progressInfo);
+        Filaments3DData outputData = new Filaments3DData(inputData);
 
         ImagePlus mask;
         if(enforceEdgesWithinMask) {
@@ -260,8 +258,8 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         ConnectivityInspector<FilamentVertex, FilamentEdge> outputDataInspector = new ConnectivityInspector<>(outputData);
         for (FilamentVertex current : candidateEndpoints) {
 
-            Vector3d currentV1 = current.getCentroid().toVector3d();
-            Vector3d currentV2 = Graphs.neighborSetOf(outputData, current).iterator().next().getCentroid().toVector3d();
+            Vector3d currentV1 = current.getSpatialLocation().toVector3d();
+            Vector3d currentV2 = Graphs.neighborSetOf(outputData, current).iterator().next().getSpatialLocation().toVector3d();
             if(!enable3D) {
                 currentV1.z = 0;
                 currentV2.z = 0;
@@ -273,13 +271,13 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
             for (FilamentVertex other : candidateEndpoints) {
                 // TODO: Auto-detect radius (based on connections to removed edges?) -> could be imprecise
                 if(other != current) {
-                    if(!enable3D && !current.getCentroid().sameZ(other.getCentroid())) {
+                    if(!enable3D && current.getSpatialLocation().getZ() != other.getSpatialLocation().getZ()) {
                         continue;
                     }
-                    if(!connectAcrossC && !current.getCentroid().sameC(other.getCentroid())) {
+                    if(!connectAcrossC &&  current.getNonSpatialLocation().getChannel() != other.getNonSpatialLocation().getChannel()) {
                         continue;
                     }
-                    if(!connectAcrossT && !current.getCentroid().sameT(other.getCentroid())) {
+                    if(!connectAcrossT && current.getNonSpatialLocation().getFrame() != other.getNonSpatialLocation().getFrame()) {
                         continue;
                     }
                     if(enforceSameComponent && !Objects.equals(components.get(current), components.get(other))) {
@@ -310,8 +308,8 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
                     }
 
                     // Calculate other direction
-                    Vector3d otherV1 = other.getCentroid().toVector3d();
-                    Vector3d otherV2 = Graphs.neighborSetOf(outputData, other).iterator().next().getCentroid().toVector3d();
+                    Vector3d otherV1 = other.getSpatialLocation().toVector3d();
+                    Vector3d otherV2 = Graphs.neighborSetOf(outputData, other).iterator().next().getSpatialLocation().toVector3d();
                     if(!enable3D) {
                         otherV1.z = 0;
                         otherV2.z = 0;

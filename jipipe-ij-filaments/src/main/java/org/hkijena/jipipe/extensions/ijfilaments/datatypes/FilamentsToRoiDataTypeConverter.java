@@ -7,7 +7,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 public class FilamentsToRoiDataTypeConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
-        return FilamentsData.class;
+        return Filaments3DData.class;
     }
 
     @Override
@@ -17,6 +17,6 @@ public class FilamentsToRoiDataTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return ((FilamentsData)input).toRoi(false, true, true, true);
+        return ((Filaments3DData)input).toRoi(false, true, true, true);
     }
 }

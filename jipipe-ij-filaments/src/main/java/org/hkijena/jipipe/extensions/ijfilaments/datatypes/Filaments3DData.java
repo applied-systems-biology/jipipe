@@ -42,23 +42,23 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Filaments", description = "Stores filaments as graph")
+@JIPipeDocumentation(name = "Filaments 3D", description = "Stores 3D filaments as graph")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A *.json file containing a JGraphT graph in its serialized form",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 @JsonSerialize(using = FilamentsDataSerializer.class)
 @JsonDeserialize(using = FilamentsDataDeserializer.class)
-public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> implements JIPipeData {
+public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> implements JIPipeData {
 
-    public FilamentsData() {
+    public Filaments3DData() {
         super(FilamentEdge.class);
     }
 
-    public FilamentsData(FilamentsData other) {
+    public Filaments3DData(Filaments3DData other) {
         super(FilamentEdge.class);
         mergeWithCopy(other);
     }
 
-    public void mergeWithCopy(FilamentsData other) {
+    public void mergeWithCopy(Filaments3DData other) {
         Map<FilamentVertex, FilamentVertex> copyMap = new IdentityHashMap<>();
         for (FilamentVertex vertex : other.vertexSet()) {
             FilamentVertex copy = new FilamentVertex(vertex);
@@ -75,7 +75,7 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
         }
     }
 
-    public void mergeWith(FilamentsData other) {
+    public void mergeWith(Filaments3DData other) {
         for (FilamentVertex vertex : other.vertexSet()) {
             addVertex(vertex);
         }
@@ -97,7 +97,7 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new FilamentsData(this);
+        return new Filaments3DData(this);
     }
 
     @Override
@@ -119,10 +119,10 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
         for (FilamentEdge edge : edgeSet()) {
             FilamentVertex edgeSource = getEdgeSource(edge);
             FilamentVertex edgeTarget = getEdgeTarget(edge);
-            int x1 = (int)Math.round((edgeSource.getCentroid().getX() - boundsXY.x) * scale);
-            int y1 = (int)Math.round((edgeSource.getCentroid().getY() - boundsXY.y) * scale);
-            int x2 = (int)Math.round((edgeTarget.getCentroid().getX() - boundsXY.x) * scale);
-            int y2 = (int)Math.round((edgeTarget.getCentroid().getY() - boundsXY.y) * scale);
+            int x1 = (int)Math.round((edgeSource.getSpatialLocation().getX() - boundsXY.x) * scale);
+            int y1 = (int)Math.round((edgeSource.getSpatialLocation().getY() - boundsXY.y) * scale);
+            int x2 = (int)Math.round((edgeTarget.getSpatialLocation().getX() - boundsXY.x) * scale);
+            int y2 = (int)Math.round((edgeTarget.getSpatialLocation().getY() - boundsXY.y) * scale);
             graphics.setPaint(edge.getColor());
             graphics.drawLine(x1, y1, x2, y2);
         }
@@ -142,12 +142,12 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
     }
 
 
-    public static FilamentsData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        FilamentsData graph;
+    public static Filaments3DData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Filaments3DData graph;
         JSONImporter<FilamentVertex, FilamentEdge> importer = new JSONImporter<>();
         Path jsonPath = storage.findFileByExtension(".json").get();
         try(InputStream stream = storage.open(jsonPath)) {
-            graph = JsonUtils.getObjectMapper().readValue(stream, FilamentsData.class);
+            graph = JsonUtils.getObjectMapper().readValue(stream, Filaments3DData.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -162,15 +162,15 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
                 FilamentVertex edgeSource = getEdgeSource(edge);
                 FilamentVertex edgeTarget = getEdgeTarget(edge);
 
-                if (edgeSource.getCentroid().getZ() != edgeTarget.getCentroid().getZ() ||
-                        edgeSource.getCentroid().getC() != edgeTarget.getCentroid().getC() ||
-                        edgeSource.getCentroid().getT() != edgeTarget.getCentroid().getT()) {
+                if (edgeSource.getSpatialLocation().getZ() != edgeTarget.getSpatialLocation().getZ() ||
+                        edgeSource.getNonSpatialLocation().getChannel() != edgeTarget.getNonSpatialLocation().getChannel() ||
+                        edgeSource.getNonSpatialLocation().getFrame() != edgeTarget.getNonSpatialLocation().getFrame()) {
                     if (ignoreNon2DEdges)
                         continue;
-                    outputData.add(edgeToRoiLine(edge, edgeSource.getCentroid().getZ(), edgeSource.getCentroid().getC(), edgeSource.getCentroid().getT(), thinEdgeLines));
-                    outputData.add(edgeToRoiLine(edge, edgeTarget.getCentroid().getZ(), edgeTarget.getCentroid().getC(), edgeTarget.getCentroid().getT(), thinEdgeLines));
+                    outputData.add(edgeToRoiLine(edge, edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), thinEdgeLines));
+                    outputData.add(edgeToRoiLine(edge, edgeTarget.getSpatialLocation().getZ(), edgeTarget.getNonSpatialLocation().getChannel(), edgeTarget.getNonSpatialLocation().getFrame(), thinEdgeLines));
                 } else {
-                    outputData.add(edgeToRoiLine(edge, edgeSource.getCentroid().getZ(), edgeSource.getCentroid().getC(), edgeSource.getCentroid().getT(), thinEdgeLines));
+                    outputData.add(edgeToRoiLine(edge, edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), thinEdgeLines));
                 }
             }
         }
@@ -184,7 +184,8 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
     }
 
     private Roi vertexToRoi(FilamentVertex vertex) {
-        FilamentLocation centroid = vertex.getCentroid();
+        Point3d centroid = vertex.getSpatialLocation();
+        NonSpatialPoint3d nonSpatialLocation = vertex.getNonSpatialLocation();
         EllipseRoi roi = new EllipseRoi(centroid.getX() - vertex.getThickness() / 2.0,
                 centroid.getY() - vertex.getThickness() / 2.0,
                 centroid.getX() + vertex.getThickness() / 2.0,
@@ -193,9 +194,9 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
         roi.setName(vertex.getUuid().toString());
         roi.setStrokeColor(vertex.getColor());
 //        roi.setFillColor(vertex.getColor());
-        int c = Math.max(-1, centroid.getC());
+        int c = Math.max(-1, nonSpatialLocation.getChannel());
         int z = Math.max(-1, centroid.getZ());
-        int t = Math.max(-1, centroid.getT());
+        int t = Math.max(-1, nonSpatialLocation.getFrame());
         roi.setPosition(c + 1, z + 1, t + 1);
         return roi;
     }
@@ -203,7 +204,7 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
     public Line edgeToRoiLine(FilamentEdge edge, int z, int c, int t, boolean thinLines) {
         FilamentVertex edgeSource = getEdgeSource(edge);
         FilamentVertex edgeTarget = getEdgeTarget(edge);
-        Line roi = new Line(edgeSource.getCentroid().getX(), edgeSource.getCentroid().getY(), edgeTarget.getCentroid().getX(), edgeTarget.getCentroid().getY());
+        Line roi = new Line(edgeSource.getSpatialLocation().getX(), edgeSource.getSpatialLocation().getY(), edgeTarget.getSpatialLocation().getX(), edgeTarget.getSpatialLocation().getY());
         roi.setStrokeColor(edge.getColor());
 //        roi.setFillColor(edge.getColor());
         if(!thinLines) {
@@ -215,7 +216,7 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
     }
 
     public void removeDuplicateVertices(boolean onlySameComponent) {
-        Multimap<FilamentLocation, FilamentVertex> multimap = groupVerticesByLocation();
+        Multimap<Point3d, FilamentVertex> multimap = groupVerticesByLocation();
         Map<FilamentVertex, Integer> componentIds;
         if(onlySameComponent) {
             componentIds = findComponentIds();
@@ -223,7 +224,7 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
             componentIds = null;
         }
 
-        for (FilamentLocation location : multimap.keySet()) {
+        for (Point3d location : multimap.keySet()) {
             Collection<FilamentVertex> vertices = multimap.get(location);
             if(onlySameComponent) {
                 Map<Integer, List<FilamentVertex>> groups = vertices.stream().collect(Collectors.groupingBy(componentIds::get));
@@ -312,11 +313,11 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
 
     public void measureVertex(FilamentVertex vertex, Map<String, Object> target, String prefix) {
         target.put(prefix + "uuid", vertex.getUuid().toString());
-        target.put(prefix + "x", vertex.getCentroid().getX());
-        target.put(prefix + "y", vertex.getCentroid().getY());
-        target.put(prefix + "z", vertex.getCentroid().getZ());
-        target.put(prefix + "c", vertex.getCentroid().getC());
-        target.put(prefix + "t", vertex.getCentroid().getT());
+        target.put(prefix + "x", vertex.getSpatialLocation().getX());
+        target.put(prefix + "y", vertex.getSpatialLocation().getY());
+        target.put(prefix + "z", vertex.getSpatialLocation().getZ());
+        target.put(prefix + "c", vertex.getNonSpatialLocation().getChannel());
+        target.put(prefix + "t", vertex.getNonSpatialLocation().getFrame());
         target.put(prefix + "thickness", vertex.getThickness());
         target.put(prefix + "color", ColorUtils.colorToHexString(vertex.getColor()));
         target.put(prefix + "degree", degreeOf(vertex));
@@ -353,22 +354,22 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
     private double getEdgeLength(FilamentEdge edge) {
         FilamentVertex edgeSource = getEdgeSource(edge);
         FilamentVertex edgeTarget = getEdgeTarget(edge);
-        return edgeSource.getCentroid().distanceTo(edgeTarget.getCentroid());
+        return edgeSource.getSpatialLocation().distanceTo(edgeTarget.getSpatialLocation());
     }
 
-    public Multimap<FilamentLocation, FilamentVertex> groupVerticesByLocation() {
-        Multimap<FilamentLocation, FilamentVertex> multimap = HashMultimap.create();
+    public Multimap<Point3d, FilamentVertex> groupVerticesByLocation() {
+        Multimap<Point3d, FilamentVertex> multimap = HashMultimap.create();
         for (FilamentVertex vertex : vertexSet()) {
-            multimap.put(vertex.getCentroid(), vertex);
+            multimap.put(vertex.getSpatialLocation(), vertex);
         }
         return multimap;
     }
 
-    public void smooth(double factorXY, double factorZ, double factorC, double factorT, boolean enforceSameComponent, DefaultExpressionParameter locationMergingFunction) {
+    public void smooth(double factorX, double factorY, double factorZ, boolean enforceSameComponent, DefaultExpressionParameter locationMergingFunction) {
         // Backup
-        Map<FilamentVertex, FilamentLocation> locationMap = new IdentityHashMap<>();
+        Map<FilamentVertex, Point3d> locationMap = new IdentityHashMap<>();
         for (FilamentVertex vertex : vertexSet()) {
-            locationMap.put(vertex, new FilamentLocation(vertex.getCentroid()));
+            locationMap.put(vertex, new Point3d(vertex.getSpatialLocation()));
         }
         Map<FilamentVertex, Integer> componentIds;
         if(enforceSameComponent) {
@@ -379,19 +380,15 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
 
         // Downscale
         for (FilamentVertex vertex : vertexSet()) {
-            FilamentLocation centroid = vertex.getCentroid();
-            if(factorXY > 0) {
-                centroid.setX((int)Math.round(centroid.getX() / factorXY));
-                centroid.setY((int)Math.round(centroid.getY() / factorXY));
+            Point3d centroid = vertex.getSpatialLocation();
+            if(factorX > 0) {
+                centroid.setX((int)Math.round(centroid.getX() / factorX));
             }
-            if(factorZ > 0 && centroid.getZ() > 0) {
+            if(factorY > 0) {
+                centroid.setY((int)Math.round(centroid.getY() / factorY));
+            }
+            if(factorZ > 0) {
                 centroid.setZ((int)Math.round(centroid.getZ() / factorZ));
-            }
-            if(factorC > 0 && centroid.getC() > 0) {
-                centroid.setC((int)Math.round(centroid.getC() / factorC));
-            }
-            if(factorT > 0 && centroid.getT() > 0) {
-                centroid.setT((int)Math.round(centroid.getT() / factorT));
             }
         }
 
@@ -399,12 +396,12 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
        removeDuplicateVertices(enforceSameComponent);
 
         // Group vertices by location and calculate a new centroid
-        Multimap<FilamentLocation, FilamentVertex> multimap = groupVerticesByLocation();
+        Multimap<Point3d, FilamentVertex> multimap = groupVerticesByLocation();
         ExpressionVariables variables = new ExpressionVariables();
         for (FilamentVertex vertex : vertexSet()) {
             // Restore original
-            vertex.setCentroid(locationMap.get(vertex));
-            Collection<FilamentVertex> group = multimap.get(vertex.getCentroid());
+            vertex.setSpatialLocation(locationMap.get(vertex));
+            Collection<FilamentVertex> group = multimap.get(vertex.getSpatialLocation());
 
             if(group.size() > 1) {
                 if (enforceSameComponent) {
@@ -415,9 +412,9 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
                             group2.add(item);
                         }
                     }
-                    calculateNewVertexLocation(factorXY, factorZ, factorC, factorT, locationMergingFunction, locationMap, variables, vertex, group2);
+                    calculateNewVertexLocation(factorX, factorY, factorZ, locationMergingFunction, locationMap, variables, vertex, group2);
                 } else {
-                    calculateNewVertexLocation(factorXY, factorZ, factorC, factorT, locationMergingFunction, locationMap, variables, vertex, group);
+                    calculateNewVertexLocation(factorX, factorY, factorZ, locationMergingFunction, locationMap, variables, vertex, group);
                 }
             }
         }
@@ -426,27 +423,19 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
         removeSelfEdges();
     }
 
-    private static void calculateNewVertexLocation(double factorXY, double factorZ, double factorC, double factorT, DefaultExpressionParameter locationMergingFunction, Map<FilamentVertex, FilamentLocation> locationMap, ExpressionVariables variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
+    private static void calculateNewVertexLocation(double factorX, double factorY, double factorZ, DefaultExpressionParameter locationMergingFunction, Map<FilamentVertex, Point3d> locationMap, ExpressionVariables variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
         // Apply average where applicable
-        if(factorXY > 0) {
+        if(factorX > 0) {
             variables.set("values", group.stream().map(v -> locationMap.get(v).getX()).collect(Collectors.toList()));
-            vertex.getCentroid().setX(locationMergingFunction.evaluateToInteger(variables));
+            vertex.getSpatialLocation().setX(locationMergingFunction.evaluateToInteger(variables));
         }
-        if(factorXY > 0) {
+        if(factorY > 0) {
             variables.set("values", group.stream().map(v -> locationMap.get(v).getY()).collect(Collectors.toList()));
-            vertex.getCentroid().setY(locationMergingFunction.evaluateToInteger(variables));
-        }
-        if(factorC > 0) {
-            variables.set("values", group.stream().map(v -> locationMap.get(v).getC()).collect(Collectors.toList()));
-            vertex.getCentroid().setC(locationMergingFunction.evaluateToInteger(variables));
+            vertex.getSpatialLocation().setY(locationMergingFunction.evaluateToInteger(variables));
         }
         if(factorZ > 0) {
             variables.set("values", group.stream().map(v -> locationMap.get(v).getZ()).collect(Collectors.toList()));
-            vertex.getCentroid().setZ(locationMergingFunction.evaluateToInteger(variables));
-        }
-        if(factorT > 0) {
-            variables.set("values", group.stream().map(v -> locationMap.get(v).getT()).collect(Collectors.toList()));
-            vertex.getCentroid().setT(locationMergingFunction.evaluateToInteger(variables));
+            vertex.getSpatialLocation().setZ(locationMergingFunction.evaluateToInteger(variables));
         }
     }
 
@@ -460,10 +449,10 @@ public class FilamentsData  extends SimpleGraph<FilamentVertex, FilamentEdge> im
         int minY = Integer.MAX_VALUE;
         int maxY = Integer.MIN_VALUE;
         for (FilamentVertex vertex : vertexSet()) {
-            minX = Math.min(minX, vertex.getCentroid().getX());
-            maxX = Math.max(maxX, vertex.getCentroid().getX());
-            minY = Math.min(minY, vertex.getCentroid().getY());
-            maxY = Math.max(maxY, vertex.getCentroid().getY());
+            minX = Math.min(minX, vertex.getSpatialLocation().getX());
+            maxX = Math.max(maxX, vertex.getSpatialLocation().getX());
+            minY = Math.min(minY, vertex.getSpatialLocation().getY());
+            maxY = Math.max(maxY, vertex.getSpatialLocation().getY());
         }
         return new Rectangle(minX, minY, maxX - minX, maxY - minY);
     }

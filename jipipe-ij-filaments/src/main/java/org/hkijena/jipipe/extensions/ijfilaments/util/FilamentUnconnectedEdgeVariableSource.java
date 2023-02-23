@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,10 +36,10 @@ public class FilamentUnconnectedEdgeVariableSource implements ExpressionParamete
         VARIABLES.add(new ExpressionParameterVariable("Target degree", "The degree (number of edges) of the vertex", "target.degree"));
     }
 
-    public static void writeToVariables(FilamentsData graph, FilamentVertex source, FilamentVertex target, ExpressionVariables variables, String prefix) {
+    public static void writeToVariables(Filaments3DData graph, FilamentVertex source, FilamentVertex target, ExpressionVariables variables, String prefix) {
         graph.measureVertex(source, variables, prefix + "source.");
         graph.measureVertex(target, variables, prefix + "target.");
-        variables.set("length", source.getCentroid().distanceTo(target.getCentroid()));
+        variables.set("length", source.getSpatialLocation().distanceTo(target.getSpatialLocation()));
     }
 
     @Override

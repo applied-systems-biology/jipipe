@@ -6,12 +6,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 
 @JIPipeDocumentation(name = "Convert filaments to ROI", description = "Converts filaments into 2D line ImageJ ROI")
-@JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -36,7 +36,7 @@ public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
+        Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         ROIListData outputData = inputData.toRoi(ignoreNon2DEdges, withEdges, withVertices, thinLines);
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);

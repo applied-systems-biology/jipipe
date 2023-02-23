@@ -6,12 +6,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 
 @JIPipeDocumentation(name = "Remove duplicate vertices", description = "Detects vertices with the same location and removes all duplicates. Edges are preserved. The metadata of deleted vertices will be removed.")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Process")
-@JIPipeInputSlot(value = FilamentsData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = FilamentsData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class RemoveDuplicateVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean onlySameComponent = true;
@@ -38,8 +38,8 @@ public class RemoveDuplicateVerticesAlgorithm extends JIPipeSimpleIteratingAlgor
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FilamentsData inputData = dataBatch.getInputData(getFirstInputSlot(), FilamentsData.class, progressInfo);
-        FilamentsData outputData = new FilamentsData(inputData);
+        Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
+        Filaments3DData outputData = new Filaments3DData(inputData);
         outputData.removeDuplicateVertices(onlySameComponent);
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
