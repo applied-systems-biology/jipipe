@@ -140,10 +140,10 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
 
         JButton addGroupButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
         JPopupMenu popupMenu = UIUtils.addPopupMenuToComponent(addGroupButton);
-        popupMenu.add(UIUtils.createMenuItem("Empty group", "Adds an empty group", UIUtils.getIconFromResources("actions/list-add.png"), this::addEmptyGroup));
-        popupMenu.add(UIUtils.createMenuItem("Node as group", "Add all parameters within a node as group", UIUtils.getIconFromResources("data-types/node.png"), this::addWholeNode));
+        popupMenu.add(UIUtils.createMenuItem("Add empty group", "Adds an empty group", UIUtils.getIconFromResources("actions/list-add.png"), this::addEmptyGroup));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Parameter", "Adds a reference to a parameter", UIUtils.getIconFromResources("data-types/parameters.png"), this::addParameterReference));
+        popupMenu.add(UIUtils.createMenuItem("Add parameter", "Adds a reference to a parameter", UIUtils.getIconFromResources("data-types/parameters.png"), this::addParameterReference));
+        popupMenu.add(UIUtils.createMenuItem("Add all parameters of node as group", "Add all parameters within a node as group", UIUtils.getIconFromResources("data-types/node.png"), this::addWholeNode));
         toolBar.add(addGroupButton);
 
         JButton removeButton = new JButton("Remove", UIUtils.getIconFromResources("actions/delete.png"));

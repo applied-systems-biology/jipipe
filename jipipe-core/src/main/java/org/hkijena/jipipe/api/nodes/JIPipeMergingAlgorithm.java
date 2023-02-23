@@ -329,7 +329,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     public ImageIcon getUIInputSlotIcon(String slotName) {
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
         if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
-            return UIUtils.getIconInvertedFromResources("actions/n-to-m.png");
+            return UIUtils.getIconInvertedFromResources("actions/merge-down.png");
         }
         return super.getUIInputSlotIcon(slotName);
     }
@@ -340,7 +340,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
         if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
             target.add(new ViewOnlyMenuItem("<html>Many-to-Many processing<br/><small>The data within this slot is merged based on annotations (N inputs produce M outputs)</small>",
-                    UIUtils.getIconFromResources("actions/n-to-m.png")));
+                    UIUtils.getIconFromResources("actions/merge-down.png")));
         }
     }
 

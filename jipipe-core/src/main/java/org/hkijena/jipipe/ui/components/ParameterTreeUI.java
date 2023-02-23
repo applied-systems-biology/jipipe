@@ -13,7 +13,10 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -27,7 +30,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -152,12 +155,41 @@ public class ParameterTreeUI extends JPanel {
     public void rebuildModel() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(tree.getRoot());
         DefaultTreeModel model = new DefaultTreeModel(root);
-        traverse(root, tree.getRoot(), false);
+
+        // Attempt to select for compartments
+        Set<JIPipeParameterTree.Node> ignored = new HashSet<>();
+        Multimap<JIPipeProjectCompartment, JIPipeParameterTree.Node> perCompartment = HashMultimap.create();
+        for (JIPipeParameterTree.Node node : tree.getRoot().getChildren().values()) {
+            if(node.getCollection() instanceof JIPipeGraphNode) {
+                JIPipeGraphNode graphNode = (JIPipeGraphNode) node.getCollection();
+                if(graphNode.getCompartmentUUIDInParentGraph() != null && graphNode.getParentGraph().getProject() != null) {
+                    JIPipeProjectCompartment compartment = graphNode.getParentGraph().getProject().getCompartments().getOrDefault(graphNode.getCompartmentUUIDInParentGraph(), null);
+                    perCompartment.put(compartment, node);
+                    ignored.add(node);
+                }
+            }
+        }
+
+        // Compartment-based nodes
+        for (JIPipeProjectCompartment compartment : perCompartment.keySet()) {
+            DefaultMutableTreeNode compartmentNode = new DefaultMutableTreeNode(compartment);
+            for (JIPipeParameterTree.Node node : perCompartment.get(compartment)) {
+                DefaultMutableTreeNode uiNode = new DefaultMutableTreeNode(node);
+                traverse(uiNode, node, Collections.emptySet(), false);
+                compartmentNode.add(uiNode);
+            }
+            root.add(compartmentNode);
+        }
+
+        traverse(root, tree.getRoot(), ignored, false);
         treeComponent.setModel(model);
 //        UIUtils.expandAllTree(treeComponent);
     }
 
-    private void traverse(DefaultMutableTreeNode uiNode, JIPipeParameterTree.Node node, boolean noSearch) {
+    private void traverse(DefaultMutableTreeNode uiNode, JIPipeParameterTree.Node node, Set<JIPipeParameterTree.Node> ignored, boolean noSearch) {
+        if (ignored.contains(node)) {
+            return;
+        }
         for (JIPipeParameterAccess value : node.getParameters().values()) {
             if (noSearch || searchTextField.test(value.getName())) {
                 DefaultMutableTreeNode parameterUINode = new DefaultMutableTreeNode(value);
@@ -166,7 +198,7 @@ public class ParameterTreeUI extends JPanel {
         }
         for (JIPipeParameterTree.Node child : node.getChildren().values()) {
             DefaultMutableTreeNode childUINode = new DefaultMutableTreeNode(child);
-            traverse(childUINode, child, noSearch || searchTextField.test(child.getName()));
+            traverse(childUINode, child, ignored, noSearch || searchTextField.test(child.getName()));
             if (childUINode.getChildCount() > 0)
                 uiNode.add(childUINode);
         }
@@ -206,7 +238,12 @@ public class ParameterTreeUI extends JPanel {
                     if (name == null)
                         name = node.getKey();
                     setText(name);
-                } else if (userObject instanceof JIPipeParameterAccess) {
+                }
+                else if(userObject instanceof JIPipeProjectCompartment) {
+                    setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
+                    setText(((JIPipeProjectCompartment) userObject).getName());
+                }
+                else if (userObject instanceof JIPipeParameterAccess) {
                     JIPipeParameterAccess access = (JIPipeParameterAccess) userObject;
                     setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
                     String name = access.getName();
