@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
+import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -1016,7 +1018,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 slotState.setSlotLabel("Parameters");
             }
             if (graph != null) {
-                if (!inputSlot.getInfo().isOptional() && graph.getGraph().inDegreeOf(inputSlot) <= 0) {
+                if (!inputSlot.getInfo().isOptional() && graph.getGraph().inDegreeOf(inputSlot) <= 0 && !(inputSlot.getNode() instanceof GraphWrapperAlgorithmInput)) {
                     slotState.setSlotStatus(SlotStatus.Unconnected);
                 } else {
                     slotState.setSlotStatus(SlotStatus.Default);
