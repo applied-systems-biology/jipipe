@@ -25,10 +25,13 @@ import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
 import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.FindParticles3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.GenerateRandom3DROIAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -40,6 +43,8 @@ import java.util.List;
 public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public static final String RESOURCE_BASE_PATH = "/org/hkijena/jipipe/extensions/ij3d";
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(IJ3DExtension.class, "org/hkijena/jipipe/extensions/ij3d");
 
     @Override
     public StringList getDependencyCitations() {
@@ -71,12 +76,13 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("roi-3d-list", ROI3DListData.class, getClass().getResource(RESOURCE_BASE_PATH + "/icons/data-type-roi3d.png"), new AddROI3DToManagerOperation());
+        registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerOperation());
         registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);
         registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
         registerNodeType("import-roi-3d", ImportROI3D.class);
 
-        registerNodeType("ij3d-roi-generate-random", GenerateRandom3DROIAlgorithm.class);
+//        registerNodeType("ij3d-roi-generate-random", GenerateRandom3DROIAlgorithm.class);
+        registerNodeType("ij3d-analyze-find-particles2d", FindParticles3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
 
         registerNodeType("ij3d-roi-merge", MergeROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
     }

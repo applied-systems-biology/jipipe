@@ -189,4 +189,11 @@ public class ROI3DListData extends Objects3DPopulation implements JIPipeData {
     }
 
 
+    public int size() {
+        return getNbObjects();
+    }
+
+    public boolean isEmpty() {
+        return size() == 0;
+    }
 }
