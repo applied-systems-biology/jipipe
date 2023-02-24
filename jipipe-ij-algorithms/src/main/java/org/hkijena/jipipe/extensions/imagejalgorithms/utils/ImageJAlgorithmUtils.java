@@ -3,11 +3,14 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.plugin.filter.Analyzer;
 import ij.process.*;
+import inra.ijpb.binary.BinaryImages;
 import inra.ijpb.label.LabelImages;
+import inra.ijpb.plugins.Connectivity3D;
 import org.hkijena.jipipe.api.JIPipePercentageProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -15,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -26,6 +30,16 @@ import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 public class ImageJAlgorithmUtils {
+
+    public static ImagePlus connectedComponents3D(ImagePlus inputImage, Neighborhood3D connectivity, int bitDepth) {
+        ImageStack outputStack = BinaryImages.componentsLabeling(inputImage.getImageStack(), connectivity.getNativeValue(), bitDepth);
+        ImagePlus outputImage = new ImagePlus("Labels", outputStack);
+        outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+
+        double nLabels = LabelImages.findLargestLabel(outputImage);
+        outputImage.setDisplayRange(0, nLabels);
+        return outputImage;
+    }
 
     public static ByteProcessor getLabelMask(ImageProcessor processor, int label) {
         ByteProcessor result = new ByteProcessor(processor.getWidth(), processor.getHeight());
