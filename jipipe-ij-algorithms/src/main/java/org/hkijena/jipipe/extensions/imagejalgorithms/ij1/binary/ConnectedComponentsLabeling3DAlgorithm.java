@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary;
 
 import ij.ImagePlus;
+import ij.ImageStack;
 import inra.ijpb.binary.BinaryImages;
+import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -25,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -43,7 +46,7 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nBinary Images", aliasName = "Connected Components Labeling (3D)")
 public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private Neighborhood2D connectivity = Neighborhood2D.EightConnected;
+    private Neighborhood3D connectivity = Neighborhood3D.TwentySixConnected;
     private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class);
 
     /**
@@ -69,12 +72,12 @@ public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratin
 
     @JIPipeDocumentation(name = "Connectivity", description = "Determines the neighborhood around each pixel that is checked for connectivity")
     @JIPipeParameter("connectivity")
-    public Neighborhood2D getConnectivity() {
+    public Neighborhood3D getConnectivity() {
         return connectivity;
     }
 
     @JIPipeParameter("connectivity")
-    public void setConnectivity(Neighborhood2D connectivity) {
+    public void setConnectivity(Neighborhood3D connectivity) {
         this.connectivity = connectivity;
     }
 
@@ -98,7 +101,7 @@ public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratin
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
 
         int bitDepth;
         if (outputType.getInfo().getDataClass() == ImagePlusGreyscale32FData.class)
@@ -108,8 +111,13 @@ public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratin
         else
             bitDepth = 8;
 
-        ImagePlus outputImage = BinaryImages.componentsLabeling(inputImage, connectivity.getNativeValue(), bitDepth);
+        ImageStack outputStack = BinaryImages.componentsLabeling(inputImage.getImageStack(), connectivity.getNativeValue(), bitDepth);
+        ImagePlus outputImage = new ImagePlus("Labels", outputStack);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+
+        double nLabels = LabelImages.findLargestLabel(outputImage);
+        outputImage.setDisplayRange(0, nLabels);
+
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImage), progressInfo);
     }
 }
