@@ -4,6 +4,7 @@ import ij.ImageJ;
 import ij.ImagePlus;
 import mcib3d.geom.Object3D;
 import mcib3d.image3d.ImageByte;
+import mcib3d.image3d.ImageFloat;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -11,6 +12,9 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
@@ -29,6 +33,8 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private double maxParticleSize = Double.POSITIVE_INFINITY;
     private double minParticleSphericity = 0;
     private double maxParticleSphericity = 1;
+
+    private Neighborhood3D neighborhood = Neighborhood3D.TwentySixConnected;
 
     private boolean measureInPhysicalUnits = true;
 
@@ -49,6 +55,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.excludeEdges = other.excludeEdges;
         this.blackBackground = other.blackBackground;
+        this.neighborhood = other.neighborhood;
     }
 
     @Override
@@ -60,8 +67,12 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageJUtils.forEachIndexedZCTSlice(maskImage, (ip, index) -> ip.invert(), progressInfo.resolve("Invert mask"));
         }
 
+        progressInfo.log("Detecting connected components ...");
+        ImagePlus labels = ImageJAlgorithmUtils.connectedComponents3D(maskImage, neighborhood, 32);
+
         ROI3DListData roiList = new ROI3DListData();
-        ImageByte imageHandler = new ImageByte(maskImage);
+        ImageFloat imageHandler = new ImageFloat(labels);
+
         progressInfo.log("Detecting 3D particles ...");
         roiList.addImage(imageHandler, 0);
         progressInfo.log("Detected " + roiList.size() + " objects");
@@ -91,6 +102,17 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), roiList, progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Neighborhood", description = "Determines which neighborhood is used to find connected components.")
+    @JIPipeParameter("neighborhood")
+    public Neighborhood3D getNeighborhood() {
+        return neighborhood;
+    }
+
+    @JIPipeParameter("neighborhood")
+    public void setNeighborhood(Neighborhood3D neighborhood) {
+        this.neighborhood = neighborhood;
     }
 
     @JIPipeParameter(value = "min-particle-size", uiOrder = -20)
