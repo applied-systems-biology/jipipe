@@ -14,8 +14,11 @@
 
 package org.hkijena.jipipe.extensions.ij3d.datatypes;
 
+import imagescience.mesh.Cube;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Objects3DPopulation;
+import mcib3d.geom.Vector3D;
+import mcib3d.geom.Voxel3D;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -203,5 +206,37 @@ public class ROI3DListData extends Objects3DPopulation implements JIPipeData {
         ResultsTableData target = new ResultsTableData();
         IJ3DUtils.measure(referenceImage, this, measurements, physicalUnits, target, progressInfo);
         return target;
+    }
+
+    /**
+     * Gets the bounds of the 3D ROI
+     * @return array with two 3D vectors, the first one being the location and the other one containing the width, heig
+     */
+    public Vector3D[] getBounds() {
+        if(isEmpty()) {
+            return new Vector3D[] {
+              new Vector3D(0,0,0),
+              new Vector3D(0,0,0)
+            };
+        }
+        double minX = Double.POSITIVE_INFINITY;
+        double maxX = Double.NEGATIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        double minZ = Double.POSITIVE_INFINITY;
+        double maxZ = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < size(); i++) {
+            Object3D object = getObject(i);
+            minX = Math.min(minX, object.getXmin());
+            maxX = Math.max(maxX, object.getXmax());
+            minY = Math.min(minY, object.getYmin());
+            maxY = Math.max(maxY, object.getYmax());
+            minZ = Math.min(minZ, object.getZmin());
+            maxZ = Math.max(maxZ, object.getZmax());
+        }
+        return new Vector3D[] {
+          new Vector3D(minX, minY, minZ),
+          new Vector3D(maxX - minX, maxY - minY, maxZ - minZ)
+        };
     }
 }

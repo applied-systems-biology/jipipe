@@ -19,6 +19,7 @@ import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3D;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -26,6 +27,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class IJ3DUtils {
+
+    public static ImageHandler wrapImage(ImagePlusData imagePlusData) {
+        if(imagePlusData != null) {
+            return ImageHandler.wrap(imagePlusData.getImage());
+        }
+        else {
+            return null;
+        }
+    }
+
     /**
      * Duplicates an {@link Object3D}
      * @param other the object to copy
