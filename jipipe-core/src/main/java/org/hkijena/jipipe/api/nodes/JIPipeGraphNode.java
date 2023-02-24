@@ -658,6 +658,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public JIPipeDataSlot getOutputSlot(String name) {
         JIPipeDataSlot slot = outputSlotMap.get(name);
+        if(slot == null)
+            return null;
         if (!slot.isOutput())
             throw new IllegalArgumentException("The slot " + name + " is not an output slot!");
         return slot;
@@ -672,6 +674,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public JIPipeInputDataSlot getInputSlot(String name) {
         JIPipeInputDataSlot slot = inputSlotMap.get(name);
+        if(slot == null)
+            return null;
         if (!slot.isInput())
             throw new IllegalArgumentException("The slot " + name + " is not an input slot!");
         return slot;
