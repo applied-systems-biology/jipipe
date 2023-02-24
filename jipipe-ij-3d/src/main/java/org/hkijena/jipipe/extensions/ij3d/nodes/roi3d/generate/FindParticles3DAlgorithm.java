@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate;
 import ij.ImageJ;
 import ij.ImagePlus;
 import mcib3d.geom.Object3D;
+import mcib3d.geom.Objects3DPopulation;
 import mcib3d.image3d.ImageByte;
 import mcib3d.image3d.ImageFloat;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -16,6 +17,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.util.ArrayList;
@@ -25,7 +27,7 @@ import java.util.Set;
 
 @JIPipeDocumentation(name = "Find particles 3D", description = "Finds 3D particles within a mask image")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI", autoCreate = true)
 public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -60,46 +62,53 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus maskImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+        ImagePlus maskImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
         if(!blackBackground) {
             maskImage = ImageJUtils.duplicate(maskImage);
             ImageJUtils.forEachIndexedZCTSlice(maskImage, (ip, index) -> ip.invert(), progressInfo.resolve("Invert mask"));
         }
 
-        progressInfo.log("Detecting connected components ...");
-        ImagePlus labels = ImageJAlgorithmUtils.connectedComponents3D(maskImage, neighborhood, 32);
-
         ROI3DListData roiList = new ROI3DListData();
-        ImageFloat imageHandler = new ImageFloat(labels);
 
-        progressInfo.log("Detecting 3D particles ...");
-        roiList.addImage(imageHandler, 0);
-        progressInfo.log("Detected " + roiList.size() + " objects");
-        List<Object3D> toRemove = new ArrayList<>();
-        progressInfo.log("Applying filters ...");
-        for (Object3D object3D : roiList.getObjectsList()) {
-            if(excludeEdges && object3D.edgeImage(imageHandler, true, true)) {
-                toRemove.add(object3D);
-                continue;
-            }
-            if(minParticleSize > 0 || maxParticleSize < Double.POSITIVE_INFINITY) {
-                double area = measureInPhysicalUnits ? object3D.getAreaUnit() : object3D.getAreaPixels();
-                if(area < minParticleSize || area > maxParticleSize) {
+        ImageJUtils.forEachIndexedCTStack(maskImage, (imp, index, stackProgress) -> {
+            progressInfo.log("Detecting connected components ...");
+            ImagePlus labels = ImageJAlgorithmUtils.connectedComponents3D(imp, neighborhood, 32);
+            ImageFloat imageHandler = new ImageFloat(labels);
+
+            progressInfo.log("Detecting 3D particles ...");
+            Objects3DPopulation population = new Objects3DPopulation(imageHandler);
+
+            // Filter phase
+            progressInfo.log("Detected " + roiList.size() + " objects");
+            List<Object3D> toRemove = new ArrayList<>();
+            progressInfo.log("Applying filters ...");
+            for (Object3D object3D : population.getObjectsList()) {
+                if(excludeEdges && object3D.edgeImage(imageHandler, true, true)) {
                     toRemove.add(object3D);
                     continue;
                 }
-            }
-            if(minParticleSphericity > 0 || maxParticleSphericity != 1) {
-                double sphericity = object3D.getSphericity(measureInPhysicalUnits);
-                if(sphericity < minParticleSphericity || sphericity > maxParticleSphericity) {
-                    toRemove.add(object3D);
+                if(minParticleSize > 0 || maxParticleSize < Double.POSITIVE_INFINITY) {
+                    double area = measureInPhysicalUnits ? object3D.getAreaUnit() : object3D.getAreaPixels();
+                    if(area < minParticleSize || area > maxParticleSize) {
+                        toRemove.add(object3D);
+                        continue;
+                    }
+                }
+                if(minParticleSphericity > 0 || maxParticleSphericity != 1) {
+                    double sphericity = object3D.getSphericity(measureInPhysicalUnits);
+                    if(sphericity < minParticleSphericity || sphericity > maxParticleSphericity) {
+                        toRemove.add(object3D);
+                    }
                 }
             }
-        }
-        for (Object3D object3D : toRemove) {
-            roiList.removeObject(object3D);
-        }
+            for (Object3D object3D : toRemove) {
+                population.removeObject(object3D);
+            }
+
+            roiList.addFromPopulation(population, index.getC() + 1, index.getT() + 1);
+
+        }, progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), roiList, progressInfo);
     }

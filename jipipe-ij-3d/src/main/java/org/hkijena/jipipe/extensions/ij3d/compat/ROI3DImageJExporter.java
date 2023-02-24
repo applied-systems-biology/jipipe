@@ -52,7 +52,7 @@ public class ROI3DImageJExporter implements ImageJDataExporter {
                 if(!StringUtils.isNullOrEmpty(parameters.getName()))
                     manager3D.setTitle(parameters.getName());
             }
-            manager3D.addObjects3DPopulation(data);
+            manager3D.addObjects3DPopulation(data.toPopulation());
             result.add(manager3D);
         }
         return result;

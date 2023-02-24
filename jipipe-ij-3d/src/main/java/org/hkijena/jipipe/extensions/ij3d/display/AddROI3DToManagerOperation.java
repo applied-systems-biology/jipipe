@@ -42,7 +42,7 @@ public class AddROI3DToManagerOperation implements JIPipeDataDisplayOperation {
             manager3D.create3DManager();
         }
         ROI3DListData listData = (ROI3DListData) data;
-        manager3D.addObjects3DPopulation(listData);
+        manager3D.addObjects3DPopulation(listData.toPopulation());
     }
 
     @Override

@@ -42,7 +42,7 @@ public class ROI3DImageJImporter implements ImageJDataImporter {
                     RoiManager3D_2 manager = (RoiManager3D_2) object;
                     Objects3DPopulation population = (Objects3DPopulation) ReflectionUtils.getDeclaredFieldValue("objects3DPopulation", manager);
                     ROI3DListData listData = new ROI3DListData();
-                    listData.addObjects(population.getObjectsList());
+                    listData.addFromPopulation(population, 0, 0);
                     if(parameters.isDuplicate())
                         dataTable.addData(listData.duplicate(progressInfo), progressInfo);
                     else
@@ -59,7 +59,7 @@ public class ROI3DImageJImporter implements ImageJDataImporter {
                     RoiManager3D_2 manager = (RoiManager3D_2) window;
                     Objects3DPopulation population = (Objects3DPopulation) ReflectionUtils.getDeclaredFieldValue("objects3DPopulation", manager);
                     ROI3DListData listData = new ROI3DListData();
-                    listData.addObjects(population.getObjectsList());
+                    listData.addFromPopulation(population, 0, 0);
                     if(parameters.isDuplicate())
                         dataTable.addData(listData.duplicate(progressInfo), progressInfo);
                     else

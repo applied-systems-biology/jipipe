@@ -987,6 +987,39 @@ public class ImageJUtils {
      * @param function     the function. The indices are ZERO-based
      * @param progressInfo the progress
      */
+    public static void forEachIndexedCTStack(ImagePlus img, TriConsumer<ImagePlus, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.hasImageStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int c = 0; c < img.getNChannels(); c++) {
+                    if (progressInfo.isCancelled())
+                        return;
+
+                    ImageStack stack = new ImageStack(img.getWidth(), img.getHeight());
+                    for (int z = 0; z < img.getNSlices(); z++) {
+                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
+                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        stack.addSlice(processor);
+                    }
+
+                    ImagePlus cube = new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("c=" + c + ", t=" + t);
+                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).resolve("c=" + c + ", t=" + t);
+                    function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
+                }
+            }
+        } else {
+            function.accept(img, new ImageSliceIndex(0, 0, 0), progressInfo);
+        }
+    }
+
+    /**
+     * Runs the function for each Z, C, and T slice.
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based
+     * @param progressInfo the progress
+     */
     public static void forEachIndexedZCTSliceWithProgress(ImagePlus img, TriConsumer<ImageProcessor, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
         if (img.hasImageStack()) {
             int iterationIndex = 0;

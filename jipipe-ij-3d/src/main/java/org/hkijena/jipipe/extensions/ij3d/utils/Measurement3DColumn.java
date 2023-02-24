@@ -22,7 +22,7 @@ public enum Measurement3DColumn {
     Index(1, "Index", "Index", "The numeric ROI index"),
     Name(2, "Name", "Name", "The name of the ROI"),
     Comment(4, "Comment", "Comment", "The comment string of the ROI"),
-    Area(8, "Area", "Area", "The area of they ROI if projected into 2D"),
+    Area(8, "Area", "Area", "The area of the surface"),
     Volume(16, "Volume", "Volume", "The volume of the ROI"),
     CenterX(32, "CenterX", "Center (X)", "The X location of the ROI's center"),
     CenterY(32, "CenterY", "Center (Y)", "The Y location of the ROI's center"),

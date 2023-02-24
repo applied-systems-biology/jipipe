@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
+import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
@@ -109,12 +110,12 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ROI3DListData outputData = new ROI3DListData();
 
         for (int row = 0; row < statistics.getRowCount(); row++) {
-            Object3D roi = inputRois.getObject(row);
+            ROI3D roi = inputRois.get(row);
             for (int col = 0; col < statistics.getColumnCount(); col++) {
                 variableSet.set(statistics.getColumnName(col), statistics.getValueAt(row, col));
             }
             if (filters.test(variableSet)) {
-                outputData.addObject(roi);
+                outputData.add(roi);
             }
         }
 

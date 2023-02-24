@@ -61,7 +61,7 @@ public class IJ3DUtils {
                 progressInfo.log( i + "/" + roiList.size() +  " (" + newPercentage + "%)");
                 lastPercentage = newPercentage;
             }
-            Object3D object = roiList.getObject(i);
+            Object3D object = roiList.get(i).getObject3D();
             measure(referenceImage, i, object, measurements, physicalUnits, target);
         }
     }
