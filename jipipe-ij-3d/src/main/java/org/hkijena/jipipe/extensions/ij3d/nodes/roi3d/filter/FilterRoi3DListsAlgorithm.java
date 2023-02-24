@@ -21,17 +21,17 @@ import java.util.Set;
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
-public class FilterROI3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter filter = new DefaultExpressionParameter("count > 0");
     private boolean includeAnnotations = true;
     private boolean outputEmptyLists = true;
 
-    public FilterROI3DListsAlgorithm(JIPipeNodeInfo info) {
+    public FilterRoi3DListsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public FilterROI3DListsAlgorithm(FilterROI3DListsAlgorithm other) {
+    public FilterRoi3DListsAlgorithm(FilterRoi3DListsAlgorithm other) {
         super(other);
         this.filter = new DefaultExpressionParameter(other.filter);
         this.includeAnnotations = other.includeAnnotations;
