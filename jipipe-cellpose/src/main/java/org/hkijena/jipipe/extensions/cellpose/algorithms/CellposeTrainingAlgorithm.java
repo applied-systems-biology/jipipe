@@ -26,6 +26,7 @@ import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeGPUSettings;
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeTrainingTweaksSettings;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -433,7 +434,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         progressInfo.log("Apply MorphoLibJ connected components labeling (8-connectivity, 16-bit) to " + mask);
         if (enable3DSegmentation) {
             ConnectedComponentsLabeling3DAlgorithm algorithm = JIPipe.createNode(ConnectedComponentsLabeling3DAlgorithm.class);
-            algorithm.setConnectivity(Neighborhood2D.EightConnected);
+            algorithm.setConnectivity(Neighborhood3D.TwentySixConnected);
             algorithm.setOutputType(new JIPipeDataInfoRef(ImagePlusGreyscale16UData.class));
             algorithm.getFirstInputSlot().addData(new ImagePlus3DGreyscaleMaskData(mask), progressInfo);
             algorithm.run(progressInfo);
