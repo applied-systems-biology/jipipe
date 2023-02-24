@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.ij3d.datatypes;
 
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Objects3DPopulation;
+import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -25,6 +26,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObject3DVoxels;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UnclosableInputStream;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -195,5 +197,11 @@ public class ROI3DListData extends Objects3DPopulation implements JIPipeData {
 
     public boolean isEmpty() {
         return size() == 0;
+    }
+
+    public ResultsTableData measure(ImageHandler referenceImage, int measurements, boolean physicalUnits, JIPipeProgressInfo progressInfo) {
+        ResultsTableData target = new ResultsTableData();
+        IJ3DUtils.measure(referenceImage, this, measurements, physicalUnits, target, progressInfo);
+        return target;
     }
 }

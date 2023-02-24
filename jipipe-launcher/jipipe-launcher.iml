@@ -10,6 +10,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="jipipe-ij-3d" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-ij-3d" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.9.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.35.0" level="project" />

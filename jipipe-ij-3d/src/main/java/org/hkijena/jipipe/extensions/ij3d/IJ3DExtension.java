@@ -27,7 +27,10 @@ import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
 import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.FindParticles3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.GenerateRandom3DROIAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure.ExtractRoi3DStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3D;
+import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -76,6 +79,10 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+
+        registerEnumParameterType("ij3d-measurement", Measurement3D.class, "3D Measurement", "A 3D object measurement");
+        registerParameterType("ij3d-measurement-set", Measurements3DSetParameter.class, "3D Measurements", "A selection of 3D object measurements");
+
         registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerOperation());
         registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);
         registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
@@ -83,6 +90,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
 //        registerNodeType("ij3d-roi-generate-random", GenerateRandom3DROIAlgorithm.class);
         registerNodeType("ij3d-analyze-find-particles2d", FindParticles3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
+
+        registerNodeType("ij3d-measure-roi3d", ExtractRoi3DStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
 
         registerNodeType("ij3d-roi-merge", MergeROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
     }
