@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.Roi3DFromLabelsAl
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure.ExtractRoi3DStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ChangeRoi3DPropertiesFromExpressionsAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3D;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -95,6 +96,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("ij3d-filter-roi3d-list", FilterRoi3DListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij3d-filter-roi3d-by-statistics", FilterRoi3DByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+
+        registerNodeType("ij3d-roi-split-explode", ExplodeRoi3DListAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
 
         registerNodeType("ij3d-roi-merge", MergeROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
 
