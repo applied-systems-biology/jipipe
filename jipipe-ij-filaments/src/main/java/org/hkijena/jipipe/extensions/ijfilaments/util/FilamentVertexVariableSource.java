@@ -16,12 +16,13 @@ public class FilamentVertexVariableSource implements ExpressionParameterVariable
     static {
         VARIABLES = new HashSet<>();
         VARIABLES.add(new ExpressionParameterVariable("UUID", "The unique ID of the vertex", "uuid"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid X", "The X location of the centroid", "x"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid Y", "The Y location of the centroid", "y"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid Z", "The Z location of the centroid", "z"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid channel", "The channel (c) location of the centroid", "c"));
-        VARIABLES.add(new ExpressionParameterVariable("Centroid frame", "The frame (t) location of the centroid", "t"));
-        VARIABLES.add(new ExpressionParameterVariable("Thickness", "The thickness around the centroid", "thickness"));
+        VARIABLES.add(new ExpressionParameterVariable("X", "The X location", "x"));
+        VARIABLES.add(new ExpressionParameterVariable("Y", "The Y location", "y"));
+        VARIABLES.add(new ExpressionParameterVariable("Z", "The Z location", "z"));
+        VARIABLES.add(new ExpressionParameterVariable("Channel", "The channel (c) location", "c"));
+        VARIABLES.add(new ExpressionParameterVariable("Frame", "The frame (t) location", "t"));
+        VARIABLES.add(new ExpressionParameterVariable("Thickness", "The thickness of the vertex", "thickness"));
+        VARIABLES.add(new ExpressionParameterVariable("Intensity", "The intensity of the vertex", "intensity"));
         VARIABLES.add(new ExpressionParameterVariable("Degree", "The degree (number of edges) of the vertex", "degree"));
     }
 

@@ -20,6 +20,8 @@ public class FilamentVertex {
 
     private double thickness = 1;
 
+    private double intensity = 0;
+
     private Color color = new Color(0xE5A50A);
 
     private Map<String, String> metadata = new HashMap<>();
@@ -32,6 +34,7 @@ public class FilamentVertex {
         this.spatialLocation = new Point3d(other.spatialLocation);
         this.nonSpatialLocation = new NonSpatialPoint3d(other.nonSpatialLocation);
         this.thickness = other.thickness;
+        this.intensity = other.intensity;
         this.metadata = new HashMap<>(other.metadata);
         this.color = other.color;
     }
@@ -54,6 +57,16 @@ public class FilamentVertex {
     @JsonSetter("non-spatial-location")
     public void setNonSpatialLocation(NonSpatialPoint3d nonSpatialLocation) {
         this.nonSpatialLocation = nonSpatialLocation;
+    }
+
+    @JsonGetter("intensity")
+    public double getIntensity() {
+        return intensity;
+    }
+
+    @JsonSetter("intensity")
+    public void setIntensity(double intensity) {
+        this.intensity = intensity;
     }
 
     @JsonGetter("thickness")

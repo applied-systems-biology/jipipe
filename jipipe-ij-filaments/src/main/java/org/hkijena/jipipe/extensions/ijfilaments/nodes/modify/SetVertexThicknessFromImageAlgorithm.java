@@ -12,10 +12,10 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Set thickness from image", description = "Sets the thickness of each vertex from the given input image. Please note that if the Z/C/T coordinates are set to zero, the value is extracted from the 0/0/0 slice.")
+@JIPipeDocumentation(name = "Set thickness from image", description = "Sets the thickness of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = Filaments3DData.class, slotName = "Filaments", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Thickness", description = "The thickness is sources from the pixels in this image", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Thickness", description = "The thickness is sourced from the pixels in this image", autoCreate = true)
 @JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class SetVertexThicknessFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     public SetVertexThicknessFromImageAlgorithm(JIPipeNodeInfo info) {
