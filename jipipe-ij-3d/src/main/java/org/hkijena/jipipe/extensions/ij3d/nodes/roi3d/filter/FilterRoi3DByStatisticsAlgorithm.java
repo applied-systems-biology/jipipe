@@ -26,10 +26,13 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.extensions.ij3d.utils.AllMeasurement3DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicSetParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -99,6 +102,7 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
                 variableSet.set("all." + column.getLabel(), new ArrayList<>(Arrays.asList(column.getDataAsString(column.getRows()))));
             }
         }
+        variableSet.set("num_roi", inputRois.size());
 
         // Apply filter
         ROI3DListData outputData = new ROI3DListData();
@@ -136,7 +140,9 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             "Annotations are available as variables.")
     @ExpressionParameterSettings(hint = "per ROI")
     @ExpressionParameterSettingsVariable(fromClass = Measurement3DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AllMeasurement3DExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")

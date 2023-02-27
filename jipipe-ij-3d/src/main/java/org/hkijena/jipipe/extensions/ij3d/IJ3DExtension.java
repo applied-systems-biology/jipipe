@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.FindParticles3DAl
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.Roi3DFromLabelsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure.ExtractRoi3DStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ChangeRoi3DPropertiesFromExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3D;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -87,7 +88,6 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
         registerNodeType("import-roi-3d", ImportROI3D.class);
 
-
         registerNodeType("ij3d-analyze-find-particles", FindParticles3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
         registerNodeType("ij3d-labels-to-roi", Roi3DFromLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
 
@@ -97,6 +97,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-filter-roi3d-by-statistics", FilterRoi3DByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerNodeType("ij3d-roi-merge", MergeROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
+
+        registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3DPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
     }
 
     @Override

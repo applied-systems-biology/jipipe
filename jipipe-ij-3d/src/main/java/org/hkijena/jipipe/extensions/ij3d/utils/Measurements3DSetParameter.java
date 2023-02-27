@@ -10,6 +10,7 @@ import java.util.Set;
 public class Measurements3DSetParameter extends DynamicSetParameter<Measurement3D> {
     public Measurements3DSetParameter() {
         super(new HashSet<>(Arrays.asList(Measurement3D.values())));
+        setCollapsed(true);
         initialize();
     }
 
