@@ -13,7 +13,10 @@ public enum Measurement3D {
     ContourPixelValueStats(512),
     BoundingBox(1024),
     Calibration(2048),
-    MassCenter(4096);
+    MassCenter(4096),
+    Location(8192),
+    Color(16384),
+    CustomMetadata(32768);
 
     private final int nativeValue;
 
@@ -43,6 +46,8 @@ public enum Measurement3D {
                 return "Bounding box";
             case MassCenter:
                 return "Mass center";
+            case CustomMetadata:
+                return "Custom metadata";
             default:
                 return name();
         }

@@ -17,14 +17,17 @@ package org.hkijena.jipipe.extensions.ij3d;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class IJ3DUtils {
 
@@ -61,12 +64,12 @@ public class IJ3DUtils {
                 progressInfo.log( i + "/" + roiList.size() +  " (" + newPercentage + "%)");
                 lastPercentage = newPercentage;
             }
-            Object3D object = roiList.get(i).getObject3D();
-            measure(referenceImage, i, object, measurements, physicalUnits, target);
+            measure(referenceImage, i, roiList.get(i), measurements, physicalUnits, target);
         }
     }
 
-    public static void measure(ImageHandler referenceImage, int index, Object3D object3D, int measurements, boolean physicalUnits, ResultsTableData target) {
+    public static void measure(ImageHandler referenceImage, int index, ROI3D roi3D, int measurements, boolean physicalUnits, ResultsTableData target) {
+        Object3D object3D = roi3D.getObject3D();
         int row = target.addRow();
         if(Measurement3D.includes(measurements, Measurement3D.Index)) {
             target.setValueAt(index, row, "Index");
@@ -76,6 +79,18 @@ public class IJ3DUtils {
         }
         if(Measurement3D.includes(measurements, Measurement3D.Comment)) {
             target.setValueAt(StringUtils.nullToEmpty(object3D.getComment()), row, "Comment");
+        }
+        if(Measurement3D.includes(measurements, Measurement3D.Location)) {
+            target.setValueAt(StringUtils.nullToEmpty(roi3D.getChannel()), row, "Channel");
+            target.setValueAt(StringUtils.nullToEmpty(roi3D.getFrame()), row, "Frame");
+        }
+        if(Measurement3D.includes(measurements, Measurement3D.Color)) {
+            target.setValueAt(ColorUtils.colorToHexString(roi3D.getFillColor()), row, "FillColor");
+        }
+        if(Measurement3D.includes(measurements, Measurement3D.CustomMetadata)) {
+            for (Map.Entry<String, String> entry : roi3D.getMetadata().entrySet()) {
+                target.setValueAt(entry.getValue(), row, "Metadata." + entry.getKey());
+            }
         }
         if(Measurement3D.includes(measurements, Measurement3D.Area)) {
             double value;

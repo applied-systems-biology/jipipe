@@ -60,7 +60,11 @@ public enum Measurement3DColumn {
     ResolutionUnit(2048, "ResolutionUnit", "Physical voxel size (unit)", "The unit of the physical size"),
     MassCenterX(4096, "MassCenterX", "Center of mass (X)", "The X coordinate of the center of Mass (or NaN)"),
     MassCenterY(4096, "MassCenterY", "Center of mass (Y)", "The Y coordinate of the center of Mass (or NaN)"),
-    MassCenterZ(4096, "MassCenterZ", "Center of mass (Z)", "The Z coordinate of the center of Mass (or NaN)")
+    MassCenterZ(4096, "MassCenterZ", "Center of mass (Z)", "The Z coordinate of the center of Mass (or NaN)"),
+
+    LocationChannel(8192, "Channel", "Channel", "The channel of the ROI (0 = all channels)"),
+    LocationFrame(8192, "Frame", "Frame", "The frame of the ROI (0 = all frames)"),
+    FillColor(16384, "FillColor", "Fill color", "The fill color (HEX string)")
     ;
 
     private final int nativeValue;

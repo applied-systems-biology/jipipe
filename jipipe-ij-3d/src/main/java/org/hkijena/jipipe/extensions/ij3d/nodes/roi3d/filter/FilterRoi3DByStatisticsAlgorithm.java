@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter;
 
 import com.google.common.primitives.Doubles;
-import ij.gui.Roi;
-import mcib3d.geom.Object3D;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -31,11 +29,7 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.AllMeasurementExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -111,9 +105,20 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
         for (int row = 0; row < statistics.getRowCount(); row++) {
             ROI3D roi = inputRois.get(row);
+
+            // Write metadata
+            Map<String, String> roiProperties = roi.getMetadata();
+            variableSet.set("metadata", roiProperties);
+            for (Map.Entry<String, String> entry : roiProperties.entrySet()) {
+                variableSet.set("metadata." + entry.getKey(), entry.getValue());
+            }
+
+            // Write statistics
             for (int col = 0; col < statistics.getColumnCount(); col++) {
                 variableSet.set(statistics.getColumnName(col), statistics.getValueAt(row, col));
             }
+
+            // Filter
             if (filters.test(variableSet)) {
                 outputData.add(roi);
             }
@@ -129,8 +134,8 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             "Click the 'f' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
-    @ExpressionParameterSettings(variableSource = Measurement3DExpressionParameterVariableSource.class, hint = "per ROI")
-    @ExpressionParameterSettingsVariable(fromClass = AllMeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettings(hint = "per ROI")
+    @ExpressionParameterSettingsVariable(fromClass = Measurement3DExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
