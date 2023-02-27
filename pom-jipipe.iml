@@ -5,6 +5,27 @@
     <output-test url="file://$MODULE_DIR$/target/test-classes" />
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/jipipe" />
+      <excludeFolder url="file://$MODULE_DIR$/miniconda" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/jipipe-linux-installer/AppDir" />
+      <excludeFolder url="file://$MODULE_DIR$/cellpose-gpu" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/zip" />
+      <excludeFolder url="file://$MODULE_DIR$/lib-jipipe-py" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/zip/dependencies" />
+      <excludeFolder url="file://$MODULE_DIR$/deep-learning-toolkit" />
+      <excludeFolder url="file://$MODULE_DIR$/ij-updater-cli/target" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/fiji-osx" />
+      <excludeFolder url="file://$MODULE_DIR$/lib-dltoolkit" />
+      <excludeFolder url="file://$MODULE_DIR$/cellpose-cpu" />
+      <excludeFolder url="file://$MODULE_DIR$/jipipe-deep-learning/target" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/zip/package" />
+      <excludeFolder url="file://$MODULE_DIR$/jipipe-python-adapter" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/fiji-win" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/codeStyles" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/inspectionProfiles" />
+      <excludeFolder url="file://$MODULE_DIR$/r" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/dictionaries" />
+      <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/fiji-linux" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
