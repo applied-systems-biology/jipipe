@@ -3,19 +3,24 @@ package org.hkijena.jipipe.extensions.ij3d.utils;
 public enum ROI3DRelationMeasurement {
     Colocalization(1),
     PercentageColocalization(2),
-    Angle(4),
-    OverlapsBox(8),
-    Includes(16),
-    IncludesBox(32),
-    RadiusCenter(64),
-    RadiusCenterOpposite(128),
-    DistanceCenter2D(256),
-    DistanceCenter(512),
-    DistanceHausdorff(1024),
-    EdgeContactColocalization(2048),
-    EdgeContactSide(4096),
-    EdgeContactDiagonal(8192),
-    IntersectionStats(16384);
+    OverlapsBox(4),
+    Includes(8),
+    IncludesBox(16),
+    RadiusCenter(32),
+    RadiusCenterOpposite(64),
+    DistanceCenter2D(128),
+    DistanceCenter(256),
+    DistanceHausdorff(512),
+
+    DistanceBorder(1024),
+
+    DistanceCenterBorder(2048),
+    EdgeContactColocalization(4096),
+    EdgeContactSide(8192),
+    EdgeContactDiagonal(16384),
+    IntersectionStats(32768),
+    Roi1Stats(65536),
+    Roi2Stats(131072);
 
     private final int nativeValue;
 
@@ -25,5 +30,9 @@ public enum ROI3DRelationMeasurement {
 
     public int getNativeValue() {
         return nativeValue;
+    }
+
+    public static boolean includes(int nativeValue, ROI3DRelationMeasurement target) {
+        return (nativeValue & target.nativeValue) == target.nativeValue;
     }
 }

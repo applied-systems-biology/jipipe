@@ -88,7 +88,7 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         customFilterVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
 
         // Obtain statistics
-        ResultsTableData statistics = inputRois.measure(IJ3DUtils.wrapImage(inputReference), measurements.getNativeValue(), measureInPhysicalUnits, progressInfo.resolve("Measuring ROIs"));
+        ResultsTableData statistics = inputRois.measure(IJ3DUtils.wrapImage(inputReference), measurements.getNativeValue(), measureInPhysicalUnits, "", progressInfo.resolve("Measuring ROIs"));
 
         // Write statistics into variables
         for (int col = 0; col < statistics.getColumnCount(); col++) {

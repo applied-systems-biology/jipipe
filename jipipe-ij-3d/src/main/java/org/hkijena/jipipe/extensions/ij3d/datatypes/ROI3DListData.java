@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.ij3d.datatypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
-import imagescience.mesh.Cube;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -218,9 +217,9 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
         }
     }
 
-    public ResultsTableData measure(ImageHandler referenceImage, int measurements, boolean physicalUnits, JIPipeProgressInfo progressInfo) {
+    public ResultsTableData measure(ImageHandler referenceImage, int measurements, boolean physicalUnits, String columnPrefix, JIPipeProgressInfo progressInfo) {
         ResultsTableData target = new ResultsTableData();
-        IJ3DUtils.measure(referenceImage, this, measurements, physicalUnits, target, progressInfo);
+        IJ3DUtils.measureRoi3d(referenceImage, this, measurements, physicalUnits, columnPrefix, target, progressInfo);
         return target;
     }
 

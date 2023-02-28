@@ -82,7 +82,7 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
         customVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
 
         // Obtain statistics
-        ResultsTableData statistics = outputROI.measure(IJ3DUtils.wrapImage(inputReference), measurements.getNativeValue(), measureInPhysicalUnits, progressInfo.resolve("Measuring ROIs"));
+        ResultsTableData statistics = outputROI.measure(IJ3DUtils.wrapImage(inputReference), measurements.getNativeValue(), measureInPhysicalUnits, "", progressInfo.resolve("Measuring ROIs"));
 
         // Write statistics into variables
         for (int col = 0; col < statistics.getColumnCount(); col++) {

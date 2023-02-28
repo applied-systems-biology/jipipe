@@ -46,7 +46,7 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         else {
             referenceHandler = ImageHandler.wrap(reference.getImage());
         }
-        ResultsTableData result = roi.measure(referenceHandler, measurements.getNativeValue(), measureInPhysicalUnits, progressInfo.resolve("Measure 3D objects"));
+        ResultsTableData result = roi.measure(referenceHandler, measurements.getNativeValue(), measureInPhysicalUnits, "", progressInfo.resolve("Measure 3D objects"));
         dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 
