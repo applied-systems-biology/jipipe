@@ -128,6 +128,13 @@ public class IJ3DUtils {
             object2.setUnits("pixels");
         }
 
+        // Mandatory!
+        target.setValueAt(roi1.getObject3D().getName(), row, "Roi1.Name");
+        target.setValueAt(roi2.getObject3D().getName(), row, "Roi2.Name");
+        target.setValueAt(roi1Index, row, "Roi1.Index");
+        target.setValueAt(roi2Index, row, "Roi2.Index");
+
+
         try {
             if (ROI3DRelationMeasurement.includes(measurements, ROI3DRelationMeasurement.Colocalization)) {
                 target.setValueAt(object1.getColoc(object2), row, columnPrefix + "Colocalization");

@@ -253,7 +253,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     }
 
     /**
-     * Adds a new input slot
+     * Adds a new output slot
      *
      * @param name        the name
      * @param description the description
@@ -265,6 +265,20 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      */
     @Deprecated
     public JIPipeDataSlotInfo addOutputSlot(String name, String description, Class<? extends JIPipeData> dataClass, String inherited, boolean user) {
+        JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(dataClass, JIPipeSlotType.Output, name, description);
+        return addSlot(name, info, user);
+    }
+
+    /**
+     * Adds a new output slot
+     *
+     * @param name        the name
+     * @param description the description
+     * @param dataClass   the data type
+     * @param user        if the user triggered this
+     * @return the slot info
+     */
+    public JIPipeDataSlotInfo addOutputSlot(String name, String description, Class<? extends JIPipeData> dataClass, boolean user) {
         JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(dataClass, JIPipeSlotType.Output, name, description);
         return addSlot(name, info, user);
     }

@@ -47,7 +47,16 @@ public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
         ImageHandler imageHandler = IJ3DUtils.wrapImage(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
         ResultsTableData outputResults = new ResultsTableData();
 
-        IJ3DUtils.measureRoi3dRelation(imageHandler, roi1List, roi2List, measurements.getNativeValue(), measureInPhysicalUnits, requireColocalization, preciseColocalization, "", outputResults, progressInfo.resolve("Measure ROI"));
+        IJ3DUtils.measureRoi3dRelation(imageHandler,
+                roi1List,
+                roi2List,
+                measurements.getNativeValue(),
+                measureInPhysicalUnits,
+                requireColocalization,
+                preciseColocalization,
+                "",
+                outputResults,
+                progressInfo.resolve("Measure ROI"));
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
     }
