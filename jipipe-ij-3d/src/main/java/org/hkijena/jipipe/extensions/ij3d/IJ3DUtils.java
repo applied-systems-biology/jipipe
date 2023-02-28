@@ -19,7 +19,7 @@ import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3D;
+import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurement;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -71,28 +71,28 @@ public class IJ3DUtils {
     public static void measure(ImageHandler referenceImage, int index, ROI3D roi3D, int measurements, boolean physicalUnits, ResultsTableData target) {
         Object3D object3D = roi3D.getObject3D();
         int row = target.addRow();
-        if(Measurement3D.includes(measurements, Measurement3D.Index)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Index)) {
             target.setValueAt(index, row, "Index");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.Name)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Name)) {
             target.setValueAt(StringUtils.nullToEmpty(object3D.getName()), row, "Name");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.Comment)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Comment)) {
             target.setValueAt(StringUtils.nullToEmpty(object3D.getComment()), row, "Comment");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.Location)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Location)) {
             target.setValueAt(StringUtils.nullToEmpty(roi3D.getChannel()), row, "Channel");
             target.setValueAt(StringUtils.nullToEmpty(roi3D.getFrame()), row, "Frame");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.Color)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Color)) {
             target.setValueAt(ColorUtils.colorToHexString(roi3D.getFillColor()), row, "FillColor");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.CustomMetadata)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.CustomMetadata)) {
             for (Map.Entry<String, String> entry : roi3D.getMetadata().entrySet()) {
                 target.setValueAt(entry.getValue(), row, "Metadata." + entry.getKey());
             }
         }
-        if(Measurement3D.includes(measurements, Measurement3D.Area)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Area)) {
             double value;
             if(physicalUnits) {
                 value = object3D.getAreaUnit();
@@ -102,7 +102,7 @@ public class IJ3DUtils {
             }
             target.setValueAt(value, row, "Area");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.Volume)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Volume)) {
             double value;
             if(physicalUnits) {
                 value = object3D.getVolumeUnit();
@@ -112,7 +112,7 @@ public class IJ3DUtils {
             }
             target.setValueAt(value, row, "Volume");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.Center)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Center)) {
             Vector3D value;
             if(physicalUnits) {
                 value = object3D.getCenterAsVectorUnit();
@@ -132,7 +132,7 @@ public class IJ3DUtils {
                 target.setValueAt(Double.NaN, row, "CenterPixelValue");
             }
         }
-        if(Measurement3D.includes(measurements, Measurement3D.ShapeMeasurements)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.ShapeMeasurements)) {
             target.setValueAt(object3D.getCompactness(), row, "Compactness");
             target.setValueAt(object3D.getSphericity(), row, "Sphericity");
             target.setValueAt(object3D.getFeret(), row, "Feret");
@@ -141,7 +141,7 @@ public class IJ3DUtils {
             target.setValueAt( object3D.getRatioBox(), row, "RatioBox");
             target.setValueAt( object3D.getRatioEllipsoid(), row, "RatioEllipsoid");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.BoundingBox)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.BoundingBox)) {
             target.setValueAt(object3D.getXmin(), row, "BoundingBoxMinX");
             target.setValueAt(object3D.getXmax(), row, "BoundingBoxMaxX");
             target.setValueAt(object3D.getYmin(), row, "BoundingBoxMinY");
@@ -149,7 +149,7 @@ public class IJ3DUtils {
             target.setValueAt(object3D.getZmin(), row, "BoundingBoxMinZ");
             target.setValueAt(object3D.getZmax(), row, "BoundingBoxMaxZ");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.DistCenterStats)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.DistCenterStats)) {
             double max, mean, sigma;
             if(physicalUnits) {
                 max = object3D.getDistCenterMax();
@@ -173,7 +173,7 @@ public class IJ3DUtils {
             target.setValueAt(mean, row, "DistCenterMean");
             target.setValueAt(sigma, row, "DistCenterSigma");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.PixelValueStats)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.PixelValueStats)) {
             if(referenceImage != null) {
                 double max = object3D.getPixMaxValue(referenceImage);
                 double min = object3D.getPixMinValue(referenceImage);
@@ -203,7 +203,7 @@ public class IJ3DUtils {
                 target.setValueAt(Double.NaN, row, "PixelValueIntDen");
             }
         }
-        if(Measurement3D.includes(measurements, Measurement3D.ContourPixelValueStats)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.ContourPixelValueStats)) {
             if(referenceImage != null) {
                 double mean = object3D.getPixMeanValueContour(referenceImage);
                 target.setValueAt(mean, row, "ContourPixelValueMean");
@@ -212,12 +212,12 @@ public class IJ3DUtils {
                 target.setValueAt(Double.NaN, row, "ContourPixelValueMean");
             }
         }
-        if(Measurement3D.includes(measurements, Measurement3D.Calibration)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Calibration)) {
             target.setValueAt(object3D.getResXY(), row, "ResolutionXY");
             target.setValueAt(object3D.getResZ(), row, "ResolutionZ");
             target.setValueAt(object3D.getUnits(), row, "ResolutionUnit");
         }
-        if(Measurement3D.includes(measurements, Measurement3D.MassCenter)) {
+        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.MassCenter)) {
             if(referenceImage != null) {
                 double x = object3D.getMassCenterX(referenceImage);
                 double y = object3D.getMassCenterY(referenceImage);

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.ij3d.utils;
 
-public enum Measurement3D {
+public enum ROI3DMeasurement {
     Index(1),
     Name(2),
     Comment(4),
@@ -20,7 +20,7 @@ public enum Measurement3D {
 
     private final int nativeValue;
 
-    Measurement3D(int nativeValue) {
+    ROI3DMeasurement(int nativeValue) {
         this.nativeValue = nativeValue;
     }
 
@@ -28,7 +28,7 @@ public enum Measurement3D {
         return nativeValue;
     }
 
-    public static boolean includes(int nativeValue, Measurement3D target) {
+    public static boolean includes(int nativeValue, ROI3DMeasurement target) {
         return (nativeValue & target.nativeValue) == target.nativeValue;
     }
     @Override

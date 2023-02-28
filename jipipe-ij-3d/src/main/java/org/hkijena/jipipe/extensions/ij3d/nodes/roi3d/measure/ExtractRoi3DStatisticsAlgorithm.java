@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure;
 
-import ij.ImagePlus;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -10,9 +9,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
+import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurementSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 @JIPipeDocumentation(name = "Extract ROI 3D statistics", description = "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
@@ -25,7 +23,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean measureInPhysicalUnits = true;
-    private Measurements3DSetParameter measurements = new Measurements3DSetParameter();
+    private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
 
     public ExtractRoi3DStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -34,7 +32,7 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     public ExtractRoi3DStatisticsAlgorithm(ExtractRoi3DStatisticsAlgorithm other) {
         super(other);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
-        this.measurements = new Measurements3DSetParameter(other.measurements);
+        this.measurements = new ROI3DMeasurementSetParameter(other.measurements);
     }
 
     @Override
@@ -54,12 +52,12 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements to generate")
     @JIPipeParameter("measurements")
-    public Measurements3DSetParameter getMeasurements() {
+    public ROI3DMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(Measurements3DSetParameter measurements) {
+    public void setMeasurements(ROI3DMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 

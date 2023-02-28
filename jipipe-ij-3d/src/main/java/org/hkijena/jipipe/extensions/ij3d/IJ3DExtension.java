@@ -32,8 +32,8 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ChangeRoi3DPropertiesFromExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ROI3DCalculatorAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3D;
-import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
+import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurement;
+import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurementSetParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -82,8 +82,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerEnumParameterType("ij3d-measurement", Measurement3D.class, "3D Measurement", "A 3D object measurement");
-        registerParameterType("ij3d-measurement-set", Measurements3DSetParameter.class, "3D Measurements", "A selection of 3D object measurements");
+        registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");
+        registerParameterType("ij3d-measurement-set", ROI3DMeasurementSetParameter.class, "3D Measurements", "A selection of 3D object measurements");
 
         registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerOperation());
         registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);

@@ -18,7 +18,7 @@ package org.hkijena.jipipe.extensions.ij3d.utils;
  * This only includes the measurements that actually generate columns - not measurement settings.
  * This contains individually addressed columns
  */
-public enum Measurement3DColumn {
+public enum ROI3DMeasurementColumn {
     Index(1, "Index", "Index", "The numeric ROI index"),
     Name(2, "Name", "Name", "The name of the ROI"),
     Comment(4, "Comment", "Comment", "The comment string of the ROI"),
@@ -72,7 +72,7 @@ public enum Measurement3DColumn {
     private final String name;
     private final String description;
 
-    Measurement3DColumn(int nativeValue, String columnName, String name, String description) {
+    ROI3DMeasurementColumn(int nativeValue, String columnName, String name, String description) {
         this.nativeValue = nativeValue;
         this.columnName = columnName;
         this.name = name;

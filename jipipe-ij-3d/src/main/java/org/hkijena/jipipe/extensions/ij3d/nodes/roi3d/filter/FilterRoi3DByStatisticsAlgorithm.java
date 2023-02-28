@@ -26,13 +26,10 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.ij3d.utils.AllMeasurement3DExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3DExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
+import org.hkijena.jipipe.extensions.ij3d.utils.AllROI3DMeasurementExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurementExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurementSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicSetParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -52,7 +49,7 @@ import java.util.Map;
 public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private final CustomExpressionVariablesParameter customFilterVariables;
     private DefaultExpressionParameter filters = new DefaultExpressionParameter();
-    private Measurements3DSetParameter measurements = new Measurements3DSetParameter();
+    private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
     private boolean outputEmptyLists = true;
     private boolean measureInPhysicalUnits = true;
 
@@ -74,7 +71,7 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     public FilterRoi3DByStatisticsAlgorithm(FilterRoi3DByStatisticsAlgorithm other) {
         super(other);
         this.filters = new DefaultExpressionParameter(other.filters);
-        this.measurements = new Measurements3DSetParameter(other.measurements);
+        this.measurements = new ROI3DMeasurementSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
@@ -139,8 +136,8 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
     @ExpressionParameterSettings(hint = "per ROI")
-    @ExpressionParameterSettingsVariable(fromClass = Measurement3DExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AllMeasurement3DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = ROI3DMeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AllROI3DMeasurementExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
@@ -158,12 +155,12 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
     @JIPipeParameter(value = "measurements", important = true)
-    public Measurements3DSetParameter getMeasurements() {
+    public ROI3DMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(Measurements3DSetParameter measurements) {
+    public void setMeasurements(ROI3DMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 

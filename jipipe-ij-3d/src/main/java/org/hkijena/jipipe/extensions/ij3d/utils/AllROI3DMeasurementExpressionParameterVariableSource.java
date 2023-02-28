@@ -10,14 +10,14 @@ import java.util.Set;
 /**
  * A variable source that contains the ImageJ measurements.
  */
-public class AllMeasurement3DExpressionParameterVariableSource implements ExpressionParameterVariableSource {
+public class AllROI3DMeasurementExpressionParameterVariableSource implements ExpressionParameterVariableSource {
 
 
     public static final Set<ExpressionParameterVariable> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        for (Measurement3DColumn column : Measurement3DColumn.values()) {
+        for (ROI3DMeasurementColumn column : ROI3DMeasurementColumn.values()) {
             VARIABLES.add(new ExpressionParameterVariable(column.getName() + " (All values)", column.getDescription() + ". This variable contains an array of all measurements.", "all." + column.getColumnName()));
         }
     }
