@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.Roi3DFromLabelsAl
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure.ExtractRoi3DStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ChangeRoi3DPropertiesFromExpressionsAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ROI3DCalculatorAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurement3D;
 import org.hkijena.jipipe.extensions.ij3d.utils.Measurements3DSetParameter;
@@ -102,6 +103,7 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-merge", MergeROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
 
         registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3DPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("ij3d-roi-calculator", ROI3DCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
     }
 
     @Override

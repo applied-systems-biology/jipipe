@@ -17,10 +17,7 @@ package org.hkijena.jipipe.extensions.ij3d.datatypes;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import imagescience.mesh.Cube;
-import mcib3d.geom.Object3D;
-import mcib3d.geom.Objects3DPopulation;
-import mcib3d.geom.Vector3D;
-import mcib3d.geom.Voxel3D;
+import mcib3d.geom.*;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -47,6 +44,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -292,6 +290,47 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             roi3D.setChannel(channel);
             roi3D.setFrame(frame);
             add(roi3D);
+        }
+    }
+
+    public void logicalAnd() {
+        if(!isEmpty()) {
+            Object3DVoxels voxels = new ExtendedObject3DVoxels();
+            voxels.addVoxelsIntersection(new ArrayList<>(stream().map(ROI3D::getObject3D).collect(Collectors.toList())));
+            clear();
+            if(!voxels.isEmpty()) {
+                add(new ROI3D(voxels));
+            }
+        }
+    }
+
+    public void logicalOr() {
+        if(!isEmpty()) {
+            Object3DVoxels voxels = new ExtendedObject3DVoxels();
+            voxels.addVoxelsUnion(new ArrayList<>(stream().map(ROI3D::getObject3D).collect(Collectors.toList())));
+            clear();
+            add(new ROI3D(voxels));
+        }
+    }
+
+    public void logicalXor() {
+        ROI3DListData or = new ROI3DListData();
+        ROI3DListData and = new ROI3DListData();
+        or.addAll(this);
+        and.addAll(this);
+        or.logicalOr();
+        and.logicalAnd();
+        clear();
+        if(!or.isEmpty() && !and.isEmpty()) {
+            for (ROI3D r1 : or) {
+                Object3DVoxels voxels = r1.getObject3D().getObject3DVoxels();
+                for (ROI3D r2 : and) {
+                    voxels.substractObject(r2.getObject3D());
+                }
+                if(!voxels.isEmpty()) {
+                    add(new ROI3D(voxels));
+                }
+            }
         }
     }
 }

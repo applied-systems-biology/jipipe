@@ -32,7 +32,7 @@ import java.util.Map;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "ROI calculator", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
-        "the whole list, meaning that an AND operation will create the intersection of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
+        "the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
         " preprocess using a ROI splitter algorithm.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
