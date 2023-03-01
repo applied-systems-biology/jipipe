@@ -2016,5 +2016,18 @@ public class ImageJUtils {
             imp.setPixels(0, c0);
         }
     }
+
+    public static int rgbPixelLerp(int A, int B, double opacity) {
+        int rs = (A & 0xff0000) >> 16;
+        int gs = (A & 0xff00) >> 8;
+        int bs = A & 0xff;
+        int rt = (B & 0xff0000) >> 16;
+        int gt = (B & 0xff00) >> 8;
+        int bt = B & 0xff;
+        int r = Math.min(255, Math.max((int) ((1 - opacity) * rs + opacity * rt), 0));
+        int g = Math.min(255, Math.max((int) ((1 - opacity) * gs + opacity * gt), 0));
+        int b = Math.min(255, Math.max((int) ((1 - opacity) * bs + opacity * bt), 0));
+        return b + (g << 8) + (r << 16);
+    }
 }
 

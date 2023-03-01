@@ -391,17 +391,19 @@ public class RoiDrawer implements JIPipeParameterCollection {
             int[] originalBytes = (int[]) originalProcessor.getPixels();
             int[] bytes = (int[]) processor.getPixels();
             for (int i = 0; i < bytes.length; i++) {
-                int rs = (originalBytes[i] & 0xff0000) >> 16;
-                int gs = (originalBytes[i] & 0xff00) >> 8;
-                int bs = originalBytes[i] & 0xff;
-                int rt = (bytes[i] & 0xff0000) >> 16;
-                int gt = (bytes[i] & 0xff00) >> 8;
-                int bt = bytes[i] & 0xff;
-                int r = Math.min(255, Math.max((int) ((1 - opacity) * rs + opacity * rt), 0));
-                int g = Math.min(255, Math.max((int) ((1 - opacity) * gs + opacity * gt), 0));
-                int b = Math.min(255, Math.max((int) ((1 - opacity) * bs + opacity * bt), 0));
-                int rgb = b + (g << 8) + (r << 16);
-                bytes[i] = rgb;
+                if(bytes[i] > 0) {
+                    int rs = (originalBytes[i] & 0xff0000) >> 16;
+                    int gs = (originalBytes[i] & 0xff00) >> 8;
+                    int bs = originalBytes[i] & 0xff;
+                    int rt = (bytes[i] & 0xff0000) >> 16;
+                    int gt = (bytes[i] & 0xff00) >> 8;
+                    int bt = bytes[i] & 0xff;
+                    int r = Math.min(255, Math.max((int) ((1 - opacity) * rs + opacity * rt), 0));
+                    int g = Math.min(255, Math.max((int) ((1 - opacity) * gs + opacity * gt), 0));
+                    int b = Math.min(255, Math.max((int) ((1 - opacity) * bs + opacity * bt), 0));
+                    int rgb = b + (g << 8) + (r << 16);
+                    bytes[i] = rgb;
+                }
             }
         }
     }
