@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.ij3d.datatypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
-import gnu.trove.set.TIntSet;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -424,7 +423,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             outputImage = createBlankCanvas("Mask", BitDepth.Grayscale8u);
         }
         Map<ImageSliceIndex, List<ROI3D>> groups = groupByPosition(true, true);
-        IJ3DUtils.forEach3DIn5DWrite(outputImage, (ih, index, ctProgress) -> {
+        IJ3DUtils.forEach3DIn5DIO(outputImage, (ih, index, ctProgress) -> {
             ROI3DListData toRender = new ROI3DListData();
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
@@ -464,7 +463,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             labelAssignments.put(get(i), i + 1);
         }
         Map<ImageSliceIndex, List<ROI3D>> groups = groupByPosition(true, true);
-        IJ3DUtils.forEach3DIn5DWrite(outputImage, (ih, index, ctProgress) -> {
+        IJ3DUtils.forEach3DIn5DIO(outputImage, (ih, index, ctProgress) -> {
             ROI3DListData toRender = new ROI3DListData();
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
@@ -580,5 +579,11 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
                 }
             }
         }
+    }
+
+    public ROI3DListData shallowCopy() {
+        ROI3DListData result = new ROI3DListData();
+        result.addAll(this);
+        return result;
     }
 }

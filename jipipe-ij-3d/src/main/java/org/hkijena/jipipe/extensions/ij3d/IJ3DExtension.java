@@ -21,6 +21,8 @@ import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
 import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
+import org.hkijena.jipipe.extensions.ij3d.nodes.binary.DistanceMap3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.binary.ErodedVolumeFraction3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
@@ -38,6 +40,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ColorRoi3DByNameAlg
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ColorRoi3DByStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ROI3DCalculatorAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.OutlineRoi3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.RemoveBorderRoi3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
@@ -120,6 +123,7 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-merge", MergeROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
 
         registerNodeType("ij3d-roi-outline", OutlineRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij3d-roi-remove-border", RemoveBorderRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3DPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("ij3d-roi-calculator", ROI3DCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
@@ -135,6 +139,9 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-extract-metadata", ExtractROI3DMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
         registerNodeType("ij3d-roi-set-metadata-from-table", SetROI3DMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
         registerNodeType("ij3d-roi-remove-metadata", RemoveROI3DMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+
+        registerNodeType("ij3d-math-distance-map-3d", DistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-math-eroded-volume-fraction-3d", ErodedVolumeFraction3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
     }
 
     @Override

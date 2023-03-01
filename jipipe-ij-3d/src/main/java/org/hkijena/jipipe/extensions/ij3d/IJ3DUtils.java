@@ -22,6 +22,7 @@ import ij.process.ImageProcessor;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
+import org.apache.commons.lang3.function.TriFunction;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
@@ -31,6 +32,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
@@ -45,7 +47,7 @@ import java.util.Map;
 
 public class IJ3DUtils {
 
-    public static void forEach3DIn5DWrite(ImagePlus imagePlus, TriConsumer<ImageHandler, ImageSliceIndex, JIPipeProgressInfo> operation, JIPipeProgressInfo progressInfo) {
+    public static void forEach3DIn5DIO(ImagePlus imagePlus, TriConsumer<ImageHandler, ImageSliceIndex, JIPipeProgressInfo> operation, JIPipeProgressInfo progressInfo) {
         ImageJUtils.forEachIndexedCTStack(imagePlus, (imp, index, ctProgress) -> {
             ImageHandler imageHandler = ImageHandler.wrap(imp);
             operation.accept(imageHandler, index, ctProgress);
@@ -61,6 +63,25 @@ public class IJ3DUtils {
         }, progressInfo);
     }
 
+    public static ImagePlus forEach3DIn5DGenerate(ImagePlus sourceImage, TriFunction<ImageHandler, ImageSliceIndex, JIPipeProgressInfo, ImageHandler> operation, JIPipeProgressInfo progressInfo) {
+        ImageStack outputStack = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight(), sourceImage.getStackSize());
+        ImageJUtils.forEachIndexedCTStack(sourceImage, (imp, index, ctProgress) -> {
+            ImageHandler input = ImageHandler.wrap(imp);
+            ImageHandler result = operation.apply(input, index, ctProgress);
+
+            // Copy data back into the imagePlus
+            ImagePlus imp2 = result.getImagePlus();
+            ImageStack stack = imp2.getStack();
+            for (int i = 0; i < stack.getSize(); i++) {
+                ImageProcessor processor = stack.getProcessor(i + 1);
+                ImageSliceIndex targetIndex = new ImageSliceIndex(index.getC(), i, index.getT());
+                int targetIndex_ = targetIndex.zeroSliceIndexToOneStackIndex(sourceImage);
+                outputStack.setProcessor(processor, targetIndex_);
+            }
+
+        }, progressInfo);
+        return new ImagePlus(sourceImage.getTitle(), outputStack);
+    }
 
     /**
      * Converts 2D ROI to 3D ROI

@@ -38,6 +38,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.*;
 
@@ -1003,8 +1004,8 @@ public class ImageJUtils {
                     }
 
                     ImagePlus cube = new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
-                    progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("c=" + c + ", t=" + t);
-                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).resolve("c=" + c + ", t=" + t);
+                    progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
+                    JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
                     function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
                 }
             }
@@ -2028,6 +2029,15 @@ public class ImageJUtils {
         int g = Math.min(255, Math.max((int) ((1 - opacity) * gs + opacity * gt), 0));
         int b = Math.min(255, Math.max((int) ((1 - opacity) * bs + opacity * bt), 0));
         return b + (g << 8) + (r << 16);
+    }
+
+    public static ImagePlus unwrap(ImagePlusData data) {
+        if(data != null) {
+            return data.getImage();
+        }
+        else {
+            return null;
+        }
     }
 }
 
