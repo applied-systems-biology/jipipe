@@ -14,14 +14,23 @@
 
 package org.hkijena.jipipe.extensions.ij3d;
 
+import com.google.common.collect.ImmutableList;
+import ij.ImagePlus;
+import ij.gui.Roi;
 import mcib3d.geom.*;
+import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurement;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurement;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -31,6 +40,71 @@ import java.util.List;
 import java.util.Map;
 
 public class IJ3DUtils {
+
+    /**
+     * Converts 2D ROI to 3D ROI
+     *
+     * @param roi2DList    the 2D ROI list
+     * @param force2D      force the creation of 2D ROI. always true if the fast mode is inactive
+     * @param fast         use masks instead of processing the ROI per component. if false, automatically implies false2D
+     * @param neighborhood the neighborhood
+     * @param progressInfo the progress info
+     * @return the 3D ROI
+     */
+    public static ROI3DListData roi2DtoRoi3D(ROIListData roi2DList, boolean force2D, boolean fast, Neighborhood3D neighborhood, JIPipeProgressInfo progressInfo) {
+        ROI3DListData roi3DList = new ROI3DListData();
+
+        // Put into groups
+        Map<ImageSliceIndex, List<Roi>> grouped;
+        if(force2D || !fast) {
+            grouped = roi2DList.groupByPosition(true, true, true);
+        }
+        else {
+            grouped = roi2DList.groupByPosition(false, true, true);
+        }
+        ImmutableList<Map.Entry<ImageSliceIndex, List<Roi>>> groups = ImmutableList.copyOf(grouped.entrySet());
+
+        if(fast) {
+            // Use mask-based object generation, but per group
+            for (int i = 0; i < groups.size(); i++) {
+                Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
+                progressInfo.resolveAndLog("Slice", i, groups.size());
+
+                ROIListData forGroup = new ROIListData();
+                forGroup.addAll(group.getValue());
+                ImagePlus mask = forGroup.toMask(new Margin(), true, true, 1);
+
+                progressInfo.log("Detecting connected components ...");
+                ImagePlus labels = ImageJAlgorithmUtils.connectedComponents3D(mask, neighborhood, 32);
+                ImageFloat imageHandler = new ImageFloat(labels);
+                Objects3DPopulation population = new Objects3DPopulation(imageHandler);
+
+                roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1);
+            }
+        }
+        else {
+            for (int i = 0; i < groups.size(); i++) {
+                Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
+                JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", i, groups.size());
+                List<Roi> rois = group.getValue();
+                for (int j = 0; j < rois.size(); j++) {
+                    Roi roi = rois.get(j);
+                    sliceProgress.resolveAndLog("ROI", j, rois.size());
+
+                    ROIListData singleton = new ROIListData();
+                    singleton.add(roi);
+
+                    ImagePlus mask = singleton.toMask(new Margin(), true, true, 1);
+                    ImageHandler imageHandler = ImageHandler.wrap(mask);
+                    Objects3DPopulation population = new Objects3DPopulation(imageHandler);
+
+                    roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1);
+                }
+
+            }
+        }
+        return roi3DList;
+    }
 
     public static ImageHandler wrapImage(ImagePlusData imagePlusData) {
         if(imagePlusData != null) {

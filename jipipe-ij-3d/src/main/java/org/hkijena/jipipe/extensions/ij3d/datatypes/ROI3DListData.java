@@ -283,6 +283,12 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
         return listData;
     }
 
+    /**
+     * Adds ROI from a population
+     * @param population the population
+     * @param channel the channel (one-based)
+     * @param frame the frame (one-based)
+     */
     public void addFromPopulation(Objects3DPopulation population, int channel, int frame) {
         for (int i = 0; i < population.getNbObjects(); i++) {
             ROI3D roi3D = new ROI3D(population.getObject(i));

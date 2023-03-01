@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.extensions.ij3d;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJExporter;
@@ -23,6 +21,7 @@ import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
 import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi2DToRoi3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByStatisticsAlgorithm;
@@ -56,6 +55,13 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(IJ3DExtension.class, "org/hkijena/jipipe/extensions/ij3d");
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:ij-3d",
+            JIPipe.getJIPipeVersion(),
+            "3D ImageJ Suite integration");
+
     @Override
     public StringList getDependencyCitations() {
         StringList strings = new StringList();
@@ -72,12 +78,6 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
     public HTMLText getDescription() {
         return new HTMLText("Integrates the 3D ImageJ Suite into JIPipe");
     }
-
-//    @Override
-//    public List<ImageIcon> getSplashIcons() {
-//        return Collections.singletonList(new ImageIcon(getClass().getResource(RESOURCE_BASE_PATH + "/weka-32.png")));
-//    }
-
 
     @Override
     public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
@@ -115,6 +115,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3DPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("ij3d-roi-calculator", ROI3DCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
+
+        registerNodeType("ij3d-roi-convert-2d-to-3d", Roi2DToRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
     }
 
     @Override
