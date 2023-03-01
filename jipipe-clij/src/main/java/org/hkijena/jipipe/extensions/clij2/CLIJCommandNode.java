@@ -9,12 +9,15 @@ import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.scijava.InstantiableException;
 
@@ -26,14 +29,83 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
     private final JIPipeDynamicParameterCollection clijParameters;
     private CLIJMacroPlugin pluginInstance;
 
+    private boolean avoidGPUMemory = false;
+
     public CLIJCommandNode(JIPipeNodeInfo info) {
         super(info);
         this.clijParameters = new JIPipeDynamicParameterCollection(((CLIJCommandNodeInfo) info).getNodeParameters());
+        updateSlots();
     }
 
     public CLIJCommandNode(CLIJCommandNode other) {
         super(other);
         this.clijParameters = new JIPipeDynamicParameterCollection(other.clijParameters);
+        this.avoidGPUMemory = other.avoidGPUMemory;
+        updateSlots();
+    }
+
+    private void updateSlots() {
+        if(avoidGPUMemory) {
+            for (JIPipeDataSlotInfo info : getSlotConfiguration().getInputSlots().values()) {
+                if(info.getDataClass().equals(CLIJImageData.class)) {
+                    info.setDataClass(ImagePlusData.class);
+                }
+            }
+            for (JIPipeDataSlotInfo info : getSlotConfiguration().getOutputSlots().values()) {
+                if(info.getDataClass().equals(CLIJImageData.class)) {
+                    info.setDataClass(ImagePlusData.class);
+                }
+            }
+            for (JIPipeDataSlot slot : getInputSlots()) {
+                if(slot.getAcceptedDataType().equals(CLIJImageData.class)) {
+                    slot.setAcceptedDataType(ImagePlusData.class);
+                }
+            }
+            for (JIPipeDataSlot slot : getOutputSlots()) {
+                if(slot.getAcceptedDataType().equals(CLIJImageData.class)) {
+                    slot.setAcceptedDataType(ImagePlusData.class);
+                }
+            }
+            updateGraphNodeSlots();
+            triggerSlotsChangedEvent();
+        }
+        else {
+            for (JIPipeDataSlotInfo info : getSlotConfiguration().getInputSlots().values()) {
+                if(info.getDataClass().equals(ImagePlusData.class)) {
+                    info.setDataClass(CLIJImageData.class);
+                }
+            }
+            for (JIPipeDataSlotInfo info : getSlotConfiguration().getOutputSlots().values()) {
+                if(info.getDataClass().equals(ImagePlusData.class)) {
+                    info.setDataClass(CLIJImageData.class);
+                }
+            }
+            for (JIPipeDataSlot slot : getInputSlots()) {
+                if(slot.getAcceptedDataType().equals(ImagePlusData.class)) {
+                    slot.setAcceptedDataType(CLIJImageData.class);
+                }
+            }
+            for (JIPipeDataSlot slot : getOutputSlots()) {
+                if(slot.getAcceptedDataType().equals(ImagePlusData.class)) {
+                    slot.setAcceptedDataType(CLIJImageData.class);
+                }
+            }
+            updateGraphNodeSlots();
+            triggerSlotsChangedEvent();
+        }
+    }
+
+    @JIPipeDocumentation(name = "Avoid allocating GPU memory", description = "If enabled, the node will be reconfigured to only allocate data into the GPU memory if absolutely necessary. Please note that " +
+            "the application of multiple GPU-based operations will be slower due to the repeated allocation and de-allocation of the images.")
+    @JIPipeParameter("avoid-gpu-memory")
+    public boolean isAvoidGPUMemory() {
+        return avoidGPUMemory;
+    }
+
+    @JIPipeParameter("avoid-gpu-memory")
+    public void setAvoidGPUMemory(boolean avoidGPUMemory) {
+        this.avoidGPUMemory = avoidGPUMemory;
+        updateSlots();
     }
 
     @JIPipeDocumentation(name = "CLIJ parameters", description = "Following parameters were extracted from the CLIJ2 operation:")
@@ -75,12 +147,23 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         Map<String, ClearCLBuffer> outputs = new HashMap<>();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             int argIndex = info.getInputSlotToArgIndexMap().get(inputSlot.getName());
-            CLIJImageData imageData = dataBatch.getInputData(inputSlot, CLIJImageData.class, progressInfo);
-            if (info.getIoInputSlots().contains(inputSlot.getName())) {
-                imageData = (CLIJImageData) imageData.duplicate(progressInfo);
-                outputs.put(inputSlot.getName(), imageData.getImage());
+            if(!avoidGPUMemory) {
+                CLIJImageData imageData = dataBatch.getInputData(inputSlot, CLIJImageData.class, progressInfo);
+                if (info.getIoInputSlots().contains(inputSlot.getName())) {
+                    imageData = (CLIJImageData) imageData.duplicate(progressInfo);
+                    outputs.put(inputSlot.getName(), imageData.getImage());
+                }
+                args[argIndex] = imageData.getImage();
             }
-            args[argIndex] = imageData.getImage();
+            else {
+                ImagePlusData imageData = dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo);
+                if (info.getIoInputSlots().contains(inputSlot.getName())) {
+                    imageData = (ImagePlusData) imageData.duplicate(progressInfo);
+                    CLIJ2 clij = CLIJ2.getInstance();
+                    outputs.put(inputSlot.getName(), clij.push(imageData.getImage()));
+                }
+                args[argIndex] = imageData.getImage();
+            }
         }
 
         // Prepare outputs (dst buffer)
@@ -116,7 +199,13 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             ClearCLBuffer buffer = outputs.get(outputSlot.getName());
             CLIJImageData imageData = new CLIJImageData(buffer);
-            dataBatch.addOutputData(outputSlot, imageData, progressInfo);
+            if(!avoidGPUMemory) {
+                dataBatch.addOutputData(outputSlot, imageData, progressInfo);
+            }
+            else {
+                dataBatch.addOutputData(outputSlot, imageData.pull(), progressInfo);
+                imageData.close();
+            }
         }
 
         // Extract outputs table

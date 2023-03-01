@@ -217,6 +217,10 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         return result;
     }
 
+    public void setDataClass(Class<? extends JIPipeData> dataClass) {
+        this.dataClass = dataClass;
+    }
+
     public Class<? extends JIPipeData> getDataClass() {
         return dataClass;
     }
