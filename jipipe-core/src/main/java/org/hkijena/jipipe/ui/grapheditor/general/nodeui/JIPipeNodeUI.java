@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general.nodeui;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -1975,7 +1976,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         if (mouseIsEntered) {
             MouseEvent mouseEvent = SwingUtilities.convertMouseEvent(getGraphCanvasUI(), e, this);
             Point mousePosition = mouseEvent.getPoint();
-            for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
+            for (JIPipeNodeUIActiveArea activeArea : ImmutableList.copyOf(activeAreas)) {
                 if (activeArea.getZoomedHitArea() != null && activeArea.getZoomedHitArea().contains(mousePosition)) {
                     if (currentActiveArea != activeArea) {
                         currentActiveArea = activeArea;

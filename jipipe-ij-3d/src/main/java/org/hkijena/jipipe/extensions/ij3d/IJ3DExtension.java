@@ -22,6 +22,9 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
 import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi2DToRoi3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi3DToLabelsAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi3DToMaskAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi3DToRGBAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByStatisticsAlgorithm;
@@ -117,6 +120,9 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-calculator", ROI3DCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
 
         registerNodeType("ij3d-roi-convert-2d-to-3d", Roi2DToRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
+        registerNodeType("ij3d-roi-convert-to-mask", Roi3DToMaskAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij3d-roi-convert-to-labels", Roi3DToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij3d-roi-convert-to-rgb", Roi3DToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));
     }
 
     @Override

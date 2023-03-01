@@ -16,6 +16,8 @@ package org.hkijena.jipipe.extensions.ij3d.datatypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import ij.IJ;
+import ij.ImagePlus;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -27,6 +29,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObject3DVoxels;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UnclosableInputStream;
@@ -39,10 +43,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -87,6 +88,24 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     @Override
     public String toString() {
         return size() == 1 ? "1 3D ROI" : size() + " 3D ROI";
+    }
+
+    /**
+     * Groups the ROI by their image positions
+     *
+     * @param perChannel group per channel
+     * @param perFrame   group per frame
+     * @return groups (grouped by zero-index positions)
+     */
+    public Map<ImageSliceIndex, List<ROI3D>> groupByPosition(boolean perChannel, boolean perFrame) {
+        return this.stream().collect(Collectors.groupingBy(roi -> {
+            ImageSliceIndex index = new ImageSliceIndex();
+            if (perFrame)
+                index.setT(roi.getFrame() - 1);
+            if (perChannel)
+                index.setC(roi.getChannel() - 1);
+            return index;
+        }));
     }
 
     public static ROI3DListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -225,7 +244,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
 
     /**
      * Gets the bounds of the 3D ROI
-     * @return array with two 3D vectors, the first one being the location and the other one containing the width, heig
+     * @return array with two 3D vectors, the first one being the location and the other one containing the width, height, and depth
      */
     public Vector3D[] getBounds() {
         if(isEmpty()) {
@@ -337,5 +356,111 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
                 }
             }
         }
+    }
+
+    public ImagePlus createBlankCanvas(String title, BitDepth bitDepth) {
+        int width = 1;
+        int height = 1;
+        int nSlices = 1;
+        int nChannels = 1;
+        int nFrames = 1;
+        Vector3D[] bounds = getBounds();
+
+        width = (int) Math.max(width, bounds[0].x + bounds[1].x);
+        height = (int) Math.max(height, bounds[0].y + bounds[1].y);
+        nSlices = (int) Math.max(nSlices, bounds[0].z + bounds[1].z);
+
+        for (ROI3D roi3D : this) {
+            nChannels = Math.max(nChannels, roi3D.getChannel());
+            nFrames = Math.max(nFrames, roi3D.getFrame());
+        }
+
+        return IJ.createHyperStack(title, width, height, nChannels, nSlices, nFrames, bitDepth.getBitDepth());
+    }
+
+    public ImagePlus createBlankCanvas(String title, int bitDepth) {
+        int width = 1;
+        int height = 1;
+        int nSlices = 1;
+        int nChannels = 1;
+        int nFrames = 1;
+        Vector3D[] bounds = getBounds();
+
+        width = (int) Math.max(width, bounds[0].x + bounds[1].x);
+        height = (int) Math.max(height, bounds[0].y + bounds[1].y);
+        nSlices = (int) Math.max(nSlices, bounds[0].z + bounds[1].z);
+
+        for (ROI3D roi3D : this) {
+            nChannels = Math.max(nChannels, roi3D.getChannel());
+            nFrames = Math.max(nFrames, roi3D.getFrame());
+        }
+
+        return IJ.createHyperStack(title, width, height, nChannels, nSlices, nFrames, bitDepth);
+    }
+
+    public ImagePlus toMask(ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {
+        ImagePlus outputImage;
+        if(referenceImage != null) {
+            outputImage = IJ.createHyperStack("Mask",
+                    referenceImage.getWidth(),
+                    referenceImage.getHeight(),
+                    referenceImage.getNChannels(),
+                    referenceImage.getNSlices(),
+                    referenceImage.getNFrames(),
+                    8);
+        }
+        else {
+            outputImage = createBlankCanvas("Mask", BitDepth.Grayscale8u);
+        }
+        Map<ImageSliceIndex, List<ROI3D>> groups = groupByPosition(true, true);
+        IJ3DUtils.forEach3DIn5DWrite(outputImage, (ih, index, ctProgress) -> {
+            ROI3DListData toRender = new ROI3DListData();
+            toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
+            toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
+            toRender.toPopulation().draw(ih, 255);
+        }, progressInfo);
+        return outputImage;
+    }
+
+    public ImagePlus toLabels(ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {
+        int bitDepth;
+        if(size() < 250) {
+            bitDepth = 8;
+        }
+        else if(size() < 65000) {
+            bitDepth = 16;
+        }
+        else {
+            bitDepth = 32;
+        }
+
+        ImagePlus outputImage;
+        if(referenceImage != null) {
+            outputImage = IJ.createHyperStack("Labels",
+                    referenceImage.getWidth(),
+                    referenceImage.getHeight(),
+                    referenceImage.getNChannels(),
+                    referenceImage.getNSlices(),
+                    referenceImage.getNFrames(),
+                    bitDepth);
+        }
+        else {
+            outputImage = createBlankCanvas("Labels", bitDepth);
+        }
+
+        Map<ROI3D, Integer> labelAssignments = new HashMap<>();
+        for (int i = 0; i < size(); i++) {
+            labelAssignments.put(get(i), i + 1);
+        }
+        Map<ImageSliceIndex, List<ROI3D>> groups = groupByPosition(true, true);
+        IJ3DUtils.forEach3DIn5DWrite(outputImage, (ih, index, ctProgress) -> {
+            ROI3DListData toRender = new ROI3DListData();
+            toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
+            toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
+            for (ROI3D roi3D : toRender) {
+                roi3D.getObject3D().draw(ih, labelAssignments.get(roi3D));
+            }
+        }, progressInfo);
+        return outputImage;
     }
 }

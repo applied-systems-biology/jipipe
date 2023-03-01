@@ -16,7 +16,9 @@ package org.hkijena.jipipe.extensions.ij3d;
 
 import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.gui.Roi;
+import ij.process.ImageProcessor;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
@@ -29,17 +31,36 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TriConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class IJ3DUtils {
+
+    public static void forEach3DIn5DWrite(ImagePlus imagePlus, TriConsumer<ImageHandler, ImageSliceIndex, JIPipeProgressInfo> operation, JIPipeProgressInfo progressInfo) {
+        ImageJUtils.forEachIndexedCTStack(imagePlus, (imp, index, ctProgress) -> {
+            ImageHandler imageHandler = ImageHandler.wrap(imp);
+            operation.accept(imageHandler, index, ctProgress);
+
+            // Copy data back into the imagePlus
+            ImagePlus imp2 = imageHandler.getImagePlus();
+            ImageStack stack = imp2.getStack();
+            for (int i = 0; i < stack.getSize(); i++) {
+                ImageProcessor processor = stack.getProcessor(i + 1);
+                ImageJUtils.setSliceZero(imagePlus, processor, new ImageSliceIndex(index.getC(), i, index.getT()));
+            }
+
+        }, progressInfo);
+    }
+
 
     /**
      * Converts 2D ROI to 3D ROI
