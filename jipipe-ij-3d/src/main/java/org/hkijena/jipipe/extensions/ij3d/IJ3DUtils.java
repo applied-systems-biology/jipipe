@@ -88,6 +88,8 @@ public class IJ3DUtils {
         if(fast) {
             // Use mask-based object generation, but per group
             for (int i = 0; i < groups.size(); i++) {
+                if(progressInfo.isCancelled())
+                    return null;
                 Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
                 progressInfo.resolveAndLog("Slice", i, groups.size());
 
@@ -105,6 +107,8 @@ public class IJ3DUtils {
         }
         else {
             for (int i = 0; i < groups.size(); i++) {
+                if(progressInfo.isCancelled())
+                    return null;
                 Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
                 JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", i, groups.size());
                 List<Roi> rois = group.getValue();

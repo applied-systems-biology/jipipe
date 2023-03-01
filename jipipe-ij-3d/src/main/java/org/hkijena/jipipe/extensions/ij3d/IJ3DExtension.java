@@ -33,13 +33,22 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.Roi3DFromLabelsAl
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure.ExtractRoi3DRelationStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure.ExtractRoi3DStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.metadata.ExtractROI3DMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.metadata.RemoveROI3DMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.metadata.SetROI3DMetadataFromTableAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ChangeRoi3DPropertiesFromExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ColorRoi3DByNameAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ColorRoi3DByStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ROI3DCalculatorAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.OutlineRoi3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.OutlineRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.ExtractROIMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.RemoveROIMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetROIMetadataFromTableAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetRoiMetadataByStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -95,6 +104,7 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnumParameterType("ij3d-relation-measurement", ROI3DRelationMeasurement.class, "3D relation measurement", "Relation between two 3D objects");
         registerEnumParameterType("ij3d-relation-measurement-column", ROI3DRelationMeasurementColumn.class, "3D relation measurement column", "Relation between two 3D objects");
         registerParameterType("ij3d-relation-measurement-set", ROI3DRelationMeasurementSetParameter.class, "3D relation measurements", "A selection of measurements between two 3D objects");
+        registerEnumParameterType("ij3d-roi-outline", ROI3DOutline.class, "3D ROI outline", "Outline algorithm for 3D ROI");
 
         registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerOperation());
         registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);
@@ -117,6 +127,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("ij3d-roi-merge", MergeROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
 
+        registerNodeType("ij3d-roi-outline", OutlineRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+
         registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3DPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("ij3d-roi-calculator", ROI3DCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij3d-roi-color-by-name", ColorRoi3DByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
@@ -126,6 +138,10 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-convert-to-mask", Roi3DToMaskAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij3d-roi-convert-to-labels", Roi3DToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
         registerNodeType("ij3d-roi-convert-to-rgb", Roi3DToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));
+
+        registerNodeType("ij3d-roi-extract-metadata", ExtractROI3DMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
+        registerNodeType("ij3d-roi-set-metadata-from-table", SetROI3DMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
+        registerNodeType("ij3d-roi-remove-metadata", RemoveROI3DMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
     }
 
     @Override

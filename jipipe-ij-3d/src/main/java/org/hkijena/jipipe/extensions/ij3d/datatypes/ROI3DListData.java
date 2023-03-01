@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.ij3d.datatypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import gnu.trove.set.TIntSet;
 import ij.IJ;
 import ij.ImagePlus;
 import mcib3d.geom.*;
@@ -29,6 +30,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObject3DVoxels;
+import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -462,5 +464,64 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             }
         }, progressInfo);
         return outputImage;
+    }
+
+    public void outline(ROI3DOutline outline, boolean ignoreErrors, JIPipeProgressInfo progressInfo) {
+        for (int i = 0; i < size(); i++) {
+            if(progressInfo.isCancelled())
+                return;
+            JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("Generating outline", i, size());
+            try {
+                ROI3D roi3D = get(i);
+                switch (outline) {
+                    case BoundingBox: {
+                        int[] boundingBox = roi3D.getObject3D().getBoundingBox();
+                        int xMin = boundingBox[0];
+                        int xMax = boundingBox[1];
+                        int yMin = boundingBox[2];
+                        int yMax = boundingBox[3];
+                        int zMin = boundingBox[4];
+                        int zMax = boundingBox[5];
+                        ObjectCreator3D creator3D = new ObjectCreator3D(xMax + 1, yMax + 1, zMax + 1);
+                        creator3D.createBrick(xMin, xMax, yMin, yMax, zMin, zMax, roi3D.getObject3D().getValue());
+                        roi3D.setObject3D(creator3D.getObject3DVoxels(roi3D.getObject3D().getValue()));
+                    }
+                    break;
+                    case BoundingBoxOriented: {
+                        ArrayList<Voxel3D> voxelList = roi3D.getObject3D().getBoundingOriented();
+                        Object3DVoxels voxels = new ExtendedObject3DVoxels(voxelList);
+                        roi3D.setObject3D(voxels);
+                    }
+                    break;
+                    case ConvexHull: {
+                        Object3DVoxels convexObject = roi3D.getObject3D().getConvexObject();
+                        roi3D.setObject3D(convexObject);
+                    }
+                    break;
+                    case Surface: {
+                        Object3DSurface object3DSurface = roi3D.getObject3D().getObject3DSurface();
+                        roi3D.setObject3D(object3DSurface);
+                    }
+                    break;
+                    case ConvexSurface: {
+                        Object3DSurface convexSurface = roi3D.getObject3D().getConvexSurface();
+                        roi3D.setObject3D(convexSurface);
+                    }
+                    break;
+                    default:
+                        throw new UnsupportedOperationException("Unsupported outline: " + outline);
+                }
+            }
+            catch (Throwable e) {
+                if(!ignoreErrors) {
+                    throw e;
+                }
+                else {
+                    roiProgress.log(e.toString());
+                    remove(i);
+                    --i;
+                }
+            }
+        }
     }
 }

@@ -34,6 +34,13 @@ public class ROI3D {
         this.fillColor = other.fillColor;
     }
 
+    public void copyMetadata(ROI3D other) {
+        this.metadata = other.metadata;
+        this.channel = other.channel;
+        this.frame = other.frame;
+        this.fillColor = other.fillColor;
+    }
+
     public ROI3D(Object3D object3D) {
         this.object3D = object3D;
     }
@@ -93,4 +100,6 @@ public class ROI3D {
     public boolean sameFrame(int frame) {
         return this.frame <= 0 || frame <= 0 || frame == this.frame;
     }
+
+
 }
