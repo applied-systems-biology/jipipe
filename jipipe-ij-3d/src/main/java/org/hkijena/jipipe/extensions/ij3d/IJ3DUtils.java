@@ -235,10 +235,10 @@ public class IJ3DUtils {
         }
 
         // Mandatory!
-        target.setValueAt(roi1.getObject3D().getName(), row, "Roi1.Name");
-        target.setValueAt(roi2.getObject3D().getName(), row, "Roi2.Name");
-        target.setValueAt(roi1Index, row, "Roi1.Index");
-        target.setValueAt(roi2Index, row, "Roi2.Index");
+        target.setValueAt(roi1.getObject3D().getName(), row, "Current.Name");
+        target.setValueAt(roi2.getObject3D().getName(), row, "Other.Name");
+        target.setValueAt(roi1Index, row, "Current.Index");
+        target.setValueAt(roi2Index, row, "Other.Index");
 
 
         try {
@@ -304,11 +304,11 @@ public class IJ3DUtils {
                     generateRoi3dRowMeasurements(reference, -1, new ROI3D(intersectionObject), 38904, physicalUnits, target, row, "Intersection.");
                 }
             }
-            if (ROI3DRelationMeasurement.includes(measurements, ROI3DRelationMeasurement.Roi1Stats)) {
-                generateRoi3dRowMeasurements(reference, roi1Index, roi1, 65536, physicalUnits, target, row, "Roi1.");
+            if (ROI3DRelationMeasurement.includes(measurements, ROI3DRelationMeasurement.CurrentStats)) {
+                generateRoi3dRowMeasurements(reference, roi1Index, roi1, 65536, physicalUnits, target, row, "Current.");
             }
-            if (ROI3DRelationMeasurement.includes(measurements, ROI3DRelationMeasurement.Roi2Stats)) {
-                generateRoi3dRowMeasurements(reference, roi2Index, roi2, 65536, physicalUnits, target, row, "Roi2.");
+            if (ROI3DRelationMeasurement.includes(measurements, ROI3DRelationMeasurement.OtherStats)) {
+                generateRoi3dRowMeasurements(reference, roi2Index, roi2, 65536, physicalUnits, target, row, "Other.");
             }
         }
         finally {

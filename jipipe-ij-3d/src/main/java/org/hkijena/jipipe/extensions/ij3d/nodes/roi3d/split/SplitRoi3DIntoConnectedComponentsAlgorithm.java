@@ -98,8 +98,8 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
             componentGraph.addVertex(i);
         }
         for (int row = 0; row < measurements.getRowCount(); row++) {
-            int roi1Index = (int) measurements.getValueAsDouble(row, "Roi1.Index");
-            int roi2Index = (int) measurements.getValueAsDouble(row, "Roi2.Index");
+            int roi1Index = (int) measurements.getValueAsDouble(row, "Current.Index");
+            int roi2Index = (int) measurements.getValueAsDouble(row, "Other.Index");
             if(StringUtils.isNullOrEmpty(overlapFilter.getExpression())) {
                 if(requireColocalization && preciseColocalization) {
                     // Already fulfilled

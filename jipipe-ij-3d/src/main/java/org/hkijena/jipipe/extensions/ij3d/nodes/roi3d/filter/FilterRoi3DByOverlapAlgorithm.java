@@ -155,8 +155,8 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm  {
         Multimap<Integer, Integer> roi1To2Overlaps = HashMultimap.create();
 
         for (int row = 0; row < measurements.getRowCount(); row++) {
-            int roi1Index = (int) measurements.getValueAsDouble(row, "Roi1.Index");
-            int roi2Index = (int) measurements.getValueAsDouble(row, "Roi2.Index");
+            int roi1Index = (int) measurements.getValueAsDouble(row, "Current.Index");
+            int roi2Index = (int) measurements.getValueAsDouble(row, "Other.Index");
 
             if(StringUtils.isNullOrEmpty(settings.overlapFilter.getExpression())) {
                 if(settings.requireColocalization && settings.preciseColocalization) {
