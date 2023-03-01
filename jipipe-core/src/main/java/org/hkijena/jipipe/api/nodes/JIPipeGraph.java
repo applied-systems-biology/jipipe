@@ -561,6 +561,9 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param userCanDisconnect If true, users are allowed to disconnect this connection again
      */
     public void connect(JIPipeDataSlot source, JIPipeDataSlot target, boolean userCanDisconnect) {
+        if(graph.containsEdge(source, target)) {
+            return;
+        }
         if (!canConnect(source, target, false))
             throw new UserFriendlyRuntimeException("Cannot connect data slots: " + source.getDisplayName() + " ==> " + target.getDisplayName(),
                     "Cannot create a connection between '" + source.getDisplayName() + "' and '" + target.getDisplayName() + "'!",
