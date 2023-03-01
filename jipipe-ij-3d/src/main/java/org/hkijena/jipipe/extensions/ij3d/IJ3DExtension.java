@@ -21,10 +21,7 @@ import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
 import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi2DToRoi3DAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi3DToLabelsAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi3DToMaskAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.Roi3DToRGBAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByStatisticsAlgorithm;
@@ -44,11 +41,6 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.OutlineRoi3DAlgori
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.OutlineRoiAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.ExtractROIMetadataAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.RemoveROIMetadataAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetROIMetadataFromTableAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetRoiMetadataByStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -134,7 +126,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-color-by-name", ColorRoi3DByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
         registerNodeType("ij3d-roi-color-by-statistics", ColorRoi3DByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
 
-        registerNodeType("ij3d-roi-convert-2d-to-3d", Roi2DToRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
+        registerNodeType("ij3d-roi-convert-2d-to-3d", Roi2DToRoi3DConverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
+        registerNodeType("ij3d-roi-convert-3d-to-2d", Roi3DToRoi2DConverterAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d.png"));
         registerNodeType("ij3d-roi-convert-to-mask", Roi3DToMaskAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij3d-roi-convert-to-labels", Roi3DToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
         registerNodeType("ij3d-roi-convert-to-rgb", Roi3DToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));

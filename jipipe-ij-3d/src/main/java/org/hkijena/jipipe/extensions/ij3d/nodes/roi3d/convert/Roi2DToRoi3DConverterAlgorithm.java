@@ -15,17 +15,17 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
-public class Roi2DToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class Roi2DToRoi3DConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean fast = false;
     private boolean force2D = true;
     private Neighborhood3D neighborhood = Neighborhood3D.TwentySixConnected;
 
-    public Roi2DToRoi3DAlgorithm(JIPipeNodeInfo info) {
+    public Roi2DToRoi3DConverterAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public Roi2DToRoi3DAlgorithm(Roi2DToRoi3DAlgorithm other) {
+    public Roi2DToRoi3DConverterAlgorithm(Roi2DToRoi3DConverterAlgorithm other) {
         super(other);
         this.fast = other.fast;
         this.force2D = other.force2D;

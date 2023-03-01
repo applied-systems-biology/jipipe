@@ -19,6 +19,10 @@ import com.google.common.collect.ImmutableList;
 import gnu.trove.set.TIntSet;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
+import ij.plugin.filter.ThresholdToSelection;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -31,6 +35,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObject3DVoxels;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DOutline;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -309,14 +314,18 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
      * @param population the population
      * @param channel the channel (one-based)
      * @param frame the frame (one-based)
+     * @return added ROI3D
      */
-    public void addFromPopulation(Objects3DPopulation population, int channel, int frame) {
+    public List<ROI3D> addFromPopulation(Objects3DPopulation population, int channel, int frame) {
+        List<ROI3D> added = new ArrayList<>();
         for (int i = 0; i < population.getNbObjects(); i++) {
             ROI3D roi3D = new ROI3D(population.getObject(i));
             roi3D.setChannel(channel);
             roi3D.setFrame(frame);
             add(roi3D);
+            added.add(roi3D);
         }
+        return added;
     }
 
     public void logicalAnd() {
@@ -464,6 +473,54 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             }
         }, progressInfo);
         return outputImage;
+    }
+
+    public ROIListData toRoi2D(JIPipeProgressInfo progressInfo) {
+        ROIListData result = new ROIListData();
+        for (int i = 0; i < this.size(); i++) {
+            if(progressInfo.isCancelled())
+                return null;
+            JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("ROI", i, size());
+            ROI3D roi3D = this.get(i);
+            Object3D object3D = roi3D.getObject3D();
+
+            int xMin = object3D.getXmin();
+            int yMin = object3D.getYmin();
+
+            int sx = object3D.getXmax() - object3D.getXmin() + 1;
+            int sy = object3D.getYmax() - object3D.getYmin() + 1;
+            ByteProcessor mask = new ByteProcessor(sx, sy);
+
+            object3D.translate(-xMin, -yMin, 0);
+
+            try {
+                for (int z = object3D.getZmin(); z <= object3D.getZmax(); z++) {
+                    if (progressInfo.isCancelled())
+                        return null;
+                    roiProgress.log("z=" + z);
+                    mask.setRoi((Roi) null);
+                    mask.setValue(0d);
+                    mask.fill();
+                    Object3D_IJUtils.draw(object3D, mask, z, 255);
+                    mask.setThreshold(255, 255, ImageProcessor.NO_LUT_UPDATE);
+                    Roi roi = ThresholdToSelection.run(new ImagePlus("slice", mask));
+                    if (roi != null) {
+                        if (roi3D.getFillColor() != null) {
+                            roi.setFillColor(roi3D.getFillColor());
+                        }
+                        roi.setLocation(xMin, yMin);
+                        roi.setPosition(roi3D.getChannel(), z + 1, roi3D.getFrame());
+                        roi.setName(StringUtils.nullToEmpty(roi3D.getObject3D().getName()) + String.format(" [z%d]", z));
+                        result.add(roi);
+                    }
+                }
+            }
+            finally {
+                object3D.translate(xMin, yMin, 0);
+            }
+
+        }
+        return result;
     }
 
     public void outline(ROI3DOutline outline, boolean ignoreErrors, JIPipeProgressInfo progressInfo) {

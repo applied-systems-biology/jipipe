@@ -123,7 +123,14 @@ public class IJ3DUtils {
                     ImageHandler imageHandler = ImageHandler.wrap(mask);
                     Objects3DPopulation population = new Objects3DPopulation(imageHandler);
 
-                    roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1);
+                    for (ROI3D roi3D : roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1)) {
+                        if(roi.getFillColor() != null) {
+                            roi3D.setFillColor(roi.getFillColor());
+                        }
+                        if(!StringUtils.isNullOrEmpty(roi.getName())) {
+                            roi3D.getObject3D().setName(roi.getName());
+                        }
+                    }
                 }
 
             }
