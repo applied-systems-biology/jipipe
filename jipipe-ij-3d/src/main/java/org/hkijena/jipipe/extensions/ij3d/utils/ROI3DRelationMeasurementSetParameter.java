@@ -8,7 +8,6 @@ import java.util.Set;
 
 public class ROI3DRelationMeasurementSetParameter extends DynamicSetParameter<ROI3DRelationMeasurement> {
     public ROI3DRelationMeasurementSetParameter() {
-        setCollapsed(true);
         initialize();
         setNativeValue(32767); // All except intersection stats and roi1, roi2 stats
     }
