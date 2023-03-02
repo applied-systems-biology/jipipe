@@ -693,6 +693,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij-convert-image-to-16-bit", ConvertImageTo16BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-16u.png"));
         registerNodeType("ij-convert-image-to-32-bit", ConvertImageTo32BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-32f.png"));
         registerNodeType("ij-convert-image-to-hsb-colors", ConvertImageToHSBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));
+        registerNodeType("ij-convert-image-to-rgb-colors", ConvertImageToRGBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij-convert-image-to-lab-colors", ConvertImageToLABAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-lab.png"));
         registerNodeType("ij1-convert-image-to-table", ImageToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-table-to-image", TableToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
