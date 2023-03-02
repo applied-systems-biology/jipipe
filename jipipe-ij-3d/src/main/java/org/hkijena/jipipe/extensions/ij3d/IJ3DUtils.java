@@ -513,4 +513,11 @@ public class IJ3DUtils {
         }
     }
 
+    public static void putToMap(ImageHandler imageHandler, int c, int t, Map<ImageSliceIndex, ImageProcessor> sliceMap) {
+        ImagePlus imagePlus = imageHandler.getImagePlus();
+        ImageStack stack = imagePlus.getStack();
+        for (int z = 0; z < stack.getSize(); z++) {
+            sliceMap.put(new ImageSliceIndex(c, z, t), stack.getProcessor(z + 1));
+        }
+    }
 }

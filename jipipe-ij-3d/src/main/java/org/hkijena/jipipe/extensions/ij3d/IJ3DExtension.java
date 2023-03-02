@@ -23,6 +23,9 @@ import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
 import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
 import org.hkijena.jipipe.extensions.ij3d.nodes.binary.DistanceMap3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.binary.ErodedVolumeFraction3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.features.EdgeFilter3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.features.FindMaxima3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.features.SymmetryFilter3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
@@ -46,6 +49,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnec
 import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.HysteresisSegmentation3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.IterativeThreshold3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -144,6 +148,9 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("ij3d-math-distance-map-3d", DistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij3d-math-eroded-volume-fraction-3d", ErodedVolumeFraction3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-feature-maxima-local-3d", FindMaxima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-feature-canny-edge-3d", EdgeFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-feature-symmetry-3d", SymmetryFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("ij3d-segmentation-hysteresis", HysteresisSegmentation3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerEnumParameterType("ij3d-segmentation-iterative-thresholding:criteria-method", IterativeThreshold3DAlgorithm.CriteriaMethod.class, "3D iterative thresholding: criteria", "Available criteria");
