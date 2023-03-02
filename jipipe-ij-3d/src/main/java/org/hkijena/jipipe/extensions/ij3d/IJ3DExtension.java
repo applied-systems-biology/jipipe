@@ -46,8 +46,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.OutlineRoi3DAlgori
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.RemoveBorderRoi3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.HysteresisSegmentation3DAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.IterativeThreshold3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.LocalMaxima2DAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -157,6 +156,11 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnumParameterType("ij3d-segmentation-iterative-thresholding:threshold-method", IterativeThreshold3DAlgorithm.ThresholdMethod.class, "3D iterative thresholding: threshold", "Available threshold methods");
         registerEnumParameterType("ij3d-segmentation-iterative-thresholding:segment-results-method", IterativeThreshold3DAlgorithm.SegmentResultsMethod.class, "3D iterative thresholding: segment results method", "Available methods for segmenting the rsults");
         registerNodeType("ij3d-segmentation-iterative-thresholding", IterativeThreshold3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerEnumParameterType("ij3d-segmentation-spot3d:spot-segmentation-method", SpotSegmentation3DAlgorithm.SpotSegmentationMethod.class, "3D spot segmentation: spot segmentation method", "Available spot segmentation methods");
+        registerNodeType("ij3d-segmentation-spot3d-constant", ConstantSpotSegmentation3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij3d-segmentation-spot3d-difference", DifferenceSpotSegmentation3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij3d-segmentation-spot3d-gaussian-fit", GaussianFitSpotSegmentation3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij3d-segmentation-spot3d-local-mean", LocalMeanSpotSegmentation3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
     }
 
     @Override
