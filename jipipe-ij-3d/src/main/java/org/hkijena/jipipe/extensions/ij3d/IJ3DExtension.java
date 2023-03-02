@@ -43,6 +43,8 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.OutlineRoi3DAlgori
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.RemoveBorderRoi3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.HysteresisSegmentation3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.IterativeThreshold3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -142,6 +144,12 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("ij3d-math-distance-map-3d", DistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij3d-math-eroded-volume-fraction-3d", ErodedVolumeFraction3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerNodeType("ij3d-segmentation-hysteresis", HysteresisSegmentation3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerEnumParameterType("ij3d-segmentation-iterative-thresholding:criteria-method", IterativeThreshold3DAlgorithm.CriteriaMethod.class, "3D iterative thresholding: criteria", "Available criteria");
+        registerEnumParameterType("ij3d-segmentation-iterative-thresholding:threshold-method", IterativeThreshold3DAlgorithm.ThresholdMethod.class, "3D iterative thresholding: threshold", "Available threshold methods");
+        registerEnumParameterType("ij3d-segmentation-iterative-thresholding:segment-results-method", IterativeThreshold3DAlgorithm.SegmentResultsMethod.class, "3D iterative thresholding: segment results method", "Available methods for segmenting the rsults");
+        registerNodeType("ij3d-segmentation-iterative-thresholding", IterativeThreshold3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
     }
 
     @Override

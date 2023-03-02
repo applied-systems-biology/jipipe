@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TFloatArrayList;
@@ -981,6 +982,71 @@ public class ImageJUtils {
         }
     }
 
+    public static ImagePlus mergeMappedSlices(Map<ImageSliceIndex, ImageProcessor> sliceMap) {
+        int maxZ = Integer.MIN_VALUE;
+        int maxC = Integer.MIN_VALUE;
+        int maxT = Integer.MIN_VALUE;
+        int minZ = Integer.MAX_VALUE;
+        int minC = Integer.MAX_VALUE;
+        int minT = Integer.MAX_VALUE;
+        for (ImageSliceIndex index : sliceMap.keySet()) {
+            maxZ = Math.max(maxZ, index.getZ());
+            maxC = Math.max(maxC, index.getC());
+            maxT = Math.max(maxT, index.getT());
+            minZ = Math.min(minZ, index.getZ());
+            minC = Math.min(minC, index.getC());
+            minT = Math.min(minT, index.getT());
+        }
+
+        // Remapping
+        List<Integer> zRemapping = new ArrayList<>(Arrays.asList(new Integer[maxZ - minZ + 1]));
+        List<Integer> cRemapping = new ArrayList<>(Arrays.asList(new Integer[maxC - minC + 1]));
+        List<Integer> tRemapping = new ArrayList<>(Arrays.asList(new Integer[maxT - minT + 1]));
+
+        for (Map.Entry<ImageSliceIndex, ImageProcessor> entry : sliceMap.entrySet()) {
+            ImageSliceIndex index = entry.getKey();
+            int z = index.getZ() - minZ;
+            int c = index.getC() - minC;
+            int t = index.getT() - minT;
+            zRemapping.set(z, index.getZ());
+            cRemapping.set(c, index.getC());
+            tRemapping.set(t, index.getT());
+        }
+
+        // Cleanup the empty locations within the map
+        Iterables.removeIf(zRemapping, Objects::isNull);
+        Iterables.removeIf(cRemapping, Objects::isNull);
+        Iterables.removeIf(tRemapping, Objects::isNull);
+
+        int consensusBitDepth = ImageJUtils.getConsensusBitDepth(sliceMap.values().stream().map(ip -> new ImagePlus("", ip)).collect(Collectors.toList()));
+        ImageProcessor referenceProcessor = sliceMap.values().iterator().next();
+        ImageStack outputImageStack = new ImageStack(referenceProcessor.getWidth(), referenceProcessor.getHeight(), zRemapping.size() * cRemapping.size() * tRemapping.size());
+
+        for (Map.Entry<ImageSliceIndex, ImageProcessor> entry : sliceMap.entrySet()) {
+            int z = zRemapping.indexOf(entry.getKey().getZ());
+            int c = cRemapping.indexOf(entry.getKey().getC());
+            int t = tRemapping.indexOf(entry.getKey().getT());
+            ImageSliceIndex targetIndex = new ImageSliceIndex(c, z, t);
+            ImagePlus converted = ImageJUtils.convertToBitDepthIfNeeded(new ImagePlus("", entry.getValue()), consensusBitDepth);
+            outputImageStack.setProcessor(converted.getProcessor(), targetIndex.zeroSliceIndexToOneStackIndex(cRemapping.size(), zRemapping.size(), tRemapping.size()));
+        }
+
+        ImagePlus outputImage = new ImagePlus("Merged", outputImageStack);
+        outputImage.setDimensions(cRemapping.size(), zRemapping.size(), tRemapping.size());
+        return outputImage;
+    }
+
+    public static ImagePlus extractCTStack(ImagePlus img, int c, int t) {
+        ImageStack stack = new ImageStack(img.getWidth(), img.getHeight());
+        for (int z = 0; z < img.getNSlices(); z++) {
+            int index = img.getStackIndex(c + 1, z + 1, t + 1);
+            ImageProcessor processor = img.getImageStack().getProcessor(index);
+            stack.addSlice(processor);
+        }
+
+        return new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+    }
+
     /**
      * Runs the function for each Z, C, and T slice.
      *
@@ -995,15 +1061,7 @@ public class ImageJUtils {
                 for (int c = 0; c < img.getNChannels(); c++) {
                     if (progressInfo.isCancelled())
                         return;
-
-                    ImageStack stack = new ImageStack(img.getWidth(), img.getHeight());
-                    for (int z = 0; z < img.getNSlices(); z++) {
-                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                        ImageProcessor processor = img.getImageStack().getProcessor(index);
-                        stack.addSlice(processor);
-                    }
-
-                    ImagePlus cube = new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+                    ImagePlus cube =  extractCTStack(img, c, t);
                     progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
                     JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
                     function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);

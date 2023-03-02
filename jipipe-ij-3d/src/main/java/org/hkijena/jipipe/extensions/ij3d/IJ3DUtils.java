@@ -42,6 +42,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TriConsumer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class IJ3DUtils {
     }
 
     public static ImagePlus forEach3DIn5DGenerate(ImagePlus sourceImage, TriFunction<ImageHandler, ImageSliceIndex, JIPipeProgressInfo, ImageHandler> operation, JIPipeProgressInfo progressInfo) {
-        ImageStack outputStack = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight(), sourceImage.getStackSize());
+        Map<ImageSliceIndex, ImageProcessor> mappedOutputSlices = new HashMap<>();
         ImageJUtils.forEachIndexedCTStack(sourceImage, (imp, index, ctProgress) -> {
             ImageHandler input = ImageHandler.wrap(imp);
             ImageHandler result = operation.apply(input, index, ctProgress);
@@ -72,15 +73,18 @@ public class IJ3DUtils {
             // Copy data back into the imagePlus
             ImagePlus imp2 = result.getImagePlus();
             ImageStack stack = imp2.getStack();
-            for (int i = 0; i < stack.getSize(); i++) {
+
+            for (int i = 0; i < stack.size(); i++) {
                 ImageProcessor processor = stack.getProcessor(i + 1);
                 ImageSliceIndex targetIndex = new ImageSliceIndex(index.getC(), i, index.getT());
-                int targetIndex_ = targetIndex.zeroSliceIndexToOneStackIndex(sourceImage);
-                outputStack.setProcessor(processor, targetIndex_);
+                mappedOutputSlices.put(targetIndex, processor);
             }
 
         }, progressInfo);
-        return new ImagePlus(sourceImage.getTitle(), outputStack);
+        ImagePlus outputImage = ImageJUtils.mergeMappedSlices(mappedOutputSlices);
+        outputImage.setTitle(sourceImage.getTitle());
+        outputImage.copyScale(sourceImage);
+        return outputImage;
     }
 
     /**
