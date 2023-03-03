@@ -28,7 +28,6 @@
     <orderEntry type="library" name="Maven: org.scijava:scripting-javascript:0.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.10.2" level="project" />
     <orderEntry type="library" name="Maven: org.ojalgo:ojalgo:45.1.1" level="project" />
-    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-updater:0.11.0" level="project" />
     <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: io.scif:scifio:0.43.2" level="project" />
@@ -317,6 +316,16 @@
     <orderEntry type="library" name="Maven: com.jgoodies:jgoodies-forms:1.7.2" level="project" />
     <orderEntry type="library" name="Maven: com.jgoodies:jgoodies-common:1.7.0" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.2.3" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:3D_Viewer:4.0.3" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:VIB-lib:2.2.0" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:pal-optimization:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:j3dcore:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" name="Maven: antlr:antlr:2.7.7" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:j3dutils:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.7.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.8.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
