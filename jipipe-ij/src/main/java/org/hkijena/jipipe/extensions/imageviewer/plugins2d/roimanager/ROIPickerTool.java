@@ -25,11 +25,11 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
 
     public ROIPickerTool(ROIManagerPlugin2D roiManagerPlugin) {
         this.roiManagerPlugin = roiManagerPlugin;
-        roiManagerPlugin.getViewerPanel().getCanvas().getEventBus().register(this);
+        roiManagerPlugin.getViewerPanel2D().getCanvas().getEventBus().register(this);
     }
 
     public ImageViewerPanelCanvas getCanvas() {
-        return roiManagerPlugin.getViewerPanel().getCanvas();
+        return roiManagerPlugin.getViewerPanel2D().getCanvas();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
     }
 
     private boolean toolIsActive() {
-        return toolIsActive(roiManagerPlugin.getViewerPanel().getCanvas());
+        return toolIsActive(roiManagerPlugin.getViewerPanel2D().getCanvas());
     }
 
     @Subscribe
@@ -66,7 +66,7 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
 
     private void pickRoiFromCanvas(boolean modify) {
         if (selectionFirst != null && selectionSecond != null) {
-            ImageViewerPanelCanvas canvas = roiManagerPlugin.getViewerPanel().getCanvas();
+            ImageViewerPanelCanvas canvas = roiManagerPlugin.getViewerPanel2D().getCanvas();
             Point p1 = canvas.screenToImageCoordinate(selectionFirst, false);
             Point p2 = canvas.screenToImageCoordinate(selectionSecond, false);
             int x0 = p1.x;
@@ -146,14 +146,14 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
     public void onMouseDrag(MouseDraggedEvent event) {
         if (toolIsActive() && selectionFirst != null) {
             selectionSecond = event.getPoint();
-            roiManagerPlugin.getViewerPanel().uploadSliceToCanvas();
+            roiManagerPlugin.getViewerPanel2D().uploadSliceToCanvas();
         }
     }
 
     private void cancelPicking() {
         selectionFirst = null;
         selectionSecond = null;
-        roiManagerPlugin.getViewerPanel().uploadSliceToCanvas();
+        roiManagerPlugin.getViewerPanel2D().uploadSliceToCanvas();
     }
 
     @Override

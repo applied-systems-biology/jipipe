@@ -47,7 +47,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
         this.timePerFrame = timePerFrame;
         this.compression = compression;
         this.jpegQuality = jpegQuality;
-        this.magnification = viewerPanel.getExportedMagnification();
+        this.magnification = viewerPanel.getViewerPanel2D().getExportedMagnification();
     }
 
     @Override
@@ -77,7 +77,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
-                BufferedImage bufferedImage = viewerPanel.generateSlice(referencePosition.getC(), z,
+                BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(referencePosition.getC(), z,
                         referencePosition.getT(),
                         magnification, true).getBufferedImage();
                 if(generatedStack == null) {
@@ -93,7 +93,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
-                BufferedImage bufferedImage = viewerPanel.generateSlice(c, referencePosition.getZ(),
+                BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(c, referencePosition.getZ(),
                         referencePosition.getT(),
                         magnification, true).getBufferedImage();
                 if(generatedStack == null) {
@@ -109,7 +109,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);
-                BufferedImage bufferedImage = viewerPanel.generateSlice(referencePosition.getC(), referencePosition.getZ(),
+                BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(referencePosition.getC(), referencePosition.getZ(),
                         t,
                         magnification, true).getBufferedImage();
                 if(generatedStack == null) {

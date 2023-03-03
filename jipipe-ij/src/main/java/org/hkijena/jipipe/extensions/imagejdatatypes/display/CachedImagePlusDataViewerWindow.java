@@ -22,9 +22,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
@@ -51,16 +48,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     }
 
     private void initialize() {
-        imageViewerPanel = new ImageViewerPanel(getWorkbench());
-        List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin2D(imageViewerPanel));
-        pluginList.add(new PixelInfoPlugin2D(imageViewerPanel));
-        pluginList.add(new LUTManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new ROIManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new AnimationSpeedPlugin2D(imageViewerPanel));
-        pluginList.add(new MeasurementDrawerPlugin2D(imageViewerPanel));
-        pluginList.add(new AnnotationInfoPlugin2D(imageViewerPanel, this));
-        imageViewerPanel.setPlugins(pluginList);
+        imageViewerPanel = ImageViewerPanel.createForCacheViewer(this);
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();
@@ -99,7 +87,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     @Override
     protected void hideErrorUI() {
-        imageViewerPanel.getCanvas().setError(null);
+        imageViewerPanel.setError(null);
     }
 
     @Override
@@ -109,7 +97,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         } else {
             errorLabel.setText("No data available");
         }
-        imageViewerPanel.getCanvas().setError(errorLabel);
+        imageViewerPanel.setError(errorLabel);
     }
 
     @Override
@@ -124,14 +112,14 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
             customDataLoader.setRois(null);
         } else if (ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
             ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
-            imageViewerPanel.getCanvas().setError(null);
+            imageViewerPanel.setError(null);
             image = data.getViewedImage(false);
             if (data.getImage().getRoi() != null) {
                 rois.add(data.getImage().getRoi());
             }
         } else if (OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
             OMEImageData data = (OMEImageData) virtualData.getData(progressInfo);
-            imageViewerPanel.getCanvas().setError(null);
+            imageViewerPanel.setError(null);
             image = data.getImage();
             rois.addAll(data.getRois());
         } else {
@@ -140,8 +128,9 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         image.setTitle(image.getTitle());
         boolean fitImage = imageViewerPanel.getImage() == null;
         if (!rois.isEmpty() || ImageViewerUISettings.getInstance().isAlwaysClearROIs()) {
-            imageViewerPanel.getPlugin(ROIManagerPlugin2D.class).clearROIs(true);
-            imageViewerPanel.getPlugin(ROIManagerPlugin2D.class).importROIs(rois, true);
+            imageViewerPanel.clearRoi2D();
+            imageViewerPanel.clearRoi3D();
+            imageViewerPanel.addRoi2d(rois);
         }
         imageViewerPanel.setImage(image);
         if (fitImage)

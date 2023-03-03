@@ -23,6 +23,13 @@ import java.util.List;
 public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, Disposable {
 
     private static final Set<ImageViewerPanel> OPEN_PANELS = new HashSet<>();
+    public static final List<Class<? extends ImageViewerPanelPlugin>> DEFAULT_PLUGINS = Arrays.asList(CalibrationPlugin2D.class,
+            PixelInfoPlugin2D.class,
+            LUTManagerPlugin2D.class,
+            ROIManagerPlugin2D.class,
+            AnimationSpeedPlugin2D.class,
+            MeasurementDrawerPlugin2D.class,
+            AnnotationInfoPlugin2D.class);
     private static ImageViewerPanel ACTIVE_PANEL = null;
     private final JIPipeWorkbench workbench;
     private final ImageViewerUISettings settings;
@@ -52,13 +59,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
 
     public static ImageViewerPanel createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow, List<Class<? extends ImageViewerPanelPlugin>> additionalPlugins) {
         Map<Class<?>, Object> contextObjects = new HashMap<>();
-        ArrayList<Class<? extends ImageViewerPanelPlugin>> plugins = new ArrayList<>(Arrays.asList(CalibrationPlugin2D.class,
-                PixelInfoPlugin2D.class,
-                LUTManagerPlugin2D.class,
-                ROIManagerPlugin2D.class,
-                AnimationSpeedPlugin2D.class,
-                MeasurementDrawerPlugin2D.class,
-                AnnotationInfoPlugin2D.class));
+        ArrayList<Class<? extends ImageViewerPanelPlugin>> plugins = new ArrayList<>(DEFAULT_PLUGINS);
         plugins.addAll(additionalPlugins);
         contextObjects.put(JIPipeCacheDataViewerWindow.class, cacheDataViewerWindow);
         return new ImageViewerPanel(cacheDataViewerWindow.getWorkbench(),

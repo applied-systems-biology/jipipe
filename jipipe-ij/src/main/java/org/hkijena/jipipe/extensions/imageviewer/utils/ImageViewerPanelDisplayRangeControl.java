@@ -184,7 +184,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                             selectedCalibration,
                             minSelectableValue,
                             maxSelectableValue,
-                            getCalibrationPlugin().getViewerPanel().getCurrentSliceStats());
+                            getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats());
                     customMin = calibration[0];
                     customMax = calibration[1];
                 }
@@ -321,8 +321,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
             g.setColor(UIManager.getColor("Button.borderColor"));
             g.drawLine(0, h, w + 2 * ThumbRenderer.SIZE, h);
             g.setColor(COLOR_SELECTED);
-            ImageProcessor slice = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel().getCurrentSlice();
-            ImageStatistics statistics = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel().getCurrentSliceStats();
+            ImageProcessor slice = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel2D().getCurrentSlice();
+            ImageStatistics statistics = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats();
             if (statistics != null && slice != null) {
                 long[] histogram = statistics.getHistogram();
                 if (histogram.length > 0) {

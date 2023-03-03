@@ -358,7 +358,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 //                    image.setLut(getLUT());
 //                    imageViewerPanel.uploadSliceToCanvas();
 //                }
-                imageViewerPanel.uploadSliceToCanvas();
+                imageViewerPanel.getViewerPanel2D().uploadSliceToCanvas();
             }
         }
     }

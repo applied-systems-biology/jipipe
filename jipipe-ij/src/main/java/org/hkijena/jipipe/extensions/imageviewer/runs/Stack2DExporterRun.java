@@ -38,7 +38,7 @@ public class Stack2DExporterRun implements JIPipeRunnable {
         this.outputFolder = outputFolder;
         this.baseName = baseName;
         this.formatName = formatName;
-        this.magnification = viewerPanel.getExportedMagnification();
+        this.magnification = viewerPanel.getViewerPanel2D().getExportedMagnification();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class Stack2DExporterRun implements JIPipeRunnable {
                     String fileName = String.format("%sc%d_t%d_z%d.%s", StringUtils.isNullOrEmpty(baseName) ? "" : baseName + "_", c, t, z, formatName.toLowerCase());
                     progressInfo.incrementProgress();
                     progressInfo.log(fileName);
-                    BufferedImage bufferedImage = viewerPanel.generateSlice(c, z,
+                    BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(c, z,
                             t,
                             magnification, true).getBufferedImage();
                     try {

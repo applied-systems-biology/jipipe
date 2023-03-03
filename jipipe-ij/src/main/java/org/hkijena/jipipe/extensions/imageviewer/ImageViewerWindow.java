@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.Collections;
 
 public class ImageViewerWindow extends JFrame implements WindowListener, JIPipeWorkbenchAccess {
     private final JIPipeWorkbench workbench;
@@ -27,7 +28,7 @@ public class ImageViewerWindow extends JFrame implements WindowListener, JIPipeW
 
     public ImageViewerWindow(JIPipeWorkbench workbench) {
         this.workbench = workbench;
-        this.viewerPanel = new ImageViewerPanel(workbench);
+        this.viewerPanel = new ImageViewerPanel(workbench, ImageViewerPanel.DEFAULT_PLUGINS, Collections.emptyMap());
         initialize();
     }
 
