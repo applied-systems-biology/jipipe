@@ -39,8 +39,6 @@ import java.util.*;
 import java.util.List;
 
 public class CachedFilamentsDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-
-    private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
 
     public CachedFilamentsDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
@@ -82,10 +80,11 @@ public class CachedFilamentsDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     @Override
     protected void showErrorUI() {
+        String errorLabel;
         if (getAlgorithm() != null) {
-            errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
+            errorLabel = (String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
         } else {
-            errorLabel.setText("No data available");
+            errorLabel = ("No data available");
         }
         imageViewerPanel.setError(errorLabel);
     }

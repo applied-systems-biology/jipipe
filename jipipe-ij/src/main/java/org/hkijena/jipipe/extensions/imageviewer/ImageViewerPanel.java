@@ -12,6 +12,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -34,6 +35,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     private final ImageViewerUISettings settings;
     private final Map<Class<?>, Object> contextObjects;
     private final JToolBar toolBar = new JToolBar();
+
+    private final JPanel toolBarDynamicContent = new JPanel(new BorderLayout());
+
+    private final JPanel dynamicContent = new JPanel(new BorderLayout());
+    private final JToolBar bottomToolBar = new JToolBar();
     private final ImageViewerPanel2D imageViewerPanel2D;
 
     private final List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
@@ -41,6 +47,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     private final List<ImageViewerPanelPlugin2D> plugins2D = new ArrayList<>();
 
     private final Map<Class<? extends ImageViewerPanelPlugin>, ImageViewerPanelPlugin> pluginMap = new HashMap<>();
+
+    private ImagePlus image;
 
     /**
      * Initializes a new image viewer
@@ -58,6 +66,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         imageViewerPanel2D = new ImageViewerPanel2D(this);
         initializePlugins(pluginTypes);
         initialize();
+        switchTo2D();
     }
 
     private void initializePlugins(List<Class<? extends ImageViewerPanelPlugin>> pluginTypes) {
@@ -95,8 +104,27 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         setLayout(new BorderLayout());
         add(toolBar, BorderLayout.NORTH);
 
-        // TODO: switchable
-        toolBar.add(imageViewerPanel2D.getToolBar());
+        // Dynamic content
+        add(dynamicContent, BorderLayout.CENTER);
+
+        // Dynamic toolbar
+        toolBarDynamicContent.setLayout(new BoxLayout(toolBarDynamicContent, BoxLayout.X_AXIS));
+        toolBar.add(toolBarDynamicContent);
+
+        // Bottom toolbar
+        bottomToolBar.setFloatable(false);
+        add(bottomToolBar, BorderLayout.SOUTH);
+    }
+
+    public void switchTo2D() {
+        toolBarDynamicContent.removeAll();
+        dynamicContent.removeAll();
+
+        toolBarDynamicContent.add(imageViewerPanel2D.getToolBar(), BorderLayout.CENTER);
+        dynamicContent.add(imageViewerPanel2D, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
 
     public static ImageViewerPanel getActiveViewerPanel() {
@@ -153,7 +181,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     }
 
     public void fitImageToScreen() {
-
+        imageViewerPanel2D.fitImageToScreen();
     }
 
     @Override
@@ -165,17 +193,17 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         if(contextObjects != null) {
             contextObjects.clear();
         }
-
-        // TODO DISPOSE VIEWER
-
+        image = null;
+        imageViewerPanel2D.dispose();
     }
 
     public void setImage(ImagePlus image) {
-
+        this.image = image;
+        imageViewerPanel2D.setImage(image);
     }
 
     public ImagePlus getImage() {
-        return null;
+        return image;
     }
 
     public ImageViewerPanel2D getViewerPanel2D() {
@@ -186,11 +214,21 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         return (T)contextObjects.getOrDefault(klass, null);
     }
 
-    public void setError(Component errorMessage) {
-
+    public void setError(String errorMessage) {
+        if(errorMessage != null) {
+            JLabel errorLabel2D = new JLabel(errorMessage, UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+            imageViewerPanel2D.getCanvas().setError(errorLabel2D);
+        }
+        else {
+            imageViewerPanel2D.getCanvas().setError(null);
+        }
     }
 
     public void clearRoi2D() {
+        ROIManagerPlugin2D plugin = getPlugin(ROIManagerPlugin2D.class);
+        if(plugin != null) {
+            plugin.clearROIs(false);
+        }
     }
 
     public void clearRoi3D() {
@@ -205,10 +243,18 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     }
 
     public void addRoi2D(Collection<Roi> rois) {
-
+        ROIManagerPlugin2D plugin = getPlugin(ROIManagerPlugin2D.class);
+        if(plugin != null) {
+            ROIListData roiListData = new ROIListData();
+            roiListData.addAll(rois);
+            plugin.importROIs(roiListData, false);
+        }
     }
 
     public void addRoi2d(ROIListData rois) {
-
+        ROIManagerPlugin2D plugin = getPlugin(ROIManagerPlugin2D.class);
+        if(plugin != null) {
+            plugin.importROIs(rois, false);
+        }
     }
 }
