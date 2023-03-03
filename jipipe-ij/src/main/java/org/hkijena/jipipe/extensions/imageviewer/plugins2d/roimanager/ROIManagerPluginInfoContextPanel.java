@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d;
+package org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager;
 
 import ij.gui.Roi;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;

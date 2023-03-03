@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d;
+package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -7,7 +7,7 @@ import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 
 import java.util.Arrays;

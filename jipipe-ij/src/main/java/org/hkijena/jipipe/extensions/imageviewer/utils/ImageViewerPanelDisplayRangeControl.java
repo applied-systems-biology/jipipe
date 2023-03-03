@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins2d.CalibrationPlugin2D;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;

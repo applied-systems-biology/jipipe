@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d;
+package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;

@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imageviewer.plugins;
+package org.hkijena.jipipe.extensions.imageviewer.plugins2d;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;

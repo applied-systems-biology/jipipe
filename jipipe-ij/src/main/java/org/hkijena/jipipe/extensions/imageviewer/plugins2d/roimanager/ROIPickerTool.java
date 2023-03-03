@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d;
+package org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager;
 
 import com.google.common.eventbus.Subscribe;
 import ij.gui.Roi;

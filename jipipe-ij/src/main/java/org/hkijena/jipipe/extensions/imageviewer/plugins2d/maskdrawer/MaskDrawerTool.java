@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d;
+package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvasTool;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;

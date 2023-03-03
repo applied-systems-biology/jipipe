@@ -28,9 +28,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Stack2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Video2DExporterRun;
@@ -57,8 +54,8 @@ import java.util.List;
 import java.util.*;
 
 public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess {
-    private static final Set<ImageViewerPanel2D> OPEN_PANELS = new HashSet<>();
-    private static ImageViewerPanel2D ACTIVE_PANEL = null;
+
+    private final ImageViewerPanel imageViewerPanel;
     private final JButton zoomStatusButton = new JButton();
     private final ImageViewerUISettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
@@ -95,13 +92,15 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
     private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+
     /**
      * Initializes a new image viewer
      *
-     * @param workbench the workbench. Use {@link org.hkijena.jipipe.ui.JIPipeDummyWorkbench} if you do not have access to one.
+     * @param imageViewerPanel the viewer
      */
-    public ImageViewerPanel2D(JIPipeWorkbench workbench) {
-        this.workbench = workbench;
+    public ImageViewerPanel2D(ImageViewerPanel imageViewerPanel) {
+        this.imageViewerPanel = imageViewerPanel;
+        this.workbench = imageViewerPanel.getWorkbench();
         if (JIPipe.getInstance() != null) {
             settings = ImageViewerUISettings.getInstance();
         } else {
@@ -109,39 +108,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
         initialize();
         updateZoomStatus();
-    }
-
-    public static ImageViewerPanel2D getActiveViewerPanel() {
-        return ACTIVE_PANEL;
-    }
-
-    public static Set<ImageViewerPanel2D> getOpenViewerPanels() {
-        return OPEN_PANELS;
-    }
-
-    /**
-     * Opens the image in a new frame
-     *
-     * @param workbench the workbench
-     * @param image     the image
-     * @param title     the title
-     * @return the panel
-     */
-    public static ImageViewerPanel2D showImage(JIPipeWorkbench workbench, ImagePlus image, String title) {
-        ImageViewerPanel2D dataDisplay = new ImageViewerPanel2D(workbench);
-        List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin2D(dataDisplay));
-        pluginList.add(new PixelInfoPlugin2D(dataDisplay));
-        pluginList.add(new LUTManagerPlugin2D(dataDisplay));
-        pluginList.add(new ROIManagerPlugin2D(dataDisplay));
-        pluginList.add(new AnimationSpeedPlugin2D(dataDisplay));
-        pluginList.add(new MeasurementDrawerPlugin2D(dataDisplay));
-        dataDisplay.setPlugins(pluginList);
-        dataDisplay.setImage(image);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setTitle(title);
-        window.setVisible(true);
-        return dataDisplay;
     }
 
     @Override
@@ -178,14 +144,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return null;
     }
 
-    public void setAsActiveViewerPanel() {
-        ACTIVE_PANEL = this;
-    }
-
-    public void addToOpenPanels() {
-        OPEN_PANELS.add(this);
-    }
-
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
 //        rotateRightButton.setVisible(enabled);
@@ -197,10 +155,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 //    }
 
     public void dispose() {
-        if (ACTIVE_PANEL == this) {
-            ACTIVE_PANEL = null;
-        }
-        OPEN_PANELS.remove(this);
         try {
             setImage(null);
         } catch (Exception | Error e) {

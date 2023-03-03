@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d;
+package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
@@ -22,7 +22,7 @@ import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvasTool;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;

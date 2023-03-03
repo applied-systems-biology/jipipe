@@ -23,15 +23,15 @@ import java.awt.event.WindowListener;
 
 public class ImageViewerWindow extends JFrame implements WindowListener, JIPipeWorkbenchAccess {
     private final JIPipeWorkbench workbench;
-    private final ImageViewerPanel2D viewerPanel;
+    private final ImageViewerPanel viewerPanel;
 
     public ImageViewerWindow(JIPipeWorkbench workbench) {
         this.workbench = workbench;
-        this.viewerPanel = new ImageViewerPanel2D(workbench);
+        this.viewerPanel = new ImageViewerPanel(workbench);
         initialize();
     }
 
-    public ImageViewerWindow(ImageViewerPanel2D panel) {
+    public ImageViewerWindow(ImageViewerPanel panel) {
         this.viewerPanel = panel;
         this.workbench = panel.getWorkbench();
         initialize();
@@ -47,7 +47,7 @@ public class ImageViewerWindow extends JFrame implements WindowListener, JIPipeW
         addWindowListener(this);
     }
 
-    public ImageViewerPanel2D getViewerPanel() {
+    public ImageViewerPanel getViewerPanel() {
         return viewerPanel;
     }
 
