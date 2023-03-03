@@ -24,6 +24,8 @@ public class Quantity {
     public static final Map<String, Double> UNITS_FACTORS = new HashMap<>();
     public static final Pattern PARSE_QUANTITY_PATTERN = Pattern.compile("([+-]?\\d+[,.]?\\d*)(.*)");
     public static final String UNIT_NO_UNIT = "";
+
+    public static final String UNIT_PIXELS = "pixels";
     public static final String[] KNOWN_UNITS_IMAGE_DIMENSIONS = new String[]{
             "pixel", "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
             "inch", "in", "foot", "ft", "yard", "yd"
@@ -150,7 +152,7 @@ public class Quantity {
             return this;
         }
         // Pixel special case
-        if("px".equals(unit) || "pixels".equals(unit) || "pixel".equals(unit)) {
+        if(unitIsPixels()) {
             if("px".equals(targetUnit) || "pixels".equals(targetUnit) || "pixel".equals(targetUnit)) {
                 return this;
             }
@@ -167,5 +169,25 @@ public class Quantity {
         }
 
         return new Quantity((getValue() * sourceFactor) / targetFactor, targetUnit);
+    }
+
+    public boolean unitIsPixels() {
+        return "px".equals(unit) || "pixels".equals(unit) || "pixel".equals(unit);
+    }
+
+    public Quantity convertToPixels(Quantity pixelSize) {
+        if(unitIsPixels()) {
+            // Already pixels
+            return this;
+        }
+        else if(unit.equalsIgnoreCase(pixelSize.unit)) {
+            // Same unit
+            return new Quantity(value / pixelSize.value, "pixels");
+        }
+        else {
+            // Different unit -> convert to same unit first
+            Quantity converted = convertTo(pixelSize.getUnit());
+            return converted.convertToPixels(pixelSize);
+        }
     }
 }

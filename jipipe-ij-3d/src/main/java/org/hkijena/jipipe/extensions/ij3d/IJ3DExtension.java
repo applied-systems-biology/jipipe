@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.binary.Watershed3DSplittingAlgor
 import org.hkijena.jipipe.extensions.ij3d.nodes.features.EdgeFilter3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.features.FindMaxima3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.features.SymmetryFilter3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.filters.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
@@ -153,6 +154,18 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-feature-maxima-local-3d", FindMaxima3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij3d-feature-canny-edge-3d", EdgeFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij3d-feature-symmetry-3d", SymmetryFilter3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerNodeType("ij3d-filter-adaptive-3d", Fast3DFiltersAdaptiveAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-close-3d", Fast3DFiltersCloseAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-local-max-3d", Fast3DFiltersLocalMaxAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-max-3d", Fast3DFiltersMaxAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-mean-3d", Fast3DFiltersMeanAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-median-3d", Fast3DFiltersMedianAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-min-3d", Fast3DFiltersMinAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-open-3d", Fast3DFiltersOpenAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-sobel-3d", Fast3DFiltersSobelAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-top-hat-3d", Fast3DFiltersTopHatAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij3d-filter-variance-3d", Fast3DFiltersVarianceAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("ij3d-segmentation-watershed-3d", Watershed3DSegmentationAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-object-histogram-linear.png"));
 

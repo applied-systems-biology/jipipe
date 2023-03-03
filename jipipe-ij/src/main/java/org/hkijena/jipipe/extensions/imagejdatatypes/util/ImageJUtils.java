@@ -40,6 +40,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.*;
 
@@ -67,6 +68,33 @@ import java.util.stream.Collectors;
  * Utility functions for ImageJ
  */
 public class ImageJUtils {
+
+    public static Quantity getPixelSizeX(ImagePlus imp) {
+        if(imp.getCalibration() != null) {
+            return new Quantity(imp.getCalibration().pixelWidth, StringUtils.orElse(imp.getCalibration().getXUnit(), Quantity.UNIT_PIXELS));
+        }
+        else {
+            return new Quantity(1, Quantity.UNIT_PIXELS);
+        }
+    }
+
+    public static Quantity getPixelSizeY(ImagePlus imp) {
+        if(imp.getCalibration() != null) {
+            return new Quantity(imp.getCalibration().pixelHeight, StringUtils.orElse(imp.getCalibration().getYUnit(), Quantity.UNIT_PIXELS));
+        }
+        else {
+            return new Quantity(1, Quantity.UNIT_PIXELS);
+        }
+    }
+
+    public static Quantity getPixelSizeZ(ImagePlus imp) {
+        if(imp.getCalibration() != null) {
+            return new Quantity(imp.getCalibration().pixelDepth, StringUtils.orElse(imp.getCalibration().getZUnit(), Quantity.UNIT_PIXELS));
+        }
+        else {
+            return new Quantity(1, Quantity.UNIT_PIXELS);
+        }
+    }
 
     /**
      * Returns the properties of a {@link Roi} as map
