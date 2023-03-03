@@ -12,24 +12,24 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Set thickness from image", description = "Sets the thickness of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
+@JIPipeDocumentation(name = "Set filament vertex radius from image", description = "Sets the radius of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice.")
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = Filaments3DData.class, slotName = "Filaments", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Thickness", description = "The thickness is sourced from the pixels in this image", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Radius", description = "The radius is sourced from the pixels in this image", autoCreate = true)
 @JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
-public class SetVertexThicknessFromImageAlgorithm extends JIPipeIteratingAlgorithm {
-    public SetVertexThicknessFromImageAlgorithm(JIPipeNodeInfo info) {
+public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm {
+    public SetVertexRadiusFromImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public SetVertexThicknessFromImageAlgorithm(SetVertexThicknessFromImageAlgorithm other) {
+    public SetVertexRadiusFromImageAlgorithm(SetVertexRadiusFromImageAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Filaments3DData filaments = new Filaments3DData(dataBatch.getInputData("Filaments", Filaments3DData.class, progressInfo));
-        ImagePlus thickness = dataBatch.getInputData("Thickness", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus thickness = dataBatch.getInputData("Radius", ImagePlusGreyscaleData.class, progressInfo).getImage();
 
         for (FilamentVertex vertex : filaments.vertexSet()) {
             int z = Math.max(0, vertex.getSpatialLocation().getZ());
@@ -37,7 +37,7 @@ public class SetVertexThicknessFromImageAlgorithm extends JIPipeIteratingAlgorit
             int t = Math.max(0, vertex.getNonSpatialLocation().getFrame());
             ImageProcessor ip = ImageJUtils.getSliceZero(thickness, c, z, t);
             float d = ip.getf(vertex.getSpatialLocation().getX(), vertex.getSpatialLocation().getY());
-            vertex.setThickness(d);
+            vertex.setRadius(d);
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), filaments, progressInfo);

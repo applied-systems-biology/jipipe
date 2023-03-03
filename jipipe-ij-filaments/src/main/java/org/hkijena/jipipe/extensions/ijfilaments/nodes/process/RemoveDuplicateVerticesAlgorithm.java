@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.ijfilaments.nodes.filter;
+package org.hkijena.jipipe.extensions.ijfilaments.nodes.process;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;

@@ -31,7 +31,9 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     private DefaultExpressionParameter centroidT = new DefaultExpressionParameter("default");
 
-    private DefaultExpressionParameter thickness = new DefaultExpressionParameter("default");
+    private DefaultExpressionParameter radius = new DefaultExpressionParameter("default");
+
+    private DefaultExpressionParameter value = new DefaultExpressionParameter("default");
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
     public ChangeFilamentVertexPropertiesAlgorithm(JIPipeNodeInfo info) {
@@ -47,7 +49,8 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.centroidZ = new DefaultExpressionParameter(other.centroidZ);
         this.centroidC = new DefaultExpressionParameter(other.centroidC);
         this.centroidT = new DefaultExpressionParameter(other.centroidT);
-        this.thickness = new DefaultExpressionParameter(other.thickness);
+        this.radius = new DefaultExpressionParameter(other.radius);
+        this.value = new DefaultExpressionParameter(other.value);
     }
 
     @Override
@@ -86,9 +89,13 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
             variables.set("default", vertex.getNonSpatialLocation().getFrame());
             vertex.getNonSpatialLocation().setFrame(centroidT.evaluateToInteger(variables));
 
-            // Thickness
-            variables.set("default", vertex.getThickness());
-            vertex.setThickness(thickness.evaluateToInteger(variables));
+            // Radius
+            variables.set("default", vertex.getRadius());
+            vertex.setRadius(radius.evaluateToDouble(variables));
+
+            // Intensity
+            variables.set("default", vertex.getValue());
+            vertex.setRadius(value.evaluateToDouble(variables));
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
@@ -189,8 +196,8 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
         this.centroidT = centroidT;
     }
 
-    @JIPipeDocumentation(name = "Thickness", description = "The thickness of the vertex")
-    @JIPipeParameter("thickness")
+    @JIPipeDocumentation(name = "Radius", description = "The radius of the vertex")
+    @JIPipeParameter("radius")
     @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
     @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
@@ -199,13 +206,32 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getThickness() {
-        return thickness;
+    public DefaultExpressionParameter getRadius() {
+        return radius;
     }
 
-    @JIPipeParameter("thickness")
-    public void setThickness(DefaultExpressionParameter thickness) {
-        this.thickness = thickness;
+    @JIPipeParameter("radius")
+    public void setRadius(DefaultExpressionParameter radius) {
+        this.radius = radius;
+    }
+
+    @JIPipeDocumentation(name = "Value", description = "The value of the vertex")
+    @JIPipeParameter("value")
+    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
+    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @ExpressionParameterSettings(hint = "per vertex")
+    public DefaultExpressionParameter getValue() {
+        return value;
+    }
+
+    @JIPipeParameter("value")
+    public void setValue(DefaultExpressionParameter value) {
+        this.value = value;
     }
 
     @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")

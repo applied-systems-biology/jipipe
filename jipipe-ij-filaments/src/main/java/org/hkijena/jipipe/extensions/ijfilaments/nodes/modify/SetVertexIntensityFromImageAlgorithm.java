@@ -37,7 +37,7 @@ public class SetVertexIntensityFromImageAlgorithm extends JIPipeIteratingAlgorit
             int t = Math.max(0, vertex.getNonSpatialLocation().getFrame());
             ImageProcessor ip = ImageJUtils.getSliceZero(thickness, c, z, t);
             float d = ip.getf(vertex.getSpatialLocation().getX(), vertex.getSpatialLocation().getY());
-            vertex.setIntensity(d);
+            vertex.setValue(d);
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), filaments, progressInfo);

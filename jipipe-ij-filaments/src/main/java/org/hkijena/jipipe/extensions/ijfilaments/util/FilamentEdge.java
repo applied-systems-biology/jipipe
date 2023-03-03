@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.awt.*;
 import java.util.HashMap;

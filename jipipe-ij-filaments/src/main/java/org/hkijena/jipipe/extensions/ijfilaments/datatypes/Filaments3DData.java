@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.Roi;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.graph.SimpleWeightedGraph;
 import org.jgrapht.nio.json.JSONImporter;
 
 import javax.swing.*;
@@ -186,10 +188,10 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     private Roi vertexToRoi(FilamentVertex vertex) {
         Point3d centroid = vertex.getSpatialLocation();
         NonSpatialPoint3d nonSpatialLocation = vertex.getNonSpatialLocation();
-        EllipseRoi roi = new EllipseRoi(centroid.getX() - vertex.getThickness() / 2.0,
-                centroid.getY() - vertex.getThickness() / 2.0,
-                centroid.getX() + vertex.getThickness() / 2.0,
-                centroid.getY() + vertex.getThickness() / 2.0,
+        EllipseRoi roi = new EllipseRoi(centroid.getX() - vertex.getRadius() / 2.0,
+                centroid.getY() - vertex.getRadius() / 2.0,
+                centroid.getX() + vertex.getRadius() / 2.0,
+                centroid.getY() + vertex.getRadius() / 2.0,
                 1);
         roi.setName(vertex.getUuid().toString());
         roi.setStrokeColor(vertex.getColor());
@@ -208,7 +210,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         roi.setStrokeColor(edge.getColor());
 //        roi.setFillColor(edge.getColor());
         if(!thinLines) {
-            roi.setStrokeWidth((edgeSource.getThickness() + edgeTarget.getThickness()) / 2);
+            roi.setStrokeWidth((edgeSource.getRadius() + edgeTarget.getRadius()) / 2);
         }
         roi.setName(edge.getUuid().toString());
         roi.setPosition(c + 1, z + 1, t + 1);
@@ -246,10 +248,10 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             // Calculate new thickness
             double thickness = 0;
             for (FilamentVertex vertex : vertices) {
-                thickness += vertex.getThickness();
+                thickness += vertex.getRadius();
             }
             thickness /= vertices.size();
-            referenceVertex.setThickness(thickness);
+            referenceVertex.setRadius(thickness);
 
             // Merge
             for (FilamentVertex vertex : vertices) {
@@ -299,7 +301,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         tableData.addNumericColumn("z");
         tableData.addNumericColumn("c");
         tableData.addNumericColumn("t");
-        tableData.addNumericColumn("thickness");
+        tableData.addNumericColumn("radius");
+        tableData.addNumericColumn("value");
         tableData.addStringColumn("color");
         tableData.addNumericColumn("degree");
         Map<String, Object> rowData = new LinkedHashMap<>();
@@ -318,7 +321,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         target.put(prefix + "z", vertex.getSpatialLocation().getZ());
         target.put(prefix + "c", vertex.getNonSpatialLocation().getChannel());
         target.put(prefix + "t", vertex.getNonSpatialLocation().getFrame());
-        target.put(prefix + "thickness", vertex.getThickness());
+        target.put(prefix + "radius", vertex.getRadius());
+        target.put(prefix + "value", vertex.getValue());
         target.put(prefix + "color", ColorUtils.colorToHexString(vertex.getColor()));
         target.put(prefix + "degree", degreeOf(vertex));
         for (Map.Entry<String, String> entry : vertex.getMetadata().entrySet()) {
@@ -475,5 +479,57 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             ++component;
         }
         return result;
+    }
+
+    public void removeComponentsAtBorder(ImagePlus reference, boolean removeInX, boolean removeInY, boolean removeInZ, boolean useThickness, double borderDistance) {
+        ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = new ConnectivityInspector<>(this);
+        Set<FilamentVertex> toDelete = new HashSet<>();
+
+        for (Set<FilamentVertex> connectedSet : connectivityInspector.connectedSets()) {
+            boolean found = false;
+            for (FilamentVertex vertex : connectedSet) {
+                if(removeInX) {
+                    double xMin = vertex.getXMin(useThickness);
+                    double xMax = vertex.getXMax(useThickness);
+                    if(xMin <= borderDistance) {
+                        found = true;
+                        break;
+                    }
+                    if(xMax >= reference.getWidth() - borderDistance - 1) {
+                        found = true;
+                        break;
+                    }
+                }
+                if(removeInY) {
+                    double yMin = vertex.getYMin(useThickness);
+                    double yMax = vertex.getYMax(useThickness);
+                    if(yMin <= borderDistance) {
+                        found = true;
+                        break;
+                    }
+                    if(yMax >= reference.getHeight() - borderDistance - 1) {
+                        found = true;
+                        break;
+                    }
+                }
+                if(removeInZ) {
+                    double zMin = vertex.getZMin(useThickness);
+                    double zMax = vertex.getZMax(useThickness);
+                    if(zMin <= borderDistance) {
+                        found = true;
+                        break;
+                    }
+                    if(zMax >= reference.getNSlices() - borderDistance - 1) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+            if(found) {
+                toDelete.addAll(connectedSet);
+            }
+        }
+
+        removeAllVertices(toDelete);
     }
 }

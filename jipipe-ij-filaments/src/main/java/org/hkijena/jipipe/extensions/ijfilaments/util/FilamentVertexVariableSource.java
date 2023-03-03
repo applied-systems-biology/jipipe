@@ -21,8 +21,8 @@ public class FilamentVertexVariableSource implements ExpressionParameterVariable
         VARIABLES.add(new ExpressionParameterVariable("Z", "The Z location", "z"));
         VARIABLES.add(new ExpressionParameterVariable("Channel", "The channel (c) location", "c"));
         VARIABLES.add(new ExpressionParameterVariable("Frame", "The frame (t) location", "t"));
-        VARIABLES.add(new ExpressionParameterVariable("Thickness", "The thickness of the vertex", "thickness"));
-        VARIABLES.add(new ExpressionParameterVariable("Intensity", "The intensity of the vertex", "intensity"));
+        VARIABLES.add(new ExpressionParameterVariable("Radius", "The radius of the vertex", "radius"));
+        VARIABLES.add(new ExpressionParameterVariable("Value", "The value of the vertex", "value"));
         VARIABLES.add(new ExpressionParameterVariable("Degree", "The degree (number of edges) of the vertex", "degree"));
     }
 

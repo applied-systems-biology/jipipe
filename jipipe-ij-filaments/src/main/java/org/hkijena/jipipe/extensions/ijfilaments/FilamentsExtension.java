@@ -23,7 +23,8 @@ import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsToRoiDataTyp
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsToRoiAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentEdgesByProperties;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentVerticesByProperties;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.RemoveDuplicateVerticesAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.RemoveBorderFilaments;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.RemoveDuplicateVerticesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.ImportFilamentsFromJsonAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToFilaments2DAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToSimplifiedFilamentsFijiAlgorithm;
@@ -33,7 +34,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.merge.MergeFilamentsAlgor
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.ChangeFilamentVertexPropertiesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexIntensityFromImageAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexMetadataFromImageAlgorithm;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexThicknessFromImageAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexRadiusFromImageAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.FixOverlapsNonBranchingAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
@@ -125,6 +126,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("filaments-filter-edges-by-properties", FilterFilamentEdgesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("filaments-filter-filaments-at-border", RemoveBorderFilaments.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerNodeType("filaments-split-into-connected-components", SplitFilamentsIntoConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
 
@@ -132,7 +134,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("filaments-convert-to-roi", ConvertFilamentsToRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
 
-        registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexThicknessFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
+        registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexRadiusFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-set-vertex-intensity-from-image", SetVertexIntensityFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-set-vertex-metadata-from-image", SetVertexMetadataFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-remove-duplicate-vertices", RemoveDuplicateVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));

@@ -18,9 +18,9 @@ public class FilamentVertex {
 
     private NonSpatialPoint3d nonSpatialLocation = new NonSpatialPoint3d();
 
-    private double thickness = 1;
+    private double radius = 1;
 
-    private double intensity = 0;
+    private double value = 0;
 
     private Color color = new Color(0xE5A50A);
 
@@ -33,8 +33,8 @@ public class FilamentVertex {
     public FilamentVertex(FilamentVertex other) {
         this.spatialLocation = new Point3d(other.spatialLocation);
         this.nonSpatialLocation = new NonSpatialPoint3d(other.nonSpatialLocation);
-        this.thickness = other.thickness;
-        this.intensity = other.intensity;
+        this.radius = other.radius;
+        this.value = other.value;
         this.metadata = new HashMap<>(other.metadata);
         this.color = other.color;
     }
@@ -59,24 +59,24 @@ public class FilamentVertex {
         this.nonSpatialLocation = nonSpatialLocation;
     }
 
-    @JsonGetter("intensity")
-    public double getIntensity() {
-        return intensity;
+    @JsonGetter("value")
+    public double getValue() {
+        return value;
     }
 
-    @JsonSetter("intensity")
-    public void setIntensity(double intensity) {
-        this.intensity = intensity;
+    @JsonSetter("value")
+    public void setValue(double value) {
+        this.value = value;
     }
 
-    @JsonGetter("thickness")
-    public double getThickness() {
-        return thickness;
+    @JsonGetter("radius")
+    public double getRadius() {
+        return radius;
     }
 
-    @JsonSetter("thickness")
-    public void setThickness(double thickness) {
-        this.thickness = thickness;
+    @JsonSetter("radius")
+    public void setRadius(double radius) {
+        this.radius = radius;
     }
 
     @JsonGetter("metadata")
@@ -124,5 +124,29 @@ public class FilamentVertex {
 
     public void setMetadata(String key, Object value) {
         metadata.put(key, StringUtils.nullToEmpty(value));
+    }
+
+    public double getXMin(boolean useThickness) {
+        return useThickness ? getSpatialLocation().getX() - radius : getSpatialLocation().getX();
+    }
+
+    public double getXMax(boolean useThickness) {
+        return useThickness ? getSpatialLocation().getX() + radius : getSpatialLocation().getX();
+    }
+
+    public double getYMin(boolean useThickness) {
+        return useThickness ? getSpatialLocation().getY() - radius : getSpatialLocation().getY();
+    }
+
+    public double getYMax(boolean useThickness) {
+        return useThickness ? getSpatialLocation().getY() + radius : getSpatialLocation().getY();
+    }
+
+    public double getZMin(boolean useThickness) {
+        return useThickness ? getSpatialLocation().getZ() - radius : getSpatialLocation().getZ();
+    }
+
+    public double getZMax(boolean useThickness) {
+        return useThickness ? getSpatialLocation().getZ() + radius : getSpatialLocation().getZ();
     }
 }
