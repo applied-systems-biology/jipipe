@@ -168,6 +168,7 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-filter-variance-3d", Fast3DFiltersVarianceAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("ij3d-segmentation-watershed-3d", Watershed3DSegmentationAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-object-histogram-linear.png"));
+        registerNodeType("ij3d-segmentation-nuclei-3d", NucleiSegmentation3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("ij3d-segmentation-hysteresis", HysteresisSegmentation3DAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerEnumParameterType("ij3d-segmentation-iterative-thresholding:criteria-method", IterativeThreshold3DAlgorithm.CriteriaMethod.class, "3D iterative thresholding: criteria", "Available criteria");
