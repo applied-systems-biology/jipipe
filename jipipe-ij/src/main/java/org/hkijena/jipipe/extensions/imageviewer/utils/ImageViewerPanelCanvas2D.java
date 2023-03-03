@@ -134,7 +134,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
             BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
             graphics2D.drawImage(image, op, contentX, contentY);
 //            graphics2D.drawImage(scaledImage, contentX, contentY, null);
-            for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins()) {
+            for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getImageViewerPanel().getPlugins2D()) {
                 plugin.postprocessDraw(graphics2D, new Rectangle(x, y, w, h), imageSliceIndex);
             }
             if (tool != null) {

@@ -98,7 +98,7 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
         // Workaround: setting LUT overrides calibration for some reason
         // Recalibrate again
-        CalibrationPlugin2D calibrationPlugin = getViewerPanel2D().getPlugin(CalibrationPlugin2D.class);
+        CalibrationPlugin2D calibrationPlugin = getViewerPanel().getPlugin(CalibrationPlugin2D.class);
         if (calibrationPlugin != null) {
             calibrationPlugin.draw(c, z, t, processor);
         }

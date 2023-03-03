@@ -89,7 +89,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     //    private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
-    private List<ImageViewerPanelPlugin2D> plugins = new ArrayList<>();
     private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
     private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
@@ -120,30 +119,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return settings;
     }
 
-    public <T extends ImageViewerPanelPlugin2D> T getPlugin(Class<T> klass) {
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
-            if (klass.isAssignableFrom(plugin.getClass()))
-                return (T) plugin;
-        }
-        return null;
-    }
-
-    public List<ImageViewerPanelPlugin2D> getPlugins() {
-        return plugins;
-    }
-
-    public void setPlugins(List<ImageViewerPanelPlugin2D> plugins) {
-        this.plugins = plugins;
-    }
-
-    public <T extends ImageViewerPanelPlugin2D> T findPlugin(Class<T> klass) {
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
-            if (klass.isAssignableFrom(plugin.getClass())) {
-                return (T) plugin;
-            }
-        }
-        return null;
-    }
 
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
@@ -347,16 +322,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         initializeExportMenu();
         toolBar.addSeparator();
 
-//        rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
-//        rotateLeftButton.setToolTipText("Rotate 90° to the left");
-//        rotateLeftButton.addActionListener(e -> rotateLeft());
-//        toolBar.add(rotateLeftButton);
-//
-//        rotateRightButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate.png"));
-//        rotateRightButton.setToolTipText("Rotate 90° to the right");
-//        rotateRightButton.addActionListener(e -> rotateRight());
-//        toolBar.add(rotateRightButton);
-
         JButton centerImageButton = new JButton("Center image", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
         centerImageButton.addActionListener(e -> canvas.centerImage());
         toolBar.add(centerImageButton);
@@ -420,8 +385,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             updateSideBar();
         });
         toolBar.add(enableSideBarButton);
-
-        add(toolBar, BorderLayout.NORTH);
     }
 
     private void initializeExportMenu() {
@@ -623,21 +586,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return zoomedDummyCanvas;
     }
 
-//    private void rotateLeft() {
-//        if (rotation == 0)
-//            rotation = 270;
-//        else
-//            rotation -= 90;
-//        refreshImageInfo();
-//        refreshSlice();
-//    }
-//
-//    public void rotateRight() {
-//        rotation = (rotation + 90) % 360;
-//        refreshImageInfo();
-//        refreshSlice();
-//    }
-
     /**
      * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
      * Its magnification should be permanently 1.0
@@ -734,7 +682,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         refreshImageInfo();
         refreshFormPanel();
         refreshMenus();
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
+        for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
             plugin.onImageChanged();
         }
         revalidate();
@@ -754,7 +702,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
+        for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
             FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
                 formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
@@ -790,6 +738,10 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      */
     public ImageSliceIndex getCurrentSliceIndex() {
         return new ImageSliceIndex(channelSlider.getValue() - 1, stackSlider.getValue() - 1, frameSlider.getValue() - 1);
+    }
+
+    public ImageViewerPanel getImageViewerPanel() {
+        return imageViewerPanel;
     }
 
     public void refreshImageInfo() {
@@ -870,7 +822,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.setPosition(channel, stack, frame);
             this.currentSlice = image.getProcessor();
-            for (ImageViewerPanelPlugin2D plugin : plugins) {
+            for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged(true);
 //                System.out.println(plugin + "(A): " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
@@ -891,12 +843,12 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      */
     public ImageProcessor generateSlice(int c, int z, int t, double magnification, boolean withPostprocessing) {
         image.setPosition(c + 1, z + 1, t + 1);
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
+        for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
             plugin.beforeDraw(c, z, t);
         }
 //        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
         ImageProcessor processor = image.getProcessor().duplicate();
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
+        for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
             processor = plugin.draw(c, z, t, processor);
         }
 //        if (withRotation && rotation != 0) {
@@ -915,7 +867,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
         if (withPostprocessing) {
             BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
-            for (ImageViewerPanelPlugin2D plugin : getPlugins()) {
+            for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
                 plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
             }
             processor = new ColorProcessor(image);
@@ -976,10 +928,5 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             return stats;
         }
         return null;
-    }
-
-
-    public void addRoi2D(List<Roi> rois) {
-
     }
 }

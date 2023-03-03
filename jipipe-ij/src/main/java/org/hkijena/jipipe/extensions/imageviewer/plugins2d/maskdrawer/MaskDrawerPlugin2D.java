@@ -239,7 +239,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
             }
         }
 
-        ROIManagerPlugin2D roiManager = getViewerPanel2D().getPlugin(ROIManagerPlugin2D.class);
+        ROIManagerPlugin2D roiManager = getViewerPanel().getPlugin(ROIManagerPlugin2D.class);
         roiManager.importROIs(rois, false);
         clearCurrentMask();
     }
@@ -438,7 +438,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
         }
 
         formPanel.addWideToForm(ribbon);
-        exportToRoiManagerAction.setVisible(getViewerPanel2D().getPlugin(ROIManagerPlugin2D.class) != null);
+        exportToRoiManagerAction.setVisible(getViewerPanel().getPlugin(ROIManagerPlugin2D.class) != null);
         SwingUtilities.invokeLater(ribbon::rebuildRibbon);
 
         formPanel.addWideToForm(toolSettingsPanel);

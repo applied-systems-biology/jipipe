@@ -65,7 +65,7 @@ public class MaskToROIDrawerPlugin2D extends MaskDrawerPlugin2D {
                 Double.POSITIVE_INFINITY);
         analyzer.analyze(new ImagePlus("mask", getCurrentMaskSlice()));
         ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
-        ROIManagerPlugin2D roiManager = getViewerPanel2D().getPlugin(ROIManagerPlugin2D.class);
+        ROIManagerPlugin2D roiManager = getViewerPanel().getPlugin(ROIManagerPlugin2D.class);
         roiManager.importROIs(rois, false);
         clearCurrentMask();
     }

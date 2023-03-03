@@ -2,17 +2,16 @@ package org.hkijena.jipipe.extensions.imageviewer;
 
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.apache.poi.ss.formula.functions.T;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.MaskDrawerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.MeasurementDrawerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -33,8 +32,15 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     private static ImageViewerPanel ACTIVE_PANEL = null;
     private final JIPipeWorkbench workbench;
     private final ImageViewerUISettings settings;
-    private final List<Class<? extends ImageViewerPanelPlugin>> pluginTypes;
     private final Map<Class<?>, Object> contextObjects;
+    private final JToolBar toolBar = new JToolBar();
+    private final ImageViewerPanel2D imageViewerPanel2D;
+
+    private final List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
+
+    private final List<ImageViewerPanelPlugin2D> plugins2D = new ArrayList<>();
+
+    private final Map<Class<? extends ImageViewerPanelPlugin>, ImageViewerPanelPlugin> pluginMap = new HashMap<>();
 
     /**
      * Initializes a new image viewer
@@ -43,18 +49,35 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
      */
     public ImageViewerPanel(JIPipeWorkbench workbench, List<Class<? extends ImageViewerPanelPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
         this.workbench = workbench;
-        this.pluginTypes = pluginTypes;
         this.contextObjects = contextObjects;
         if (JIPipe.getInstance() != null) {
             settings = ImageViewerUISettings.getInstance();
         } else {
             settings = null;
         }
+        imageViewerPanel2D = new ImageViewerPanel2D(this);
+        initializePlugins(pluginTypes);
         initialize();
+    }
+
+    private void initializePlugins(List<Class<? extends ImageViewerPanelPlugin>> pluginTypes) {
+        for (Class<? extends ImageViewerPanelPlugin> pluginType : pluginTypes) {
+            Object plugin = ReflectionUtils.newInstance(pluginType, this);
+            if(plugin instanceof ImageViewerPanelPlugin2D) {
+                ImageViewerPanelPlugin2D plugin2D = (ImageViewerPanelPlugin2D) plugin;
+                plugins.add(plugin2D);
+                plugins2D.add(plugin2D);
+                pluginMap.put(pluginType, plugin2D);
+            }
+        }
     }
 
     public static ImageViewerPanel createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow) {
        return createForCacheViewer(cacheDataViewerWindow, Collections.emptyList());
+    }
+
+    public ImageViewerPanel2D getImageViewerPanel2D() {
+        return imageViewerPanel2D;
     }
 
     public static ImageViewerPanel createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow, List<Class<? extends ImageViewerPanelPlugin>> additionalPlugins) {
@@ -68,7 +91,12 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     }
 
     private void initialize() {
+        toolBar.setFloatable(false);
+        setLayout(new BorderLayout());
+        add(toolBar, BorderLayout.NORTH);
 
+        // TODO: switchable
+        toolBar.add(imageViewerPanel2D.getToolBar());
     }
 
     public static ImageViewerPanel getActiveViewerPanel() {
@@ -77,6 +105,14 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
 
     public static Set<ImageViewerPanel> getOpenViewerPanels() {
         return OPEN_PANELS;
+    }
+
+    public List<ImageViewerPanelPlugin> getPlugins() {
+        return Collections.unmodifiableList(plugins);
+    }
+
+    public List<ImageViewerPanelPlugin2D> getPlugins2D() {
+        return Collections.unmodifiableList(plugins2D);
     }
 
     @Override
@@ -143,7 +179,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     }
 
     public ImageViewerPanel2D getViewerPanel2D() {
-        return null;
+        return imageViewerPanel2D;
     }
 
     public <T> T getContextObject(Class<T> klass) {
@@ -161,11 +197,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     }
 
     public JToolBar getToolBar() {
-        return null;
+        return toolBar;
     }
 
     public <T> T getPlugin(Class<T> klass) {
-        return null;
+        return (T) pluginMap.getOrDefault(klass, null);
     }
 
     public void addRoi2D(Collection<Roi> rois) {
