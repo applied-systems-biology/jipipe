@@ -39,7 +39,6 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     private final JPanel toolBarDynamicContent = new JPanel(new BorderLayout());
 
     private final JPanel dynamicContent = new JPanel(new BorderLayout());
-    private final JToolBar bottomToolBar = new JToolBar();
     private final ImageViewerPanel2D imageViewerPanel2D;
 
     private final List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
@@ -49,6 +48,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     private final Map<Class<? extends ImageViewerPanelPlugin>, ImageViewerPanelPlugin> pluginMap = new HashMap<>();
 
     private ImagePlus image;
+
+    private final JButton switchModeButton = new JButton();
 
     /**
      * Initializes a new image viewer
@@ -104,6 +105,12 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         setLayout(new BorderLayout());
         add(toolBar, BorderLayout.NORTH);
 
+        // Switcher
+        toolBar.add(switchModeButton);
+        JPopupMenu switchModeMenu = UIUtils.addPopupMenuToComponent(switchModeButton);
+        switchModeMenu.add(UIUtils.createMenuItem("Switch to 2D", "Display the image in 2D", UIUtils.getIconFromResources("data-types/imgplus-2d.png"), this::switchTo2D));
+        switchModeMenu.add(UIUtils.createMenuItem("Switch to 3D", "Display the image in 3D", UIUtils.getIconFromResources("data-types/imgplus-3d.png"), this::switchTo3D));
+
         // Dynamic content
         add(dynamicContent, BorderLayout.CENTER);
 
@@ -111,12 +118,23 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         toolBarDynamicContent.setLayout(new BoxLayout(toolBarDynamicContent, BoxLayout.X_AXIS));
         toolBar.add(toolBarDynamicContent);
 
-        // Bottom toolbar
-        bottomToolBar.setFloatable(false);
-        add(bottomToolBar, BorderLayout.SOUTH);
+    }
+
+    private void switchTo3D() {
+        switchModeButton.setText("Display");
+        switchModeButton.setIcon(UIUtils.getIconFromResources("data-types/imgplus-3d.png"));
+
+        toolBarDynamicContent.removeAll();
+        dynamicContent.removeAll();
+
+        revalidate();
+        repaint();
     }
 
     public void switchTo2D() {
+        switchModeButton.setText("Display");
+        switchModeButton.setIcon(UIUtils.getIconFromResources("data-types/imgplus-2d.png"));
+
         toolBarDynamicContent.removeAll();
         dynamicContent.removeAll();
 
