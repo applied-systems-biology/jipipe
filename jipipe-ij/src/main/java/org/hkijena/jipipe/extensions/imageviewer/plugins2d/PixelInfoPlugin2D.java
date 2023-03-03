@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -32,7 +32,7 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D {
     }
 
     @Subscribe
-    public void onPixelHover(ImageViewerPanelCanvas.PixelHoverEvent event) {
+    public void onPixelHover(ImageViewerPanelCanvas2D.PixelHoverEvent event) {
         updatePixelInfo(event.getPixelCoordinate());
     }
 

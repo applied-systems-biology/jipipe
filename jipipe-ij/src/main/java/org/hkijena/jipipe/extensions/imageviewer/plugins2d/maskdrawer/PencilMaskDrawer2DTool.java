@@ -7,7 +7,7 @@ import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PencilMaskDrawerTool extends MaskDrawerTool {
+public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
 
     public static int DEFAULT_SETTING_PENCIL_SIZE_X = 12;
     public static int DEFAULT_SETTING_PENCIL_SIZE_Y = 12;
@@ -40,7 +40,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     private Point lastPencilPosition;
     private boolean isDrawing;
 
-    public PencilMaskDrawerTool(MaskDrawerPlugin2D plugin) {
+    public PencilMaskDrawer2DTool(MaskDrawerPlugin2D plugin) {
         super(plugin,
                 "Pencil",
                 "Allows to draw free-hand",
@@ -138,12 +138,12 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public void onToolActivate(ImageViewerPanelCanvas canvas) {
+    public void onToolActivate(ImageViewerPanelCanvas2D canvas) {
 
     }
 
     @Override
-    public void onToolDeactivate(ImageViewerPanelCanvas canvas) {
+    public void onToolDeactivate(ImageViewerPanelCanvas2D canvas) {
     }
 
     @Subscribe

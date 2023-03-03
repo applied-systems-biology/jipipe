@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Stack2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Video2DExporterRun;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -82,7 +82,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private ImageCanvas zoomedDummyCanvas;
     private ImageCanvas exportDummyCanvas;
     private ImageProcessor currentSlice;
-    private ImageViewerPanelCanvas canvas;
+    private ImageViewerPanelCanvas2D canvas;
     private FormPanel bottomPanel;
     private long lastTimeZoomed;
     private JScrollPane scrollPane;
@@ -177,7 +177,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
 
         setLayout(new BorderLayout());
-        canvas = new ImageViewerPanelCanvas(this);
+        canvas = new ImageViewerPanelCanvas2D(this);
         scrollPane = new JScrollPane(canvas);
         canvas.setScrollPane(scrollPane);
         initializeToolbar();
@@ -614,7 +614,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     /**
      * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
-     * It is updated by {@link ImageViewerPanelCanvas}
+     * It is updated by {@link ImageViewerPanelCanvas2D}
      * Please do not make any changes to the display properties here, as the image viewer has its own canvas
      *
      * @return the dummy canvas
@@ -939,7 +939,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
-    public ImageViewerPanelCanvas getCanvas() {
+    public ImageViewerPanelCanvas2D getCanvas() {
         return canvas;
     }
 

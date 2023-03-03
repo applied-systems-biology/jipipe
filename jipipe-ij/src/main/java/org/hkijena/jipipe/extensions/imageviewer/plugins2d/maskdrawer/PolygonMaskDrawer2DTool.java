@@ -6,7 +6,7 @@ import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
@@ -22,7 +22,7 @@ import java.util.List;
  * Polygon drawing
  * Allows left-click canvas dragging
  */
-public class PolygonMaskDrawerTool extends MaskDrawerTool {
+public class PolygonMaskDrawer2DTool extends MaskDrawer2DTool {
 
     public static boolean DEFAULT_SETTING_CLOSE = true;
     public static boolean DEFAULT_SETTING_FILL = true;
@@ -32,7 +32,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     private JCheckBox closeToggle;
     private JCheckBox fillToggle;
 
-    public PolygonMaskDrawerTool(MaskDrawerPlugin2D plugin) {
+    public PolygonMaskDrawer2DTool(MaskDrawerPlugin2D plugin) {
         super(plugin,
                 "Polygon",
                 "Draws a polygon.\n" +
@@ -69,12 +69,12 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public void onToolActivate(ImageViewerPanelCanvas canvas) {
+    public void onToolActivate(ImageViewerPanelCanvas2D canvas) {
 
     }
 
     @Override
-    public void onToolDeactivate(ImageViewerPanelCanvas canvas) {
+    public void onToolDeactivate(ImageViewerPanelCanvas2D canvas) {
         cancelDrawing();
     }
 

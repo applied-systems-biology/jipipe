@@ -7,9 +7,9 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Tool for the {@link ImageViewerPanelCanvas}
+ * Tool for the {@link ImageViewerPanelCanvas2D}
  */
-public interface ImageViewerPanelCanvasTool {
+public interface ImageViewerPanelCanvas2DTool {
     /**
      * Cursor for the tool
      *
@@ -22,14 +22,14 @@ public interface ImageViewerPanelCanvasTool {
      *
      * @param canvas the canvas
      */
-    void onToolActivate(ImageViewerPanelCanvas canvas);
+    void onToolActivate(ImageViewerPanelCanvas2D canvas);
 
     /**
      * Executed on deactivation of this tool
      *
      * @param canvas the canvas
      */
-    void onToolDeactivate(ImageViewerPanelCanvas canvas);
+    void onToolDeactivate(ImageViewerPanelCanvas2D canvas);
 
     /**
      * Returns true if left mouse dragging should be allowed
@@ -46,7 +46,7 @@ public interface ImageViewerPanelCanvasTool {
      * @param canvas the canvas
      * @return if the tool is active
      */
-    default boolean toolIsActive(ImageViewerPanelCanvas canvas) {
+    default boolean toolIsActive(ImageViewerPanelCanvas2D canvas) {
         return canvas.getTool() == this;
     }
 
@@ -73,7 +73,7 @@ public interface ImageViewerPanelCanvasTool {
      *
      * @param toggleButton the toggle button
      */
-    default void addToggleButton(JToggleButton toggleButton, ImageViewerPanelCanvas canvas) {
+    default void addToggleButton(JToggleButton toggleButton, ImageViewerPanelCanvas2D canvas) {
         toggleButton.setSelected(toolIsActive(canvas));
         toggleButton.addActionListener(e -> {
             if (toggleButton.isSelected())
@@ -83,7 +83,7 @@ public interface ImageViewerPanelCanvasTool {
         });
         canvas.getEventBus().register(new Object() {
             @Subscribe
-            public void onToolChanged(ImageViewerPanelCanvas.ToolChangedEvent event) {
+            public void onToolChanged(ImageViewerPanelCanvas2D.ToolChangedEvent event) {
                 toggleButton.setSelected(toolIsActive(canvas));
             }
         });

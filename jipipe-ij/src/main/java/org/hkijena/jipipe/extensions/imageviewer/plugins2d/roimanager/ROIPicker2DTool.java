@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager;
 import com.google.common.eventbus.Subscribe;
 import ij.gui.Roi;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvasTool;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.utils.ui.*;
 
 import javax.swing.*;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ROIPickerTool implements ImageViewerPanelCanvasTool {
+public class ROIPicker2DTool implements ImageViewerPanelCanvas2DTool {
 
     public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
 
@@ -23,12 +23,12 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
 
     private Point selectionSecond;
 
-    public ROIPickerTool(ROIManagerPlugin2D roiManagerPlugin) {
+    public ROIPicker2DTool(ROIManagerPlugin2D roiManagerPlugin) {
         this.roiManagerPlugin = roiManagerPlugin;
         roiManagerPlugin.getViewerPanel2D().getCanvas().getEventBus().register(this);
     }
 
-    public ImageViewerPanelCanvas getCanvas() {
+    public ImageViewerPanelCanvas2D getCanvas() {
         return roiManagerPlugin.getViewerPanel2D().getCanvas();
     }
 
@@ -38,12 +38,12 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
     }
 
     @Override
-    public void onToolActivate(ImageViewerPanelCanvas canvas) {
+    public void onToolActivate(ImageViewerPanelCanvas2D canvas) {
 
     }
 
     @Override
-    public void onToolDeactivate(ImageViewerPanelCanvas canvas) {
+    public void onToolDeactivate(ImageViewerPanelCanvas2D canvas) {
         cancelPicking();
     }
 
@@ -66,7 +66,7 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
 
     private void pickRoiFromCanvas(boolean modify) {
         if (selectionFirst != null && selectionSecond != null) {
-            ImageViewerPanelCanvas canvas = roiManagerPlugin.getViewerPanel2D().getCanvas();
+            ImageViewerPanelCanvas2D canvas = roiManagerPlugin.getViewerPanel2D().getCanvas();
             Point p1 = canvas.screenToImageCoordinate(selectionFirst, false);
             Point p2 = canvas.screenToImageCoordinate(selectionSecond, false);
             int x0 = p1.x;

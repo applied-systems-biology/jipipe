@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -11,8 +11,8 @@ import java.awt.*;
  * The standard mouse selection.
  * Allows left-click canvas dragging
  */
-public class MouseMaskDrawerTool extends MaskDrawerTool {
-    public MouseMaskDrawerTool(MaskDrawerPlugin2D plugin) {
+public class MouseMaskDrawer2DTool extends MaskDrawer2DTool {
+    public MouseMaskDrawer2DTool(MaskDrawerPlugin2D plugin) {
         super(plugin,
                 "No tool",
                 "Allows to drag the canvas with the left mouse",
@@ -25,12 +25,12 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public void onToolActivate(ImageViewerPanelCanvas canvas) {
+    public void onToolActivate(ImageViewerPanelCanvas2D canvas) {
 
     }
 
     @Override
-    public void onToolDeactivate(ImageViewerPanelCanvas canvas) {
+    public void onToolDeactivate(ImageViewerPanelCanvas2D canvas) {
     }
 
     @Override
@@ -39,8 +39,8 @@ public class MouseMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public boolean toolIsActive(ImageViewerPanelCanvas canvas) {
-        return canvas.getTool() == null || canvas.getTool() instanceof MouseMaskDrawerTool;
+    public boolean toolIsActive(ImageViewerPanelCanvas2D canvas) {
+        return canvas.getTool() == null || canvas.getTool() instanceof MouseMaskDrawer2DTool;
     }
 
     @Override

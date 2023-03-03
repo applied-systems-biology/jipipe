@@ -19,8 +19,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvasTool;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.*;
@@ -58,15 +58,15 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
     private final JPanel colorSelectionPanel = new JPanel();
     private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
     private final JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
-    private final MouseMaskDrawerTool mouseTool = new MouseMaskDrawerTool(this);
+    private final MouseMaskDrawer2DTool mouseTool = new MouseMaskDrawer2DTool(this);
     private final Ribbon ribbon = new Ribbon(3);
-    private final List<MaskDrawerTool> registeredTools = new ArrayList<>();
+    private final List<MaskDrawer2DTool> registeredTools = new ArrayList<>();
     private final FormPanel toolSettingsPanel = new FormPanel(FormPanel.NONE);
     private ImagePlus mask;
     private ImageProcessor currentMaskSlice;
     private BufferedImage currentMaskSlicePreview;
     private MaskColor currentColor = MaskColor.Foreground;
-    private MaskDrawerTool currentTool;
+    private MaskDrawer2DTool currentTool;
     private ColorChooserButton highlightColorButton;
     private ColorChooserButton maskColorButton;
     private Color highlightColor = new Color(255, 255, 0, 128);
@@ -83,21 +83,21 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
         // Install tools
         this.currentTool = mouseTool;
         installTool(currentTool);
-        installTool(new PencilMaskDrawerTool(this));
-        installTool(new FloodFillMaskDrawerTool(this));
-        installTool(new RectangleMaskDrawerTool(this));
-        installTool(new EllipseMaskDrawerTool(this));
-        installTool(new PolygonMaskDrawerTool(this));
+        installTool(new PencilMaskDrawer2DTool(this));
+        installTool(new FloodFillMaskDrawer2DTool(this));
+        installTool(new RectangleMaskDrawer2DTool(this));
+        installTool(new EllipseMaskDrawer2DTool(this));
+        installTool(new PolygonMaskDrawer2DTool(this));
 
         getViewerPanel2D().getCanvas().getEventBus().register(this);
         getViewerPanel2D().getCanvas().setTool(mouseTool);
         rebuildToolSettings();
     }
 
-    public void installTool(MaskDrawerTool tool) {
+    public void installTool(MaskDrawer2DTool tool) {
         Ribbon.Task task = ribbon.getOrCreateTask("Draw");
         Ribbon.Band band = task.getOrCreateBand("Tools");
-        if (tool instanceof MouseMaskDrawerTool) {
+        if (tool instanceof MouseMaskDrawer2DTool) {
             LargeToggleButtonAction action = new LargeToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
             action.addActionListener(e -> {
                 if (action.getState()) {
@@ -696,7 +696,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
         }
     }
 
-    public MaskDrawerTool getCurrentTool() {
+    public MaskDrawer2DTool getCurrentTool() {
         return currentTool;
     }
 
@@ -716,12 +716,12 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
     }
 
     @Subscribe
-    public void onToolChanged(ImageViewerPanelCanvas.ToolChangedEvent event) {
-        ImageViewerPanelCanvasTool newTool = event.getNewTool();
-        MaskDrawerTool localTool;
-        if (newTool instanceof MaskDrawerTool) {
+    public void onToolChanged(ImageViewerPanelCanvas2D.ToolChangedEvent event) {
+        ImageViewerPanelCanvas2DTool newTool = event.getNewTool();
+        MaskDrawer2DTool localTool;
+        if (newTool instanceof MaskDrawer2DTool) {
             if (registeredTools.contains(newTool)) {
-                localTool = (MaskDrawerTool) newTool;
+                localTool = (MaskDrawer2DTool) newTool;
             } else {
                 localTool = mouseTool;
             }

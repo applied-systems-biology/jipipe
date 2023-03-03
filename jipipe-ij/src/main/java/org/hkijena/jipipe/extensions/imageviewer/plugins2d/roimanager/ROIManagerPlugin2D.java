@@ -220,7 +220,7 @@ public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
             Ribbon.Band modifyBand = selectionTask.addBand("Modify");
             Ribbon.Band measureBand = selectionTask.addBand("Measure");
 
-            ROIPickerTool pickerTool = new ROIPickerTool(this);
+            ROIPicker2DTool pickerTool = new ROIPicker2DTool(this);
             LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
             pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel2D().getCanvas());
             generalBand.add(pickerToggle);

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvasTool;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 
 import javax.swing.*;
@@ -8,13 +8,13 @@ import javax.swing.*;
 /**
  * Super class for any tool that can be used in {@link MaskDrawerPlugin2D}
  */
-public abstract class MaskDrawerTool extends ImageViewerPanelPlugin2D implements ImageViewerPanelCanvasTool {
+public abstract class MaskDrawer2DTool extends ImageViewerPanelPlugin2D implements ImageViewerPanelCanvas2DTool {
     private final MaskDrawerPlugin2D maskDrawerPlugin;
     private final String name;
     private final String description;
     private final Icon icon;
 
-    public MaskDrawerTool(MaskDrawerPlugin2D maskDrawerPlugin, String name, String description, Icon icon) {
+    public MaskDrawer2DTool(MaskDrawerPlugin2D maskDrawerPlugin, String name, String description, Icon icon) {
         super(maskDrawerPlugin.getViewerPanel());
         this.maskDrawerPlugin = maskDrawerPlugin;
         this.name = name;

@@ -4,7 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
@@ -19,7 +19,7 @@ import java.util.Objects;
  * Ellipse drawing
  * Allows left-click canvas dragging
  */
-public class EllipseMaskDrawerTool extends MaskDrawerTool {
+public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool {
 
     public static boolean DEFAULT_SETTING_START_FROM_CENTER = false;
     public static boolean DEFAULT_SETTING_SQUARE = false;
@@ -31,7 +31,7 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
     private JCheckBox squareToggle;
     private JCheckBox fillToggle;
 
-    public EllipseMaskDrawerTool(MaskDrawerPlugin2D plugin) {
+    public EllipseMaskDrawer2DTool(MaskDrawerPlugin2D plugin) {
         super(plugin,
                 "Ellipse",
                 "Draws an ellipse between two points",
@@ -65,12 +65,12 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public void onToolActivate(ImageViewerPanelCanvas canvas) {
+    public void onToolActivate(ImageViewerPanelCanvas2D canvas) {
 
     }
 
     @Override
-    public void onToolDeactivate(ImageViewerPanelCanvas canvas) {
+    public void onToolDeactivate(ImageViewerPanelCanvas2D canvas) {
         cancelDrawing();
     }
 
@@ -89,7 +89,7 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
         if (referencePoint != null) {
             Point p0 = referencePoint;
             Point p1 = getViewerPanel2D().getCanvas().getMouseModelPixelCoordinate(null, false);
-            Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
+            Rectangle r = RectangleMaskDrawer2DTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
             if (p1 == null) {
                 infoArea.setText(String.format("P1: %d, %d\n" +
                         "P2: -\n" +
@@ -207,7 +207,7 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
         ImageProcessor processor = getMaskDrawerPlugin().getCurrentMaskSlice();
         processor.setValue(getMaskDrawerPlugin().getCurrentColor().getValue());
 
-        Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
+        Rectangle r = RectangleMaskDrawer2DTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
         if (fillToggle.isSelected()) {
             processor.fillOval(r.x, r.y, r.width, r.height);
         } else {
@@ -230,7 +230,7 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
         final double zoom = getViewerPanel2D().getCanvas().getZoom();
         graphics2D.setColor(getMaskDrawerPlugin().getHighlightColor());
 
-        Rectangle r = RectangleMaskDrawerTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
+        Rectangle r = RectangleMaskDrawer2DTool.getDrawnArea(p0, p1, startFromCenterToggle.isSelected(), squareToggle.isSelected());
         r.x = (int) (zoom * r.x);
         r.y = (int) (zoom * r.y);
         r.width = (int) (zoom * r.width);

@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 import com.google.common.eventbus.Subscribe;
 import ij.process.FloodFiller;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
@@ -15,8 +15,8 @@ import java.awt.*;
  * The standard mouse selection.
  * Allows left-click canvas dragging
  */
-public class FloodFillMaskDrawerTool extends MaskDrawerTool {
-    public FloodFillMaskDrawerTool(MaskDrawerPlugin2D plugin) {
+public class FloodFillMaskDrawer2DTool extends MaskDrawer2DTool {
+    public FloodFillMaskDrawer2DTool(MaskDrawerPlugin2D plugin) {
         super(plugin,
                 "Flood fill",
                 "Fills the selected area with the selected color",
@@ -30,12 +30,12 @@ public class FloodFillMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public void onToolActivate(ImageViewerPanelCanvas canvas) {
+    public void onToolActivate(ImageViewerPanelCanvas2D canvas) {
 
     }
 
     @Override
-    public void onToolDeactivate(ImageViewerPanelCanvas canvas) {
+    public void onToolDeactivate(ImageViewerPanelCanvas2D canvas) {
 
     }
 

@@ -30,7 +30,7 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 
-public class ImageViewerPanelCanvas extends JPanel implements MouseListener, MouseMotionListener {
+public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, MouseMotionListener {
     private final ImageViewerPanel2D imageViewerPanel;
     private final EventBus eventBus = new EventBus();
     private BufferedImage image;
@@ -45,9 +45,9 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     private Component error = null;
     private BufferedImage renderedError = null;
 
-    private ImageViewerPanelCanvasTool tool;
+    private ImageViewerPanelCanvas2DTool tool;
 
-    public ImageViewerPanelCanvas(ImageViewerPanel2D imageViewerPanel) {
+    public ImageViewerPanelCanvas2D(ImageViewerPanel2D imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
         setLayout(null);
         addMouseListener(this);
@@ -551,12 +551,12 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         }
     }
 
-    public ImageViewerPanelCanvasTool getTool() {
+    public ImageViewerPanelCanvas2DTool getTool() {
         return tool;
     }
 
-    public void setTool(ImageViewerPanelCanvasTool tool) {
-        ImageViewerPanelCanvasTool oldTool = this.tool;
+    public void setTool(ImageViewerPanelCanvas2DTool tool) {
+        ImageViewerPanelCanvas2DTool oldTool = this.tool;
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         if (this.tool != null) {
             this.tool.onToolDeactivate(this);
@@ -588,25 +588,25 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     }
 
     public static class ToolChangedEvent {
-        private final ImageViewerPanelCanvas canvas;
-        private final ImageViewerPanelCanvasTool oldTool;
-        private final ImageViewerPanelCanvasTool newTool;
+        private final ImageViewerPanelCanvas2D canvas;
+        private final ImageViewerPanelCanvas2DTool oldTool;
+        private final ImageViewerPanelCanvas2DTool newTool;
 
-        public ToolChangedEvent(ImageViewerPanelCanvas canvas, ImageViewerPanelCanvasTool oldTool, ImageViewerPanelCanvasTool newTool) {
+        public ToolChangedEvent(ImageViewerPanelCanvas2D canvas, ImageViewerPanelCanvas2DTool oldTool, ImageViewerPanelCanvas2DTool newTool) {
             this.canvas = canvas;
             this.oldTool = oldTool;
             this.newTool = newTool;
         }
 
-        public ImageViewerPanelCanvasTool getOldTool() {
+        public ImageViewerPanelCanvas2DTool getOldTool() {
             return oldTool;
         }
 
-        public ImageViewerPanelCanvasTool getNewTool() {
+        public ImageViewerPanelCanvas2DTool getNewTool() {
             return newTool;
         }
 
-        public ImageViewerPanelCanvas getCanvas() {
+        public ImageViewerPanelCanvas2D getCanvas() {
             return canvas;
         }
     }
