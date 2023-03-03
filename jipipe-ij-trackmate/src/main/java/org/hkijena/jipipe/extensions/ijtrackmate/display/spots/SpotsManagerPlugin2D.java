@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -65,7 +65,7 @@ public class SpotsManagerPlugin2D extends ImageViewerPanelPlugin2D {
     private SpotListCellRenderer spotsListCellRenderer;
     private JPanel mainPanel;
 
-    public SpotsManagerPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public SpotsManagerPlugin2D(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
@@ -432,7 +432,7 @@ public class SpotsManagerPlugin2D extends ImageViewerPanelPlugin2D {
             return spotsManagerPlugin;
         }
 
-        public ImageViewerPanel2D getViewerPanel() {
+        public ImageViewerPanel getViewerPanel() {
             return spotsManagerPlugin.getViewerPanel();
         }
 

@@ -40,7 +40,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
                         "Remove points with right click. Double right-click to cancel drawing.\n" +
                         "Draw by double-clicking.",
                 UIUtils.getIconFromResources("actions/draw-polyline.png"));
-        getViewerPanel().getCanvas().getEventBus().register(this);
+        getViewerPanel2D().getCanvas().getEventBus().register(this);
         initialize();
         updateInfo();
     }
@@ -80,7 +80,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
 
     private void cancelDrawing() {
         referencePoints.clear();
-        getViewerPanel().getCanvas().repaint(50);
+        getViewerPanel2D().getCanvas().repaint(50);
         updateInfo();
     }
 
@@ -96,7 +96,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
                 length += p0.distance(p1);
             }
             double lengthPlusMouse = 0;
-            Point mouse = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
+            Point mouse = getViewerPanel2D().getCanvas().getMouseModelPixelCoordinate(null, false);
             if (mouse != null) {
                 lengthPlusMouse = length + referencePoints.get(referencePoints.size() - 1).distance(mouse);
             }
@@ -125,7 +125,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
         if (!toolIsActive())
             return;
         if (SwingUtilities.isLeftMouseButton(event)) {
-            Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
+            Point point = getViewerPanel2D().getCanvas().getMouseModelPixelCoordinate(null, false);
             if (point == null) {
                 cancelDrawing();
                 return;
@@ -144,7 +144,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
                 if (!referencePoints.isEmpty()) {
                     // Remove last reference point
                     referencePoints.remove(referencePoints.size() - 1);
-                    getViewerPanel().getCanvas().repaint(50);
+                    getViewerPanel2D().getCanvas().repaint(50);
                     updateInfo();
                 }
             }
@@ -192,8 +192,8 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
             return;
         final int renderX = renderArea.x;
         final int renderY = renderArea.y;
-        final double zoom = getViewerPanel().getCanvas().getZoom();
-        Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
+        final double zoom = getViewerPanel2D().getCanvas().getZoom();
+        Point point = getViewerPanel2D().getCanvas().getMouseModelPixelCoordinate(null, false);
         graphics2D.setColor(getMaskDrawerPlugin().getHighlightColor());
 
         int nPoints = referencePoints.size() + 1;
@@ -222,7 +222,7 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     public void onMouseMove(MouseMovedEvent event) {
         if (!toolIsActive())
             return;
-        getViewerPanel().getCanvas().repaint(50);
+        getViewerPanel2D().getCanvas().repaint(50);
         updateInfo();
     }
 

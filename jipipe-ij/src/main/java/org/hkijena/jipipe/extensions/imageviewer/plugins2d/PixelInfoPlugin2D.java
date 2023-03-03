@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins2d;
 import com.google.common.eventbus.Subscribe;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -15,9 +15,9 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
     private final JLabel pixelInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/tool-pointer.png"), JLabel.LEFT);
 
-    public PixelInfoPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public PixelInfoPlugin2D(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
-        getViewerPanel().getCanvas().getEventBus().register(this);
+        getViewerPanel2D().getCanvas().getEventBus().register(this);
         updatePixelInfo(null);
     }
 
@@ -44,7 +44,7 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D {
                 } else {
                     String value = "";
                     try {
-                        ImageProcessor slice = getViewerPanel().getCurrentSlice();
+                        ImageProcessor slice = getViewerPanel2D().getCurrentSlice();
                         if (slice != null) {
                             if (slice instanceof ColorProcessor) {
                                 Color color = ((ColorProcessor) slice).getColor(coordinate.x, coordinate.y);

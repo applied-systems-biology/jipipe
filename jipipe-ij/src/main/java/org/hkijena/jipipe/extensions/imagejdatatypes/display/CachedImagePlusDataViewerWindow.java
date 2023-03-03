@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
@@ -39,7 +39,7 @@ import java.util.List;
 public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
-    private ImageViewerPanel2D imageViewerPanel;
+    private ImageViewerPanel imageViewerPanel;
     private CustomDataLoader customDataLoader;
 
     public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoadingData) {
@@ -51,7 +51,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     }
 
     private void initialize() {
-        imageViewerPanel = new ImageViewerPanel2D(getWorkbench());
+        imageViewerPanel = new ImageViewerPanel(getWorkbench());
         List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
         pluginList.add(new CalibrationPlugin2D(imageViewerPanel));
         pluginList.add(new PixelInfoPlugin2D(imageViewerPanel));

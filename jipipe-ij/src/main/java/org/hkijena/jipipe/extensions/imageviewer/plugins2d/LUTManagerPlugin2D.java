@@ -5,7 +5,7 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerLUTEditor;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -20,7 +20,7 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
     private final List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 
-    public LUTManagerPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public LUTManagerPlugin2D(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
     }
 
@@ -98,7 +98,7 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
         // Workaround: setting LUT overrides calibration for some reason
         // Recalibrate again
-        CalibrationPlugin2D calibrationPlugin = getViewerPanel().getPlugin(CalibrationPlugin2D.class);
+        CalibrationPlugin2D calibrationPlugin = getViewerPanel2D().getPlugin(CalibrationPlugin2D.class);
         if (calibrationPlugin != null) {
             calibrationPlugin.draw(c, z, t, processor);
         }

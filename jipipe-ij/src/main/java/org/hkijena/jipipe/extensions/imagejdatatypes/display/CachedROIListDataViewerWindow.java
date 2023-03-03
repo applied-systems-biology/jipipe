@@ -22,11 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -35,13 +31,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
 
 public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
-    private ImageViewerPanel2D imageViewerPanel;
+    private ImageViewerPanel imageViewerPanel;
 
     public CachedROIListDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -52,16 +48,7 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
     }
 
     private void initialize() {
-        imageViewerPanel = new ImageViewerPanel2D(getWorkbench());
-        List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin2D(imageViewerPanel));
-        pluginList.add(new PixelInfoPlugin2D(imageViewerPanel));
-        pluginList.add(new LUTManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new ROIManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new AnimationSpeedPlugin2D(imageViewerPanel));
-        pluginList.add(new MeasurementDrawerPlugin2D(imageViewerPanel));
-        pluginList.add(new AnnotationInfoPlugin2D(imageViewerPanel, this));
-        imageViewerPanel.setPlugins(pluginList);
+        imageViewerPanel = ImageViewerPanel.createForCacheViewer(this);
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();
@@ -86,7 +73,7 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
 
     @Override
     protected void hideErrorUI() {
-        imageViewerPanel.getCanvas().setError(null);
+        imageViewerPanel.setError(null);
     }
 
     @Override
@@ -96,12 +83,11 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
         } else {
             errorLabel.setText("No data available");
         }
-        imageViewerPanel.getCanvas().setError(errorLabel);
+        imageViewerPanel.setError(errorLabel);
     }
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        ROIManagerPlugin2D plugin = imageViewerPanel.getPlugin(ROIManagerPlugin2D.class);
         ROIListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROIListData.class);
         int width;
         int height;
@@ -123,15 +109,15 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
             }
         }
 
-        imageViewerPanel.getCanvas().setError(null);
+        imageViewerPanel.setError(null);
         ImagePlus image = IJ.createImage("empty", "8-bit", width, height, numC, numZ, numT);
         ImageJUtils.forEachSlice(image, ip -> {
             ip.setColor(0);
             ip.fill();
         }, new JIPipeProgressInfo());
         boolean fitImage = imageViewerPanel.getImage() == null;
-        plugin.clearROIs(true);
-        plugin.importROIs(data, true);
+        imageViewerPanel.clearRoi2D();
+        imageViewerPanel.addRoi2d(data);
         imageViewerPanel.setImage(image);
         if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);

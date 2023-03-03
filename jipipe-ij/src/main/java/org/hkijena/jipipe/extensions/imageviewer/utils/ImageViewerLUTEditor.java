@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.process.LUT;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -44,7 +44,7 @@ import java.util.List;
  * Based on {@link org.jdesktop.swingx.JXGradientChooser}
  */
 public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
-    private final ImageViewerPanel2D imageViewerPanel;
+    private final ImageViewerPanel imageViewerPanel;
     private final int targetChannel;
     private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
     private ColorMap lastColorMap = ColorMap.viridis;
@@ -58,7 +58,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private String channelName;
     private LUT cachedLUT;
 
-    public ImageViewerLUTEditor(ImageViewerPanel2D imageViewerPanel, int targetChannel) {
+    public ImageViewerLUTEditor(ImageViewerPanel imageViewerPanel, int targetChannel) {
         this.imageViewerPanel = imageViewerPanel;
         this.targetChannel = targetChannel;
         this.channelName = "Channel " + (targetChannel + 1);

@@ -45,7 +45,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
                 "Pencil",
                 "Allows to draw free-hand",
                 UIUtils.getIconFromResources("actions/draw-brush.png"));
-        getViewerPanel().getCanvas().getEventBus().register(this);
+        getViewerPanel2D().getCanvas().getEventBus().register(this);
         initialize();
     }
 
@@ -153,7 +153,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         if (isDrawing) {
             drawPencil();
         }
-        getViewerPanel().getCanvas().repaint(50);
+        getViewerPanel2D().getCanvas().repaint(50);
     }
 
     @Subscribe
@@ -212,8 +212,8 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         final int renderX = renderArea.x;
         final int renderY = renderArea.y;
-        Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
-        final double zoom = getViewerPanel().getCanvas().getZoom();
+        Point mousePosition = getViewerPanel2D().getCanvas().getMouseModelPixelCoordinate(null, false);
+        final double zoom = getViewerPanel2D().getCanvas().getZoom();
         AffineTransform transform = new AffineTransform();
         transform.scale(zoom, zoom);
         BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
@@ -234,7 +234,7 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
      */
     private void drawPencil() {
         // Copy the pencil into the mask buffer
-        Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
+        Point mousePosition = getViewerPanel2D().getCanvas().getMouseModelPixelCoordinate(null, false);
         if (mousePosition == null) {
             releasePencil();
             return;

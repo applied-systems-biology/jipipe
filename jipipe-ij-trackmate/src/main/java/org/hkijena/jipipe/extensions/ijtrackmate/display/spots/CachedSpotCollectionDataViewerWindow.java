@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
@@ -37,7 +37,7 @@ import java.util.List;
 public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
-    private ImageViewerPanel2D imageViewerPanel;
+    private ImageViewerPanel imageViewerPanel;
 
     public CachedSpotCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -48,7 +48,7 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerW
     }
 
     private void initialize() {
-        imageViewerPanel = new ImageViewerPanel2D(getWorkbench());
+        imageViewerPanel = new ImageViewerPanel(getWorkbench());
         List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
         pluginList.add(new CalibrationPlugin2D(imageViewerPanel));
         pluginList.add(new PixelInfoPlugin2D(imageViewerPanel));

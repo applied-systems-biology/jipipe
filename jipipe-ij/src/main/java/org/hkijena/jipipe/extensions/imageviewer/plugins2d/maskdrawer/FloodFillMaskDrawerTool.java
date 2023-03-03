@@ -21,7 +21,7 @@ public class FloodFillMaskDrawerTool extends MaskDrawerTool {
                 "Flood fill",
                 "Fills the selected area with the selected color",
                 UIUtils.getIconFromResources("actions/color-fill.png"));
-        getViewerPanel().getCanvas().getEventBus().register(this);
+        getViewerPanel2D().getCanvas().getEventBus().register(this);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class FloodFillMaskDrawerTool extends MaskDrawerTool {
         if (!toolIsActive())
             return;
         if (SwingUtilities.isLeftMouseButton(event)) {
-            Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, true);
+            Point point = getViewerPanel2D().getCanvas().getMouseModelPixelCoordinate(null, true);
             if (point == null) {
                 return;
             }

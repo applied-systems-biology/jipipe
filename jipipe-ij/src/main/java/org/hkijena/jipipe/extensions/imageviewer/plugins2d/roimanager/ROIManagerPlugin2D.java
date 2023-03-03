@@ -15,7 +15,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.utils.RoiListCellRenderer;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -54,7 +54,7 @@ public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
 
-    public ROIManagerPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public ROIManagerPlugin2D(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
         loadDefaults();
         initialize();
@@ -83,7 +83,7 @@ public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
             }
         }
         for (Roi roi : rois) {
-            ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
+            ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel2D().getZoomedDummyCanvas());
         }
         updateListModel(true, Collections.emptySet());
     }
@@ -222,7 +222,7 @@ public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
 
             ROIPickerTool pickerTool = new ROIPickerTool(this);
             LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
-            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel().getCanvas());
+            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel2D().getCanvas());
             generalBand.add(pickerToggle);
 
             generalBand.add(new SmallButtonAction("Select all", "Selects all ROI", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
@@ -394,9 +394,9 @@ public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
         if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
             for (int i = 0; i < rois.size(); i++) {
                 Roi roi = rois.get(i);
-                ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
+                ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel2D().getZoomedDummyCanvas());
             }
-            roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), getViewerPanel().getCanvas().getZoom());
+            roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), getViewerPanel2D().getCanvas().getZoom());
         }
     }
 
@@ -585,7 +585,7 @@ public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
     public void importROIs(ROIListData rois, boolean deferUploadSlice) {
         for (Roi roi : rois) {
             Roi clone = (Roi) roi.clone();
-            ImageJUtils.setRoiCanvas(clone, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
+            ImageJUtils.setRoiCanvas(clone, getCurrentImage(), getViewerPanel2D().getZoomedDummyCanvas());
             this.rois.add(clone);
         }
         updateListModel(deferUploadSlice, Collections.emptySet());

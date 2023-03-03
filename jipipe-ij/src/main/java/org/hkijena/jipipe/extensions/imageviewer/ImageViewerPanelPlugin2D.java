@@ -8,20 +8,24 @@ import java.awt.image.BufferedImage;
 
 public abstract class ImageViewerPanelPlugin2D extends ImageViewerPanelPlugin {
 
-    public ImageViewerPanelPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public ImageViewerPanelPlugin2D(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
     }
 
+    public ImageViewerPanel2D getViewerPanel2D() {
+        return getViewerPanel().getViewerPanel2D();
+    }
+
     public void uploadSliceToCanvas() {
-        getViewerPanel().uploadSliceToCanvas();
+        getViewerPanel2D().uploadSliceToCanvas();
     }
 
     public ImageSliceIndex getCurrentSlicePosition() {
-        return getViewerPanel().getCurrentSliceIndex();
+        return getViewerPanel2D().getCurrentSliceIndex();
     }
 
     public ImageProcessor getCurrentSlice() {
-        return getViewerPanel().getCurrentSlice();
+        return getViewerPanel2D().getCurrentSlice();
     }
 
     /**

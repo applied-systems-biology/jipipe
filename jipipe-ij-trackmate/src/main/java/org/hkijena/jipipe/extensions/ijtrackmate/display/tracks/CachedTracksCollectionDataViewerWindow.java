@@ -20,11 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.SpotsManagerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -33,12 +29,13 @@ import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
-    private ImageViewerPanel2D imageViewerPanel;
+    private ImageViewerPanel imageViewerPanel;
 
     public CachedTracksCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -49,18 +46,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
     }
 
     private void initialize() {
-        imageViewerPanel = new ImageViewerPanel2D(getWorkbench());
-        List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin2D(imageViewerPanel));
-        pluginList.add(new PixelInfoPlugin2D(imageViewerPanel));
-        pluginList.add(new LUTManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new TracksManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new SpotsManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new ROIManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new AnimationSpeedPlugin2D(imageViewerPanel));
-        pluginList.add(new MeasurementDrawerPlugin2D(imageViewerPanel));
-        pluginList.add(new AnnotationInfoPlugin2D(imageViewerPanel, this));
-        imageViewerPanel.setPlugins(pluginList);
+        imageViewerPanel = ImageViewerPanel.createForCacheViewer(this, Arrays.asList(TracksManagerPlugin2D.class, SpotsManagerPlugin2D.class));
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();
@@ -85,7 +71,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
 
     @Override
     protected void hideErrorUI() {
-        imageViewerPanel.getCanvas().setError(null);
+        imageViewerPanel.setError(null);
     }
 
     @Override
@@ -95,7 +81,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
         } else {
             errorLabel.setText("No data available");
         }
-        imageViewerPanel.getCanvas().setError(errorLabel);
+        imageViewerPanel.setError(errorLabel);
     }
 
     @Override
@@ -106,7 +92,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
         boolean fitImage = imageViewerPanel.getImage() == null;
         spotsManagerPlugin.setSpotCollection(data, true);
         tracksManagerPlugin.setTrackCollection(data, getDataSource(), true);
-        imageViewerPanel.getCanvas().setError(null);
+        imageViewerPanel.setError(null);
         imageViewerPanel.setImage(data.getImage());
         if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);

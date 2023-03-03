@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imageviewer.runs;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -26,14 +26,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Stack2DExporterRun implements JIPipeRunnable {
-    private final ImageViewerPanel2D viewerPanel;
+    private final ImageViewerPanel viewerPanel;
     private final Path outputFolder;
     private final String baseName;
     private final String formatName;
     private final double magnification;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public Stack2DExporterRun(ImageViewerPanel2D viewerPanel, Path outputFolder, String baseName, String formatName) {
+    public Stack2DExporterRun(ImageViewerPanel viewerPanel, Path outputFolder, String baseName, String formatName) {
         this.viewerPanel = viewerPanel;
         this.outputFolder = outputFolder;
         this.baseName = baseName;
@@ -88,7 +88,7 @@ public class Stack2DExporterRun implements JIPipeRunnable {
         }
     }
 
-    public ImageViewerPanel2D getViewerPanel() {
+    public ImageViewerPanel getViewerPanel() {
         return viewerPanel;
     }
 

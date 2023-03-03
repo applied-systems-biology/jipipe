@@ -31,7 +31,7 @@ public abstract class MaskDrawerTool extends ImageViewerPanelPlugin2D implements
     }
 
     public boolean toolIsActive() {
-        return toolIsActive(getMaskDrawerPlugin().getViewerPanel().getCanvas());
+        return toolIsActive(getMaskDrawerPlugin().getViewerPanel2D().getCanvas());
     }
 
     @Override
@@ -65,7 +65,7 @@ public abstract class MaskDrawerTool extends ImageViewerPanelPlugin2D implements
      * Posts a mask changed event to the viewer' canvas event bus
      */
     public void postMaskChangedEvent() {
-        getViewerPanel().getCanvas().getEventBus().post(new MaskDrawerPlugin2D.MaskChangedEvent(getMaskDrawerPlugin()));
+        getViewerPanel2D().getCanvas().getEventBus().post(new MaskDrawerPlugin2D.MaskChangedEvent(getMaskDrawerPlugin()));
     }
 
     /**

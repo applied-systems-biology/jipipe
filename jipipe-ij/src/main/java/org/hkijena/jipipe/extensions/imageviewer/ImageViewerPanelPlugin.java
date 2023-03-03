@@ -8,13 +8,13 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import javax.swing.*;
 
 public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
-    private final ImageViewerPanel2D viewerPanel;
+    private final ImageViewerPanel viewerPanel;
 
-    public ImageViewerPanelPlugin(ImageViewerPanel2D viewerPanel) {
+    public ImageViewerPanelPlugin(ImageViewerPanel viewerPanel) {
         this.viewerPanel = viewerPanel;
     }
 
-    public ImageViewerPanel2D getViewerPanel() {
+    public ImageViewerPanel getViewerPanel() {
         return viewerPanel;
     }
 

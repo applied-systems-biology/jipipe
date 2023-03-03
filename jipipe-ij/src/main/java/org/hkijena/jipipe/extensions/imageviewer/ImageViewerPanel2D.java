@@ -17,6 +17,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.ImageWindow;
+import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
@@ -555,7 +556,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             Path targetPath = exportPathEditor.getPath();
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
-            Stack2DExporterRun run = new Stack2DExporterRun(this, targetPath, baseName, format);
+            Stack2DExporterRun run = new Stack2DExporterRun(imageViewerPanel, targetPath, baseName, format);
             JIPipeRunExecuterUI.runInDialog(this, run);
         }
     }
@@ -596,7 +597,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 null);
         if (response == JOptionPane.OK_OPTION) {
             Video2DExporterRun run = new Video2DExporterRun(
-                    this,
+                    imageViewerPanel,
                     path,
                     getCurrentSliceIndex(),
                     (HyperstackDimension) dimensionEditor.getSelectedItem(),
@@ -978,6 +979,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     }
 
 
+    public void addRoi2D(List<Roi> rois) {
 
-
+    }
 }

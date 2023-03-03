@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvasTool;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
@@ -75,7 +75,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
     private SmallButtonAction exportToRoiManagerAction;
     private boolean drawCurrentMaskSlicePreview;
 
-    public MaskDrawerPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public MaskDrawerPlugin2D(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
 //        viewerPanel.setRotationEnabled(false);
         initialize();
@@ -89,8 +89,8 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
         installTool(new EllipseMaskDrawerTool(this));
         installTool(new PolygonMaskDrawerTool(this));
 
-        viewerPanel.getCanvas().getEventBus().register(this);
-        viewerPanel.getCanvas().setTool(mouseTool);
+        getViewerPanel2D().getCanvas().getEventBus().register(this);
+        getViewerPanel2D().getCanvas().setTool(mouseTool);
         rebuildToolSettings();
     }
 
@@ -101,19 +101,19 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
             LargeToggleButtonAction action = new LargeToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
             action.addActionListener(e -> {
                 if (action.getState()) {
-                    getViewerPanel().getCanvas().setTool(tool);
+                    getViewerPanel2D().getCanvas().setTool(tool);
                 }
             });
-            tool.addToggleButton(action.getButton(), getViewerPanel().getCanvas());
+            tool.addToggleButton(action.getButton(), getViewerPanel2D().getCanvas());
             band.add(action);
         } else {
             SmallToggleButtonAction action = new SmallToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
             action.addActionListener(e -> {
                 if (action.getState()) {
-                    getViewerPanel().getCanvas().setTool(tool);
+                    getViewerPanel2D().getCanvas().setTool(tool);
                 }
             });
-            tool.addToggleButton(action.getButton(), getViewerPanel().getCanvas());
+            tool.addToggleButton(action.getButton(), getViewerPanel2D().getCanvas());
             band.add(action);
         }
 
@@ -233,13 +233,13 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
 
         // Set slices
         if (getViewerPanel().getImage().getStackSize() > 1) {
-            ImageSliceIndex index = getViewerPanel().getCurrentSliceIndex();
+            ImageSliceIndex index = getViewerPanel2D().getCurrentSliceIndex();
             for (Roi roi : rois) {
                 roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
             }
         }
 
-        ROIManagerPlugin2D roiManager = getViewerPanel().getPlugin(ROIManagerPlugin2D.class);
+        ROIManagerPlugin2D roiManager = getViewerPanel2D().getPlugin(ROIManagerPlugin2D.class);
         roiManager.importROIs(rois, false);
         clearCurrentMask();
     }
@@ -331,7 +331,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
     }
 
     private void postMaskChangedEvent() {
-        getViewerPanel().getCanvas().getEventBus().post(new MaskChangedEvent(this));
+        getViewerPanel2D().getCanvas().getEventBus().post(new MaskChangedEvent(this));
     }
 
     private void exportMask() {
@@ -361,7 +361,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
             return;
         ImageJUtils.maskToBufferedImage(currentMaskSlice, currentMaskSlicePreview, maskColor, ColorUtils.WHITE_TRANSPARENT);
         drawCurrentMaskSlicePreview = currentMaskSlice.getStats().max > 0;
-        getViewerPanel().getCanvas().repaint(50);
+        getViewerPanel2D().getCanvas().repaint(50);
     }
 
     private <T> void addSelectionButton(T value, JPanel target, Map<T, JToggleButton> targetMap, ButtonGroup targetGroup, String text, String toolTip, Icon icon, Supplier<T> getter, Consumer<T> setter) {
@@ -385,7 +385,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
             return;
         if (mask == null)
             return;
-        ImageSliceIndex index = getViewerPanel().getCurrentSliceIndex();
+        ImageSliceIndex index = getViewerPanel2D().getCurrentSliceIndex();
         int z = Math.min(index.getZ(), mask.getNSlices() - 1);
         int c = Math.min(index.getC(), mask.getNChannels() - 1);
         int t = Math.min(index.getT(), mask.getNFrames() - 1);
@@ -438,7 +438,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
         }
 
         formPanel.addWideToForm(ribbon);
-        exportToRoiManagerAction.setVisible(getViewerPanel().getPlugin(ROIManagerPlugin2D.class) != null);
+        exportToRoiManagerAction.setVisible(getViewerPanel2D().getPlugin(ROIManagerPlugin2D.class) != null);
         SwingUtilities.invokeLater(ribbon::rebuildRibbon);
 
         formPanel.addWideToForm(toolSettingsPanel);
@@ -588,7 +588,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
         IntNumberRangeParameter zRange = parameterCollection.get("z").get(IntNumberRangeParameter.class);
         IntNumberRangeParameter cRange = parameterCollection.get("c").get(IntNumberRangeParameter.class);
         IntNumberRangeParameter tRange = parameterCollection.get("t").get(IntNumberRangeParameter.class);
-        ImageSliceIndex currentIndex = getViewerPanel().getCurrentSliceIndex();
+        ImageSliceIndex currentIndex = getViewerPanel2D().getCurrentSliceIndex();
 
         try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
@@ -612,7 +612,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
     public void setMask(ImagePlus mask) {
         this.mask = mask;
         currentMaskSlice = mask.getProcessor();
-        getViewerPanel().refreshFormPanel();
+        getViewerPanel2D().refreshFormPanel();
         updateCurrentMaskSlice();
     }
 
@@ -635,7 +635,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
         final int renderY = renderArea.y;
         final int renderW = renderArea.width;
         final int renderH = renderArea.height;
-        final double zoom = getViewerPanel().getCanvas().getZoom();
+        final double zoom = getViewerPanel2D().getCanvas().getZoom();
         if(drawCurrentMaskSlicePreview) {
             AffineTransform transform = new AffineTransform();
             transform.scale(zoom, zoom);
@@ -646,7 +646,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
         if (showGuidesToggle.isSelected() && currentTool.showGuides()) {
             graphics2D.setStroke(STROKE_GUIDE_LINE);
             graphics2D.setColor(getHighlightColor());
-            Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(null, false);
+            Point mousePosition = getViewerPanel2D().getCanvas().getMouseModelPixelCoordinate(null, false);
             if (mousePosition != null) {
                 int displayedX = (int) (renderX + zoom * mousePosition.x);
                 int displayedY = (int) (renderY + zoom * mousePosition.y);

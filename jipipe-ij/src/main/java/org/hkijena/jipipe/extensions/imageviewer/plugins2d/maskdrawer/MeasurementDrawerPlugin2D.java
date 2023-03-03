@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
@@ -40,10 +40,10 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
     private JXTable table = new JXTable();
     private ResultsTableData lastMeasurements;
 
-    public MeasurementDrawerPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public MeasurementDrawerPlugin2D(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
         initialize();
-        viewerPanel.getCanvas().getEventBus().register(this);
+        viewerPanel.getViewerPanel2D().getCanvas().getEventBus().register(this);
         setMaskGenerator(this::generateMask);
     }
 
@@ -128,7 +128,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
             showNoMeasurements();
             return;
         }
-        if (getViewerPanel().getCurrentSlice() == null) {
+        if (getViewerPanel2D().getCurrentSlice() == null) {
             showNoMeasurements();
             return;
         }
@@ -146,7 +146,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
         }
         ROIListData data = new ROIListData();
         data.add(roi);
-        ImagePlus dummy = new ImagePlus("Reference", getViewerPanel().getCurrentSlice().duplicate());
+        ImagePlus dummy = new ImagePlus("Reference", getViewerPanel2D().getCurrentSlice().duplicate());
         dummy.setCalibration(getCurrentImage().getCalibration());
         ResultsTableData measurements = data.measure(dummy,
                 SETTINGS.statistics, false, SETTINGS.measureInPhysicalUnits);
