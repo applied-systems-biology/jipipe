@@ -31,14 +31,14 @@ import java.text.DecimalFormat;
 
 public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spot> {
 
-    private final SpotsManagerPlugin spotsManagerPlugin;
+    private final SpotsManagerPlugin2D spotsManagerPlugin;
     private final SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private final JLabel iconLabel = new JLabel();
     private final JLabel nameLabel = new JLabel();
     private final JLabel infoLabel = new JLabel();
     private FeatureColorGenerator<Spot> strokeColorGenerator;
 
-    public SpotListCellRenderer(SpotsManagerPlugin spotsManagerPlugin) {
+    public SpotListCellRenderer(SpotsManagerPlugin2D spotsManagerPlugin) {
         this.spotsManagerPlugin = spotsManagerPlugin;
         initialize();
     }

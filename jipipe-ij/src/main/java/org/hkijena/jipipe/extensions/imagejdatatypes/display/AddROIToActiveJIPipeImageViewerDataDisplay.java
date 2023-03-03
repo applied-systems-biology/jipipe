@@ -17,9 +17,9 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.ImageViewerPanelPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -29,13 +29,13 @@ import java.util.stream.Collectors;
 public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        ImageViewerPanel viewerPanel = ImageViewerPanel.getActiveViewerPanel();
+        ImageViewerPanel2D viewerPanel = ImageViewerPanel2D.getActiveViewerPanel();
         if (viewerPanel == null) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
         } else {
-            for (ImageViewerPanelPlugin plugin : viewerPanel.getPlugins().stream()
-                    .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
-                ((ROIManagerPlugin) plugin).importROIs((ROIListData) data, false);
+            for (ImageViewerPanelPlugin2D plugin : viewerPanel.getPlugins().stream()
+                    .filter(plugin -> plugin instanceof ROIManagerPlugin2D).collect(Collectors.toList())) {
+                ((ROIManagerPlugin2D) plugin).importROIs((ROIListData) data, false);
             }
         }
     }

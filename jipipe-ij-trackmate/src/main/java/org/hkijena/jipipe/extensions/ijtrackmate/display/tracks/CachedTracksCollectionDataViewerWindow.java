@@ -19,11 +19,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.SpotsManagerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.SpotsManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementDrawerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -37,7 +38,7 @@ import java.util.List;
 public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
-    private ImageViewerPanel imageViewerPanel;
+    private ImageViewerPanel2D imageViewerPanel;
 
     public CachedTracksCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -48,17 +49,17 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
     }
 
     private void initialize() {
-        imageViewerPanel = new ImageViewerPanel(getWorkbench());
-        List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin(imageViewerPanel));
-        pluginList.add(new PixelInfoPlugin(imageViewerPanel));
-        pluginList.add(new LUTManagerPlugin(imageViewerPanel));
-        pluginList.add(new TracksManagerPlugin(imageViewerPanel));
-        pluginList.add(new SpotsManagerPlugin(imageViewerPanel));
-        pluginList.add(new ROIManagerPlugin(imageViewerPanel));
-        pluginList.add(new AnimationSpeedPlugin(imageViewerPanel));
-        pluginList.add(new MeasurementDrawerPlugin(imageViewerPanel));
-        pluginList.add(new AnnotationInfoPlugin(imageViewerPanel, this));
+        imageViewerPanel = new ImageViewerPanel2D(getWorkbench());
+        List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
+        pluginList.add(new CalibrationPlugin2D(imageViewerPanel));
+        pluginList.add(new PixelInfoPlugin2D(imageViewerPanel));
+        pluginList.add(new LUTManagerPlugin2D(imageViewerPanel));
+        pluginList.add(new TracksManagerPlugin2D(imageViewerPanel));
+        pluginList.add(new SpotsManagerPlugin2D(imageViewerPanel));
+        pluginList.add(new ROIManagerPlugin2D(imageViewerPanel));
+        pluginList.add(new AnimationSpeedPlugin2D(imageViewerPanel));
+        pluginList.add(new MeasurementDrawerPlugin2D(imageViewerPanel));
+        pluginList.add(new AnnotationInfoPlugin2D(imageViewerPanel, this));
         imageViewerPanel.setPlugins(pluginList);
         setContentPane(imageViewerPanel);
         revalidate();
@@ -99,8 +100,8 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        SpotsManagerPlugin spotsManagerPlugin = imageViewerPanel.getPlugin(SpotsManagerPlugin.class);
-        TracksManagerPlugin tracksManagerPlugin = imageViewerPanel.getPlugin(TracksManagerPlugin.class);
+        SpotsManagerPlugin2D spotsManagerPlugin = imageViewerPanel.getPlugin(SpotsManagerPlugin2D.class);
+        TracksManagerPlugin2D tracksManagerPlugin = imageViewerPanel.getPlugin(TracksManagerPlugin2D.class);
         TrackCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), TrackCollectionData.class);
         boolean fitImage = imageViewerPanel.getImage() == null;
         spotsManagerPlugin.setSpotCollection(data, true);

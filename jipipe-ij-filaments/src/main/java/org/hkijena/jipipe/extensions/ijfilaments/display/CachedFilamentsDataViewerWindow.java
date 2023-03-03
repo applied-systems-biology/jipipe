@@ -23,10 +23,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementDrawerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -41,7 +42,7 @@ import java.util.List;
 public class CachedFilamentsDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
-    private ImageViewerPanel imageViewerPanel;
+    private ImageViewerPanel2D imageViewerPanel;
 
     public CachedFilamentsDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -52,15 +53,15 @@ public class CachedFilamentsDataViewerWindow extends JIPipeCacheDataViewerWindow
     }
 
     private void initialize() {
-        imageViewerPanel = new ImageViewerPanel(getWorkbench());
-        List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin(imageViewerPanel));
-        pluginList.add(new PixelInfoPlugin(imageViewerPanel));
-        pluginList.add(new LUTManagerPlugin(imageViewerPanel));
-        pluginList.add(new ROIManagerPlugin(imageViewerPanel));
-        pluginList.add(new AnimationSpeedPlugin(imageViewerPanel));
-        pluginList.add(new MeasurementDrawerPlugin(imageViewerPanel));
-        pluginList.add(new AnnotationInfoPlugin(imageViewerPanel, this));
+        imageViewerPanel = new ImageViewerPanel2D(getWorkbench());
+        List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
+        pluginList.add(new CalibrationPlugin2D(imageViewerPanel));
+        pluginList.add(new PixelInfoPlugin2D(imageViewerPanel));
+        pluginList.add(new LUTManagerPlugin2D(imageViewerPanel));
+        pluginList.add(new ROIManagerPlugin2D(imageViewerPanel));
+        pluginList.add(new AnimationSpeedPlugin2D(imageViewerPanel));
+        pluginList.add(new MeasurementDrawerPlugin2D(imageViewerPanel));
+        pluginList.add(new AnnotationInfoPlugin2D(imageViewerPanel, this));
         imageViewerPanel.setPlugins(pluginList);
         setContentPane(imageViewerPanel);
         revalidate();
@@ -101,7 +102,7 @@ public class CachedFilamentsDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
+        ROIManagerPlugin2D plugin = imageViewerPanel.getPlugin(ROIManagerPlugin2D.class);
         Filaments3DData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), Filaments3DData.class);
         ROIListData rois = data.toRoi(false, true, true, true);
         int width;

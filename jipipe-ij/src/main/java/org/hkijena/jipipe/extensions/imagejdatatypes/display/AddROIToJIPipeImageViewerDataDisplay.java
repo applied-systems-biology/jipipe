@@ -17,9 +17,9 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.ImageViewerPanelPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.ComponentListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,27 +36,27 @@ import java.util.stream.Collectors;
 public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        List<ImageViewerPanel> viewerPanels = new ArrayList<>(ImageViewerPanel.getOpenViewerPanels());
+        List<ImageViewerPanel2D> viewerPanels = new ArrayList<>(ImageViewerPanel2D.getOpenViewerPanels());
         if (viewerPanels.isEmpty()) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There are no active JIPipe image viewers.", "Add to image viewer", JOptionPane.ERROR_MESSAGE);
             return;
         }
         viewerPanels.sort(Comparator.comparing(Component::getName));
-        if (ImageViewerPanel.getActiveViewerPanel() != null) {
-            viewerPanels.remove(ImageViewerPanel.getActiveViewerPanel());
-            viewerPanels.add(0, ImageViewerPanel.getActiveViewerPanel());
+        if (ImageViewerPanel2D.getActiveViewerPanel() != null) {
+            viewerPanels.remove(ImageViewerPanel2D.getActiveViewerPanel());
+            viewerPanels.add(0, ImageViewerPanel2D.getActiveViewerPanel());
         }
-        List<ImageViewerPanel> selected = UIUtils.getSelectionByDialog(workbench.getWindow(),
+        List<ImageViewerPanel2D> selected = UIUtils.getSelectionByDialog(workbench.getWindow(),
                 viewerPanels,
                 Collections.singleton(viewerPanels.get(0)),
                 "Add to image viewer",
                 "Please select one or multiple image viewers.",
                 new ComponentListCellRenderer<>(UIUtils.getIconFromResources("actions/window.png")),
                 ListSelectionMode.MultipleInterval);
-        for (ImageViewerPanel viewerPanel : selected) {
-            for (ImageViewerPanelPlugin plugin : viewerPanel.getPlugins().stream()
-                    .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
-                ((ROIManagerPlugin) plugin).importROIs((ROIListData) data, false);
+        for (ImageViewerPanel2D viewerPanel : selected) {
+            for (ImageViewerPanelPlugin2D plugin : viewerPanel.getPlugins().stream()
+                    .filter(plugin -> plugin instanceof ROIManagerPlugin2D).collect(Collectors.toList())) {
+                ((ROIManagerPlugin2D) plugin).importROIs((ROIListData) data, false);
             }
         }
     }

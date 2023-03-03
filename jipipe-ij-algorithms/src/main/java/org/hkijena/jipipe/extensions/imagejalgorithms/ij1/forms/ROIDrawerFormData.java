@@ -10,12 +10,12 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MaskToROIDrawerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MaskToROIDrawerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -30,10 +30,10 @@ public class ROIDrawerFormData extends FormData {
 
     private final List<JIPipeMergingDataBatch> dataBatches;
     private final DrawROIAlgorithm drawROIAlgorithm;
-    private ImageViewerPanel imageViewerPanel;
+    private ImageViewerPanel2D imageViewerPanel;
 
-    private ROIManagerPlugin roiManagerPlugin;
-    private MaskToROIDrawerPlugin maskDrawerPlugin;
+    private ROIManagerPlugin2D roiManagerPlugin;
+    private MaskToROIDrawerPlugin2D maskDrawerPlugin;
     private ImagePlus lazyLoadedImage;
     private ROIListData lazyLoadedROIs;
 
@@ -43,12 +43,12 @@ public class ROIDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new ImageViewerPanel(new JIPipeDummyWorkbench());
-        maskDrawerPlugin = new MaskToROIDrawerPlugin(imageViewerPanel);
-        roiManagerPlugin = new ROIManagerPlugin(imageViewerPanel);
-        imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin(imageViewerPanel),
-                new PixelInfoPlugin(imageViewerPanel),
-                new LUTManagerPlugin(imageViewerPanel),
+        imageViewerPanel = new ImageViewerPanel2D(new JIPipeDummyWorkbench());
+        maskDrawerPlugin = new MaskToROIDrawerPlugin2D(imageViewerPanel);
+        roiManagerPlugin = new ROIManagerPlugin2D(imageViewerPanel);
+        imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin2D(imageViewerPanel),
+                new PixelInfoPlugin2D(imageViewerPanel),
+                new LUTManagerPlugin2D(imageViewerPanel),
                 roiManagerPlugin,
                 maskDrawerPlugin));
         if (lazyLoadedImage != null) {
@@ -59,7 +59,7 @@ public class ROIDrawerFormData extends FormData {
         }
     }
 
-    public ImageViewerPanel getImageViewerPanel() {
+    public ImageViewerPanel2D getImageViewerPanel() {
         if (imageViewerPanel == null || maskDrawerPlugin == null) {
             initializeImageViewer();
         }

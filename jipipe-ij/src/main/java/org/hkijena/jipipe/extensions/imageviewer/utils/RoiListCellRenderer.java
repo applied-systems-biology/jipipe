@@ -9,38 +9,34 @@
  *
  * The project code is licensed under BSD 2-Clause.
  * See the LICENSE file provided with the code for the full license.
- *
  */
 
-package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
+package org.hkijena.jipipe.extensions.imageviewer.utils;
 
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import ij.gui.Roi;
+import org.apache.commons.math3.util.Precision;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class TrackListCellRenderer extends JPanel implements ListCellRenderer<Integer> {
+public class RoiListCellRenderer extends JPanel implements ListCellRenderer<Roi> {
 
-    private final TracksManagerPlugin2D tracksManagerPlugin;
-    //    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
+    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private JLabel iconLabel = new JLabel();
     private JLabel nameLabel = new JLabel();
     private JLabel infoLabel = new JLabel();
 
-    public TrackListCellRenderer(TracksManagerPlugin2D tracksManagerPlugin) {
-        this.tracksManagerPlugin = tracksManagerPlugin;
+    public RoiListCellRenderer() {
         initialize();
-        updateColorMaps();
-    }
-
-    public void updateColorMaps() {
     }
 
     private void initialize() {
         setOpaque(true);
         setLayout(new GridBagLayout());
-        iconLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackscheme.png"));
+        iconLabel.setIcon(strokeFillPreview);
         infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         add(iconLabel, new GridBagConstraints() {
             {
@@ -70,13 +66,24 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends Integer> list, Integer trackId, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends Roi> list, Roi value, int index, boolean isSelected, boolean cellHasFocus) {
 
-        nameLabel.setText(tracksManagerPlugin.getTracksCollection().getTrackModel().name(trackId));
+        if (!StringUtils.isNullOrEmpty(value.getName()))
+            nameLabel.setText(value.getName());
+        else
+            nameLabel.setText("Unnamed [" + index + "]");
+        if (value.getFillColor() != null)
+            strokeFillPreview.setFillColor(value.getFillColor());
+        else
+            strokeFillPreview.setFillColor(Color.WHITE);
+        if (value.getStrokeColor() != null)
+            strokeFillPreview.setBorderColor(value.getStrokeColor());
+        else
+            strokeFillPreview.setBorderColor(Color.YELLOW);
 
-//        strokeFillPreview.setFillColor(Color.WHITE);
         iconLabel.setText("" + index);
-        infoLabel.setText(tracksManagerPlugin.getTracksCollection().getTrackSpots(trackId).size() + " spots");
+        infoLabel.setText("x: " + Precision.round(value.getXBase(), 3) + ", y: " + Precision.round(value.getYBase(), 3) + ", z: " + (value.getZPosition() != 0 ? value.getZPosition() : "*") +
+                ", c: " + (value.getCPosition() != 0 ? value.getCPosition() : "*") + ", t: " + (value.getTPosition() != 0 ? value.getTPosition() : "*"));
 
         if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));

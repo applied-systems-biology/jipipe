@@ -10,11 +10,11 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MaskDrawerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MaskDrawerPlugin2D;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -29,8 +29,8 @@ public class MaskDrawerFormData extends FormData {
 
     private final List<JIPipeMergingDataBatch> dataBatches;
     private final DrawMaskAlgorithm drawMaskAlgorithm;
-    private ImageViewerPanel imageViewerPanel;
-    private MaskDrawerPlugin maskDrawerPlugin;
+    private ImageViewerPanel2D imageViewerPanel;
+    private MaskDrawerPlugin2D maskDrawerPlugin;
     private ImagePlus lazyLoadedImage;
     private ImagePlus lazyLoadedMask;
 
@@ -40,11 +40,11 @@ public class MaskDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new ImageViewerPanel(new JIPipeDummyWorkbench());
-        maskDrawerPlugin = new MaskDrawerPlugin(imageViewerPanel);
-        imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin(imageViewerPanel),
-                new PixelInfoPlugin(imageViewerPanel),
-                new LUTManagerPlugin(imageViewerPanel),
+        imageViewerPanel = new ImageViewerPanel2D(new JIPipeDummyWorkbench());
+        maskDrawerPlugin = new MaskDrawerPlugin2D(imageViewerPanel);
+        imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin2D(imageViewerPanel),
+                new PixelInfoPlugin2D(imageViewerPanel),
+                new LUTManagerPlugin2D(imageViewerPanel),
                 maskDrawerPlugin));
         if (lazyLoadedImage != null) {
             imageViewerPanel.setImage(lazyLoadedImage);
@@ -54,7 +54,7 @@ public class MaskDrawerFormData extends FormData {
         }
     }
 
-    public ImageViewerPanel getImageViewerPanel() {
+    public ImageViewerPanel2D getImageViewerPanel() {
         if (imageViewerPanel == null || maskDrawerPlugin == null) {
             initializeImageViewer();
         }
