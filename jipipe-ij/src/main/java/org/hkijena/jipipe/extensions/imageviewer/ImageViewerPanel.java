@@ -230,6 +230,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     public void setImage(ImagePlus image) {
         this.image = image;
         imageViewerPanel2D.setImage(image);
+        imageViewerPanel3D.setImage(image);
     }
 
     public ImagePlus getImage() {

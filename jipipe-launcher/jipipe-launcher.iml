@@ -314,9 +314,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:pal-optimization:2.0.1" level="project" />
     <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:j3dcore:1.6.0-scijava-2" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.gluegen:gluegen-rt:2.4.0-rc-20210111" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: antlr:antlr:2.7.7" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.jogl:jogl-all:2.4.0-rc-20210111" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:j3dutils:1.6.0-scijava-2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
     <orderEntry type="module" module-name="jipipe-ij2" scope="RUNTIME" />
@@ -434,6 +431,13 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:icegrid:3.6.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:ice:3.6.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.zeroc:glacier2:3.6.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.gluegen:gluegen-rt:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: antlr:antlr:2.7.7" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.gluegen:gluegen-rt-natives-linux-amd64:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.gluegen:gluegen-rt-natives-windows-amd64:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.jogl:jogl-all-natives-linux-amd64:2.4.0-rc-20210111" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jogamp.jogl:jogl-all-natives-windows-amd64:2.4.0-rc-20210111" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.7.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.8.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
