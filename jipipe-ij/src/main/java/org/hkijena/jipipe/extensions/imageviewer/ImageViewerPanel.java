@@ -1,9 +1,14 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
+import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.ImageWindow;
 import ij.gui.Roi;
+import ij.measure.Calibration;
+import ij.util.Tools;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.*;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.MeasurementDrawerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
@@ -12,6 +17,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
 
@@ -53,6 +59,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
 
     private final JButton switchModeButton = new JButton();
 
+    private final JLabel imageInfoLabel = new JLabel();
+
     /**
      * Initializes a new image viewer
      *
@@ -83,6 +91,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
                 pluginMap.put(pluginType, plugin2D);
             }
         }
+    }
+
+    public ImageViewerUISettings getSettings() {
+        return settings;
     }
 
     public static ImageViewerPanel createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow) {
@@ -118,23 +130,87 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         switchModeMenu.add(UIUtils.createMenuItem("Switch to 2D", "Display the image in 2D", UIUtils.getIconFromResources("data-types/imgplus-2d.png"), this::switchTo2D));
         switchModeMenu.add(UIUtils.createMenuItem("Switch to 3D", "Display the image in 3D", UIUtils.getIconFromResources("data-types/imgplus-3d.png"), this::switchTo3D));
 
+        // Shared image controls
+        JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
+        openInImageJButton.addActionListener(e -> openInImageJ());
+
+        toolBar.add(openInImageJButton);
+        toolBar.add(Box.createHorizontalStrut(8));
+        toolBar.add(imageInfoLabel);
+
         // Dynamic content
         add(dynamicContent, BorderLayout.CENTER);
 
         // Dynamic toolbar
         toolBarDynamicContent.setLayout(new BoxLayout(toolBarDynamicContent, BoxLayout.X_AXIS));
         toolBar.add(toolBarDynamicContent);
+    }
 
+    private void openInImageJ() {
+        if (image != null) {
+            String title = image.getTitle();
+            ImagePlus duplicate = ImageJUtils.duplicate(image);
+            duplicate.setTitle(title);
+            duplicate.show();
+        }
+    }
+
+    public void refreshImageInfo() {
+        String s = "";
+        if (image == null) {
+            imageInfoLabel.setText("");
+            return;
+        }
+        int type = image.getType();
+        Calibration cal = image.getCalibration();
+        if (cal.scaled()) {
+            boolean unitsMatch = cal.getXUnit().equals(cal.getYUnit());
+            double cwidth = image.getWidth() * cal.pixelWidth;
+            double cheight = image.getHeight() * cal.pixelHeight;
+            int digits = Tools.getDecimalPlaces(cwidth, cheight);
+            if (digits > 2) digits = 2;
+            if (unitsMatch) {
+                s += IJ.d2s(cwidth, digits) + "x" + IJ.d2s(cheight, digits)
+                        + " " + cal.getUnits() + " (" + image.getWidth() + "x" + image.getHeight() + "); ";
+            } else {
+                s += (cwidth) + " " + cal.getXUnit() + " x "
+                        + (cheight) + " " + cal.getYUnit()
+                        + " (" + image.getWidth() + "x" + image.getHeight() + "); ";
+            }
+        } else
+            s += image.getWidth() + "x" + image.getHeight() + " pixels; ";
+        switch (type) {
+            case ImagePlus.GRAY8:
+            case ImagePlus.COLOR_256:
+                s += "8-bit";
+                break;
+            case ImagePlus.GRAY16:
+                s += "16-bit";
+                break;
+            case ImagePlus.GRAY32:
+                s += "32-bit";
+                break;
+            case ImagePlus.COLOR_RGB:
+                s += "RGB";
+                break;
+        }
+        if (image.isInvertedLut())
+            s += " (inverting LUT)";
+        s += "; " + ImageWindow.getImageSize(image);
+//        if (rotation != 0) {
+//            s += " (Rotated " + rotation + "°)";
+//        }
+        imageInfoLabel.setText(s);
     }
 
     private void switchTo3D() {
-        switchModeButton.setText("Display");
+        switchModeButton.setText("3D Viewer");
         switchModeButton.setIcon(UIUtils.getIconFromResources("data-types/imgplus-3d.png"));
 
         toolBarDynamicContent.removeAll();
         dynamicContent.removeAll();
 
-//        toolBarDynamicContent.add(imageViewerPanel3D.getToolBar(), BorderLayout.CENTER);
+        toolBarDynamicContent.add(imageViewerPanel3D.getToolBar(), BorderLayout.CENTER);
         dynamicContent.add(imageViewerPanel3D, BorderLayout.CENTER);
 
         revalidate();
@@ -144,7 +220,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     }
 
     public void switchTo2D() {
-        switchModeButton.setText("Display");
+        switchModeButton.setText("2D Viewer");
         switchModeButton.setIcon(UIUtils.getIconFromResources("data-types/imgplus-2d.png"));
 
         toolBarDynamicContent.removeAll();
@@ -231,6 +307,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         this.image = image;
         imageViewerPanel2D.setImage(image);
         imageViewerPanel3D.setImage(image);
+
+        refreshImageInfo();
     }
 
     public ImagePlus getImage() {
@@ -248,10 +326,13 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
     public void setError(String errorMessage) {
         if(errorMessage != null) {
             JLabel errorLabel2D = new JLabel(errorMessage, UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
+            JLabel errorLabel3D = new JLabel(errorMessage, UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
             imageViewerPanel2D.getCanvas().setError(errorLabel2D);
+            imageViewerPanel3D.showDataError(errorLabel3D);
         }
         else {
             imageViewerPanel2D.getCanvas().setError(null);
+            imageViewerPanel3D.showDataError(null);
         }
     }
 

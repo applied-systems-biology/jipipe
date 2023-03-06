@@ -69,7 +69,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private final JLabel imageInfoLabel = new JLabel();
     private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
@@ -309,13 +308,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     private void initializeToolbar() {
         toolBar.setFloatable(false);
-
-        JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
-        openInImageJButton.addActionListener(e -> openInImageJ());
-
-        toolBar.add(openInImageJButton);
-        toolBar.add(Box.createHorizontalStrut(8));
-        toolBar.add(imageInfoLabel);
 
         toolBar.add(Box.createHorizontalGlue());
 
@@ -624,15 +616,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         updateZoomStatus();
     }
 
-    private void openInImageJ() {
-        if (image != null) {
-            String title = image.getTitle();
-            ImagePlus duplicate = ImageJUtils.duplicate(image);
-            duplicate.setTitle(title);
-            duplicate.show();
-        }
-    }
-
     private void refreshSliders() {
         try {
             isUpdatingSliders = true;
@@ -679,7 +662,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         this.statisticsMap.clear();
         refreshSliders();
         refreshSlice();
-        refreshImageInfo();
         refreshFormPanel();
         refreshMenus();
         for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
@@ -742,54 +724,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     public ImageViewerPanel getImageViewerPanel() {
         return imageViewerPanel;
-    }
-
-    public void refreshImageInfo() {
-        String s = "";
-        if (image == null) {
-            imageInfoLabel.setText("");
-            return;
-        }
-        int type = image.getType();
-        Calibration cal = image.getCalibration();
-        if (cal.scaled()) {
-            boolean unitsMatch = cal.getXUnit().equals(cal.getYUnit());
-            double cwidth = image.getWidth() * cal.pixelWidth;
-            double cheight = image.getHeight() * cal.pixelHeight;
-            int digits = Tools.getDecimalPlaces(cwidth, cheight);
-            if (digits > 2) digits = 2;
-            if (unitsMatch) {
-                s += IJ.d2s(cwidth, digits) + "x" + IJ.d2s(cheight, digits)
-                        + " " + cal.getUnits() + " (" + image.getWidth() + "x" + image.getHeight() + "); ";
-            } else {
-                s += (cwidth) + " " + cal.getXUnit() + " x "
-                        + (cheight) + " " + cal.getYUnit()
-                        + " (" + image.getWidth() + "x" + image.getHeight() + "); ";
-            }
-        } else
-            s += image.getWidth() + "x" + image.getHeight() + " pixels; ";
-        switch (type) {
-            case ImagePlus.GRAY8:
-            case ImagePlus.COLOR_256:
-                s += "8-bit";
-                break;
-            case ImagePlus.GRAY16:
-                s += "16-bit";
-                break;
-            case ImagePlus.GRAY32:
-                s += "32-bit";
-                break;
-            case ImagePlus.COLOR_RGB:
-                s += "RGB";
-                break;
-        }
-        if (image.isInvertedLut())
-            s += " (inverting LUT)";
-        s += "; " + ImageWindow.getImageSize(image);
-//        if (rotation != 0) {
-//            s += " (Rotated " + rotation + "°)";
-//        }
-        imageInfoLabel.setText(s);
     }
 
     private void animateNextSlice() {
