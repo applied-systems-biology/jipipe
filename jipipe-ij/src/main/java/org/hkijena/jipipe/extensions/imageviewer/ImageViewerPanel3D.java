@@ -4,7 +4,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij3d.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomImage3DUniverse;
@@ -22,7 +21,6 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
-import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.jdesktop.swingx.JXStatusBar;
@@ -39,6 +37,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener {
@@ -70,9 +69,15 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     private final JLabel contentStatusLabel = new JLabel();
 
+    private Content currentImageContent;
+
+    private final Timer updateImageLaterTimer;
+
     public ImageViewerPanel3D(ImageViewerPanel imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
         this.settings = imageViewerPanel.getSettings();
+        this.updateImageLaterTimer = new Timer(1000, e -> updateImageNow());
+        updateImageLaterTimer.setRepeats(false);
         initialize();
         updateSideBar();
     }
@@ -297,17 +302,27 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     public void setImage(ImagePlus image) {
         this.image = image;
-        updateImage();
+        if(imageLoader != null) {
+            imageLoader.cancel(true);
+        }
+        if(universe != null) {
+            universe.removeAllContents();
+        }
+        updateImageNow();
     }
 
     public void activate() {
         if(!active) {
             active = true;
-            updateImage();
+            updateImageNow();
         }
     }
 
-    private void updateImage() {
+    public void updateImageLater() {
+        updateImageLaterTimer.restart();
+    }
+
+    private void updateImageNow() {
         if(!active)
             return;
         if(image == null && universe == null)
@@ -316,7 +331,6 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             initializeUniverse();
         }
         if(universe != null) {
-            universe.removeAllContents();
             if (image != null) {
                 if(imageLoader != null) {
                     imageLoader.cancel(true);
@@ -472,7 +486,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 repaint();
 
                 setRendererStatus(RendererStatus.Initialized);
-                updateImage();
+                updateImageNow();
 
             } catch (Throwable e) {
                 e.printStackTrace();
@@ -488,8 +502,16 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         universe.addInteractiveBehavior(new CustomInteractiveBehavior(this, universe));
     }
 
-    private void onContentReady(Content content) {
+    private void onImageContentReady(Content content) {
         if(universe != null) {
+            if(currentImageContent != null) {
+                universe.removeContent(currentImageContent.getName());
+            }
+            currentImageContent = content;
+
+            // Create unique name because removal depends on the name?!
+            content.setName(content.getName() + "-" + UUID.randomUUID());
+
             universe.addContent(content);
             universe.fixWeirdRendering();
         }
@@ -542,7 +564,12 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     public void showDataError(JLabel label) {
-
+        dataStatusPanel.removeAll();
+        if(label != null) {
+            dataStatusPanel.add(label);
+        }
+        dataStatusPanel.revalidate();
+        dataStatusPanel.repaint();
     }
 
     public enum RendererStatus {
@@ -625,7 +652,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             if(!isCancelled()) {
                 try {
                     Content content = get();
-                    panel3D.onContentReady(content);
+                    panel3D.onImageContentReady(content);
                 } catch (InterruptedException | ExecutionException e) {
                 }
             }

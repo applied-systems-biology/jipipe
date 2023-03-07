@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d;
 
+import ij3d.Content;
 import ij3d.Image3DUniverse;
 import org.scijava.java3d.Transform3D;
 import org.scijava.vecmath.AxisAngle4d;
