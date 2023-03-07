@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 import com.google.common.eventbus.Subscribe;
 import ij.process.FloodFiller;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.MouseClickedEvent;

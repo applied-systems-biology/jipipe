@@ -3,8 +3,8 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager;
 import com.google.common.eventbus.Subscribe;
 import ij.gui.Roi;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2D;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas2DTool;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.utils.ui.*;
 
 import javax.swing.*;

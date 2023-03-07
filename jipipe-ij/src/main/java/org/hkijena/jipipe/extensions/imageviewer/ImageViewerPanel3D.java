@@ -4,6 +4,8 @@ import ij.ImagePlus;
 import ij3d.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomImage3DUniverse;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomInteractiveBehavior;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
@@ -34,7 +36,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     private final JPanel viewerPanel = new JPanel(new BorderLayout());
     private final JPanel viewerCanvasPanel = new JPanel(new BorderLayout());
-    private Image3DUniverse universe;
+    private CustomImage3DUniverse universe;
     private boolean active = false;
 
     private final JToolBar toolBar = new JToolBar();
@@ -256,6 +258,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         return label;
     }
 
+    public CustomImage3DUniverse getUniverse() {
+        return universe;
+    }
+
     @Override
     public void dispose() {
         setImage(null);
@@ -288,7 +294,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
     }
 
-    private void onUniverseInitialized(Image3DUniverse universe, RendererStatus status) {
+    private void onUniverseInitialized(CustomImage3DUniverse universe, RendererStatus status) {
         if(universe != null) {
             this.universe = universe;
             universe.addUniverseListener(this);
@@ -307,6 +313,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 viewerCanvasPanel.add(canvas3D, BorderLayout.CENTER);
                 universe.ui.setHandTool();
 
+                setupUniverseDefaults();
+
                 revalidate();
                 repaint();
 
@@ -321,6 +329,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         else {
             setRendererStatus(status);
         }
+    }
+
+    private void setupUniverseDefaults() {
+        universe.addInteractiveBehavior(new CustomInteractiveBehavior(this, universe));
     }
 
     private void onContentReady(Content content) {
@@ -405,7 +417,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
     }
 
-    public static class UniverseInitializer extends SwingWorker<Image3DUniverse, Object> {
+    public static class UniverseInitializer extends SwingWorker<CustomImage3DUniverse, Object> {
 
         private final ImageViewerPanel3D panel3D;
         private RendererStatus status = RendererStatus.ErrorGeneric;
@@ -415,9 +427,9 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
 
         @Override
-        protected Image3DUniverse doInBackground() throws Exception {
+        protected CustomImage3DUniverse doInBackground() throws Exception {
             try {
-                return new Image3DUniverse();
+                return new CustomImage3DUniverse();
             }
             catch (Throwable e) {
                 status = RendererStatus.ErrorGeneric;
@@ -427,7 +439,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         @Override
         protected void done() {
-            Image3DUniverse universe = null;
+            CustomImage3DUniverse universe = null;
             try {
                 universe = get();
             } catch (InterruptedException | ExecutionException e) {
@@ -465,7 +477,4 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             }
         }
     }
-
-
-
 }

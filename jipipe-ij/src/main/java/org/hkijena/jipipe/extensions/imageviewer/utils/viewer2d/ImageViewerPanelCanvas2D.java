@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imageviewer.utils;
+package org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
