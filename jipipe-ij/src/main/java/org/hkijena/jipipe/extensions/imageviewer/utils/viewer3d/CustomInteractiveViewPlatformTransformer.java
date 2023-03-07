@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d;
 
-import ij3d.DefaultUniverse;
 import ij3d.Image3DUniverse;
 import ij3d.ImageCanvas3D;
 import ij3d.behaviors.BehaviorCallback;
@@ -9,6 +8,7 @@ import org.scijava.java3d.Transform3D;
 import org.scijava.java3d.TransformGroup;
 import org.scijava.vecmath.*;
 
+import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
@@ -16,7 +16,7 @@ import java.awt.event.MouseWheelEvent;
  * Copy of all contents of {@link ij3d.behaviors.ViewPlatformTransformer} and {@link InteractiveViewPlatformTransformer}, so the behavior can be changed
  */
 public class CustomInteractiveViewPlatformTransformer {
-    protected DefaultUniverse univ;
+    protected CustomImage3DUniverse universe;
     protected ImageCanvas3D canvas;
 
     protected final Point3d rotCenter = new Point3d();
@@ -51,20 +51,19 @@ public class CustomInteractiveViewPlatformTransformer {
     /**
      * Initialize this ViewPlatformTransformer.
      *
-     * @param univ
+     * @param universe
      * @param callback
      */
-    public CustomInteractiveViewPlatformTransformer(final DefaultUniverse univ,
-                                   final BehaviorCallback callback)
-    {
-        this.univ = univ;
-        this.canvas = (ImageCanvas3D) univ.getCanvas();
+    public CustomInteractiveViewPlatformTransformer(final CustomImage3DUniverse universe,
+                                                    final BehaviorCallback callback) {
+        this.universe = universe;
+        this.canvas = (ImageCanvas3D) universe.getCanvas();
         this.callback = callback;
-        this.centerTG = univ.getCenterTG();
-        this.rotationTG = univ.getRotationTG();
-        this.zoomTG = univ.getZoomTG();
-        this.translateTG = univ.getTranslateTG();
-        ((Image3DUniverse) univ).getGlobalCenterPoint(rotCenter);
+        this.centerTG = universe.getCenterTG();
+        this.rotationTG = universe.getRotationTG();
+        this.zoomTG = universe.getZoomTG();
+        this.translateTG = universe.getTranslateTG();
+        ((Image3DUniverse) universe).getGlobalCenterPoint(rotCenter);
     }
 
     /**
@@ -85,8 +84,8 @@ public class CustomInteractiveViewPlatformTransformer {
         zDir.scale(distance);
         zoomXform.set(zDir);
         zoomTG.setTransform(zoomXform);
-        univ.getViewer().getView().setBackClipDistance(5 * distance);
-        univ.getViewer().getView().setFrontClipDistance(5 * distance / 100);
+        universe.getViewer().getView().setBackClipDistance(5 * distance);
+        universe.getViewer().getView().setFrontClipDistance(5 * distance / 100);
         transformChanged(BehaviorCallback.TRANSLATE, zoomXform);
     }
 
@@ -94,8 +93,8 @@ public class CustomInteractiveViewPlatformTransformer {
         zoomTG.getTransform(zoomXform);
         zoomXform.get(zDir);
         final double d = zDir.length();
-        univ.getViewer().getView().setBackClipDistance(5 * d);
-        univ.getViewer().getView().setFrontClipDistance(5 * d / 100);
+        universe.getViewer().getView().setBackClipDistance(5 * d);
+        universe.getViewer().getView().setFrontClipDistance(5 * d / 100);
     }
 
     private final Transform3D tmp = new Transform3D();
@@ -134,8 +133,8 @@ public class CustomInteractiveViewPlatformTransformer {
         zoomTG.setTransform(zoomXform);
         zoomXform.get(centerV);
         final double distance = centerV.length();
-        univ.getViewer().getView().setBackClipDistance(5 * distance);
-        univ.getViewer().getView().setFrontClipDistance(5 * distance / 100);
+        universe.getViewer().getView().setBackClipDistance(5 * distance);
+        universe.getViewer().getView().setFrontClipDistance(5 * distance / 100);
         transformChanged(BehaviorCallback.TRANSLATE, zoomXform);
     }
 
@@ -212,20 +211,29 @@ public class CustomInteractiveViewPlatformTransformer {
     }
 
     public void resetView(StandardView standardView) {
+        universe.resetView();
 
-        //Reset translation
-        translateXform.set(new Vector3d(0, 0, 0));
-        translateTG.setTransform(translateXform);
-        transformChanged(BehaviorCallback.TRANSLATE, translateXform);
+        AxisAngle4d angle4d;
 
-        // Reset rotation
-        Vector3d rotationVec;
-        switch (standardView) {
-            default:
-                 rotationVec = new Vector3d();
+        if (standardView == StandardView.Top) {
+            angle4d = new AxisAngle4d(1, 0, 0, Math.PI);
+        } else if (standardView == StandardView.Bottom) {
+            angle4d = new AxisAngle4d(0, 0, 1, Math.PI);
+        }
+        else if (standardView == StandardView.North) {
+            angle4d = new AxisAngle4d(0, -1, 1, Math.PI);
+        } else if (standardView == StandardView.South) {
+            angle4d = new AxisAngle4d(0, 1, 1, Math.PI);
+        } else if (standardView == StandardView.East) {
+            angle4d = new AxisAngle4d(1, 0, 1, Math.PI);
+        } else if (standardView == StandardView.West) {
+            angle4d = new AxisAngle4d(1, 0, -1, Math.PI);
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported: " + standardView);
         }
 
-        rotationXform.set(rotationVec);
+        rotationXform.set(angle4d);
         rotationTG.setTransform(rotationXform);
         transformChanged(BehaviorCallback.ROTATE, rotationXform);
     }
@@ -286,7 +294,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Rotates the view around the center of view by the specified angle around
      * the given axis (of the image plate).
      *
-     * @param axis The axis of rotation (in image plate coordinate system)
+     * @param axis  The axis of rotation (in image plate coordinate system)
      * @param angle The angle (in rad) around the given axis
      */
     public void rotate(final Vector3d axis, final double angle) {
@@ -448,7 +456,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Transforms the x-direction of the image plate to a normalized vector
      * representing this direction in the vworld space.
      *
-     * @param v Vector3d in which the result in stored.
+     * @param v          Vector3d in which the result in stored.
      * @param ipToVWorld the image plate to vworld transformation.
      */
     public void getXDir(final Vector3d v, final Transform3D ipToVWorld) {
@@ -475,7 +483,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Transforms the y-direction of the image plate to a normalized vector
      * representing this direction in the vworld space.
      *
-     * @param v Vector3d in which the result in stored.
+     * @param v          Vector3d in which the result in stored.
      * @param ipToVWorld the image plate to vworld transformation.
      */
     public void getYDir(final Vector3d v, final Transform3D ipToVWorld) {
@@ -502,7 +510,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Transforms the z-direction of the image plate to a normalized vector
      * representing this direction in the vworld space.
      *
-     * @param v Vector3d in which the result in stored.
+     * @param v          Vector3d in which the result in stored.
      * @param ipToVWorld the image plate to vworld transformation.
      */
     public void getZDir(final Vector3d v, final Transform3D ipToVWorld) {

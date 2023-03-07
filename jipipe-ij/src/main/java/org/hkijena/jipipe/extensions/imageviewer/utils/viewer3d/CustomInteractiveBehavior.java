@@ -4,6 +4,10 @@ import ij3d.Content;
 import ij3d.behaviors.InteractiveBehavior;
 import ij3d.behaviors.InteractiveViewPlatformTransformer;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel3D;
+import org.scijava.java3d.Transform3D;
+import org.scijava.vecmath.AxisAngle4d;
+import org.scijava.vecmath.Quat4d;
+import org.scijava.vecmath.Vector3d;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
