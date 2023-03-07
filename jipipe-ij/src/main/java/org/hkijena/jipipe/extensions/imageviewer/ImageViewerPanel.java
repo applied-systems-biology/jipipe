@@ -53,6 +53,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
 
     private final List<ImageViewerPanelPlugin2D> plugins2D = new ArrayList<>();
 
+    private final List<ImageViewerPanelPlugin3D> plugins3D = new ArrayList<>();
+
     private final Map<Class<? extends ImageViewerPanelPlugin>, ImageViewerPanelPlugin> pluginMap = new HashMap<>();
 
     private ImagePlus image;
@@ -89,6 +91,12 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
                 plugins.add(plugin2D);
                 plugins2D.add(plugin2D);
                 pluginMap.put(pluginType, plugin2D);
+            }
+            else if(plugin instanceof ImageViewerPanelPlugin3D) {
+                ImageViewerPanelPlugin3D plugin3D = (ImageViewerPanelPlugin3D) plugin;
+                plugins.add(plugin3D);
+                plugins3D.add(plugin3D);
+                pluginMap.put(pluginType, plugin3D);
             }
         }
     }
@@ -247,6 +255,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
 
     public List<ImageViewerPanelPlugin2D> getPlugins2D() {
         return Collections.unmodifiableList(plugins2D);
+    }
+
+    public List<ImageViewerPanelPlugin3D> getPlugins3D() {
+        return Collections.unmodifiableList(plugins3D);
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.NewThrobberIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -37,6 +38,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
@@ -72,6 +75,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private Content currentImageContent;
 
     private final Timer updateImageLaterTimer;
+
+    private final Map<String, FormPanel> formPanels = new HashMap<>();
 
     public ImageViewerPanel3D(ImageViewerPanel imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
@@ -309,6 +314,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             universe.removeAllContents();
         }
         updateImageNow();
+        refreshFormPanel();
     }
 
     public void activate() {
@@ -320,6 +326,37 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     public void updateImageLater() {
         updateImageLaterTimer.restart();
+    }
+
+    public void refreshFormPanel() {
+        Map<String, Integer> scrollValues = new HashMap<>();
+        for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
+            scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
+            entry.getValue().clear();
+        }
+        for (ImageViewerPanelPlugin3D plugin : imageViewerPanel.getPlugins3D()) {
+            FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
+            if (formPanel == null) {
+                formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+                formPanels.put(plugin.getCategory(), formPanel);
+                FormPanel finalFormPanel = formPanel;
+                tabPane.registerSingletonTab(plugin.getCategory(),
+                        plugin.getCategory(),
+                        plugin.getCategoryIcon(),
+                        () -> finalFormPanel,
+                        DocumentTabPane.CloseMode.withoutCloseButton,
+                        DocumentTabPane.SingletonTabMode.Present);
+            }
+            plugin.initializeSettingsPanel(formPanel);
+        }
+        for (Map.Entry<String, FormPanel> entry : formPanels.entrySet()) {
+            if (!entry.getValue().isHasVerticalGlue()) {
+                entry.getValue().addVerticalGlue();
+            }
+            SwingUtilities.invokeLater(() -> {
+                entry.getValue().getScrollPane().getVerticalScrollBar().setValue(scrollValues.getOrDefault(entry.getKey(), 0));
+            });
+        }
     }
 
     private void updateImageNow() {
