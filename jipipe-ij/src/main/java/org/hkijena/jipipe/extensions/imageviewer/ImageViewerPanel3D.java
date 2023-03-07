@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij3d.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -31,9 +32,11 @@ import org.scijava.java3d.GraphicsConfigTemplate3D;
 import org.scijava.java3d.View;
 import org.scijava.vecmath.Color3f;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
@@ -199,10 +202,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 //
 //        exportMenu.add(exportDisplayedScaleToggle);
 //
-//        JMenuItem exportCurrentSliceItem = new JMenuItem("Export snapshot of current slice", UIUtils.getIconFromResources("actions/viewimage.png"));
-//        exportCurrentSliceItem.addActionListener(e -> exportCurrentSliceToPNG());
-//        exportMenu.add(exportCurrentSliceItem);
-//
+        JMenuItem exportCurrentSliceItem = new JMenuItem("Export snapshot to file", UIUtils.getIconFromResources("actions/viewimage.png"));
+        exportCurrentSliceItem.addActionListener(e -> exportSnapshotToPNG());
+        exportMenu.add(exportCurrentSliceItem);
+
 //        exportAllSlicesItem = new JMenuItem("Export snapshot of all slices", UIUtils.getIconFromResources("actions/qlipper.png"));
 //        exportAllSlicesItem.addActionListener(e -> exportAllSlicesToPNG());
 //        exportMenu.add(exportAllSlicesItem);
@@ -210,15 +213,44 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 //        exportMovieItem = new JMenuItem("Export movie", UIUtils.getIconFromResources("actions/filmgrain.png"));
 //        exportMovieItem.addActionListener(e -> exportVideo());
 //        exportMenu.add(exportMovieItem);
+
+        exportMenu.addSeparator();
 //
-//        exportMenu.addSeparator();
-//
-        JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyCurrentSliceItem.addActionListener(e -> copySnapshotToClipboard());
         exportMenu.add(copyCurrentSliceItem);
 
         UIUtils.addPopupMenuToComponent(exportMenuButton, exportMenu);
         toolBar.add(exportMenuButton);
+    }
+
+    private void exportSnapshotToPNG() {
+        if(universe != null) {
+            Path targetFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
+            if (targetFile != null) {
+                String format = "PNG";
+                if (UIUtils.EXTENSION_FILTER_BMP.accept(targetFile.toFile()))
+                    format = "BMP";
+                else if (UIUtils.EXTENSION_FILTER_JPEG.accept(targetFile.toFile()))
+                    format = "JPEG";
+
+                Canvas3D canvas = universe.getCanvas();
+
+                SnapshotSettings snapshotSettings = new SnapshotSettings();
+                snapshotSettings.setWidth(canvas.getWidth());
+                snapshotSettings.setHeight(canvas.getHeight());
+
+                if(ParameterPanel.showDialog(getWorkbench(), this, snapshotSettings, new MarkdownDocument(), "Create snapshot", ParameterPanel.WITH_SCROLLING)) {
+                    ImagePlus imagePlus = universe.takeSnapshot(snapshotSettings.getWidth(), snapshotSettings.getHeight());
+                    BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(imagePlus.getBufferedImage());
+                    try {
+                        ImageIO.write(image, format, targetFile.toFile());
+                    } catch (IOException e) {
+                        IJ.handleException(e);
+                    }
+                }
+            }
+        }
     }
 
     private void copySnapshotToClipboard() {
