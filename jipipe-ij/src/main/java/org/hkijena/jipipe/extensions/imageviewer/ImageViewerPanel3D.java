@@ -398,7 +398,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
         else {
             contentStatusLabel.setIcon(UIUtils.getIconFromResources("devices/input-mouse.png"));
-            contentStatusLabel.setText("Rotate (drag), Move (shift+drag)");
+            contentStatusLabel.setText("Rotate (drag), Move (shift+drag), Zoom (wheel)");
             contentStatusLabelThrobberIcon.stop();
         }
     }
