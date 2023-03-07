@@ -46,8 +46,14 @@ public class CustomInteractiveBehavior extends InteractiveBehavior {
             viewTransformer.init(e);
         }
         else if(id == MouseEvent.MOUSE_DRAGGED) {
-            if(SwingUtilities.isMiddleMouseButton(e) && !e.isShiftDown()) {
-                viewTransformer.rotate(e);
+            if(SwingUtilities.isMiddleMouseButton(e)) {
+                if(e.isShiftDown() && !e.isControlDown()) {
+                    viewTransformer.translate(e);
+                }
+                else if(!e.isShiftDown() && !e.isControlDown()) {
+                    viewTransformer.rotate(e);
+                }
+
             }
         }
 

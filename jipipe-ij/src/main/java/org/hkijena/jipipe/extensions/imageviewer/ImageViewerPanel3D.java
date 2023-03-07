@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomImage3DUniverse;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomInteractiveBehavior;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.StandardView;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
@@ -40,6 +41,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private boolean active = false;
 
     private final JToolBar toolBar = new JToolBar();
+
+    private final JToolBar viewerToolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
     private RendererStatus rendererStatus = RendererStatus.Uninitialized;
 
@@ -65,10 +68,40 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         setLayout(new BorderLayout());
         viewerPanel.add(viewerCanvasPanel, BorderLayout.CENTER);
 
-        JPanel messagePanel = new JPanel();
-        messagePanel.setLayout(new BoxLayout(messagePanel, BoxLayout.Y_AXIS));
-        messagePanel.add(rendererStatusPanel);
-        messagePanel.add(dataStatusPanel);
+        JPanel messagePanel = new JPanel(new GridBagLayout());
+        messagePanel.add(viewerToolBar, new GridBagConstraints(0,
+                0,
+                1,
+                1,
+                1,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(0,0,0,0),
+                0,
+                0));
+        messagePanel.add(rendererStatusPanel, new GridBagConstraints(0,
+                1,
+                1,
+                1,
+                1,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(0,0,0,0),
+                0,
+                0));
+        messagePanel.add(dataStatusPanel, new GridBagConstraints(0,
+                2,
+                1,
+                1,
+                1,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(0,0,0,0),
+                0,
+                0));
         viewerPanel.add(messagePanel, BorderLayout.NORTH);
 
         JXStatusBar contentStatusBar = new JXStatusBar();
@@ -77,6 +110,39 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         contentStatusBar.add(contentStatusLabel);
 
         initializeToolbar();
+        initializeViewerToolbar();
+    }
+
+    private void initializeViewerToolbar() {
+        viewerToolBar.setFloatable(false);
+
+        JButton resetViewButton = new JButton("Reset view", UIUtils.getIconFromResources("actions/view-restore.png"));
+        JPopupMenu resetViewMenu = UIUtils.addPopupMenuToComponent(resetViewButton);
+        resetViewMenu.add(UIUtils.createMenuItem("Top",
+                "Display the image from the top",
+                UIUtils.getIconFromResources("actions/draw-cuboid.png"),
+                () -> universe.getCustomInteractiveViewPlatformTransformer().resetView(StandardView.Top)));
+        resetViewMenu.add(UIUtils.createMenuItem("Bottom",
+                "Display the image from the bottom",
+                UIUtils.getIconFromResources("actions/draw-cuboid.png"),
+                () -> universe.getCustomInteractiveViewPlatformTransformer().resetView(StandardView.Bottom)));
+        resetViewMenu.add(UIUtils.createMenuItem("North",
+                "Display the image from the north side",
+                UIUtils.getIconFromResources("actions/draw-cuboid.png"),
+                () -> universe.getCustomInteractiveViewPlatformTransformer().resetView(StandardView.North)));
+        resetViewMenu.add(UIUtils.createMenuItem("South",
+                "Display the image from the south side",
+                UIUtils.getIconFromResources("actions/draw-cuboid.png"),
+                () -> universe.getCustomInteractiveViewPlatformTransformer().resetView(StandardView.South)));
+        resetViewMenu.add(UIUtils.createMenuItem("East",
+                "Display the image from the east side",
+                UIUtils.getIconFromResources("actions/draw-cuboid.png"),
+                () -> universe.getCustomInteractiveViewPlatformTransformer().resetView(StandardView.East)));
+        resetViewMenu.add(UIUtils.createMenuItem("West",
+                "Display the image from the west side",
+                UIUtils.getIconFromResources("actions/draw-cuboid.png"),
+                () -> universe.getCustomInteractiveViewPlatformTransformer().resetView(StandardView.West)));
+        viewerToolBar.add(resetViewButton);
     }
 
     private void initializeToolbar() {

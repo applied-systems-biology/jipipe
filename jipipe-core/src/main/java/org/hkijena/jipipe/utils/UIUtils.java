@@ -1861,6 +1861,13 @@ public class UIUtils {
         }
     }
 
+    public static JButton createFlatButton(String text, Icon icon, Runnable function) {
+        JButton button = new JButton(text, icon);
+        UIUtils.makeFlat(button);
+        button.addActionListener(e -> function.run());
+        return button;
+    }
+
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
         private final Component target;

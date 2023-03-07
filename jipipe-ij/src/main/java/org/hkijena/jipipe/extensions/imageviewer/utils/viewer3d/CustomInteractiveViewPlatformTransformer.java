@@ -211,6 +211,25 @@ public class CustomInteractiveViewPlatformTransformer {
         transformChanged(BehaviorCallback.TRANSLATE, translateXform);
     }
 
+    public void resetView(StandardView standardView) {
+
+        //Reset translation
+        translateXform.set(new Vector3d(0, 0, 0));
+        translateTG.setTransform(translateXform);
+        transformChanged(BehaviorCallback.TRANSLATE, translateXform);
+
+        // Reset rotation
+        Vector3d rotationVec;
+        switch (standardView) {
+            default:
+                 rotationVec = new Vector3d();
+        }
+
+        rotationXform.set(rotationVec);
+        rotationTG.setTransform(rotationXform);
+        transformChanged(BehaviorCallback.ROTATE, rotationXform);
+    }
+
     /**
      * Translates the view by the specified distances along the x and y direction
      * (of the image plate).
@@ -568,4 +587,6 @@ public class CustomInteractiveViewPlatformTransformer {
         xLast = e.getX();
         yLast = y;
     }
+
+
 }
