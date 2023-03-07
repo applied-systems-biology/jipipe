@@ -3,20 +3,27 @@ package org.hkijena.jipipe.extensions.imageviewer;
 import ij.ImagePlus;
 import ij3d.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomImage3DUniverse;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomInteractiveBehavior;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.SnapshotSettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.StandardView;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.icons.NewThrobberIcon;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Disposable;
 import org.scijava.java3d.Canvas3D;
@@ -26,6 +33,7 @@ import org.scijava.vecmath.Color3f;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
@@ -187,7 +195,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         saveRawImageItem.addActionListener(e -> saveRawImage());
         exportMenu.add(saveRawImageItem);
 
-//        exportMenu.addSeparator();
+        exportMenu.addSeparator();
 //
 //        exportMenu.add(exportDisplayedScaleToggle);
 //
@@ -205,12 +213,30 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 //
 //        exportMenu.addSeparator();
 //
-//        JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
-//        copyCurrentSliceItem.addActionListener(e -> copyCurrentSliceToClipboard());
-//        exportMenu.add(copyCurrentSliceItem);
+        JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        copyCurrentSliceItem.addActionListener(e -> copySnapshotToClipboard());
+        exportMenu.add(copyCurrentSliceItem);
 
         UIUtils.addPopupMenuToComponent(exportMenuButton, exportMenu);
         toolBar.add(exportMenuButton);
+    }
+
+    private void copySnapshotToClipboard() {
+        if(universe != null) {
+            Canvas3D canvas = universe.getCanvas();
+
+            SnapshotSettings snapshotSettings = new SnapshotSettings();
+            snapshotSettings.setWidth(canvas.getWidth());
+            snapshotSettings.setHeight(canvas.getHeight());
+
+            if(ParameterPanel.showDialog(getWorkbench(), this, snapshotSettings, new MarkdownDocument(), "Create snapshot", ParameterPanel.WITH_SCROLLING)) {
+                ImagePlus imagePlus = universe.takeSnapshot(snapshotSettings.getWidth(), snapshotSettings.getHeight());
+                BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(imagePlus.getBufferedImage());
+                CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
+                copyImageToClipboard.copyImage(image);
+            }
+
+        }
     }
 
     private void saveRawImage() {
@@ -339,8 +365,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             contentStatusLabelThrobberIcon.start();
         }
         else {
-            contentStatusLabel.setIcon(UIUtils.getIconFromResources("actions/check-circle.png"));
-            contentStatusLabel.setText("Ready");
+            contentStatusLabel.setIcon(UIUtils.getIconFromResources("devices/input-mouse.png"));
+            contentStatusLabel.setText("Rotate (drag), Move (shift+drag)");
             contentStatusLabelThrobberIcon.stop();
         }
     }
@@ -433,6 +459,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private void onContentReady(Content content) {
         if(universe != null) {
             universe.addContent(content);
+            universe.fixWeirdRendering();
         }
         updateContentStatus();
     }

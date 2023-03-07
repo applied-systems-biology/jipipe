@@ -57,7 +57,14 @@ public class CustomInteractiveBehavior extends InteractiveBehavior {
                 else if(!e.isShiftDown() && !e.isControlDown()) {
                     viewTransformer.rotate(e);
                 }
-
+            }
+            else  if(SwingUtilities.isLeftMouseButton(e)) {
+                if(e.isShiftDown() && !e.isControlDown()) {
+                    viewTransformer.translate(e);
+                }
+                else if(!e.isShiftDown() && !e.isControlDown()) {
+                    viewTransformer.rotate(e);
+                }
             }
         }
 

@@ -236,6 +236,8 @@ public class CustomInteractiveViewPlatformTransformer {
         rotationXform.set(angle4d);
         rotationTG.setTransform(rotationXform);
         transformChanged(BehaviorCallback.ROTATE, rotationXform);
+
+        universe.fixWeirdRendering();
     }
 
     /**
