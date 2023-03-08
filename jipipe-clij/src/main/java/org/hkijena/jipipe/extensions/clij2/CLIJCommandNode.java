@@ -231,7 +231,9 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                 }
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     ClearCLBuffer buffer = outputs.get(outputSlot.getName());
-                    buffer.close();
+                    if(buffer != null) {
+                        buffer.close();
+                    }
                 }
             }
         }
