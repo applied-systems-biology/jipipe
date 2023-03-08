@@ -226,7 +226,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                     if (withExpression) {
                         int row = otherLabelMeasurementRows.get(allOtherLabels[otherLabelIndex]);
                         for (int col = 0; col < otherLabelMeasurements.getColumnCount(); col++) {
-                            variables.set(targetPrefix + "." + otherLabelMeasurements.getColumnName(col), otherLabelMeasurements.getValueAt(row, col));
+                            variables.set(otherPrefix + "." + otherLabelMeasurements.getColumnName(col), otherLabelMeasurements.getValueAt(row, col));
                         }
                     }
 
