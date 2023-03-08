@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -301,7 +302,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onRunFinished(RunWorkerFinishedEvent event) {
+    public void onRunFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == run)
             openResults();
     }
@@ -312,7 +313,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onRunInterrupted(RunWorkerInterruptedEvent event) {
+    public void onRunInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == run)
             openError(event.getException());
     }

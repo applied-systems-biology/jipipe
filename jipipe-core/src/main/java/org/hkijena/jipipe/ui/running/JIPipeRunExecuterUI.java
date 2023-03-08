@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.ui.components.icons.JIPipeRunThrobberIcon;
+import org.hkijena.jipipe.ui.components.icons.JIPipeRunnerQueueThrobberIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -57,7 +57,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.setModal(true);
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerFinished(RunWorkerFinishedEvent event) {
+            public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
                 if (event.getRun() == run)
                     dialog.setVisible(false);
             }
@@ -84,7 +84,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         progressBar.setStringPainted(true);
 
         JLabel throbberLabel = new JLabel();
-        throbberLabel.setIcon(new JIPipeRunThrobberIcon(throbberLabel));
+        throbberLabel.setIcon(new JIPipeRunnerQueueThrobberIcon(throbberLabel));
         buttonPanel.add(throbberLabel);
         buttonPanel.add(Box.createHorizontalStrut(8));
 
@@ -136,7 +136,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunWorkerFinishedEvent event) {
+    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
@@ -149,7 +149,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
@@ -157,7 +157,7 @@ public class JIPipeRunExecuterUI extends JPanel {
     }
 
     @Subscribe
-    public void onWorkerStart(RunWorkerStartedEvent event) {
+    public void onWorkerStart(JIPipeRunnable.StartedEvent event) {
         if (event.getRun() == run) {
             cancelButton.setEnabled(true);
         }
@@ -169,7 +169,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerProgress(RunWorkerProgressEvent event) {
+    public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
         if (event.getRun() == run) {
             progressBar.setIndeterminate(false);
             progressBar.setMaximum(event.getStatus().getMaxProgress());

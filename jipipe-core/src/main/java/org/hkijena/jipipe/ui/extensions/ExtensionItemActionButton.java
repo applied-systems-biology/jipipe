@@ -17,9 +17,9 @@ package org.hkijena.jipipe.ui.extensions;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -82,7 +82,7 @@ public class ExtensionItemActionButton extends JButton {
     }
 
     @Subscribe
-    public void onUpdateSiteActivated(RunWorkerFinishedEvent event) {
+    public void onUpdateSiteActivated(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             if (extension instanceof UpdateSiteExtension) {
                 // Try to update it

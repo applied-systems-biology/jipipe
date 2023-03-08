@@ -39,8 +39,6 @@ import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -332,14 +330,14 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     @Subscribe
-    public void onWorkerFinished(RunWorkerFinishedEvent event) {
+    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable())
             return;
         refreshTable();
     }
 
     @Subscribe
-    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (!isDisplayable())
             return;
         refreshTable();

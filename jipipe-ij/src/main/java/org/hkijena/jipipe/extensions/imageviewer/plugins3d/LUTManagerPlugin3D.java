@@ -17,7 +17,7 @@ import javax.swing.event.DocumentEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin2D {
+public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
     private final List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 
@@ -90,38 +90,8 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin2D {
     }
 
     @Override
-    public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
-        if (!(processor instanceof ColorProcessor)) {
-            if (c <= lutEditors.size() - 1) {
-                processor.setLut(lutEditors.get(c).getLUT());
-            }
-        }
-
-        // Workaround: setting LUT overrides calibration for some reason
-        // Recalibrate again
-        CalibrationPlugin3D calibrationPlugin = getViewerPanel().getPlugin(CalibrationPlugin3D.class);
-        if (calibrationPlugin != null) {
-            calibrationPlugin.draw(c, z, t, processor);
-        }
-
-        return processor;
-    }
-
-    @Override
-    public void beforeDraw(int c, int z, int t) {
-//        if(getCurrentImage().getType() != ImagePlus.COLOR_RGB) {
-//            if (getCurrentImage() instanceof CompositeImage) {
-//                CompositeImage image = (CompositeImage) getCurrentImage();
-//                if (c <= lutEditors.size() - 1) {
-//                    image.setChannelLut(lutEditors.get(c).getLUT(), c + 1);
-//                    image.setLut(lutEditors.get(c).getLUT());
-//                }
-//            } else {
-//                ImagePlus image = getCurrentImage();
-//                if (c <= lutEditors.size() - 1) {
-//                    image.setLut(lutEditors.get(c).getLUT());
-//                }
-//            }
-//        }
+    public ImagePlus process(ImagePlus imagePlus) {
+        // TODO
+        return super.process(imagePlus);
     }
 }

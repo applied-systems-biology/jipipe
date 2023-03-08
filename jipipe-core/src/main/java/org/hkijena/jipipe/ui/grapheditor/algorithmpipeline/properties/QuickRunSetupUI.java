@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -373,7 +374,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunWorkerFinishedEvent event) {
+    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == currentQuickRun) {
             tryShowSelectionPanel();
 
@@ -404,7 +405,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == currentQuickRun) {
             openError(event.getException());
         }

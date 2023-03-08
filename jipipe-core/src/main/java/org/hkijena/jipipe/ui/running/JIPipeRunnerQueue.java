@@ -27,13 +27,15 @@ import java.util.*;
 public class JIPipeRunnerQueue {
 
     private static JIPipeRunnerQueue instance;
+
+    private final String name;
     private final Queue<JIPipeRunWorker> queue = new ArrayDeque<>();
     private final Map<JIPipeRunnable, JIPipeRunWorker> assignedWorkers = new HashMap<>();
     private final EventBus eventBus = new EventBus();
     private JIPipeRunWorker currentlyRunningWorker = null;
 
-    private JIPipeRunnerQueue() {
-
+    public JIPipeRunnerQueue(String name) {
+        this.name = name;
     }
 
     /**
@@ -41,7 +43,7 @@ public class JIPipeRunnerQueue {
      */
     public static JIPipeRunnerQueue getInstance() {
         if (instance == null)
-            instance = new JIPipeRunnerQueue();
+            instance = new JIPipeRunnerQueue("");
         return instance;
     }
 
@@ -93,7 +95,7 @@ public class JIPipeRunnerQueue {
         worker.getEventBus().register(this);
         assignedWorkers.put(run, worker);
         queue.add(worker);
-        eventBus.post(new RunWorkerEnqueuedEvent(run, worker));
+        eventBus.post(new JIPipeRunnable.EnqueuedEvent(run, worker));
         tryDequeue();
         return worker;
     }
@@ -114,7 +116,7 @@ public class JIPipeRunnerQueue {
     public void tryDequeue() {
         if (currentlyRunningWorker == null && !queue.isEmpty()) {
             currentlyRunningWorker = queue.remove();
-            eventBus.post(new RunWorkerStartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
+            eventBus.post(new JIPipeRunnable.StartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
             currentlyRunningWorker.execute();
         }
     }
@@ -134,7 +136,7 @@ public class JIPipeRunnerQueue {
                 worker.cancel(true);
             } else {
                 queue.remove(worker);
-                eventBus.post(new RunWorkerInterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
+                eventBus.post(new JIPipeRunnable.InterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
 
                 worker.getEventBus().unregister(this);
             }
@@ -147,7 +149,7 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunWorkerFinishedEvent event) {
+    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
@@ -164,7 +166,7 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
@@ -181,7 +183,7 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerProgress(RunWorkerProgressEvent event) {
+    public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
         eventBus.post(event);
     }
 
@@ -212,6 +214,13 @@ public class JIPipeRunnerQueue {
     public void clearQueue() {
         for (JIPipeRunWorker worker : ImmutableList.copyOf(queue)) {
             cancel(worker.getRun());
+        }
+    }
+
+    public void cancelAll() {
+        clearQueue();
+        if(currentlyRunningWorker != null) {
+            cancel(currentlyRunningWorker.getRun());
         }
     }
 }

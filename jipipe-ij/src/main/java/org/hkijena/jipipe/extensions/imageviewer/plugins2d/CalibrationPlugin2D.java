@@ -5,7 +5,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelDisplayRangeControl;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewer2DDisplayRangeControl;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -14,7 +14,7 @@ import javax.swing.*;
 
 public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
-    private ImageViewerPanelDisplayRangeControl displayRangeCalibrationControl;
+    private ImageViewer2DDisplayRangeControl displayRangeCalibrationControl;
     private JComboBox<ImageJCalibrationMode> calibrationModes;
 //    private JToggleButton autoCalibrateButton = new JToggleButton("Keep auto-calibrating", UIUtils.getIconFromResources("actions/view-refresh.png"));
 
@@ -27,7 +27,7 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
         calibrationModes = new JComboBox<>();
         calibrationModes.setModel(new DefaultComboBoxModel<>(ImageJCalibrationMode.values()));
         calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
-        displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
+        displayRangeCalibrationControl = new ImageViewer2DDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
             displayRangeCalibrationControl.updateFromCurrentSlice(false);
             uploadSliceToCanvas();

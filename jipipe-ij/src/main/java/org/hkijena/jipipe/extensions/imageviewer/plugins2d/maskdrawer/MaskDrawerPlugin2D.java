@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
-import org.hkijena.jipipe.extensions.imageviewer.JPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -52,7 +52,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MaskDrawerPlugin2D extends JPipeImageViewerPlugin2D {
+public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     public static final Stroke STROKE_GUIDE_LINE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     private final JPanel colorSelectionPanel = new JPanel();

@@ -2,22 +2,18 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.imageviewer.plugins2d.GeneralImageViewerPanelPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelDisplayRangeControl;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DDisplayRangeControl;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin2D {
+public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
-    private ImageViewerPanelDisplayRangeControl displayRangeCalibrationControl;
+    private ImageViewer3DDisplayRangeControl displayRangeCalibrationControl;
     private JComboBox<ImageJCalibrationMode> calibrationModes;
-//    private JToggleButton autoCalibrateButton = new JToggleButton("Keep auto-calibrating", UIUtils.getIconFromResources("actions/view-refresh.png"));
 
     public CalibrationPlugin3D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
@@ -28,22 +24,11 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin2D {
         calibrationModes = new JComboBox<>();
         calibrationModes.setModel(new DefaultComboBoxModel<>(ImageJCalibrationMode.values()));
         calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
-        // TODO
-        System.err.println("BROKEN BROKEN BROKEN");
-//        displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
+        displayRangeCalibrationControl = new ImageViewer3DDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
-            displayRangeCalibrationControl.updateFromCurrentSlice(false);
-            uploadSliceToCanvas();
+            displayRangeCalibrationControl.updateFromCurrentImage(false);
+            getViewerPanel3D().updateImageLater();
         });
-//        autoCalibrateButton.addActionListener(e -> {
-//            if (autoCalibrateButton.isSelected()) {
-//                if (calibrationModes.getSelectedItem() != ImageJCalibrationMode.AutomaticImageJ) {
-//                    calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
-//                } else {
-//                    displayRangeCalibrationControl.applyCalibration(true);
-//                }
-//            }
-//        });
     }
 
     @Override
@@ -69,7 +54,7 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin2D {
                     }
                     if(!found) {
                         calibrationModes.setSelectedItem(ImageJCalibrationMode.Custom);
-                        displayRangeCalibrationControl.updateFromCurrentSlice(true);
+                        displayRangeCalibrationControl.updateFromCurrentImage(true);
                         displayRangeCalibrationControl.setCustomMinMax(min, max);
                     }
                 }
@@ -79,37 +64,14 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin2D {
             }
 
         }
-        displayRangeCalibrationControl.updateFromCurrentSlice(true);
+        displayRangeCalibrationControl.updateFromCurrentImage(true);
     }
 
     @Override
     public void initializeSettingsPanel(FormPanel formPanel) {
-        FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
-//        headerPanel.addColumn(autoCalibrateButton);
+        formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
         formPanel.addToForm(calibrationModes, new JLabel("Calibration type"), null);
         formPanel.addWideToForm(displayRangeCalibrationControl, null);
-    }
-
-    @Override
-    public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
-        ImageJUtils.calibrate(processor,
-                getSelectedCalibration(),
-                displayRangeCalibrationControl.getCustomMin(),
-                displayRangeCalibrationControl.getCustomMax(),
-                getViewerPanel2D().getSliceStats(new ImageSliceIndex(c, z, t)));
-        return processor;
-    }
-
-    @Override
-    public void onSliceChanged(boolean deferUploadSlice) {
-        displayRangeCalibrationControl.updateFromCurrentSlice(false);
-//        displayRangeCalibrationControl.applyCalibration(false);
-//        displayRangeCalibrationControl.updateSliders();
-    }
-
-    @Override
-    public void beforeDraw(int c, int z, int t) {
-//        displayRangeCalibrationControl.applyCalibration(false);
     }
 
     public ImageJCalibrationMode getSelectedCalibration() {
@@ -120,9 +82,9 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin2D {
         calibrationModes.setSelectedItem(mode);
     }
 
-
-//    public void disableAutoCalibration() {
-//        autoCalibrateButton.setSelected(false);
-//    }
-
+    @Override
+    public ImagePlus process(ImagePlus imagePlus) {
+        // TODO
+        return super.process(imagePlus);
+    }
 }

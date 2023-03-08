@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -29,8 +30,6 @@ import org.hkijena.jipipe.ui.extensions.JIPipeModernPluginManager;
 import org.hkijena.jipipe.ui.extensions.UpdateSiteExtension;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.scijava.Context;
@@ -211,7 +210,7 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
     }
 
     @Subscribe
-    public void onUpdateSiteActivated(RunWorkerFinishedEvent event) {
+    public void onUpdateSiteActivated(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun && this.clickedInstallAll) {
             if (JOptionPane.showOptionDialog(this, "Please close and restart ImageJ to complete the installation of updates. " +
                     "If you have any issues, please install the necessary dependencies via the ImageJ update manager (Help > Update)", "Dependencies installed", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Close ImageJ", "Ignore"}, "Close ImageJ") == JOptionPane.YES_OPTION) {
@@ -221,7 +220,7 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
     }
 
     @Subscribe
-    public void onUpdateSiteInstallationInterrupted(RunWorkerInterruptedEvent event) {
+    public void onUpdateSiteInstallationInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun) {
             clickedInstallAll = false;
         }

@@ -50,10 +50,10 @@ public interface JIPipeRunnable extends Runnable {
      *
      * @param function the method to execute when the run finishes (successfully or not successfully)
      */
-    default void onFinished(Consumer<RunWorkerFinishedEvent> function) {
+    default void onFinished(Consumer<FinishedEvent> function) {
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerFinished(RunWorkerFinishedEvent event) {
+            public void onWorkerFinished(FinishedEvent event) {
                 if (event.getRun() == JIPipeRunnable.this) {
                     function.accept(event);
                 }
@@ -67,10 +67,10 @@ public interface JIPipeRunnable extends Runnable {
      *
      * @param function the method to execute when the run is interrupted (due to error or user cancel)
      */
-    default void onInterrupted(Consumer<RunWorkerInterruptedEvent> function) {
+    default void onInterrupted(Consumer<InterruptedEvent> function) {
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
+            public void onWorkerInterrupted(InterruptedEvent event) {
                 if (event.getRun() == JIPipeRunnable.this) {
                     function.accept(event);
                 }
@@ -84,10 +84,10 @@ public interface JIPipeRunnable extends Runnable {
      *
      * @param function the method to execute when the run starts
      */
-    default void onStarted(Consumer<RunWorkerStartedEvent> function) {
+    default void onStarted(Consumer<StartedEvent> function) {
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerStarted(RunWorkerStartedEvent event) {
+            public void onWorkerStarted(StartedEvent event) {
                 if (event.getRun() == JIPipeRunnable.this) {
                     function.accept(event);
                 }
@@ -101,14 +101,148 @@ public interface JIPipeRunnable extends Runnable {
      *
      * @param function the method to execute when the run progresses
      */
-    default void onProgress(Consumer<RunWorkerProgressEvent> function) {
+    default void onProgress(Consumer<ProgressEvent> function) {
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerStarted(RunWorkerProgressEvent event) {
+            public void onWorkerStarted(ProgressEvent event) {
                 if (event.getRun() == JIPipeRunnable.this) {
                     function.accept(event);
                 }
             }
         });
+    }
+
+    /**
+     * Generated when an {@link JIPipeRunWorker} was started
+     */
+    class StartedEvent {
+
+        private JIPipeRunnable run;
+        private JIPipeRunWorker worker;
+
+        /**
+         * @param run    the run
+         * @param worker the worker
+         */
+        public StartedEvent(JIPipeRunnable run, JIPipeRunWorker worker) {
+            this.run = run;
+            this.worker = worker;
+        }
+
+        public JIPipeRunWorker getWorker() {
+            return worker;
+        }
+
+        public JIPipeRunnable getRun() {
+            return run;
+        }
+    }
+
+    /**
+     * Generated when an {@link JIPipeRunWorker} finished its work
+     */
+    class FinishedEvent {
+
+        private JIPipeRunWorker worker;
+
+        /**
+         * @param worker worker that finished
+         */
+        public FinishedEvent(JIPipeRunWorker worker) {
+            this.worker = worker;
+        }
+
+        public JIPipeRunWorker getWorker() {
+            return worker;
+        }
+
+        public JIPipeRunnable getRun() {
+            return worker.getRun();
+        }
+    }
+
+    /**
+     * Generated when an {@link JIPipeRunWorker} was enqueued
+     */
+    class EnqueuedEvent {
+
+        private JIPipeRunnable run;
+        private JIPipeRunWorker worker;
+
+        /**
+         * @param run    the run
+         * @param worker the worker
+         */
+        public EnqueuedEvent(JIPipeRunnable run, JIPipeRunWorker worker) {
+            this.run = run;
+            this.worker = worker;
+        }
+
+        public JIPipeRunWorker getWorker() {
+            return worker;
+        }
+
+        public JIPipeRunnable getRun() {
+            return run;
+        }
+    }
+
+    /**
+     * Generated when work of an {@link JIPipeRunWorker} is interrupted
+     */
+    class InterruptedEvent {
+
+        private Throwable exception;
+        private JIPipeRunWorker worker;
+
+        /**
+         * @param worker    the worker
+         * @param exception the exception triggered when interrupted
+         */
+        public InterruptedEvent(JIPipeRunWorker worker, Throwable exception) {
+            this.exception = exception;
+            this.worker = worker;
+        }
+
+        public JIPipeRunWorker getWorker() {
+            return worker;
+        }
+
+        public Throwable getException() {
+            return exception;
+        }
+
+        public JIPipeRunnable getRun() {
+            return worker.getRun();
+        }
+    }
+
+    /**
+     * Generated when an {@link JIPipeRunWorker} reports progress
+     */
+    class ProgressEvent {
+        private final JIPipeRunWorker worker;
+        private final JIPipeProgressInfo.StatusUpdatedEvent status;
+
+        /**
+         * @param worker the worker
+         * @param status the status
+         */
+        public ProgressEvent(JIPipeRunWorker worker, JIPipeProgressInfo.StatusUpdatedEvent status) {
+            this.worker = worker;
+            this.status = status;
+        }
+
+        public JIPipeRunWorker getWorker() {
+            return worker;
+        }
+
+        public JIPipeRunnable getRun() {
+            return worker.getRun();
+        }
+
+        public JIPipeProgressInfo.StatusUpdatedEvent getStatus() {
+            return status;
+        }
     }
 }

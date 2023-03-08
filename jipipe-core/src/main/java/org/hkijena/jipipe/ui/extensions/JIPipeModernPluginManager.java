@@ -25,14 +25,13 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.ijupdater.ConflictDialog;
 import org.hkijena.jipipe.ui.ijupdater.RefreshRepositoryRun;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.NetworkUtils;
 
@@ -210,7 +209,7 @@ public class JIPipeModernPluginManager {
     }
 
     @Subscribe
-    public void onOperationInterrupted(RunWorkerInterruptedEvent event) {
+    public void onOperationInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.");
             onFailure();
@@ -218,7 +217,7 @@ public class JIPipeModernPluginManager {
     }
 
     @Subscribe
-    public void onOperationFinished(RunWorkerFinishedEvent event) {
+    public void onOperationFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             this.updateSites = refreshRepositoryRun.getFilesCollection();
             onSuccess();

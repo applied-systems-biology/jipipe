@@ -2,6 +2,7 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.time.DurationFormatUtils;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,7 +37,7 @@ public class JIPipeRunQueueNotifier {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunWorkerFinishedEvent event) {
+    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
                 return;
@@ -66,7 +67,7 @@ public class JIPipeRunQueueNotifier {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
                 return;

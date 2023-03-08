@@ -1,23 +1,21 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
-import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
-import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.util.Tools;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.*;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.MeasurementDrawerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins3d.LUTManagerPlugin3D;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
@@ -36,7 +34,9 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             ROIManagerPlugin2D.class,
             AnimationSpeedPlugin2D.class,
             MeasurementDrawerPlugin2D.class,
-            AnnotationInfoPlugin2D.class);
+            AnnotationInfoPlugin2D.class,
+            CalibrationPlugin3D.class,
+            LUTManagerPlugin3D.class);
     private static JIPipeImageViewer ACTIVE_PANEL = null;
     private final JIPipeWorkbench workbench;
     private final ImageViewerUISettings settings;
@@ -52,7 +52,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
     private final List<JIPipeImageViewerPlugin> plugins = new ArrayList<>();
 
-    private final List<JPipeImageViewerPlugin2D> plugins2D = new ArrayList<>();
+    private final List<JIPipeImageViewerPlugin2D> plugins2D = new ArrayList<>();
 
     private final List<JIPipeImageViewerPlugin3D> plugins3D = new ArrayList<>();
 
@@ -91,8 +91,8 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
     private void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes) {
         for (Class<? extends JIPipeImageViewerPlugin> pluginType : pluginTypes) {
             Object plugin = ReflectionUtils.newInstance(pluginType, this);
-            if(plugin instanceof JPipeImageViewerPlugin2D) {
-                JPipeImageViewerPlugin2D plugin2D = (JPipeImageViewerPlugin2D) plugin;
+            if(plugin instanceof JIPipeImageViewerPlugin2D) {
+                JIPipeImageViewerPlugin2D plugin2D = (JIPipeImageViewerPlugin2D) plugin;
                 plugins.add(plugin2D);
                 plugins2D.add(plugin2D);
                 pluginMap.put(pluginType, plugin2D);
@@ -268,7 +268,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         return Collections.unmodifiableList(plugins);
     }
 
-    public List<JPipeImageViewerPlugin2D> getPlugins2D() {
+    public List<JIPipeImageViewerPlugin2D> getPlugins2D() {
         return Collections.unmodifiableList(plugins2D);
     }
 
@@ -312,7 +312,9 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
                         LUTManagerPlugin2D.class,
                         ROIManagerPlugin2D.class,
                         AnimationSpeedPlugin2D.class,
-                        MeasurementDrawerPlugin2D.class),
+                        MeasurementDrawerPlugin2D.class,
+                        LUTManagerPlugin3D.class,
+                        CalibrationPlugin3D.class),
                 Collections.emptyMap());
         dataDisplay.setImage(image);
         JIPipeImageViewerWindow window = new JIPipeImageViewerWindow(dataDisplay);
@@ -334,9 +336,11 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         if(contextObjects != null) {
             contextObjects.clear();
         }
+        clearOverlays();
         dataSource = null;
         image = null;
         imageViewerPanel2D.dispose();
+        imageViewerPanel3D.dispose();
     }
 
     public void setImage(ImagePlus image) {
@@ -370,16 +374,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             imageViewerPanel2D.getCanvas().setError(null);
             imageViewerPanel3D.showDataError(null);
         }
-    }
-
-    public void clearRoi2D() {
-        ROIManagerPlugin2D plugin = getPlugin(ROIManagerPlugin2D.class);
-        if(plugin != null) {
-            plugin.clearROIs(false);
-        }
-    }
-
-    public void clearRoi3D() {
     }
 
     public JToolBar getToolBar() {

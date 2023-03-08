@@ -52,7 +52,7 @@ import java.util.*;
 
 public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess {
 
-    private final JIPipeImageViewer imageViewerPanel;
+    private final JIPipeImageViewer imageViewer;
     private final JButton zoomStatusButton = new JButton();
     private final ImageViewerUISettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
@@ -91,11 +91,11 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     /**
      * Initializes a new image viewer
      *
-     * @param imageViewerPanel the viewer
+     * @param imageViewer the viewer
      */
-    public ImageViewerPanel2D(JIPipeImageViewer imageViewerPanel) {
-        this.imageViewerPanel = imageViewerPanel;
-        this.workbench = imageViewerPanel.getWorkbench();
+    public ImageViewerPanel2D(JIPipeImageViewer imageViewer) {
+        this.imageViewer = imageViewer;
+        this.workbench = imageViewer.getWorkbench();
         if (JIPipe.getInstance() != null) {
             settings = ImageViewerUISettings.getInstance();
         } else {
@@ -507,7 +507,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             Path targetPath = exportPathEditor.getPath();
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
-            Stack2DExporterRun run = new Stack2DExporterRun(imageViewerPanel, targetPath, baseName, format);
+            Stack2DExporterRun run = new Stack2DExporterRun(imageViewer, targetPath, baseName, format);
             JIPipeRunExecuterUI.runInDialog(this, run);
         }
     }
@@ -548,7 +548,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 null);
         if (response == JOptionPane.OK_OPTION) {
             Video2DExporterRun run = new Video2DExporterRun(
-                    imageViewerPanel,
+                    imageViewer,
                     path,
                     getCurrentSliceIndex(),
                     (HyperstackDimension) dimensionEditor.getSelectedItem(),
@@ -660,7 +660,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         refreshSlice();
         refreshFormPanel();
         refreshMenus();
-        for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             plugin.onImageChanged();
         }
         revalidate();
@@ -680,7 +680,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
-        for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
                 formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
@@ -718,8 +718,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return new ImageSliceIndex(channelSlider.getValue() - 1, stackSlider.getValue() - 1, frameSlider.getValue() - 1);
     }
 
-    public JIPipeImageViewer getImageViewerPanel() {
-        return imageViewerPanel;
+    public JIPipeImageViewer getImageViewer() {
+        return imageViewer;
     }
 
     private void animateNextSlice() {
@@ -752,7 +752,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.setPosition(channel, stack, frame);
             this.currentSlice = image.getProcessor();
-            for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged(true);
 //                System.out.println(plugin + "(A): " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
@@ -773,12 +773,12 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      */
     public ImageProcessor generateSlice(int c, int z, int t, double magnification, boolean withPostprocessing) {
         image.setPosition(c + 1, z + 1, t + 1);
-        for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             plugin.beforeDraw(c, z, t);
         }
 //        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
         ImageProcessor processor = image.getProcessor().duplicate();
-        for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             processor = plugin.draw(c, z, t, processor);
         }
 //        if (withRotation && rotation != 0) {
@@ -797,7 +797,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
         if (withPostprocessing) {
             BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
-            for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
                 plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
             }
             processor = new ColorProcessor(image);
