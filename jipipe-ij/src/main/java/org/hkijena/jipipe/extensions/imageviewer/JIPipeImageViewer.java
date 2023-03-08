@@ -13,6 +13,7 @@ import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.Measuremen
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.LUTManagerPlugin3D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins3d.RenderSettingsPlugin3D;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
@@ -36,7 +37,8 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             MeasurementDrawerPlugin2D.class,
             AnnotationInfoPlugin2D.class,
             CalibrationPlugin3D.class,
-            LUTManagerPlugin3D.class);
+            LUTManagerPlugin3D.class,
+            RenderSettingsPlugin3D.class);
     private static JIPipeImageViewer ACTIVE_PANEL = null;
     private final JIPipeWorkbench workbench;
     private final ImageViewerUISettings settings;

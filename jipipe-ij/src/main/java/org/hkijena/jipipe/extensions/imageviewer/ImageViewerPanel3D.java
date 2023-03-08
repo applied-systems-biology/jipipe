@@ -7,10 +7,12 @@ import ij.process.ImageStatistics;
 import ij.process.StackStatistics;
 import ij3d.*;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRendererSettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomImage3DUniverse;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomInteractiveBehavior;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.SnapshotSettings;
@@ -29,9 +31,9 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
-import org.jdesktop.swingx.JXStatusBar;
 import org.scijava.Disposable;
 import org.scijava.java3d.Canvas3D;
 import org.scijava.java3d.GraphicsConfigTemplate3D;
@@ -82,6 +84,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     private final JIPipeRunnerQueue viewerRunnerQueue = new JIPipeRunnerQueue("3D viewer");
 
+    private final Image3DRendererSettings image3DRendererSettings = new Image3DRendererSettings();
+
+    private final JLabel renderInfoLabel = new JLabel("No image",
+            UIUtils.getIconFromResources("devices/video-display.png"), JLabel.LEFT);
+
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         this.settings = imageViewer.getSettings();
@@ -89,7 +96,14 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         updateImageLaterTimer.setRepeats(false);
         initialize();
         updateSideBar();
+
+        // Register events
         viewerRunnerQueue.getEventBus().register(this);
+        image3DRendererSettings.addParameterChangeListener(e -> updateImageLater());
+    }
+
+    public Image3DRendererSettings getImage3DRendererSettings() {
+        return image3DRendererSettings;
     }
 
     private void initialize() {
@@ -139,6 +153,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         contentStatusBar.add(UIUtils.createVerticalSeparator());
         contentStatusBar.add(Box.createHorizontalStrut(8));
         contentStatusBar.add(new JLabel("Zoom", UIUtils.getIconFromResources("actions/input-mouse-click-middle.png"), JLabel.LEFT));
+
+        contentStatusBar.add(Box.createHorizontalStrut(8));
+        contentStatusBar.add(UIUtils.createVerticalSeparator());
+        contentStatusBar.add(Box.createHorizontalStrut(8));
+        contentStatusBar.add(renderInfoLabel);
         contentStatusBar.add(Box.createHorizontalStrut(8));
 
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
@@ -401,10 +420,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
         if(universe != null) {
             if (image != null) {
-                if(imageLoaderRun != null) {
-                    viewerRunnerQueue.enqueue(imageLoaderRun);
-                }
-                imageLoaderRun = new ImageLoaderRun(this, image);
+                viewerRunnerQueue.cancelIf(run -> run instanceof ImageLoaderRun);
+                int resolutionFactor = image3DRendererSettings.getResolutionFactor(image);
+                renderInfoLabel.setText( (int)image3DRendererSettings.getExpectedMemoryAllocationMegabytes(image) + "MB / " + resolutionFactor);
+                imageLoaderRun = new ImageLoaderRun(image, image3DRendererSettings.getRenderType(), resolutionFactor);
                 viewerRunnerQueue.enqueue(imageLoaderRun);
             }
         }
@@ -654,25 +673,6 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         Initialized
     }
 
-    public enum RenderType {
-        Volume(0),
-        OrthoSlice(1),
-        Surface(2),
-        SurfacePlot2D(3),
-        MultiOrthoSlices(4);
-
-        private final int nativeValue;
-
-        RenderType(int nativeValue) {
-
-            this.nativeValue = nativeValue;
-        }
-
-        public int getNativeValue() {
-            return nativeValue;
-        }
-    }
-
     public static class UniverseInitializerRun extends AbstractJIPipeRunnable {
 
         private final ImageViewerPanel3D panel3D;
@@ -712,15 +712,18 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     public static class ImageLoaderRun extends AbstractJIPipeRunnable {
 
-        private final ImageViewerPanel3D panel3D;
-
         private final ImagePlus imagePlus;
+
+        private final Image3DRenderType renderType;
+
+        private final int resolutionFactor;
 
         private Content content;
 
-        public ImageLoaderRun(ImageViewerPanel3D panel3D, ImagePlus imagePlus) {
-            this.panel3D = panel3D;
+        public ImageLoaderRun(ImagePlus imagePlus, Image3DRenderType renderType, int resolutionFactor) {
             this.imagePlus = imagePlus;
+            this.renderType = renderType;
+            this.resolutionFactor = resolutionFactor;
         }
 
         @Override
@@ -730,8 +733,16 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         @Override
         public void run() {
-            ImagePlus asRGB = ImageJUtils.renderToRGBWithLUTIfNeeded(imagePlus, new JIPipeProgressInfo());
-            content = ContentCreator.createContent("Image", asRGB, RenderType.Volume.nativeValue, 1, 0, new Color3f(1, 1, 1), 0, new boolean[]{true, true, true});
+            ImagePlus asRGB = ImageJUtils.renderToRGBWithLUTIfNeeded(imagePlus, getProgressInfo().resolve("Render to RGB"));
+            getProgressInfo().log("Converting into " + renderType);
+            content = ContentCreator.createContent("Image",
+                    asRGB,
+                    renderType.getNativeValue(),
+                    resolutionFactor,
+                    0,
+                    new Color3f(1, 1, 1),
+                    0,
+                    new boolean[]{true, true, true});
         }
 
         public Content getContent() {

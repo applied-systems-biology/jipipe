@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Queue for {@link JIPipeRunnable}
@@ -220,6 +222,15 @@ public class JIPipeRunnerQueue {
     public void cancelAll() {
         clearQueue();
         if(currentlyRunningWorker != null) {
+            cancel(currentlyRunningWorker.getRun());
+        }
+    }
+
+    public void cancelIf(Predicate<JIPipeRunnable> predicate) {
+        for (JIPipeRunWorker toCancel : queue.stream().filter(rw -> predicate.test(rw.getRun())).collect(Collectors.toList())) {
+            cancel(toCancel.getRun());
+        }
+        if(currentlyRunningWorker != null && !currentlyRunningWorker.isDone() && predicate.test(currentlyRunningWorker.getRun())) {
             cancel(currentlyRunningWorker.getRun());
         }
     }
