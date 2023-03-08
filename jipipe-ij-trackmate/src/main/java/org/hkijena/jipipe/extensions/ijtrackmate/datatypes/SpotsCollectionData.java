@@ -143,8 +143,8 @@ public class SpotsCollectionData extends ModelData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         CachedSpotCollectionDataViewerWindow window = new CachedSpotCollectionDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
-        window.reloadDisplayedData();
         window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     /**

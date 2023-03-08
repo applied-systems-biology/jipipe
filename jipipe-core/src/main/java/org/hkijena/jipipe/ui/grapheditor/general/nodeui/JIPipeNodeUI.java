@@ -1871,7 +1871,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setContentPane(algorithmFinderUI);
         dialog.pack();
-        dialog.setSize(640, 480);
+        dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(this);
 
         algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {
@@ -1902,7 +1902,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setContentPane(algorithmFinderUI);
         dialog.pack();
-        dialog.setSize(640, 480);
+        dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(this);
 
         algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {

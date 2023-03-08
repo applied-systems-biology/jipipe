@@ -191,8 +191,9 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedPlotViewerWindow window = new CachedPlotViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedPlotViewerWindow window = new CachedPlotViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     @Override

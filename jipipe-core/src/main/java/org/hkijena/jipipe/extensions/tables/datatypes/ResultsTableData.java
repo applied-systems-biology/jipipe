@@ -817,8 +817,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     public ResultsTable getTable() {
