@@ -125,7 +125,8 @@ public class TrackCollectionData extends SpotsCollectionData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTracksCollectionDataViewerWindow window = new CachedTracksCollectionDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedTracksCollectionDataViewerWindow window = new CachedTracksCollectionDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        window.reloadDisplayedData();
         window.setVisible(true);
     }
 

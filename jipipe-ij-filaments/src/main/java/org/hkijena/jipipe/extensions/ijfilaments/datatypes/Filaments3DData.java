@@ -104,7 +104,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedFilamentsDataViewerWindow window = new CachedFilamentsDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedFilamentsDataViewerWindow window = new CachedFilamentsDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        window.reloadDisplayedData();
         window.setVisible(true);
     }
 

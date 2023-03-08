@@ -30,7 +30,7 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
         if (viewerPanel == null) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
         } else {
-            viewerPanel.addRoi2D((ROIListData)data);
+            viewerPanel.addOverlay(data);
         }
     }
 

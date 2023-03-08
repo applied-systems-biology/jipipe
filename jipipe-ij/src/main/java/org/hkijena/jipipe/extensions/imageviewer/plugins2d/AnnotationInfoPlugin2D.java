@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d;
 
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.JPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -13,7 +13,7 @@ import javax.swing.*;
  * To be used with {@link org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow} and other similar implementations that
  * have access to the cache
  */
-public class AnnotationInfoPlugin2D extends ImageViewerPanelPlugin2D {
+public class AnnotationInfoPlugin2D extends JPipeImageViewerPlugin2D {
 
     private final JIPipeCacheDataViewerWindow cacheDataViewerWindow;
     private final JIPipeCachedDataViewerAnnotationInfoPanel infoPanel;

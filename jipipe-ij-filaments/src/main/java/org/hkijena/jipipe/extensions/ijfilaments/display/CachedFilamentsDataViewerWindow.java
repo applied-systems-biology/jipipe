@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 
@@ -32,55 +33,10 @@ import java.awt.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-public class CachedFilamentsDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-    private JIPipeImageViewer imageViewerPanel;
+public class CachedFilamentsDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
 
-    public CachedFilamentsDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedFilamentsDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
-        initialize();
-        if (!deferLoading)
-            reloadDisplayedData();
-        addWindowListener(this);
-    }
-
-    private void initialize() {
-        imageViewerPanel = JIPipeImageViewer.createForCacheViewer(this);
-        setContentPane(imageViewerPanel);
-        revalidate();
-        repaint();
-    }
-
-    @Override
-    public JToolBar getToolBar() {
-        if (imageViewerPanel == null)
-            return null;
-        else
-            return imageViewerPanel.getToolBar();
-    }
-
-    @Override
-    protected void beforeSetRow() {
-
-    }
-
-    @Override
-    protected void afterSetRow() {
-    }
-
-    @Override
-    protected void hideErrorUI() {
-        imageViewerPanel.setError(null);
-    }
-
-    @Override
-    protected void showErrorUI() {
-        String errorLabel;
-        if (getAlgorithm() != null) {
-            errorLabel = (String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
-        } else {
-            errorLabel = ("No data available");
-        }
-        imageViewerPanel.setError(errorLabel);
     }
 
     @Override
@@ -107,53 +63,16 @@ public class CachedFilamentsDataViewerWindow extends JIPipeCacheDataViewerWindow
             }
         }
 
-        imageViewerPanel.setError(null);
+        getImageViewer().setError(null);
         ImagePlus image = IJ.createImage("empty", "8-bit", width, height, numC, numZ, numT);
         ImageJUtils.forEachSlice(image, ip -> {
             ip.setColor(0);
             ip.fill();
         }, new JIPipeProgressInfo());
-        boolean fitImage = imageViewerPanel.getImage() == null;
-        imageViewerPanel.clearRoi2D();
-        imageViewerPanel.clearRoi3D();
-        imageViewerPanel.addRoi2d(rois);
-        imageViewerPanel.setImage(image);
-        if (fitImage)
-            SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
+        getImageViewer().clearOverlays();
+        getImageViewer().setImage(image);
+        getImageViewer().addOverlay(rois);
+        fitImageToScreenOnce();
     }
 
-    @Override
-    public void windowOpened(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        imageViewerPanel.dispose();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-
-    }
 }

@@ -51,7 +51,7 @@ public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOp
                 new ComponentListCellRenderer<>(UIUtils.getIconFromResources("actions/window.png")),
                 ListSelectionMode.MultipleInterval);
         for (JIPipeImageViewer viewerPanel : selected) {
-            viewerPanel.addRoi2d((ROIListData) data);
+            viewerPanel.addOverlay(data);
         }
     }
 

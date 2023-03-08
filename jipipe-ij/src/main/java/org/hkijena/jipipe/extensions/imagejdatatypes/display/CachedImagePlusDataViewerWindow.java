@@ -21,6 +21,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
@@ -28,24 +30,14 @@ import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-    private JIPipeImageViewer imageViewerPanel;
+public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
     private CustomDataLoader customDataLoader;
 
-    public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoadingData) {
+    public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
-        initialize();
-        if (!deferLoadingData)
-            reloadDisplayedData();
-        addWindowListener(this);
-    }
-
-    private void initialize() {
-        imageViewerPanel = JIPipeImageViewer.createForCacheViewer(this);
-        setContentPane(imageViewerPanel);
-        revalidate();
-        repaint();
     }
 
     public CustomDataLoader getCustomDataLoader() {
@@ -54,45 +46,6 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     public void setCustomDataLoader(CustomDataLoader customDataLoader) {
         this.customDataLoader = customDataLoader;
-    }
-
-    @Override
-    public JToolBar getToolBar() {
-        if (imageViewerPanel == null)
-            return null;
-        else
-            return imageViewerPanel.getToolBar();
-    }
-
-    @Override
-    public void setTitle(String title) {
-        super.setTitle(title);
-        imageViewerPanel.setName(getTitle());
-    }
-
-    @Override
-    protected void beforeSetRow() {
-
-    }
-
-    @Override
-    protected void afterSetRow() {
-    }
-
-    @Override
-    protected void hideErrorUI() {
-        imageViewerPanel.setError(null);
-    }
-
-    @Override
-    protected void showErrorUI() {
-        String errorLabel;
-        if (getAlgorithm() != null) {
-            errorLabel = String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow());
-        } else {
-            errorLabel = "No data available";
-        }
-        imageViewerPanel.setError(errorLabel);
     }
 
     @Override
@@ -107,71 +60,26 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
             customDataLoader.setRois(null);
         } else if (ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
             ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
-            imageViewerPanel.setError(null);
+            getImageViewer().setError(null);
             image = data.getViewedImage(false);
             if (data.getImage().getRoi() != null) {
                 rois.add(data.getImage().getRoi());
             }
         } else if (OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
             OMEImageData data = (OMEImageData) virtualData.getData(progressInfo);
-            imageViewerPanel.setError(null);
+            getImageViewer().setError(null);
             image = data.getImage();
             rois.addAll(data.getRois());
         } else {
             throw new UnsupportedOperationException();
         }
         image.setTitle(image.getTitle());
-        boolean fitImage = imageViewerPanel.getImage() == null;
         if (!rois.isEmpty() || ImageViewerUISettings.getInstance().isAlwaysClearROIs()) {
-            imageViewerPanel.clearRoi2D();
-            imageViewerPanel.clearRoi3D();
-            imageViewerPanel.addRoi2d(rois);
+            getImageViewer().clearOverlays();
+            getImageViewer().addOverlay(rois);
         }
-        imageViewerPanel.setImage(image);
-        if (fitImage)
-            SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
-    }
-
-    @Override
-    public void windowOpened(WindowEvent e) {
-        imageViewerPanel.setName(getTitle());
-        imageViewerPanel.addToOpenPanels();
-        imageViewerPanel.setAsActiveViewerPanel();
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        imageViewerPanel.dispose();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-        imageViewerPanel.setAsActiveViewerPanel();
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-
-    }
-
-    @Override
-    public void dispose() {
-        super.dispose();
-        imageViewerPanel.dispose();
+        getImageViewer().setImage(image);
+        fitImageToScreenOnce();
     }
 
     /**

@@ -19,116 +19,33 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 
-import javax.swing.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-    private JIPipeImageViewer imageViewerPanel;
+public class CachedSpotCollectionDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
 
-    public CachedSpotCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedSpotCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
-        initialize();
-        if (!deferLoading)
-            reloadDisplayedData();
-        addWindowListener(this);
-    }
-
-    private void initialize() {
-        imageViewerPanel = JIPipeImageViewer.createForCacheViewer(this, Collections.singletonList(SpotsManagerPlugin2D.class));
-        setContentPane(imageViewerPanel);
-        revalidate();
-        repaint();
     }
 
     @Override
-    public JToolBar getToolBar() {
-        if (imageViewerPanel == null)
-            return null;
-        else
-            return imageViewerPanel.getToolBar();
-    }
-
-    @Override
-    protected void beforeSetRow() {
-
-    }
-
-    @Override
-    protected void afterSetRow() {
-    }
-
-    @Override
-    protected void hideErrorUI() {
-        imageViewerPanel.setError(null);
-    }
-
-    @Override
-    protected void showErrorUI() {
-        String errorLabel;
-        if (getAlgorithm() != null) {
-            errorLabel = (String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
-        } else {
-            errorLabel = ("No data available");
-        }
-        imageViewerPanel.setError(errorLabel);
+    protected void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
+        super.initializePlugins(plugins, contextObjects);
+        plugins.add(SpotsManagerPlugin2D.class);
     }
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-//        ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
-//        SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class);
-//        imageViewerPanel.getCanvas().setError(null);
-//        boolean fitImage = imageViewerPanel.getImage() == null;
-//        plugin.clearROIs(true);
-//        plugin.importROIs(data.spotsToROIList(), true);
-        SpotsManagerPlugin2D plugin = imageViewerPanel.getPlugin(SpotsManagerPlugin2D.class);
+        getImageViewer().clearOverlays();
         SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class);
-        boolean fitImage = imageViewerPanel.getImage() == null;
-        plugin.setSpotCollection(data, true);
-        imageViewerPanel.setError(null);
-        imageViewerPanel.setImage(data.getImage());
-        if (fitImage)
-            SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
+        getImageViewer().addOverlay(data);
+        getImageViewer().setError(null);
+        getImageViewer().setImage(data.getImage());
+        fitImageToScreenOnce();
     }
 
-    @Override
-    public void windowOpened(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        imageViewerPanel.dispose();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-
-    }
 }

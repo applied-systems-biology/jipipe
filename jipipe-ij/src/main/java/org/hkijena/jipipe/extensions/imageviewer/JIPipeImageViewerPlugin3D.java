@@ -3,9 +3,9 @@ package org.hkijena.jipipe.extensions.imageviewer;
 import ij.ImagePlus;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomImage3DUniverse;
 
-public abstract class ImageViewerPanelPlugin3D extends ImageViewerPanelPlugin {
+public abstract class JIPipeImageViewerPlugin3D extends JIPipeImageViewerPlugin {
 
-    public ImageViewerPanelPlugin3D(JIPipeImageViewer viewerPanel) {
+    public JIPipeImageViewerPlugin3D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
     }
 

@@ -28,7 +28,9 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin2D {
         calibrationModes = new JComboBox<>();
         calibrationModes.setModel(new DefaultComboBoxModel<>(ImageJCalibrationMode.values()));
         calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
-        displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
+        // TODO
+        System.err.println("BROKEN BROKEN BROKEN");
+//        displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
             displayRangeCalibrationControl.updateFromCurrentSlice(false);
             uploadSliceToCanvas();

@@ -633,7 +633,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setVisible(true);
     }
 

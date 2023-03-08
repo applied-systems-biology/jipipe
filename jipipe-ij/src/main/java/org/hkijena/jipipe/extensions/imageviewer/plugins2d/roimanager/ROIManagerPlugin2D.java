@@ -17,7 +17,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.RoiListCellRenderer;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.JPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
+public class ROIManagerPlugin2D extends JPipeImageViewerPlugin2D {
     private final ROIListData overlayRois = new ROIListData();
     private final JList<Roi> roiListControl = new JList<>();
     private final RoiDrawer roiDrawer = new RoiDrawer();
@@ -86,6 +86,23 @@ public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
             ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel2D().getZoomedDummyCanvas());
         }
         updateListModel(true, Collections.emptySet());
+    }
+
+    @Override
+    public void onOverlayAdded(Object overlay) {
+        if(overlay instanceof ROIListData) {
+            importROIs((ROIListData) overlay, false);
+        }
+    }
+
+    @Override
+    public void onOverlayRemoved(Object overlay) {
+        // Currently not possible (creates copies of the ROI)
+    }
+
+    @Override
+    public void onOverlaysCleared() {
+        clearROIs(false);
     }
 
     @Override

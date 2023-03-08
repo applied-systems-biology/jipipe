@@ -1,16 +1,17 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
 import ij.ImagePlus;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.FormPanel;
 
 import javax.swing.*;
 
-public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
+public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess {
     private final JIPipeImageViewer viewerPanel;
 
-    public ImageViewerPanelPlugin(JIPipeImageViewer viewerPanel) {
+    public JIPipeImageViewerPlugin(JIPipeImageViewer viewerPanel) {
         this.viewerPanel = viewerPanel;
     }
 
@@ -25,6 +26,14 @@ public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
     @Override
     public JIPipeWorkbench getWorkbench() {
         return getViewerPanel().getWorkbench();
+    }
+
+    /**
+     * Gets the current data source if any is set
+     * @return the data source or null
+     */
+    public JIPipeDataSource getDataSource() {
+        return getViewerPanel().getDataSource();
     }
 
     /**
@@ -56,4 +65,27 @@ public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
      * @return the icon
      */
     public abstract Icon getCategoryIcon();
+
+    /**
+     * Called if an overlay was added
+     * @param overlay the overlay
+     */
+    public void onOverlayAdded(Object overlay) {
+
+    }
+
+    /**
+     * Called if an overlay was removed
+     * @param overlay the overlay
+     */
+    public void onOverlayRemoved(Object overlay) {
+
+    }
+
+    /**
+     * Called if the overlays were cleared
+     */
+    public void onOverlaysCleared() {
+
+    }
 }

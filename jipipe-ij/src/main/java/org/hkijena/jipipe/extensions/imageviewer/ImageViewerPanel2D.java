@@ -660,7 +660,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         refreshSlice();
         refreshFormPanel();
         refreshMenus();
-        for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+        for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
             plugin.onImageChanged();
         }
         revalidate();
@@ -680,7 +680,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
-        for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+        for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
             FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
                 formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
@@ -752,7 +752,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.setPosition(channel, stack, frame);
             this.currentSlice = image.getProcessor();
-            for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+            for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged(true);
 //                System.out.println(plugin + "(A): " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
@@ -773,12 +773,12 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      */
     public ImageProcessor generateSlice(int c, int z, int t, double magnification, boolean withPostprocessing) {
         image.setPosition(c + 1, z + 1, t + 1);
-        for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+        for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
             plugin.beforeDraw(c, z, t);
         }
 //        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
         ImageProcessor processor = image.getProcessor().duplicate();
-        for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+        for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
             processor = plugin.draw(c, z, t, processor);
         }
 //        if (withRotation && rotation != 0) {
@@ -797,7 +797,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
         if (withPostprocessing) {
             BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
-            for (ImageViewerPanelPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
+            for (JPipeImageViewerPlugin2D plugin : imageViewerPanel.getPlugins2D()) {
                 plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
             }
             processor = new ColorProcessor(image);

@@ -8,6 +8,7 @@ import ij.gui.Roi;
 import ij.measure.Calibration;
 import ij.util.Tools;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.*;
@@ -29,7 +30,7 @@ import java.util.List;
 public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, Disposable {
 
     private static final Set<JIPipeImageViewer> OPEN_PANELS = new HashSet<>();
-    public static final List<Class<? extends ImageViewerPanelPlugin>> DEFAULT_PLUGINS = Arrays.asList(CalibrationPlugin2D.class,
+    public static final List<Class<? extends JIPipeImageViewerPlugin>> DEFAULT_PLUGINS = Arrays.asList(CalibrationPlugin2D.class,
             PixelInfoPlugin2D.class,
             LUTManagerPlugin2D.class,
             ROIManagerPlugin2D.class,
@@ -37,8 +38,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             MeasurementDrawerPlugin2D.class,
             AnnotationInfoPlugin2D.class);
     private static JIPipeImageViewer ACTIVE_PANEL = null;
-
-    private final EventBus eventBus = new EventBus();
     private final JIPipeWorkbench workbench;
     private final ImageViewerUISettings settings;
     private final Map<Class<?>, Object> contextObjects;
@@ -51,13 +50,13 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
     private final ImageViewerPanel3D imageViewerPanel3D;
 
-    private final List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
+    private final List<JIPipeImageViewerPlugin> plugins = new ArrayList<>();
 
-    private final List<ImageViewerPanelPlugin2D> plugins2D = new ArrayList<>();
+    private final List<JPipeImageViewerPlugin2D> plugins2D = new ArrayList<>();
 
-    private final List<ImageViewerPanelPlugin3D> plugins3D = new ArrayList<>();
+    private final List<JIPipeImageViewerPlugin3D> plugins3D = new ArrayList<>();
 
-    private final Map<Class<? extends ImageViewerPanelPlugin>, ImageViewerPanelPlugin> pluginMap = new HashMap<>();
+    private final Map<Class<? extends JIPipeImageViewerPlugin>, JIPipeImageViewerPlugin> pluginMap = new HashMap<>();
 
     private ImagePlus image;
 
@@ -67,12 +66,14 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
     private final List<Object> overlays = new ArrayList<>();
 
+    private JIPipeDataSource dataSource;
+
     /**
      * Initializes a new image viewer
      *
      * @param workbench the workbench. Use {@link org.hkijena.jipipe.ui.JIPipeDummyWorkbench} if you do not have access to one.
      */
-    public JIPipeImageViewer(JIPipeWorkbench workbench, List<Class<? extends ImageViewerPanelPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
+    public JIPipeImageViewer(JIPipeWorkbench workbench, List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
         this.workbench = workbench;
         this.contextObjects = contextObjects;
         if (JIPipe.getInstance() != null) {
@@ -87,17 +88,17 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         switchTo2D();
     }
 
-    private void initializePlugins(List<Class<? extends ImageViewerPanelPlugin>> pluginTypes) {
-        for (Class<? extends ImageViewerPanelPlugin> pluginType : pluginTypes) {
+    private void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes) {
+        for (Class<? extends JIPipeImageViewerPlugin> pluginType : pluginTypes) {
             Object plugin = ReflectionUtils.newInstance(pluginType, this);
-            if(plugin instanceof ImageViewerPanelPlugin2D) {
-                ImageViewerPanelPlugin2D plugin2D = (ImageViewerPanelPlugin2D) plugin;
+            if(plugin instanceof JPipeImageViewerPlugin2D) {
+                JPipeImageViewerPlugin2D plugin2D = (JPipeImageViewerPlugin2D) plugin;
                 plugins.add(plugin2D);
                 plugins2D.add(plugin2D);
                 pluginMap.put(pluginType, plugin2D);
             }
-            else if(plugin instanceof ImageViewerPanelPlugin3D) {
-                ImageViewerPanelPlugin3D plugin3D = (ImageViewerPanelPlugin3D) plugin;
+            else if(plugin instanceof JIPipeImageViewerPlugin3D) {
+                JIPipeImageViewerPlugin3D plugin3D = (JIPipeImageViewerPlugin3D) plugin;
                 plugins.add(plugin3D);
                 plugins3D.add(plugin3D);
                 pluginMap.put(pluginType, plugin3D);
@@ -107,10 +108,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
     public ImageViewerUISettings getSettings() {
         return settings;
-    }
-
-    public static JIPipeImageViewer createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow) {
-       return createForCacheViewer(cacheDataViewerWindow, Collections.emptyList());
     }
 
     public ImageViewerPanel2D getImageViewerPanel2D() {
@@ -129,24 +126,20 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         while(!overlays.isEmpty()) {
             Object o = overlays.get(0);
             overlays.remove(o);
-            eventBus.post(new OverlayRemovedEvent(this, o));
+            for (JIPipeImageViewerPlugin plugin : plugins) {
+                plugin.onOverlayRemoved(o);
+            }
         }
-        eventBus.post(new OverlayClearedEvent(this));
+        for (JIPipeImageViewerPlugin plugin : plugins) {
+            plugin.onOverlaysCleared();
+        }
     }
 
     public void addOverlay(Object o) {
         overlays.add(o);
-        eventBus.post(new OverlayAddedEvent(this, o));
-    }
-
-    public static JIPipeImageViewer createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow, List<Class<? extends ImageViewerPanelPlugin>> additionalPlugins) {
-        Map<Class<?>, Object> contextObjects = new HashMap<>();
-        ArrayList<Class<? extends ImageViewerPanelPlugin>> plugins = new ArrayList<>(DEFAULT_PLUGINS);
-        plugins.addAll(additionalPlugins);
-        contextObjects.put(JIPipeCacheDataViewerWindow.class, cacheDataViewerWindow);
-        return new JIPipeImageViewer(cacheDataViewerWindow.getWorkbench(),
-                plugins,
-                contextObjects);
+        for (JIPipeImageViewerPlugin plugin : plugins) {
+            plugin.onOverlayAdded(o);
+        }
     }
 
     private void initialize() {
@@ -271,15 +264,15 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         return OPEN_PANELS;
     }
 
-    public List<ImageViewerPanelPlugin> getPlugins() {
+    public List<JIPipeImageViewerPlugin> getPlugins() {
         return Collections.unmodifiableList(plugins);
     }
 
-    public List<ImageViewerPanelPlugin2D> getPlugins2D() {
+    public List<JPipeImageViewerPlugin2D> getPlugins2D() {
         return Collections.unmodifiableList(plugins2D);
     }
 
-    public List<ImageViewerPanelPlugin3D> getPlugins3D() {
+    public List<JIPipeImageViewerPlugin3D> getPlugins3D() {
         return Collections.unmodifiableList(plugins3D);
     }
 
@@ -294,6 +287,14 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
     public void addToOpenPanels() {
         OPEN_PANELS.add(this);
+    }
+
+    public JIPipeDataSource getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(JIPipeDataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /**
@@ -333,6 +334,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         if(contextObjects != null) {
             contextObjects.clear();
         }
+        dataSource = null;
         image = null;
         imageViewerPanel2D.dispose();
     }
@@ -388,67 +390,4 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         return (T) pluginMap.getOrDefault(klass, null);
     }
 
-    public void addRoi2D(Collection<Roi> rois) {
-        ROIManagerPlugin2D plugin = getPlugin(ROIManagerPlugin2D.class);
-        if(plugin != null) {
-            ROIListData roiListData = new ROIListData();
-            roiListData.addAll(rois);
-            plugin.importROIs(roiListData, false);
-        }
-    }
-
-    public void addRoi2d(ROIListData rois) {
-        ROIManagerPlugin2D plugin = getPlugin(ROIManagerPlugin2D.class);
-        if(plugin != null) {
-            plugin.importROIs(rois, false);
-        }
-    }
-
-    public static class OverlayAddedEvent {
-        private final JIPipeImageViewer imageViewerPanel;
-        private final Object overlay;
-
-        public OverlayAddedEvent(JIPipeImageViewer imageViewerPanel, Object overlay) {
-            this.imageViewerPanel = imageViewerPanel;
-            this.overlay = overlay;
-        }
-
-        public JIPipeImageViewer getImageViewerPanel() {
-            return imageViewerPanel;
-        }
-
-        public Object getOverlay() {
-            return overlay;
-        }
-    }
-
-    public static class OverlayRemovedEvent {
-        private final JIPipeImageViewer imageViewerPanel;
-        private final Object overlay;
-
-        public OverlayRemovedEvent(JIPipeImageViewer imageViewerPanel, Object overlay) {
-            this.imageViewerPanel = imageViewerPanel;
-            this.overlay = overlay;
-        }
-
-        public JIPipeImageViewer getImageViewerPanel() {
-            return imageViewerPanel;
-        }
-
-        public Object getOverlay() {
-            return overlay;
-        }
-    }
-
-    public static class OverlayClearedEvent {
-        private final JIPipeImageViewer imageViewerPanel;
-
-        public OverlayClearedEvent(JIPipeImageViewer imageViewerPanel) {
-            this.imageViewerPanel = imageViewerPanel;
-        }
-
-        public JIPipeImageViewer getImageViewerPanel() {
-            return imageViewerPanel;
-        }
-    }
 }

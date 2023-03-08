@@ -334,7 +334,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
-        for (ImageViewerPanelPlugin3D plugin : imageViewerPanel.getPlugins3D()) {
+        for (JIPipeImageViewerPlugin3D plugin : imageViewerPanel.getPlugins3D()) {
             FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
                 formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);

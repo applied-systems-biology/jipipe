@@ -6,9 +6,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public abstract class ImageViewerPanelPlugin2D extends ImageViewerPanelPlugin {
+public abstract class JPipeImageViewerPlugin2D extends JIPipeImageViewerPlugin {
 
-    public ImageViewerPanelPlugin2D(JIPipeImageViewer viewerPanel) {
+    public JPipeImageViewerPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
     }
 
@@ -27,6 +27,7 @@ public abstract class ImageViewerPanelPlugin2D extends ImageViewerPanelPlugin {
     public ImageProcessor getCurrentSlice() {
         return getViewerPanel2D().getCurrentSlice();
     }
+
 
     /**
      * Draws the image in the processor
