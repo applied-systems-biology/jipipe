@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
@@ -75,7 +75,7 @@ public class MaskDrawerPlugin2D extends ImageViewerPanelPlugin2D {
     private SmallButtonAction exportToRoiManagerAction;
     private boolean drawCurrentMaskSlicePreview;
 
-    public MaskDrawerPlugin2D(ImageViewerPanel viewerPanel) {
+    public MaskDrawerPlugin2D(JIPipeImageViewerPanel viewerPanel) {
         super(viewerPanel);
 //        viewerPanel.setRotationEnabled(false);
         initialize();

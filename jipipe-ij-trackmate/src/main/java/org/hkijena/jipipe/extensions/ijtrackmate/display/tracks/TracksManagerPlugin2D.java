@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -70,7 +70,7 @@ public class TracksManagerPlugin2D extends ImageViewerPanelPlugin2D {
     private TrackListCellRenderer tracksListCellRenderer;
     private JPanel mainPanel;
 
-    public TracksManagerPlugin2D(ImageViewerPanel viewerPanel) {
+    public TracksManagerPlugin2D(JIPipeImageViewerPanel viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
@@ -455,7 +455,7 @@ public class TracksManagerPlugin2D extends ImageViewerPanelPlugin2D {
             return tracksManagerPlugin;
         }
 
-        public ImageViewerPanel getViewerPanel() {
+        public JIPipeImageViewerPanel getViewerPanel() {
             return tracksManagerPlugin.getViewerPanel();
         }
 

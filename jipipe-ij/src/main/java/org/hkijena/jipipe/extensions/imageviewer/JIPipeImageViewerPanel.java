@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
+import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageWindow;
@@ -17,7 +18,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
 
@@ -26,9 +26,9 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, Disposable {
+public class JIPipeImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, Disposable {
 
-    private static final Set<ImageViewerPanel> OPEN_PANELS = new HashSet<>();
+    private static final Set<JIPipeImageViewerPanel> OPEN_PANELS = new HashSet<>();
     public static final List<Class<? extends ImageViewerPanelPlugin>> DEFAULT_PLUGINS = Arrays.asList(CalibrationPlugin2D.class,
             PixelInfoPlugin2D.class,
             LUTManagerPlugin2D.class,
@@ -36,7 +36,9 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
             AnimationSpeedPlugin2D.class,
             MeasurementDrawerPlugin2D.class,
             AnnotationInfoPlugin2D.class);
-    private static ImageViewerPanel ACTIVE_PANEL = null;
+    private static JIPipeImageViewerPanel ACTIVE_PANEL = null;
+
+    private final EventBus eventBus = new EventBus();
     private final JIPipeWorkbench workbench;
     private final ImageViewerUISettings settings;
     private final Map<Class<?>, Object> contextObjects;
@@ -63,12 +65,14 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
 
     private final JLabel imageInfoLabel = new JLabel();
 
+    private List<Object> overlays = new ArrayList<>();
+
     /**
      * Initializes a new image viewer
      *
      * @param workbench the workbench. Use {@link org.hkijena.jipipe.ui.JIPipeDummyWorkbench} if you do not have access to one.
      */
-    public ImageViewerPanel(JIPipeWorkbench workbench, List<Class<? extends ImageViewerPanelPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
+    public JIPipeImageViewerPanel(JIPipeWorkbench workbench, List<Class<? extends ImageViewerPanelPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
         this.workbench = workbench;
         this.contextObjects = contextObjects;
         if (JIPipe.getInstance() != null) {
@@ -105,7 +109,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         return settings;
     }
 
-    public static ImageViewerPanel createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow) {
+    public static JIPipeImageViewerPanel createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow) {
        return createForCacheViewer(cacheDataViewerWindow, Collections.emptyList());
     }
 
@@ -117,12 +121,30 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         return imageViewerPanel3D;
     }
 
-    public static ImageViewerPanel createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow, List<Class<? extends ImageViewerPanelPlugin>> additionalPlugins) {
+    public List<Object> getOverlays() {
+        return Collections.unmodifiableList(overlays);
+    }
+
+    public void clearOverlays() {
+        while(!overlays.isEmpty()) {
+            Object o = overlays.get(0);
+            overlays.remove(o);
+            eventBus.post(new OverlayRemovedEvent(this, o));
+        }
+        eventBus.post(new OverlayClearedEvent(this));
+    }
+
+    public void addOverlay(Object o) {
+        overlays.add(o);
+        eventBus.post(new OverlayAddedEvent(this, o));
+    }
+
+    public static JIPipeImageViewerPanel createForCacheViewer(JIPipeCacheDataViewerWindow cacheDataViewerWindow, List<Class<? extends ImageViewerPanelPlugin>> additionalPlugins) {
         Map<Class<?>, Object> contextObjects = new HashMap<>();
         ArrayList<Class<? extends ImageViewerPanelPlugin>> plugins = new ArrayList<>(DEFAULT_PLUGINS);
         plugins.addAll(additionalPlugins);
         contextObjects.put(JIPipeCacheDataViewerWindow.class, cacheDataViewerWindow);
-        return new ImageViewerPanel(cacheDataViewerWindow.getWorkbench(),
+        return new JIPipeImageViewerPanel(cacheDataViewerWindow.getWorkbench(),
                 plugins,
                 contextObjects);
     }
@@ -241,11 +263,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         repaint();
     }
 
-    public static ImageViewerPanel getActiveViewerPanel() {
+    public static JIPipeImageViewerPanel getActiveViewerPanel() {
         return ACTIVE_PANEL;
     }
 
-    public static Set<ImageViewerPanel> getOpenViewerPanels() {
+    public static Set<JIPipeImageViewerPanel> getOpenViewerPanels() {
         return OPEN_PANELS;
     }
 
@@ -282,8 +304,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
      * @param title     the title
      * @return the panel
      */
-    public static ImageViewerPanel showImage(JIPipeWorkbench workbench, ImagePlus image, String title) {
-        ImageViewerPanel dataDisplay = new ImageViewerPanel(workbench,
+    public static JIPipeImageViewerPanel showImage(JIPipeWorkbench workbench, ImagePlus image, String title) {
+        JIPipeImageViewerPanel dataDisplay = new JIPipeImageViewerPanel(workbench,
                 Arrays.asList(CalibrationPlugin2D.class,
                         PixelInfoPlugin2D.class,
                         LUTManagerPlugin2D.class,
@@ -292,7 +314,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
                         MeasurementDrawerPlugin2D.class),
                 Collections.emptyMap());
         dataDisplay.setImage(image);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
+        JIPipeImageViewerWindow window = new JIPipeImageViewerWindow(dataDisplay);
         window.setTitle(title);
         window.setVisible(true);
         return dataDisplay;
@@ -379,6 +401,54 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess, D
         ROIManagerPlugin2D plugin = getPlugin(ROIManagerPlugin2D.class);
         if(plugin != null) {
             plugin.importROIs(rois, false);
+        }
+    }
+
+    public static class OverlayAddedEvent {
+        private final JIPipeImageViewerPanel imageViewerPanel;
+        private final Object overlay;
+
+        public OverlayAddedEvent(JIPipeImageViewerPanel imageViewerPanel, Object overlay) {
+            this.imageViewerPanel = imageViewerPanel;
+            this.overlay = overlay;
+        }
+
+        public JIPipeImageViewerPanel getImageViewerPanel() {
+            return imageViewerPanel;
+        }
+
+        public Object getOverlay() {
+            return overlay;
+        }
+    }
+
+    public static class OverlayRemovedEvent {
+        private final JIPipeImageViewerPanel imageViewerPanel;
+        private final Object overlay;
+
+        public OverlayRemovedEvent(JIPipeImageViewerPanel imageViewerPanel, Object overlay) {
+            this.imageViewerPanel = imageViewerPanel;
+            this.overlay = overlay;
+        }
+
+        public JIPipeImageViewerPanel getImageViewerPanel() {
+            return imageViewerPanel;
+        }
+
+        public Object getOverlay() {
+            return overlay;
+        }
+    }
+
+    public static class OverlayClearedEvent {
+        private final JIPipeImageViewerPanel imageViewerPanel;
+
+        public OverlayClearedEvent(JIPipeImageViewerPanel imageViewerPanel) {
+            this.imageViewerPanel = imageViewerPanel;
+        }
+
+        public JIPipeImageViewerPanel getImageViewerPanel() {
+            return imageViewerPanel;
         }
     }
 }

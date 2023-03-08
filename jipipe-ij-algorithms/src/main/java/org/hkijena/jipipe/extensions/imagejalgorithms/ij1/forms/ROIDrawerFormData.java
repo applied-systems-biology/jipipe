@@ -10,7 +10,7 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.CalibrationPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.LUTManagerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.PixelInfoPlugin2D;
@@ -31,7 +31,7 @@ public class ROIDrawerFormData extends FormData {
 
     private final List<JIPipeMergingDataBatch> dataBatches;
     private final DrawROIAlgorithm drawROIAlgorithm;
-    private ImageViewerPanel imageViewerPanel;
+    private JIPipeImageViewerPanel imageViewerPanel;
 
     private ROIManagerPlugin2D roiManagerPlugin;
     private MaskToROIDrawerPlugin2D maskDrawerPlugin;
@@ -44,7 +44,7 @@ public class ROIDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new ImageViewerPanel(new JIPipeDummyWorkbench(), Arrays.asList(CalibrationPlugin2D.class,
+        imageViewerPanel = new JIPipeImageViewerPanel(new JIPipeDummyWorkbench(), Arrays.asList(CalibrationPlugin2D.class,
                 PixelInfoPlugin2D.class,
                 LUTManagerPlugin2D.class,
                 ROIManagerPlugin2D.class,
@@ -59,7 +59,7 @@ public class ROIDrawerFormData extends FormData {
         }
     }
 
-    public ImageViewerPanel getImageViewerPanel() {
+    public JIPipeImageViewerPanel getImageViewerPanel() {
         if (imageViewerPanel == null || maskDrawerPlugin == null) {
             initializeImageViewer();
         }

@@ -19,22 +19,17 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-    private ImageViewerPanel imageViewerPanel;
+    private JIPipeImageViewerPanel imageViewerPanel;
 
     public CachedSpotCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -45,7 +40,7 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerW
     }
 
     private void initialize() {
-        imageViewerPanel = ImageViewerPanel.createForCacheViewer(this, Collections.singletonList(SpotsManagerPlugin2D.class));
+        imageViewerPanel = JIPipeImageViewerPanel.createForCacheViewer(this, Collections.singletonList(SpotsManagerPlugin2D.class));
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();

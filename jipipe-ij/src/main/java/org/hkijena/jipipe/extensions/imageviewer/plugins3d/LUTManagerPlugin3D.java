@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.GeneralImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerLUTEditor;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
@@ -21,7 +21,7 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin2D {
 
     private final List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 
-    public LUTManagerPlugin3D(ImageViewerPanel viewerPanel) {
+    public LUTManagerPlugin3D(JIPipeImageViewerPanel viewerPanel) {
         super(viewerPanel);
     }
 

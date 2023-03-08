@@ -15,7 +15,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.utils.RoiListCellRenderer;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -54,7 +54,7 @@ public class ROIManagerPlugin2D extends ImageViewerPanelPlugin2D {
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
 
-    public ROIManagerPlugin2D(ImageViewerPanel viewerPanel) {
+    public ROIManagerPlugin2D(JIPipeImageViewerPanel viewerPanel) {
         super(viewerPanel);
         loadDefaults();
         initialize();

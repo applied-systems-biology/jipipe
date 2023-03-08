@@ -44,7 +44,7 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener {
-    private final ImageViewerPanel imageViewerPanel;
+    private final JIPipeImageViewerPanel imageViewerPanel;
     private final ImageViewerUISettings settings;
     private ImagePlus image;
 
@@ -78,7 +78,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     private final Map<String, FormPanel> formPanels = new HashMap<>();
 
-    public ImageViewerPanel3D(ImageViewerPanel imageViewerPanel) {
+    public ImageViewerPanel3D(JIPipeImageViewerPanel imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
         this.settings = imageViewerPanel.getSettings();
         this.updateImageLaterTimer = new Timer(1000, e -> updateImageNow());
@@ -297,7 +297,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         return imageViewerPanel.getWorkbench();
     }
 
-    public ImageViewerPanel getImageViewerPanel() {
+    public JIPipeImageViewerPanel getImageViewerPanel() {
         return imageViewerPanel;
     }
 

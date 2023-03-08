@@ -6,7 +6,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManagerPlugin2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 
@@ -16,7 +16,7 @@ import java.util.Arrays;
  * Mask drawer with function to add ROIs to the ROI manager
  */
 public class MaskToROIDrawerPlugin2D extends MaskDrawerPlugin2D {
-    public MaskToROIDrawerPlugin2D(ImageViewerPanel viewerPanel) {
+    public MaskToROIDrawerPlugin2D(JIPipeImageViewerPanel viewerPanel) {
         super(viewerPanel);
         setMaskGenerator(this::generateMask);
     }
