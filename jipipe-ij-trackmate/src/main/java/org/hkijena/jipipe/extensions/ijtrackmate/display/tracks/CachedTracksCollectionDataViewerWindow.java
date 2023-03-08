@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.SpotsManagerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 
@@ -30,7 +30,7 @@ import java.awt.event.WindowListener;
 import java.util.Arrays;
 
 public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-    private JIPipeImageViewerPanel imageViewerPanel;
+    private JIPipeImageViewer imageViewerPanel;
 
     public CachedTracksCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -41,7 +41,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
     }
 
     private void initialize() {
-        imageViewerPanel = JIPipeImageViewerPanel.createForCacheViewer(this, Arrays.asList(TracksManagerPlugin2D.class, SpotsManagerPlugin2D.class));
+        imageViewerPanel = JIPipeImageViewer.createForCacheViewer(this, Arrays.asList(TracksManagerPlugin2D.class, SpotsManagerPlugin2D.class));
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();

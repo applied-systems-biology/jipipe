@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 
 public abstract class ImageViewerPanelPlugin2D extends ImageViewerPanelPlugin {
 
-    public ImageViewerPanelPlugin2D(JIPipeImageViewerPanel viewerPanel) {
+    public ImageViewerPanelPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
     }
 

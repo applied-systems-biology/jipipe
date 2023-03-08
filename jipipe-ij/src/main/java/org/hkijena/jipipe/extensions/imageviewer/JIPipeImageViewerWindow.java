@@ -24,15 +24,15 @@ import java.util.Collections;
 
 public class JIPipeImageViewerWindow extends JFrame implements WindowListener, JIPipeWorkbenchAccess {
     private final JIPipeWorkbench workbench;
-    private final JIPipeImageViewerPanel viewerPanel;
+    private final JIPipeImageViewer viewerPanel;
 
     public JIPipeImageViewerWindow(JIPipeWorkbench workbench) {
         this.workbench = workbench;
-        this.viewerPanel = new JIPipeImageViewerPanel(workbench, JIPipeImageViewerPanel.DEFAULT_PLUGINS, Collections.emptyMap());
+        this.viewerPanel = new JIPipeImageViewer(workbench, JIPipeImageViewer.DEFAULT_PLUGINS, Collections.emptyMap());
         initialize();
     }
 
-    public JIPipeImageViewerWindow(JIPipeImageViewerPanel panel) {
+    public JIPipeImageViewerWindow(JIPipeImageViewer panel) {
         this.viewerPanel = panel;
         this.workbench = panel.getWorkbench();
         initialize();
@@ -48,7 +48,7 @@ public class JIPipeImageViewerWindow extends JFrame implements WindowListener, J
         addWindowListener(this);
     }
 
-    public JIPipeImageViewerPanel getViewerPanel() {
+    public JIPipeImageViewer getViewerPanel() {
         return viewerPanel;
     }
 

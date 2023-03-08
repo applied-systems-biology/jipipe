@@ -22,14 +22,14 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
 public class Video2DExporterRun implements JIPipeRunnable {
-    private final JIPipeImageViewerPanel viewerPanel;
+    private final JIPipeImageViewer viewerPanel;
     private final Path outputFile;
     private final ImageSliceIndex referencePosition;
     private final HyperstackDimension followedDimension;
@@ -39,7 +39,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
     private final double magnification;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public Video2DExporterRun(JIPipeImageViewerPanel viewerPanel, Path outputFile, ImageSliceIndex referencePosition, HyperstackDimension followedDimension, int timePerFrame, AVICompression compression, int jpegQuality) {
+    public Video2DExporterRun(JIPipeImageViewer viewerPanel, Path outputFile, ImageSliceIndex referencePosition, HyperstackDimension followedDimension, int timePerFrame, AVICompression compression, int jpegQuality) {
         this.viewerPanel = viewerPanel;
         this.outputFile = outputFile;
         this.referencePosition = referencePosition;
@@ -130,7 +130,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
         }
     }
 
-    public JIPipeImageViewerPanel getViewerPanel() {
+    public JIPipeImageViewer getViewerPanel() {
         return viewerPanel;
     }
 

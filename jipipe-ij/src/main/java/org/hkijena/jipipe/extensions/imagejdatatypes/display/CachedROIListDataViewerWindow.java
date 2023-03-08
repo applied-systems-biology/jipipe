@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 
@@ -32,7 +32,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-    private JIPipeImageViewerPanel imageViewerPanel;
+    private JIPipeImageViewer imageViewerPanel;
 
     public CachedROIListDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -43,7 +43,7 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
     }
 
     private void initialize() {
-        imageViewerPanel = JIPipeImageViewerPanel.createForCacheViewer(this);
+        imageViewerPanel = JIPipeImageViewer.createForCacheViewer(this);
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();

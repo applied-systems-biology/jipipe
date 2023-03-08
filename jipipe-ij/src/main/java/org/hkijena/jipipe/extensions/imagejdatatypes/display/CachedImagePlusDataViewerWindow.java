@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
@@ -30,7 +30,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-    private JIPipeImageViewerPanel imageViewerPanel;
+    private JIPipeImageViewer imageViewerPanel;
     private CustomDataLoader customDataLoader;
 
     public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoadingData) {
@@ -42,7 +42,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     }
 
     private void initialize() {
-        imageViewerPanel = JIPipeImageViewerPanel.createForCacheViewer(this);
+        imageViewerPanel = JIPipeImageViewer.createForCacheViewer(this);
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();

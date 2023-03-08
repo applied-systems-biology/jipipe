@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 
@@ -29,7 +29,7 @@ import java.awt.event.WindowListener;
 import java.util.Collections;
 
 public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
-    private JIPipeImageViewerPanel imageViewerPanel;
+    private JIPipeImageViewer imageViewerPanel;
 
     public CachedSpotCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
@@ -40,7 +40,7 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerW
     }
 
     private void initialize() {
-        imageViewerPanel = JIPipeImageViewerPanel.createForCacheViewer(this, Collections.singletonList(SpotsManagerPlugin2D.class));
+        imageViewerPanel = JIPipeImageViewer.createForCacheViewer(this, Collections.singletonList(SpotsManagerPlugin2D.class));
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();

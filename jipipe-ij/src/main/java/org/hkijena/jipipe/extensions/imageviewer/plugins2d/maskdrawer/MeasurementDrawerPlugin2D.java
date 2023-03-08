@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
@@ -40,7 +40,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
     private JXTable table = new JXTable();
     private ResultsTableData lastMeasurements;
 
-    public MeasurementDrawerPlugin2D(JIPipeImageViewerPanel viewerPanel) {
+    public MeasurementDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
         initialize();
         viewerPanel.getViewerPanel2D().getCanvas().getEventBus().register(this);

@@ -5,7 +5,7 @@ import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.CustomImage3DUni
 
 public abstract class ImageViewerPanelPlugin3D extends ImageViewerPanelPlugin {
 
-    public ImageViewerPanelPlugin3D(JIPipeImageViewerPanel viewerPanel) {
+    public ImageViewerPanelPlugin3D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
     }
 

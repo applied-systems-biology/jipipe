@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.ComponentListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -33,24 +33,24 @@ import java.util.List;
 public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        List<JIPipeImageViewerPanel> viewerPanels = new ArrayList<>(JIPipeImageViewerPanel.getOpenViewerPanels());
+        List<JIPipeImageViewer> viewerPanels = new ArrayList<>(JIPipeImageViewer.getOpenViewerPanels());
         if (viewerPanels.isEmpty()) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There are no active JIPipe image viewers.", "Add to image viewer", JOptionPane.ERROR_MESSAGE);
             return;
         }
         viewerPanels.sort(Comparator.comparing(Component::getName));
-        if (JIPipeImageViewerPanel.getActiveViewerPanel() != null) {
-            viewerPanels.remove(JIPipeImageViewerPanel.getActiveViewerPanel());
-            viewerPanels.add(0, JIPipeImageViewerPanel.getActiveViewerPanel());
+        if (JIPipeImageViewer.getActiveViewerPanel() != null) {
+            viewerPanels.remove(JIPipeImageViewer.getActiveViewerPanel());
+            viewerPanels.add(0, JIPipeImageViewer.getActiveViewerPanel());
         }
-        List<JIPipeImageViewerPanel> selected = UIUtils.getSelectionByDialog(workbench.getWindow(),
+        List<JIPipeImageViewer> selected = UIUtils.getSelectionByDialog(workbench.getWindow(),
                 viewerPanels,
                 Collections.singleton(viewerPanels.get(0)),
                 "Add to image viewer",
                 "Please select one or multiple image viewers.",
                 new ComponentListCellRenderer<>(UIUtils.getIconFromResources("actions/window.png")),
                 ListSelectionMode.MultipleInterval);
-        for (JIPipeImageViewerPanel viewerPanel : selected) {
+        for (JIPipeImageViewer viewerPanel : selected) {
             viewerPanel.addRoi2d((ROIListData) data);
         }
     }

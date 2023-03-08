@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d;
 
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPanel;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
@@ -18,7 +18,7 @@ public class AnnotationInfoPlugin2D extends ImageViewerPanelPlugin2D {
     private final JIPipeCacheDataViewerWindow cacheDataViewerWindow;
     private final JIPipeCachedDataViewerAnnotationInfoPanel infoPanel;
 
-    public AnnotationInfoPlugin2D(JIPipeImageViewerPanel viewerPanel) {
+    public AnnotationInfoPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
         this.cacheDataViewerWindow = viewerPanel.getContextObject(JIPipeCacheDataViewerWindow.class);
         this.infoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(cacheDataViewerWindow.getWorkbench());

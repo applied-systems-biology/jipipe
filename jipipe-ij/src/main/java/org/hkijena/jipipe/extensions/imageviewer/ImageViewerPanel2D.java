@@ -52,7 +52,7 @@ import java.util.*;
 
 public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess {
 
-    private final JIPipeImageViewerPanel imageViewerPanel;
+    private final JIPipeImageViewer imageViewerPanel;
     private final JButton zoomStatusButton = new JButton();
     private final ImageViewerUISettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
@@ -93,7 +93,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      *
      * @param imageViewerPanel the viewer
      */
-    public ImageViewerPanel2D(JIPipeImageViewerPanel imageViewerPanel) {
+    public ImageViewerPanel2D(JIPipeImageViewer imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
         this.workbench = imageViewerPanel.getWorkbench();
         if (JIPipe.getInstance() != null) {
@@ -718,7 +718,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return new ImageSliceIndex(channelSlider.getValue() - 1, stackSlider.getValue() - 1, frameSlider.getValue() - 1);
     }
 
-    public JIPipeImageViewerPanel getImageViewerPanel() {
+    public JIPipeImageViewer getImageViewerPanel() {
         return imageViewerPanel;
     }
 
