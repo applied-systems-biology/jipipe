@@ -54,15 +54,16 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
     }
 
     public double getExpectedMemoryAllocationMegabytes(ImagePlus image) {
-        if(renderType == Image3DRenderType.Volume) {
-            return 4.0 * image.getWidth() * image.getHeight() * image.getStackSize() / 1024 / 1024;
-        }
-        else if(renderType == Image3DRenderType.OrthoSlice || renderType == Image3DRenderType.MultiOrthoSlices) {
-            return 4.0 * image.getWidth() * image.getHeight() * 3.0 / 1024 / 1024;
-        }
-        else {
-            return 4.0 * image.getWidth() * image.getHeight();
-        }
+//        if(renderType == Image3DRenderType.Volume) {
+//            return 4.0 * image.getWidth() * image.getHeight() * image.getNSlices() * image.getNFrames() / 1024 / 1024;
+//        }
+//        else if(renderType == Image3DRenderType.OrthoSlice || renderType == Image3DRenderType.MultiOrthoSlices) {
+//            return 4.0 * image.getWidth() * image.getHeight() * 3.0 * image.getNFrames() / 1024 / 1024;
+//        }
+//        else {
+//            return 4.0 * image.getWidth() * image.getHeight() * image.getNFrames() / 1024 / 1024;
+//        }
+        return 4.0 * image.getWidth() * image.getHeight() * image.getNSlices() * image.getNFrames() / 1024 / 1024;
     }
 
     public int getResolutionFactor(ImagePlus image) {
