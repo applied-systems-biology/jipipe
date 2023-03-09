@@ -3,13 +3,16 @@ package org.hkijena.jipipe.extensions.imageviewer;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.StackStatistics;
 import ij3d.*;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins3d.LUTManagerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRendererSettings;
@@ -41,14 +44,14 @@ import org.scijava.vecmath.Color3f;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.List;
 
 public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener {
     private final JIPipeImageViewer imageViewer;
@@ -74,7 +77,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     private final NewThrobberIcon initializationThrobberIcon = new NewThrobberIcon(this);
     private ImageLoaderRun imageLoaderRun;
-    private Content currentImageContent;
+    private List<Content> currentImageContents;
 
     private final Timer updateImageLaterTimer;
 
@@ -578,23 +581,27 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         universe.addInteractiveBehavior(new CustomInteractiveBehavior(this, universe));
     }
 
-    private void onImageContentReady(Content content) {
+    private void onImageContentReady(List<Content> contents) {
         if(universe != null) {
-            if(currentImageContent != null) {
-                universe.removeContent(currentImageContent.getName());
+            if(currentImageContents != null) {
+                for (Content currentImageContent : currentImageContents) {
+                    universe.removeContent(currentImageContent.getName());
+                }
             }
-            currentImageContent = content;
+            currentImageContents = contents;
 
             // Create unique name because removal depends on the name?!
-            content.setName(content.getName() + "-" + UUID.randomUUID());
+            for (Content content : contents) {
+                content.setName(content.getName() + "-" + UUID.randomUUID());
+                universe.addContent(content);
+            }
 
-            universe.addContent(content);
             universe.fixWeirdRendering();
             updateLutAndThreshold();
             universe.setAutoAdjustView(false);
 
             for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
-                plugin3D.onImageContentReady(content);
+                plugin3D.onImageContentReady(contents);
             }
         }
     }
@@ -611,7 +618,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 getImageViewer().setImage(run.imagePlus);
             }
             else {
-                onImageContentReady((run).getContent());
+                onImageContentReady((run).getContents());
             }
         }
     }
@@ -678,7 +685,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     public void updateLutAndThreshold() {
-        if(currentImageContent != null) {
+        if(currentImageContents != null) {
             CalibrationPlugin3D calibrationPlugin3D = getImageViewer().getPlugin(CalibrationPlugin3D.class);
             double min = 0;
             double max = 255;
@@ -688,7 +695,14 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 max = minMax[1];
             }
 
-            currentImageContent.setThreshold((int) min);
+            LUTManagerPlugin3D lutManagerPlugin3D = getImageViewer().getPlugin(LUTManagerPlugin3D.class);
+            if(lutManagerPlugin3D != null) {
+            }
+
+            for (Content currentImageContent : currentImageContents) {
+                currentImageContent.setThreshold((int) min);
+            }
+
         }
     }
 
@@ -748,7 +762,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         private boolean imageWasConvertedTo8Bit;
 
-        private Content content;
+        private List<Content> contents = new ArrayList<>();
 
         public ImageLoaderRun(ImageViewerPanel3D viewerPanel3D, ImagePlus imagePlus, Image3DRenderType renderType, int resolutionFactor) {
             this.viewerPanel3D = viewerPanel3D;
@@ -779,18 +793,30 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 generatedImage = ImageJUtils.convertToGreyscale8UIfNeeded(generatedImage);
             }
             getProgressInfo().log("Converting into " + renderType);
-            content = ContentCreator.createContent("Image",
-                    generatedImage,
-                    renderType.getNativeValue(),
-                    resolutionFactor,
-                    0,
-                    new Color3f(1, 1, 1),
-                    0,
-                    new boolean[]{true, true, true});
+
+            for (int c = 0; c < generatedImage.getNChannels(); c++) {
+                Map<ImageSliceIndex, ImageProcessor> processorMap = new HashMap<>();
+                int finalC = c;
+                ImageJUtils.forEachIndexedZCTSlice(generatedImage, (ip, index) -> {
+                    if(index.getC() == finalC) {
+                        processorMap.put(new ImageSliceIndex(0, index.getZ(), index.getT()), ip);
+                    }
+                }, getProgressInfo().resolve("c=" + c));
+                ImagePlus forChannel = ImageJUtils.mergeMappedSlices(processorMap);
+                Content content = ContentCreator.createContent("Image-c" + finalC,
+                        forChannel,
+                        renderType.getNativeValue(),
+                        resolutionFactor,
+                        0,
+                        new Color3f(1, 1, 1),
+                        0,
+                        new boolean[]{true, true, true});
+                contents.add(content);
+            }
         }
 
-        public Content getContent() {
-            return content;
+        public List<Content> getContents() {
+            return contents;
         }
 
         public boolean isImageWasConvertedTo8Bit() {

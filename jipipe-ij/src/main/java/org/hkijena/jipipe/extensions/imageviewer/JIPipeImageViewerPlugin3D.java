@@ -5,6 +5,8 @@ import ij3d.Content;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomImage3DUniverse;
 
+import java.util.List;
+
 public abstract class JIPipeImageViewerPlugin3D extends JIPipeImageViewerPlugin {
 
     public JIPipeImageViewerPlugin3D(JIPipeImageViewer viewerPanel) {
@@ -23,7 +25,7 @@ public abstract class JIPipeImageViewerPlugin3D extends JIPipeImageViewerPlugin 
         return imagePlus;
     }
 
-    public void onImageContentReady(Content content) {
+    public void onImageContentReady(List<Content> content) {
 
     }
 }

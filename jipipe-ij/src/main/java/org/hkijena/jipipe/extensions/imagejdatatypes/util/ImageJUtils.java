@@ -1075,6 +1075,7 @@ public class ImageJUtils {
         return new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
     }
 
+
     /**
      * Runs the function for each Z, C, and T slice.
      *
