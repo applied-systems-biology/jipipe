@@ -363,9 +363,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         if(!active) {
             return;
         }
-        if(imageLoaderRun != null) {
-            viewerRunnerQueue.cancel(imageLoaderRun);
-        }
+        viewerRunnerQueue.cancelIf(run -> !(run instanceof UniverseInitializerRun));
         if(universe != null) {
             universe.setAutoAdjustView(true);
             universe.removeAllContents();
@@ -377,10 +375,17 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         refreshFormPanel();
     }
 
+    public JIPipeRunnerQueue getViewerRunnerQueue() {
+        return viewerRunnerQueue;
+    }
+
     public void activate() {
         if(!active) {
             active = true;
             updateImageNow();
+            for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
+                plugin3D.onViewerActivated();
+            }
             for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
                 plugin3D.onImageChanged();
             }
@@ -522,6 +527,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         setImage(null);
         updateImageLaterTimer.stop();
         viewerRunnerQueue.cancelAll();
+        imageLoaderRun = null;
+        universeInitializerRun = null;
         if(universe != null) {
             universe.removeUniverseListener(this);
 
@@ -577,6 +584,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
                 setRendererStatus(RendererStatus.Initialized);
                 updateImageNow();
+
+                for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
+                    plugin3D.onViewerUniverseReady();
+                }
 
             } catch (Throwable e) {
                 e.printStackTrace();

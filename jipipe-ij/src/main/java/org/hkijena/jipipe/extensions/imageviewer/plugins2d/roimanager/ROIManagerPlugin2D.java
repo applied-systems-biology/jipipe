@@ -10,7 +10,7 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
+import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
@@ -46,7 +46,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private final RoiDrawer roiDrawer = new RoiDrawer();
     private final LargeToggleButtonAction displayROIViewMenuItem = new LargeToggleButtonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
     private final SmallToggleButtonAction renderROIAsOverlayViewMenuItem = new SmallToggleButtonAction("Draw ROI as overlay", "If disabled, ROI are drawn as pixels directly into the displayed image.", UIUtils.getIconFromResources("actions/path-break-apart.png"));
-    private final List<ROIManagerPluginSelectionContextPanel> selectionContextPanels = new ArrayList<>();
+    private final List<ROIManagerPlugin2DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private final Ribbon ribbon = new Ribbon(3);
     private ROIListData rois = new ROIListData();
@@ -58,11 +58,11 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         super(viewerPanel);
         loadDefaults();
         initialize();
-        addSelectionContextPanel(new ROIManagerPluginInfoContextPanel(this));
+        addSelectionContextPanel(new ROIManagerPlugin2DInfoContextPanel(this));
     }
 
     private void loadDefaults() {
-        ImageViewerUIRoiDisplaySettings settings = ImageViewerUIRoiDisplaySettings.getInstance();
+        ImageViewerUIROI2DDisplaySettings settings = ImageViewerUIROI2DDisplaySettings.getInstance();
         roiDrawer.copyFrom(settings.getRoiDrawer());
         displayROIViewMenuItem.setSelected(settings.isShowROI());
         renderROIAsOverlayViewMenuItem.setSelected(settings.isRenderROIAsOverlay());
@@ -136,18 +136,18 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         return rois;
     }
 
-    public List<ROIManagerPluginSelectionContextPanel> getSelectionContextPanels() {
+    public List<ROIManagerPlugin2DSelectionContextPanel> getSelectionContextPanels() {
         return Collections.unmodifiableList(selectionContextPanels);
     }
 
-    public void addSelectionContextPanel(ROIManagerPluginSelectionContextPanel panel) {
+    public void addSelectionContextPanel(ROIManagerPlugin2DSelectionContextPanel panel) {
         selectionContextPanels.add(panel);
         selectionContentPanelUI.add(panel);
         selectionContentPanelUI.revalidate();
         selectionContentPanelUI.repaint();
     }
 
-    public void removeSelectionContextPanel(ROIManagerPluginSelectionContextPanel panel) {
+    public void removeSelectionContextPanel(ROIManagerPlugin2DSelectionContextPanel panel) {
         selectionContextPanels.remove(panel);
         selectionContentPanelUI.remove(panel);
         selectionContentPanelUI.revalidate();
@@ -278,7 +278,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private void openMeasurementSettings() {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
         dialog.setTitle("Measurement settings");
-        dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), MeasurementSettings.INSTANCE, null, FormPanel.WITH_SCROLLING));
+        dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), Measurement2DSettings.INSTANCE, null, FormPanel.WITH_SCROLLING));
         UIUtils.addEscapeListener(dialog);
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(getViewerPanel());
@@ -307,7 +307,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     private void measureSelectedROI() {
         ROIListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
-        MeasurementSettings settings = MeasurementSettings.INSTANCE;
+        Measurement2DSettings settings = Measurement2DSettings.INSTANCE;
         ResultsTableData measurements = data.measure(ImageJUtils.duplicate(getViewerPanel().getImage()),
                 settings.getStatistics(), true, settings.isMeasureInPhysicalUnits());
         TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
@@ -354,7 +354,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                 "Dou you want to save the ROI display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ImageViewerUIRoiDisplaySettings settings = ImageViewerUIRoiDisplaySettings.getInstance();
+            ImageViewerUIROI2DDisplaySettings settings = ImageViewerUIROI2DDisplaySettings.getInstance();
             settings.getRoiDrawer().copyFrom(roiDrawer);
             settings.setRenderROIAsOverlay(renderROIAsOverlayViewMenuItem.getState());
             settings.setShowROI(displayROIViewMenuItem.getState());
@@ -689,7 +689,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     private void updateContextPanels() {
         List<Roi> selectedValuesList = roiListControl.getSelectedValuesList();
-        for (ROIManagerPluginSelectionContextPanel selectionContextPanel : selectionContextPanels) {
+        for (ROIManagerPlugin2DSelectionContextPanel selectionContextPanel : selectionContextPanels) {
             selectionContextPanel.selectionUpdated(rois, selectedValuesList);
         }
     }

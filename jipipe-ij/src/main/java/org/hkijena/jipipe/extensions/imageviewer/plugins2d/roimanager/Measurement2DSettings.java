@@ -5,14 +5,14 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 
-public class MeasurementSettings extends AbstractJIPipeParameterCollection {
+public class Measurement2DSettings extends AbstractJIPipeParameterCollection {
 
-    public static MeasurementSettings INSTANCE = new MeasurementSettings();
+    public static Measurement2DSettings INSTANCE = new Measurement2DSettings();
 
     private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
     private boolean measureInPhysicalUnits = true;
 
-    public MeasurementSettings() {
+    public Measurement2DSettings() {
         statistics.setCollapsed(false);
     }
 

@@ -7,11 +7,11 @@ import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import javax.swing.*;
 import java.util.List;
 
-public abstract class ROIManagerPluginSelectionContextPanel extends JPanel {
+public abstract class ROIManagerPlugin2DSelectionContextPanel extends JPanel {
 
     private final ROIManagerPlugin2D roiManagerPlugin;
 
-    public ROIManagerPluginSelectionContextPanel(ROIManagerPlugin2D roiManagerPlugin) {
+    public ROIManagerPlugin2DSelectionContextPanel(ROIManagerPlugin2D roiManagerPlugin) {
         this.roiManagerPlugin = roiManagerPlugin;
     }
 

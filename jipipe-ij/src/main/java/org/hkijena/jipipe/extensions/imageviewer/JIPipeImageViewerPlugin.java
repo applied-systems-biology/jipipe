@@ -5,10 +5,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 
-public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess {
+public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess, Disposable {
     private final JIPipeImageViewer viewerPanel;
 
     public JIPipeImageViewerPlugin(JIPipeImageViewer viewerPanel) {

@@ -44,9 +44,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UnclosableOutputStream;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -73,6 +71,14 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         saveObjectsToStream(storage.write(StringUtils.orElse(name, "rois") + ".roi3d.zip"), progressInfo);
+    }
+
+    public void save(Path path) {
+        try(FileOutputStream stream = new FileOutputStream(path.toFile())) {
+            saveObjectsToStream(stream, new JIPipeProgressInfo());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -586,4 +592,6 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
         result.addAll(this);
         return result;
     }
+
+
 }

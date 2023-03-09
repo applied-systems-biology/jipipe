@@ -28,4 +28,12 @@ public abstract class JIPipeImageViewerPlugin3D extends JIPipeImageViewerPlugin 
     public void onImageContentReady(List<Content> content) {
 
     }
+
+    public void onViewerUniverseReady() {
+
+    }
+
+    public void onViewerActivated() {
+
+    }
 }

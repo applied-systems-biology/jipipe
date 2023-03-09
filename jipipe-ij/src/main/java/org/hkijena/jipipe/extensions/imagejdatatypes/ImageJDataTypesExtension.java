@@ -76,7 +76,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataPre
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImportImageJPathDataOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataPreview;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreview;
-import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
+import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
@@ -543,13 +543,13 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
         registerMenuExtension(BioFormatsConfigTool.class);
 
-        registerSettingsSheet(ImageViewerUIRoiDisplaySettings.ID,
-                "ROI display",
+        registerSettingsSheet(ImageViewerUIROI2DDisplaySettings.ID,
+                "2D ROI display",
                 "Settings for the ROI manager component of the JIPipe image viewer",
                 UIUtils.getIconFromResources("actions/roi.png"),
                 "Image viewer",
                 UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewerUIRoiDisplaySettings());
+                new ImageViewerUIROI2DDisplaySettings());
 
     }
 

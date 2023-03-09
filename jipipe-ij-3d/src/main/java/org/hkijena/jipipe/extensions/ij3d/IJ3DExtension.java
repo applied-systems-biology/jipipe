@@ -20,6 +20,8 @@ import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJExporter;
 import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
+import org.hkijena.jipipe.extensions.ij3d.imageviewer.ImageViewerUIROI3DDisplaySettings;
+import org.hkijena.jipipe.extensions.ij3d.imageviewer.ROIManagerPlugin3D;
 import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
 import org.hkijena.jipipe.extensions.ij3d.nodes.binary.DistanceMap3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.binary.ErodedVolumeFraction3DAlgorithm;
@@ -51,6 +53,8 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgo
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -99,6 +103,15 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+
+        registerSettingsSheet(ImageViewerUIROI3DDisplaySettings.ID,
+                "3D ROI display",
+                "Settings for the ROI manager component of the JIPipe image viewer",
+                IJ3DExtension.RESOURCES.getIconFromResources("data-type-roi3d.png"),
+                "Image viewer",
+                UIUtils.getIconFromResources("actions/viewimage.png"),
+                new ImageViewerUIROI2DDisplaySettings());
+        JIPipeImageViewer.registerDefaultPlugin(ROIManagerPlugin3D.class);
 
         registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");
         registerEnumParameterType("ij3d-measurement-column", ROI3DMeasurementColumn.class, "3D measurement column", "A 3D object measurement column");

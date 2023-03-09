@@ -7,11 +7,11 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.List;
 
-public class ROIManagerPluginInfoContextPanel extends ROIManagerPluginSelectionContextPanel {
+public class ROIManagerPlugin2DInfoContextPanel extends ROIManagerPlugin2DSelectionContextPanel {
     private final JLabel roiInfoLabel = new JLabel();
 
 
-    public ROIManagerPluginInfoContextPanel(ROIManagerPlugin2D roiManagerPlugin) {
+    public ROIManagerPlugin2DInfoContextPanel(ROIManagerPlugin2D roiManagerPlugin) {
         super(roiManagerPlugin);
         initialize();
     }

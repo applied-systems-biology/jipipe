@@ -22,6 +22,7 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.List;
 
@@ -81,6 +82,15 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         initializePlugins(pluginTypes);
         initialize();
         switchTo2D();
+    }
+
+    public static void registerDefaultPlugin(Class<? extends JIPipeImageViewerPlugin> klass) {
+        if(!DEFAULT_PLUGINS.contains(klass)) {
+            if(Modifier.isAbstract(klass.getModifiers())) {
+                throw new IllegalArgumentException("Plugin is abstract!");
+            }
+            DEFAULT_PLUGINS.add(klass);
+        }
     }
 
     private void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes) {
@@ -330,6 +340,9 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         clearOverlays();
         dataSource = null;
         image = null;
+        for (JIPipeImageViewerPlugin plugin : plugins) {
+            plugin.dispose();
+        }
         imageViewerPanel2D.dispose();
         imageViewerPanel3D.dispose();
     }
