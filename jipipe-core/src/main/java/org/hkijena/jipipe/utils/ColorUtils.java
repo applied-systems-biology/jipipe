@@ -292,6 +292,11 @@ public class ColorUtils {
         return new Color((first.getRed() + second.getRed()) / 2, (first.getGreen() + second.getGreen()) / 2, (first.getBlue() + second.getBlue()) / 2);
     }
 
+    public static Color toGreyscale(Color color) {
+        int v = (color.getRed() + color.getGreen() + color.getBlue()) / 3;
+        return new Color(v,v,v);
+    }
+
     public static class GradientStop implements Comparable<GradientStop> {
         private Color color;
         private float position;

@@ -3,7 +3,9 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 import ij.ImagePlus;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerGrayscaleLUTEditor;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerLUTEditor;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DGreyscaleLUTEditor;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DLUTEditor;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -18,6 +20,8 @@ import java.util.List;
 public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
     private final List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
+
+    private final List<ImageViewerGrayscaleLUTEditor> alphaLutEditors = new ArrayList<>();
 
     public LUTManagerPlugin3D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
@@ -43,6 +47,9 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
                 ImageViewerLUTEditor editor = new ImageViewer3DLUTEditor(getViewerPanel(), lutEditors.size());
                 editor.loadLUTFromImage();
                 lutEditors.add(editor);
+
+                ImageViewer3DGreyscaleLUTEditor alphaEditor = new ImageViewer3DGreyscaleLUTEditor(getViewerPanel(), lutEditors.size());
+                alphaLutEditors.add(alphaEditor);
             }
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
             if (getCurrentImage().getNChannels() == 3) {
@@ -52,27 +59,23 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
             }
             for (int channel = 0; channel < getCurrentImage().getNChannels(); channel++) {
                 ImageViewerLUTEditor editor = lutEditors.get(channel);
-                JTextField channelNameEditor = new JTextField(editor.getChannelName());
-                channelNameEditor.setOpaque(false);
-                channelNameEditor.setBorder(null);
-                channelNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
-                    @Override
-                    public void changed(DocumentEvent documentEvent) {
-                        editor.setChannelName(channelNameEditor.getText());
-                    }
-                });
-                formPanel.addToForm(editor, channelNameEditor, null);
+                formPanel.addToForm(editor, new JLabel("Channel " + (channel + 1)));
+
+                ImageViewerGrayscaleLUTEditor alphaEditor = alphaLutEditors.get(channel);
+                formPanel.addToForm(alphaEditor, new JLabel("Channel " + (channel + 1) + " (Opacity)"));
             }
         }
 
         // Apply LUT after creating the panel
-        for (int i = 0; i < Math.min(getCurrentImage().getNChannels(), lutEditors.size()); i++) {
-            lutEditors.get(i).applyLUT();
-        }
+        getViewerPanel3D().updateLutAndCalibration();
     }
 
     public List<ImageViewerLUTEditor> getLutEditors() {
         return lutEditors;
+    }
+
+    public List<ImageViewerGrayscaleLUTEditor> getAlphaLutEditors() {
+        return alphaLutEditors;
     }
 
     private void splitChannels() {

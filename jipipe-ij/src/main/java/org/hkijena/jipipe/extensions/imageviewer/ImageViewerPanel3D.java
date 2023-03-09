@@ -707,18 +707,23 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             for (int channel = 0; channel < currentImageContents.size(); channel++) {
                 Content currentImageContent = currentImageContents.get(channel);
                 LUT lut;
+                LUT alphaLut;
                 if(lutManagerPlugin3D != null && channel < lutManagerPlugin3D.getLutEditors().size()) {
                     lut = lutManagerPlugin3D.getLutEditors().get(channel).getLUT();
+                    alphaLut = lutManagerPlugin3D.getAlphaLutEditors().get(channel).getLUT();
                 }
                 else {
                     lut = LUT.createLutFromColor(Color.WHITE);
+                    alphaLut = lut;
                 }
                 byte[] reds = new byte[256];
                 byte[] greens = new byte[256];
                 byte[] blues = new byte[256];
+                byte[] alphas = new byte[256];
                 lut.getReds(reds);
                 lut.getGreens(greens);
                 lut.getBlues(blues);
+                alphaLut.getReds(alphas);
                 int[] newReds = new int[256];
                 int[] newGreens = new int[256];
                 int[] newBlues = new int[256];
@@ -726,7 +731,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 for (int i = 0; i < 256; i++) {
                     if(i >= min) {
                         int normIndex = Math.max(0, Math.min(255, (int)(255.0 * i / (max - min))));
-                        newAlphas[i] = normIndex;
+                        newAlphas[i] = Byte.toUnsignedInt(alphas[normIndex]);
                         newReds[i] = Byte.toUnsignedInt(reds[normIndex]);
                         newGreens[i] = Byte.toUnsignedInt(greens[normIndex]);
                         newBlues[i] = Byte.toUnsignedInt(blues[normIndex]);
