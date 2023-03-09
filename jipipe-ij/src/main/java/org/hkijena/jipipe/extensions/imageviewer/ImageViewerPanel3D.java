@@ -5,6 +5,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import ij.process.LUT;
 import ij.process.StackStatistics;
 import ij3d.*;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
@@ -687,20 +688,51 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     public void updateLutAndThreshold() {
         if(currentImageContents != null) {
             CalibrationPlugin3D calibrationPlugin3D = getImageViewer().getPlugin(CalibrationPlugin3D.class);
-            double min = 0;
-            double max = 255;
+            int min = 0;
+            int max = 255;
             if(calibrationPlugin3D != null) {
                 double[] minMax = calibrationPlugin3D.calculateCalibration();
-                min = minMax[0];
-                max = minMax[1];
+                min = (int) minMax[0];
+                max = (int) minMax[1];
+            }
+
+            if(max < min) {
+                int x = max;
+                max = min;
+                min = x;
             }
 
             LUTManagerPlugin3D lutManagerPlugin3D = getImageViewer().getPlugin(LUTManagerPlugin3D.class);
-            if(lutManagerPlugin3D != null) {
-            }
 
-            for (Content currentImageContent : currentImageContents) {
-                currentImageContent.setThreshold((int) min);
+            for (int channel = 0; channel < currentImageContents.size(); channel++) {
+                Content currentImageContent = currentImageContents.get(channel);
+                LUT lut;
+                if(lutManagerPlugin3D != null && channel < lutManagerPlugin3D.getLutEditors().size()) {
+                    lut = lutManagerPlugin3D.getLutEditors().get(channel).getLUT();
+                }
+                else {
+                    lut = LUT.createLutFromColor(Color.WHITE);
+                }
+                byte[] reds = new byte[256];
+                byte[] greens = new byte[256];
+                byte[] blues = new byte[256];
+                lut.getReds(reds);
+                lut.getGreens(greens);
+                lut.getBlues(blues);
+                int[] newReds = new int[256];
+                int[] newGreens = new int[256];
+                int[] newBlues = new int[256];
+                int[] newAlphas = new int[256];
+                for (int i = 0; i < 256; i++) {
+                    if(i >= min) {
+                        int normIndex = Math.max(0, Math.min(255, (int)(255.0 * i / (max - min))));
+                        newAlphas[i] = normIndex;
+                        newReds[i] = Byte.toUnsignedInt(reds[normIndex]);
+                        newGreens[i] = Byte.toUnsignedInt(greens[normIndex]);
+                        newBlues[i] = Byte.toUnsignedInt(blues[normIndex]);
+                    }
+                }
+                currentImageContent.setLUT(newReds, newGreens, newBlues, newAlphas);
             }
 
         }
@@ -803,7 +835,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                     }
                 }, getProgressInfo().resolve("c=" + c));
                 ImagePlus forChannel = ImageJUtils.mergeMappedSlices(processorMap);
-                Content content = ContentCreator.createContent("Image-c" + finalC,
+                Content content = ContentCreator.createContent("Image-Channel-" + finalC,
                         forChannel,
                         renderType.getNativeValue(),
                         resolutionFactor,

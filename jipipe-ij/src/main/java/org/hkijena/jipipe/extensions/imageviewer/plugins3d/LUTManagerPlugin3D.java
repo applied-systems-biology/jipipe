@@ -71,6 +71,10 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
         }
     }
 
+    public List<ImageViewerLUTEditor> getLutEditors() {
+        return lutEditors;
+    }
+
     private void splitChannels() {
         if (getCurrentImage() != null) {
             try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
