@@ -253,7 +253,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                                 variables.set("Overlap." + overlapMeasurements.getColumnName(col), overlapMeasurements.getValueAt(0, col));
                             }
                         }
-                        matched = overlapMeasurements.getRowCount() > 0 && settings.overlapFilter.test(variables);
+                        matched = (!settings.enforceOverlap || overlapMeasurements.getRowCount() > 0) && settings.overlapFilter.test(variables);
                     } else {
                         matched = overlap.getStatistics().max > 0;
 //                        System.out.println(allTargetLabels[targetLabelIndex] + "<-> " + allOtherLabels[otherLabelIndex] + " = " + matched);
@@ -459,6 +459,8 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean enabled = true;
         private boolean invert = false;
         private boolean outputOverlaps = false;
+
+        private boolean enforceOverlap = true;
         private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
 
         private boolean measureInPhysicalUnits = true;
@@ -472,11 +474,23 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.outputOverlaps = other.outputOverlaps;
             this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
+            this.enforceOverlap = other.enforceOverlap;
         }
 
         @Override
         public EventBus getEventBus() {
             return eventBus;
+        }
+
+        @JIPipeDocumentation(name = "Overlap filter: enforce overlap", description = "If enabled, a pair of labels is not considered for custom filtering if it does not overlap. Disable this setting if you want to implement special behavior.")
+        @JIPipeParameter("enforce-overlap")
+        public boolean isEnforceOverlap() {
+            return enforceOverlap;
+        }
+
+        @JIPipeParameter("enforce-overlap")
+        public void setEnforceOverlap(boolean enforceOverlap) {
+            this.enforceOverlap = enforceOverlap;
         }
 
         @JIPipeDocumentation(name = "Enabled", description = "You can use this setting to disable generating this output.")
