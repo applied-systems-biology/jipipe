@@ -2,6 +2,8 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DDisplayRangeControl;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -27,7 +29,7 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
         displayRangeCalibrationControl = new ImageViewer3DDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
             displayRangeCalibrationControl.updateFromCurrentImage(false);
-            getViewerPanel3D().updateImageLater();
+            getViewerPanel3D().updateLutAndThreshold();
         });
     }
 
@@ -82,9 +84,16 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
         calibrationModes.setSelectedItem(mode);
     }
 
-    @Override
-    public ImagePlus process(ImagePlus imagePlus) {
-        // TODO
-        return super.process(imagePlus);
+    public double[] calculateCalibration() {
+        if(getCurrentImage() != null) {
+            return ImageJUtils.calculateCalibration(getCurrentImage().getProcessor(),
+                    (ImageJCalibrationMode) calibrationModes.getSelectedItem(),
+                    displayRangeCalibrationControl.getCustomMin(),
+                    displayRangeCalibrationControl.getCustomMax(),
+                    getViewerPanel3D().getCurrentImageStats());
+        }
+        else {
+            return new double[] {0,255};
+        }
     }
 }

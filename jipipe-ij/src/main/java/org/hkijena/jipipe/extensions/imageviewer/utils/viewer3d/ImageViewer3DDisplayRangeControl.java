@@ -44,8 +44,8 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
     private boolean isUpdating = false;
     private double customMin;
     private double customMax;
-    private double minSelectableValue;
-    private double maxSelectableValue;
+    private final double minSelectableValue = 0;
+    private final double maxSelectableValue = 255;
 
     private WeakReference<ImagePlus> lastSelectableValueCalculationBasis;
 
@@ -141,42 +141,6 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
             ImagePlus currentImage = getCalibrationPlugin().getCurrentImage();
             if (currentImage != null) {
                 if(lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
-                    double min;
-                    double max;
-                    if (currentImage.getBitDepth() == 32) {
-                        // We need to find the min and max
-                        if (currentImage.getStackSize() == 1) {
-                            ImageStatistics statistics = currentImage.getProcessor().getStats();
-                            if (statistics == null)
-                                return;
-                            min = statistics.min;
-                            max = statistics.max;
-                        } else {
-                            // Initial value
-                            {
-                                ImageProcessor processor = currentImage.getStack().getProcessor(1);
-                                ImageStatistics statistics = processor.getStats();
-                                if (statistics == null)
-                                    return;
-                                min = statistics.min;
-                                max = statistics.max;
-                            }
-                            for (int i = 2; i <= currentImage.getStackSize(); i++) {
-                                ImageProcessor processor = currentImage.getStack().getProcessor(i);
-                                ImageStatistics statistics = processor.getStats();
-                                if (statistics == null)
-                                    continue;
-                                min = Math.min(statistics.min, min);
-                                max = Math.max(statistics.max, max);
-                            }
-                        }
-                    } else {
-                        ImageStatistics imageStats = getCalibrationPlugin().getViewerPanel3D().getCurrentImageStats();
-                        min = imageStats.min;
-                        max = imageStats.max;
-                    }
-                    minSelectableValue = min;
-                    maxSelectableValue = max;
                     lastSelectableValueCalculationBasis = new WeakReference<>(currentImage);
                 }
                 if(selectedCalibration != ImageJCalibrationMode.Custom) {

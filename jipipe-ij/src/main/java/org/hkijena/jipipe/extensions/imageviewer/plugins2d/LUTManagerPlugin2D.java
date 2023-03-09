@@ -6,6 +6,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerLUTEditor;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewer2DLUTEditor;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -41,7 +42,7 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
             toRGBButton.addActionListener(e -> splitChannels());
         } else {
             while (lutEditors.size() < getCurrentImage().getNChannels()) {
-                ImageViewerLUTEditor editor = new ImageViewerLUTEditor(getViewerPanel(), lutEditors.size());
+                ImageViewerLUTEditor editor = new ImageViewer2DLUTEditor(getViewerPanel(), lutEditors.size());
                 editor.loadLUTFromImage();
                 lutEditors.add(editor);
             }

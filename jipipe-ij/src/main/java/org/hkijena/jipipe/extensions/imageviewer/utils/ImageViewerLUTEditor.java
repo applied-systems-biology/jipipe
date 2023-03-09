@@ -19,6 +19,7 @@ import ij.process.LUT;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.utils.CustomGradientTrackRenderer;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -43,7 +44,7 @@ import java.util.List;
 /**
  * Based on {@link org.jdesktop.swingx.JXGradientChooser}
  */
-public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
+public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private final JIPipeImageViewer imageViewerPanel;
     private final int targetChannel;
     private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
@@ -345,21 +346,11 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
         }
     }
 
-    public void applyLUT() {
-        ImagePlus image = imageViewerPanel.getImage();
-        if (image != null && image.getType() != ImagePlus.COLOR_RGB) {
-            if (targetChannel < image.getNChannels()) {
-//                if (image instanceof CompositeImage) {
-//                    CompositeImage compositeImage = (CompositeImage) image;
-//                    compositeImage.setChannelLut(getLUT(), targetChannel + 1);
-//                }
-//                int c = image.getC();
-//                if (c == targetChannel + 1) {
-//                    image.setLut(getLUT());
-//                    imageViewerPanel.uploadSliceToCanvas();
-//                }
-                imageViewerPanel.getViewerPanel2D().uploadSliceToCanvas();
-            }
-        }
+
+
+    public JIPipeImageViewer getImageViewerPanel() {
+        return imageViewerPanel;
     }
+
+    public abstract void applyLUT();
 }

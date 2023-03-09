@@ -8,8 +8,8 @@ import ij.process.StackStatistics;
 import ij3d.*;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRendererSettings;
@@ -31,7 +31,6 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
-import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.scijava.Disposable;
@@ -354,6 +353,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             viewerRunnerQueue.cancel(imageLoaderRun);
         }
         if(universe != null) {
+            universe.setAutoAdjustView(true);
             universe.removeAllContents();
         }
         updateImageNow();
@@ -423,7 +423,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 viewerRunnerQueue.cancelIf(run -> run instanceof ImageLoaderRun);
                 int resolutionFactor = image3DRendererSettings.getResolutionFactor(image);
                 renderInfoLabel.setText( (int)image3DRendererSettings.getExpectedMemoryAllocationMegabytes(image) + "MB / " + resolutionFactor);
-                imageLoaderRun = new ImageLoaderRun(image, image3DRendererSettings.getRenderType(), resolutionFactor);
+                imageLoaderRun = new ImageLoaderRun(this, image, image3DRendererSettings.getRenderType(), resolutionFactor);
                 viewerRunnerQueue.enqueue(imageLoaderRun);
             }
         }
@@ -590,6 +590,12 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
             universe.addContent(content);
             universe.fixWeirdRendering();
+            updateLutAndThreshold();
+            universe.setAutoAdjustView(false);
+
+            for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
+                plugin3D.onImageContentReady(content);
+            }
         }
     }
 
@@ -601,7 +607,12 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
         else if(event.getRun() instanceof ImageLoaderRun) {
             ImageLoaderRun run = (ImageLoaderRun) event.getRun();
-            onImageContentReady((run).getContent());
+            if(run.imageWasConvertedTo8Bit) {
+                getImageViewer().setImage(run.imagePlus);
+            }
+            else {
+                onImageContentReady((run).getContent());
+            }
         }
     }
 
@@ -666,6 +677,21 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         return imageStatistics;
     }
 
+    public void updateLutAndThreshold() {
+        if(currentImageContent != null) {
+            CalibrationPlugin3D calibrationPlugin3D = getImageViewer().getPlugin(CalibrationPlugin3D.class);
+            double min = 0;
+            double max = 255;
+            if(calibrationPlugin3D != null) {
+                double[] minMax = calibrationPlugin3D.calculateCalibration();
+                min = minMax[0];
+                max = minMax[1];
+            }
+
+            currentImageContent.setThreshold((int) min);
+        }
+    }
+
     public enum RendererStatus {
         Uninitialized,
         Initializing,
@@ -712,15 +738,20 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     public static class ImageLoaderRun extends AbstractJIPipeRunnable {
 
-        private final ImagePlus imagePlus;
+        private final ImageViewerPanel3D viewerPanel3D;
+
+        private ImagePlus imagePlus;
 
         private final Image3DRenderType renderType;
 
         private final int resolutionFactor;
 
+        private boolean imageWasConvertedTo8Bit;
+
         private Content content;
 
-        public ImageLoaderRun(ImagePlus imagePlus, Image3DRenderType renderType, int resolutionFactor) {
+        public ImageLoaderRun(ImageViewerPanel3D viewerPanel3D, ImagePlus imagePlus, Image3DRenderType renderType, int resolutionFactor) {
+            this.viewerPanel3D = viewerPanel3D;
             this.imagePlus = imagePlus;
             this.renderType = renderType;
             this.resolutionFactor = resolutionFactor;
@@ -733,10 +764,23 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         @Override
         public void run() {
-            ImagePlus asRGB = ImageJUtils.renderToRGBWithLUTIfNeeded(imagePlus, getProgressInfo().resolve("Render to RGB"));
+            if(imagePlus.getType() != ImagePlus.COLOR_RGB && imagePlus.getType() !=  ImagePlus.GRAY8) {
+                getProgressInfo().log("Converting image to 8-bit");
+                imagePlus = ImageJUtils.convertToGreyscale8UIfNeeded(imagePlus);
+                imageWasConvertedTo8Bit = true;
+                return;
+            }
+            ImagePlus generatedImage = imagePlus;
+            for (JIPipeImageViewerPlugin3D plugin3D : viewerPanel3D.getImageViewer().getPlugins3D()) {
+                generatedImage = plugin3D.preprocess(generatedImage, getProgressInfo().resolveAndLog("Preprocessing with " + plugin3D.getClass().getName()));
+            }
+            if(generatedImage.getType() != ImagePlus.COLOR_RGB && generatedImage.getType() !=  ImagePlus.GRAY8) {
+                getProgressInfo().log("Converting generated image to 8-bit");
+                generatedImage = ImageJUtils.convertToGreyscale8UIfNeeded(generatedImage);
+            }
             getProgressInfo().log("Converting into " + renderType);
             content = ContentCreator.createContent("Image",
-                    asRGB,
+                    generatedImage,
                     renderType.getNativeValue(),
                     resolutionFactor,
                     0,
@@ -747,6 +791,14 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         public Content getContent() {
             return content;
+        }
+
+        public boolean isImageWasConvertedTo8Bit() {
+            return imageWasConvertedTo8Bit;
+        }
+
+        public ImagePlus getImagePlus() {
+            return imagePlus;
         }
     }
 }

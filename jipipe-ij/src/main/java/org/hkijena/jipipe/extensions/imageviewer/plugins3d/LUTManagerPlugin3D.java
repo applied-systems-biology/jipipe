@@ -1,12 +1,10 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.imageviewer.plugins2d.GeneralImageViewerPanelPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerLUTEditor;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DLUTEditor;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -42,7 +40,7 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
             toRGBButton.addActionListener(e -> splitChannels());
         } else {
             while (lutEditors.size() < getCurrentImage().getNChannels()) {
-                ImageViewerLUTEditor editor = new ImageViewerLUTEditor(getViewerPanel(), lutEditors.size());
+                ImageViewerLUTEditor editor = new ImageViewer3DLUTEditor(getViewerPanel(), lutEditors.size());
                 editor.loadLUTFromImage();
                 lutEditors.add(editor);
             }
@@ -87,11 +85,5 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
                 getViewerPanel().setImage(ImageJUtils.channelsToRGB(getCurrentImage()));
             }
         }
-    }
-
-    @Override
-    public ImagePlus process(ImagePlus imagePlus) {
-        // TODO
-        return super.process(imagePlus);
     }
 }
