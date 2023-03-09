@@ -598,7 +598,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             }
 
             universe.fixWeirdRendering();
-            updateLutAndThreshold();
+            updateLutAndCalibration();
             universe.setAutoAdjustView(false);
 
             for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
@@ -685,7 +685,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         return imageStatistics;
     }
 
-    public void updateLutAndThreshold() {
+    public void updateLutAndCalibration() {
         if(currentImageContents != null) {
             CalibrationPlugin3D calibrationPlugin3D = getImageViewer().getPlugin(CalibrationPlugin3D.class);
             int min = 0;

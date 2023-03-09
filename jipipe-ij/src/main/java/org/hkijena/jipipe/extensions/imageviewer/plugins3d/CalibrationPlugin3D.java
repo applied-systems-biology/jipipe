@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DDisplayRangeControl;
@@ -29,7 +28,7 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
         displayRangeCalibrationControl = new ImageViewer3DDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
             displayRangeCalibrationControl.updateFromCurrentImage(false);
-            getViewerPanel3D().updateLutAndThreshold();
+            getViewerPanel3D().updateLutAndCalibration();
         });
     }
 
