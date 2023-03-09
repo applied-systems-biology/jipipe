@@ -20,18 +20,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin;
-import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
-
-import javax.swing.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
     private CustomDataLoader customDataLoader;
@@ -74,7 +64,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataV
             throw new UnsupportedOperationException();
         }
         image.setTitle(image.getTitle());
-        if (!rois.isEmpty() || ImageViewerUISettings.getInstance().isAlwaysClearROIs()) {
+        if (!rois.isEmpty()) {
             getImageViewer().clearOverlays();
             getImageViewer().addOverlay(rois);
         }

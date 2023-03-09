@@ -28,9 +28,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Stack2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Video2DExporterRun;
+import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer2DUISettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -54,7 +54,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     private final JIPipeImageViewer imageViewer;
     private final JButton zoomStatusButton = new JButton();
-    private final ImageViewerUISettings settings;
+    private final ImageViewer2DUISettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private final JLabel channelSliderLabel = new JLabel("Channel (C)");
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
@@ -97,9 +97,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         this.imageViewer = imageViewer;
         this.workbench = imageViewer.getWorkbench();
         if (JIPipe.getInstance() != null) {
-            settings = ImageViewerUISettings.getInstance();
+            settings = ImageViewer2DUISettings.getInstance();
         } else {
-            settings = null;
+            settings = new ImageViewer2DUISettings();
         }
         initialize();
         updateZoomStatus();
@@ -110,7 +110,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return workbench;
     }
 
-    public ImageViewerUISettings getSettings() {
+    public ImageViewer2DUISettings getSettings() {
         return settings;
     }
 

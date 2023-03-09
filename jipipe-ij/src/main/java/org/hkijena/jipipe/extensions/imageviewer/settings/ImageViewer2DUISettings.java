@@ -11,44 +11,28 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.settings;
+package org.hkijena.jipipe.extensions.imageviewer.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
  */
-public class ImageViewerUISettings implements JIPipeParameterCollection {
+public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
 
-    public static String ID = "image-viewer-ui";
-
-    private final EventBus eventBus = new EventBus();
+    public static String ID = "image-viewer-ui-2d";
     private boolean showSideBar = true;
     private int defaultAnimationSpeed = 75;
-    private boolean alwaysClearROIs = true;
-
     private double zoomBaseSpeed = 0.05;
 
     private double zoomDynamicSpeed = 0.1;
 
-    public static ImageViewerUISettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUISettings.class);
-    }
-
-    @JIPipeDocumentation(name = "Always clear ROIs", description = "If enabled, viewers will always clear ROI lists if new data is loaded.")
-    @JIPipeParameter("always-clear-rois")
-    public boolean isAlwaysClearROIs() {
-        return alwaysClearROIs;
-    }
-
-    @JIPipeParameter("always-clear-rois")
-    public void setAlwaysClearROIs(boolean alwaysClearROIs) {
-        this.alwaysClearROIs = alwaysClearROIs;
+    public static ImageViewer2DUISettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ImageViewer2DUISettings.class);
     }
 
     @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
@@ -93,10 +77,5 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("zoom-dynamic-speed")
     public void setZoomDynamicSpeed(double zoomDynamicSpeed) {
         this.zoomDynamicSpeed = zoomDynamicSpeed;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

@@ -8,6 +8,7 @@ import ij.process.ImageStatistics;
 import ij.process.LUT;
 import ij.process.StackStatistics;
 import ij3d.*;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -15,6 +16,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.LUTManagerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
+import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer2DUISettings;
+import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer3DUISettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRendererSettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomImage3DUniverse;
@@ -22,7 +25,6 @@ import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomI
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.SnapshotSettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.StandardView;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -56,7 +58,7 @@ import java.util.List;
 
 public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener {
     private final JIPipeImageViewer imageViewer;
-    private final ImageViewerUISettings settings;
+    private final ImageViewer3DUISettings settings;
     private ImagePlus image;
 
     private JComponent currentContentPanel;
@@ -94,7 +96,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
-        this.settings = imageViewer.getSettings();
+        if (JIPipe.getInstance() != null) {
+            settings = ImageViewer3DUISettings.getInstance();
+        } else {
+            settings = new ImageViewer3DUISettings();
+        }
         this.updateImageLaterTimer = new Timer(1000, e -> updateImageNow());
         updateImageLaterTimer.setRepeats(false);
         initialize();
@@ -103,6 +109,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         // Register events
         viewerRunnerQueue.getEventBus().register(this);
         image3DRendererSettings.addParameterChangeListener(e -> updateImageLater());
+    }
+
+    public ImageViewer3DUISettings getSettings() {
+        return settings;
     }
 
     public Image3DRendererSettings getImage3DRendererSettings() {

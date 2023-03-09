@@ -14,7 +14,6 @@ import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManager
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.LUTManagerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.RenderSettingsPlugin3D;
-import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -41,7 +40,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             RenderSettingsPlugin3D.class);
     private static JIPipeImageViewer ACTIVE_PANEL = null;
     private final JIPipeWorkbench workbench;
-    private final ImageViewerUISettings settings;
     private final Map<Class<?>, Object> contextObjects;
     private final JToolBar toolBar = new JToolBar();
 
@@ -78,11 +76,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
     public JIPipeImageViewer(JIPipeWorkbench workbench, List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes, Map<Class<?>, Object> contextObjects) {
         this.workbench = workbench;
         this.contextObjects = contextObjects;
-        if (JIPipe.getInstance() != null) {
-            settings = ImageViewerUISettings.getInstance();
-        } else {
-            settings = null;
-        }
         imageViewerPanel2D = new ImageViewerPanel2D(this);
         imageViewerPanel3D = new ImageViewerPanel3D(this);
         initializePlugins(pluginTypes);
@@ -106,10 +99,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
                 pluginMap.put(pluginType, plugin3D);
             }
         }
-    }
-
-    public ImageViewerUISettings getSettings() {
-        return settings;
     }
 
     public ImageViewerPanel2D getImageViewerPanel2D() {

@@ -15,6 +15,10 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
     }
 
     public Image3DRendererSettings(Image3DRendererSettings other) {
+        copyFrom(other);
+    }
+
+    public void copyFrom(Image3DRendererSettings other) {
         this.renderType = other.renderType;
         this.maximumMemory = other.maximumMemory;
         this.overrideResolutionFactor = new OptionalIntegerParameter(other.overrideResolutionFactor);

@@ -109,13 +109,6 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 "UI",
                 null,
                 new GraphEditorUISettings());
-        registerSettingsSheet(ImageViewerUISettings.ID,
-                "Image viewer",
-                "Settings for the JIPipe image viewer",
-                UIUtils.getIconFromResources("actions/viewimage.png"),
-                "UI",
-                null,
-                new ImageViewerUISettings());
         registerSettingsSheet(TableViewerUISettings.ID,
                 "Table viewer",
                 "Settings for the JIPipe table viewer",
