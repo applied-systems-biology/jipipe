@@ -46,7 +46,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
 
     private final JPopupMenu menu = new JPopupMenu();
 
-    private boolean withProgressBar = true;
+    private boolean flatMode = false;
 
     /**
      * Creates new instance
@@ -74,7 +74,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
 
     public void makeFlat() {
         setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
-        withProgressBar = false;
+        flatMode = true;
     }
 
     public JIPipeRunnerQueue getRunnerQueue() {
@@ -171,19 +171,32 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-
-        if(showProgress && withProgressBar) {
-            g.setColor(Color.LIGHT_GRAY);
-            g.fillRect(15,getHeight() - 6,getWidth()-15*2, 2);
-            if(lastMaxProgress > 0) {
-                double perc = 1.0 * lastProgress / lastMaxProgress;
-                if(perc < 0)
-                    perc = 0;
-                if(perc > 1)
-                    perc = 1;
-                g.setColor(ModernMetalTheme.PRIMARY5);
-                int progressBarMarginBottom = 6;
-                g.fillRect(15,getHeight() - progressBarMarginBottom, (int) ((getWidth()-15*2) * perc), 2);
+        if(showProgress) {
+            if(!flatMode) {
+                g.setColor(Color.LIGHT_GRAY);
+                g.fillRect(15, getHeight() - 6, getWidth() - 15 * 2, 2);
+                if (lastMaxProgress > 0) {
+                    double perc = 1.0 * lastProgress / lastMaxProgress;
+                    if (perc < 0)
+                        perc = 0;
+                    if (perc > 1)
+                        perc = 1;
+                    g.setColor(ModernMetalTheme.PRIMARY5);
+                    g.fillRect(15, getHeight() - 6, (int) ((getWidth() - 15 * 2) * perc), 2);
+                }
+            }
+            else {
+                g.setColor(Color.LIGHT_GRAY);
+                g.fillRect(22, getHeight() - 4, getWidth() - 22, 2);
+                if (lastMaxProgress > 0) {
+                    double perc = 1.0 * lastProgress / lastMaxProgress;
+                    if (perc < 0)
+                        perc = 0;
+                    if (perc > 1)
+                        perc = 1;
+                    g.setColor(ModernMetalTheme.PRIMARY5);
+                    g.fillRect(22, getHeight() - 4, (int) ((getWidth() - 22) * perc), 2);
+                }
             }
         }
     }

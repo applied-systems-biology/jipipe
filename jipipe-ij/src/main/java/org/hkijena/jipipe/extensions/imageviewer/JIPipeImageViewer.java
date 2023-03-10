@@ -29,7 +29,7 @@ import java.util.List;
 public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, Disposable {
 
     private static final Set<JIPipeImageViewer> OPEN_PANELS = new HashSet<>();
-    public static final List<Class<? extends JIPipeImageViewerPlugin>> DEFAULT_PLUGINS = Arrays.asList(CalibrationPlugin2D.class,
+    public static final List<Class<? extends JIPipeImageViewerPlugin>> DEFAULT_PLUGINS = new ArrayList<>(Arrays.asList(CalibrationPlugin2D.class,
             PixelInfoPlugin2D.class,
             LUTManagerPlugin2D.class,
             ROIManagerPlugin2D.class,
@@ -38,7 +38,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             AnnotationInfoPlugin2D.class,
             CalibrationPlugin3D.class,
             LUTManagerPlugin3D.class,
-            RenderSettingsPlugin3D.class);
+            RenderSettingsPlugin3D.class));
     private static JIPipeImageViewer ACTIVE_PANEL = null;
     private final JIPipeWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;

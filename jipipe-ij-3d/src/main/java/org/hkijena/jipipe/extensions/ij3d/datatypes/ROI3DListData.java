@@ -58,6 +58,8 @@ import java.util.zip.ZipOutputStream;
         "The *.zip contains multiple 3D ImageJ Suite ROI. Please note that if multiple *.zip files are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
 public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
+
+    public static final String IMAGE_OVERLAY_KEY = "org.hkijena.jipipe:ij-3d:overlay-3d";
     public ROI3DListData() {
 
     }
@@ -68,9 +70,42 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
         }
     }
 
+    /**
+     * Extracts a 3D ROI list from an {@link ImagePlus} property
+     * @param img the image
+     * @return the ROIs (empty if no overlay is set)
+     */
+    public static ROI3DListData extractOverlay(ImagePlus img) {
+        Object property = img.getProperty(IMAGE_OVERLAY_KEY);
+        if(property instanceof ROI3DListData) {
+            return (ROI3DListData) property;
+        }
+        else {
+            return new ROI3DListData();
+        }
+    }
+
+    /**
+     * Sets the 3D ROI list as overlay via an {@link ImagePlus} property.
+     * Please note that ImageJ cannot natively interact with this.
+     * @param img the image
+     * @param rois the ROIs
+     */
+    public static void setOverlay(ImagePlus img, ROI3DListData rois) {
+        img.setProperty(IMAGE_OVERLAY_KEY, rois.shallowCopy());
+    }
+
+    /**
+     * Removes the 3D ROI list overlay
+     * @param img the image
+     */
+    public static void removeOverlay(ImagePlus img) {
+        img.setProperty(IMAGE_OVERLAY_KEY, null);
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        saveObjectsToStream(storage.write(StringUtils.orElse(name, "rois") + ".roi3d.zip"), progressInfo);
+        saveObjectsToStream(storage.write(StringUtils.orElse(name, "rois") + ".roi3d"), progressInfo);
     }
 
     public void save(Path path) {
@@ -121,7 +156,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     }
 
     public static ROI3DListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        Path zipFile = storage.findFileByExtension(".zip").get();
+        Path zipFile = storage.findFileByExtension(".roi3d").get();
         try(InputStream stream = storage.open(zipFile)) {
             ROI3DListData target = new ROI3DListData();
             target.loadObjectsFromStream(stream,  progressInfo);

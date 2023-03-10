@@ -64,11 +64,11 @@ public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataV
             throw new UnsupportedOperationException();
         }
         image.setTitle(image.getTitle());
+        getImageViewer().clearOverlays();
+        getImageViewer().setImage(image);
         if (!rois.isEmpty()) {
-            getImageViewer().clearOverlays();
             getImageViewer().addOverlay(rois);
         }
-        getImageViewer().setImage(image);
         fitImageToScreenOnce();
     }
 

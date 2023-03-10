@@ -76,6 +76,14 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     public void onImageChanged() {
         cancelScheduledTasks();
         updateListModel(Collections.emptySet());
+
+        // Load ROI3D content
+        if(getCurrentImage() != null) {
+            ROI3DListData data = ROI3DListData.extractOverlay(getCurrentImage());
+            if(!data.isEmpty()) {
+                getViewerPanel().addOverlay(data);
+            }
+        }
     }
 
     @Override
@@ -104,7 +112,12 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void importROIs(ROI3DListData overlay) {
-        scheduledRoi3D.addAll(overlay);
+        for (ROI3D roi3D : overlay) {
+            ROI3D copy = new ROI3D();
+            copy.setObject3D(roi3D.getObject3D());
+            copy.copyMetadata(roi3D);
+            scheduledRoi3D.add(copy);
+        }
         executeScheduledTasks();
     }
 
@@ -509,12 +522,15 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     private void executeScheduledTasks() {
         if(!scheduledRoi2D.isEmpty()) {
             ROI2DTo3DConverterRun run = new ROI2DTo3DConverterRun(new ArrayList<>(scheduledRoi2D));
-            getViewerPanel3D().getViewerRunnerQueue().enqueue(run);
-
+            scheduledRoi2D.clear();
+//            getViewerPanel3D().getViewerRunnerQueue().enqueue(run);
+            System.out.println("Schedule 2d to 3d ROI converter run");
         }
         if(!scheduledRoi3D.isEmpty()) {
             ROI3DToContentConverterRun run = new ROI3DToContentConverterRun(new ArrayList<>(scheduledRoi3D));
-            getViewerPanel3D().getViewerRunnerQueue().enqueue(run);
+            scheduledRoi3D.clear();
+//            getViewerPanel3D().getViewerRunnerQueue().enqueue(run);
+            System.out.println("Schedule 3d ROI converter run");
         }
     }
 
