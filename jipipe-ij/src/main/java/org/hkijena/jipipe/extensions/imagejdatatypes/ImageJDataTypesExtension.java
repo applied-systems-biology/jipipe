@@ -84,6 +84,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer2DUISettings;
 import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer3DUISettings;
+import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewerGeneralUISettings;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -550,6 +551,13 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 "Image viewer",
                 UIUtils.getIconFromResources("actions/viewimage.png"),
                 new ImageViewerUIROI2DDisplaySettings());
+        registerSettingsSheet(ImageViewerGeneralUISettings.ID,
+                "General",
+                "General settings for the image viewer",
+                UIUtils.getIconFromResources("actions/configure.png"),
+                "Image viewer",
+                UIUtils.getIconFromResources("actions/viewimage.png"),
+                new ImageViewerGeneralUISettings());
 
     }
 

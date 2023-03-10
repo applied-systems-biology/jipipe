@@ -45,14 +45,14 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
     @Override
     public void onImageChanged() {
-        if (getCurrentImage() != null) {
+        if (getCurrentImagePlus() != null) {
 
-            if(getCurrentImage().getType() == ImagePlus.COLOR_RGB) {
+            if(getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
                 // Set to 0-255
                 calibrationModes.setSelectedItem(ImageJCalibrationMode.Depth8Bit);
             }
             else {
-                ImageProcessor processor = getCurrentImage().getProcessor();
+                ImageProcessor processor = getCurrentImagePlus().getProcessor();
                 double min = processor.getMin();
                 double max = processor.getMax();
                 if(min != 0 || max != 0) {

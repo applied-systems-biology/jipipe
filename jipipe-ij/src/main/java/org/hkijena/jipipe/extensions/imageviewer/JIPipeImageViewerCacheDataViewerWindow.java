@@ -51,7 +51,7 @@ public abstract class JIPipeImageViewerCacheDataViewerWindow extends JIPipeCache
      * Triggers the fitImage() command if applied once
      */
     public void fitImageToScreenOnce() {
-        if(!fitImageTriggered && imageViewer.getImage() != null) {
+        if(!fitImageTriggered && imageViewer.getImagePlus() != null) {
             SwingUtilities.invokeLater(imageViewer::fitImageToScreen);
             fitImageTriggered = true;
         }

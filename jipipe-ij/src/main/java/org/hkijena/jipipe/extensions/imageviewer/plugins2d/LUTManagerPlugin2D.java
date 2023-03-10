@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins2d;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerLUTEditor;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
@@ -32,27 +33,27 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
     @Override
     public void initializeSettingsPanel(FormPanel formPanel) {
-        if (getCurrentImage() == null) {
+        if (getCurrentImagePlus() == null) {
             return;
         }
-        if (getCurrentImage().getType() == ImagePlus.COLOR_256 || getCurrentImage().getType() == ImagePlus.COLOR_RGB) {
+        if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
             JButton toRGBButton = new JButton("Split channels", UIUtils.getIconFromResources("actions/channelmixer.png"));
             headerPanel.add(toRGBButton);
             toRGBButton.addActionListener(e -> splitChannels());
         } else {
-            while (lutEditors.size() < getCurrentImage().getNChannels()) {
+            while (lutEditors.size() < getCurrentImagePlus().getNChannels()) {
                 ImageViewerLUTEditor editor = new ImageViewer2DLUTEditor(getViewerPanel(), lutEditors.size());
                 editor.loadLUTFromImage();
                 lutEditors.add(editor);
             }
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
-            if (getCurrentImage().getNChannels() == 3) {
+            if (getCurrentImagePlus().getNChannels() == 3) {
                 JButton toRGBButton = new JButton("Convert to RGB", UIUtils.getIconFromResources("actions/colors-rgb.png"));
                 headerPanel.add(toRGBButton);
                 toRGBButton.addActionListener(e -> convertImageToRGB());
             }
-            for (int channel = 0; channel < getCurrentImage().getNChannels(); channel++) {
+            for (int channel = 0; channel < getCurrentImagePlus().getNChannels(); channel++) {
                 ImageViewerLUTEditor editor = lutEditors.get(channel);
                 JTextField channelNameEditor = new JTextField(editor.getChannelName());
                 channelNameEditor.setOpaque(false);
@@ -68,23 +69,29 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
         }
 
         // Apply LUT after creating the panel
-        for (int i = 0; i < Math.min(getCurrentImage().getNChannels(), lutEditors.size()); i++) {
+        for (int i = 0; i < Math.min(getCurrentImagePlus().getNChannels(), lutEditors.size()); i++) {
             lutEditors.get(i).applyLUT();
         }
     }
 
     private void splitChannels() {
-        if (getCurrentImage() != null) {
+        if (getCurrentImagePlus() != null) {
             try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
-                getViewerPanel().setImage(ImageJUtils.rgbToChannels(getCurrentImage()));
+                ImagePlus imagePlus = ImageJUtils.rgbToChannels(getCurrentImagePlus());
+                ImagePlusData imagePlusData = new ImagePlusData(imagePlus);
+                imagePlusData.copyMetadata(getCurrentImage());
+                getViewerPanel().setImageData(imagePlusData);
             }
         }
     }
 
     private void convertImageToRGB() {
-        if (getCurrentImage() != null) {
+        if (getCurrentImagePlus() != null) {
             try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
-                getViewerPanel().setImage(ImageJUtils.channelsToRGB(getCurrentImage()));
+                ImagePlus imagePlus = ImageJUtils.channelsToRGB(getCurrentImagePlus());
+                ImagePlusData imagePlusData = new ImagePlusData(imagePlus);
+                imagePlusData.copyMetadata(getCurrentImage());
+                getViewerPanel().setImageData(imagePlusData);
             }
         }
     }

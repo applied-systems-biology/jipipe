@@ -23,8 +23,8 @@ public class MaskToROIDrawerPlugin2D extends MaskDrawerPlugin2D {
 
     private ImagePlus generateMask(ImagePlus imagePlus) {
         return IJ.createHyperStack("Mask",
-                getCurrentImage().getWidth(),
-                getCurrentImage().getHeight(),
+                getCurrentImagePlus().getWidth(),
+                getCurrentImagePlus().getHeight(),
                 1,
                 1,
                 1,

@@ -26,8 +26,11 @@ public class ExtractOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        ROI3DListData rois = ROI3DListData.extractOverlay(img);
+        ImagePlusData image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+        ROI3DListData rois = new ROI3DListData();
+        for (ROI3DListData data : image.extractOverlaysOfType(ROI3DListData.class)) {
+            rois.addAll(data);
+        }
         dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 }

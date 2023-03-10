@@ -11,7 +11,7 @@ public class ImageViewer2DLUTEditor extends ImageViewerLUTEditor {
 
     @Override
     public void applyLUT() {
-        ImagePlus image = getImageViewerPanel().getImage();
+        ImagePlus image = getImageViewerPanel().getImagePlus();
         if (image != null && image.getType() != ImagePlus.COLOR_RGB) {
             if (getTargetChannel() < image.getNChannels()) {
 //                if (image instanceof CompositeImage) {

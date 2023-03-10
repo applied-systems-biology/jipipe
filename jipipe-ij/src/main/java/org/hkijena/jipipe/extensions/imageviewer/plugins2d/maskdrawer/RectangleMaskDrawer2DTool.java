@@ -218,7 +218,7 @@ public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool {
                         "Circumference: -", p0.x, p0.y));
                 return;
             }
-            Calibration calibration = getViewerPanel().getImage().getCalibration();
+            Calibration calibration = getViewerPanel().getImagePlus().getCalibration();
             if(calibration != null && calibration.scaled()) {
                 if(calibration.pixelWidth == calibration.pixelHeight && Objects.equals(calibration.getXUnit(), calibration.getYUnit())) {
                     infoArea.setText(String.format("P1: %d, %d\n" +

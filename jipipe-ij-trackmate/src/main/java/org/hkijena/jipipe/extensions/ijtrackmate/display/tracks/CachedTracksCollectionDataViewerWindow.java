@@ -18,19 +18,12 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.SpotsManagerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 
-import javax.swing.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +45,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeImageViewerCac
         TrackCollectionData trackCollectionData = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), TrackCollectionData.class);
         getImageViewer().addOverlay(trackCollectionData);
         getImageViewer().setError(null);
-        getImageViewer().setImage(trackCollectionData.getImage());
+        getImageViewer().setImagePlus(trackCollectionData.getImage());
         fitImageToScreenOnce();
     }
 

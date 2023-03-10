@@ -73,17 +73,17 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         for (Roi roi : overlayRois) {
             rois.remove(roi);
         }
-        if (getCurrentImage() != null && getCurrentImage().getOverlay() != null) {
-            if (getCurrentImage().getRoi() != null) {
-                rois.add(getCurrentImage().getRoi());
+        if (getCurrentImagePlus() != null && getCurrentImagePlus().getOverlay() != null) {
+            if (getCurrentImagePlus().getRoi() != null) {
+                rois.add(getCurrentImagePlus().getRoi());
             }
-            for (Roi roi : getCurrentImage().getOverlay()) {
+            for (Roi roi : getCurrentImagePlus().getOverlay()) {
                 rois.add(roi);
                 overlayRois.add(roi);
             }
         }
         for (Roi roi : rois) {
-            ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel2D().getZoomedDummyCanvas());
+            ImageJUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
         }
         updateListModel(true, Collections.emptySet());
     }
@@ -107,7 +107,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void initializeSettingsPanel(FormPanel formPanel) {
-        if (getCurrentImage() == null)
+        if (getCurrentImagePlus() == null)
             return;
         formPanel.addVerticalGlue(mainPanel, null);
     }
@@ -308,7 +308,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private void measureSelectedROI() {
         ROIListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
         Measurement2DSettings settings = Measurement2DSettings.INSTANCE;
-        ResultsTableData measurements = data.measure(ImageJUtils.duplicate(getViewerPanel().getImage()),
+        ResultsTableData measurements = data.measure(ImageJUtils.duplicate(getViewerPanel().getImagePlus()),
                 settings.getStatistics(), true, settings.isMeasureInPhysicalUnits());
         TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
     }
@@ -411,7 +411,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
             for (int i = 0; i < rois.size(); i++) {
                 Roi roi = rois.get(i);
-                ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel2D().getZoomedDummyCanvas());
+                ImageJUtils.setRoiCanvas(roi, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
             }
             roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), getViewerPanel2D().getCanvas().getZoom());
         }
@@ -426,10 +426,10 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
         if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
             Graphics2D graphics = image.createGraphics();
             ROIListData copy = new ROIListData();
-            ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImage(), magnification);
+            ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImagePlus(), magnification);
             for (Roi roi : rois) {
                 Roi clone = (Roi) roi.clone();
-                ImageJUtils.setRoiCanvas(clone, getCurrentImage(), canvas);
+                ImageJUtils.setRoiCanvas(clone, getCurrentImagePlus(), canvas);
                 copy.add(clone);
             }
             roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0, 0, image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), magnification);
@@ -602,7 +602,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     public void importROIs(ROIListData rois, boolean deferUploadSlice) {
         for (Roi roi : rois) {
             Roi clone = (Roi) roi.clone();
-            ImageJUtils.setRoiCanvas(clone, getCurrentImage(), getViewerPanel2D().getZoomedDummyCanvas());
+            ImageJUtils.setRoiCanvas(clone, getCurrentImagePlus(), getViewerPanel2D().getZoomedDummyCanvas());
             this.rois.add(clone);
         }
         updateListModel(deferUploadSlice, Collections.emptySet());

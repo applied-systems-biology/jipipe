@@ -66,7 +66,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
 
     @Override
     public void run() {
-        ImagePlus image = viewerPanel.getImage();
+        ImagePlus image = viewerPanel.getImagePlus();
         ImageStack generatedStack = null;
 
         if (followedDimension == HyperstackDimension.Depth) {

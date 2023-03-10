@@ -37,9 +37,9 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D {
     }
 
     private void updatePixelInfo(Point coordinate) {
-        if (getCurrentImage() != null) {
+        if (getCurrentImagePlus() != null) {
             if (coordinate != null) {
-                if (coordinate.x < 0 || coordinate.y < 0 || coordinate.x >= getCurrentImage().getWidth() || coordinate.y >= getCurrentImage().getHeight()) {
+                if (coordinate.x < 0 || coordinate.y < 0 || coordinate.x >= getCurrentImagePlus().getWidth() || coordinate.y >= getCurrentImagePlus().getHeight()) {
                     pixelInfoLabel.setText("x: " + coordinate.x + " y: " + coordinate.y + " (Outside image)");
                 } else {
                     String value = "";

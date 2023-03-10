@@ -65,7 +65,7 @@ public class Stack2DExporterRun implements JIPipeRunnable {
             }
         }
 
-        ImagePlus image = viewerPanel.getImage();
+        ImagePlus image = viewerPanel.getImagePlus();
         progressInfo.setMaxProgress(image.getStackSize());
         for (int c = 0; c < image.getNChannels(); c++) {
             for (int t = 0; t < image.getNFrames(); t++) {

@@ -7,6 +7,7 @@ import ij.measure.Calibration;
 import ij.util.Tools;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.*;
 import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.MeasurementDrawerPlugin2D;
@@ -14,6 +15,7 @@ import org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager.ROIManager
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.LUTManagerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.RenderSettingsPlugin3D;
+import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewerGeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -59,7 +61,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
     private final Map<Class<? extends JIPipeImageViewerPlugin>, JIPipeImageViewerPlugin> pluginMap = new HashMap<>();
 
-    private ImagePlus image;
+    private ImagePlusData image;
 
     private final JButton switchModeButton = new JButton();
 
@@ -68,6 +70,8 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
     private final List<Object> overlays = new ArrayList<>();
 
     private JIPipeDataSource dataSource;
+
+    private final ImageViewerGeneralUISettings settings;
 
     /**
      * Initializes a new image viewer
@@ -79,6 +83,12 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         this.contextObjects = contextObjects;
         imageViewerPanel2D = new ImageViewerPanel2D(this);
         imageViewerPanel3D = new ImageViewerPanel3D(this);
+        if(JIPipe.isInstantiated()) {
+            settings = ImageViewerGeneralUISettings.getInstance();
+        }
+        else {
+            settings = new ImageViewerGeneralUISettings();
+        }
         initializePlugins(pluginTypes);
         initialize();
         switchTo2D();
@@ -150,9 +160,17 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
         // Switcher
         toolBar.add(switchModeButton);
-        JPopupMenu switchModeMenu = UIUtils.addPopupMenuToComponent(switchModeButton);
-        switchModeMenu.add(UIUtils.createMenuItem("Switch to 2D", "Display the image in 2D", UIUtils.getIconFromResources("data-types/imgplus-2d.png"), this::switchTo2D));
-        switchModeMenu.add(UIUtils.createMenuItem("Switch to 3D", "Display the image in 3D", UIUtils.getIconFromResources("data-types/imgplus-3d.png"), this::switchTo3D));
+        JPopupMenu switchModeMenu = new JPopupMenu();
+        UIUtils.addReloadablePopupMenuToComponent(switchModeButton, switchModeMenu, () -> {
+            switchModeMenu.removeAll();
+            switchModeMenu.add(UIUtils.createMenuItem("Switch to 2D", "Display the image in 2D", UIUtils.getIconFromResources("data-types/imgplus-2d.png"), this::switchTo2D));
+            switchModeMenu.add(UIUtils.createMenuItem("Switch to 3D", "Display the image in 3D", UIUtils.getIconFromResources("data-types/imgplus-3d.png"), this::switchTo3D));
+            switchModeMenu.addSeparator();
+            JCheckBoxMenuItem autoSwitchToggle = new JCheckBoxMenuItem("Select automatically", settings.isAutoSwitch2D3DViewer());
+            autoSwitchToggle.addActionListener(e -> settings.setAutoSwitch2D3DViewer(autoSwitchToggle.isSelected()));
+            switchModeMenu.add(autoSwitchToggle);
+        });
+
 
         // Shared image controls
         JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
@@ -172,8 +190,8 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
     private void openInImageJ() {
         if (image != null) {
-            String title = image.getTitle();
-            ImagePlus duplicate = ImageJUtils.duplicate(image);
+            String title = image.getImage().getTitle();
+            ImagePlus duplicate = image.getDuplicateImage();
             duplicate.setTitle(title);
             duplicate.show();
         }
@@ -185,8 +203,8 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             imageInfoLabel.setText("");
             return;
         }
-        int type = image.getType();
-        Calibration cal = image.getCalibration();
+        int type = image.getImage().getType();
+        Calibration cal = image.getImage().getCalibration();
         if (cal.scaled()) {
             boolean unitsMatch = cal.getXUnit().equals(cal.getYUnit());
             double cwidth = image.getWidth() * cal.pixelWidth;
@@ -218,16 +236,16 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
                 s += "RGB";
                 break;
         }
-        if (image.isInvertedLut())
+        if (image.getImage().isInvertedLut())
             s += " (inverting LUT)";
-        s += "; " + ImageWindow.getImageSize(image);
+        s += "; " + ImageWindow.getImageSize(image.getImage());
 //        if (rotation != 0) {
 //            s += " (Rotated " + rotation + "°)";
 //        }
         imageInfoLabel.setText(s);
     }
 
-    private void switchTo3D() {
+    public void switchTo3D() {
         switchModeButton.setText("3D Viewer");
         switchModeButton.setIcon(UIUtils.getIconFromResources("data-types/imgplus-3d.png"));
 
@@ -317,7 +335,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
                         LUTManagerPlugin3D.class,
                         CalibrationPlugin3D.class),
                 Collections.emptyMap());
-        dataDisplay.setImage(image);
+        dataDisplay.setImageData(new ImagePlusData(image));
         JIPipeImageViewerWindow window = new JIPipeImageViewerWindow(dataDisplay);
         window.setTitle(title);
         window.setVisible(true);
@@ -347,16 +365,38 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         imageViewerPanel3D.dispose();
     }
 
+    @Deprecated
     public void setImage(ImagePlus image) {
+        setImagePlus(image);
+    }
+
+    public void setImagePlus(ImagePlus image) {
+        setImageData(new ImagePlusData(image));
+    }
+
+    public void setImageData(ImagePlusData image) {
         this.image = image;
         imageViewerPanel2D.setImage(image);
         imageViewerPanel3D.setImage(image);
 
         refreshImageInfo();
+
+        if(settings.isAutoSwitch2D3DViewer()) {
+            if(image.getImage().getNSlices() > 1) {
+                switchTo3D();
+            }
+            else {
+                switchTo2D();
+            }
+        }
     }
 
-    public ImagePlus getImage() {
+    public ImagePlusData getImage() {
         return image;
+    }
+
+    public ImagePlus getImagePlus() {
+        return ImageJUtils.unwrap(image);
     }
 
     public ImageViewerPanel2D getViewerPanel2D() {

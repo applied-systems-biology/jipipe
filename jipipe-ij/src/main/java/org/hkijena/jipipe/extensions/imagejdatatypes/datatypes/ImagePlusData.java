@@ -43,8 +43,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * ImageJ image
@@ -60,6 +62,7 @@ public class ImagePlusData implements JIPipeData {
     private ImagePlus image;
     private ImageSource imageSource;
     private ColorSpace colorSpace = new RGBColorSpace();
+    private List<JIPipeData> overlays = new ArrayList<>();
 
     /**
      * @param image wrapped image
@@ -147,11 +150,54 @@ public class ImagePlusData implements JIPipeData {
     }
 
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return new ImagePlusData(importImagePlusFrom(storage, progressInfo));
+        ImagePlus imagePlus = importImagePlusFrom(storage, progressInfo);
+        ImagePlusData imagePlusData = new ImagePlusData(imagePlus);
+        if(storage.exists("overlays") && storage.isDirectory("overlays")) {
+            JIPipeDataTable dataTable = JIPipeDataTable.importData(storage.resolve("overlays"), progressInfo.resolve("Import overlays"));
+            for (int i = 0; i < dataTable.getRowCount(); i++) {
+                imagePlusData.addOverlay(dataTable.getData(i, JIPipeData.class, progressInfo));
+            }
+        }
+        return imagePlusData;
     }
 
     public static ColorSpace getColorSpaceOf(Class<? extends ImagePlusData> dataType) {
         return (ColorSpace) ReflectionUtils.newInstance(dataType.getAnnotation(ImageTypeInfo.class).colorSpace());
+    }
+
+    /**
+     * Gets overlay data
+     * @return the overlays
+     */
+    public List<JIPipeData> getOverlays() {
+        return overlays;
+    }
+
+    /**
+     * Sets overlay data
+     * @param overlays the overlay
+     */
+    public void setOverlays(List<JIPipeData> overlays) {
+        this.overlays = overlays;
+    }
+
+    public void removeOverlay(JIPipeData overlay) {
+        if(overlays != null) {
+            overlays.remove(overlay);
+        }
+    }
+
+    public void addOverlay(JIPipeData overlay) {
+        if(overlays == null) {
+            overlays = new ArrayList<>();
+        }
+        overlays.add(overlay);
+    }
+
+    public void removeOverlaysOfType(Class<? extends JIPipeData> klass) {
+        if(overlays != null) {
+            overlays.removeIf(overlay -> klass.isAssignableFrom(overlay.getClass()));
+        }
     }
 
     /**
@@ -305,6 +351,13 @@ public class ImagePlusData implements JIPipeData {
         } else {
             imageSource.saveTo(storage.getFileSystemPath(), name, forceName, progressInfo);
         }
+        if(overlays != null && !overlays.isEmpty()) {
+            JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
+            for (JIPipeData overlay : overlays) {
+                dataTable.addData(overlay, progressInfo);
+            }
+            dataTable.exportData(storage.resolve("overlays"), progressInfo.resolve("Export overlays"));
+        }
     }
 
     @Override
@@ -430,4 +483,27 @@ public class ImagePlusData implements JIPipeData {
         return image != null;
     }
 
+    public <T extends JIPipeData> List<T> extractOverlaysOfType(Class<T> klass) {
+        List<T> result = new ArrayList<>();
+        if(overlays != null) {
+            for (JIPipeData overlay : overlays) {
+                if(klass.isAssignableFrom(overlay.getClass())) {
+                    result.add((T)overlay);
+                }
+            }
+        }
+        return result;
+    }
+
+    public ImagePlusData shallowCopy() {
+        ImagePlusData imagePlusData = new ImagePlusData(getImage());
+        imagePlusData.copyMetadata(this);
+        return imagePlusData;
+    }
+
+    public void copyMetadata(ImagePlusData other) {
+        if(other.overlays!=null) {
+            setOverlays(new ArrayList<>(other.overlays));
+        }
+    }
 }

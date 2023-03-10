@@ -139,9 +139,13 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
         invertColorsButton.addActionListener(e -> invertColors());
         menu.add(invertColorsButton);
 
-        JMenuItem setToColorMapButton = new JMenuItem("Reset", UIUtils.getIconFromResources("actions/editclear.png"));
-        setToColorMapButton.addActionListener(e -> resetLUT());
-        menu.add(setToColorMapButton);
+        JMenuItem resetColorsButton = new JMenuItem("Reset", UIUtils.getIconFromResources("actions/editclear.png"));
+        resetColorsButton.addActionListener(e -> resetLUT());
+        menu.add(resetColorsButton);
+
+        JMenuItem setColorsButton = new JMenuItem("Set to color", UIUtils.getIconFromResources("actions/stock_edit.png"));
+        setColorsButton.addActionListener(e -> setToUniformColor());
+        menu.add(setColorsButton);
 
         JMenuItem exportLUTToJSONButton = new JMenuItem("Export LUT as *.json", UIUtils.getIconFromResources("actions/document-export.png"));
         exportLUTToJSONButton.addActionListener(e -> exportLUTToJSON());
@@ -180,6 +184,16 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
         addThumbButton.addActionListener(e -> addColor());
         deleteThumbButton.addActionListener(e -> removeColor());
         changeColorButton.addActionListener(e -> changeColor());
+    }
+
+    private void setToUniformColor() {
+        Color color = JColorChooser.showDialog(this, "Select color", Color.WHITE);
+        if(color != null) {
+            importLUT(LUT.createLutFromColor(Color.WHITE), true);
+            slider.getModel().getThumbAt(1).setObject(color);
+            slider.getModel().getThumbAt(0).setObject(color);
+            applyLUT();
+        }
     }
 
     public void resetLUT() {

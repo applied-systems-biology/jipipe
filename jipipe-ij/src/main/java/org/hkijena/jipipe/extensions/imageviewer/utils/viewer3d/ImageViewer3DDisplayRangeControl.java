@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d;
 
 import ij.ImagePlus;
-import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
@@ -81,7 +80,7 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
         JButton setMinButton = new JButton("set min");
         setMinButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         setMinButton.addActionListener(e -> {
-            if (calibrationPlugin.getCurrentImage().getImage() != null) {
+            if (calibrationPlugin.getCurrentImagePlus().getImage() != null) {
                 double value = (minSelectableValue + slider.getModel().getThumbAt(0).getPosition() * (maxSelectableValue - minSelectableValue));
                 Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
                         "Set min display value",
@@ -102,7 +101,7 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
         JButton setMaxButton = new JButton("set max");
         setMaxButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         setMaxButton.addActionListener(e -> {
-            if (calibrationPlugin.getCurrentImage().getImage() != null) {
+            if (calibrationPlugin.getCurrentImagePlus().getImage() != null) {
                 double value = (minSelectableValue + slider.getModel().getThumbAt(1).getPosition() * (maxSelectableValue - minSelectableValue));
                 Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
                         "Set max display value",
@@ -138,7 +137,7 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
         ImageJCalibrationMode selectedCalibration = getCalibrationPlugin().getSelectedCalibration();
         if (clearCustom || selectedCalibration != ImageJCalibrationMode.Custom) {
             isUpdating = true;
-            ImagePlus currentImage = getCalibrationPlugin().getCurrentImage();
+            ImagePlus currentImage = getCalibrationPlugin().getCurrentImagePlus();
             if (currentImage != null) {
                 if(lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
                     lastSelectableValueCalculationBasis = new WeakReference<>(currentImage);
@@ -285,7 +284,7 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
             g.setColor(UIManager.getColor("Button.borderColor"));
             g.drawLine(0, h, w + 2 * ThumbRenderer.SIZE, h);
             g.setColor(COLOR_SELECTED);
-            ImagePlus currentImage = displayRangeControl.getCalibrationPlugin().getCurrentImage();
+            ImagePlus currentImage = displayRangeControl.getCalibrationPlugin().getCurrentImagePlus();
             ImageStatistics statistics = displayRangeControl.getCalibrationPlugin().getViewerPanel3D().getCurrentImageStats();
             if (statistics != null && currentImage != null) {
                 long[] histogram = statistics.getHistogram();
@@ -325,7 +324,7 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
             g.setColor(UIManager.getColor("Label.foreground"));
 
             DecimalFormat format;
-            if (displayRangeControl.calibrationPlugin.getCurrentImage().getType() == ImagePlus.GRAY32) {
+            if (displayRangeControl.calibrationPlugin.getCurrentImagePlus().getType() == ImagePlus.GRAY32) {
                 format = DECIMAL_FORMAT_FLOAT;
             } else {
                 format = DECIMAL_FORMAT_INT;

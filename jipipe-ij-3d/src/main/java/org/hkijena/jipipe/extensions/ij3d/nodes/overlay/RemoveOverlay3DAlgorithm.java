@@ -26,8 +26,8 @@ public class RemoveOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
-        ROI3DListData.removeOverlay(img);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
+        ImagePlusData img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).shallowCopy();
+        img.removeOverlaysOfType(ROI3DListData.class);
+        dataBatch.addOutputData(getFirstOutputSlot(), img, progressInfo);
     }
 }

@@ -49,7 +49,7 @@ public class MaskDrawerFormData extends FormData {
                 Collections.emptyMap());
         maskDrawerPlugin = imageViewerPanel.getPlugin(MaskDrawerPlugin2D.class);
         if (lazyLoadedImage != null) {
-            imageViewerPanel.setImage(lazyLoadedImage);
+            imageViewerPanel.setImageData(new ImagePlusData(lazyLoadedImage));
             maskDrawerPlugin.setMask(lazyLoadedMask);
             lazyLoadedImage = null;
             lazyLoadedMask = null;
@@ -136,7 +136,7 @@ public class MaskDrawerFormData extends FormData {
         ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusGreyscaleMaskData.class, new JIPipeProgressInfo()).getImage();
 
         if (imageViewerPanel != null) {
-            imageViewerPanel.setImage(referenceImage);
+            imageViewerPanel.setImagePlus(referenceImage);
             maskDrawerPlugin.setMask(maskImage);
         } else {
             lazyLoadedImage = referenceImage;

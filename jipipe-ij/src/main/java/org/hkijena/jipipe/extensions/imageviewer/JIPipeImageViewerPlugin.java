@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.imageviewer;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -20,7 +21,11 @@ public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess, 
         return viewerPanel;
     }
 
-    public ImagePlus getCurrentImage() {
+    public ImagePlus getCurrentImagePlus() {
+        return viewerPanel.getImagePlus();
+    }
+
+    public ImagePlusData getCurrentImage() {
         return viewerPanel.getImage();
     }
 

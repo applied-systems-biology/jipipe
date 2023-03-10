@@ -19,7 +19,6 @@ import ij.process.LUT;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.imageviewer.utils.CustomGradientTrackRenderer;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -67,7 +66,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     public void loadLUTFromImage() {
-        ImagePlus image = imageViewerPanel.getImage();
+        ImagePlus image = imageViewerPanel.getImagePlus();
         if (image != null) {
             if (targetChannel < image.getLuts().length) {
                 importLUT(image.getLuts()[targetChannel], true);

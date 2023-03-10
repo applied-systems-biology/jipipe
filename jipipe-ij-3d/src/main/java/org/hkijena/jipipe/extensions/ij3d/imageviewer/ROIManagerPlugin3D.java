@@ -1,30 +1,31 @@
 package org.hkijena.jipipe.extensions.ij3d.imageviewer;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
+import customnode.CustomMesh;
+import customnode.CustomMultiMesh;
+import customnode.CustomTriangleMesh;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
 import ij3d.Content;
+import ij3d.ContentCreator;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.extensions.ij3d.utils.Roi3DDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin3D;
-import org.hkijena.jipipe.extensions.imageviewer.utils.RoiListCellRenderer;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
@@ -34,8 +35,10 @@ import org.hkijena.jipipe.ui.components.ribbon.*;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.vecmath.Color3f;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.nio.file.Path;
 import java.util.List;
@@ -43,26 +46,28 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
-    private final ROIListData overlayRois = new ROIListData();
     private final JList<ROI3D> roiListControl = new JList<>();
     private final LargeToggleButtonAction displayROIViewMenuItem = new LargeToggleButtonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
     private final List<ROIManagerPlugin3DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private final Ribbon ribbon = new Ribbon(3);
+    private final Timer updateContentLaterTimer;
     private ROI3DListData rois = new ROI3DListData();
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
     private final ROIListData scheduledRoi2D = new ROIListData();
 
-    private final ROI3DListData scheduledRoi3D = new ROI3DListData();
-
-    private final BiMap<ROI3D, Content> roi3DToContentMap = HashBiMap.create();
+    private ROI3DToContentConverterRun currentRendererRun;
+    private Content currentRendereredContent;
 
     public ROIManagerPlugin3D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
         loadDefaults();
         initialize();
         addSelectionContextPanel(new ROIManagerPlugin3DInfoContextPanel(this));
+
+        this.updateContentLaterTimer = new Timer(1000, e -> rebuildRoiContentNow());
+        updateContentLaterTimer.setRepeats(false);
 
         getViewerPanel3D().getViewerRunnerQueue().getEventBus().register(this);
     }
@@ -79,7 +84,10 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
         // Load ROI3D content
         if(getCurrentImage() != null) {
-            ROI3DListData data = ROI3DListData.extractOverlay(getCurrentImage());
+            ROI3DListData data = new ROI3DListData();
+            for (ROI3DListData listData : getCurrentImage().extractOverlaysOfType(ROI3DListData.class)) {
+                data.addAll(listData);
+            }
             if(!data.isEmpty()) {
                 getViewerPanel().addOverlay(data);
             }
@@ -107,7 +115,13 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
             // TODO
         }
         else if(event.getRun() instanceof ROI3DToContentConverterRun) {
-            // TODO
+            ROI3DToContentConverterRun run = (ROI3DToContentConverterRun) event.getRun();
+            if(currentRendereredContent != null) {
+                getViewerPanel3D().getUniverse().removeContent(currentRendereredContent.getName());
+            }
+            currentRendereredContent = run.getRenderedContent();
+            getViewerPanel3D().getUniverse().addContent(run.getRenderedContent());
+            updateContentVisibility();
         }
     }
 
@@ -116,14 +130,18 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
             ROI3D copy = new ROI3D();
             copy.setObject3D(roi3D.getObject3D());
             copy.copyMetadata(roi3D);
-            scheduledRoi3D.add(copy);
+            rois.add(copy);
         }
-        executeScheduledTasks();
+        rebuildRoiContentNow();
+        updateListModel(Collections.emptyList());
     }
 
     @Override
     public void dispose() {
+        updateContentLaterTimer.stop();
         cancelScheduledTasks();
+        currentRendereredContent = null;
+        rois.clear();
     }
 
     @Override
@@ -134,15 +152,13 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
     private void cancelScheduledTasks() {
         scheduledRoi2D.clear();
-        scheduledRoi3D.clear();
         getViewerPanel3D().getViewerRunnerQueue().cancelIf(run -> run instanceof ROI2DTo3DConverterRun || run instanceof ROI3DToContentConverterRun);
         scheduledRoi2D.clear();
-        scheduledRoi3D.clear();
     }
 
     @Override
     public void initializeSettingsPanel(FormPanel formPanel) {
-        if (getCurrentImage() == null)
+        if (getCurrentImagePlus() == null)
             return;
         formPanel.addVerticalGlue(mainPanel, null);
     }
@@ -174,10 +190,6 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         return rois;
     }
 
-    @Override
-    public void onViewerUniverseReady() {
-        executeScheduledTasks();
-    }
 
     public List<ROIManagerPlugin3DSelectionContextPanel> getSelectionContextPanels() {
         return Collections.unmodifiableList(selectionContextPanels);
@@ -200,7 +212,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     private void initializeRibbon() {
 
         // Register necessary actions
-        displayROIViewMenuItem.addActionListener(this::updateExistingContent);
+        displayROIViewMenuItem.addActionListener(this::updateContentVisibility);
 
         // View menu for general display
         {
@@ -211,13 +223,14 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
 //            renderingBand.add(new SmallButtonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openRoiDrawingSettings));
             renderingBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
+            renderingBand.add(new SmallButtonAction("Rebuild", "Re-renders the ROI", UIUtils.getIconFromResources("actions/run-build.png"), this::rebuildRoiContentNow));
         }
 
         // Filter task
         {
             Ribbon.Task filterTask = ribbon.addTask("Filter");
             Ribbon.Band listBand = filterTask.addBand("List");
-            Ribbon.Band roiBand = filterTask.addBand("ROI");
+//            Ribbon.Band roiBand = filterTask.addBand("ROI");
 
             // List band
 //            listBand.add(new SmallToggleButtonAction("Hide invisible", "Show only visible ROI in list", UIUtils.getIconFromResources("actions/eye-slash.png"), filterListHideInvisible, (toggle) -> {
@@ -286,6 +299,12 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         }
     }
 
+    private void updateContentVisibility() {
+        if(currentRendereredContent != null) {
+            currentRendereredContent.setVisible(displayROIViewMenuItem.isSelected());
+        }
+    }
+
     private void openMeasurementSettings() {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
         dialog.setTitle("Measurement settings");
@@ -319,7 +338,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     private void measureSelectedROI() {
         ROI3DListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
         Measurement3DSettings settings = Measurement3DSettings.INSTANCE;
-        ResultsTableData measurements = data.measure(ImageHandler.wrap(getCurrentImage()), settings.getStatistics().getNativeValue(),
+        ResultsTableData measurements = data.measure(ImageHandler.wrap(getCurrentImagePlus()), settings.getStatistics().getNativeValue(),
                 settings.isMeasureInPhysicalUnits(), "", new JIPipeProgressInfo());
         TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
     }
@@ -422,7 +441,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
                     roi.setFillColor(value);
                 }
                 roiListControl.repaint();
-                updateExistingContent();
+                rebuildRoiContentLater();
             }
         });
         menu.add(setFillColorItem);
@@ -464,18 +483,10 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
                     roi.setFrame(value.get());
                 }
                 roiListControl.repaint();
-               updateExistingContent();
+                rebuildRoiContentLater();
             }
         });
         menu.add(setTPositionItem);
-    }
-
-    private void updateExistingContent() {
-        // TODO
-        // Visibility
-        // Selection highlight (alpha)
-        // Color
-        // Frame
     }
 
     private void initialize() {
@@ -483,7 +494,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         roiListControl.setCellRenderer(new ROI3DListCellRenderer());
         roiListControl.addListSelectionListener(e -> {
             updateContextPanels();
-            updateExistingContent();
+            rebuildRoiContentLater();
         });
 
         // Setup ribbon
@@ -514,24 +525,33 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         mainPanel.add(selectionContentPanelUI, BorderLayout.SOUTH);
     }
 
-    public void importROIs(ROIListData rois) {
-        scheduledRoi2D.addAll(rois);
-        executeScheduledTasks();
+    private void rebuildRoiContentLater() {
+        updateContentLaterTimer.restart();
     }
 
-    private void executeScheduledTasks() {
-        if(!scheduledRoi2D.isEmpty()) {
-            ROI2DTo3DConverterRun run = new ROI2DTo3DConverterRun(new ArrayList<>(scheduledRoi2D));
-            scheduledRoi2D.clear();
-//            getViewerPanel3D().getViewerRunnerQueue().enqueue(run);
-            System.out.println("Schedule 2d to 3d ROI converter run");
+    public void importROIs(ROIListData rois) {
+        scheduledRoi2D.addAll(rois);
+        rebuildRoiContentNow();
+    }
+
+    private void rebuildRoiContentNow() {
+        if(currentRendererRun != null) {
+            getViewerPanel3D().getViewerRunnerQueue().cancel(currentRendererRun);
         }
-        if(!scheduledRoi3D.isEmpty()) {
-            ROI3DToContentConverterRun run = new ROI3DToContentConverterRun(new ArrayList<>(scheduledRoi3D));
-            scheduledRoi3D.clear();
-//            getViewerPanel3D().getViewerRunnerQueue().enqueue(run);
-            System.out.println("Schedule 3d ROI converter run");
+        if(getViewerPanel3D().getCurrentImageContents() == null) {
+            // Wait for ImageContentReady
+            return;
         }
+        currentRendererRun = new ROI3DToContentConverterRun(new ArrayList<>(rois),
+                new Roi3DDrawer(),
+                getCurrentImagePlus(),
+                getViewerPanel3D().getImage3DRendererSettings().getResolutionFactor(getCurrentImage().getImage()));
+        getViewerPanel3D().getViewerRunnerQueue().enqueue(currentRendererRun);
+    }
+
+    @Override
+    public void onImageContentReady(List<Content> content) {
+        rebuildRoiContentNow();
     }
 
     public void removeSelectedROIs() {
@@ -542,26 +562,21 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void removeContent(Collection<ROI3D> rois) {
-        for (ROI3D roi3D : rois) {
-            removeContent(roi3D);
-        }
+        this.rois.removeAll(rois);
+        rebuildRoiContentNow();
     }
 
     private void removeContent(ROI3D roi3D) {
-        Content content = roi3DToContentMap.get(roi3D);
-        if(content != null) {
-            roi3DToContentMap.remove(roi3D);
-            getViewerPanel3D().getUniverse().removeContent(content.getName());
-        }
+       rois.remove(roi3D);
+       rebuildRoiContentNow();
     }
 
     public void clearROIs() {
         rois.clear();
         updateListModel(Collections.emptySet());
-        for (Content content : ImmutableList.copyOf(roi3DToContentMap.values())) {
-            getViewerPanel3D().getUniverse().removeContent(content.getName());
+        if(currentRendereredContent != null && getViewerPanel3D().getUniverse() != null) {
+            getViewerPanel3D().getUniverse().removeContent(currentRendereredContent.getName());
         }
-        roi3DToContentMap.clear();
     }
 
     public ROI3DListData getRois() {
@@ -601,7 +616,6 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         roiListControl.setModel(model);
         setSelectedROI(selectedValuesList, false);
         updateContextPanels();
-        updateExistingContent();
     }
 
     private void updateContextPanels() {
@@ -670,11 +684,19 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
     private static class ROI3DToContentConverterRun extends AbstractJIPipeRunnable {
 
-        private final List<ROI3D> roi;
-        private final List<Content> converted = new ArrayList<>();
+        private final List<ROI3D> rois;
 
-        public ROI3DToContentConverterRun(List<ROI3D> roi) {
-            this.roi = roi;
+        private final Roi3DDrawer drawer;
+
+        private final ImagePlus referenceImage;
+        private Content renderedContent;
+        private final int resolutionFactor;
+
+        public ROI3DToContentConverterRun(List<ROI3D> rois, Roi3DDrawer drawer, ImagePlus referenceImage, int resolutionFactor) {
+            this.rois = rois;
+            this.drawer = drawer;
+            this.referenceImage = referenceImage;
+            this.resolutionFactor = resolutionFactor;
         }
 
         @Override
@@ -682,9 +704,45 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
             return "Preprocess 3D ROI";
         }
 
+        public Content getRenderedContent() {
+            return renderedContent;
+        }
+
+        public List<ROI3D> getRois() {
+            return rois;
+        }
+
         @Override
         public void run() {
-            // TODO
+//           ROI3DListData roi3DListData = new ROI3DListData();
+//           roi3DListData.addAll(rois);
+//           Roi3DDrawer copyDrawer = new Roi3DDrawer(drawer);
+//           copyDrawer.setDrawOver(false);
+//           ImagePlus render = copyDrawer.draw(roi3DListData, referenceImage, getProgressInfo().resolve("Render ROI to RGB"));
+//
+//
+//
+//           getProgressInfo().log("Converting RGB to ");
+//            renderedContent = ContentCreator.createContent("ROI3D-" + UUID.randomUUID(),
+//                    render,
+//                    Image3DRenderType.Surface.getNativeValue(),
+//                    resolutionFactor,
+//                    0,
+//                    new Color3f(1, 1, 1),
+//                    0,
+//                    new boolean[]{true, true, true});
+//
+//            renderedContent.applySurfaceColors(render);
+
+            List<CustomMesh> meshList = new ArrayList<>();
+            for (ROI3D roi3D : rois) {
+                CustomTriangleMesh mesh = new CustomTriangleMesh(roi3D.getObject3D().getObject3DSurface().getSurfaceTrianglesPixels(true),
+                        new Color3f(roi3D.getFillColor().getRed() / 255.0f, roi3D.getFillColor().getGreen() / 255.0f, roi3D.getFillColor().getBlue() / 255.0f),
+                        0f);
+                meshList.add(mesh);
+            }
+            CustomMultiMesh customMultiMesh = new CustomMultiMesh(meshList);
+            renderedContent = ContentCreator.createContent(customMultiMesh,"ROI3D-" + UUID.randomUUID());
         }
     }
 }

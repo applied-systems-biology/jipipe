@@ -40,32 +40,32 @@ public class CachedImagePlusDataViewerWindow extends JIPipeImageViewerCacheDataV
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        ImagePlus image;
+        ImagePlusData image;
         ROIListData rois = new ROIListData();
         if (customDataLoader != null) {
             customDataLoader.load(virtualData, progressInfo);
-            image = customDataLoader.getImagePlus();
+            image = new ImagePlusData(customDataLoader.getImagePlus());
             rois = customDataLoader.getRois();
             customDataLoader.setImagePlus(null);
             customDataLoader.setRois(null);
         } else if (ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
             ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
             getImageViewer().setError(null);
-            image = data.getViewedImage(false);
+            image = new ImagePlusData(data.getViewedImage(false));
             if (data.getImage().getRoi() != null) {
                 rois.add(data.getImage().getRoi());
             }
+            image.copyMetadata(data);
         } else if (OMEImageData.class.isAssignableFrom(virtualData.getDataClass())) {
             OMEImageData data = (OMEImageData) virtualData.getData(progressInfo);
             getImageViewer().setError(null);
-            image = data.getImage();
+            image = new ImagePlusData(data.getImage());
             rois.addAll(data.getRois());
         } else {
             throw new UnsupportedOperationException();
         }
-        image.setTitle(image.getTitle());
         getImageViewer().clearOverlays();
-        getImageViewer().setImage(image);
+        getImageViewer().setImageData(image);
         if (!rois.isEmpty()) {
             getImageViewer().addOverlay(rois);
         }

@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-@JIPipeDocumentation(name = "Set 3D overlay", description = "Set overlay ROIs")
+@JIPipeDocumentation(name = "Set 3D overlay", description = "Set overlay ROIs. Please note that 3D overlays are not natively supported by ImageJ and cann")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
@@ -25,9 +25,10 @@ public class SetOverlay3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
+        ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo).shallowCopy();
         ROI3DListData rois = dataBatch.getInputData("ROI", ROI3DListData.class, progressInfo);
-        ROI3DListData.setOverlay(img, rois);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
+        img.removeOverlaysOfType(ROI3DListData.class);
+        img.addOverlay(rois);
+        dataBatch.addOutputData(getFirstOutputSlot(), img, progressInfo);
     }
 }

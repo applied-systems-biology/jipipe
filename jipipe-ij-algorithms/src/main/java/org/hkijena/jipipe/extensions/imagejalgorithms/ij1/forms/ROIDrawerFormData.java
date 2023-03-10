@@ -52,7 +52,7 @@ public class ROIDrawerFormData extends FormData {
         maskDrawerPlugin = imageViewerPanel.getPlugin(MaskToROIDrawerPlugin2D.class);
         roiManagerPlugin = imageViewerPanel.getPlugin(ROIManagerPlugin2D.class);
         if (lazyLoadedImage != null) {
-            imageViewerPanel.setImage(lazyLoadedImage);
+            imageViewerPanel.setImageData(new ImagePlusData(lazyLoadedImage));
             roiManagerPlugin.setRois(lazyLoadedROIs, false);
             lazyLoadedImage = null;
             lazyLoadedROIs = null;
@@ -130,7 +130,7 @@ public class ROIDrawerFormData extends FormData {
         ROIListData rois = drawROIAlgorithm.getOutputSlot("ROI").getData(row, ROIListData.class, new JIPipeProgressInfo());
 
         if (imageViewerPanel != null) {
-            imageViewerPanel.setImage(referenceImage);
+            imageViewerPanel.setImagePlus(referenceImage);
             roiManagerPlugin.setRois(rois, false);
         } else {
             lazyLoadedImage = referenceImage;

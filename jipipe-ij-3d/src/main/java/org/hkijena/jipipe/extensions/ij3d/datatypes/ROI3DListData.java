@@ -29,12 +29,15 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
+import org.hkijena.jipipe.extensions.ij3d.display.CachedROIList3DDataViewerWindow;
 import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObject3DVoxels;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -44,6 +47,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UnclosableOutputStream;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,8 +62,6 @@ import java.util.zip.ZipOutputStream;
         "The *.zip contains multiple 3D ImageJ Suite ROI. Please note that if multiple *.zip files are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
 public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
-
-    public static final String IMAGE_OVERLAY_KEY = "org.hkijena.jipipe:ij-3d:overlay-3d";
     public ROI3DListData() {
 
     }
@@ -68,39 +70,6 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
         for (ROI3D roi3D : other) {
             add(new ROI3D(roi3D));
         }
-    }
-
-    /**
-     * Extracts a 3D ROI list from an {@link ImagePlus} property
-     * @param img the image
-     * @return the ROIs (empty if no overlay is set)
-     */
-    public static ROI3DListData extractOverlay(ImagePlus img) {
-        Object property = img.getProperty(IMAGE_OVERLAY_KEY);
-        if(property instanceof ROI3DListData) {
-            return (ROI3DListData) property;
-        }
-        else {
-            return new ROI3DListData();
-        }
-    }
-
-    /**
-     * Sets the 3D ROI list as overlay via an {@link ImagePlus} property.
-     * Please note that ImageJ cannot natively interact with this.
-     * @param img the image
-     * @param rois the ROIs
-     */
-    public static void setOverlay(ImagePlus img, ROI3DListData rois) {
-        img.setProperty(IMAGE_OVERLAY_KEY, rois.shallowCopy());
-    }
-
-    /**
-     * Removes the 3D ROI list overlay
-     * @param img the image
-     */
-    public static void removeOverlay(ImagePlus img) {
-        img.setProperty(IMAGE_OVERLAY_KEY, null);
     }
 
     @Override
@@ -129,7 +98,10 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-
+        CachedROIList3DDataViewerWindow window = new CachedROIList3DDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        window.reloadDisplayedData();
+        window.setVisible(true);
+        SwingUtilities.invokeLater(() -> window.getImageViewer().switchTo3D());
     }
 
     @Override

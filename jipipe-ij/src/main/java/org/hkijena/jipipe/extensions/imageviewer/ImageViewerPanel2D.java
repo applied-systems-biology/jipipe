@@ -21,6 +21,7 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -73,7 +74,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private final JIPipeWorkbench workbench;
     private final JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
     private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
-    private ImagePlus image;
+    private ImagePlusData image;
     private ImageCanvas zoomedDummyCanvas;
     private ImageCanvas exportDummyCanvas;
     private ImageProcessor currentSlice;
@@ -413,7 +414,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeRunExecuterUI.runInDialog(this, new RawImage2DExporterRun(getImage(), path));
+            JIPipeRunExecuterUI.runInDialog(this, new RawImage2DExporterRun(getImagePlus(), path));
         }
     }
 
@@ -640,16 +641,17 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
-    public ImagePlus getImage() {
-        return image;
+    public ImagePlus getImagePlus() {
+        return imageViewer.getImagePlus();
     }
 
-    public void setImage(ImagePlus image) {
+    public void setImage(ImagePlusData image) {
         this.image = image;
         if (image != null) {
-            this.zoomedDummyCanvas = new ImageCanvas(image);
+            ImagePlus imagePlus = image.getImage();
+            this.zoomedDummyCanvas = new ImageCanvas(imagePlus);
             this.zoomedDummyCanvas.setMagnification(getCanvas().getZoom());
-            this.exportDummyCanvas = new ImageCanvas(image);
+            this.exportDummyCanvas = new ImageCanvas(imagePlus);
         } else {
             this.zoomedDummyCanvas = null;
             this.exportDummyCanvas = null;
@@ -669,7 +671,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     }
 
     private void refreshMenus() {
-        boolean hasMultipleSlices = image != null && image.getNDimensions() > 2;
+        boolean hasMultipleSlices = image != null && image.getImage().getNDimensions() > 2;
         exportAllSlicesItem.setVisible(hasMultipleSlices);
         exportMovieItem.setVisible(hasMultipleSlices);
     }
@@ -728,13 +730,13 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             return;
         }
         if (animationStackToggle.isSelected()) {
-            int newIndex = (image.getZ() % image.getNSlices()) + 1;
+            int newIndex = (image.getImage().getZ() % image.getNSlices()) + 1;
             stackSlider.setValue(newIndex);
         } else if (animationChannelToggle.isSelected()) {
-            int newIndex = (image.getC() % image.getNChannels()) + 1;
+            int newIndex = (image.getImage().getC() % image.getNChannels()) + 1;
             channelSlider.setValue(newIndex);
         } else if (animationFrameToggle.isSelected()) {
-            int newIndex = (image.getT() % image.getNFrames()) + 1;
+            int newIndex = (image.getImage().getT() % image.getNFrames()) + 1;
             frameSlider.setValue(newIndex);
         } else {
             stopAnimations();
@@ -750,8 +752,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             frameSliderLabel.setText(String.format("Frame (T) %d/%d", frame, image.getNFrames()));
             channelSliderLabel.setText(String.format("Channel (C) %d/%d", channel, image.getNChannels()));
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
-            image.setPosition(channel, stack, frame);
-            this.currentSlice = image.getProcessor();
+            image.getImage().setPosition(channel, stack, frame);
+            this.currentSlice = image.getImage().getProcessor();
             for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged(true);
@@ -772,12 +774,12 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      * @return the new slice
      */
     public ImageProcessor generateSlice(int c, int z, int t, double magnification, boolean withPostprocessing) {
-        image.setPosition(c + 1, z + 1, t + 1);
+        image.getImage().setPosition(c + 1, z + 1, t + 1);
         for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             plugin.beforeDraw(c, z, t);
         }
 //        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
-        ImageProcessor processor = image.getProcessor().duplicate();
+        ImageProcessor processor = image.getImage().getProcessor().duplicate();
         for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             processor = plugin.draw(c, z, t, processor);
         }
@@ -835,12 +837,16 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
+    public ImagePlusData getImage() {
+        return image;
+    }
+
     public ImageProcessor getCurrentSlice() {
         return currentSlice;
     }
 
     public ImageStatistics getCurrentSliceStats() {
-        if (getImage() != null && getCurrentSliceIndex() != null) {
+        if (getImagePlus() != null && getCurrentSliceIndex() != null) {
             return getSliceStats(getCurrentSliceIndex());
         } else {
             return null;
@@ -848,10 +854,10 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     }
 
     public ImageStatistics getSliceStats(ImageSliceIndex sliceIndex) {
-        if (getImage() != null) {
+        if (getImagePlus() != null) {
             ImageStatistics stats = statisticsMap.getOrDefault(sliceIndex, null);
             if (stats == null) {
-                ImageProcessor processor = ImageJUtils.getSliceZero(image, sliceIndex);
+                ImageProcessor processor = ImageJUtils.getSliceZero(image.getImage(), sliceIndex);
                 stats = processor.getStats();
                 statisticsMap.put(sliceIndex, stats);
             }

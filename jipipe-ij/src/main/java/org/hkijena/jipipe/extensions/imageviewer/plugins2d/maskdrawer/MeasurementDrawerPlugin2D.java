@@ -49,8 +49,8 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
 
     private ImagePlus generateMask(ImagePlus imagePlus) {
         return IJ.createHyperStack("Mask",
-                getCurrentImage().getWidth(),
-                getCurrentImage().getHeight(),
+                getCurrentImagePlus().getWidth(),
+                getCurrentImagePlus().getHeight(),
                 1,
                 1,
                 1,
@@ -124,7 +124,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
     }
 
     public void measureCurrentMask() {
-        if (getCurrentImage() == null) {
+        if (getCurrentImagePlus() == null) {
             showNoMeasurements();
             return;
         }
@@ -142,12 +142,12 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
         ip.setThreshold(threshold, threshold, ImageProcessor.NO_LUT_UPDATE);
         Roi roi = ThresholdToSelection.run(new ImagePlus("slice", ip));
         if (roi == null) {
-            roi = new Roi(0, 0, getCurrentImage().getWidth(), getCurrentImage().getHeight());
+            roi = new Roi(0, 0, getCurrentImagePlus().getWidth(), getCurrentImagePlus().getHeight());
         }
         ROIListData data = new ROIListData();
         data.add(roi);
         ImagePlus dummy = new ImagePlus("Reference", getViewerPanel2D().getCurrentSlice().duplicate());
-        dummy.setCalibration(getCurrentImage().getCalibration());
+        dummy.setCalibration(getCurrentImagePlus().getCalibration());
         ResultsTableData measurements = data.measure(dummy,
                 SETTINGS.statistics, false, SETTINGS.measureInPhysicalUnits);
         lastMeasurements = measurements;

@@ -232,7 +232,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
 
         // Set slices
-        if (getViewerPanel().getImage().getStackSize() > 1) {
+        if (getViewerPanel().getImagePlus().getStackSize() > 1) {
             ImageSliceIndex index = getViewerPanel2D().getCurrentSliceIndex();
             for (Roi roi : rois) {
                 roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
@@ -381,7 +381,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
     }
 
     private void updateCurrentMaskSlice() {
-        if (getCurrentImage() == null)
+        if (getCurrentImagePlus() == null)
             return;
         if (mask == null)
             return;
@@ -398,21 +398,21 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onImageChanged() {
-        if (getCurrentImage() != null) {
-            if (mask == null || !ImageJUtils.imagesHaveSameSize(mask, getCurrentImage())) {
+        if (getCurrentImagePlus() != null) {
+            if (mask == null || !ImageJUtils.imagesHaveSameSize(mask, getCurrentImagePlus())) {
                 if (maskGenerator == null) {
                     mask = IJ.createHyperStack("Mask",
-                            getCurrentImage().getWidth(),
-                            getCurrentImage().getHeight(),
-                            getCurrentImage().getNChannels(),
-                            getCurrentImage().getNSlices(),
-                            getCurrentImage().getNFrames(),
+                            getCurrentImagePlus().getWidth(),
+                            getCurrentImagePlus().getHeight(),
+                            getCurrentImagePlus().getNChannels(),
+                            getCurrentImagePlus().getNSlices(),
+                            getCurrentImagePlus().getNFrames(),
                             8);
                 } else {
-                    mask = maskGenerator.apply(getCurrentImage());
+                    mask = maskGenerator.apply(getCurrentImagePlus());
                 }
-                currentMaskSlicePreview = new BufferedImage(getCurrentImage().getWidth(),
-                        getCurrentImage().getHeight(),
+                currentMaskSlicePreview = new BufferedImage(getCurrentImagePlus().getWidth(),
+                        getCurrentImagePlus().getHeight(),
                         BufferedImage.TYPE_4BYTE_ABGR);
                 currentMaskSlice = mask.getProcessor();
                 setMask(mask);
@@ -433,7 +433,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void initializeSettingsPanel(FormPanel formPanel) {
-        if (getCurrentImage() == null) {
+        if (getCurrentImagePlus() == null) {
             return;
         }
 

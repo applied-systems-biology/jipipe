@@ -85,9 +85,12 @@ public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus reference = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        ROI3DListData rois = ROI3DListData.extractOverlay(reference);
-        ImagePlus outputImage = drawer.draw(rois, reference, progressInfo);
+        ImagePlusData image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+        ROI3DListData rois = new ROI3DListData();
+        for (ROI3DListData data : image.extractOverlaysOfType(ROI3DListData.class)) {
+            rois.addAll(data);
+        }
+        ImagePlus outputImage = drawer.draw(rois, image.getImage(), progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(outputImage), progressInfo);
 
     }

@@ -100,7 +100,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool {
                 return;
             }
 
-            Calibration calibration = getViewerPanel().getImage().getCalibration();
+            Calibration calibration = getViewerPanel().getImagePlus().getCalibration();
             if(calibration != null && calibration.scaled()) {
                 if(calibration.pixelWidth == calibration.pixelHeight && Objects.equals(calibration.getXUnit(), calibration.getYUnit())) {
                     double a = r.getWidth() / 2.0;

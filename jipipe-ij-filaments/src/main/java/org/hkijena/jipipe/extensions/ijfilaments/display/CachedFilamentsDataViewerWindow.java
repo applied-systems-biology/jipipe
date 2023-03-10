@@ -23,15 +23,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 
 public class CachedFilamentsDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
 
@@ -70,7 +65,7 @@ public class CachedFilamentsDataViewerWindow extends JIPipeImageViewerCacheDataV
             ip.fill();
         }, new JIPipeProgressInfo());
         getImageViewer().clearOverlays();
-        getImageViewer().setImage(image);
+        getImageViewer().setImagePlus(image);
         getImageViewer().addOverlay(rois);
         fitImageToScreenOnce();
     }

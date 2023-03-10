@@ -73,7 +73,7 @@ public class JIPipeImageViewerWindow extends JFrame implements WindowListener, J
 
     @Override
     public void windowClosed(WindowEvent e) {
-        viewerPanel.setImage(null);
+        viewerPanel.setImageData(null);
     }
 
     @Override
