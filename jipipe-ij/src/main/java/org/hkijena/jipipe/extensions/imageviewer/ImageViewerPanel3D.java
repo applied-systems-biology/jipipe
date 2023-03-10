@@ -131,7 +131,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     private void initialize() {
-        
+
         // Load default animation speed
         if (settings != null) {
             animationSpeedControl.getModel().setValue(settings.getDefaultAnimationSpeed());
