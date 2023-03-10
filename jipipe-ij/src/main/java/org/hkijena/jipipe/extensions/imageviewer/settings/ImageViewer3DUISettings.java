@@ -28,6 +28,7 @@ public class ImageViewer3DUISettings extends AbstractJIPipeParameterCollection {
     public static String ID = "image-viewer-ui-3d";
     private boolean showSideBar = true;
 
+    private int defaultAnimationSpeed = 75;
     private final Image3DRendererSettings rendererSettings = new Image3DRendererSettings();
 
     public static ImageViewer3DUISettings getInstance() {
@@ -49,5 +50,16 @@ public class ImageViewer3DUISettings extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("renderer-settings")
     public Image3DRendererSettings getRendererSettings() {
         return rendererSettings;
+    }
+
+    @JIPipeDocumentation(name = "Animation speed", description = "The default animation speed")
+    @JIPipeParameter("default-animation-speed")
+    public int getDefaultAnimationSpeed() {
+        return defaultAnimationSpeed;
+    }
+
+    @JIPipeParameter("default-animation-speed")
+    public void setDefaultAnimationSpeed(int defaultAnimationSpeed) {
+        this.defaultAnimationSpeed = defaultAnimationSpeed;
     }
 }

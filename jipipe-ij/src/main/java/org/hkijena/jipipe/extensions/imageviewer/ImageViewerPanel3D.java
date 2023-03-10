@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.common.primitives.Ints;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -9,6 +8,7 @@ import ij.process.ImageStatistics;
 import ij.process.LUT;
 import ij.process.StackStatistics;
 import ij3d.*;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -38,6 +38,7 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.scijava.Disposable;
@@ -94,6 +95,15 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     private final JLabel renderInfoLabel = new JLabel("No image",
             UIUtils.getIconFromResources("devices/video-display.png"), JLabel.LEFT);
+
+    private final JSlider frameSlider = new JSlider(1, 100, 1);
+    private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
+    private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
+    private boolean isUpdatingSliders = false;
+    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+
+    private final JLabel frameSliderLabel = new JLabel("Frame (T)");
+    private FormPanel bottomPanel;
 
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
@@ -176,7 +186,32 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
+        bottomPanel = new FormPanel(null, FormPanel.NONE);
+        add(bottomPanel, BorderLayout.SOUTH);
+
         initializeToolbar();
+
+        initializeAnimationControls();
+    }
+
+    private void refreshSliders() {
+        try {
+            isUpdatingSliders = true;
+            if (image != null) {
+                bottomPanel.setVisible(true);
+                bottomPanel.clear();
+
+                if (image.getNFrames() > 1)
+                    addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle, "Frame", "Frame (T) %d/%d");
+
+                frameSlider.setMinimum(1);
+                frameSlider.setMaximum(image.getNFrames());
+            } else {
+                bottomPanel.setVisible(false);
+            }
+        } finally {
+            isUpdatingSliders = false;
+        }
     }
 
     private void initializeToolbar() {
@@ -369,6 +404,9 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     public void setImage(ImagePlusData image) {
         this.image = image;
         this.imageStatistics = null;
+
+        refreshSliders();
+
         if(!active) {
             return;
         }
@@ -533,6 +571,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     @Override
     public void dispose() {
+        stopAnimations();
         setImage(null);
         rebuildImageLaterTimer.stop();
         viewerRunnerQueue.cancelAll();
@@ -712,6 +751,125 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             imageStatistics = new StackStatistics(image.getImage());
         }
         return imageStatistics;
+    }
+
+    private void initializeAnimationControls() {
+        frameSlider.addChangeListener(e -> {
+            if (!isUpdatingSliders)
+                setAnimationFrameFromSlider();
+        });
+        animationTimer.setRepeats(true);
+        animationSpeedControl.addChangeListener(e -> {
+            int delay = ((SpinnerNumberModel) animationSpeedControl.getModel()).getNumber().intValue();
+            if (settings != null) {
+                settings.setDefaultAnimationSpeed(delay);
+            }
+            stopAnimations();
+            animationTimer.setDelay(delay);
+        });
+        animationFrameToggle.addActionListener(e -> {
+            if (animationFrameToggle.isSelected()) {
+                animationTimer.start();
+            }
+        });
+    }
+
+    private void setAnimationFrameFromSlider() {
+        if(universe != null && image != null && currentImageContents != null) {
+            universe.showTimepoint(frameSlider.getValue() - 1);
+        }
+    }
+
+    private void addSliderToForm(JSlider slider, JLabel label, JToggleButton animation, String name, String labelFormat) {
+
+        // configure slider
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(false);
+
+        // fix label glitch
+        {
+            String maxFormat = String.format(labelFormat, slider.getMaximum(), slider.getMaximum());
+            int stringWidth = label.getFontMetrics(label.getFont()).stringWidth(maxFormat);
+            int bufferedSw = (int) (stringWidth + stringWidth * 0.2);
+            label.setMinimumSize(new Dimension(bufferedSw, 16));
+            label.setPreferredSize(new Dimension(bufferedSw, 16));
+        }
+
+        animation.setToolTipText("Toggle animation");
+        UIUtils.makeFlat25x25(animation);
+        JPanel descriptionPanel = new JPanel();
+        descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.X_AXIS));
+
+        JButton editButton = new JButton(UIUtils.getIconFromResources("actions/go-jump.png"));
+        editButton.setToolTipText("Jump to slice");
+        UIUtils.makeFlat25x25(editButton);
+        editButton.addActionListener(e -> {
+            String input = JOptionPane.showInputDialog(this,
+                    "Please input a new value for " + name + " (" + slider.getMinimum() + "-" + slider.getMaximum() + ")",
+                    slider.getValue());
+            if (!StringUtils.isNullOrEmpty(input)) {
+                Integer index = NumberUtils.createInteger(input);
+                index = Math.min(slider.getMaximum(), Math.max(slider.getMinimum(), index));
+                slider.setValue(index);
+            }
+        });
+        descriptionPanel.add(editButton);
+        descriptionPanel.add(animation);
+        descriptionPanel.add(label);
+
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setOpaque(false);
+        contentPanel.add(slider, BorderLayout.CENTER);
+
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.X_AXIS));
+        contentPanel.add(rightPanel, BorderLayout.EAST);
+
+        JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/arrow-left.png"));
+        UIUtils.makeFlat25x25(lastFrame);
+        lastFrame.setToolTipText("Go one slice back");
+        lastFrame.addActionListener(e -> {
+            int value = slider.getValue();
+            int maximum = slider.getMaximum();
+            int newIndex = value - 1;
+            if (newIndex < 1)
+                newIndex += maximum;
+            slider.setValue(newIndex);
+        });
+        rightPanel.add(lastFrame);
+
+        JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/arrow-right.png"));
+        UIUtils.makeFlat25x25(nextFrame);
+        nextFrame.setToolTipText("Go one slice forward");
+        nextFrame.addActionListener(e -> {
+            int value = slider.getValue();
+            int maximum = slider.getMaximum();
+            int newIndex = ((value) % maximum) + 1;
+            slider.setValue(newIndex);
+        });
+        rightPanel.add(nextFrame);
+
+        bottomPanel.addToForm(contentPanel, descriptionPanel, null);
+    }
+
+    private void stopAnimations() {
+        animationTimer.stop();
+        animationFrameToggle.setSelected(false);
+    }
+
+    private void animateNextSlice() {
+        if (!isDisplayable()) {
+            stopAnimations();
+            return;
+        }
+        if (animationFrameToggle.isSelected()) {
+            int currentFrame = frameSlider.getValue();
+            int newIndex = (currentFrame % image.getNFrames()) + 1;
+            frameSlider.setValue(newIndex);
+        } else {
+            stopAnimations();
+        }
     }
 
     public void updateLutAndCalibration() {
