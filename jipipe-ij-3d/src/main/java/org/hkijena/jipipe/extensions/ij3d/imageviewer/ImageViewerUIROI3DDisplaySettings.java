@@ -25,6 +25,8 @@ public class ImageViewerUIROI3DDisplaySettings implements JIPipeParameterCollect
     private final EventBus eventBus = new EventBus();
     private boolean showROI = true;
 
+    private boolean renderROIAsVolume = false;
+
     public ImageViewerUIROI3DDisplaySettings() {
     }
 
@@ -41,6 +43,17 @@ public class ImageViewerUIROI3DDisplaySettings implements JIPipeParameterCollect
     @JIPipeParameter("show-roi")
     public void setShowROI(boolean showROI) {
         this.showROI = showROI;
+    }
+
+    @JIPipeDocumentation(name = "Render ROI as volume", description = "If enabled, render ROI as volume")
+    @JIPipeParameter("render-roi-as-volume")
+    public boolean isRenderROIAsVolume() {
+        return renderROIAsVolume;
+    }
+
+    @JIPipeParameter("render-roi-as-volume")
+    public void setRenderROIAsVolume(boolean renderROIAsVolume) {
+        this.renderROIAsVolume = renderROIAsVolume;
     }
 
     @Override

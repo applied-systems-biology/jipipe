@@ -118,7 +118,7 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
                 IJ3DExtension.RESOURCES.getIconFromResources("data-type-roi3d.png"),
                 "Image viewer",
                 UIUtils.getIconFromResources("actions/viewimage.png"),
-                new ImageViewerUIROI2DDisplaySettings());
+                new ImageViewerUIROI3DDisplaySettings());
         JIPipeImageViewer.registerDefaultPlugin(ROIManagerPlugin3D.class);
 
         registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");

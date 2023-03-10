@@ -31,14 +31,17 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.ui.components.ribbon.*;
+import org.hkijena.jipipe.ui.components.ribbon.LargeToggleButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
+import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.vecmath.Color3f;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
 import java.util.List;
@@ -48,6 +51,7 @@ import java.util.stream.Collectors;
 public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     private final JList<ROI3D> roiListControl = new JList<>();
     private final LargeToggleButtonAction displayROIViewMenuItem = new LargeToggleButtonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
+    private final SmallToggleButtonAction displayROIAsVolumeItem = new SmallToggleButtonAction("Render as volume", "If enabled, render ROI as volume", UIUtils.getIconFromResources("actions/antivignetting.png"));
     private final List<ROIManagerPlugin3DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private final Ribbon ribbon = new Ribbon(3);
@@ -73,8 +77,9 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void loadDefaults() {
-        ImageViewerUIROI2DDisplaySettings settings = ImageViewerUIROI2DDisplaySettings.getInstance();
+        ImageViewerUIROI3DDisplaySettings settings = ImageViewerUIROI3DDisplaySettings.getInstance();
         displayROIViewMenuItem.setSelected(settings.isShowROI());
+        displayROIAsVolumeItem.setSelected(settings.isRenderROIAsVolume());
     }
 
     @Override
@@ -83,12 +88,12 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         updateListModel(Collections.emptySet());
 
         // Load ROI3D content
-        if(getCurrentImage() != null) {
+        if (getCurrentImage() != null) {
             ROI3DListData data = new ROI3DListData();
             for (ROI3DListData listData : getCurrentImage().extractOverlaysOfType(ROI3DListData.class)) {
                 data.addAll(listData);
             }
-            if(!data.isEmpty()) {
+            if (!data.isEmpty()) {
                 getViewerPanel().addOverlay(data);
             }
         }
@@ -96,11 +101,10 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if(overlay instanceof ROIListData) {
+        if (overlay instanceof ROIListData) {
             importROIs((ROIListData) overlay);
-        }
-        else if(overlay instanceof ROI3DListData) {
-            importROIs((ROI3DListData)overlay);
+        } else if (overlay instanceof ROI3DListData) {
+            importROIs((ROI3DListData) overlay);
         }
     }
 
@@ -111,12 +115,11 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
     @Subscribe
     public void onViewerTaskFinished(JIPipeRunnable.FinishedEvent event) {
-        if(event.getRun() instanceof ROI2DTo3DConverterRun) {
+        if (event.getRun() instanceof ROI2DTo3DConverterRun) {
             // TODO
-        }
-        else if(event.getRun() instanceof ROI3DToContentConverterRun) {
+        } else if (event.getRun() instanceof ROI3DToContentConverterRun) {
             ROI3DToContentConverterRun run = (ROI3DToContentConverterRun) event.getRun();
-            if(currentRendereredContent != null) {
+            if (currentRendereredContent != null) {
                 getViewerPanel3D().getUniverse().removeContent(currentRendereredContent.getName());
             }
             currentRendereredContent = run.getRenderedContent();
@@ -213,6 +216,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
         // Register necessary actions
         displayROIViewMenuItem.addActionListener(this::updateContentVisibility);
+        displayROIAsVolumeItem.addActionListener(this::rebuildRoiContentLater);
 
         // View menu for general display
         {
@@ -222,6 +226,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
             renderingBand.add(displayROIViewMenuItem);
 
 //            renderingBand.add(new SmallButtonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openRoiDrawingSettings));
+            renderingBand.add(displayROIAsVolumeItem);
             renderingBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
             renderingBand.add(new SmallButtonAction("Rebuild", "Re-renders the ROI", UIUtils.getIconFromResources("actions/run-build.png"), this::rebuildRoiContentNow));
         }
@@ -300,7 +305,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void updateContentVisibility() {
-        if(currentRendereredContent != null) {
+        if (currentRendereredContent != null) {
             currentRendereredContent.setVisible(displayROIViewMenuItem.isSelected());
         }
     }
@@ -386,6 +391,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ImageViewerUIROI3DDisplaySettings settings = ImageViewerUIROI3DDisplaySettings.getInstance();
             settings.setShowROI(displayROIViewMenuItem.getState());
+            settings.setRenderROIAsVolume(displayROIAsVolumeItem.getState());
             JIPipe.getSettings().save();
         }
     }
@@ -535,17 +541,17 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void rebuildRoiContentNow() {
-        if(currentRendererRun != null) {
+        if (currentRendererRun != null) {
             getViewerPanel3D().getViewerRunnerQueue().cancel(currentRendererRun);
         }
-        if(getViewerPanel3D().getCurrentImageContents() == null) {
+        if (getViewerPanel3D().getCurrentImageContents() == null) {
             // Wait for ImageContentReady
             return;
         }
         currentRendererRun = new ROI3DToContentConverterRun(new ArrayList<>(rois),
                 new Roi3DDrawer(),
                 getCurrentImagePlus(),
-                getViewerPanel3D().getImage3DRendererSettings().getResolutionFactor(getCurrentImage().getImage()));
+                displayROIAsVolumeItem.isSelected(), getViewerPanel3D().getImage3DRendererSettings().getResolutionFactor(getCurrentImage().getImage()));
         getViewerPanel3D().getViewerRunnerQueue().enqueue(currentRendererRun);
     }
 
@@ -567,14 +573,14 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void removeContent(ROI3D roi3D) {
-       rois.remove(roi3D);
-       rebuildRoiContentNow();
+        rois.remove(roi3D);
+        rebuildRoiContentNow();
     }
 
     public void clearROIs() {
         rois.clear();
         updateListModel(Collections.emptySet());
-        if(currentRendereredContent != null && getViewerPanel3D().getUniverse() != null) {
+        if (currentRendereredContent != null && getViewerPanel3D().getUniverse() != null) {
             getViewerPanel3D().getUniverse().removeContent(currentRendereredContent.getName());
         }
     }
@@ -591,6 +597,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     public void exportROIsToManager(ROIListData rois) {
         rois.addToRoiManager(RoiManager.getRoiManager());
     }
+
     public boolean isFilterListOnlySelected() {
         return filterListOnlySelected;
     }
@@ -692,10 +699,13 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         private Content renderedContent;
         private final int resolutionFactor;
 
-        public ROI3DToContentConverterRun(List<ROI3D> rois, Roi3DDrawer drawer, ImagePlus referenceImage, int resolutionFactor) {
+        private final boolean renderAsVolume;
+
+        public ROI3DToContentConverterRun(List<ROI3D> rois, Roi3DDrawer drawer, ImagePlus referenceImage, boolean renderAsVolume, int resolutionFactor) {
             this.rois = rois;
             this.drawer = drawer;
             this.referenceImage = referenceImage;
+            this.renderAsVolume = renderAsVolume;
             this.resolutionFactor = resolutionFactor;
         }
 
@@ -714,35 +724,33 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
         @Override
         public void run() {
-//           ROI3DListData roi3DListData = new ROI3DListData();
-//           roi3DListData.addAll(rois);
-//           Roi3DDrawer copyDrawer = new Roi3DDrawer(drawer);
-//           copyDrawer.setDrawOver(false);
-//           ImagePlus render = copyDrawer.draw(roi3DListData, referenceImage, getProgressInfo().resolve("Render ROI to RGB"));
-//
-//
-//
-//           getProgressInfo().log("Converting RGB to ");
-//            renderedContent = ContentCreator.createContent("ROI3D-" + UUID.randomUUID(),
-//                    render,
-//                    Image3DRenderType.Surface.getNativeValue(),
-//                    resolutionFactor,
-//                    0,
-//                    new Color3f(1, 1, 1),
-//                    0,
-//                    new boolean[]{true, true, true});
-//
-//            renderedContent.applySurfaceColors(render);
 
-            List<CustomMesh> meshList = new ArrayList<>();
-            for (ROI3D roi3D : rois) {
-                CustomTriangleMesh mesh = new CustomTriangleMesh(roi3D.getObject3D().getObject3DSurface().getSurfaceTrianglesPixels(true),
-                        new Color3f(roi3D.getFillColor().getRed() / 255.0f, roi3D.getFillColor().getGreen() / 255.0f, roi3D.getFillColor().getBlue() / 255.0f),
-                        0f);
-                meshList.add(mesh);
+            if (renderAsVolume) {
+                ROI3DListData roi3DListData = new ROI3DListData();
+                roi3DListData.addAll(rois);
+                Roi3DDrawer copyDrawer = new Roi3DDrawer(drawer);
+                copyDrawer.setDrawOver(false);
+                ImagePlus render = copyDrawer.draw(roi3DListData, referenceImage, getProgressInfo().resolve("Render ROI to RGB"));
+                getProgressInfo().log("Converting RGB to ");
+                renderedContent = ContentCreator.createContent("ROI3D-" + UUID.randomUUID(),
+                        render,
+                        Image3DRenderType.Volume.getNativeValue(),
+                        resolutionFactor,
+                        0,
+                        new Color3f(1, 1, 1),
+                        0,
+                        new boolean[]{true, true, true});
+            } else {
+                List<CustomMesh> meshList = new ArrayList<>();
+                for (ROI3D roi3D : rois) {
+                    CustomTriangleMesh mesh = new CustomTriangleMesh(roi3D.getObject3D().getObject3DSurface().getSurfaceTrianglesPixels(true),
+                            new Color3f(roi3D.getFillColor().getRed() / 255.0f, roi3D.getFillColor().getGreen() / 255.0f, roi3D.getFillColor().getBlue() / 255.0f),
+                            0f);
+                    meshList.add(mesh);
+                }
+                CustomMultiMesh customMultiMesh = new CustomMultiMesh(meshList);
+                renderedContent = ContentCreator.createContent(customMultiMesh, "ROI3D-" + UUID.randomUUID());
             }
-            CustomMultiMesh customMultiMesh = new CustomMultiMesh(meshList);
-            renderedContent = ContentCreator.createContent(customMultiMesh,"ROI3D-" + UUID.randomUUID());
         }
     }
 }

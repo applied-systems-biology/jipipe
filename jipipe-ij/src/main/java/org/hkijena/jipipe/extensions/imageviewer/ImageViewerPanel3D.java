@@ -777,8 +777,6 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                     }
                 }
                 currentImageContent.setLUT(newReds, newGreens, newBlues, newAlphas);
-//                currentImageContent.setTransparency(1 - (maxAlpha / 255.0f));
-
             }
 
         }
