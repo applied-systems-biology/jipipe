@@ -18,9 +18,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.Roi3DDrawer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
@@ -685,7 +687,10 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
         @Override
         public void run() {
-            // TODO
+            ROIListData inputData = new ROIListData();
+            inputData.addAll(rois);
+            ROI3DListData outputData = IJ3DUtils.roi2DtoRoi3D(inputData, true, false, Neighborhood3D.TwentySixConnected, getProgressInfo());
+            converted.addAll(outputData);
         }
     }
 
