@@ -15,14 +15,19 @@ package org.hkijena.jipipe.ui.grapheditor.compartments.properties;
 
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
+import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -56,7 +61,20 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
         add(splitPane, BorderLayout.CENTER);
 
         JPanel actionPanel = new JPanel(new BorderLayout());
-        splitPane.setBottomComponent(actionPanel);
+        DocumentTabPane tabPane = new DocumentTabPane(false);
+
+        tabPane.addTab("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"),
+                actionPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+
+        tabPane.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
+                new BookmarkListPanel(getWorkbench(), canvas.getGraph(), canvas.getGraphEditorUI()), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        tabPane.addTab("Journal",
+                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                new HistoryJournalUI(canvas.getHistoryJournal()),
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
+        splitPane.setBottomComponent(tabPane);
         splitPane.setTopComponent(new JIPipeGraphEditorMinimap(canvas.getGraphEditorUI()));
 
         initializeToolbar(actionPanel);
