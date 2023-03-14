@@ -118,7 +118,9 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     @Subscribe
     public void onViewerTaskFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ROI2DTo3DConverterRun) {
-            // TODO
+            ROI3DListData roi3DListData = new ROI3DListData();
+            roi3DListData.addAll(((ROI2DTo3DConverterRun) event.getRun()).converted);
+            importROIs(roi3DListData);
         } else if (event.getRun() instanceof ROI3DToContentConverterRun) {
             ROI3DToContentConverterRun run = (ROI3DToContentConverterRun) event.getRun();
             if (currentRendereredContent != null) {
