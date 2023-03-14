@@ -17,6 +17,7 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -68,6 +69,11 @@ public class FormPanel extends JXPanel {
      */
     public static final int DOCUMENTATION_BELOW = 4;
 
+    /**
+     * Puts the documentation into a {@link org.hkijena.jipipe.ui.components.tabs.DocumentTabPane} if WITH_DOCUMENTATION is active
+     */
+    public static final int TABBED_DOCUMENTATION = 8;
+
     private static final int COLUMN_PROPERTIES = 2;
 
     private static final int COLUMN_LABEL_OR_WIDE_CONTENT = 0;
@@ -86,6 +92,8 @@ public class FormPanel extends JXPanel {
     private boolean hasVerticalGlue;
 
     private FormPanel redirectDocumentationTarget;
+
+    private DocumentTabPane documentationTabPane;
 
     private List<FormPanelEntry> entries = new ArrayList<>();
 
@@ -125,6 +133,17 @@ public class FormPanel extends JXPanel {
         contentPanel.setScrollableWidthHint(ScrollableSizeHint.FIT);
         contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
 
+        // Determine the component that will be displayed in the help pane
+        Component helpComponent;
+        if((flags & TABBED_DOCUMENTATION) == TABBED_DOCUMENTATION) {
+            documentationTabPane = new DocumentTabPane(false);
+            documentationTabPane.addTab("Documentation", UIUtils.getIconFromResources("actions/help.png"), helpPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+            helpComponent = documentationTabPane;
+        }
+        else {
+            helpComponent = helpPanel;
+        }
+
         Component content;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
             scrollPane = new JScrollPane(contentPanel);
@@ -138,7 +157,7 @@ public class FormPanel extends JXPanel {
             if ((flags & DOCUMENTATION_NO_UI) != DOCUMENTATION_NO_UI) {
                 this.documentationHasUI = true;
                 boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
-                AutoResizeSplitPane splitPane = new AutoResizeSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel, AutoResizeSplitPane.RATIO_3_TO_1);
+                AutoResizeSplitPane splitPane = new AutoResizeSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpComponent, AutoResizeSplitPane.RATIO_3_TO_1);
                 add(splitPane, BorderLayout.CENTER);
             } else {
                 this.documentationHasUI = false;
@@ -149,6 +168,10 @@ public class FormPanel extends JXPanel {
             this.documentationHasUI = false;
             add(content, BorderLayout.CENTER);
         }
+    }
+
+    public DocumentTabPane getDocumentationTabPane() {
+        return documentationTabPane;
     }
 
     public FormPanel getRedirectDocumentationTarget() {

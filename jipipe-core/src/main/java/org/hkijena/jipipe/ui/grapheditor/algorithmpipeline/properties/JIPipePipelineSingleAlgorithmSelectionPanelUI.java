@@ -21,9 +21,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
 import org.hkijena.jipipe.extensions.nodetemplate.AddTemplateContextMenuAction;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
+import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchAssistantUI;
+import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -32,6 +35,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeAdvancedParameterEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeSlotEditorUI;
+import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.JIPipeRunQueuePanelUI;
@@ -81,7 +85,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 node,
                 TooltipUtils.getAlgorithmDocumentation(node),
-                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.TABBED_DOCUMENTATION);
         tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 () -> parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
@@ -153,6 +157,22 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
 
         add(tabbedPane, BorderLayout.CENTER);
 
+        // Additional tabs for the help panel
+        parametersUI.getDocumentationTabPane().addTab("Available nodes", UIUtils.getIconFromResources("actions/configuration.png"),
+                new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        parametersUI.getDocumentationTabPane().addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
+                new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        parametersUI.getDocumentationTabPane().addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
+                new BookmarkListPanel(getWorkbench(), graphEditorUI.getAlgorithmGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        parametersUI.getDocumentationTabPane().addTab("Journal",
+                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                new HistoryJournalUI(graphEditorUI.getHistoryJournal()),
+                DocumentTabPane.CloseMode.withoutCloseButton);
+
+        // Lazy content
         tabbedPane.getTabbedPane().addChangeListener(e -> activateLazyContent(tabbedPane));
         restoreTabState();
         tabbedPane.getTabbedPane().addChangeListener(e -> saveTabState(tabbedPane));

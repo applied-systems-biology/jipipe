@@ -73,10 +73,10 @@ public class DocumentTabPane extends JPanel implements Disposable {
      */
     public DocumentTabPane(boolean scrollable) {
         this.scrollable = scrollable;
-        initialize(scrollable);
+        initialize();
     }
 
-    private void initialize(boolean scrollable) {
+    private void initialize() {
         setLayout(new BorderLayout());
         tabbedPane = new DnDTabbedPane();
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);

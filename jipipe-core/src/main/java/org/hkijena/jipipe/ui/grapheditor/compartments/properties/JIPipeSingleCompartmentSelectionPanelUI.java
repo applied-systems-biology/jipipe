@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.QuickRunSe
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeSlotEditorUI;
+import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.JIPipeRunQueuePanelUI;
@@ -66,7 +68,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 compartment,
                 MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()),
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING);
+                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SCROLLING | ParameterPanel.TABBED_DOCUMENTATION);
         tabbedPane.addTab("Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
@@ -90,6 +92,15 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
             tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
                     this::createCurrentRunInfo, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
         }
+
+        // Bottom tabs
+        parametersUI.getDocumentationTabPane().addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
+                new BookmarkListPanel(getWorkbench(), getProject().getGraph(), graphEditorUI), DocumentTabPane.CloseMode.withoutCloseButton);
+
+        parametersUI.getDocumentationTabPane().addTab("Journal",
+                UIUtils.getIconFromResources("actions/edit-undo-history.png"),
+                new HistoryJournalUI(graphEditorUI.getHistoryJournal()),
+                DocumentTabPane.CloseMode.withoutCloseButton);
 
         add(tabbedPane, BorderLayout.CENTER);
 
