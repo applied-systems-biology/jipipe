@@ -114,6 +114,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         } else {
             settings = new ImageViewer3DUISettings();
         }
+        this.image3DRendererSettings.copyFrom(settings.getRendererSettings());
         this.rebuildImageLaterTimer = new Timer(1000, e -> rebuildImageNow());
         rebuildImageLaterTimer.setRepeats(false);
         initialize();
