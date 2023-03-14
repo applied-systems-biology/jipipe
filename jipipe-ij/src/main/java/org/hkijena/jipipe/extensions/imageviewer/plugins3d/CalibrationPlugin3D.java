@@ -28,7 +28,7 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
         displayRangeCalibrationControl = new ImageViewer3DDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
             displayRangeCalibrationControl.updateFromCurrentImage(false);
-            getViewerPanel3D().updateLutAndCalibration();
+            getViewerPanel3D().scheduleUpdateLutAndCalibration();
         });
     }
 

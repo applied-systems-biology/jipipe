@@ -143,6 +143,10 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
         resetColorsButton.addActionListener(e -> resetLUT());
         menu.add(resetColorsButton);
 
+        JMenuItem setToBlackButton = new JMenuItem("Set to black", UIUtils.getIconFromResources("actions/editclear.png"));
+        setToBlackButton.addActionListener(e -> setToUniformColor(Color.BLACK));
+        menu.add(setToBlackButton);
+
         JMenuItem setColorsButton = new JMenuItem("Set to color", UIUtils.getIconFromResources("actions/stock_edit.png"));
         setColorsButton.addActionListener(e -> setToUniformColor());
         menu.add(setColorsButton);
@@ -189,11 +193,15 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
     private void setToUniformColor() {
         Color color = JColorChooser.showDialog(this, "Select color", Color.WHITE);
         if(color != null) {
-            importLUT(LUT.createLutFromColor(Color.WHITE), true);
-            slider.getModel().getThumbAt(1).setObject(color);
-            slider.getModel().getThumbAt(0).setObject(color);
-            applyLUT();
+            setToUniformColor(color);
         }
+    }
+
+    private void setToUniformColor(Color color) {
+        importLUT(LUT.createLutFromColor(Color.WHITE), true);
+        slider.getModel().getThumbAt(1).setObject(color);
+        slider.getModel().getThumbAt(0).setObject(color);
+        applyLUT();
     }
 
     public void resetLUT() {

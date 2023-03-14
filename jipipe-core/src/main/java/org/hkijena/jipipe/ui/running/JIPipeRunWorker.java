@@ -35,11 +35,15 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
     private final AtomicLong startTime = new AtomicLong();
     private final AtomicLong endTime = new AtomicLong();
 
+    private final boolean silent;
+
     /**
-     * @param run The executed run
+     * @param run    The executed run
+     * @param silent if no stdout should be printed
      */
-    public JIPipeRunWorker(JIPipeRunnable run) {
+    public JIPipeRunWorker(JIPipeRunnable run, boolean silent) {
         this.run = run;
+        this.silent = silent;
         this.run.getProgressInfo().getEventBus().register(this);
     }
 
@@ -58,7 +62,9 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
             run.getProgressInfo().log("------------------------");
             run.getProgressInfo().log(e.toString());
             run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
-            e.printStackTrace();
+            if(!silent) {
+                e.printStackTrace();
+            }
             return e;
         }
         endTime.set(System.currentTimeMillis());

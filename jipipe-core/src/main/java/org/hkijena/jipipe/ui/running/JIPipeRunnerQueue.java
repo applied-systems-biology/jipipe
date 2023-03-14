@@ -36,6 +36,7 @@ public class JIPipeRunnerQueue {
     private final EventBus eventBus = new EventBus();
     private JIPipeRunWorker currentlyRunningWorker = null;
 
+    private boolean silent;
     public JIPipeRunnerQueue(String name) {
         this.name = name;
     }
@@ -70,6 +71,14 @@ public class JIPipeRunnerQueue {
         return new ArrayDeque<>(queue);
     }
 
+    public boolean isSilent() {
+        return silent;
+    }
+
+    public void setSilent(boolean silent) {
+        this.silent = silent;
+    }
+
     /**
      * @return true if nothing is running and the queue is empty
      */
@@ -93,7 +102,7 @@ public class JIPipeRunnerQueue {
      * @return The worker associated to the run
      */
     public JIPipeRunWorker enqueue(JIPipeRunnable run) {
-        JIPipeRunWorker worker = new JIPipeRunWorker(run);
+        JIPipeRunWorker worker = new JIPipeRunWorker(run, silent);
         worker.getEventBus().register(this);
         assignedWorkers.put(run, worker);
         queue.add(worker);

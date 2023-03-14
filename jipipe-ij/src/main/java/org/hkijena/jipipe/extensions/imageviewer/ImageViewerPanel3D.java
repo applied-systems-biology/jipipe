@@ -105,6 +105,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
     private FormPanel bottomPanel;
 
+    private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;
+
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         if (JIPipe.getInstance() != null) {
@@ -118,6 +120,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         updateSideBar();
 
         // Register events
+        viewerRunnerQueue.setSilent(true);
         viewerRunnerQueue.getEventBus().register(this);
         image3DRendererSettings.addParameterChangeListener(e -> rebuildImageLater());
     }
@@ -677,7 +680,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             }
 
             universe.fixWeirdRendering();
-            updateLutAndCalibration();
+            scheduleUpdateLutAndCalibration();
             universe.setAutoAdjustView(false);
 
             for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
@@ -883,49 +886,93 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
     }
 
-    public void updateLutAndCalibration() {
-        if(currentImageContents != null) {
-            CalibrationPlugin3D calibrationPlugin3D = getImageViewer().getPlugin(CalibrationPlugin3D.class);
-            int min = 0;
-            int max = 255;
-            if(calibrationPlugin3D != null) {
-                double[] minMax = calibrationPlugin3D.calculateCalibration();
-                min = (int) minMax[0];
-                max = (int) minMax[1];
-            }
+    public void scheduleUpdateLutAndCalibration() {
+        if(currentUpdateCalibrationRun != null) {
+            viewerRunnerQueue.cancel(currentUpdateCalibrationRun);
+            currentUpdateCalibrationRun = null;
+        }
+        currentUpdateCalibrationRun = new UpdateLutAndCalibrationRun(getImageViewer(), currentImageContents);
+        viewerRunnerQueue.enqueue(currentUpdateCalibrationRun);
+    }
 
-            if(max < min) {
-                int x = max;
-                max = min;
-                min = x;
-            }
+    public void updateLutAndCalibrationNow() {
+        if(currentUpdateCalibrationRun != null) {
+            viewerRunnerQueue.cancel(currentUpdateCalibrationRun);
+            currentUpdateCalibrationRun = null;
+        }
+        UpdateLutAndCalibrationRun run = new UpdateLutAndCalibrationRun(getImageViewer(), currentImageContents);
+        run.run();
+    }
 
-            LUTManagerPlugin3D lutManagerPlugin3D = getImageViewer().getPlugin(LUTManagerPlugin3D.class);
+    public enum RendererStatus {
+        Uninitialized,
+        Initializing,
+        ErrorGeneric,
+        Initialized
+    }
 
-            for (int channel = 0; channel < currentImageContents.size(); channel++) {
-                Content currentImageContent = currentImageContents.get(channel);
-                LUT lut;
-                LUT alphaLut;
-                if(lutManagerPlugin3D != null && channel < lutManagerPlugin3D.getLutEditors().size()) {
-                    lut = lutManagerPlugin3D.getLutEditors().get(channel).getLUT();
-                    alphaLut = lutManagerPlugin3D.getAlphaLutEditors().get(channel).getLUT();
+    public static class UpdateLutAndCalibrationRun extends AbstractJIPipeRunnable {
+
+        private final JIPipeImageViewer imageViewer;
+
+        private final List<Content> currentImageContents;
+
+        public UpdateLutAndCalibrationRun(JIPipeImageViewer imageViewer, List<Content> currentImageContents) {
+            this.imageViewer = imageViewer;
+            this.currentImageContents = currentImageContents;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Update LUT and calibration";
+        }
+
+        @Override
+        public void run() {
+            if(currentImageContents != null) {
+                CalibrationPlugin3D calibrationPlugin3D = imageViewer.getPlugin(CalibrationPlugin3D.class);
+                int min = 0;
+                int max = 255;
+                if(calibrationPlugin3D != null) {
+                    double[] minMax = calibrationPlugin3D.calculateCalibration();
+                    min = (int) minMax[0];
+                    max = (int) minMax[1];
                 }
-                else {
-                    lut = LUT.createLutFromColor(Color.WHITE);
-                    alphaLut = lut;
+
+                if(max < min) {
+                    int x = max;
+                    max = min;
+                    min = x;
                 }
-                byte[] reds = new byte[256];
-                byte[] greens = new byte[256];
-                byte[] blues = new byte[256];
-                byte[] alphas = new byte[256];
-                lut.getReds(reds);
-                lut.getGreens(greens);
-                lut.getBlues(blues);
-                alphaLut.getReds(alphas);
-                int[] newReds = new int[256];
-                int[] newGreens = new int[256];
-                int[] newBlues = new int[256];
-                int[] newAlphas = new int[256];
+
+                LUTManagerPlugin3D lutManagerPlugin3D = imageViewer.getPlugin(LUTManagerPlugin3D.class);
+
+                for (int channel = 0; channel < currentImageContents.size(); channel++) {
+                    if(getProgressInfo().isCancelled())
+                        return;
+                    Content currentImageContent = currentImageContents.get(channel);
+                    LUT lut;
+                    LUT alphaLut;
+                    if(lutManagerPlugin3D != null && channel < lutManagerPlugin3D.getLutEditors().size()) {
+                        lut = lutManagerPlugin3D.getLutEditors().get(channel).getLUT();
+                        alphaLut = lutManagerPlugin3D.getAlphaLutEditors().get(channel).getLUT();
+                    }
+                    else {
+                        lut = LUT.createLutFromColor(Color.WHITE);
+                        alphaLut = lut;
+                    }
+                    byte[] reds = new byte[256];
+                    byte[] greens = new byte[256];
+                    byte[] blues = new byte[256];
+                    byte[] alphas = new byte[256];
+                    lut.getReds(reds);
+                    lut.getGreens(greens);
+                    lut.getBlues(blues);
+                    alphaLut.getReds(alphas);
+                    int[] newReds = new int[256];
+                    int[] newGreens = new int[256];
+                    int[] newBlues = new int[256];
+                    int[] newAlphas = new int[256];
 
 //                int maxAlpha = 0;
 //                for (byte alpha : alphas) {
@@ -936,26 +983,21 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 //                    maxAlpha = 1;
 //                }
 
-                for (int i = 0; i < 256; i++) {
-                    if(i >= min) {
-                        int normIndex = Math.max(0, Math.min(255, (int)(255.0 * i / (max - min))));
-                        newAlphas[i] = Byte.toUnsignedInt(alphas[normIndex]);
-                        newReds[i] = Byte.toUnsignedInt(reds[normIndex]);
-                        newGreens[i] = Byte.toUnsignedInt(greens[normIndex]);
-                        newBlues[i] = Byte.toUnsignedInt(blues[normIndex]);
+                    for (int i = 0; i < 256; i++) {
+                        if(i >= min) {
+                            int normIndex = Math.max(0, Math.min(255, (int)(255.0 * i / (max - min))));
+                            newAlphas[i] = Byte.toUnsignedInt(alphas[normIndex]);
+                            newReds[i] = Byte.toUnsignedInt(reds[normIndex]);
+                            newGreens[i] = Byte.toUnsignedInt(greens[normIndex]);
+                            newBlues[i] = Byte.toUnsignedInt(blues[normIndex]);
+                        }
                     }
+                    currentImageContent.setThreshold(min);
+                    currentImageContent.setLUT(newReds, newGreens, newBlues, newAlphas);
                 }
-                currentImageContent.setLUT(newReds, newGreens, newBlues, newAlphas);
+
             }
-
         }
-    }
-
-    public enum RendererStatus {
-        Uninitialized,
-        Initializing,
-        ErrorGeneric,
-        Initialized
     }
 
     public static class UniverseInitializerRun extends AbstractJIPipeRunnable {
@@ -1044,6 +1086,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             getProgressInfo().log("Converting into " + renderType);
 
             for (int c = 0; c < generatedImage.getNChannels(); c++) {
+                if(getProgressInfo().isCancelled())
+                    return;
                 Map<ImageSliceIndex, ImageProcessor> processorMap = new HashMap<>();
                 int finalC = c;
                 ImageJUtils.forEachIndexedZCTSlice(generatedImage, (ip, index) -> {

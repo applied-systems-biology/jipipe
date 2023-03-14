@@ -14,7 +14,7 @@ public class ImageViewer3DLUTEditor extends ImageViewerLUTEditor {
         ImagePlus image = getImageViewerPanel().getImagePlus();
         if (image != null && image.getType() != ImagePlus.COLOR_RGB) {
             if (getTargetChannel() < image.getNChannels()) {
-                getImageViewerPanel().getImageViewerPanel3D().updateLutAndCalibration();
+                getImageViewerPanel().getImageViewerPanel3D().scheduleUpdateLutAndCalibration();
             }
         }
     }

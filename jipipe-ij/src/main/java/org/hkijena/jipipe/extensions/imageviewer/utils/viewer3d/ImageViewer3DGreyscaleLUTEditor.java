@@ -10,6 +10,6 @@ public class ImageViewer3DGreyscaleLUTEditor extends ImageViewerGrayscaleLUTEdit
 
     @Override
     public void applyLUT() {
-        getImageViewerPanel().getImageViewerPanel3D().updateLutAndCalibration();
+        getImageViewerPanel().getImageViewerPanel3D().scheduleUpdateLutAndCalibration();
     }
 }

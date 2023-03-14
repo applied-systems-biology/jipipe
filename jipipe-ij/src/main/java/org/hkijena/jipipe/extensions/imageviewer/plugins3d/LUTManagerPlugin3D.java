@@ -66,7 +66,7 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
         }
 
         // Apply LUT after creating the panel
-        getViewerPanel3D().updateLutAndCalibration();
+        getViewerPanel3D().scheduleUpdateLutAndCalibration();
     }
 
     public List<ImageViewerLUTEditor> getLutEditors() {
