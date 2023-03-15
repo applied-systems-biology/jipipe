@@ -52,6 +52,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.Timer;
 import java.awt.*;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -59,7 +61,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 
-public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener {
+public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener, ComponentListener {
     private final JIPipeImageViewer imageViewer;
     private final ImageViewer3DUISettings settings;
     private ImagePlusData image;
@@ -127,6 +129,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         viewerRunnerQueue.setSilent(true);
         viewerRunnerQueue.getEventBus().register(this);
         image3DRendererSettings.addParameterChangeListener(e -> rebuildImageLater());
+        addComponentListener(this);
     }
 
     public int getCurrentImageContentsResamplingFactor() {
@@ -928,6 +931,28 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
         UpdateLutAndCalibrationRun run = new UpdateLutAndCalibrationRun(getImageViewer(), currentImageContents);
         run.run();
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+        if(universe != null) {
+            universe.fixBlankCanvasLater();
+        }
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentShown(ComponentEvent e) {
+
+    }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+
     }
 
     public enum RendererStatus {

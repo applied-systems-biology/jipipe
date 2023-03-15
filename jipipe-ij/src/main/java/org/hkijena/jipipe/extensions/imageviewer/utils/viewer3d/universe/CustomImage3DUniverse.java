@@ -11,9 +11,12 @@ import java.awt.event.MouseMotionListener;
 
 public class CustomImage3DUniverse extends Image3DUniverse {
     private final CustomInteractiveViewPlatformTransformer customInteractiveViewPlatformTransformer;
+    private final Timer fixBlankCanvasTimer = new Timer(200, e -> fixBlankCanvasNow());
 
     public CustomImage3DUniverse() {
         customInteractiveViewPlatformTransformer = new CustomInteractiveViewPlatformTransformer(this, this);
+
+        fixBlankCanvasTimer.setRepeats(false);
 
         // Hack the point list dialog, because this is not what we do here
         ReflectionUtils.setDeclaredFieldValue(Image3DUniverse.class, this, "plDialog", new PointListDialog(null));
@@ -59,4 +62,11 @@ public class CustomImage3DUniverse extends Image3DUniverse {
         });
     }
 
+    public void fixBlankCanvasLater() {
+        fixBlankCanvasTimer.restart();
+    }
+
+    private void fixBlankCanvasNow() {
+        fixWeirdRendering();
+    }
 }
