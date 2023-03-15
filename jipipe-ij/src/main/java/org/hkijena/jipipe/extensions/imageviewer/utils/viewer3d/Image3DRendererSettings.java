@@ -58,7 +58,7 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
     }
 
     public double getExpectedMemoryAllocationMegabytes(ImagePlus image) {
-        return 4.0 * image.getWidth() * image.getHeight() * image.getNSlices() * image.getNFrames() / 1024 / 1024;
+        return 4.0 * image.getNChannels() * image.getWidth() * image.getHeight() * image.getNSlices() * image.getNFrames() / 1024 / 1024;
     }
 
     public int getResamplingFactor(ImagePlus image) {
