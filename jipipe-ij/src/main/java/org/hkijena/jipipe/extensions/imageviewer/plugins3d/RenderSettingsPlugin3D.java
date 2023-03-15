@@ -16,7 +16,7 @@ public class RenderSettingsPlugin3D extends JIPipeImageViewerPlugin3D {
 
     @Override
     public String getCategory() {
-        return "Rendering";
+        return "Display";
     }
 
     @Override

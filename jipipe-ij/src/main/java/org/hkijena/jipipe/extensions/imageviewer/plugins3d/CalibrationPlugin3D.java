@@ -71,7 +71,7 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
     @Override
     public void initializeSettingsPanel(FormPanel formPanel) {
         formPanel.addGroupHeader("Display range", UIUtils.getIconFromResources("actions/contrast.png"));
-        formPanel.addToForm(calibrationModes, new JLabel("Calibration type"), null);
+        formPanel.addToForm(calibrationModes, new JLabel("Presets"), null);
         formPanel.addWideToForm(displayRangeCalibrationControl, null);
     }
 

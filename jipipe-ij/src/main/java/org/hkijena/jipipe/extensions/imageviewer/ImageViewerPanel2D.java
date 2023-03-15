@@ -242,6 +242,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             label.setPreferredSize(new Dimension(bufferedSw, 16));
         }
 
+
         animation.setToolTipText("Toggle animation");
         UIUtils.makeFlat25x25(animation);
         JPanel descriptionPanel = new JPanel();
@@ -276,12 +277,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         UIUtils.makeFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
-            int value = slider.getValue();
-            int maximum = slider.getMaximum();
-            int newIndex = value - 1;
-            if (newIndex < 1)
-                newIndex += maximum;
-            slider.setValue(newIndex);
+            decrementSlider(slider);
         });
         rightPanel.add(lastFrame);
 
@@ -289,14 +285,36 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         UIUtils.makeFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
-            int value = slider.getValue();
-            int maximum = slider.getMaximum();
-            int newIndex = ((value) % maximum) + 1;
-            slider.setValue(newIndex);
+            incrementSlider(slider);
         });
         rightPanel.add(nextFrame);
 
+        slider.addMouseWheelListener(e -> {
+            if(e.getWheelRotation() < 0) {
+                incrementSlider(slider);
+            }
+            else {
+                decrementSlider(slider);
+            }
+        });
+
         bottomPanel.addToForm(contentPanel, descriptionPanel, null);
+    }
+
+    private static void incrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = ((value) % maximum) + 1;
+        slider.setValue(newIndex);
+    }
+
+    private static void decrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = value - 1;
+        if (newIndex < 1)
+            newIndex += maximum;
+        slider.setValue(newIndex);
     }
 
     public JToolBar getToolBar() {

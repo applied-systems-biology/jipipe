@@ -24,7 +24,6 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.Roi3DDrawer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
@@ -555,7 +554,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         currentRendererRun = new ROI3DToContentConverterRun(new ArrayList<>(rois),
                 new Roi3DDrawer(),
                 getCurrentImagePlus(),
-                displayROIAsVolumeItem.isSelected(), getViewerPanel3D().getImage3DRendererSettings().getResolutionFactor(getCurrentImage().getImage()));
+                displayROIAsVolumeItem.isSelected(), getViewerPanel3D().getImage3DRendererSettings().getResamplingFactor(getCurrentImage().getImage()));
         getViewerPanel3D().getViewerRunnerQueue().enqueue(currentRendererRun);
     }
 

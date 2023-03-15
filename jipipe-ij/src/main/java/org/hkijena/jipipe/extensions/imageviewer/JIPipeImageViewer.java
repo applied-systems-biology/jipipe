@@ -40,7 +40,8 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             LUTManagerPlugin3D.class,
             OpacityManagerPlugin3D.class,
             RenderSettingsPlugin3D.class,
-            AnimationSpeedPlugin3D.class));
+            AnimationSpeedPlugin3D.class,
+            SlicerControlsPlugin3D.class));
     private static JIPipeImageViewer ACTIVE_PANEL = null;
     private final JIPipeWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;

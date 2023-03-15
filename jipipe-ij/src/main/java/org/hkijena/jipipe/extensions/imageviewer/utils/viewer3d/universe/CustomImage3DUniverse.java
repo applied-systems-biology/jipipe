@@ -1,10 +1,13 @@
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe;
 
+import com.google.common.collect.ImmutableList;
 import ij3d.Image3DUniverse;
 import ij3d.pointlist.PointListDialog;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 public class CustomImage3DUniverse extends Image3DUniverse {
     private final CustomInteractiveViewPlatformTransformer customInteractiveViewPlatformTransformer;
@@ -14,6 +17,19 @@ public class CustomImage3DUniverse extends Image3DUniverse {
 
         // Hack the point list dialog, because this is not what we do here
         ReflectionUtils.setDeclaredFieldValue(Image3DUniverse.class, this, "plDialog", new PointListDialog(null));
+
+        // Remove context menu and other listeners from the canvas
+        for (MouseListener listener : ImmutableList.copyOf(getCanvas().getMouseListeners())) {
+            if(listener.getClass().getName().startsWith("ij3d.Image3DUniverse")) {
+                getCanvas().removeMouseListener(listener);
+            }
+        }
+        for (MouseMotionListener listener : ImmutableList.copyOf(getCanvas().getMouseMotionListeners())) {
+            if(listener.getClass().getName().startsWith("ij3d.Image3DUniverse")) {
+                getCanvas().removeMouseMotionListener(listener);
+            }
+        }
+
     }
 
     public CustomInteractiveViewPlatformTransformer getCustomInteractiveViewPlatformTransformer() {

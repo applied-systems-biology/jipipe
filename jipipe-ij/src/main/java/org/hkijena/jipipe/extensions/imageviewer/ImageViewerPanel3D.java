@@ -85,6 +85,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private ImageLoaderRun imageLoaderRun;
     private List<Content> currentImageContents;
 
+    private int currentImageContentsResamplingFactor;
+
     private final Timer rebuildImageLaterTimer;
 
     private final Map<String, FormPanel> formPanels = new HashMap<>();
@@ -125,6 +127,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         viewerRunnerQueue.setSilent(true);
         viewerRunnerQueue.getEventBus().register(this);
         image3DRendererSettings.addParameterChangeListener(e -> rebuildImageLater());
+    }
+
+    public int getCurrentImageContentsResamplingFactor() {
+        return currentImageContentsResamplingFactor;
     }
 
     public ImageViewer3DUISettings getSettings() {
@@ -503,7 +509,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         if(universe != null) {
             if (image != null) {
                 viewerRunnerQueue.cancelIf(run -> run instanceof ImageLoaderRun);
-                int resolutionFactor = image3DRendererSettings.getResolutionFactor(image.getImage());
+                int resolutionFactor = image3DRendererSettings.getResamplingFactor(image.getImage());
                 renderInfoLabel.setText( (int)Math.ceil(image3DRendererSettings.getExpectedMemoryAllocationMegabytes(image.getImage())) + "MB / " + resolutionFactor);
                 imageLoaderRun = new ImageLoaderRun(this, image, image3DRendererSettings.getRenderType(), resolutionFactor);
                 viewerRunnerQueue.enqueue(imageLoaderRun);
@@ -667,7 +673,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         universe.addInteractiveBehavior(new CustomInteractiveBehavior(this, universe));
     }
 
-    private void onImageContentReady(List<Content> contents) {
+    private void onImageContentReady(List<Content> contents, int resamplingFactor) {
         if(universe != null) {
             if(currentImageContents != null) {
                 for (Content currentImageContent : currentImageContents) {
@@ -675,6 +681,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 }
             }
             currentImageContents = contents;
+            currentImageContentsResamplingFactor = resamplingFactor;
 
             // Create unique name because removal depends on the name?!
             for (Content content : contents) {
@@ -703,7 +710,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 getImageViewer().setImageData(run.imageData);
             }
             else {
-                onImageContentReady((run).getContents());
+                onImageContentReady((run).getContents(), run.getResamplingFactor());
             }
         }
     }
@@ -846,12 +853,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         UIUtils.makeFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
-            int value = slider.getValue();
-            int maximum = slider.getMaximum();
-            int newIndex = value - 1;
-            if (newIndex < 1)
-                newIndex += maximum;
-            slider.setValue(newIndex);
+          decrementSlider(slider);
         });
         rightPanel.add(lastFrame);
 
@@ -859,14 +861,36 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         UIUtils.makeFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
-            int value = slider.getValue();
-            int maximum = slider.getMaximum();
-            int newIndex = ((value) % maximum) + 1;
-            slider.setValue(newIndex);
+           incrementSlider(slider);
         });
         rightPanel.add(nextFrame);
 
+        slider.addMouseWheelListener(e -> {
+            if(e.getWheelRotation() < 0) {
+                incrementSlider(slider);
+            }
+            else {
+                decrementSlider(slider);
+            }
+        });
+
         bottomPanel.addToForm(contentPanel, descriptionPanel, null);
+    }
+
+    private static void incrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = ((value) % maximum) + 1;
+        slider.setValue(newIndex);
+    }
+
+    private static void decrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = value - 1;
+        if (newIndex < 1)
+            newIndex += maximum;
+        slider.setValue(newIndex);
     }
 
     private void stopAnimations() {
@@ -1052,17 +1076,17 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         private final Image3DRenderType renderType;
 
-        private final int resolutionFactor;
+        private final int resamplingFactor;
 
         private boolean imageWasConvertedTo8Bit;
 
         private List<Content> contents = new ArrayList<>();
 
-        public ImageLoaderRun(ImageViewerPanel3D viewerPanel3D, ImagePlusData imageData, Image3DRenderType renderType, int resolutionFactor) {
+        public ImageLoaderRun(ImageViewerPanel3D viewerPanel3D, ImagePlusData imageData, Image3DRenderType renderType, int resamplingFactor) {
             this.viewerPanel3D = viewerPanel3D;
             this.imageData = imageData;
             this.renderType = renderType;
-            this.resolutionFactor = resolutionFactor;
+            this.resamplingFactor = resamplingFactor;
         }
 
         @Override
@@ -1106,7 +1130,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 Content content = ContentCreator.createContent("Image-Channel-" + finalC + "-" + UUID.randomUUID(),
                         forChannel,
                         renderType.getNativeValue(),
-                        resolutionFactor,
+                        resamplingFactor,
                         0,
                         new Color3f(1, 1, 1),
                         0,
@@ -1125,6 +1149,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         public ImagePlusData getImageData() {
             return imageData;
+        }
+
+        public int getResamplingFactor() {
+            return resamplingFactor;
         }
     }
 }

@@ -61,6 +61,9 @@ public class CustomInteractiveBehavior extends InteractiveBehavior {
                     viewTransformer.rotate(e);
                 }
             }
+            else if(SwingUtilities.isRightMouseButton(e)) {
+                viewTransformer.translate(e);
+            }
         }
 
         e.consume();

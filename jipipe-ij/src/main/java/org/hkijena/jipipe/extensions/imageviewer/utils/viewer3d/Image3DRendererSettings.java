@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 
 public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
     private Image3DRenderType renderType = Image3DRenderType.Volume;
-    private OptionalIntegerParameter overrideResolutionFactor = new OptionalIntegerParameter(false, 2);
+    private OptionalIntegerParameter overrideResamplingFactor = new OptionalIntegerParameter(false, 2);
 
     private int maximumMemory = 128;
     public Image3DRendererSettings() {
@@ -21,7 +21,7 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
     public void copyFrom(Image3DRendererSettings other) {
         this.renderType = other.renderType;
         this.maximumMemory = other.maximumMemory;
-        this.overrideResolutionFactor = new OptionalIntegerParameter(other.overrideResolutionFactor);
+        this.overrideResamplingFactor = new OptionalIntegerParameter(other.overrideResamplingFactor);
     }
 
     @JIPipeDocumentation(name = "Render type", description = "The way how images are rendered in 3D")
@@ -35,18 +35,18 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
         this.renderType = renderType;
     }
 
-    @JIPipeDocumentation(name = "Override resolution factor", description = "If enabled, set the resolution factor manually. Otherwise it is determined by the maximum allocated memory.")
-    @JIPipeParameter("override-resolution-factor")
-    public OptionalIntegerParameter getOverrideResolutionFactor() {
-        return overrideResolutionFactor;
+    @JIPipeDocumentation(name = "Force resampling", description = "If enabled, set the resampling factor manually. Otherwise it is determined by the maximum allocated memory.")
+    @JIPipeParameter("override-resampling-factor")
+    public OptionalIntegerParameter getOverrideResamplingFactor() {
+        return overrideResamplingFactor;
     }
 
-    @JIPipeParameter("override-resolution-factor")
-    public void setOverrideResolutionFactor(OptionalIntegerParameter overrideResolutionFactor) {
-        this.overrideResolutionFactor = overrideResolutionFactor;
+    @JIPipeParameter("override-resampling-factor")
+    public void setOverrideResamplingFactor(OptionalIntegerParameter overrideResamplingFactor) {
+        this.overrideResamplingFactor = overrideResamplingFactor;
     }
 
-    @JIPipeDocumentation(name = "Maximum allocated memory (MB)", description = "The maximum memory allocated to the image display. Determines the resolution factor if not manually overridden. The lowest value is 64.")
+    @JIPipeDocumentation(name = "Maximum GPU memory (MB)", description = "The maximum memory allocated to the image display. Determines the resolution factor if not manually overridden. The lowest value is 64.")
     @JIPipeParameter("maximum-memory")
     public int getMaximumMemory() {
         return maximumMemory;
@@ -58,21 +58,12 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
     }
 
     public double getExpectedMemoryAllocationMegabytes(ImagePlus image) {
-//        if(renderType == Image3DRenderType.Volume) {
-//            return 4.0 * image.getWidth() * image.getHeight() * image.getNSlices() * image.getNFrames() / 1024 / 1024;
-//        }
-//        else if(renderType == Image3DRenderType.OrthoSlice || renderType == Image3DRenderType.MultiOrthoSlices) {
-//            return 4.0 * image.getWidth() * image.getHeight() * 3.0 * image.getNFrames() / 1024 / 1024;
-//        }
-//        else {
-//            return 4.0 * image.getWidth() * image.getHeight() * image.getNFrames() / 1024 / 1024;
-//        }
         return 4.0 * image.getWidth() * image.getHeight() * image.getNSlices() * image.getNFrames() / 1024 / 1024;
     }
 
-    public int getResolutionFactor(ImagePlus image) {
-        if(overrideResolutionFactor.isEnabled()) {
-            return Math.max(1, overrideResolutionFactor.getContent());
+    public int getResamplingFactor(ImagePlus image) {
+        if(overrideResamplingFactor.isEnabled()) {
+            return Math.max(1, overrideResamplingFactor.getContent());
         }
         else {
             return (int) Math.ceil(getExpectedMemoryAllocationMegabytes(image) / Math.max(64, maximumMemory));

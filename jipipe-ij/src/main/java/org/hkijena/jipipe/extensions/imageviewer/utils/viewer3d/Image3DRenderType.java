@@ -17,4 +17,19 @@ public enum Image3DRenderType {
     public int getNativeValue() {
         return nativeValue;
     }
+
+
+    @Override
+    public String toString() {
+        switch (this) {
+            case OrthoSlice:
+                return "Ortho slice";
+            case SurfacePlot2D:
+                return "Surface plot 2D";
+            case MultiOrthoSlices:
+                return "Ortho slice (advanced)";
+            default:
+                return name();
+        }
+    }
 }

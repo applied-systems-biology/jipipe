@@ -55,7 +55,7 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
             }
             for (int channel = 0; channel < getCurrentImagePlus().getNChannels(); channel++) {
                 ImageViewerLUTEditor editor = lutEditors.get(channel);
-                formPanel.addToForm(editor, new JLabel("C " + (channel + 1)), null);
+                formPanel.addToForm(editor, new JLabel("C" + (channel + 1)), null);
             }
         }
 

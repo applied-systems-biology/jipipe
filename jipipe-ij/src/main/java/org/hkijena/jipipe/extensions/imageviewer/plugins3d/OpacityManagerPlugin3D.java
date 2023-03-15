@@ -47,7 +47,7 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
             }
             for (int channel = 0; channel < getCurrentImagePlus().getNChannels(); channel++) {
                 ImageViewerGrayscaleLUTEditor alphaEditor = alphaLutEditors.get(channel);
-                formPanel.addToForm(alphaEditor, new JLabel("Channel " + (channel + 1)));
+                formPanel.addToForm(alphaEditor, new JLabel("C" + (channel + 1)));
             }
         }
 
