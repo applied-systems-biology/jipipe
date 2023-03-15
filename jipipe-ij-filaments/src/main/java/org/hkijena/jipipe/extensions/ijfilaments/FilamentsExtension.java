@@ -18,6 +18,7 @@ import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.ij3d.IJ3DExtension;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsToRoiDataTypeConverter;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsToRoiAlgorithm;
@@ -75,7 +76,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public Set<JIPipeDependency> getDependencies() {
-        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY);
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY, IJ3DExtension.AS_DEPENDENCY);
     }
 
     @Override

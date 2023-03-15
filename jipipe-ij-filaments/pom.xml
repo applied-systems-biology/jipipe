@@ -91,6 +91,10 @@
             <artifactId>jipipe-ij-algorithms</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-ij-3d</artifactId>
+        </dependency>
+        <dependency>
             <groupId>sc.fiji</groupId>
             <artifactId>AnalyzeSkeleton_</artifactId>
             <version>3.4.2</version>
