@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.CalibrationPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.plugins3d.LUTManagerPlugin3D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins3d.OpacityManagerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer3DUISettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
@@ -503,7 +504,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             if (image != null) {
                 viewerRunnerQueue.cancelIf(run -> run instanceof ImageLoaderRun);
                 int resolutionFactor = image3DRendererSettings.getResolutionFactor(image.getImage());
-                renderInfoLabel.setText( (int)image3DRendererSettings.getExpectedMemoryAllocationMegabytes(image.getImage()) + "MB / " + resolutionFactor);
+                renderInfoLabel.setText( (int)Math.ceil(image3DRendererSettings.getExpectedMemoryAllocationMegabytes(image.getImage())) + "MB / " + resolutionFactor);
                 imageLoaderRun = new ImageLoaderRun(this, image, image3DRendererSettings.getRenderType(), resolutionFactor);
                 viewerRunnerQueue.enqueue(imageLoaderRun);
             }
@@ -947,6 +948,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 }
 
                 LUTManagerPlugin3D lutManagerPlugin3D = imageViewer.getPlugin(LUTManagerPlugin3D.class);
+                OpacityManagerPlugin3D opacityManagerPlugin3D = imageViewer.getPlugin(OpacityManagerPlugin3D.class);
 
                 for (int channel = 0; channel < currentImageContents.size(); channel++) {
                     if(getProgressInfo().isCancelled())
@@ -956,11 +958,15 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                     LUT alphaLut;
                     if(lutManagerPlugin3D != null && channel < lutManagerPlugin3D.getLutEditors().size()) {
                         lut = lutManagerPlugin3D.getLutEditors().get(channel).getLUT();
-                        alphaLut = lutManagerPlugin3D.getAlphaLutEditors().get(channel).getLUT();
                     }
                     else {
                         lut = LUT.createLutFromColor(Color.WHITE);
-                        alphaLut = lut;
+                    }
+                    if(opacityManagerPlugin3D != null && channel < opacityManagerPlugin3D.getAlphaLutEditors().size()) {
+                        alphaLut = opacityManagerPlugin3D.getAlphaLutEditors().get(channel).getLUT();
+                    }
+                    else {
+                        alphaLut = LUT.createLutFromColor(Color.WHITE);
                     }
                     byte[] reds = new byte[256];
                     byte[] greens = new byte[256];

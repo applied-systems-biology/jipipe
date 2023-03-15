@@ -126,69 +126,127 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void initialize() {
-        setLayout(new BorderLayout());
+        setLayout(new GridBagLayout());
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,4,4,4),
+                BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
+                        BorderFactory.createEmptyBorder(4,4,0,4))));
         slider = new JXMultiThumbSlider<>();
         slider.getModel().addThumb(0, Color.BLACK);
         slider.getModel().addThumb(1, Color.WHITE);
         slider.setTrackRenderer(new CustomGradientTrackRenderer());
-        slider.setThumbRenderer(new GradientThumbRenderer());
+        slider.setThumbRenderer(new CustomGradientThumbRenderer());
         slider.setPreferredSize(new Dimension(100, 35));
         slider.addMultiThumbListener(this);
-        changeColorButton = new JButton(changeColorButtonDisplayedColor);
-        changeColorButton.setToolTipText("Set color of selected gradient stop");
-        JButton addThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-add.png"));
-        deleteThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-remove.png"));
+        add(slider, new GridBagConstraints(0,
+                0,
+                1,
+                3,
+                1,
+                1,
+                GridBagConstraints.WEST,
+                GridBagConstraints.BOTH,
+                new Insets(0,0,0,0),
+                0,
+                0));
 
-        JButton optionsButton = new JButton(UIUtils.getIconFromResources("actions/configuration.png"));
-        optionsButton.setToolTipText("Additional configuration options");
-        JPopupMenu menu = UIUtils.addPopupMenuToComponent(optionsButton);
+        changeColorButton = new JButton("Edit", changeColorButtonDisplayedColor);
+        changeColorButton.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        changeColorButton.setToolTipText("Set color of selected gradient stop");
+        changeColorButton.addActionListener(e -> changeColor());
+        changeColorButton.setHorizontalAlignment(SwingConstants.LEFT);
+        add(changeColorButton, new GridBagConstraints(1,
+                0,
+                1,
+                1,
+                0,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(14,0,0,0),
+                0,
+                0));
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(8,0,0,0),
+                BorderFactory.createMatteBorder(1,0,0,0, UIManager.getColor("Button.borderColor"))));
+        add(toolBar, new GridBagConstraints(0,
+                4,
+                4,
+                1,
+                1,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(0,0,0,0),
+                0,
+                0));
+
+        JButton addThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-add.png"));
+        addThumbButton.setToolTipText("Add color");
+        UIUtils.makeFlat(addThumbButton);
+        addThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
+        addThumbButton.addActionListener(e -> addColor());
+        add(addThumbButton, new GridBagConstraints(2,
+                0,
+                1,
+                1,
+                0,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(12,0,0,0),
+                0,
+                0));
+
+        deleteThumbButton = new JButton(UIUtils.getIconFromResources("actions/color-remove.png"));
+        deleteThumbButton.setToolTipText("Remove color");
+        UIUtils.makeFlat(deleteThumbButton);
+        deleteThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
+        deleteThumbButton.addActionListener(e -> removeColor());
+        add(deleteThumbButton, new GridBagConstraints(3,
+                0,
+                1,
+                1,
+                0,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(12,0,0,0),
+                0,
+                0));
 
         // Menu items
-        JMenuItem invertColorsButton = new JMenuItem("Invert LUT", UIUtils.getIconFromResources("actions/object-inverse.png"));
+        JButton invertColorsButton = new JButton("Invert", UIUtils.getIconFromResources("actions/object-inverse.png"));
+        UIUtils.makeFlat(invertColorsButton);
         invertColorsButton.addActionListener(e -> invertColors());
-        menu.add(invertColorsButton);
+        toolBar.add(invertColorsButton);
 
-        JMenuItem setToColorMapButton = new JMenuItem("Set to color map", UIUtils.getIconFromResources("actions/color-gradient.png"));
+        JButton setToColorMapButton = new JButton("Color map", UIUtils.getIconFromResources("actions/color-gradient.png"));
+        UIUtils.makeFlat(setToColorMapButton);
         setToColorMapButton.addActionListener(e -> pickColorsFromColorMap());
-        menu.add(setToColorMapButton);
+        toolBar.add(setToColorMapButton);
+
+        JButton moreButton = new JButton("More ...", UIUtils.getIconFromResources("actions/configure.png"));
+        UIUtils.makeFlat(moreButton);
+        toolBar.add(moreButton);
+        JPopupMenu moreMenu = UIUtils.addPopupMenuToComponent(moreButton);
 
         JMenuItem exportLUTToJSONButton = new JMenuItem("Export LUT as *.json", UIUtils.getIconFromResources("actions/document-export.png"));
         exportLUTToJSONButton.addActionListener(e -> exportLUTToJSON());
-        menu.add(exportLUTToJSONButton);
+        moreMenu.add(exportLUTToJSONButton);
 
         JMenuItem exportLUTToPNGButton = new JMenuItem("Export LUT as *.png", UIUtils.getIconFromResources("actions/document-export.png"));
         exportLUTToPNGButton.addActionListener(e -> exportLUTToPNG());
-        menu.add(exportLUTToPNGButton);
+        moreMenu.add(exportLUTToPNGButton);
 
         JMenuItem importLUTFromJSONButton = new JMenuItem("Import LUT from *.json", UIUtils.getIconFromResources("actions/document-import.png"));
         importLUTFromJSONButton.addActionListener(e -> importLUTFromJSON());
-        menu.add(importLUTFromJSONButton);
+        moreMenu.add(importLUTFromJSONButton);
 
         JMenuItem importLUTFromPNGButton = new JMenuItem("Import LUT from *.png", UIUtils.getIconFromResources("actions/document-import.png"));
         importLUTFromPNGButton.addActionListener(e -> importLUTFromPNG());
-        menu.add(importLUTFromPNGButton);
-
-        // Standard buttons
-        UIUtils.makeFlat25x25(addThumbButton);
-        UIUtils.makeFlat25x25(changeColorButton);
-        UIUtils.makeFlat25x25(deleteThumbButton);
-        UIUtils.makeFlat25x25(optionsButton);
-
-        setLayout(new BorderLayout());
-        add(slider, BorderLayout.CENTER);
-
-        JPanel settingsPanel = new JPanel();
-        settingsPanel.setBorder(BorderFactory.createEmptyBorder(12, 4, 0, 0));
-        settingsPanel.setLayout(new BoxLayout(settingsPanel, BoxLayout.X_AXIS));
-        settingsPanel.add(changeColorButton);
-        settingsPanel.add(addThumbButton);
-        settingsPanel.add(deleteThumbButton);
-        settingsPanel.add(optionsButton);
-        add(settingsPanel, BorderLayout.EAST);
-
-        addThumbButton.addActionListener(e -> addColor());
-        deleteThumbButton.addActionListener(e -> removeColor());
-        changeColorButton.addActionListener(e -> changeColor());
+        moreMenu.add(importLUTFromPNGButton);
     }
 
     public void importLUT(LUTData lutData) {

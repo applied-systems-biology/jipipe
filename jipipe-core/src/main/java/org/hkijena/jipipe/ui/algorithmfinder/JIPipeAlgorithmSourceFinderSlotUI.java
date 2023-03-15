@@ -71,7 +71,7 @@ public class JIPipeAlgorithmSourceFinderSlotUI extends JPanel {
         assignButton.setPreferredSize(new Dimension(25, 50));
         assignButton.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
         assignButtonMenu = UIUtils.addPopupMenuToComponent(assignButton);
-        UIUtils.makeFlat(assignButton);
+        UIUtils.setStandardButtonBorder(assignButton);
 
         JLabel nameLabel = new JLabel(outputSlot.getName());
         nameLabel.setToolTipText(JIPipeData.getNameOf(outputSlot.getAcceptedDataType()));

@@ -64,11 +64,11 @@ public class IconRefParameterEditorUI extends JIPipeParameterEditorUI {
         currentlyDisplayed = new JButton();
         currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
         currentlyDisplayed.addActionListener(e -> pickIcon());
-        UIUtils.makeFlat(currentlyDisplayed);
+        UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        UIUtils.makeFlat(selectButton);
+        UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select icon");
         selectButton.addActionListener(e -> pickIcon());
         add(selectButton, BorderLayout.EAST);

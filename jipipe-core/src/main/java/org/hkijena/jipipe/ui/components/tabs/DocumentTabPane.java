@@ -423,7 +423,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
             addTab(tab);
             switchToLastTab();
         });
-        UIUtils.makeFlatH25(reAttachButton);
+        UIUtils.makeFlat(reAttachButton);
         statusBar.add(reAttachButton);
 
         contentPane.add(statusBar, BorderLayout.SOUTH);

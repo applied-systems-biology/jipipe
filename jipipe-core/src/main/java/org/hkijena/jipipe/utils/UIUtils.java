@@ -30,21 +30,16 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
-import org.hkijena.jipipe.ui.components.VerticalToolBar;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.theme.DarkModernMetalTheme;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -720,7 +715,7 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeFlat(AbstractButton component) {
+    public static void setStandardButtonBorder(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         Border margin = new EmptyBorder(5, 15, 5, 15);
@@ -741,7 +736,7 @@ public class UIUtils {
      * @param right       right border size
      * @param bottom      bottom border size
      */
-    public static void makeFlat(AbstractButton component, Color borderColor, int top, int left, int right, int bottom) {
+    public static void setStandardButtonBorder(AbstractButton component, Color borderColor, int top, int left, int right, int bottom) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         Border margin = new EmptyBorder(5, 15, 5, 15);
@@ -783,7 +778,7 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeFlatH25(AbstractButton component) {
+    public static void makeFlat(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
 //        component.setPreferredSize(new Dimension(component.getPreferredSize().width, 25));
@@ -1863,7 +1858,7 @@ public class UIUtils {
 
     public static JButton createFlatButton(String text, Icon icon, Runnable function) {
         JButton button = new JButton(text, icon);
-        UIUtils.makeFlat(button);
+        UIUtils.setStandardButtonBorder(button);
         button.addActionListener(e -> function.run());
         return button;
     }

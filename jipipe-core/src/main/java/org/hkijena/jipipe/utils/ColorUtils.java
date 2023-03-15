@@ -297,6 +297,10 @@ public class ColorUtils {
         return new Color(v,v,v);
     }
 
+    public static Color invert(Color color) {
+        return new Color(~color.getRGB());
+    }
+
     public static class GradientStop implements Comparable<GradientStop> {
         private Color color;
         private float position;

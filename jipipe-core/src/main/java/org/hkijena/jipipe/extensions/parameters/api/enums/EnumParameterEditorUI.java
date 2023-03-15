@@ -90,11 +90,11 @@ public class EnumParameterEditorUI extends JIPipeParameterEditorUI {
             currentlyDisplayed = new JButton();
             currentlyDisplayed.setHorizontalAlignment(SwingConstants.LEFT);
             currentlyDisplayed.addActionListener(e -> pickEnum());
-            UIUtils.makeFlat(currentlyDisplayed);
+            UIUtils.setStandardButtonBorder(currentlyDisplayed);
             add(currentlyDisplayed, BorderLayout.CENTER);
 
             JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-            UIUtils.makeFlat(selectButton);
+            UIUtils.setStandardButtonBorder(selectButton);
             selectButton.setToolTipText("Select value");
             selectButton.addActionListener(e -> pickEnum());
             add(selectButton, BorderLayout.EAST);

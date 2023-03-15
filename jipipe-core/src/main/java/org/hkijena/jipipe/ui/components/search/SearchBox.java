@@ -104,7 +104,7 @@ public class SearchBox<T> extends JPanel {
         for (int i = 0; i < comboBox.getComponentCount(); i++) {
             Component component = comboBox.getComponent(i);
             if (component instanceof AbstractButton) {
-                UIUtils.makeFlat((AbstractButton) component);
+                UIUtils.setStandardButtonBorder((AbstractButton) component);
                 ((AbstractButton) component).setBorder(null);
                 ((AbstractButton) component).setOpaque(true);
                 component.setBackground(UIManager.getColor("TextField.background"));

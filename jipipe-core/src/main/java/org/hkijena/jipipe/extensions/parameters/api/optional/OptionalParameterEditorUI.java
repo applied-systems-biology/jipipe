@@ -56,7 +56,7 @@ public class OptionalParameterEditorUI extends JIPipeParameterEditorUI {
 
         // Create toggle button
         JToggleButton toggle = new JToggleButton("Enabled", UIUtils.getIconFromResources("emblems/check-square.png"));
-        UIUtils.makeFlat(toggle);
+        UIUtils.setStandardButtonBorder(toggle);
         toggle.setToolTipText("If enabled, the parameter is not ignored.");
         toggle.setSelected(parameter.isEnabled());
         toggle.setIcon(toggle.isSelected() ? UIUtils.getIconFromResources("emblems/check-square.png") :

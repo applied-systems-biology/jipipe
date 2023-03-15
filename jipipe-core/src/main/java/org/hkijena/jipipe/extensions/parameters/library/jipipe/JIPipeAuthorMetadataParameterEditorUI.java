@@ -76,7 +76,7 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
         add(Box.createHorizontalStrut(8));
 
         JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/stock_edit.png"));
-        UIUtils.makeFlat(editButton);
+        UIUtils.setStandardButtonBorder(editButton);
         editButton.setToolTipText("Shows the full editor");
         editButton.addActionListener(e -> {
             JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);

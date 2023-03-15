@@ -448,7 +448,7 @@ public class ParameterTableEditorWindow extends JFrame {
     private JButton addActionToPalette(String name, String description, Icon icon, Runnable action) {
         JButton button = new JButton(name, icon);
         button.setToolTipText(description);
-        UIUtils.makeFlat(button);
+        UIUtils.setStandardButtonBorder(button);
         button.setBorder(BorderFactory.createEmptyBorder(2, 16, 2, 2));
 //        button.setVerticalTextPosition(SwingConstants.BOTTOM);
         button.setHorizontalAlignment(SwingConstants.LEFT);

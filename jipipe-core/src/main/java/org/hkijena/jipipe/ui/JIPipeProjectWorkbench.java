@@ -368,7 +368,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         // Virtual control
         JButton optionsButton = memoryOptionsControl.createOptionsButton();
-        UIUtils.makeFlatH25(optionsButton);
+        UIUtils.makeFlat(optionsButton);
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
         statusBar.add(new MemoryStatusUI());
@@ -594,12 +594,12 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         // Real-time runner control
         JToggleButton realtimeToggleButton = realTimeProjectRunner.createToggleButton();
-        UIUtils.makeFlat(realtimeToggleButton);
+        UIUtils.setStandardButtonBorder(realtimeToggleButton);
         menu.add(realtimeToggleButton);
 
         // Cache monitor
         JIPipeCacheManagerUI cacheManagerUI = new JIPipeCacheManagerUI(this);
-        UIUtils.makeFlat(cacheManagerUI);
+        UIUtils.setStandardButtonBorder(cacheManagerUI);
         menu.add(cacheManagerUI);
 
         // Queue monitor
@@ -608,7 +608,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
         runProjectButton.setToolTipText("Opens a new interface to run the analysis.");
-        UIUtils.makeFlat(runProjectButton);
+        UIUtils.setStandardButtonBorder(runProjectButton);
 
         runProjectButton.addActionListener(e -> openRunUI());
         menu.add(runProjectButton);

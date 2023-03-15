@@ -31,7 +31,7 @@ public class TemplateProjectListCellRenderer extends JPanel implements ListCellR
         pathLabel.setForeground(Color.GRAY);
         pathLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
         openButton = new JButton("New");
-        UIUtils.makeFlat(openButton);
+        UIUtils.setStandardButtonBorder(openButton);
         openButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
 
         add(iconLabel, new GridBagConstraints() {

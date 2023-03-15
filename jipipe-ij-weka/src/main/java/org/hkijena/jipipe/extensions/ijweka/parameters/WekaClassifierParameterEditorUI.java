@@ -35,20 +35,20 @@ public class WekaClassifierParameterEditorUI extends JIPipeParameterEditorUI {
 
         currentlyDisplayed = new JButton();
         currentlyDisplayed.addActionListener(e -> pick());
-        UIUtils.makeFlat(currentlyDisplayed);
+        UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        UIUtils.makeFlat(selectButton);
+        UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select classifier");
         selectButton.addActionListener(e -> pick());
         buttonPanel.add(selectButton);
 
         JButton configureButton = new JButton(UIUtils.getIconFromResources("actions/configure.png"));
-        UIUtils.makeFlat(configureButton);
+        UIUtils.setStandardButtonBorder(configureButton);
         configureButton.setToolTipText("Configure the classifier");
         configureButton.addActionListener(e -> pick());
         buttonPanel.add(configureButton);

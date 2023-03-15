@@ -20,8 +20,6 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
     private final List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 
-    private final List<ImageViewerGrayscaleLUTEditor> alphaLutEditors = new ArrayList<>();
-
     public LUTManagerPlugin3D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
     }
@@ -46,9 +44,6 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
                 ImageViewerLUTEditor editor = new ImageViewer3DLUTEditor(getViewerPanel(), lutEditors.size());
                 editor.loadLUTFromImage();
                 lutEditors.add(editor);
-
-                ImageViewer3DGreyscaleLUTEditor alphaEditor = new ImageViewer3DGreyscaleLUTEditor(getViewerPanel(), lutEditors.size());
-                alphaLutEditors.add(alphaEditor);
             }
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
             if (getCurrentImagePlus().getNChannels() == 3) {
@@ -58,10 +53,7 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
             }
             for (int channel = 0; channel < getCurrentImagePlus().getNChannels(); channel++) {
                 ImageViewerLUTEditor editor = lutEditors.get(channel);
-                formPanel.addToForm(editor, new JLabel("Channel " + (channel + 1)));
-
-                ImageViewerGrayscaleLUTEditor alphaEditor = alphaLutEditors.get(channel);
-                formPanel.addToForm(alphaEditor, new JLabel("Channel " + (channel + 1) + " (Opacity)"));
+                formPanel.addToForm(editor, new JLabel("C " + (channel + 1)));
             }
         }
 
@@ -71,10 +63,6 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
     public List<ImageViewerLUTEditor> getLutEditors() {
         return lutEditors;
-    }
-
-    public List<ImageViewerGrayscaleLUTEditor> getAlphaLutEditors() {
-        return alphaLutEditors;
     }
 
     private void splitChannels() {

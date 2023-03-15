@@ -102,7 +102,7 @@ public class NotificationButton extends JButton {
     }
 
     private void initialize() {
-        UIUtils.makeFlat(this);
+        UIUtils.setStandardButtonBorder(this);
 
         warningIcon = new AnimatedIcon(this, UIUtils.getIconFromResources("emblems/emblem-important.png"),
                 UIUtils.getIconFromResources("emblems/warning.png"),

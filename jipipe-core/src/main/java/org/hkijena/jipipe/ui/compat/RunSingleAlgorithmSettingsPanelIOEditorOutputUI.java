@@ -46,7 +46,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditorOutputUI extends JPanel {
         pickExporterButton.addActionListener(e -> pickExporter());
         editExporterPanel.add(pickExporterButton, BorderLayout.EAST);
         UIUtils.makeFlat25x25(pickExporterButton);
-        UIUtils.makeFlatH25(selectExporterButton);
+        UIUtils.makeFlat(selectExporterButton);
         titlePanel.add(editExporterPanel, BorderLayout.EAST);
         add(titlePanel);
 

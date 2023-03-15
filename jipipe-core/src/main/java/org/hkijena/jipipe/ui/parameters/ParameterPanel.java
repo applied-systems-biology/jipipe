@@ -393,7 +393,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
                     JButton actionButton = new JButton(action.getDocumentation().name(), icon);
                     actionButton.setToolTipText(DocumentationUtils.getDocumentationDescription(action.getDocumentation()));
                     actionButton.addActionListener(e -> action.accept(workbench));
-                    UIUtils.makeFlat(actionButton);
+                    UIUtils.setStandardButtonBorder(actionButton);
                     groupHeaderPanel.addColumn(actionButton);
                 }
 
@@ -406,7 +406,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
                         dialog.setVisible(true);
                     });
                     addButton.setToolTipText("Allows to add/remove parameters in this group");
-                    UIUtils.makeFlat(addButton);
+                    UIUtils.setStandardButtonBorder(addButton);
                     groupHeaderPanel.addColumn(addButton);
                 }
             }

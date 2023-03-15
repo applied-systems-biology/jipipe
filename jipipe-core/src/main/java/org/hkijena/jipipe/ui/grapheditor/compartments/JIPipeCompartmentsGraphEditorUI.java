@@ -193,14 +193,14 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         JIPipeNodeInfo info = JIPipe.getNodes().getInfoById("jipipe:project-compartment");
 
         JButton addItem = new JButton("Add new compartment", UIUtils.getIconFromResources("actions/list-add.png"));
-        UIUtils.makeFlatH25(addItem);
+        UIUtils.makeFlat(addItem);
         addItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
         addItem.addActionListener(e -> addCompartment());
         menuBar.add(addItem);
 
         JButton importItem = new JButton("Import compartment", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        UIUtils.makeFlatH25(importItem);
+        UIUtils.makeFlat(importItem);
         importItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
         importItem.setToolTipText("Imports a compartment from a *.jipc file");
         importItem.addActionListener(e -> importCompartment());
@@ -208,7 +208,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
 
         if (JIPipe.getNodes().hasNodeInfoWithId("jipipe:comment")) {
             JButton addCommentItem = new JButton("Add comment", UIUtils.getIconFromResources("actions/edit-comment.png"));
-            UIUtils.makeFlatH25(addCommentItem);
+            UIUtils.makeFlat(addCommentItem);
             addCommentItem.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
             addCommentItem.setToolTipText("Add a comment node");
             addCommentItem.addActionListener(e -> addComment());

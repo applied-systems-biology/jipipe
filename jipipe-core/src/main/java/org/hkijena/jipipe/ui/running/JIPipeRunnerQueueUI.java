@@ -66,7 +66,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
 
     private void initialize() {
         setIcon(UIUtils.getIconFromResources("actions/check-circle.png"));
-        UIUtils.makeFlat(this);
+        UIUtils.setStandardButtonBorder(this);
 
         throbberIcon = new JIPipeRunnerQueueThrobberIcon(this, runnerQueue);
         UIUtils.addReloadablePopupMenuToComponent(this, menu, this::reloadMenu);

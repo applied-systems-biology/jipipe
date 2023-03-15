@@ -55,16 +55,7 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
             }
             for (int channel = 0; channel < getCurrentImagePlus().getNChannels(); channel++) {
                 ImageViewerLUTEditor editor = lutEditors.get(channel);
-                JTextField channelNameEditor = new JTextField(editor.getChannelName());
-                channelNameEditor.setOpaque(false);
-                channelNameEditor.setBorder(null);
-                channelNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
-                    @Override
-                    public void changed(DocumentEvent documentEvent) {
-                        editor.setChannelName(channelNameEditor.getText());
-                    }
-                });
-                formPanel.addToForm(editor, channelNameEditor, null);
+                formPanel.addToForm(editor, new JLabel("C " + (channel + 1)), null);
             }
         }
 
