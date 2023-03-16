@@ -180,30 +180,30 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 0));
         viewerPanel.add(messagePanel, BorderLayout.NORTH);
 
-        JToolBar contentStatusBar = new JToolBar();
-        contentStatusBar.setFloatable(false);
-        viewerPanel.add(contentStatusBar, BorderLayout.SOUTH);
+        JToolBar statusBar = new JToolBar();
+        statusBar.setFloatable(false);
+        viewerPanel.add(statusBar, BorderLayout.SOUTH);
 
         JIPipeRunnerQueueUI runnerQueueUI = new JIPipeRunnerQueueUI(getWorkbench(), viewerRunnerQueue);
         runnerQueueUI.makeFlat();
-        contentStatusBar.add(runnerQueueUI);
-        contentStatusBar.add(Box.createHorizontalGlue());
-        contentStatusBar.add(new JLabel("Rotate", UIUtils.getIconFromResources("actions/input-mouse-click-left.png"), JLabel.LEFT));
-        contentStatusBar.add(Box.createHorizontalStrut(8));
-        contentStatusBar.add(UIUtils.createVerticalSeparator());
-        contentStatusBar.add(Box.createHorizontalStrut(8));
-        contentStatusBar.add(new JLabel("+",UIUtils.getIconFromResources("actions/tap-extract.png"), JLabel.LEFT));
-        contentStatusBar.add(new JLabel("Move", UIUtils.getIconFromResources("actions/input-mouse-click-left.png"), JLabel.LEFT));
-        contentStatusBar.add(Box.createHorizontalStrut(8));
-        contentStatusBar.add(UIUtils.createVerticalSeparator());
-        contentStatusBar.add(Box.createHorizontalStrut(8));
-        contentStatusBar.add(new JLabel("Zoom", UIUtils.getIconFromResources("actions/input-mouse-click-middle.png"), JLabel.LEFT));
+        statusBar.add(runnerQueueUI);
+        statusBar.add(Box.createHorizontalGlue());
+        statusBar.add(new JLabel("Rotate", UIUtils.getIconFromResources("actions/input-mouse-click-left.png"), JLabel.LEFT));
+        statusBar.add(Box.createHorizontalStrut(8));
+        statusBar.add(UIUtils.createVerticalSeparator());
+        statusBar.add(Box.createHorizontalStrut(8));
+        statusBar.add(new JLabel("+",UIUtils.getIconFromResources("actions/tap-extract.png"), JLabel.LEFT));
+        statusBar.add(new JLabel("Move", UIUtils.getIconFromResources("actions/input-mouse-click-left.png"), JLabel.LEFT));
+        statusBar.add(Box.createHorizontalStrut(8));
+        statusBar.add(UIUtils.createVerticalSeparator());
+        statusBar.add(Box.createHorizontalStrut(8));
+        statusBar.add(new JLabel("Zoom", UIUtils.getIconFromResources("actions/input-mouse-click-middle.png"), JLabel.LEFT));
 
-        contentStatusBar.add(Box.createHorizontalStrut(8));
-        contentStatusBar.add(UIUtils.createVerticalSeparator());
-        contentStatusBar.add(Box.createHorizontalStrut(8));
-        contentStatusBar.add(renderInfoLabel);
-        contentStatusBar.add(Box.createHorizontalStrut(8));
+        statusBar.add(Box.createHorizontalStrut(8));
+        statusBar.add(UIUtils.createVerticalSeparator());
+        statusBar.add(Box.createHorizontalStrut(8));
+        statusBar.add(renderInfoLabel);
+        statusBar.add(Box.createHorizontalStrut(8));
 
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
