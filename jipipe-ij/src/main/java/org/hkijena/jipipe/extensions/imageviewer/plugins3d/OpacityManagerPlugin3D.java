@@ -59,15 +59,15 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
     @Override
     public void onImageContentReady(List<Content> content) {
-        for (int i = 0; i < content.size(); i++) {
-            Content item = content.get(i);
-            if(item.getTransparency() == 0) {
-                if(i < alphaLutEditors.size()) {
-                    ImageViewerGrayscaleLUTEditor lutEditor = alphaLutEditors.get(i);
-                    lutEditor.setToUniformColor(Color.BLACK);
-                }
-            }
-        }
+//        for (int i = 0; i < content.size(); i++) {
+//            Content item = content.get(i);
+//            if(item.getTransparency() == 0) {
+//                if(i < alphaLutEditors.size()) {
+//                    ImageViewerGrayscaleLUTEditor lutEditor = alphaLutEditors.get(i);
+//                    lutEditor.setToUniformColor(Color.BLACK);
+//                }
+//            }
+//        }
     }
 
     public List<ImageViewerGrayscaleLUTEditor> getAlphaLutEditors() {
