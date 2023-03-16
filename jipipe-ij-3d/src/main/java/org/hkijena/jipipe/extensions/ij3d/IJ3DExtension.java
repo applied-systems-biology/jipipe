@@ -110,6 +110,11 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
+    public boolean isBeta() {
+        return true;
+    }
+
+    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
         registerSettingsSheet(ImageViewerUIROI3DDisplaySettings.ID,
