@@ -26,6 +26,7 @@ import java.awt.*;
  */
 public class JIPipeRunExecuterUI extends JPanel {
     private JIPipeRunnable run;
+    private final JIPipeRunnerQueue queue;
     private JProgressBar progressBar;
     private JButton cancelButton;
     private JButton closeButton;
@@ -33,20 +34,29 @@ public class JIPipeRunExecuterUI extends JPanel {
     private JTextArea log;
     private JDialog dialog;
 
+    public JIPipeRunExecuterUI(JIPipeRunnable run) {
+        this(run, JIPipeRunnerQueue.getInstance());
+    }
+
     /**
      * @param run The runnable
      */
-    public JIPipeRunExecuterUI(JIPipeRunnable run) {
+    public JIPipeRunExecuterUI(JIPipeRunnable run, JIPipeRunnerQueue queue) {
         this.run = run;
+        this.queue = queue;
         initialize();
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        queue.getEventBus().register(this);
     }
 
     public static void runInDialog(Component parent, JIPipeRunnable run) {
+        runInDialog(parent, run, JIPipeRunnerQueue.getInstance());
+    }
+
+    public static void runInDialog(Component parent, JIPipeRunnable run, JIPipeRunnerQueue queue) {
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
         dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run);
+        JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run, queue);
         ui.setDialog(dialog);
         dialog.setContentPane(ui);
         dialog.pack();
@@ -55,14 +65,14 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
-        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+        queue.getEventBus().register(new Object() {
             @Subscribe
             public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
                 if (event.getRun() == run)
                     dialog.setVisible(false);
             }
         });
-        JIPipeRunnerQueue.getInstance().enqueue(run);
+        queue.enqueue(run);
         dialog.setVisible(true);
     }
 
@@ -107,7 +117,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * Starts the run
      */
     public void startRun() {
-        JIPipeRunnerQueue.getInstance().enqueue(run);
+        queue.enqueue(run);
         progressBar.setString("Waiting until other processes are finished ...");
         progressBar.setIndeterminate(true);
     }
@@ -117,7 +127,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      */
     public void requestCancelRun() {
         cancelButton.setEnabled(false);
-        JIPipeRunnerQueue.getInstance().cancel(run);
+        queue.cancel(run);
     }
 
     private void switchToCloseButtonIfPossible() {
