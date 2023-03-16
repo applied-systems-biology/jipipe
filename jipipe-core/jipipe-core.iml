@@ -16,6 +16,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.11.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:2.0.3" level="project" />
+    <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-launcher:6.0.2" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-notebook:0.7.1" level="project" />
     <orderEntry type="library" name="Maven: org.knowm.xchart:xchart:3.5.4" level="project" />
@@ -40,7 +41,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.smurn:jply:0.2.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-plugins-batch:0.1.1" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-deprecated:0.1.5" level="project" />
-    <orderEntry type="library" name="Maven: edu.ucar:udunits:4.3.18" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imagej:imagej-plugins-commands:0.8.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.sbridges.object-inspector:object-inspector:0.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.iharder:base64:2.3.8" level="project" />
