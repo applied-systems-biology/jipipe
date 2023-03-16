@@ -1183,7 +1183,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * Gets all algorithms and all dependent algorithms that are missing inputs or are deactivated by the user
      *
      * @param cascading if predecessors are also checked.
-     * @return list of algorithms
+     * @return set of algorithms
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms(boolean cascading) {
         Set<JIPipeGraphNode> missing = new HashSet<>();
@@ -1229,7 +1229,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * Gets all algorithms and all dependent algorithms that are missing inputs or are deactivated by the user
      *
      * @param externallySatisfied list of algorithms that have their input set externally
-     * @return list of algorithms
+     * @return set of algorithms
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms(Set<JIPipeGraphNode> externallySatisfied) {
         Set<JIPipeGraphNode> missing = new HashSet<>();

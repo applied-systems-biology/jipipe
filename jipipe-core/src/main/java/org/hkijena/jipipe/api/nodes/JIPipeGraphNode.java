@@ -931,7 +931,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Returns a list of all dependencies this algorithm currently has.
      *
-     * @return List of dependencies
+     * @return set of dependencies
      */
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();

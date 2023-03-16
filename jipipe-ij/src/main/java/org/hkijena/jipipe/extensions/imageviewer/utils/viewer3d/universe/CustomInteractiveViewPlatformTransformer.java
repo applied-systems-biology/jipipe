@@ -53,8 +53,8 @@ public class CustomInteractiveViewPlatformTransformer {
     /**
      * Initialize this ViewPlatformTransformer.
      *
-     * @param universe
-     * @param callback
+     * @param universe the universe
+     * @param callback the callback
      */
     public CustomInteractiveViewPlatformTransformer(final CustomImage3DUniverse universe,
                                                     final BehaviorCallback callback) {
@@ -79,7 +79,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Moves the view back (i.e. in the z-direction of the image plate) to the
      * specified distance.
      *
-     * @param distance
+     * @param distance the distance
      */
     public void zoomTo(final double distance) {
         zDir.set(0, 0, 1);
@@ -102,7 +102,7 @@ public class CustomInteractiveViewPlatformTransformer {
     /**
      * Zoom by the specified amounts of units.
      *
-     * @param units
+     * @param units the units
      */
     public void zoom(final double units) {
         origin.set(0, 0, 0);
@@ -141,7 +141,7 @@ public class CustomInteractiveViewPlatformTransformer {
     /**
      * Center the view at the given point.
      *
-     * @param center
+     * @param center the center
      */
     public void centerAt(final Point3d center) {
         // set the center transformation to the translation given by
@@ -161,8 +161,8 @@ public class CustomInteractiveViewPlatformTransformer {
      * Translates the view suitable to a mouse movement by dxPix and dyPix on the
      * canvas.
      *
-     * @param dxPix
-     * @param dyPix
+     * @param dxPix the dxPix
+     * @param dyPix the dyPix
      */
     public void translateXY(final int dxPix, final int dyPix) {
         origin.set(0, 0, 0);
@@ -335,7 +335,7 @@ public class CustomInteractiveViewPlatformTransformer {
     /**
      * Retrieves the manual translation vector of the view.
      *
-     * @param v
+     * @param v the vector
      */
     public void getTranslateTranslation(final Vector3d v) {
         translateTG.getTransform(tmp);
@@ -346,7 +346,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Retrieves the translation vector which is responsible for centering the
      * view.
      *
-     * @param v
+     * @param v the vector
      */
     public void getCenterTranslation(final Vector3d v) {
         centerTG.getTransform(tmp);
@@ -357,7 +357,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Retrieves the translation vector which is responsible for the current
      * zooming and stores it in the given Vector3d.
      *
-     * @param v
+     * @param v the vector
      */
     public void getZoomTranslation(final Vector3d v) {
         zoomTG.getTransform(tmp);
@@ -368,7 +368,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Stores the canvas position of the origin of the vworld in the specified
      * Point2d.
      *
-     * @param out
+     * @param out the output
      */
     public void originInCanvas(final Point2d out) {
         origin.set(0, 0, 0);
@@ -379,8 +379,8 @@ public class CustomInteractiveViewPlatformTransformer {
      * Calculates where the specified point in the vworld space is placed on the
      * canvas and stores the result in the specified Point2d.
      *
-     * @param in
-     * @param out
+     * @param in the input
+     * @param out the output
      */
     public void pointInCanvas(final Point3d in, final Point2d out) {
         tmpP.set(in);
@@ -394,7 +394,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Calculates the distance between the viewer's eye and an arbitrary point in
      * the vworld space.
      *
-     * @return
+     * @return the distance
      */
     public double distanceEyeTo(final Point3d p) {
         canvas.getCenterEyeInImagePlate(eyePos);
@@ -407,7 +407,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Calculates the distance between the viewer's eye and the origin in the
      * vworld space.
      *
-     * @return
+     * @return the distance
      */
     public double distanceEyeOrigin() {
         origin.set(0, 0, 0);
@@ -517,7 +517,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * This method should be called when a new transformation is started (i.e.
      * when the mouse is pressed before dragging in order to rotate or translate).
      *
-     * @param e
+     * @param e the event
      */
     public void init(final MouseEvent e) {
         this.xLast = e.getX();
@@ -528,7 +528,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * This method should be called during the mouse is dragged, if the mouse
      * event should result in a translation.
      *
-     * @param e
+     * @param e the event
      */
     public void translate(final MouseEvent e) {
         final int dx = xLast - e.getX();
@@ -542,7 +542,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * This method should be called during the mouse is dragged, if the mouse
      * event should result in a rotation.
      *
-     * @param e
+     * @param e the event
      */
     public void rotate(final MouseEvent e) {
         final int dx = xLast - e.getX();
@@ -556,7 +556,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * This method should be called, if the specified MouseEvent should affect
      * zooming based on wheel movement.
      *
-     * @param e
+     * @param e the event
      */
     public void wheel_zoom(final MouseEvent e) {
         final MouseWheelEvent we = (MouseWheelEvent) e;
@@ -570,7 +570,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * This method should be called, if the specified MouseEvent should affect
      * zooming based on vertical mouse dragging.
      *
-     * @param e
+     * @param e the event
      */
     public void zoom(final MouseEvent e) {
         final int y = e.getY();

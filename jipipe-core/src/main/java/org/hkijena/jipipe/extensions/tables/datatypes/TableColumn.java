@@ -31,7 +31,7 @@ import java.util.List;
 public interface TableColumn extends JIPipeData {
     /**
      * Returns true if the parameter is a mutable table column.
-     * Will return false if the data is not a {@link TableColumn}
+     * Will return false if the data is not a column
      *
      * @param klass the class
      * @return if the parameter is a mutable table column
@@ -42,7 +42,7 @@ public interface TableColumn extends JIPipeData {
 
     /**
      * Returns true if the parameter is a generating table column.
-     * Will return false if the data is not a {@link TableColumn}
+     * Will return false if the data is not a column
      *
      * @param klass the class
      * @return if the parameter is a mutable table column

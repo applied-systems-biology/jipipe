@@ -181,7 +181,7 @@ public interface JIPipeNodeInfo {
     /**
      * Returns all dependencies
      *
-     * @return List of dependencies
+     * @return set of dependencies
      */
     Set<JIPipeDependency> getDependencies();
 

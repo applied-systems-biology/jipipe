@@ -88,7 +88,7 @@ public class JIPipeImageJAdapterRegistry {
      *
      * @param dataClass          the data type to import
      * @param includeConvertible if the list should include importers that convert to the specified data type
-     * @return the list of importers
+     * @return the set of importers
      */
     public Set<ImageJDataImporter> getAvailableImporters(Class<? extends JIPipeData> dataClass, boolean includeConvertible) {
         Set<ImageJDataImporter> result;
@@ -125,7 +125,7 @@ public class JIPipeImageJAdapterRegistry {
      *
      * @param dataClass          the data type to exporter
      * @param includeConvertible if the list should include importers that convert to the specified data type
-     * @return the list of importers
+     * @return the set of importers
      */
     public Set<ImageJDataExporter> getAvailableExporters(Class<? extends JIPipeData> dataClass, boolean includeConvertible) {
         Set<ImageJDataExporter> result;

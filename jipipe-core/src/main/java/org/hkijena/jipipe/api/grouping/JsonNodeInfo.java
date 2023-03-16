@@ -73,7 +73,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     }
 
     /**
-     * Creates a new {@link JsonNodeInfo} from a {@link NodeGroup}
+     * Creates a new info from a {@link NodeGroup}
      *
      * @param group the node group. The graph will NOT be copied.
      */

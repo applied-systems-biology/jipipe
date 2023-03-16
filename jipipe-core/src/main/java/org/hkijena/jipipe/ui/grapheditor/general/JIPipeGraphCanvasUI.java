@@ -2258,14 +2258,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     /**
-     * @return the list of selected {@link JIPipeNodeUI}
+     * @return the set of selected {@link JIPipeNodeUI}
      */
     public Set<JIPipeNodeUI> getSelection() {
         return Collections.unmodifiableSet(selection);
     }
 
     /**
-     * @return the list of selected nodes
+     * @return the set of selected nodes
      */
     public Set<JIPipeGraphNode> getSelectedNodes() {
         return selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
