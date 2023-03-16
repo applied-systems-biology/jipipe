@@ -949,7 +949,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
-     * Registers a sub-parameter instance to pass {@link ParameterStructureChangedEvent} via this algorithm's {@link EventBus}
+     * Registers a sub-parameter instance to pass {@link JIPipeParameterCollection.ParameterStructureChangedEvent} via this algorithm's {@link EventBus}
      *
      * @param subParameter the sub-parameter
      */

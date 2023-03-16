@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Map;
 
 /**
- * Parameter equivalent of {@link Map.Entry}.
+ * Parameter equivalent of a map entry.
  * We suggest to use {@link org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList} if applicable, due to its greater flexibility.
  */
 @JsonSerialize(using = PairParameter.Serializer.class)
