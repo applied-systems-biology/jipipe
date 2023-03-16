@@ -68,7 +68,7 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
     }
 
     /**
-     * Finds open {@link JIPipeNodeGroupUI} tabs
+     * Finds open tabs
      *
      * @param nodeGroup Targeted compartment
      * @return List of UIs

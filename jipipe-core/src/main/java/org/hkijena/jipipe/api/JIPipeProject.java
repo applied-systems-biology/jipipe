@@ -717,7 +717,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * Returns a list of all nodes that cannot be executed or are deactivated by the user.
      * This method works on transitive deactivation (e.g. a dependency is deactivated).
      *
-     * @return list of deactivated nodes
+     * @return set of deactivated nodes
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms() {
         return graph.getDeactivatedAlgorithms(true);

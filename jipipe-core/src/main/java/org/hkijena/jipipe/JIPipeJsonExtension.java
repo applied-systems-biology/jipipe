@@ -72,7 +72,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeExt
     }
 
     /**
-     * Loads a {@link JIPipeJsonExtension} from JSON
+     * Loads an extension from JSON
      *
      * @param jsonData JSON data
      * @return Loaded instance

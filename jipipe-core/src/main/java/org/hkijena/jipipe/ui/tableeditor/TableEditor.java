@@ -77,7 +77,7 @@ public class TableEditor extends FlexContentWorkbenchPanel {
     }
 
     /**
-     * Imports a table from CSV and creates a new {@link TableEditor} tab
+     * Imports a table from CSV and creates a new editor tab
      *
      * @param fileName    CSV file
      * @param workbenchUI workbench

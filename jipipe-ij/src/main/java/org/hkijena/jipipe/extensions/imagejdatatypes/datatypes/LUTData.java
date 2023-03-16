@@ -46,7 +46,7 @@ public class LUTData implements JIPipeData {
     }
 
     /**
-     * Creates a {@link LUTData} object from an image. The image must RGB color and
+     * Creates a LUT object from an image. The image must RGB color and
      * contain the value mappings in the first row. LUTs always have 256 colors, but other
      * number of columns are supported (in such case, the image will be stretched)
      *
@@ -58,8 +58,8 @@ public class LUTData implements JIPipeData {
     }
 
     /**
-     * Imports an ImageJ LUT into a {@link LUTData} object.
-     * Please note, that ImageJ represents LUTs as array of colors, while {@link LUTData} represents LUTs
+     * Imports an ImageJ LUT into a LUT object.
+     * Please note, that ImageJ represents LUTs as array of colors, while LUT represents LUTs
      * as set of gradient stops. The conversion might not be always 100% perfect.
      *
      * @param lut      the LUT
@@ -204,7 +204,7 @@ public class LUTData implements JIPipeData {
     }
 
     /**
-     * Converts the {@link LUTData} into an ImageJ {@link LUT}
+     * Converts the LUT into an ImageJ {@link LUT}
      *
      * @return the LUT
      */
@@ -213,7 +213,7 @@ public class LUTData implements JIPipeData {
     }
 
     /**
-     * Renders the {@link LUTData} into an RGB Image
+     * Renders the LUT into an RGB Image
      *
      * @return the image
      */

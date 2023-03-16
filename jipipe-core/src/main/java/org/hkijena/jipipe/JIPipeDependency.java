@@ -157,7 +157,7 @@ public interface JIPipeDependency extends JIPipeValidatable {
      * This can contain nested or even cyclic dependencies.
      * The storage of dependencies into JSON format is handled by getTraversedDependencies()
      *
-     * @return the list of JIPipe dependencies
+     * @return the set of JIPipe dependencies
      */
     default Set<JIPipeDependency> getDependencies() {
         return Collections.emptySet();
