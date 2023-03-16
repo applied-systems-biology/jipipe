@@ -47,6 +47,7 @@ import org.scijava.java3d.Canvas3D;
 import org.scijava.java3d.GraphicsConfigTemplate3D;
 import org.scijava.java3d.View;
 import org.scijava.vecmath.Color3f;
+import org.scijava.vecmath.Point3f;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -1105,7 +1106,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         private boolean imageWasConvertedTo8Bit;
 
-        private List<Content> contents = new ArrayList<>();
+        private final List<Content> contents = new ArrayList<>();
 
         public ImageLoaderRun(ImageViewerPanel3D viewerPanel3D, ImagePlusData imageData, Image3DRenderType renderType, int resamplingFactor) {
             this.viewerPanel3D = viewerPanel3D;
@@ -1152,7 +1153,16 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                     }
                 }, getProgressInfo().resolve("c=" + c));
                 ImagePlus forChannel = ImageJUtils.mergeMappedSlices(processorMap);
-                Content content = ContentCreator.createContent("Image-Channel-" + finalC + "-" + UUID.randomUUID(),
+
+                if(forChannel.getType() == ImagePlus.GRAY8) {
+                    ImageStatistics statistics = new StackStatistics(forChannel);
+
+                    if (statistics.max == 0) {
+                        // Workaround: viewer does not work with empty images. Convert to RGB
+                        forChannel = ImageJUtils.convertToColorRGBIfNeeded(forChannel);
+                    }
+                }
+                Content content= ContentCreator.createContent("Image-Channel-" + finalC + "-" + UUID.randomUUID(),
                         forChannel,
                         renderType.getNativeValue(),
                         resamplingFactor,

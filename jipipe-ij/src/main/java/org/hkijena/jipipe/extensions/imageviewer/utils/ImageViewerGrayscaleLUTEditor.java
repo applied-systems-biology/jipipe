@@ -19,16 +19,12 @@ import ij.process.LUT;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
-import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.ui.components.PickEnumValueDialog;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
-import org.jdesktop.swingx.color.GradientThumbRenderer;
 import org.jdesktop.swingx.multislider.Thumb;
 import org.jdesktop.swingx.multislider.ThumbListener;
 
@@ -37,7 +33,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -229,7 +224,7 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
         JPopupMenu moreMenu = UIUtils.addPopupMenuToComponent(moreButton);
 
         JMenuItem setColorsButton = new JMenuItem("Set to color", UIUtils.getIconFromResources("actions/stock_edit.png"));
-        setColorsButton.addActionListener(e -> setToUniformColor());
+        setColorsButton.addActionListener(e -> setToUniformColorByDialog());
         moreMenu.add(setColorsButton);
 
         JMenuItem exportLUTToJSONButton = new JMenuItem("Export LUT as *.json", UIUtils.getIconFromResources("actions/document-export.png"));
@@ -249,14 +244,14 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
         moreMenu.add(importLUTFromPNGButton);
     }
 
-    private void setToUniformColor() {
+    public void setToUniformColorByDialog() {
         Color color = JColorChooser.showDialog(this, "Select color", Color.WHITE);
         if(color != null) {
             setToUniformColor(color);
         }
     }
 
-    private void setToUniformColor(Color color) {
+    public void setToUniformColor(Color color) {
         importLUT(LUT.createLutFromColor(Color.WHITE), true);
         slider.getModel().getThumbAt(1).setObject(color);
         slider.getModel().getThumbAt(0).setObject(color);

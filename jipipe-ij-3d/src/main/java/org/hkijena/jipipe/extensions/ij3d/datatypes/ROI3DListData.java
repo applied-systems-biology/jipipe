@@ -382,23 +382,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     }
 
     public ImagePlus createBlankCanvas(String title, BitDepth bitDepth) {
-        int width = 1;
-        int height = 1;
-        int nSlices = 1;
-        int nChannels = 1;
-        int nFrames = 1;
-        Vector3D[] bounds = getBounds();
-
-        width = (int) Math.max(width, bounds[0].x + bounds[1].x);
-        height = (int) Math.max(height, bounds[0].y + bounds[1].y);
-        nSlices = (int) Math.max(nSlices, bounds[0].z + bounds[1].z);
-
-        for (ROI3D roi3D : this) {
-            nChannels = Math.max(nChannels, roi3D.getChannel());
-            nFrames = Math.max(nFrames, roi3D.getFrame());
-        }
-
-        return IJ.createHyperStack(title, width, height, nChannels, nSlices, nFrames, bitDepth.getBitDepth());
+        return createBlankCanvas(title, bitDepth.getBitDepth());
     }
 
     public ImagePlus createBlankCanvas(String title, int bitDepth) {

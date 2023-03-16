@@ -5,10 +5,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
+import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.Roi;
+import mcib3d.geom.ObjectCreator3D;
+import mcib3d.geom.Vector3D;
+import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -19,9 +23,14 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
+import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObjectCreator3D;
 import org.hkijena.jipipe.extensions.ijfilaments.display.CachedFilamentsDataViewerWindow;
 import org.hkijena.jipipe.extensions.ijfilaments.util.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -742,5 +751,99 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             edges.addAll(edgesOf(vertex));
         }
         return edges;
+    }
+
+    public ImagePlus createBlankCanvas(String title, BitDepth bitDepth) {
+        return createBlankCanvas(title, bitDepth.getBitDepth());
+    }
+
+    public ImagePlus createBlankCanvas(String title, int bitDepth) {
+        int maxX = 0;
+        int maxY = 0;
+        int maxZ = 0;
+        int maxC = 0;
+        int maxT = 0;
+
+        for (FilamentVertex vertex : vertexSet()) {
+            maxX = (int) Math.max(maxX, vertex.getXMax(true));
+            maxY = (int) Math.max(maxY, vertex.getYMax(true));
+            maxZ = (int) Math.max(maxZ, vertex.getZMax(true));
+            maxC = Math.max(maxC, vertex.getNonSpatialLocation().getChannel());
+            maxT = Math.max(maxT, vertex.getNonSpatialLocation().getFrame());
+        }
+
+        return IJ.createHyperStack(title, maxX + 1, maxY + 1, maxC + 1, maxZ + 1, maxT + 1, bitDepth);
+    }
+
+    public ROI3DListData toRoi3D(boolean withEdges, boolean withVertices, boolean thinLines, JIPipeProgressInfo progressInfo) {
+        ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = getConnectivityInspector();
+        List<Set<FilamentVertex>> connectedSets = connectivityInspector.connectedSets();
+
+        ROI3DListData result = new ROI3DListData();
+
+        ImagePlus blankCanvas = createBlankCanvas("", 8);
+        ImageJUtils.forEachIndexedCTStack(blankCanvas, (imp, index, ctProgress) -> {
+            ExtendedObjectCreator3D objectCreator3D = new ExtendedObjectCreator3D(ImageHandler.wrap(imp));
+            for (int i = 0; i < connectedSets.size(); i++) {
+                if(ctProgress.isCancelled())
+                    return;
+                Set<FilamentVertex> connectedSet = connectedSets.get(i);
+                ctProgress.resolveAndLog("Component", i, connectedSets.size());
+
+                boolean found = false;
+                for (FilamentVertex vertex : connectedSet) {
+                    if(vertex.getNonSpatialLocation().getFrame() == index.getT() || vertex.getNonSpatialLocation().getChannel() == index.getC()) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                if(!found)
+                    continue;
+
+                objectCreator3D.reset();
+                if(withEdges) {
+                    Filaments3DData extracted = extractShallowCopy(connectedSet);
+                    for (FilamentEdge edge : extracted.edgeSet()) {
+                        if(ctProgress.isCancelled())
+                            return;
+                        FilamentVertex source = extracted.getEdgeSource(edge);
+                        FilamentVertex target = extracted.getEdgeTarget(edge);
+                        if(thinLines) {
+                            objectCreator3D.createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
+                                    target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
+                                    1,
+                                    0);
+                        }
+                        else {
+                            objectCreator3D.createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
+                                    target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
+                                    1,
+                                    (int) source.getRadius(),
+                                    (int) target.getRadius());
+                        }
+                    }
+                }
+                if(withVertices) {
+                    for (FilamentVertex vertex : connectedSet) {
+                        if(ctProgress.isCancelled())
+                            return;
+                        objectCreator3D.createSphere(vertex.getSpatialLocation().getX(),
+                                vertex.getSpatialLocation().getY(),
+                                vertex.getSpatialLocation().getZ(),
+                                vertex.getRadius(),
+                                1,
+                                false);
+                    }
+                }
+
+                ROI3D roi3D = new ROI3D(objectCreator3D.getObject3DVoxels(1));
+                roi3D.setFrame(index.getT() + 1);
+                roi3D.setChannel(index.getC() + 1);
+                result.add(roi3D);
+            }
+        }, progressInfo);
+
+        return result;
     }
 }

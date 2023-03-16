@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
+import ij3d.Content;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
@@ -13,6 +14,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +55,19 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
 
         // Apply LUT after creating the panel
         getViewerPanel3D().scheduleUpdateLutAndCalibration();
+    }
+
+    @Override
+    public void onImageContentReady(List<Content> content) {
+        for (int i = 0; i < content.size(); i++) {
+            Content item = content.get(i);
+            if(item.getTransparency() == 0) {
+                if(i < alphaLutEditors.size()) {
+                    ImageViewerGrayscaleLUTEditor lutEditor = alphaLutEditors.get(i);
+                    lutEditor.setToUniformColor(Color.BLACK);
+                }
+            }
+        }
     }
 
     public List<ImageViewerGrayscaleLUTEditor> getAlphaLutEditors() {
