@@ -43,7 +43,7 @@ public class JIPipeDataAnnotation implements JIPipeAnnotation {
     }
 
     public <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
-        return (T) JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), klass);
+        return (T) JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), klass, progressInfo);
     }
 
     @Override

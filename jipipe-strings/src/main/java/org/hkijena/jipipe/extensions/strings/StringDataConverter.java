@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.strings;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -35,7 +36,7 @@ public class StringDataConverter implements JIPipeDataConverter {
     }
 
     @Override
-    public JIPipeData convert(JIPipeData input) {
+    public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         return (JIPipeData) ReflectionUtils.newInstance(outputType, ((StringData) input).getData());
     }
 }

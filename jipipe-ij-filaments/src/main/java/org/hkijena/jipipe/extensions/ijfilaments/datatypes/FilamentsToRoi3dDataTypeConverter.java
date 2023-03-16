@@ -1,24 +1,23 @@
-package org.hkijena.jipipe.extensions.imagej2.converters;
+package org.hkijena.jipipe.extensions.ijfilaments.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 
-public class ImageJ2ToImageJ1Converter implements JIPipeDataConverter {
+public class FilamentsToRoi3dDataTypeConverter implements JIPipeDataConverter {
     @Override
     public Class<? extends JIPipeData> getInputType() {
-        return ImageJ2DatasetData.class;
+        return Filaments3DData.class;
     }
 
     @Override
     public Class<? extends JIPipeData> getOutputType() {
-        return ImagePlusData.class;
+        return ROI3DListData.class;
     }
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return ((ImageJ2DatasetData) input).wrap();
+        return ((Filaments3DData)input).toRoi3D(false, true, -1, -1, progressInfo);
     }
 }

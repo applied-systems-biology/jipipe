@@ -41,7 +41,7 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeImageViewerCache
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         getImageViewer().clearOverlays();
-        SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class);
+        SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class, progressInfo);
         getImageViewer().addOverlay(data);
         getImageViewer().setError(null);
         getImageViewer().setImagePlus(data.getImage());

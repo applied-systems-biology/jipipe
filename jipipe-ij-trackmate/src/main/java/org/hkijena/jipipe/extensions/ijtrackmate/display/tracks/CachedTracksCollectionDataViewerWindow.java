@@ -42,7 +42,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeImageViewerCac
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         getImageViewer().clearOverlays();
-        TrackCollectionData trackCollectionData = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), TrackCollectionData.class);
+        TrackCollectionData trackCollectionData = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), TrackCollectionData.class, progressInfo);
         getImageViewer().addOverlay(trackCollectionData);
         getImageViewer().setError(null);
         getImageViewer().setImagePlus(trackCollectionData.getImage());

@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.convert;
 
+import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -8,13 +9,17 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-@JIPipeDocumentation(name = "Convert filaments to 3D ROI", description = "Converts filaments into a 3D ROI")
+@JIPipeDocumentation(name = "Convert filaments to mask", description = "Converts filaments into a 3D ROI")
 @JIPipeInputSlot(value = Filaments3DData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true, description = "Optional reference image that determines the size of the mask")
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ConvertFilamentsToMaskAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean withEdges = true;
     private boolean withVertices = true;
 
@@ -22,11 +27,11 @@ public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgor
 
     private OptionalIntegerParameter forcedVertexRadius = new OptionalIntegerParameter(false, 1);
 
-    public ConvertFilamentsToRoi3DAlgorithm(JIPipeNodeInfo info) {
+    public ConvertFilamentsToMaskAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ConvertFilamentsToRoi3DAlgorithm(ConvertFilamentsToRoi3DAlgorithm other) {
+    public ConvertFilamentsToMaskAlgorithm(ConvertFilamentsToMaskAlgorithm other) {
         super(other);
         this.withEdges = other.withEdges;
         this.withVertices = other.withVertices;
@@ -36,10 +41,11 @@ public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgor
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
-        ROI3DListData outputData = inputData.toRoi3D(withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1), progressInfo);
+        Filaments3DData inputData = dataBatch.getInputData("Input", Filaments3DData.class, progressInfo);
+        ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        ImagePlus mask = inputData.toMask(reference, withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(mask), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Override edge thickness", description = "If enabled, set the thickness of edges. Must be at least zero.")

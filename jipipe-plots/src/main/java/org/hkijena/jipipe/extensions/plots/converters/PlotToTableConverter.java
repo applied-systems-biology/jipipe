@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.plots.converters;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
@@ -19,7 +20,7 @@ public class PlotToTableConverter implements JIPipeDataConverter {
     }
 
     @Override
-    public JIPipeData convert(JIPipeData input) {
+    public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         PlotData plotData = (PlotData) input;
         ResultsTableData resultsTableData = new ResultsTableData();
         int index = 1;

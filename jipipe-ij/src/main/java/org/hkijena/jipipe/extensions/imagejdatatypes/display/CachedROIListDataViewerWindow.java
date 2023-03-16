@@ -35,7 +35,7 @@ public class CachedROIListDataViewerWindow extends CachedImagePlusDataViewerWind
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        ROIListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROIListData.class);
+        ROIListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROIListData.class, progressInfo);
         int width;
         int height;
         int numZ = 1;

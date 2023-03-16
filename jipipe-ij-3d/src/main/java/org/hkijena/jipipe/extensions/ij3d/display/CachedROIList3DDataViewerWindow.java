@@ -13,22 +13,15 @@
 
 package org.hkijena.jipipe.extensions.ij3d.display;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class CachedROIList3DDataViewerWindow extends CachedImagePlusDataViewerWindow {
 
@@ -38,7 +31,7 @@ public class CachedROIList3DDataViewerWindow extends CachedImagePlusDataViewerWi
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        ROI3DListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROI3DListData.class);
+        ROI3DListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROI3DListData.class, progressInfo);
         ImagePlus image = data.createBlankCanvas("Empty", 8);
         getImageViewer().clearOverlays();
         getImageViewer().setImageData(new ImagePlusData(image));

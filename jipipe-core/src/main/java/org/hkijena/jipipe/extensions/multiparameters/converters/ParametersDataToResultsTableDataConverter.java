@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.multiparameters.converters;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
@@ -17,7 +18,7 @@ public class ParametersDataToResultsTableDataConverter implements JIPipeDataConv
     }
 
     @Override
-    public JIPipeData convert(JIPipeData input) {
+    public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         ParametersData parametersData = (ParametersData) input;
         ResultsTableData result = new ResultsTableData();
         result.addRow(parametersData.getParameterData());

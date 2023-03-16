@@ -48,4 +48,8 @@ public class OptionalIntegerParameter extends OptionalParameter<Integer> {
         setContent(0);
         return 0;
     }
+
+    public int orElse(int defaultValue) {
+        return isEnabled() ? getContent() : defaultValue;
+    }
 }

@@ -10,8 +10,6 @@ import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Line;
 import ij.gui.Roi;
-import mcib3d.geom.ObjectCreator3D;
-import mcib3d.geom.Vector3D;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -166,7 +164,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return graph;
     }
 
-    public ROIListData toRoi(boolean ignoreNon2DEdges, boolean withEdges, boolean withVertices, boolean thinEdgeLines) {
+    public ROIListData toRoi(boolean ignoreNon2DEdges, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius) {
         ROIListData outputData = new ROIListData();
 
         if(withEdges) {
@@ -179,29 +177,33 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                         edgeSource.getNonSpatialLocation().getFrame() != edgeTarget.getNonSpatialLocation().getFrame()) {
                     if (ignoreNon2DEdges)
                         continue;
-                    outputData.add(edgeToRoiLine(edge, edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), thinEdgeLines));
-                    outputData.add(edgeToRoiLine(edge, edgeTarget.getSpatialLocation().getZ(), edgeTarget.getNonSpatialLocation().getChannel(), edgeTarget.getNonSpatialLocation().getFrame(), thinEdgeLines));
+                    outputData.add(edgeToRoiLine(edge, edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), forcedLineThickness));
+                    outputData.add(edgeToRoiLine(edge, edgeTarget.getSpatialLocation().getZ(), edgeTarget.getNonSpatialLocation().getChannel(), edgeTarget.getNonSpatialLocation().getFrame(), forcedLineThickness));
                 } else {
-                    outputData.add(edgeToRoiLine(edge, edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), thinEdgeLines));
+                    outputData.add(edgeToRoiLine(edge, edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), forcedLineThickness));
                 }
             }
         }
         if(withVertices) {
             for (FilamentVertex vertex : vertexSet()) {
-                outputData.add(vertexToRoi(vertex));
+                outputData.add(vertexToRoi(vertex, forcedVertexRadius));
             }
         }
 
         return outputData;
     }
 
-    private Roi vertexToRoi(FilamentVertex vertex) {
+    private Roi vertexToRoi(FilamentVertex vertex, int forcedVertexRadius) {
         Point3d centroid = vertex.getSpatialLocation();
         NonSpatialPoint3d nonSpatialLocation = vertex.getNonSpatialLocation();
-        EllipseRoi roi = new EllipseRoi(centroid.getX() - vertex.getRadius() / 2.0,
-                centroid.getY() - vertex.getRadius() / 2.0,
-                centroid.getX() + vertex.getRadius() / 2.0,
-                centroid.getY() + vertex.getRadius() / 2.0,
+        double radius = vertex.getRadius();
+        if(forcedVertexRadius > 0) {
+            radius = forcedVertexRadius;
+        }
+        EllipseRoi roi = new EllipseRoi(centroid.getX() - radius / 2.0,
+                centroid.getY() - radius / 2.0,
+                centroid.getX() + radius / 2.0,
+                centroid.getY() + radius / 2.0,
                 1);
         roi.setName(vertex.getUuid().toString());
         roi.setStrokeColor(vertex.getColor());
@@ -213,15 +215,20 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return roi;
     }
 
-    public Line edgeToRoiLine(FilamentEdge edge, int z, int c, int t, boolean thinLines) {
+    public Line edgeToRoiLine(FilamentEdge edge, int z, int c, int t, int forcedLineThickness) {
         FilamentVertex edgeSource = getEdgeSource(edge);
         FilamentVertex edgeTarget = getEdgeTarget(edge);
         Line roi = new Line(edgeSource.getSpatialLocation().getX(), edgeSource.getSpatialLocation().getY(), edgeTarget.getSpatialLocation().getX(), edgeTarget.getSpatialLocation().getY());
         roi.setStrokeColor(edge.getColor());
 //        roi.setFillColor(edge.getColor());
-        if(!thinLines) {
-            roi.setStrokeWidth((edgeSource.getRadius() + edgeTarget.getRadius()) / 2);
+        double thickness = Math.min(edgeSource.getRadius(), edgeTarget.getRadius());
+        if(forcedLineThickness == 0) {
+            thickness = 1;
         }
+        else if(forcedLineThickness > 0) {
+            thickness = forcedLineThickness;
+        }
+        roi.setStrokeWidth(thickness);
         roi.setName(edge.getUuid().toString());
         roi.setPosition(c + 1, z + 1, t + 1);
         return roi;
@@ -775,7 +782,17 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return IJ.createHyperStack(title, maxX + 1, maxY + 1, maxC + 1, maxZ + 1, maxT + 1, bitDepth);
     }
 
-    public ROI3DListData toRoi3D(boolean withEdges, boolean withVertices, boolean thinLines, JIPipeProgressInfo progressInfo) {
+    public ImagePlus toLabels(ImagePlus referenceImage, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, JIPipeProgressInfo progressInfo) {
+        ROI3DListData roi3D = toRoi3D(withEdges, withVertices, forcedLineThickness, forcedVertexRadius, progressInfo);
+        return roi3D.toLabels(referenceImage, progressInfo);
+    }
+
+    public ImagePlus toMask(ImagePlus referenceImage, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, JIPipeProgressInfo progressInfo) {
+        ROI3DListData roi3D = toRoi3D(withEdges, withVertices, forcedLineThickness, forcedVertexRadius, progressInfo);
+        return roi3D.toMask(referenceImage, progressInfo);
+    }
+
+    public ROI3DListData toRoi3D(boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, JIPipeProgressInfo progressInfo) {
         ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = getConnectivityInspector();
         List<Set<FilamentVertex>> connectedSets = connectivityInspector.connectedSets();
 
@@ -809,18 +826,24 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                             return;
                         FilamentVertex source = extracted.getEdgeSource(edge);
                         FilamentVertex target = extracted.getEdgeTarget(edge);
-                        if(thinLines) {
+                        if(forcedLineThickness >= 0) {
                             objectCreator3D.createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
                                     target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
                                     1,
-                                    0);
+                                    forcedLineThickness);
                         }
                         else {
+                            int sourceRadius = (int) source.getRadius();
+                            int targetRadius = (int)target.getRadius();
+                            if(forcedVertexRadius > 0) {
+                                sourceRadius = forcedVertexRadius;
+                                targetRadius = forcedVertexRadius;
+                            }
                             objectCreator3D.createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
                                     target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
                                     1,
-                                    (int) source.getRadius(),
-                                    (int) target.getRadius());
+                                    sourceRadius,
+                                    targetRadius);
                         }
                     }
                 }
@@ -828,11 +851,15 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                     for (FilamentVertex vertex : connectedSet) {
                         if(ctProgress.isCancelled())
                             return;
+                        int radius = (int) vertex.getRadius();
+                        if(forcedVertexRadius > 0) {
+                            radius = forcedVertexRadius;
+                        }
                         objectCreator3D.createSphere(vertex.getSpatialLocation().getX(),
                                 vertex.getSpatialLocation().getY(),
                                 vertex.getSpatialLocation().getZ(),
                                 vertex.getRadius(),
-                                1,
+                                radius,
                                 false);
                     }
                 }

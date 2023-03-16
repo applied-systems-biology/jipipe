@@ -36,8 +36,8 @@ public class CachedFilamentsDataViewerWindow extends JIPipeImageViewerCacheDataV
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        Filaments3DData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), Filaments3DData.class);
-        ROIListData rois = data.toRoi(false, true, true, true);
+        Filaments3DData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), Filaments3DData.class, progressInfo);
+        ROIListData rois = data.toRoi(false, true, true, -1,-1);
         int width;
         int height;
         int numZ = 1;

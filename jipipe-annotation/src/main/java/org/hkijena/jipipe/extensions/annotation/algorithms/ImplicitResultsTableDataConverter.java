@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -33,7 +34,7 @@ public class ImplicitResultsTableDataConverter implements JIPipeDataConverter {
     }
 
     @Override
-    public JIPipeData convert(JIPipeData input) {
+    public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         return new AnnotationTableData((ResultsTableData) input);
     }
 }

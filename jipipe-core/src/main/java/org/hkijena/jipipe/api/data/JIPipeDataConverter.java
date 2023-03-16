@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.data;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+
 /**
  * Interface that converts between {@link JIPipeData} instances
  */
@@ -31,8 +33,9 @@ public interface JIPipeDataConverter {
     /**
      * Converts the supported input type to the output type
      *
-     * @param input the input data
+     * @param input        the input data
+     * @param progressInfo the progress info
      * @return the converted input data
      */
-    JIPipeData convert(JIPipeData input);
+    JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo);
 }

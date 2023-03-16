@@ -76,7 +76,7 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
      */
     public synchronized <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
         JIPipeData data = getData(progressInfo);
-        data = JIPipe.getDataTypes().convert(data, klass);
+        data = JIPipe.getDataTypes().convert(data, klass, progressInfo);
         return (T) data;
     }
 

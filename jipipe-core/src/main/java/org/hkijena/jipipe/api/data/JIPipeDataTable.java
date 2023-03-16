@@ -417,7 +417,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @return Data at row
      */
     public <T extends JIPipeData> T getData(int row, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
-        return (T) JIPipe.getDataTypes().convert(data.get(row).getData(progressInfo), dataClass);
+        return (T) JIPipe.getDataTypes().convert(data.get(row).getData(progressInfo), dataClass, progressInfo);
     }
 
     /**
@@ -432,7 +432,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public <T extends JIPipeData> List<T> getAllData(Class<T> dataClass, JIPipeProgressInfo progressInfo) {
         List<T> result = new ArrayList<>();
         for (int row = 0; row < getRowCount(); row++) {
-            result.add((T) JIPipe.getDataTypes().convert(data.get(row).getData(progressInfo), dataClass));
+            result.add((T) JIPipe.getDataTypes().convert(data.get(row).getData(progressInfo), dataClass, progressInfo));
         }
         return result;
     }
@@ -521,7 +521,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                 }
             }
         }
-        JIPipeDataItemStore virtualData = new JIPipeDataItemStore(JIPipe.getDataTypes().convert(data, getAcceptedDataType()));
+        JIPipeDataItemStore virtualData = new JIPipeDataItemStore(JIPipe.getDataTypes().convert(data, getAcceptedDataType(), new JIPipeProgressInfo()));
         virtualData.addUser(this);
         this.data.set(row, virtualData);
     }
@@ -841,7 +841,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         if (!annotations.isEmpty()) {
             annotations = mergeStrategy.merge(annotations);
         }
-        JIPipeDataItemStore virtualData = new JIPipeDataItemStore(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
+        JIPipeDataItemStore virtualData = new JIPipeDataItemStore(JIPipe.getDataTypes().convert(value, getAcceptedDataType(), progressInfo));
         virtualData.addUser(this);
         data.add(virtualData);
         for (JIPipeTextAnnotation annotation : annotations) {
@@ -1133,7 +1133,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Convert", row, getRowCount());
             JIPipeDataItemStore virtualData = getDataItemStore(row);
             if (!dataClass.isAssignableFrom(virtualData.getDataClass())) {
-                JIPipeData converted = JIPipe.getDataTypes().convert(virtualData.getData(rowProgress), dataClass);
+                JIPipeData converted = JIPipe.getDataTypes().convert(virtualData.getData(rowProgress), dataClass, progressInfo);
                 virtualData = new JIPipeDataItemStore(converted);
                 data.set(row, virtualData);
             }
