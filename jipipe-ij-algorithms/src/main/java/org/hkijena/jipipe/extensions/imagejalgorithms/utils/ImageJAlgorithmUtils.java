@@ -10,7 +10,6 @@ import ij.plugin.filter.Analyzer;
 import ij.process.*;
 import inra.ijpb.binary.BinaryImages;
 import inra.ijpb.label.LabelImages;
-import inra.ijpb.plugins.Connectivity3D;
 import org.hkijena.jipipe.api.JIPipePercentageProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -171,17 +170,17 @@ public class ImageJAlgorithmUtils {
                 if (label instanceof FloatProcessor) {
                     float[] labelBytes = (float[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = (labelBytes[j]) == id ? (byte)255 : (byte)0;
+                        maskBytes[j] = (labelBytes[j]) == id ? (byte) 255 : (byte) 0;
                     }
                 } else if (label instanceof ShortProcessor) {
                     short[] labelBytes = (short[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = (labelBytes[j]) == id ? (byte)255 : (byte)0;
+                        maskBytes[j] = (labelBytes[j]) == id ? (byte) 255 : (byte) 0;
                     }
                 } else if (label instanceof ByteProcessor) {
                     byte[] labelBytes = (byte[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = Byte.toUnsignedInt(labelBytes[j]) == id ? (byte)255 : (byte)0;
+                        maskBytes[j] = Byte.toUnsignedInt(labelBytes[j]) == id ? (byte) 255 : (byte) 0;
                     }
                 } else {
                     throw new UnsupportedOperationException("Unknown label type!");

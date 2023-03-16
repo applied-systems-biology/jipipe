@@ -32,15 +32,11 @@ import java.util.Map;
 @JIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Filters/3D-Edge-and-Symmetry-Filter/")
 public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private double alpha = 0.5;
-
-    private int radius = 10;
-
-    private double normalize = 10;
-
-    private double scaling = 2;
-
     boolean improved = true;
+    private double alpha = 0.5;
+    private int radius = 10;
+    private double normalize = 10;
+    private double scaling = 2;
 
     public SymmetryFilter3DAlgorithm(JIPipeNodeInfo info) {
         super(info);

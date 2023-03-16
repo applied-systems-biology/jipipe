@@ -198,7 +198,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     }
 
     private void activateLazyContent(DocumentTabPane tabbedPane) {
-        if(disposed)
+        if (disposed)
             return;
         if (testBenchTabContent != null && tabbedPane.getCurrentContent() == testBenchTabContent) {
             if (testBenchTabContent.getComponentCount() == 0) {

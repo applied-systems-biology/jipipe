@@ -141,7 +141,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
             ImagePlus currentImage = getCalibrationPlugin().getCurrentImagePlus();
             ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
             if (currentImage != null && currentSlice != null) {
-                if(lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
+                if (lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
                     double min;
                     double max;
                     if (currentImage.getBitDepth() == 32) {
@@ -179,7 +179,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
                     maxSelectableValue = max;
                     lastSelectableValueCalculationBasis = new WeakReference<>(currentImage);
                 }
-                if(selectedCalibration != ImageJCalibrationMode.Custom) {
+                if (selectedCalibration != ImageJCalibrationMode.Custom) {
                     double[] calibration = ImageJUtils.calculateCalibration(currentSlice,
                             selectedCalibration,
                             minSelectableValue,

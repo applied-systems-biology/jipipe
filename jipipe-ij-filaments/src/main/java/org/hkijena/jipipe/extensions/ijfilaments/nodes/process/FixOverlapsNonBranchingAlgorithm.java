@@ -36,23 +36,15 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customExpressionVariables;
     private boolean enforceSameComponent = true;
-
     private boolean ensureNoPathExists = true;
-
     private boolean connectAcrossC = false;
-
     private boolean connectAcrossT = false;
-
     private boolean excludeExistingEndpoints = true;
     private boolean enable3D = true;
-
     private DefaultExpressionParameter filterFunction = new DefaultExpressionParameter("length < 50");
-
     private DefaultExpressionParameter scoringFunction = new DefaultExpressionParameter("default");
-
-    private final CustomExpressionVariablesParameter customExpressionVariables;
-
     private OptionalColorParameter newEdgeColor = new OptionalColorParameter(Color.GREEN, true);
 
     private boolean enforceEdgesWithinMask = true;
@@ -221,16 +213,14 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         Filaments3DData outputData = new Filaments3DData(inputData);
 
         ImagePlus mask;
-        if(enforceEdgesWithinMask) {
+        if (enforceEdgesWithinMask) {
             ImagePlusGreyscaleMaskData maskData = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo);
-            if(maskData != null) {
+            if (maskData != null) {
                 mask = maskData.getImage();
-            }
-            else {
+            } else {
                 mask = null;
             }
-        }
-        else {
+        } else {
             mask = null;
         }
 
@@ -247,7 +237,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Detect candidates to be connected (degree == 1)
         Set<FilamentVertex> candidateEndpoints = outputData.vertexSet().stream().filter(vertex -> outputData.degreeOf(vertex) == 1).collect(Collectors.toSet());
-        if(excludeExistingEndpoints) {
+        if (excludeExistingEndpoints) {
             candidateEndpoints.removeAll(existingEndpoints);
         }
 
@@ -260,7 +250,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
             Vector3d currentV1 = current.getSpatialLocation().toVector3d();
             Vector3d currentV2 = Graphs.neighborSetOf(outputData, current).iterator().next().getSpatialLocation().toVector3d();
-            if(!enable3D) {
+            if (!enable3D) {
                 currentV1.z = 0;
                 currentV2.z = 0;
             }
@@ -270,23 +260,23 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
             outer:
             for (FilamentVertex other : candidateEndpoints) {
                 // TODO: Auto-detect radius (based on connections to removed edges?) -> could be imprecise
-                if(other != current) {
-                    if(!enable3D && current.getSpatialLocation().getZ() != other.getSpatialLocation().getZ()) {
+                if (other != current) {
+                    if (!enable3D && current.getSpatialLocation().getZ() != other.getSpatialLocation().getZ()) {
                         continue;
                     }
-                    if(!connectAcrossC &&  current.getNonSpatialLocation().getChannel() != other.getNonSpatialLocation().getChannel()) {
+                    if (!connectAcrossC && current.getNonSpatialLocation().getChannel() != other.getNonSpatialLocation().getChannel()) {
                         continue;
                     }
-                    if(!connectAcrossT && current.getNonSpatialLocation().getFrame() != other.getNonSpatialLocation().getFrame()) {
+                    if (!connectAcrossT && current.getNonSpatialLocation().getFrame() != other.getNonSpatialLocation().getFrame()) {
                         continue;
                     }
-                    if(enforceSameComponent && !Objects.equals(components.get(current), components.get(other))) {
+                    if (enforceSameComponent && !Objects.equals(components.get(current), components.get(other))) {
                         continue;
                     }
-                    if(ensureNoPathExists && outputDataInspector.pathExists(current, other)) {
+                    if (ensureNoPathExists && outputDataInspector.pathExists(current, other)) {
                         continue;
                     }
-                    if(mask != null) {
+                    if (mask != null) {
                         Vector3d difference = new Vector3d(currentV2.x - currentV1.x, currentV2.y - currentV1.y, currentV2.z - currentV1.z);
                         double length = difference.length();
                         int nSteps = (int) length;
@@ -296,12 +286,12 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
                             Vector3d testLocation = new Vector3d(currentV1.x + i * step.x,
                                     currentV1.y + i * step.y,
                                     currentV1.z + i * step.z);
-                            int x = Math.max(0, Math.min (mask.getWidth() - 1, (int)Math.round(testLocation.x)));
-                            int y = (int)Math.round(testLocation.y);
-                            int z = Math.max(0, (int)Math.round(testLocation.z));
+                            int x = Math.max(0, Math.min(mask.getWidth() - 1, (int) Math.round(testLocation.x)));
+                            int y = (int) Math.round(testLocation.y);
+                            int z = Math.max(0, (int) Math.round(testLocation.z));
 
                             ImageProcessor ip = ImageJUtils.getSliceZero(mask, 0, z, 0);
-                            if(ip.get(x,y) == 0) {
+                            if (ip.get(x, y) == 0) {
                                 continue outer;
                             }
                         }
@@ -310,7 +300,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
                     // Calculate other direction
                     Vector3d otherV1 = other.getSpatialLocation().toVector3d();
                     Vector3d otherV2 = Graphs.neighborSetOf(outputData, other).iterator().next().getSpatialLocation().toVector3d();
-                    if(!enable3D) {
+                    if (!enable3D) {
                         otherV1.z = 0;
                         otherV2.z = 0;
                     }
@@ -322,7 +312,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
                     variables.set("angle", Math.toDegrees(currentDirection.angle(otherDirection)));
 
                     // Check via filter
-                    if(!filterFunction.test(variables)) {
+                    if (!filterFunction.test(variables)) {
                         continue;
                     }
 
@@ -343,10 +333,10 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         int successes = 0;
         Set<FilamentVertex> processedCandidateVertices = new HashSet<>();
         for (EdgeCandidate candidate : candidates) {
-            if(!processedCandidateVertices.contains(candidate.source) && !processedCandidateVertices.contains(candidate.target)) {
+            if (!processedCandidateVertices.contains(candidate.source) && !processedCandidateVertices.contains(candidate.target)) {
                 // Connect
                 FilamentEdge edge = outputData.addEdge(candidate.source, candidate.target);
-                if(newEdgeColor.isEnabled())
+                if (newEdgeColor.isEnabled())
                     edge.setColor(newEdgeColor.getContent());
 
                 // Mark as used

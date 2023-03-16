@@ -72,7 +72,7 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
     @JIPipeDocumentation(name = "Icon", description = "Defines the icon of this comment node.")
     @JIPipeParameter("icon")
     public IconRef getIcon() {
-        if(icon == null) {
+        if (icon == null) {
             icon = new IconRef("actions/edit-comment.png");
         }
         return icon;

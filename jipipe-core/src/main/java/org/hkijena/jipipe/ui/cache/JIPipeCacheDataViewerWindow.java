@@ -50,14 +50,13 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private final String displayName;
     private final String slotName;
     private final JPanel contentPane = new JPanel(new BorderLayout());
+    private final JPopupMenu rowInfoLabelMenu = new JPopupMenu();
     private JIPipeDataTableDataSource dataSource;
     private JIPipeCachedDataDisplayCacheControl cacheAwareToggle;
     private Store<JIPipeDataItemStore> lastVirtualData;
     private JButton previousRowButton;
     private JButton nextRowButton;
     private JButton rowInfoLabel;
-
-    private final JPopupMenu rowInfoLabelMenu = new JPopupMenu();
     private Function<JIPipeDataItemStore, JIPipeDataItemStore> dataConverterFunction;
 
     private JLabel standardErrorLabel;
@@ -387,11 +386,11 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
                 showErrorUI();
                 return;
             }
-            if(JIPipeWeakDataReferenceData.class.isAssignableFrom(virtualData.getDataClass())) {
+            if (JIPipeWeakDataReferenceData.class.isAssignableFrom(virtualData.getDataClass())) {
                 // Dereference weak reference data
                 JIPipeWeakDataReferenceData weakDataReferenceData = virtualData.getData(JIPipeWeakDataReferenceData.class, new JIPipeProgressInfo());
                 JIPipeData data = weakDataReferenceData.getDataReference().get();
-                if(data == null) {
+                if (data == null) {
                     showErrorUI();
                     return;
                 }

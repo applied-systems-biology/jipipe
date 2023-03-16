@@ -135,12 +135,11 @@ public class FormPanel extends JXPanel {
 
         // Determine the component that will be displayed in the help pane
         Component helpComponent;
-        if((flags & TABBED_DOCUMENTATION) == TABBED_DOCUMENTATION) {
+        if ((flags & TABBED_DOCUMENTATION) == TABBED_DOCUMENTATION) {
             documentationTabPane = new DocumentTabPane(false);
             documentationTabPane.addTab("Documentation", UIUtils.getIconFromResources("actions/help.png"), helpPanel, DocumentTabPane.CloseMode.withoutCloseButton);
             helpComponent = documentationTabPane;
-        }
-        else {
+        } else {
             helpComponent = helpPanel;
         }
 
@@ -453,13 +452,13 @@ public class FormPanel extends JXPanel {
      */
     public void clear() {
         for (FormPanelEntry entry : entries) {
-            if(entry.label instanceof Disposable) {
+            if (entry.label instanceof Disposable) {
                 ((Disposable) entry.label).dispose();
             }
-            if(entry.properties instanceof Disposable) {
+            if (entry.properties instanceof Disposable) {
                 ((Disposable) entry.properties).dispose();
             }
-            if(entry.content instanceof Disposable) {
+            if (entry.content instanceof Disposable) {
                 ((Disposable) entry.content).dispose();
             }
         }

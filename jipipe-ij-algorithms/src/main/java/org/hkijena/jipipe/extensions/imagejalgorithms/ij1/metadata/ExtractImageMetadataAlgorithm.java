@@ -1,18 +1,12 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata;
 
 import ij.ImagePlus;
-import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -38,7 +32,7 @@ public class ExtractImageMetadataAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImagePlus imagePlus = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ResultsTableData table = new ResultsTableData();
         Map<String, Object> tableRow = new HashMap<>();
-        if(imagePlus.getImageProperties() != null) {
+        if (imagePlus.getImageProperties() != null) {
             for (Map.Entry<Object, Object> entry : imagePlus.getImageProperties().entrySet()) {
                 tableRow.put(StringUtils.nullToEmpty(entry.getKey()), entry.getValue());
             }

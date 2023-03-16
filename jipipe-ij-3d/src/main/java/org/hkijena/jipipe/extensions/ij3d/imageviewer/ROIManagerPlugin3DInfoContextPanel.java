@@ -1,9 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.imageviewer;
 
-import ij.gui.Roi;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

@@ -84,7 +84,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if(overlay instanceof SpotsCollectionData) {
+        if (overlay instanceof SpotsCollectionData) {
             SpotsCollectionData trackCollectionData = (SpotsCollectionData) overlay;
             setSpotCollection(trackCollectionData, false);
         }
@@ -92,8 +92,8 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onOverlayRemoved(Object overlay) {
-        if(overlay instanceof SpotsCollectionData) {
-            setSpotCollection(new SpotsCollectionData(new Model(), new Settings(), IJ.createImage("",1,1,1,8)), false);
+        if (overlay instanceof SpotsCollectionData) {
+            setSpotCollection(new SpotsCollectionData(new Model(), new Settings(), IJ.createImage("", 1, 1, 1, 8)), false);
         }
     }
 

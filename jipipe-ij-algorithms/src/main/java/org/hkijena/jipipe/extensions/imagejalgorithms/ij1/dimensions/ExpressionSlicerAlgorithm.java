@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks")
 public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customFilterVariables;
     private DefaultExpressionParameter expressionZ = new DefaultExpressionParameter("z");
     private DefaultExpressionParameter expressionC = new DefaultExpressionParameter("c");
     private DefaultExpressionParameter expressionT = new DefaultExpressionParameter("t");
@@ -44,8 +45,6 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalAnnotationNameParameter annotateZ = new OptionalAnnotationNameParameter("Z", true);
     private OptionalAnnotationNameParameter annotateC = new OptionalAnnotationNameParameter("C", true);
     private OptionalAnnotationNameParameter annotateT = new OptionalAnnotationNameParameter("T", true);
-
-    private final CustomExpressionVariablesParameter customFilterVariables;
 
     public ExpressionSlicerAlgorithm(JIPipeNodeInfo info) {
         super(info);

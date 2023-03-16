@@ -120,13 +120,6 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
         }
     }
 
-    @Override
-    public void dispose() {
-        clear();
-        traversed = null;
-        displayedParameters = null;
-    }
-
     /**
      * Shows a parameter collection inside a modal dialog
      *
@@ -218,6 +211,13 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
             markdownString.append("No description provided.");
         }
         return new MarkdownDocument(markdownString.toString());
+    }
+
+    @Override
+    public void dispose() {
+        clear();
+        traversed = null;
+        displayedParameters = null;
     }
 
     public BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> getCustomIsParameterVisible() {

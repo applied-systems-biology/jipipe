@@ -70,7 +70,7 @@ public class NodeGroupContents implements JIPipeFunctionallyComparable {
 
     @Override
     public boolean functionallyEquals(Object other) {
-        if(other instanceof NodeGroupContents) {
+        if (other instanceof NodeGroupContents) {
             return wrappedGraph.functionallyEquals(((NodeGroupContents) other).wrappedGraph);
         }
         return false;

@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.ij3d.utils;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicSetParameter;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 public class ROI3DRelationMeasurementSetParameter extends DynamicSetParameter<ROI3DRelationMeasurement> {

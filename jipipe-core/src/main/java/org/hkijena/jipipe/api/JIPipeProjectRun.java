@@ -489,7 +489,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
     /**
      * Attempts to load data from cache
      *
-     * @param runAlgorithm  the target node (inside copy graph)
+     * @param runAlgorithm the target node (inside copy graph)
      * @return if successful. This means all output slots were restored.
      */
     private boolean tryLoadFromCache(JIPipeGraphNode runAlgorithm, JIPipeProgressInfo progressInfo) {

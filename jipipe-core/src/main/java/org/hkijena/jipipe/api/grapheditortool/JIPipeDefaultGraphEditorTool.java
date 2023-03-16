@@ -9,6 +9,7 @@ import java.awt.event.MouseEvent;
 public class JIPipeDefaultGraphEditorTool implements JIPipeToggleableGraphEditorTool {
 
     private JIPipeGraphEditorUI graphEditorUI;
+
     @Override
     public String getName() {
         return "No tool";

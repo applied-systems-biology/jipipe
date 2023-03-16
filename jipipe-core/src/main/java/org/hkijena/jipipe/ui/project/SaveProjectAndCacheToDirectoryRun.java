@@ -34,9 +34,8 @@ public class SaveProjectAndCacheToDirectoryRun implements JIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
     private final Path outputPath;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-
     private final boolean addAsRecentProject;
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public SaveProjectAndCacheToDirectoryRun(JIPipeWorkbench workbench, JIPipeProject project, Path outputPath, boolean addAsRecentProject) {
         this.workbench = workbench;
@@ -68,7 +67,7 @@ public class SaveProjectAndCacheToDirectoryRun implements JIPipeRunnable {
         try {
             Files.createDirectories(outputPath);
             project.saveProject(outputPath.resolve("project.jip"));
-            if(addAsRecentProject)
+            if (addAsRecentProject)
                 ProjectsSettings.getInstance().addRecentProject(outputPath);
         } catch (IOException e) {
             throw new RuntimeException(e);

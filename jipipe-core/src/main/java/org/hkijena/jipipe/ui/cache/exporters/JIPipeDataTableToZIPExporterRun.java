@@ -60,8 +60,7 @@ public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implem
             }
 
             progressInfo.incrementProgress();
-        }
-        finally {
+        } finally {
             dataTable = null;
         }
     }

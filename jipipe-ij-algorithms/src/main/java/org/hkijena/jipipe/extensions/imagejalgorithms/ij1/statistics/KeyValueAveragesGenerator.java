@@ -104,7 +104,7 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
             float[] keyPixels = (float[]) keyIp.getPixels();
             float[] valuePixels = (float[]) valueIp.getPixels();
             for (int i = 0; i < keyPixels.length; i++) {
-                if(mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                if (mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
                     float key = keyPixels[i];
                     float value = valuePixels[i];
                     TFloatList list = bucketedValues.get(key);
@@ -152,13 +152,13 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
 
 
             outputTable.addRow();
-            if(keyColumnName.isEnabled())
+            if (keyColumnName.isEnabled())
                 outputTable.setLastValue(key, keyColumnName.getContent());
-            if(countColumnName.isEnabled())
+            if (countColumnName.isEnabled())
                 outputTable.setLastValue(count, countColumnName.getContent());
-            if(sumColumnName.isEnabled())
+            if (sumColumnName.isEnabled())
                 outputTable.setLastValue(sum, sumColumnName.getContent());
-            if(meanColumnName.isEnabled())
+            if (meanColumnName.isEnabled())
                 outputTable.setLastValue(sum / count, meanColumnName.getContent());
 
             long currentTime = System.currentTimeMillis();

@@ -40,7 +40,6 @@ import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -154,7 +153,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         for (JIPipeDataSlot inputSlot : batchesNodeCopy.getDataInputSlots()) {
             for (Store<JIPipeDataTable> cacheSlotReference : currentCache.get(inputSlot.getName())) {
                 JIPipeDataTable cacheSlot = cacheSlotReference.get();
-                if(cacheSlot == null) {
+                if (cacheSlot == null) {
                     batchPreviewNumberLabel.setText("Cache was cleared! Aborted.");
                     return;
                 }
@@ -331,7 +330,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     private void clearCaches() {
         currentCache.clear();
-        if(batchesNodeCopy != null) {
+        if (batchesNodeCopy != null) {
             batchesNodeCopy.clearSlotData();
         }
         batchTable.setDataTable(new JIPipeDataTable(JIPipeData.class));

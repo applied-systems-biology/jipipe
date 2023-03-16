@@ -72,6 +72,7 @@ public class ExtendedObject3DVoxels extends Object3DVoxels {
 
     /**
      * Saves the voxels to a stream
+     *
      * @param stream the stream
      */
     public void saveObjectToStream(OutputStream stream) {
@@ -94,8 +95,9 @@ public class ExtendedObject3DVoxels extends Object3DVoxels {
 
     /**
      * Loads the voxels from a stream
+     *
      * @param stream the input stream
-     * @param name the name
+     * @param name   the name
      */
     public void loadObjectFromStream(InputStream stream, String name) {
         BufferedReader bf;

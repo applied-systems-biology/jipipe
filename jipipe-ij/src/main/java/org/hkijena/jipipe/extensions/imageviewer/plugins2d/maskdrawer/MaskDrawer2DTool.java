@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
-import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
 
 import javax.swing.*;
 

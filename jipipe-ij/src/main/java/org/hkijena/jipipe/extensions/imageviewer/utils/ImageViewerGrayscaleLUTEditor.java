@@ -113,9 +113,9 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,4,4,4),
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
                 BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
-                        BorderFactory.createEmptyBorder(4,4,0,4))));
+                        BorderFactory.createEmptyBorder(4, 4, 0, 4))));
         slider = new JXMultiThumbSlider<>();
         slider.getModel().addThumb(0, Color.BLACK);
         slider.getModel().addThumb(1, Color.WHITE);
@@ -131,12 +131,12 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
                 1,
                 GridBagConstraints.WEST,
                 GridBagConstraints.BOTH,
-                new Insets(0,0,0,0),
+                new Insets(0, 0, 0, 0),
                 0,
                 0));
 
         changeColorButton = new JButton("Edit", changeColorButtonDisplayedColor);
-        changeColorButton.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        changeColorButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         changeColorButton.setToolTipText("Set color of selected gradient stop");
         changeColorButton.addActionListener(e -> changeColor());
         changeColorButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -148,7 +148,7 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(14,0,0,0),
+                new Insets(14, 0, 0, 0),
                 0,
                 0));
 
@@ -165,7 +165,7 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(12,0,0,0),
+                new Insets(12, 0, 0, 0),
                 0,
                 0));
 
@@ -182,14 +182,14 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(12,0,0,0),
+                new Insets(12, 0, 0, 0),
                 0,
                 0));
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        toolBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(8,0,0,0),
-                BorderFactory.createMatteBorder(1,0,0,0, UIManager.getColor("Button.borderColor"))));
+        toolBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0),
+                BorderFactory.createMatteBorder(1, 0, 0, 0, UIManager.getColor("Button.borderColor"))));
         add(toolBar, new GridBagConstraints(0,
                 4,
                 4,
@@ -198,7 +198,7 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(0,0,0,0),
+                new Insets(0, 0, 0, 0),
                 0,
                 0));
 
@@ -208,12 +208,12 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
         invertColorsButton.addActionListener(e -> invertColors());
         toolBar.add(invertColorsButton);
 
-        JButton setToColorBlackButton = new JButton("Black", new SolidColorIcon(16,16,Color.BLACK));
+        JButton setToColorBlackButton = new JButton("Black", new SolidColorIcon(16, 16, Color.BLACK));
         UIUtils.makeFlat(setToColorBlackButton);
         setToColorBlackButton.addActionListener(e -> setToUniformColor(Color.BLACK));
         toolBar.add(setToColorBlackButton);
 
-        JButton resetColorButton = new JButton("Reset",  UIUtils.getIconFromResources("actions/undo.png"));
+        JButton resetColorButton = new JButton("Reset", UIUtils.getIconFromResources("actions/undo.png"));
         UIUtils.makeFlat(resetColorButton);
         resetColorButton.addActionListener(e -> resetLUT());
         toolBar.add(resetColorButton);
@@ -246,7 +246,7 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
 
     public void setToUniformColorByDialog() {
         Color color = JColorChooser.showDialog(this, "Select color", Color.WHITE);
-        if(color != null) {
+        if (color != null) {
             setToUniformColor(color);
         }
     }
@@ -408,7 +408,6 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
             changeColor();
         }
     }
-
 
 
     public JIPipeImageViewer getImageViewerPanel() {

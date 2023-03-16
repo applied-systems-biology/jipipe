@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.convert;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;

@@ -44,9 +44,8 @@ import java.util.List;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
-
     private final CustomExpressionVariablesParameter customExpressionVariables;
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
 
     /**
      * Creates a new instance
@@ -119,15 +118,15 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return filters;
     }
 
+    @JIPipeParameter("filters")
+    public void setFilters(DefaultExpressionParameter filters) {
+        this.filters = filters;
+    }
+
     @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-expression-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
     public CustomExpressionVariablesParameter getCustomExpressionVariables() {
         return customExpressionVariables;
-    }
-
-    @JIPipeParameter("filters")
-    public void setFilters(DefaultExpressionParameter filters) {
-        this.filters = filters;
     }
 }

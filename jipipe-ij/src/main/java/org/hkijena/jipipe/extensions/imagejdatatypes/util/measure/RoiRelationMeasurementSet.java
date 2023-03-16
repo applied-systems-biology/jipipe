@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.util.measure;
 
-import ij.plugin.filter.Analyzer;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicSetParameter;
 
 import java.util.Arrays;

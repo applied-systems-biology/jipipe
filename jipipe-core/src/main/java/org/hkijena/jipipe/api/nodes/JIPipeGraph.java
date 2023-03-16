@@ -561,7 +561,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param userCanDisconnect If true, users are allowed to disconnect this connection again
      */
     public void connect(JIPipeDataSlot source, JIPipeDataSlot target, boolean userCanDisconnect) {
-        if(graph.containsEdge(source, target)) {
+        if (graph.containsEdge(source, target)) {
             return;
         }
         if (!canConnect(source, target, false))
@@ -1834,18 +1834,18 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
     @Override
     public boolean functionallyEquals(Object other) {
-        if(other instanceof JIPipeGraph) {
+        if (other instanceof JIPipeGraph) {
             JIPipeGraph otherGraph = (JIPipeGraph) other;
-            if(graph.vertexSet().size() != otherGraph.graph.vertexSet().size())
+            if (graph.vertexSet().size() != otherGraph.graph.vertexSet().size())
                 return false;
-            if(graph.edgeSet().size() != otherGraph.graph.edgeSet().size())
+            if (graph.edgeSet().size() != otherGraph.graph.edgeSet().size())
                 return false;
 
             // Compare nodes by UUID (if we find the same UUID, we can be sure) as UUIDs are unlikely to collide
             for (Map.Entry<UUID, JIPipeGraphNode> hereEntry : nodeUUIDs.entrySet()) {
                 JIPipeGraphNode thisNode = hereEntry.getValue();
                 JIPipeGraphNode otherNode = otherGraph.getNodeByUUID(hereEntry.getKey());
-                if(otherNode != null && !thisNode.functionallyEquals(otherNode)) {
+                if (otherNode != null && !thisNode.functionallyEquals(otherNode)) {
                     return false;
                 }
             }

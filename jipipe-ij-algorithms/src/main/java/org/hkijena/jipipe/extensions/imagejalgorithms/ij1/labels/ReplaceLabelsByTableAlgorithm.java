@@ -13,27 +13,22 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
-import com.google.common.primitives.Ints;
 import gnu.trove.map.TFloatFloatMap;
 import gnu.trove.map.hash.TFloatFloatHashMap;
 import ij.ImagePlus;
-import inra.ijpb.label.LabelImages;
-import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.library.pairs.IntRangeAndIntegerPairParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalFloatParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
@@ -121,7 +116,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         float defaultMapping;
-        if(missingValueReplacement.isEnabled()) {
+        if (missingValueReplacement.isEnabled()) {
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(dataBatch.getMergedTextAnnotations());
             defaultMapping = missingValueReplacement.getContent().evaluateToFloat(variables);
@@ -133,13 +128,12 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             float[] pixels = (float[]) ip.getPixels();
             for (int i = 0; i < pixels.length; i++) {
                 float value = pixels[i];
-                if(ignoreZero && value == 0f) {
+                if (ignoreZero && value == 0f) {
                     continue;
                 }
-                if(mapping.containsKey(value)) {
+                if (mapping.containsKey(value)) {
                     value = mapping.get(value);
-                }
-                else if(missingValueReplacement.isEnabled()) {
+                } else if (missingValueReplacement.isEnabled()) {
                     value = defaultMapping;
                 }
                 pixels[i] = value;

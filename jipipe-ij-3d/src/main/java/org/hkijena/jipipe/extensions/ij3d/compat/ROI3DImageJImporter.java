@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Window;
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -36,31 +36,30 @@ public class ROI3DImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(ROI3DListData.class);
-        if(!objects.isEmpty()) {
+        if (!objects.isEmpty()) {
             for (Object object : objects) {
-                if(object instanceof RoiManager3D_2) {
+                if (object instanceof RoiManager3D_2) {
                     RoiManager3D_2 manager = (RoiManager3D_2) object;
                     Objects3DPopulation population = (Objects3DPopulation) ReflectionUtils.getDeclaredFieldValue("objects3DPopulation", manager);
                     ROI3DListData listData = new ROI3DListData();
                     listData.addFromPopulation(population, 0, 0);
-                    if(parameters.isDuplicate())
+                    if (parameters.isDuplicate())
                         dataTable.addData(listData.duplicate(progressInfo), progressInfo);
                     else
                         dataTable.addData(listData, progressInfo);
                 }
             }
-        }
-        else {
+        } else {
             for (Window window : WindowManager.getAllNonImageWindows()) {
-                if(window instanceof RoiManager3D_2) {
-                    if(!StringUtils.isNullOrEmpty(parameters.getName()) && !Objects.equals(parameters.getName(), ((RoiManager3D_2) window).getTitle())) {
-                       continue;
+                if (window instanceof RoiManager3D_2) {
+                    if (!StringUtils.isNullOrEmpty(parameters.getName()) && !Objects.equals(parameters.getName(), ((RoiManager3D_2) window).getTitle())) {
+                        continue;
                     }
                     RoiManager3D_2 manager = (RoiManager3D_2) window;
                     Objects3DPopulation population = (Objects3DPopulation) ReflectionUtils.getDeclaredFieldValue("objects3DPopulation", manager);
                     ROI3DListData listData = new ROI3DListData();
                     listData.addFromPopulation(population, 0, 0);
-                    if(parameters.isDuplicate())
+                    if (parameters.isDuplicate())
                         dataTable.addData(listData.duplicate(progressInfo), progressInfo);
                     else
                         dataTable.addData(listData, progressInfo);

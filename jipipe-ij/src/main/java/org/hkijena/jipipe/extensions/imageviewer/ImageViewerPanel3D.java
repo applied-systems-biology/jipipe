@@ -7,7 +7,9 @@ import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.process.LUT;
 import ij.process.StackStatistics;
-import ij3d.*;
+import ij3d.Content;
+import ij3d.ContentCreator;
+import ij3d.UniverseListener;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
@@ -22,10 +24,10 @@ import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer3DUISettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRendererSettings;
-import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomImage3DUniverse;
-import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomInteractiveBehavior;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.SnapshotSettings;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.StandardView;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomImage3DUniverse;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomInteractiveBehavior;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
@@ -47,11 +49,10 @@ import org.scijava.java3d.Canvas3D;
 import org.scijava.java3d.GraphicsConfigTemplate3D;
 import org.scijava.java3d.View;
 import org.scijava.vecmath.Color3f;
-import org.scijava.vecmath.Point3f;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -59,58 +60,42 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener, ComponentListener {
     private final JIPipeImageViewer imageViewer;
     private final ImageViewer3DUISettings settings;
-    private ImagePlusData image;
-
-    private JComponent currentContentPanel;
     private final JPanel rendererStatusPanel = new JPanel(new BorderLayout());
     private final JPanel dataStatusPanel = new JPanel(new BorderLayout());
-
     private final JPanel viewerPanel = new JPanel(new BorderLayout());
     private final JPanel viewerCanvasPanel = new JPanel(new BorderLayout());
-    private CustomImage3DUniverse universe;
-    private boolean active = false;
-
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
-    private RendererStatus rendererStatus = RendererStatus.Uninitialized;
-
     private final DocumentTabPane tabPane = new DocumentTabPane();
-
-    private UniverseInitializerRun universeInitializerRun;
-
     private final NewThrobberIcon initializationThrobberIcon = new NewThrobberIcon(this);
-    private ImageLoaderRun imageLoaderRun;
-    private List<Content> currentImageContents;
-
-    private int currentImageContentsResamplingFactor;
-
     private final Timer rebuildImageLaterTimer;
-
     private final Map<String, FormPanel> formPanels = new HashMap<>();
-    private ImageStatistics imageStatistics;
-
     private final JIPipeRunnerQueue viewerRunnerQueue = new JIPipeRunnerQueue("3D viewer");
-
     private final Image3DRendererSettings image3DRendererSettings = new Image3DRendererSettings();
-
     private final JLabel renderInfoLabel = new JLabel("No image",
             UIUtils.getIconFromResources("devices/video-display.png"), JLabel.LEFT);
-
     private final JSlider frameSlider = new JSlider(1, 100, 1);
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
-    private boolean isUpdatingSliders = false;
-    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
+    private ImagePlusData image;
+    private JComponent currentContentPanel;
+    private CustomImage3DUniverse universe;
+    private boolean active = false;
+    private RendererStatus rendererStatus = RendererStatus.Uninitialized;
+    private UniverseInitializerRun universeInitializerRun;
+    private ImageLoaderRun imageLoaderRun;
+    private List<Content> currentImageContents;
+    private int currentImageContentsResamplingFactor;
+    private ImageStatistics imageStatistics;
+    private boolean isUpdatingSliders = false;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private FormPanel bottomPanel;
-
     private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;
 
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
@@ -131,6 +116,43 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         viewerRunnerQueue.getEventBus().register(this);
         image3DRendererSettings.addParameterChangeListener(e -> rebuildImageLater());
         addComponentListener(this);
+    }
+
+    public static GraphicsConfiguration getBestConfigurationOnSameDevice(Window frame) {
+
+        GraphicsConfiguration gc = frame.getGraphicsConfiguration();
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice[] gs = ge.getScreenDevices();
+        GraphicsConfiguration good = null;
+
+        GraphicsConfigTemplate3D gct = new GraphicsConfigTemplate3D();
+
+        for (GraphicsDevice gd : gs) {
+
+            if (gd == gc.getDevice()) {
+                good = gct.getBestConfiguration(gd.getConfigurations());
+                if (good != null)
+                    break;
+            }
+        }
+
+        return good;
+    }
+
+    private static void incrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = ((value) % maximum) + 1;
+        slider.setValue(newIndex);
+    }
+
+    private static void decrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = value - 1;
+        if (newIndex < 1)
+            newIndex += maximum;
+        slider.setValue(newIndex);
     }
 
     public int getCurrentImageContentsResamplingFactor() {
@@ -165,7 +187,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(0,0,0,0),
+                new Insets(0, 0, 0, 0),
                 0,
                 0));
         messagePanel.add(dataStatusPanel, new GridBagConstraints(0,
@@ -176,7 +198,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(0,0,0,0),
+                new Insets(0, 0, 0, 0),
                 0,
                 0));
         viewerPanel.add(messagePanel, BorderLayout.NORTH);
@@ -193,7 +215,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         statusBar.add(Box.createHorizontalStrut(8));
         statusBar.add(UIUtils.createVerticalSeparator());
         statusBar.add(Box.createHorizontalStrut(8));
-        statusBar.add(new JLabel("+",UIUtils.getIconFromResources("actions/tap-extract.png"), JLabel.LEFT));
+        statusBar.add(new JLabel("+", UIUtils.getIconFromResources("actions/tap-extract.png"), JLabel.LEFT));
         statusBar.add(new JLabel("Move", UIUtils.getIconFromResources("actions/input-mouse-click-left.png"), JLabel.LEFT));
         statusBar.add(Box.createHorizontalStrut(8));
         statusBar.add(UIUtils.createVerticalSeparator());
@@ -349,7 +371,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     private void exportSnapshotToPNG() {
-        if(universe != null) {
+        if (universe != null) {
             Path targetFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export current slice", UIUtils.EXTENSION_FILTER_PNG, UIUtils.EXTENSION_FILTER_JPEG, UIUtils.EXTENSION_FILTER_BMP);
             if (targetFile != null) {
                 String format = "PNG";
@@ -364,7 +386,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 snapshotSettings.setWidth(canvas.getWidth());
                 snapshotSettings.setHeight(canvas.getHeight());
 
-                if(ParameterPanel.showDialog(getWorkbench(), this, snapshotSettings, new MarkdownDocument(), "Create snapshot", ParameterPanel.WITH_SCROLLING)) {
+                if (ParameterPanel.showDialog(getWorkbench(), this, snapshotSettings, new MarkdownDocument(), "Create snapshot", ParameterPanel.WITH_SCROLLING)) {
                     ImagePlus imagePlus = universe.takeSnapshot(snapshotSettings.getWidth(), snapshotSettings.getHeight());
                     BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(imagePlus.getBufferedImage());
                     try {
@@ -378,14 +400,14 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     private void copySnapshotToClipboard() {
-        if(universe != null) {
+        if (universe != null) {
             Canvas3D canvas = universe.getCanvas();
 
             SnapshotSettings snapshotSettings = new SnapshotSettings();
             snapshotSettings.setWidth(canvas.getWidth());
             snapshotSettings.setHeight(canvas.getHeight());
 
-            if(ParameterPanel.showDialog(getWorkbench(), this, snapshotSettings, new MarkdownDocument(), "Create snapshot", ParameterPanel.WITH_SCROLLING)) {
+            if (ParameterPanel.showDialog(getWorkbench(), this, snapshotSettings, new MarkdownDocument(), "Create snapshot", ParameterPanel.WITH_SCROLLING)) {
                 ImagePlus imagePlus = universe.takeSnapshot(snapshotSettings.getWidth(), snapshotSettings.getHeight());
                 BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(imagePlus.getBufferedImage());
                 CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
@@ -429,11 +451,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         refreshSliders();
 
-        if(!active) {
+        if (!active) {
             return;
         }
         viewerRunnerQueue.cancelIf(run -> !(run instanceof UniverseInitializerRun));
-        if(universe != null) {
+        if (universe != null) {
             universe.setAutoAdjustView(true);
             universe.removeAllContents();
         }
@@ -449,7 +471,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     public void activate() {
-        if(!active) {
+        if (!active) {
             active = true;
             rebuildImageNow();
             for (JIPipeImageViewerPlugin3D plugin3D : getImageViewer().getPlugins3D()) {
@@ -503,18 +525,18 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     private void rebuildImageNow() {
         rebuildImageLaterTimer.stop();
-        if(!active)
+        if (!active)
             return;
-        if(image == null && universe == null)
+        if (image == null && universe == null)
             return;
-        if(universe == null) {
+        if (universe == null) {
             initializeUniverse();
         }
-        if(universe != null) {
+        if (universe != null) {
             if (image != null) {
                 viewerRunnerQueue.cancelIf(run -> run instanceof ImageLoaderRun);
                 int resolutionFactor = image3DRendererSettings.getResamplingFactor(image.getImage());
-                renderInfoLabel.setText( (int)Math.ceil(image3DRendererSettings.getExpectedMemoryAllocationMegabytes(image.getImage())) + "MB / " + resolutionFactor);
+                renderInfoLabel.setText((int) Math.ceil(image3DRendererSettings.getExpectedMemoryAllocationMegabytes(image.getImage())) + "MB / " + resolutionFactor);
                 imageLoaderRun = new ImageLoaderRun(this, image, image3DRendererSettings.getRenderType(), resolutionFactor);
                 viewerRunnerQueue.enqueue(imageLoaderRun);
             }
@@ -522,34 +544,12 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     private void initializeUniverse() {
-        if(universe == null && universeInitializerRun == null) {
+        if (universe == null && universeInitializerRun == null) {
             setRendererStatus(RendererStatus.Initializing);
             universeInitializerRun = new UniverseInitializerRun(this);
             viewerRunnerQueue.enqueue(universeInitializerRun);
         }
     }
-
-    public static GraphicsConfiguration getBestConfigurationOnSameDevice(Window frame){
-
-        GraphicsConfiguration gc = frame.getGraphicsConfiguration();
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice[] gs = ge.getScreenDevices();
-        GraphicsConfiguration good = null;
-
-        GraphicsConfigTemplate3D gct = new GraphicsConfigTemplate3D();
-
-        for(GraphicsDevice gd: gs){
-
-            if(gd==gc.getDevice()){
-                good = gct.getBestConfiguration(gd.getConfigurations());
-                if(good!=null)
-                    break;
-            }
-        }
-
-        return good;
-    }
-
 
     public RendererStatus getRendererStatus() {
         return rendererStatus;
@@ -584,10 +584,10 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     private JLabel createMessageLabel(String text, String subText, Icon icon) {
-        JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subText, icon, JLabel.LEFT );
-        label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,4,4,4),
+        JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subText, icon, JLabel.LEFT);
+        label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
                 BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
-                BorderFactory.createEmptyBorder(16,16,16,16))));
+                        BorderFactory.createEmptyBorder(16, 16, 16, 16))));
         return label;
     }
 
@@ -603,7 +603,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         viewerRunnerQueue.cancelAll();
         imageLoaderRun = null;
         universeInitializerRun = null;
-        if(universe != null) {
+        if (universe != null) {
             universe.removeUniverseListener(this);
 
 //        // Must remove the listener so this instance can be garbage
@@ -623,8 +623,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
             try {
                 universe.cleanup();
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
 //        canvas3D.flush();
@@ -633,7 +632,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     private void onUniverseInitialized(CustomImage3DUniverse universe, RendererStatus status) {
-        if(universe != null) {
+        if (universe != null) {
             this.universe = universe;
             universe.addUniverseListener(this);
             Canvas3D canvas3D = universe.getCanvas();
@@ -667,8 +666,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 e.printStackTrace();
                 setRendererStatus(RendererStatus.ErrorGeneric);
             }
-        }
-        else {
+        } else {
             setRendererStatus(status);
         }
     }
@@ -678,8 +676,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     private void onImageContentReady(List<Content> contents, int resamplingFactor) {
-        if(universe != null) {
-            if(currentImageContents != null) {
+        if (universe != null) {
+            if (currentImageContents != null) {
                 for (Content currentImageContent : currentImageContents) {
                     universe.removeContent(currentImageContent.getName());
                 }
@@ -703,17 +701,15 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     @Subscribe
-    public void onViewerRunnerQueueFinished(JIPipeRunnable.FinishedEvent event)  {
-        if(event.getRun() instanceof UniverseInitializerRun) {
+    public void onViewerRunnerQueueFinished(JIPipeRunnable.FinishedEvent event) {
+        if (event.getRun() instanceof UniverseInitializerRun) {
             UniverseInitializerRun run = (UniverseInitializerRun) event.getRun();
             onUniverseInitialized((run).getUniverse(), (run).getStatus());
-        }
-        else if(event.getRun() instanceof ImageLoaderRun) {
+        } else if (event.getRun() instanceof ImageLoaderRun) {
             ImageLoaderRun run = (ImageLoaderRun) event.getRun();
-            if(run.imageWasConvertedTo8Bit) {
+            if (run.imageWasConvertedTo8Bit) {
                 getImageViewer().setImageData(run.imageData);
-            }
-            else {
+            } else {
                 onImageContentReady((run).getContents(), run.getResamplingFactor());
             }
         }
@@ -766,7 +762,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     public void showDataError(JLabel label) {
         dataStatusPanel.removeAll();
-        if(label != null) {
+        if (label != null) {
             dataStatusPanel.add(label);
         }
         dataStatusPanel.revalidate();
@@ -774,7 +770,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     public ImageStatistics getCurrentImageStats() {
-        if(imageStatistics == null && image != null) {
+        if (imageStatistics == null && image != null) {
             imageStatistics = new StackStatistics(image.getImage());
         }
         return imageStatistics;
@@ -802,7 +798,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     private void setAnimationFrameFromSlider() {
-        if(universe != null && image != null && currentImageContents != null) {
+        if (universe != null && image != null && currentImageContents != null) {
             universe.showTimepoint(frameSlider.getValue() - 1);
         }
     }
@@ -857,7 +853,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         UIUtils.makeFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
-          decrementSlider(slider);
+            decrementSlider(slider);
         });
         rightPanel.add(lastFrame);
 
@@ -865,36 +861,19 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         UIUtils.makeFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
-           incrementSlider(slider);
+            incrementSlider(slider);
         });
         rightPanel.add(nextFrame);
 
         slider.addMouseWheelListener(e -> {
-            if(e.getWheelRotation() < 0) {
+            if (e.getWheelRotation() < 0) {
                 incrementSlider(slider);
-            }
-            else {
+            } else {
                 decrementSlider(slider);
             }
         });
 
         bottomPanel.addToForm(contentPanel, descriptionPanel, null);
-    }
-
-    private static void incrementSlider(JSlider slider) {
-        int value = slider.getValue();
-        int maximum = slider.getMaximum();
-        int newIndex = ((value) % maximum) + 1;
-        slider.setValue(newIndex);
-    }
-
-    private static void decrementSlider(JSlider slider) {
-        int value = slider.getValue();
-        int maximum = slider.getMaximum();
-        int newIndex = value - 1;
-        if (newIndex < 1)
-            newIndex += maximum;
-        slider.setValue(newIndex);
     }
 
     private void stopAnimations() {
@@ -917,7 +896,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     public void scheduleUpdateLutAndCalibration() {
-        if(currentUpdateCalibrationRun != null) {
+        if (currentUpdateCalibrationRun != null) {
             viewerRunnerQueue.cancel(currentUpdateCalibrationRun);
             currentUpdateCalibrationRun = null;
         }
@@ -926,7 +905,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     public void updateLutAndCalibrationNow() {
-        if(currentUpdateCalibrationRun != null) {
+        if (currentUpdateCalibrationRun != null) {
             viewerRunnerQueue.cancel(currentUpdateCalibrationRun);
             currentUpdateCalibrationRun = null;
         }
@@ -936,7 +915,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     @Override
     public void componentResized(ComponentEvent e) {
-        if(universe != null) {
+        if (universe != null) {
             universe.fixBlankCanvasLater();
         }
     }
@@ -981,17 +960,17 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         @Override
         public void run() {
-            if(currentImageContents != null) {
+            if (currentImageContents != null) {
                 CalibrationPlugin3D calibrationPlugin3D = imageViewer.getPlugin(CalibrationPlugin3D.class);
                 int min = 0;
                 int max = 255;
-                if(calibrationPlugin3D != null) {
+                if (calibrationPlugin3D != null) {
                     double[] minMax = calibrationPlugin3D.calculateCalibration();
                     min = (int) minMax[0];
                     max = (int) minMax[1];
                 }
 
-                if(max < min) {
+                if (max < min) {
                     int x = max;
                     max = min;
                     min = x;
@@ -1001,21 +980,19 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 OpacityManagerPlugin3D opacityManagerPlugin3D = imageViewer.getPlugin(OpacityManagerPlugin3D.class);
 
                 for (int channel = 0; channel < currentImageContents.size(); channel++) {
-                    if(getProgressInfo().isCancelled())
+                    if (getProgressInfo().isCancelled())
                         return;
                     Content currentImageContent = currentImageContents.get(channel);
                     LUT lut;
                     LUT alphaLut;
-                    if(lutManagerPlugin3D != null && channel < lutManagerPlugin3D.getLutEditors().size()) {
+                    if (lutManagerPlugin3D != null && channel < lutManagerPlugin3D.getLutEditors().size()) {
                         lut = lutManagerPlugin3D.getLutEditors().get(channel).getLUT();
-                    }
-                    else {
+                    } else {
                         lut = LUT.createLutFromColor(Color.WHITE);
                     }
-                    if(opacityManagerPlugin3D != null && channel < opacityManagerPlugin3D.getAlphaLutEditors().size()) {
+                    if (opacityManagerPlugin3D != null && channel < opacityManagerPlugin3D.getAlphaLutEditors().size()) {
                         alphaLut = opacityManagerPlugin3D.getAlphaLutEditors().get(channel).getLUT();
-                    }
-                    else {
+                    } else {
                         alphaLut = LUT.createLutFromColor(Color.WHITE);
                     }
                     byte[] reds = new byte[256];
@@ -1041,8 +1018,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 //                }
 
                     for (int i = 0; i < 256; i++) {
-                        if(i >= min) {
-                            int normIndex = Math.max(0, Math.min(255, (int)(255.0 * i / (max - min))));
+                        if (i >= min) {
+                            int normIndex = Math.max(0, Math.min(255, (int) (255.0 * i / (max - min))));
                             newAlphas[i] = Byte.toUnsignedInt(alphas[normIndex]);
                             newReds[i] = Byte.toUnsignedInt(reds[normIndex]);
                             newGreens[i] = Byte.toUnsignedInt(greens[normIndex]);
@@ -1086,8 +1063,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             try {
                 universe = new CustomImage3DUniverse();
                 status = RendererStatus.Initialized;
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 status = RendererStatus.ErrorGeneric;
             }
@@ -1097,16 +1073,11 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     public static class ImageLoaderRun extends AbstractJIPipeRunnable {
 
         private final ImageViewerPanel3D viewerPanel3D;
-
-        private ImagePlusData imageData;
-
         private final Image3DRenderType renderType;
-
         private final int resamplingFactor;
-
-        private boolean imageWasConvertedTo8Bit;
-
         private final List<Content> contents = new ArrayList<>();
+        private ImagePlusData imageData;
+        private boolean imageWasConvertedTo8Bit;
 
         public ImageLoaderRun(ImageViewerPanel3D viewerPanel3D, ImagePlusData imageData, Image3DRenderType renderType, int resamplingFactor) {
             this.viewerPanel3D = viewerPanel3D;
@@ -1123,7 +1094,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         @Override
         public void run() {
             ImagePlus imagePlus = imageData.getImage();
-            if(imagePlus.getType() != ImagePlus.COLOR_RGB && imagePlus.getType() !=  ImagePlus.GRAY8) {
+            if (imagePlus.getType() != ImagePlus.COLOR_RGB && imagePlus.getType() != ImagePlus.GRAY8) {
                 getProgressInfo().log("Converting image to 8-bit");
                 imagePlus = ImageJUtils.convertToGreyscale8UIfNeeded(imagePlus);
                 ImagePlusData newImageData = new ImagePlusData(imagePlus);
@@ -1136,25 +1107,25 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             for (JIPipeImageViewerPlugin3D plugin3D : viewerPanel3D.getImageViewer().getPlugins3D()) {
                 generatedImage = plugin3D.preprocess(generatedImage, getProgressInfo().resolveAndLog("Preprocessing with " + plugin3D.getClass().getName()));
             }
-            if(generatedImage.getType() != ImagePlus.COLOR_RGB && generatedImage.getType() !=  ImagePlus.GRAY8) {
+            if (generatedImage.getType() != ImagePlus.COLOR_RGB && generatedImage.getType() != ImagePlus.GRAY8) {
                 getProgressInfo().log("Converting generated image to 8-bit");
                 generatedImage = ImageJUtils.convertToGreyscale8UIfNeeded(generatedImage);
             }
             getProgressInfo().log("Converting into " + renderType);
 
             for (int c = 0; c < generatedImage.getNChannels(); c++) {
-                if(getProgressInfo().isCancelled())
+                if (getProgressInfo().isCancelled())
                     return;
                 Map<ImageSliceIndex, ImageProcessor> processorMap = new HashMap<>();
                 int finalC = c;
                 ImageJUtils.forEachIndexedZCTSlice(generatedImage, (ip, index) -> {
-                    if(index.getC() == finalC) {
+                    if (index.getC() == finalC) {
                         processorMap.put(new ImageSliceIndex(0, index.getZ(), index.getT()), ip);
                     }
                 }, getProgressInfo().resolve("c=" + c));
                 ImagePlus forChannel = ImageJUtils.mergeMappedSlices(processorMap);
 
-                if(forChannel.getType() == ImagePlus.GRAY8) {
+                if (forChannel.getType() == ImagePlus.GRAY8) {
                     ImageStatistics statistics = new StackStatistics(forChannel);
 
                     if (statistics.max == 0) {
@@ -1162,7 +1133,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                         forChannel = ImageJUtils.convertToColorRGBIfNeeded(forChannel);
                     }
                 }
-                Content content= ContentCreator.createContent("Image-Channel-" + finalC + "-" + UUID.randomUUID(),
+                Content content = ContentCreator.createContent("Image-Channel-" + finalC + "-" + UUID.randomUUID(),
                         forChannel,
                         renderType.getNativeValue(),
                         resamplingFactor,
@@ -1190,4 +1161,6 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             return resamplingFactor;
         }
     }
+
+
 }

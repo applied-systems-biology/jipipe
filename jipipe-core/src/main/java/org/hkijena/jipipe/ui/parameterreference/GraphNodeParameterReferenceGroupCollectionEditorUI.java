@@ -197,7 +197,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
             for (TreePath path : groupJTree.getSelectionPaths()) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 if (node.getUserObject() instanceof GraphNodeParameterReference) {
-                    GraphNodeParameterReferenceGroup group = (GraphNodeParameterReferenceGroup) ((DefaultMutableTreeNode)path.getParentPath().getLastPathComponent()).getUserObject();
+                    GraphNodeParameterReferenceGroup group = (GraphNodeParameterReferenceGroup) ((DefaultMutableTreeNode) path.getParentPath().getLastPathComponent()).getUserObject();
                     group.removeContent((GraphNodeParameterReference) node.getUserObject());
                 }
             }

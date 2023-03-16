@@ -56,10 +56,10 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
 
     private void initializeOrthoSliceEditor() {
 
-        orthoSliderPanels = new OrthoSliderPanel[] {
-            new OrthoSliderPanel("X", this, UIUtils.getIconFromResources("actions/3d-plane-yz.png")),
-            new OrthoSliderPanel("Y", this, UIUtils.getIconFromResources("actions/3d-plane-xz.png")),
-            new OrthoSliderPanel("Z", this, UIUtils.getIconFromResources("actions/3d-plane-xy.png"))
+        orthoSliderPanels = new OrthoSliderPanel[]{
+                new OrthoSliderPanel("X", this, UIUtils.getIconFromResources("actions/3d-plane-yz.png")),
+                new OrthoSliderPanel("Y", this, UIUtils.getIconFromResources("actions/3d-plane-xz.png")),
+                new OrthoSliderPanel("Z", this, UIUtils.getIconFromResources("actions/3d-plane-xy.png"))
         };
 
         for (OrthoSliderPanel orthoSliderPanel : orthoSliderPanels) {
@@ -69,7 +69,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
                     updateOrthoSlice();
             });
             orthoSliderPanel.visibleButton.addActionListener(e -> {
-                if(!isUpdatingSliders)
+                if (!isUpdatingSliders)
                     updateOrthoSlice();
             });
         }
@@ -77,35 +77,32 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
 
     private void updateMultiOrthoSlice() {
         ImagePlusData image = getCurrentImage();
-        if(image != null && getViewerPanel3D().getUniverse() != null && getViewerPanel3D().getCurrentImageContents() != null && getViewerPanel3D().getImage3DRendererSettings().getRenderType() == Image3DRenderType.MultiOrthoSlices) {
+        if (image != null && getViewerPanel3D().getUniverse() != null && getViewerPanel3D().getCurrentImageContents() != null && getViewerPanel3D().getImage3DRendererSettings().getRenderType() == Image3DRenderType.MultiOrthoSlices) {
             List<Integer> xSlices = multiOrthoSlicerSettings.x.tryGetIntegers(1, image.getWidth(), new ExpressionVariables());
             List<Integer> ySlices = multiOrthoSlicerSettings.y.tryGetIntegers(1, image.getHeight(), new ExpressionVariables());
             List<Integer> zSlices = multiOrthoSlicerSettings.z.tryGetIntegers(1, image.getNSlices(), new ExpressionVariables());
-            if(xSlices != null) {
+            if (xSlices != null) {
                 xSlices.removeIf(value -> value < 1 || value > image.getWidth());
-            }
-            else {
+            } else {
                 xSlices = new ArrayList<>();
             }
-            if(ySlices != null) {
+            if (ySlices != null) {
                 ySlices.removeIf(value -> value < 1 || value > image.getHeight());
-            }
-            else {
+            } else {
                 ySlices = new ArrayList<>();
             }
-            if(zSlices != null) {
+            if (zSlices != null) {
                 zSlices.removeIf(value -> value < 1 || value > image.getNSlices());
-            }
-            else {
+            } else {
                 zSlices = new ArrayList<>();
             }
-            if(xSlices.isEmpty() && ySlices.isEmpty() && zSlices.isEmpty()) {
+            if (xSlices.isEmpty() && ySlices.isEmpty() && zSlices.isEmpty()) {
                 xSlices = Collections.singletonList(image.getWidth() / 2 + 1);
                 ySlices = Collections.singletonList(image.getHeight() / 2 + 1);
                 zSlices = Collections.singletonList(image.getNSlices() / 2 + 1);
             }
 
-            if(currentUpdateRun != null) {
+            if (currentUpdateRun != null) {
                 getViewerPanel3D().getViewerRunnerQueue().cancel(currentUpdateRun);
                 currentUpdateRun = null;
             }
@@ -121,12 +118,12 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void updateOrthoSlice() {
-        if(getCurrentImage() != null && getViewerPanel3D().getUniverse() != null && getViewerPanel3D().getCurrentImageContents() != null && getViewerPanel3D().getImage3DRendererSettings().getRenderType() == Image3DRenderType.OrthoSlice) {
+        if (getCurrentImage() != null && getViewerPanel3D().getUniverse() != null && getViewerPanel3D().getCurrentImageContents() != null && getViewerPanel3D().getImage3DRendererSettings().getRenderType() == Image3DRenderType.OrthoSlice) {
             int x = Math.max(1, Math.min(getCurrentImage().getWidth(), orthoSliderPanels[0].getValue())) - 1;
             int y = Math.max(1, Math.min(getCurrentImage().getHeight(), orthoSliderPanels[1].getValue())) - 1;
-            int z = Math.max(1, Math.min(getCurrentImage().getNSlices(), orthoSliderPanels[2].getValue())) -1;
+            int z = Math.max(1, Math.min(getCurrentImage().getNSlices(), orthoSliderPanels[2].getValue())) - 1;
 
-            if(currentUpdateRun != null) {
+            if (currentUpdateRun != null) {
                 getViewerPanel3D().getViewerRunnerQueue().cancel(currentUpdateRun);
                 currentUpdateRun = null;
             }
@@ -193,7 +190,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void updateSlidersMinMax() {
-        if(getCurrentImage() != null) {
+        if (getCurrentImage() != null) {
             try {
                 isUpdatingSliders = true;
                 int max = Math.max(getCurrentImage().getWidth(), Math.max(getCurrentImage().getHeight(), getCurrentImage().getNSlices()));
@@ -205,8 +202,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
                 }
                 orthoSliceEditor.revalidate();
                 orthoSliceEditor.repaint();
-            }
-            finally {
+            } finally {
                 isUpdatingSliders = false;
             }
         }
@@ -216,14 +212,13 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
     public void onImageChanged() {
         super.onImageChanged();
         updateSlidersMinMax();
-        if(getCurrentImage() != null) {
+        if (getCurrentImage() != null) {
             try {
                 isUpdatingSliders = true;
                 orthoSliderPanels[0].setValue(getCurrentImage().getWidth() / 2 + 1);
                 orthoSliderPanels[1].setValue(getCurrentImage().getHeight() / 2 + 1);
                 orthoSliderPanels[2].setValue(getCurrentImage().getNSlices() / 2 + 1);
-            }
-            finally {
+            } finally {
                 isUpdatingSliders = false;
             }
         }
@@ -246,10 +241,9 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
 
             slider.addChangeListener(e -> updateLabel());
             slider.addMouseWheelListener(e -> {
-                if(e.getWheelRotation() < 0) {
+                if (e.getWheelRotation() < 0) {
                     increment();
-                }
-                else {
+                } else {
                     decrement();
                 }
             });
@@ -339,6 +333,10 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
             return slider.getValue();
         }
 
+        public void setValue(int value) {
+            slider.setValue(value);
+        }
+
         public boolean isPlaneVisible() {
             return visibleButton.isSelected();
         }
@@ -346,16 +344,12 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
         public void updateLabelSizing(int max) {
             // fix label glitch
             {
-                String maxFormat = String.format( sliderName + " %d/%d", max, max);
+                String maxFormat = String.format(sliderName + " %d/%d", max, max);
                 int stringWidth = label.getFontMetrics(label.getFont()).stringWidth(maxFormat);
                 int bufferedSw = stringWidth + 22;
                 label.setMinimumSize(new Dimension(bufferedSw, 16));
                 label.setPreferredSize(new Dimension(bufferedSw, 16));
             }
-        }
-
-        public void setValue(int value) {
-            slider.setValue(value);
         }
     }
 
@@ -447,7 +441,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
         @Override
         public void run() {
             for (Content content : contentList) {
-                if(content.getContent() instanceof OrthoGroup) {
+                if (content.getContent() instanceof OrthoGroup) {
                     OrthoGroup orthoGroup = (OrthoGroup) content.getContent();
                     orthoGroup.setVisible(AxisConstants.X_AXIS, showX);
                     orthoGroup.setVisible(AxisConstants.Y_AXIS, showY);
@@ -487,7 +481,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
         @Override
         public void run() {
             for (Content content : contentList) {
-                if(content.getContent() instanceof MultiOrthoGroup) {
+                if (content.getContent() instanceof MultiOrthoGroup) {
                     MultiOrthoGroup multiOrthoGroup = (MultiOrthoGroup) content.getContent();
                     final int X = AxisConstants.X_AXIS;
                     final int Y = AxisConstants.Y_AXIS;
@@ -499,19 +493,19 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
 
                     for (int x : xSlices) {
                         int rx = (x - 1) / resamplingFactor;
-                        if(rx >= 0 && rx < xAxis.length) {
+                        if (rx >= 0 && rx < xAxis.length) {
                             xAxis[rx] = true;
                         }
                     }
                     for (int y : ySlices) {
                         int ry = (y - 1) / resamplingFactor;
-                        if(ry >= 0 && ry < yAxis.length) {
+                        if (ry >= 0 && ry < yAxis.length) {
                             yAxis[ry] = true;
                         }
                     }
                     for (int z : zSlices) {
                         int rz = (z - 1) / resamplingFactor;
-                        if(rz >= 0 && rz < yAxis.length) {
+                        if (rz >= 0 && rz < yAxis.length) {
                             zAxis[rz] = true;
                         }
                     }

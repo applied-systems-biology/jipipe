@@ -19,7 +19,10 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Queue;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,7 @@ public class JIPipeRunnerQueue {
     private JIPipeRunWorker currentlyRunningWorker = null;
 
     private boolean silent;
+
     public JIPipeRunnerQueue(String name) {
         this.name = name;
     }
@@ -230,7 +234,7 @@ public class JIPipeRunnerQueue {
 
     public void cancelAll() {
         clearQueue();
-        if(currentlyRunningWorker != null) {
+        if (currentlyRunningWorker != null) {
             cancel(currentlyRunningWorker.getRun());
         }
     }
@@ -239,7 +243,7 @@ public class JIPipeRunnerQueue {
         for (JIPipeRunWorker toCancel : queue.stream().filter(rw -> predicate.test(rw.getRun())).collect(Collectors.toList())) {
             cancel(toCancel.getRun());
         }
-        if(currentlyRunningWorker != null && !currentlyRunningWorker.isDone() && predicate.test(currentlyRunningWorker.getRun())) {
+        if (currentlyRunningWorker != null && !currentlyRunningWorker.isDone() && predicate.test(currentlyRunningWorker.getRun())) {
             cancel(currentlyRunningWorker.getRun());
         }
     }

@@ -25,8 +25,8 @@ import java.awt.*;
  * UI that executes an {@link JIPipeRunnable}
  */
 public class JIPipeRunExecuterUI extends JPanel {
-    private JIPipeRunnable run;
     private final JIPipeRunnerQueue queue;
+    private JIPipeRunnable run;
     private JProgressBar progressBar;
     private JButton cancelButton;
     private JButton closeButton;

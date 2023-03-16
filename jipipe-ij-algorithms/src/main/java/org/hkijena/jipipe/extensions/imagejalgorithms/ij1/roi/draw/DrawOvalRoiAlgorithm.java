@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw;
 
 import ij.gui.OvalRoi;
-import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;

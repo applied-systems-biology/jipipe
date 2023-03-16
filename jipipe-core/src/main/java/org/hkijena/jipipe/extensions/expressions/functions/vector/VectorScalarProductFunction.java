@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.expressions.functions.vector;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VectorUtils;
 
 import java.util.Collection;

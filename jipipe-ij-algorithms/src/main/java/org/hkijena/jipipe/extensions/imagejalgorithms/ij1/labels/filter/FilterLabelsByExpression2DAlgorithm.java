@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.filter;
 import com.google.common.primitives.Ints;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
-import ij.ImageStack;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -33,8 +32,6 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 

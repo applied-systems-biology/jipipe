@@ -15,8 +15,6 @@ package org.hkijena.jipipe.ui.grapheditor.compartments.properties;
 
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
-import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
@@ -87,7 +85,7 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
         boolean canAddSeparator = false;
         for (NodeUIContextAction action : canvas.getContextActions()) {
             if (action == null) {
-                if(canAddSeparator) {
+                if (canAddSeparator) {
                     content.addWideToForm(new JSeparator());
                     canAddSeparator = false;
                 }
@@ -95,7 +93,7 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
             }
             if (action.isHidden())
                 continue;
-            if(!action.showInMultiSelectionPanel())
+            if (!action.showInMultiSelectionPanel())
                 continue;
             boolean matches = action.matches(nodeUIs);
             if (!matches && !action.disableOnNonMatch())

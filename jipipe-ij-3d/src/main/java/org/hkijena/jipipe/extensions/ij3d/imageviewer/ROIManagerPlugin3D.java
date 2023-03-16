@@ -57,11 +57,10 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
     private final JPanel selectionContentPanelUI = new JPanel();
     private final Ribbon ribbon = new Ribbon(3);
     private final Timer updateContentLaterTimer;
+    private final ROIListData scheduledRoi2D = new ROIListData();
     private ROI3DListData rois = new ROI3DListData();
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
-    private final ROIListData scheduledRoi2D = new ROIListData();
-
     private ROI3DToContentConverterRun currentRendererRun;
     private Content currentRendereredContent;
 
@@ -702,10 +701,9 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         private final Roi3DDrawer drawer;
 
         private final ImagePlus referenceImage;
-        private Content renderedContent;
         private final int resolutionFactor;
-
         private final boolean renderAsVolume;
+        private Content renderedContent;
 
         public ROI3DToContentConverterRun(List<ROI3D> rois, Roi3DDrawer drawer, ImagePlus referenceImage, boolean renderAsVolume, int resolutionFactor) {
             this.rois = rois;

@@ -37,8 +37,8 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.RenderOverlay3DAlgorithm
 import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.SetOverlay3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.FindParticles3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.Roi3DFromLabelsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure.ExtractRoi3DRelationStatisticsAlgorithm;
@@ -57,11 +57,6 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgo
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.ExtractOverlayAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.RemoveOverlayAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.RenderOverlayAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.SetOverlayAlgorithm;
-import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIROI2DDisplaySettings;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;

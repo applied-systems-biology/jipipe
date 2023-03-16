@@ -294,7 +294,7 @@ public class ColorUtils {
 
     public static Color toGreyscale(Color color) {
         int v = (color.getRed() + color.getGreen() + color.getBlue()) / 3;
-        return new Color(v,v,v);
+        return new Color(v, v, v);
     }
 
     public static Color invert(Color color) {

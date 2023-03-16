@@ -219,8 +219,8 @@ public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool {
                 return;
             }
             Calibration calibration = getViewerPanel().getImagePlus().getCalibration();
-            if(calibration != null && calibration.scaled()) {
-                if(calibration.pixelWidth == calibration.pixelHeight && Objects.equals(calibration.getXUnit(), calibration.getYUnit())) {
+            if (calibration != null && calibration.scaled()) {
+                if (calibration.pixelWidth == calibration.pixelHeight && Objects.equals(calibration.getXUnit(), calibration.getYUnit())) {
                     infoArea.setText(String.format("P1: %d, %d\n" +
                                     "P2: %d, %d\n" +
                                     "Width: %d px (%f %s)\n" +
@@ -241,8 +241,7 @@ public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool {
                             (int) (2 * r.getWidth() + 2 * r.getHeight()),
                             (2 * r.getWidth() * calibration.pixelWidth + 2 * r.getHeight() * calibration.pixelHeight),
                             calibration.getXUnit()));
-                }
-                else {
+                } else {
                     infoArea.setText(String.format("P1: %d, %d\n" +
                                     "P2: %d, %d\n" +
                                     "Width: %d px (%f %s)\n" +
@@ -260,8 +259,7 @@ public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool {
                             (int) (r.getWidth() * r.getHeight()),
                             (int) (2 * r.getWidth() + 2 * r.getHeight())));
                 }
-            }
-            else {
+            } else {
                 infoArea.setText(String.format("P1: %d, %d\n" +
                                 "P2: %d, %d\n" +
                                 "Width: %d px\n" +

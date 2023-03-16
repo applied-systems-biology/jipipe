@@ -22,7 +22,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -34,7 +33,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-
 
 
 /**
@@ -58,10 +56,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final AutoThreshold2DAlgorithm autoThresholding;
     private int rollingBallRadius = 20;
     private int dilationErodeSteps = 2;
     private double gaussianSigma = 3;
-    private final AutoThreshold2DAlgorithm autoThresholding;
 
     /**
      * @param info the info
@@ -86,7 +84,7 @@ public class BrightSpotsSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlg
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getSource() == autoThresholding && "source-area".equals(access.getKey())) {
+        if (access.getSource() == autoThresholding && "source-area".equals(access.getKey())) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

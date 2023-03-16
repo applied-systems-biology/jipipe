@@ -8,10 +8,9 @@ public class VectorUtils {
     public static List<Double> objectListToNumericVector(Collection<?> items) {
         List<Double> vector = new ArrayList<>(items.size());
         for (Object item : items) {
-            if(item instanceof Number) {
+            if (item instanceof Number) {
                 vector.add(((Number) item).doubleValue());
-            }
-            else {
+            } else {
                 vector.add(StringUtils.parseDouble(StringUtils.nullToEmpty(item)));
             }
         }
@@ -26,7 +25,7 @@ public class VectorUtils {
         return Math.sqrt(sum);
     }
 
-    public  static double l1Norm(List<Double> vector) {
+    public static double l1Norm(List<Double> vector) {
         double sum = 0;
         for (double v : vector) {
             sum += Math.abs(v);
@@ -56,10 +55,10 @@ public class VectorUtils {
     }
 
     public static List<Double> add(List<Double> v1, List<Double> v2) {
-        if(v1.size() != v2.size()) {
+        if (v1.size() != v2.size()) {
             throw new NumberFormatException("The vectors have a different size!");
         }
-        List<Double> result =  new ArrayList<>(v1.size());
+        List<Double> result = new ArrayList<>(v1.size());
         for (int i = 0; i < v1.size(); i++) {
             result.add(v1.get(i) + v2.get(i));
         }
@@ -67,10 +66,10 @@ public class VectorUtils {
     }
 
     public static List<Double> subtract(List<Double> v1, List<Double> v2) {
-        if(v1.size() != v2.size()) {
+        if (v1.size() != v2.size()) {
             throw new NumberFormatException("The vectors have a different size!");
         }
-        List<Double> result =  new ArrayList<>(v1.size());
+        List<Double> result = new ArrayList<>(v1.size());
         for (int i = 0; i < v1.size(); i++) {
             result.add(v1.get(i) - v2.get(i));
         }
@@ -79,7 +78,7 @@ public class VectorUtils {
 
 
     public static double scalarProduct(List<Double> v1, List<Double> v2) {
-        if(v1.size() != v2.size()) {
+        if (v1.size() != v2.size()) {
             throw new NumberFormatException("The vectors have a different size!");
         }
         double result = 0;

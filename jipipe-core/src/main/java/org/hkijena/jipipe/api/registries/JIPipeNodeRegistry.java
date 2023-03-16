@@ -159,10 +159,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         Set<JIPipeNodeInfo> result = new HashSet<>();
         for (JIPipeNodeInfo info : registeredNodeInfos.values()) {
             if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
-                if(info.getDataSourceMenuLocation() == dataClass) {
+                if (info.getDataSourceMenuLocation() == dataClass) {
                     result.add(info);
-                }
-                else if(info.getDataSourceMenuLocation() == JIPipeEmptyData.class) {
+                } else if (info.getDataSourceMenuLocation() == JIPipeEmptyData.class) {
                     if (info.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
                         result.add(info);
                     }

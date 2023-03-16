@@ -39,10 +39,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TriConsumer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,28 +72,25 @@ import java.util.stream.Collectors;
 public class ImageJUtils {
 
     public static Quantity getPixelSizeX(ImagePlus imp) {
-        if(imp.getCalibration() != null) {
+        if (imp.getCalibration() != null) {
             return new Quantity(imp.getCalibration().pixelWidth, StringUtils.orElse(imp.getCalibration().getXUnit(), Quantity.UNIT_PIXELS));
-        }
-        else {
+        } else {
             return new Quantity(1, Quantity.UNIT_PIXELS);
         }
     }
 
     public static Quantity getPixelSizeY(ImagePlus imp) {
-        if(imp.getCalibration() != null) {
+        if (imp.getCalibration() != null) {
             return new Quantity(imp.getCalibration().pixelHeight, StringUtils.orElse(imp.getCalibration().getYUnit(), Quantity.UNIT_PIXELS));
-        }
-        else {
+        } else {
             return new Quantity(1, Quantity.UNIT_PIXELS);
         }
     }
 
     public static Quantity getPixelSizeZ(ImagePlus imp) {
-        if(imp.getCalibration() != null) {
+        if (imp.getCalibration() != null) {
             return new Quantity(imp.getCalibration().pixelDepth, StringUtils.orElse(imp.getCalibration().getZUnit(), Quantity.UNIT_PIXELS));
-        }
-        else {
+        } else {
             return new Quantity(1, Quantity.UNIT_PIXELS);
         }
     }
@@ -128,7 +127,7 @@ public class ImageJUtils {
      */
     public static Map<String, String> getImageProperties(ImagePlus imagePlus) {
         HashMap<String, String> map = new HashMap<>();
-        if(imagePlus.getImageProperties() != null) {
+        if (imagePlus.getImageProperties() != null) {
             for (Map.Entry<Object, Object> entry : imagePlus.getImageProperties().entrySet()) {
                 map.put("" + entry.getKey(), "" + entry.getValue());
             }
@@ -160,7 +159,7 @@ public class ImageJUtils {
     /**
      * Sets the properties of a {@link ImagePlus} from a map
      *
-     * @param imagePlus        the image
+     * @param imagePlus  the image
      * @param properties the properties
      */
     public static void setImageProperties(ImagePlus imagePlus, Map<String, String> properties) {
@@ -298,9 +297,9 @@ public class ImageJUtils {
             imp2.setOverlay(overlay);
 
         // Copy the LUT
-        if(imp.getType() != ImagePlus.COLOR_RGB) {
+        if (imp.getType() != ImagePlus.COLOR_RGB) {
             imp2.setLut(imp.getProcessor().getLut());
-            if(imp2.hasImageStack()) {
+            if (imp2.hasImageStack()) {
                 imp2.getStack().setColorModel(imp.getStack().getColorModel());
             }
         }
@@ -1090,7 +1089,7 @@ public class ImageJUtils {
                 for (int c = 0; c < img.getNChannels(); c++) {
                     if (progressInfo.isCancelled())
                         return;
-                    ImagePlus cube =  extractCTStack(img, c, t);
+                    ImagePlus cube = extractCTStack(img, c, t);
                     progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
                     JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
                     function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
@@ -1470,7 +1469,7 @@ public class ImageJUtils {
     public static void writeCalibration(ImagePlus imagePlus, Map<ImageSliceIndex, DisplayRange> calibrationMap) {
         ImageJUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
             DisplayRange displayRange = calibrationMap.getOrDefault(index, null);
-            if(displayRange != null) {
+            if (displayRange != null) {
                 ip.setMinAndMax(displayRange.getDisplayedMin(), displayRange.getDisplayedMax());
             }
         }, new JIPipeProgressInfo());
@@ -1585,8 +1584,8 @@ public class ImageJUtils {
     public static void calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
         ImageProcessor ip = imp.getProcessor();
         ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
-        if(imp.hasImageStack()) {
-          imp.getImageStack().update(ip);
+        if (imp.hasImageStack()) {
+            imp.getImageStack().update(ip);
         }
     }
 
@@ -2120,7 +2119,7 @@ public class ImageJUtils {
     }
 
     public static void convolveSlice(Convolver convolver, int kernelWidth, int kernelHeight, float[] kernel, ImageProcessor imp) {
-        if(imp instanceof ColorProcessor) {
+        if (imp instanceof ColorProcessor) {
             // Split into channels and convolve individually
             FloatProcessor c0 = imp.toFloat(0, null);
             FloatProcessor c1 = imp.toFloat(1, null);
@@ -2131,11 +2130,9 @@ public class ImageJUtils {
             imp.setPixels(0, c0);
             imp.setPixels(1, c1);
             imp.setPixels(2, c2);
-        }
-        else if(imp instanceof FloatProcessor) {
+        } else if (imp instanceof FloatProcessor) {
             convolver.convolve(imp, kernel, kernelWidth, kernelHeight);
-        }
-        else {
+        } else {
             // Convolve directly
             FloatProcessor c0 = imp.toFloat(0, null);
             convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
@@ -2157,10 +2154,9 @@ public class ImageJUtils {
     }
 
     public static ImagePlus unwrap(ImagePlusData data) {
-        if(data != null) {
+        if (data != null) {
             return data.getImage();
-        }
-        else {
+        } else {
             return null;
         }
     }

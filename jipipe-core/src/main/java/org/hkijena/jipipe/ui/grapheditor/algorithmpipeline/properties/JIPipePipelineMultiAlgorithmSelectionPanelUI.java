@@ -47,7 +47,7 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
     /**
      * @param workbenchUI The workbench
      * @param canvas      The algorithm graph
-     * @param nodes  The algorithm selection
+     * @param nodes       The algorithm selection
      */
     public JIPipePipelineMultiAlgorithmSelectionPanelUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphCanvasUI canvas, Set<JIPipeGraphNode> nodes) {
         super(workbenchUI);
@@ -64,7 +64,7 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
         add(splitPane, BorderLayout.CENTER);
 
         JPanel actionPanel = new JPanel(new BorderLayout());
-      
+
         DocumentTabPane tabPane = new DocumentTabPane(false);
         tabPane.addTab("Selection", UIUtils.getIconFromResources("actions/edit-select-all.png"), actionPanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
@@ -81,7 +81,7 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
                 UIUtils.getIconFromResources("actions/edit-undo-history.png"),
                 new HistoryJournalUI(canvas.getHistoryJournal()),
                 DocumentTabPane.CloseMode.withoutCloseButton);
-        
+
         splitPane.setBottomComponent(tabPane);
         splitPane.setTopComponent(new JIPipeGraphEditorMinimap(canvas.getGraphEditorUI()));
 
@@ -95,7 +95,7 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
         boolean canAddSeparator = false;
         for (NodeUIContextAction action : canvas.getContextActions()) {
             if (action == null) {
-                if(canAddSeparator) {
+                if (canAddSeparator) {
                     content.addWideToForm(new JSeparator());
                     canAddSeparator = false;
                 }
@@ -103,7 +103,7 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
             }
             if (action.isHidden())
                 continue;
-            if(!action.showInMultiSelectionPanel())
+            if (!action.showInMultiSelectionPanel())
                 continue;
             boolean matches = action.matches(nodeUIs);
             if (!matches && !action.disableOnNonMatch())

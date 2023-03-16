@@ -82,6 +82,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private final JIPipeHistoryJournal historyJournal;
     private final int flags;
     private final JMenu graphMenu = new JMenu("Graph");
+    private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
+    private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
     protected JMenuBar menuBar = new JMenuBar();
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
@@ -90,8 +92,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private boolean isPanning = false;
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private JIPipeToggleableGraphEditorTool currentTool;
-    private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
-    private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
 
     /**
      * @param workbenchUI    the workbench
@@ -107,7 +107,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         this.flags = flags;
         this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), this, algorithmGraph, compartment, historyJournal);
         this.graphUISettings = settings;
-
 
 
         initialize();
@@ -340,7 +339,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
             JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
-            if(tool.supports(this)) {
+            if (tool.supports(this)) {
                 tool.setGraphEditor(this);
                 tools.add(tool);
             }
@@ -348,21 +347,20 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         tools.sort(Comparator.comparing(JIPipeGraphEditorTool::getCategory).thenComparing(JIPipeGraphEditorTool::getPriority));
         for (int i = 0; i < tools.size(); i++) {
             JIPipeGraphEditorTool tool = tools.get(i);
-            if(i > 0 && !Objects.equals(tool.getCategory(), tools.get(i - 1).getCategory())) {
+            if (i > 0 && !Objects.equals(tool.getCategory(), tools.get(i - 1).getCategory())) {
                 toolBar.addSeparator();
             }
-            if(tool instanceof JIPipeToggleableGraphEditorTool) {
+            if (tool instanceof JIPipeToggleableGraphEditorTool) {
                 JToggleButton toggleButton = new JToggleButton(tool.getIcon());
                 toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + "</html>");
-                toggleButton.addActionListener( e -> selectTool(tool));
+                toggleButton.addActionListener(e -> selectTool(tool));
                 UIUtils.makeFlat25x25(toggleButton);
                 toolBar.add(toggleButton);
                 toolToggles.put((JIPipeToggleableGraphEditorTool) tool, toggleButton);
-            }
-            else {
+            } else {
                 JButton button = new JButton(tool.getIcon());
                 button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + "</html>");
-                button.addActionListener( e -> selectTool(tool));
+                button.addActionListener(e -> selectTool(tool));
                 UIUtils.makeFlat25x25(button);
                 toolBar.add(button);
             }
@@ -381,13 +379,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     public void selectTool(JIPipeGraphEditorTool tool) {
-        if(tool instanceof JIPipeToggleableGraphEditorTool) {
-            if(tool == currentTool) {
+        if (tool instanceof JIPipeToggleableGraphEditorTool) {
+            if (tool == currentTool) {
                 JToggleButton toggleButton = toolToggles.get(currentTool);
                 toggleButton.setSelected(true);
                 return;
             }
-            if(currentTool != null) {
+            if (currentTool != null) {
                 // Deselect current tool
                 JToggleButton toggleButton = toolToggles.get(currentTool);
                 toggleButton.setSelected(false);
@@ -401,8 +399,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             currentTool = (JIPipeToggleableGraphEditorTool) tool;
             canvasUI.setCurrentTool(currentTool);
             tool.activate();
-        }
-        else {
+        } else {
             tool.activate();
         }
     }
@@ -860,18 +857,18 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     /**
      * Sets the component displayed in the right property panel
      *
-     * @param content the component
+     * @param content         the component
      * @param disposeExisting if the old component should be disposed
      */
     protected void setPropertyPanel(Component content, boolean disposeExisting) {
         int dividerLocation = splitPane.getDividerLocation();
         if (isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
-            if(disposeExisting && splitPane.getLeftComponent() instanceof Disposable) {
+            if (disposeExisting && splitPane.getLeftComponent() instanceof Disposable) {
                 ((Disposable) splitPane.getLeftComponent()).dispose();
             }
             splitPane.setLeftComponent(content);
         } else {
-            if(disposeExisting && splitPane.getRightComponent() instanceof Disposable) {
+            if (disposeExisting && splitPane.getRightComponent() instanceof Disposable) {
                 ((Disposable) splitPane.getRightComponent()).dispose();
             }
             splitPane.setRightComponent(content);

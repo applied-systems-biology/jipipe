@@ -16,8 +16,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.imageviewer.utils.RoiListCellRenderer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.utils.RoiListCellRenderer;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
@@ -90,7 +90,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if(overlay instanceof ROIListData) {
+        if (overlay instanceof ROIListData) {
             importROIs((ROIListData) overlay, false);
         }
     }

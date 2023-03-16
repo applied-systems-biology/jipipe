@@ -44,14 +44,15 @@ import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 
 import javax.imageio.ImageIO;
-import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
 public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess {
 
@@ -76,6 +77,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private final JIPipeWorkbench workbench;
     private final JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
     private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
+    private final JPanel viewerPanel = new JPanel(new BorderLayout());
+    private final JIPipeRunnerQueue viewerRunnerQueue = new JIPipeRunnerQueue("Image Viewer 2D");
     private ImagePlusData image;
     private ImageCanvas zoomedDummyCanvas;
     private ImageCanvas exportDummyCanvas;
@@ -83,18 +86,12 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private ImageViewerPanelCanvas2D canvas;
     private FormPanel bottomPanel;
     private long lastTimeZoomed;
-
-    private final JPanel viewerPanel = new JPanel(new BorderLayout());
-
     //    private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private Component currentContentPanel;
-    private boolean isUpdatingSliders = false;
-    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private final JIPipeRunnerQueue viewerRunnerQueue = new JIPipeRunnerQueue("Image Viewer 2D");
+    private boolean isUpdatingSliders = false;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JScrollPane canvasScrollPane;
-
     /**
      * Initializes a new image viewer
      *
@@ -112,13 +109,25 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         updateZoomStatus();
     }
 
+    private static void incrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = ((value) % maximum) + 1;
+        slider.setValue(newIndex);
+    }
+
+    private static void decrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = value - 1;
+        if (newIndex < 1)
+            newIndex += maximum;
+        slider.setValue(newIndex);
+    }
+
     @Override
     public JIPipeWorkbench getWorkbench() {
         return workbench;
-    }
-
-    public ImageViewer2DUISettings getSettings() {
-        return settings;
     }
 
 
@@ -131,6 +140,10 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 //            refreshSlice();
 //        }
 //    }
+
+    public ImageViewer2DUISettings getSettings() {
+        return settings;
+    }
 
     public void dispose() {
         try {
@@ -180,7 +193,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         viewerPanel.add(canvasScrollPane, BorderLayout.CENTER);
         JToolBar statusBar = new JToolBar();
         statusBar.setFloatable(false);
-        statusBar.setBorder(BorderFactory.createMatteBorder(1,0,1,0,UIManager.getColor("MenuBar.borderColor")));
+        statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, UIManager.getColor("MenuBar.borderColor")));
         viewerPanel.add(statusBar, BorderLayout.SOUTH);
 
         JIPipeRunnerQueueUI runnerQueueUI = new JIPipeRunnerQueueUI(getWorkbench(), viewerRunnerQueue);
@@ -313,31 +326,14 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         rightPanel.add(nextFrame);
 
         slider.addMouseWheelListener(e -> {
-            if(e.getWheelRotation() < 0) {
+            if (e.getWheelRotation() < 0) {
                 incrementSlider(slider);
-            }
-            else {
+            } else {
                 decrementSlider(slider);
             }
         });
 
         bottomPanel.addToForm(contentPanel, descriptionPanel, null);
-    }
-
-    private static void incrementSlider(JSlider slider) {
-        int value = slider.getValue();
-        int maximum = slider.getMaximum();
-        int newIndex = ((value) % maximum) + 1;
-        slider.setValue(newIndex);
-    }
-
-    private static void decrementSlider(JSlider slider) {
-        int value = slider.getValue();
-        int maximum = slider.getMaximum();
-        int newIndex = value - 1;
-        if (newIndex < 1)
-            newIndex += maximum;
-        slider.setValue(newIndex);
     }
 
     public JToolBar getToolBar() {
@@ -686,31 +682,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return imageViewer.getImagePlus();
     }
 
-    public void setImage(ImagePlusData image) {
-        this.image = image;
-        if (image != null) {
-            ImagePlus imagePlus = image.getImage();
-            this.zoomedDummyCanvas = new ImageCanvas(imagePlus);
-            this.zoomedDummyCanvas.setMagnification(getCanvas().getZoom());
-            this.exportDummyCanvas = new ImageCanvas(imagePlus);
-        } else {
-            this.zoomedDummyCanvas = null;
-            this.exportDummyCanvas = null;
-        }
-        this.currentSlice = null;
-        this.statisticsMap.clear();
-        refreshSliders();
-        refreshSlice();
-        refreshFormPanel();
-        refreshMenus();
-        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
-            plugin.onImageChanged();
-        }
-        revalidate();
-        repaint();
-        uploadSliceToCanvas();
-    }
-
     private void refreshMenus() {
         boolean hasMultipleSlices = image != null && image.getImage().getNDimensions() > 2;
         exportAllSlicesItem.setVisible(hasMultipleSlices);
@@ -882,6 +853,31 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return image;
     }
 
+    public void setImage(ImagePlusData image) {
+        this.image = image;
+        if (image != null) {
+            ImagePlus imagePlus = image.getImage();
+            this.zoomedDummyCanvas = new ImageCanvas(imagePlus);
+            this.zoomedDummyCanvas.setMagnification(getCanvas().getZoom());
+            this.exportDummyCanvas = new ImageCanvas(imagePlus);
+        } else {
+            this.zoomedDummyCanvas = null;
+            this.exportDummyCanvas = null;
+        }
+        this.currentSlice = null;
+        this.statisticsMap.clear();
+        refreshSliders();
+        refreshSlice();
+        refreshFormPanel();
+        refreshMenus();
+        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            plugin.onImageChanged();
+        }
+        revalidate();
+        repaint();
+        uploadSliceToCanvas();
+    }
+
     public ImageProcessor getCurrentSlice() {
         return currentSlice;
     }
@@ -906,4 +902,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
         return null;
     }
+
+
 }

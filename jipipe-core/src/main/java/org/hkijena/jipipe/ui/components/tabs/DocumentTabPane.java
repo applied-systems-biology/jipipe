@@ -188,7 +188,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
     @Override
     public void dispose() {
         for (DocumentTab tab : tabs) {
-            if(tab.content instanceof Disposable) {
+            if (tab.content instanceof Disposable) {
                 ((Disposable) tab.content).dispose();
             }
         }

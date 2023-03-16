@@ -34,7 +34,7 @@ public class ROI3DImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         boolean multiple = Prefs.get("RoiManager3D-Options_UseMultiple.boolean", false);
-        if(parameters.isAppend())
+        if (parameters.isAppend())
             multiple = false;
         List<Object> result = new ArrayList<>();
         for (int row = 0; row < dataTable.getRowCount(); row++) {
@@ -49,7 +49,7 @@ public class ROI3DImageJExporter implements ImageJDataExporter {
             if (manager3D == null) {
                 manager3D = new RoiManager3D_2();
                 manager3D.create3DManager();
-                if(!StringUtils.isNullOrEmpty(parameters.getName()))
+                if (!StringUtils.isNullOrEmpty(parameters.getName()))
                     manager3D.setTitle(parameters.getName());
             }
             manager3D.addObjects3DPopulation(data.toPopulation());
@@ -65,6 +65,6 @@ public class ROI3DImageJExporter implements ImageJDataExporter {
 
     @Override
     public Class<?> getExportedImageJDataType() {
-        return  RoiManager3D_2.class;
+        return RoiManager3D_2.class;
     }
 }

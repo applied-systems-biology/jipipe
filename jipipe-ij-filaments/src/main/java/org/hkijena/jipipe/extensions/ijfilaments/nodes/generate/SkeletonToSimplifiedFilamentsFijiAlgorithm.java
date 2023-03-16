@@ -16,16 +16,19 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.generate;
 
 import ij.ImagePlus;
 import ij.gui.Roi;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeCitation;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
-import org.hkijena.jipipe.extensions.ijfilaments.util.Point3d;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
+import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
+import org.hkijena.jipipe.extensions.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.AnalyzeSkeleton2D3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
@@ -113,7 +116,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
                 z /= numPoints;
 
                 FilamentVertex filamentVertex = new FilamentVertex();
-                filamentVertex.setSpatialLocation(new Point3d((int)Math.round(x), (int)Math.round(y), (int)Math.round(z)));
+                filamentVertex.setSpatialLocation(new Point3d((int) Math.round(x), (int) Math.round(y), (int) Math.round(z)));
                 vertexMapping.put(vertex, filamentVertex);
                 filamentsData.addVertex(filamentVertex);
             }

@@ -48,7 +48,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     /**
      * Creates a new instance
      *
-     * @param table              the table
+     * @param table          the table
      * @param dataTableStore the wrapped slot
      */
     public JIPipeExtendedDataTableModel(JTable table, Store<JIPipeDataTable> dataTableStore) {
@@ -96,13 +96,12 @@ public class JIPipeExtendedDataTableModel implements TableModel {
      */
     public int toAnnotationColumnIndex(int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
-        if(dataTable != null) {
+        if (dataTable != null) {
             if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
                 return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
             else
                 return -1;
-        }
-        else {
+        } else {
             return -1;
         }
     }
@@ -115,14 +114,13 @@ public class JIPipeExtendedDataTableModel implements TableModel {
      */
     public int toDataAnnotationColumnIndex(int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
-        if(dataTable != null) {
+        if (dataTable != null) {
             if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
                 return columnIndex - 4;
             } else {
                 return -1;
             }
-        }
-        else {
+        } else {
             return -1;
         }
     }
@@ -130,10 +128,9 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     @Override
     public int getRowCount() {
         JIPipeDataTable dataTable = dataTableStore.get();
-        if(dataTable != null) {
+        if (dataTable != null) {
             return dataTable.getRowCount();
-        }
-        else {
+        } else {
             return 0;
         }
     }
@@ -141,10 +138,9 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     @Override
     public int getColumnCount() {
         JIPipeDataTable dataTable = dataTableStore.get();
-        if(dataTable != null) {
+        if (dataTable != null) {
             return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 4;
-        }
-        else {
+        } else {
             return 4;
         }
     }
@@ -162,10 +158,9 @@ public class JIPipeExtendedDataTableModel implements TableModel {
             return "String representation";
         else if (toDataAnnotationColumnIndex(columnIndex) != -1 && dataTable != null) {
             return "$" + dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
-        } else if(dataTable != null) {
+        } else if (dataTable != null) {
             return dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
-        }
-        else {
+        } else {
             return "NA";
         }
     }
@@ -195,7 +190,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
-        if(dataTable != null) {
+        if (dataTable != null) {
             if (columnIndex == 0) {
                 return rowIndex;
             } else if (columnIndex == 1) {
@@ -245,8 +240,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
                     return null;
                 }
             }
-        }
-        else {
+        } else {
             return null;
         }
     }

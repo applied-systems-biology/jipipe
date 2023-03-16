@@ -58,7 +58,7 @@ public class FileChooserBookmark extends AbstractJIPipeParameterCollection {
     }
 
     public boolean isDirectory() {
-        if(path == null)
+        if (path == null)
             return false;
         return Files.isDirectory(path);
     }

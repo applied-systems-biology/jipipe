@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 
 /**
  * A weakly owning store (using a {@link WeakReference}
+ *
  * @param <T>
  */
 public class WeakStore<T> implements Store<T> {

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.overlay;
 
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;

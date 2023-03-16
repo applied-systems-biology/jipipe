@@ -15,8 +15,6 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify;
 
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
-import ij.gui.Roi;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,12 +24,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurement;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurementColumn;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorMapParameter;
@@ -84,10 +78,9 @@ public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         for (int row = 0; row < inputRois.size(); row++) {
             Object measurement = statistics.getValueAt(row, statistics.getColumnIndex(fillMeasurement.getColumnName()));
             double fillValue;
-            if(measurement instanceof Number) {
+            if (measurement instanceof Number) {
                 fillValue = ((Number) measurement).doubleValue();
-            }
-            else {
+            } else {
                 fillValue = measurement.hashCode();
             }
 

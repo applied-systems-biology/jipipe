@@ -23,7 +23,6 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
@@ -490,6 +489,7 @@ public class StringUtils {
     /**
      * Attempts to parse a string as double.
      * If not successful, return the string
+     *
      * @param str the string
      * @return the number or the string
      */
@@ -499,20 +499,15 @@ public class StringUtils {
         double value;
         if (NumberUtils.isCreatable(str)) {
             value = NumberUtils.createDouble(str);
-        }
-        else if(StringUtils.isNullOrEmpty(str)) {
+        } else if (StringUtils.isNullOrEmpty(str)) {
             value = 0d;
-        }
-        else if(str.toLowerCase().startsWith("-inf")) {
+        } else if (str.toLowerCase().startsWith("-inf")) {
             value = Double.NEGATIVE_INFINITY;
-        }
-        else if(str.toLowerCase().startsWith("inf")) {
+        } else if (str.toLowerCase().startsWith("inf")) {
             value = Double.POSITIVE_INFINITY;
-        }
-        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+        } else if (str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
             value = Double.NaN;
-        }
-        else {
+        } else {
             return str;
         }
         return value;
@@ -524,21 +519,16 @@ public class StringUtils {
         double value;
         if (NumberUtils.isCreatable(str)) {
             value = NumberUtils.createDouble(str);
-        }
-        else if(StringUtils.isNullOrEmpty(str)) {
+        } else if (StringUtils.isNullOrEmpty(str)) {
             value = 0d;
-        }
-        else if(str.toLowerCase().startsWith("-inf")) {
+        } else if (str.toLowerCase().startsWith("-inf")) {
             value = Double.NEGATIVE_INFINITY;
-        }
-        else if(str.toLowerCase().startsWith("inf")) {
+        } else if (str.toLowerCase().startsWith("inf")) {
             value = Double.POSITIVE_INFINITY;
-        }
-        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+        } else if (str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
             value = Double.NaN;
-        }
-        else {
-           throw new NumberFormatException("String is not a number: " + str);
+        } else {
+            throw new NumberFormatException("String is not a number: " + str);
         }
         return value;
     }
@@ -549,30 +539,24 @@ public class StringUtils {
         float value;
         if (NumberUtils.isCreatable(str)) {
             value = NumberUtils.createFloat(str);
-        }
-        else if(StringUtils.isNullOrEmpty(str)) {
+        } else if (StringUtils.isNullOrEmpty(str)) {
             value = 0f;
-        }
-        else if(str.toLowerCase().startsWith("-inf")) {
+        } else if (str.toLowerCase().startsWith("-inf")) {
             value = Float.NEGATIVE_INFINITY;
-        }
-        else if(str.toLowerCase().startsWith("inf")) {
+        } else if (str.toLowerCase().startsWith("inf")) {
             value = Float.POSITIVE_INFINITY;
-        }
-        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+        } else if (str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
             value = Float.NaN;
-        }
-        else {
+        } else {
             throw new NumberFormatException("String is not a number: " + str);
         }
         return value;
     }
 
     public static double objectToDouble(Object o) {
-        if(o instanceof Number) {
+        if (o instanceof Number) {
             return ((Number) o).doubleValue();
-        }
-        else {
+        } else {
             return StringUtils.parseDouble(StringUtils.nullToEmpty(o));
         }
     }

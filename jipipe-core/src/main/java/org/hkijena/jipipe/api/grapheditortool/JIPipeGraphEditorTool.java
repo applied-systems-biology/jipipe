@@ -13,6 +13,7 @@ public interface JIPipeGraphEditorTool extends MouseMotionListener, MouseListene
     String getName();
 
     String getTooltip();
+
     Icon getIcon();
 
     default int getPriority() {

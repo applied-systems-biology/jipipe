@@ -30,8 +30,8 @@ import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -136,12 +136,12 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
     @Override
     public Dimension getUIInputSlotIconBaseDimensions(String slotName) {
-        return new Dimension(16,16);
+        return new Dimension(16, 16);
     }
 
     @Override
     public ImageIcon getUIInputSlotIcon(String slotName) {
-        if(slotName.equals(SLOT_PARAMETERS)) {
+        if (slotName.equals(SLOT_PARAMETERS)) {
             return UIUtils.getIconInvertedFromResources("actions/reload.png");
         }
         return super.getUIInputSlotIcon(slotName);
@@ -150,7 +150,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     @Override
     public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
         super.createUIInputSlotIconDescriptionMenuItems(slotName, target);
-        if(slotName.equals(SLOT_PARAMETERS)) {
+        if (slotName.equals(SLOT_PARAMETERS)) {
             target.add(new ViewOnlyMenuItem("<html>Repeated per parameter<br/><small>The workload of the node is repeated for each parameter item</small>",
                     UIUtils.getIconFromResources("actions/reload.png")));
         }

@@ -95,7 +95,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
         } else {
-            try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
                 image = IJ.openImage(fileName.toString());
             }
         }

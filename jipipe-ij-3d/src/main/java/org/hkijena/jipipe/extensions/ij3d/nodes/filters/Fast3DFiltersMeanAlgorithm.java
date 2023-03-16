@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.filters;
 
 import mcib3d.image3d.processing.FastFilters3D;
-import mcib_plugins.Fast_filters3D;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;

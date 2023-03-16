@@ -676,7 +676,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     /**
      * Rotates the ROI around the center
      * Does not change the ROIs in this list
-     * @param angle the angle
+     *
+     * @param angle  the angle
      * @param center the center point
      * @return the rotated ROIs
      */

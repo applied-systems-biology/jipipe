@@ -21,9 +21,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 
 import java.util.*;
 
@@ -603,10 +603,11 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
 
     /**
      * Returns true if no data is referenced
+     *
      * @return if no data is referenced
      */
     public boolean isEmpty() {
-        if(inputSlotRows.isEmpty())
+        if (inputSlotRows.isEmpty())
             return true;
         for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
             if (!entry.getValue().isEmpty())

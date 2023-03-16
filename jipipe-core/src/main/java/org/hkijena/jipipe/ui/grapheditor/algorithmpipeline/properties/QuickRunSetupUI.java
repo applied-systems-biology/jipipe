@@ -31,7 +31,9 @@ import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSetupWindow;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
-import org.hkijena.jipipe.ui.running.*;
+import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

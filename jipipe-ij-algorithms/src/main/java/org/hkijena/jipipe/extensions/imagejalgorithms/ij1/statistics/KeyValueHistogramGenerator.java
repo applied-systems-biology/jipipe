@@ -7,7 +7,6 @@ import gnu.trove.map.TDoubleDoubleMap;
 import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
-import ij.process.AutoThresholder;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -111,7 +110,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
             float[] keyPixels = (float[]) keyIp.getPixels();
             float[] valuePixels = (float[]) valueIp.getPixels();
             for (int i = 0; i < keyPixels.length; i++) {
-                if(mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                if (mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
                     float key = keyPixels[i];
                     float value = valuePixels[i];
                     TFloatList list = bucketedValues.get(key);

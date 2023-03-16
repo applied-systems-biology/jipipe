@@ -58,7 +58,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
         try {
             run.run();
         } catch (Error | Exception e) {
-            if(!silent) {
+            if (!silent) {
                 run.getProgressInfo().log("An error was encountered");
                 run.getProgressInfo().log("------------------------");
                 run.getProgressInfo().log(e.toString());
@@ -107,7 +107,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
     }
 
     private void postInterruptedEvent(Throwable e) {
-        if(!silent) {
+        if (!silent) {
             run.getProgressInfo().log("An error was encountered");
             run.getProgressInfo().log("------------------------");
             run.getProgressInfo().log(e.toString());

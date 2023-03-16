@@ -38,14 +38,13 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
     public static final DecimalFormat DECIMAL_FORMAT_INT = new DecimalFormat("0");
 
     private final CalibrationPlugin3D calibrationPlugin;
+    private final double minSelectableValue = 0;
+    private final double maxSelectableValue = 255;
     private JXMultiThumbSlider<DisplayRangeStop> slider;
     private TrackRenderer trackRenderer;
     private boolean isUpdating = false;
     private double customMin;
     private double customMax;
-    private final double minSelectableValue = 0;
-    private final double maxSelectableValue = 255;
-
     private WeakReference<ImagePlus> lastSelectableValueCalculationBasis;
 
     public ImageViewer3DDisplayRangeControl(CalibrationPlugin3D calibrationPlugin) {
@@ -139,10 +138,10 @@ public class ImageViewer3DDisplayRangeControl extends JPanel implements ThumbLis
             isUpdating = true;
             ImagePlus currentImage = getCalibrationPlugin().getCurrentImagePlus();
             if (currentImage != null) {
-                if(lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
+                if (lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
                     lastSelectableValueCalculationBasis = new WeakReference<>(currentImage);
                 }
-                if(selectedCalibration != ImageJCalibrationMode.Custom) {
+                if (selectedCalibration != ImageJCalibrationMode.Custom) {
                     double[] calibration = ImageJUtils.calculateCalibration(currentImage.getProcessor(),
                             selectedCalibration,
                             minSelectableValue,

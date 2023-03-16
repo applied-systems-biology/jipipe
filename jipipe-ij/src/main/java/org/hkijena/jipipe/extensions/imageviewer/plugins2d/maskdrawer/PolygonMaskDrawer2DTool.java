@@ -101,7 +101,7 @@ public class PolygonMaskDrawer2DTool extends MaskDrawer2DTool {
                 lengthPlusMouse = length + referencePoints.get(referencePoints.size() - 1).distance(mouse);
             }
             Calibration calibration = getViewerPanel().getImagePlus().getCalibration();
-            if(calibration != null && calibration.scaled() && calibration.pixelWidth == calibration.pixelHeight) {
+            if (calibration != null && calibration.scaled() && calibration.pixelWidth == calibration.pixelHeight) {
                 infoArea.setText(String.format("Length: %f px (%f %s)\n" +
                                 "Length (+ mouse): %f px (%f %s)",
                         length,
@@ -110,8 +110,7 @@ public class PolygonMaskDrawer2DTool extends MaskDrawer2DTool {
                         lengthPlusMouse,
                         lengthPlusMouse * calibration.pixelWidth,
                         calibration.getXUnit()));
-            }
-            else {
+            } else {
                 infoArea.setText(String.format("Length: %f px\n" +
                                 "Length (+ mouse): %f px",
                         length,

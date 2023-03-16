@@ -13,30 +13,14 @@
 
 package org.hkijena.jipipe.extensions.graphannotation;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.eventbus.Subscribe;
-import ij.Menus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.JIPipeJsonExtension;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionRegistrationTask;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
-
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class GraphAnnotationExtension extends JIPipePrepackagedDefaultJavaExtension {

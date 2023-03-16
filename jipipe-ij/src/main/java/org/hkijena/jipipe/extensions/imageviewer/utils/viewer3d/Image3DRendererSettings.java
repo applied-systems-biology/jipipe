@@ -11,6 +11,7 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
     private OptionalIntegerParameter overrideResamplingFactor = new OptionalIntegerParameter(false, 2);
 
     private int maximumMemory = 128;
+
     public Image3DRendererSettings() {
     }
 
@@ -62,10 +63,9 @@ public class Image3DRendererSettings extends AbstractJIPipeParameterCollection {
     }
 
     public int getResamplingFactor(ImagePlus image) {
-        if(overrideResamplingFactor.isEnabled()) {
+        if (overrideResamplingFactor.isEnabled()) {
             return Math.max(1, overrideResamplingFactor.getContent());
-        }
-        else {
+        } else {
             return (int) Math.ceil(getExpectedMemoryAllocationMegabytes(image) / Math.max(64, maximumMemory));
         }
     }

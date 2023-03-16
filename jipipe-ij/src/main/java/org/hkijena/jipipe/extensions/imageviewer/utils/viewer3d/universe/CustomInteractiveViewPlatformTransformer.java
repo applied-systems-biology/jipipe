@@ -4,7 +4,6 @@ import ij3d.ImageCanvas3D;
 import ij3d.behaviors.BehaviorCallback;
 import ij3d.behaviors.InteractiveViewPlatformTransformer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.StandardView;
-import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.universe.CustomImage3DUniverse;
 import org.scijava.java3d.Transform3D;
 import org.scijava.java3d.TransformGroup;
 import org.scijava.vecmath.*;
@@ -16,37 +15,40 @@ import java.awt.event.MouseWheelEvent;
  * Copy of all contents of {@link ij3d.behaviors.ViewPlatformTransformer} and {@link InteractiveViewPlatformTransformer}, so the behavior can be changed
  */
 public class CustomInteractiveViewPlatformTransformer {
-    protected CustomImage3DUniverse universe;
-    protected ImageCanvas3D canvas;
-
+    private static final double ONE_RAD = 2 * Math.PI / 360;
     protected final Point3d rotCenter = new Point3d();
-
     private final BehaviorCallback callback;
-
     private final TransformGroup centerTG;
     private final TransformGroup rotationTG;
     private final TransformGroup zoomTG;
     private final TransformGroup translateTG;
-
     private final Transform3D centerXform = new Transform3D();
     private final Transform3D rotationXform = new Transform3D();
     private final Transform3D zoomXform = new Transform3D();
     private final Transform3D translateXform = new Transform3D();
-
     private final Point3d origin = new Point3d(0, 0, 0);
     private final Point3d eyePos = new Point3d();
-
     private final Point3d oneInX = new Point3d(1, 0, 0);
     private final Point3d oneInY = new Point3d(0, 1, 0);
     private final Point3d oneInZ = new Point3d(0, 0, 1);
-
     private final Vector3d zDir = new Vector3d();
     private final Vector3d xDir = new Vector3d();
     private final Vector3d yDir = new Vector3d();
-
     private final Vector3d centerV = new Vector3d();
-
     private final Transform3D ipToVWorld = new Transform3D();
+    private final Transform3D tmp = new Transform3D();
+    private final Point2d originInCanvas = new Point2d();
+    private final Point3d originOnIp = new Point3d();
+    private final Point3d currentPtOnIp = new Point3d();
+    private final AxisAngle4d aa = new AxisAngle4d();
+    private final Vector3d tmpV = new Vector3d();
+    private final AxisAngle4d aa2 = new AxisAngle4d();
+    private final Transform3D tmp2 = new Transform3D();
+    private final Point3d tmpP = new Point3d();
+    private final Transform3D ipToVWorldInverse = new Transform3D();
+    protected CustomImage3DUniverse universe;
+    protected ImageCanvas3D canvas;
+    private int xLast, yLast;
 
     /**
      * Initialize this ViewPlatformTransformer.
@@ -96,8 +98,6 @@ public class CustomInteractiveViewPlatformTransformer {
         universe.getViewer().getView().setBackClipDistance(5 * d);
         universe.getViewer().getView().setFrontClipDistance(5 * d / 100);
     }
-
-    private final Transform3D tmp = new Transform3D();
 
     /**
      * Zoom by the specified amounts of units.
@@ -157,10 +157,6 @@ public class CustomInteractiveViewPlatformTransformer {
         rotCenter.set(center);
     }
 
-    private final Point2d originInCanvas = new Point2d();
-    private final Point3d originOnIp = new Point3d();
-    private final Point3d currentPtOnIp = new Point3d();
-
     /**
      * Translates the view suitable to a mouse movement by dxPix and dyPix on the
      * canvas.
@@ -219,8 +215,7 @@ public class CustomInteractiveViewPlatformTransformer {
             angle4d = new AxisAngle4d(1, 0, 0, Math.PI);
         } else if (standardView == StandardView.Bottom) {
             angle4d = new AxisAngle4d(0, 0, 1, Math.PI);
-        }
-        else if (standardView == StandardView.North) {
+        } else if (standardView == StandardView.North) {
             angle4d = new AxisAngle4d(0, -1, 1, Math.PI);
         } else if (standardView == StandardView.South) {
             angle4d = new AxisAngle4d(0, 1, 1, Math.PI);
@@ -228,8 +223,7 @@ public class CustomInteractiveViewPlatformTransformer {
             angle4d = new AxisAngle4d(1, 0, 1, Math.PI);
         } else if (standardView == StandardView.West) {
             angle4d = new AxisAngle4d(1, 0, -1, Math.PI);
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported: " + standardView);
         }
 
@@ -255,9 +249,6 @@ public class CustomInteractiveViewPlatformTransformer {
         xDir.add(yDir);
         translate(xDir);
     }
-
-    private final AxisAngle4d aa = new AxisAngle4d();
-    private final Vector3d tmpV = new Vector3d();
 
     /**
      * Rotates the view around the global rotation center by the specified angle
@@ -313,9 +304,6 @@ public class CustomInteractiveViewPlatformTransformer {
         rotationTG.setTransform(rotationXform);
         transformChanged(BehaviorCallback.ROTATE, rotationXform);
     }
-
-    private final AxisAngle4d aa2 = new AxisAngle4d();
-    private final Transform3D tmp2 = new Transform3D();
 
     /**
      * Rotates the view around the center of view by the specified angles around
@@ -386,9 +374,6 @@ public class CustomInteractiveViewPlatformTransformer {
         origin.set(0, 0, 0);
         pointInCanvas(origin, out);
     }
-
-    private final Point3d tmpP = new Point3d();
-    private final Transform3D ipToVWorldInverse = new Transform3D();
 
     /**
      * Calculates where the specified point in the vworld space is placed on the
@@ -527,9 +512,6 @@ public class CustomInteractiveViewPlatformTransformer {
     private void transformChanged(final int type, final Transform3D t) {
         if (callback != null) callback.transformChanged(type, t);
     }
-
-    private static final double ONE_RAD = 2 * Math.PI / 360;
-    private int xLast, yLast;
 
     /**
      * This method should be called when a new transformation is started (i.e.

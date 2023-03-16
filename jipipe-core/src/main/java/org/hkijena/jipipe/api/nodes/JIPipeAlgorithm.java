@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -32,7 +29,6 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -170,7 +166,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     @Override
     public boolean functionallyEquals(Object other) {
-        if(!super.functionallyEquals(other))
+        if (!super.functionallyEquals(other))
             return false;
 
         JIPipeGraphNode otherNode = (JIPipeGraphNode) other;
@@ -178,23 +174,23 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         // Compare slots and their data type (other properties do not matter)
         for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
             JIPipeInputDataSlot otherInputSlot = otherNode.getInputSlot(inputSlot.getName());
-            if(otherInputSlot == null || otherInputSlot.getInfo().getDataClass() != inputSlot.getInfo().getDataClass()) {
+            if (otherInputSlot == null || otherInputSlot.getInfo().getDataClass() != inputSlot.getInfo().getDataClass()) {
                 return false;
             }
         }
         for (JIPipeInputDataSlot inputSlot : otherNode.getInputSlots()) {
-            if(getInputSlot(inputSlot.getName()) == null) {
+            if (getInputSlot(inputSlot.getName()) == null) {
                 return false;
             }
         }
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
             JIPipeDataSlot otherOutputSlot = otherNode.getOutputSlot(outputSlot.getName());
-            if(otherOutputSlot == null || otherOutputSlot.getInfo().getDataClass() != outputSlot.getInfo().getDataClass()) {
+            if (otherOutputSlot == null || otherOutputSlot.getInfo().getDataClass() != outputSlot.getInfo().getDataClass()) {
                 return false;
             }
         }
         for (JIPipeOutputDataSlot outputSlot : otherNode.getOutputSlots()) {
-            if(getOutputSlot(outputSlot.getName()) == null) {
+            if (getOutputSlot(outputSlot.getName()) == null) {
                 return false;
             }
         }
@@ -203,32 +199,28 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         JIPipeParameterTree here = new JIPipeParameterTree(this);
         JIPipeParameterTree there = new JIPipeParameterTree(otherNode);
 
-        if(!here.getParameters().keySet().equals(there.getParameters().keySet()))
+        if (!here.getParameters().keySet().equals(there.getParameters().keySet()))
             return false;
 
         for (String key : here.getParameters().keySet()) {
             Object hereObj = here.getParameters().get(key).get(Object.class);
             Object thereObj = there.getParameters().get(key).get(Object.class);
-            if(hereObj == null && thereObj == null) {
+            if (hereObj == null && thereObj == null) {
                 // Continue
-            }
-            else if(hereObj == null || thereObj == null) {
+            } else if (hereObj == null || thereObj == null) {
                 // Not equal
                 return false;
-            }
-            else if(Objects.equals(hereObj, thereObj)) {
+            } else if (Objects.equals(hereObj, thereObj)) {
                 // Continue
-            }
-            else if(hereObj instanceof JIPipeFunctionallyComparable) {
-                if(!((JIPipeFunctionallyComparable) hereObj).functionallyEquals(thereObj)) {
+            } else if (hereObj instanceof JIPipeFunctionallyComparable) {
+                if (!((JIPipeFunctionallyComparable) hereObj).functionallyEquals(thereObj)) {
                     return false;
                 }
-            }
-            else {
+            } else {
                 // Serialization-based comparison (slow, but very portable)
                 String serializedHere = JsonUtils.toJsonString(hereObj);
                 String serializedThere = JsonUtils.toJsonString(thereObj);
-                if(!serializedThere.equals(serializedHere)) {
+                if (!serializedThere.equals(serializedHere)) {
                     return false;
                 }
             }

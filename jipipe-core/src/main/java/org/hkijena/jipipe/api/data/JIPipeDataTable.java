@@ -115,6 +115,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     /**
      * Creates a copy of this data table that contains only {@link JIPipeWeakDataReferenceData} data and data annotations
      * (If any data is already weak, it is left as-is)
+     *
      * @return weakly referencing shallow copy of the data as table
      */
     public JIPipeDataTable toWeakCopy() {
@@ -564,9 +565,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Sets a text annotation
-     * @param row the row
+     *
+     * @param row    the row
      * @param column the column
-     * @param value the value
+     * @param value  the value
      */
     public void setTextAnnotation(int row, String column, String value) {
         List<JIPipeTextAnnotation> columnData = getOrCreateTextAnnotationColumnData(column);
@@ -575,7 +577,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Sets a text annotation
-     * @param row the row
+     *
+     * @param row        the row
      * @param annotation the annotation
      */
     public void setTextAnnotation(int row, JIPipeTextAnnotation annotation) {
@@ -586,7 +589,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     /**
      * Sets a data annotation
      *
-     * @param row    the row
+     * @param row        the row
      * @param annotation the annotation
      */
     public void setDataAnnotation(int row, JIPipeDataAnnotation annotation) {
@@ -1050,7 +1053,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      *
      * @param sourceSlot   The other slot
      * @param progressInfo the progress
-     * @deprecated  use addDataFromSlot
+     * @deprecated use addDataFromSlot
      */
     @Deprecated
     public void addData(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {

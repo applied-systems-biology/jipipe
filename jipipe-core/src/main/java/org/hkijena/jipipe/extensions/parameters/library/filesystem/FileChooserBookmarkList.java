@@ -4,6 +4,7 @@ import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
 public class FileChooserBookmarkList extends ListParameter<FileChooserBookmark> {
     /**
+     *
      */
     public FileChooserBookmarkList() {
         super(FileChooserBookmark.class);

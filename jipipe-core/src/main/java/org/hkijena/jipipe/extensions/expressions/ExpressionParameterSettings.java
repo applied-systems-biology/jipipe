@@ -43,6 +43,7 @@ public @interface ExpressionParameterSettings {
     /**
      * Hint displayed in the UI.
      * Should explain what the expression does or when it is applied
+     *
      * @return the hint
      */
     String hint() default "";

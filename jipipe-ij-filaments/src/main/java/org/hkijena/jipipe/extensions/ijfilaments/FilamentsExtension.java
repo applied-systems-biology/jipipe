@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.extensions.ijfilaments;
 
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.*;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
@@ -29,12 +32,11 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsT
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentEdgesByProperties;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentVerticesByProperties;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.RemoveBorderFilaments;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureFilamentsAlgorithm;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.RemoveDuplicateVerticesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.ImportFilamentsFromJsonAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToFilaments2DAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToSimplifiedFilamentsFijiAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureEdgesAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureVerticesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.merge.MergeFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.ChangeFilamentVertexPropertiesAlgorithm;
@@ -42,6 +44,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexIntensity
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexMetadataFromImageAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexRadiusFromImageAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.FixOverlapsNonBranchingAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.RemoveDuplicateVerticesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SimplifyFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;

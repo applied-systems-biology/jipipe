@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.operations.integrating;
 
 import gnu.trove.map.TDoubleIntMap;
-import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TDoubleIntHashMap;
-import gnu.trove.map.hash.TIntIntHashMap;
-import org.apache.commons.math3.stat.descriptive.rank.Median;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
@@ -37,7 +34,7 @@ public class StatisticsModeIntegratingColumnOperation implements IntegratingColu
         int maxCount = -1;
         for (double key : map.keys()) {
             int count = map.get(key);
-            if(count > maxCount) {
+            if (count > maxCount) {
                 maxKey = key;
                 maxCount = count;
             }

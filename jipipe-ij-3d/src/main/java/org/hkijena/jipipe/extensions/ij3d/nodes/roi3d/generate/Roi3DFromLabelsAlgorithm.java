@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate;
 import ij.ImagePlus;
 import mcib3d.geom.Object3D;
 import mcib3d.geom.Objects3DPopulation;
-import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -12,10 +11,6 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
@@ -67,20 +62,20 @@ public class Roi3DFromLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             List<Object3D> toRemove = new ArrayList<>();
             progressInfo.log("Applying filters ...");
             for (Object3D object3D : population.getObjectsList()) {
-                if(excludeEdges && object3D.edgeImage(imageHandler, true, true)) {
+                if (excludeEdges && object3D.edgeImage(imageHandler, true, true)) {
                     toRemove.add(object3D);
                     continue;
                 }
-                if(minParticleSize > 0 || maxParticleSize < Double.POSITIVE_INFINITY) {
+                if (minParticleSize > 0 || maxParticleSize < Double.POSITIVE_INFINITY) {
                     double area = measureInPhysicalUnits ? object3D.getAreaUnit() : object3D.getAreaPixels();
-                    if(area < minParticleSize || area > maxParticleSize) {
+                    if (area < minParticleSize || area > maxParticleSize) {
                         toRemove.add(object3D);
                         continue;
                     }
                 }
-                if(minParticleSphericity > 0 || maxParticleSphericity != 1) {
+                if (minParticleSphericity > 0 || maxParticleSphericity != 1) {
                     double sphericity = object3D.getSphericity(measureInPhysicalUnits);
-                    if(sphericity < minParticleSphericity || sphericity > maxParticleSphericity) {
+                    if (sphericity < minParticleSphericity || sphericity > maxParticleSphericity) {
                         toRemove.add(object3D);
                     }
                 }

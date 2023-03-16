@@ -98,8 +98,7 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
                     throw new RuntimeException(e);
                 }
             }
-        }
-        finally {
+        } finally {
             dataTables.clear();
         }
     }

@@ -46,8 +46,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -65,6 +65,34 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     public Filaments3DData(Filaments3DData other) {
         super(FilamentEdge.class);
         mergeWithCopy(other);
+    }
+
+    public static Filaments3DData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Filaments3DData graph;
+        JSONImporter<FilamentVertex, FilamentEdge> importer = new JSONImporter<>();
+        Path jsonPath = storage.findFileByExtension(".json").get();
+        try (InputStream stream = storage.open(jsonPath)) {
+            graph = JsonUtils.getObjectMapper().readValue(stream, Filaments3DData.class);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return graph;
+    }
+
+    private static void calculateNewVertexLocation(double factorX, double factorY, double factorZ, DefaultExpressionParameter locationMergingFunction, Map<FilamentVertex, Point3d> locationMap, ExpressionVariables variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
+        // Apply average where applicable
+        if (factorX > 0) {
+            variables.set("values", group.stream().map(v -> locationMap.get(v).getX()).collect(Collectors.toList()));
+            vertex.getSpatialLocation().setX(locationMergingFunction.evaluateToInteger(variables));
+        }
+        if (factorY > 0) {
+            variables.set("values", group.stream().map(v -> locationMap.get(v).getY()).collect(Collectors.toList()));
+            vertex.getSpatialLocation().setY(locationMergingFunction.evaluateToInteger(variables));
+        }
+        if (factorZ > 0) {
+            variables.set("values", group.stream().map(v -> locationMap.get(v).getZ()).collect(Collectors.toList()));
+            vertex.getSpatialLocation().setZ(locationMergingFunction.evaluateToInteger(variables));
+        }
     }
 
     public void mergeWithCopy(Filaments3DData other) {
@@ -97,7 +125,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        try(OutputStream stream = storage.write("graph.json")) {
+        try (OutputStream stream = storage.write("graph.json")) {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(stream, this);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -119,20 +147,20 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     @Override
     public Component preview(int width, int height) {
         Rectangle boundsXY = getBoundsXY();
-        if(boundsXY.width == 0)
+        if (boundsXY.width == 0)
             boundsXY.width = width;
-        if(boundsXY.height == 0)
+        if (boundsXY.height == 0)
             boundsXY.height = height;
         double scale = Math.min(1.0 * width / boundsXY.width, 1.0 * height / boundsXY.height);
-        BufferedImage image = new BufferedImage((int)(boundsXY.width * scale), (int)(boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage((int) (boundsXY.width * scale), (int) (boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
         Graphics2D graphics = image.createGraphics();
         for (FilamentEdge edge : edgeSet()) {
             FilamentVertex edgeSource = getEdgeSource(edge);
             FilamentVertex edgeTarget = getEdgeTarget(edge);
-            int x1 = (int)Math.round((edgeSource.getSpatialLocation().getX() - boundsXY.x) * scale);
-            int y1 = (int)Math.round((edgeSource.getSpatialLocation().getY() - boundsXY.y) * scale);
-            int x2 = (int)Math.round((edgeTarget.getSpatialLocation().getX() - boundsXY.x) * scale);
-            int y2 = (int)Math.round((edgeTarget.getSpatialLocation().getY() - boundsXY.y) * scale);
+            int x1 = (int) Math.round((edgeSource.getSpatialLocation().getX() - boundsXY.x) * scale);
+            int y1 = (int) Math.round((edgeSource.getSpatialLocation().getY() - boundsXY.y) * scale);
+            int x2 = (int) Math.round((edgeTarget.getSpatialLocation().getX() - boundsXY.x) * scale);
+            int y2 = (int) Math.round((edgeTarget.getSpatialLocation().getY() - boundsXY.y) * scale);
             graphics.setPaint(edge.getColor());
             graphics.drawLine(x1, y1, x2, y2);
         }
@@ -151,23 +179,10 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return String.format("Filaments [%d vertices, %d edges]", vertexSet().size(), edgeSet().size());
     }
 
-
-    public static Filaments3DData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        Filaments3DData graph;
-        JSONImporter<FilamentVertex, FilamentEdge> importer = new JSONImporter<>();
-        Path jsonPath = storage.findFileByExtension(".json").get();
-        try(InputStream stream = storage.open(jsonPath)) {
-            graph = JsonUtils.getObjectMapper().readValue(stream, Filaments3DData.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return graph;
-    }
-
     public ROIListData toRoi(boolean ignoreNon2DEdges, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius) {
         ROIListData outputData = new ROIListData();
 
-        if(withEdges) {
+        if (withEdges) {
             for (FilamentEdge edge : edgeSet()) {
                 FilamentVertex edgeSource = getEdgeSource(edge);
                 FilamentVertex edgeTarget = getEdgeTarget(edge);
@@ -184,7 +199,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 }
             }
         }
-        if(withVertices) {
+        if (withVertices) {
             for (FilamentVertex vertex : vertexSet()) {
                 outputData.add(vertexToRoi(vertex, forcedVertexRadius));
             }
@@ -197,7 +212,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         Point3d centroid = vertex.getSpatialLocation();
         NonSpatialPoint3d nonSpatialLocation = vertex.getNonSpatialLocation();
         double radius = vertex.getRadius();
-        if(forcedVertexRadius > 0) {
+        if (forcedVertexRadius > 0) {
             radius = forcedVertexRadius;
         }
         EllipseRoi roi = new EllipseRoi(centroid.getX() - radius / 2.0,
@@ -222,10 +237,9 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         roi.setStrokeColor(edge.getColor());
 //        roi.setFillColor(edge.getColor());
         double thickness = Math.min(edgeSource.getRadius(), edgeTarget.getRadius());
-        if(forcedLineThickness == 0) {
+        if (forcedLineThickness == 0) {
             thickness = 1;
-        }
-        else if(forcedLineThickness > 0) {
+        } else if (forcedLineThickness > 0) {
             thickness = forcedLineThickness;
         }
         roi.setStrokeWidth(thickness);
@@ -237,7 +251,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     public void removeDuplicateVertices(boolean onlySameComponent) {
         Multimap<Point3d, FilamentVertex> multimap = groupVerticesByLocation();
         Map<FilamentVertex, Integer> componentIds;
-        if(onlySameComponent) {
+        if (onlySameComponent) {
             componentIds = findComponentIds();
         } else {
             componentIds = null;
@@ -245,20 +259,19 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
         for (Point3d location : multimap.keySet()) {
             Collection<FilamentVertex> vertices = multimap.get(location);
-            if(onlySameComponent) {
+            if (onlySameComponent) {
                 Map<Integer, List<FilamentVertex>> groups = vertices.stream().collect(Collectors.groupingBy(componentIds::get));
                 for (List<FilamentVertex> vertexList : groups.values()) {
                     mergeVertices(vertexList);
                 }
-            }
-            else {
+            } else {
                 mergeVertices(vertices);
             }
         }
     }
 
     public void mergeVertices(Collection<FilamentVertex> vertices) {
-        if(vertices.size() > 1) {
+        if (vertices.size() > 1) {
             // Apply merge
             FilamentVertex referenceVertex = vertices.iterator().next();
 
@@ -289,13 +302,13 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     }
 
     public void addEdgeIgnoreLoops(FilamentVertex source, FilamentVertex target) {
-        if(!Objects.equals(source, target)) {
+        if (!Objects.equals(source, target)) {
             addEdge(source, target);
         }
     }
 
     public void addEdgeIgnoreLoops(FilamentVertex source, FilamentVertex target, FilamentEdge edge) {
-        if(!Objects.equals(source, target)) {
+        if (!Objects.equals(source, target)) {
             addEdge(source, target, edge);
         }
     }
@@ -304,7 +317,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         for (FilamentEdge edge : ImmutableList.copyOf(edgeSet())) {
             FilamentVertex edgeSource = getEdgeSource(edge);
             FilamentVertex edgeTarget = getEdgeTarget(edge);
-            if(edgeSource == edgeTarget) {
+            if (edgeSource == edgeTarget) {
                 removeEdge(edge);
             }
         }
@@ -393,7 +406,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             locationMap.put(vertex, new Point3d(vertex.getSpatialLocation()));
         }
         Map<FilamentVertex, Integer> componentIds;
-        if(enforceSameComponent) {
+        if (enforceSameComponent) {
             componentIds = findComponentIds();
         } else {
             componentIds = null;
@@ -402,19 +415,19 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         // Downscale
         for (FilamentVertex vertex : vertexSet()) {
             Point3d centroid = vertex.getSpatialLocation();
-            if(factorX > 0) {
-                centroid.setX((int)Math.round(centroid.getX() / factorX));
+            if (factorX > 0) {
+                centroid.setX((int) Math.round(centroid.getX() / factorX));
             }
-            if(factorY > 0) {
-                centroid.setY((int)Math.round(centroid.getY() / factorY));
+            if (factorY > 0) {
+                centroid.setY((int) Math.round(centroid.getY() / factorY));
             }
-            if(factorZ > 0) {
-                centroid.setZ((int)Math.round(centroid.getZ() / factorZ));
+            if (factorZ > 0) {
+                centroid.setZ((int) Math.round(centroid.getZ() / factorZ));
             }
         }
 
         // Remove duplicates
-       removeDuplicateVertices(enforceSameComponent);
+        removeDuplicateVertices(enforceSameComponent);
 
         // Group vertices by location and calculate a new centroid
         Multimap<Point3d, FilamentVertex> multimap = groupVerticesByLocation();
@@ -424,7 +437,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             vertex.setSpatialLocation(locationMap.get(vertex));
             Collection<FilamentVertex> group = multimap.get(vertex.getSpatialLocation());
 
-            if(group.size() > 1) {
+            if (group.size() > 1) {
                 if (enforceSameComponent) {
                     int component = componentIds.get(vertex);
                     Set<FilamentVertex> group2 = new HashSet<>();
@@ -442,22 +455,6 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
         // Cleanup
         removeSelfEdges();
-    }
-
-    private static void calculateNewVertexLocation(double factorX, double factorY, double factorZ, DefaultExpressionParameter locationMergingFunction, Map<FilamentVertex, Point3d> locationMap, ExpressionVariables variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
-        // Apply average where applicable
-        if(factorX > 0) {
-            variables.set("values", group.stream().map(v -> locationMap.get(v).getX()).collect(Collectors.toList()));
-            vertex.getSpatialLocation().setX(locationMergingFunction.evaluateToInteger(variables));
-        }
-        if(factorY > 0) {
-            variables.set("values", group.stream().map(v -> locationMap.get(v).getY()).collect(Collectors.toList()));
-            vertex.getSpatialLocation().setY(locationMergingFunction.evaluateToInteger(variables));
-        }
-        if(factorZ > 0) {
-            variables.set("values", group.stream().map(v -> locationMap.get(v).getZ()).collect(Collectors.toList()));
-            vertex.getSpatialLocation().setZ(locationMergingFunction.evaluateToInteger(variables));
-        }
     }
 
     public boolean isEmpty() {
@@ -490,7 +487,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         Map<FilamentVertex, Integer> result = new HashMap<>();
         int component = 0;
         for (Set<FilamentVertex> connectedSet : connectivityInspector.connectedSets()) {
-            for(FilamentVertex vertex : connectedSet) {
+            for (FilamentVertex vertex : connectedSet) {
                 result.put(vertex, component);
             }
             ++component;
@@ -505,44 +502,44 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         for (Set<FilamentVertex> connectedSet : connectivityInspector.connectedSets()) {
             boolean found = false;
             for (FilamentVertex vertex : connectedSet) {
-                if(removeInX) {
+                if (removeInX) {
                     double xMin = vertex.getXMin(useThickness);
                     double xMax = vertex.getXMax(useThickness);
-                    if(xMin <= borderDistance) {
+                    if (xMin <= borderDistance) {
                         found = true;
                         break;
                     }
-                    if(xMax >= reference.getWidth() - borderDistance - 1) {
+                    if (xMax >= reference.getWidth() - borderDistance - 1) {
                         found = true;
                         break;
                     }
                 }
-                if(removeInY) {
+                if (removeInY) {
                     double yMin = vertex.getYMin(useThickness);
                     double yMax = vertex.getYMax(useThickness);
-                    if(yMin <= borderDistance) {
+                    if (yMin <= borderDistance) {
                         found = true;
                         break;
                     }
-                    if(yMax >= reference.getHeight() - borderDistance - 1) {
+                    if (yMax >= reference.getHeight() - borderDistance - 1) {
                         found = true;
                         break;
                     }
                 }
-                if(removeInZ) {
+                if (removeInZ) {
                     double zMin = vertex.getZMin(useThickness);
                     double zMax = vertex.getZMax(useThickness);
-                    if(zMin <= borderDistance) {
+                    if (zMin <= borderDistance) {
                         found = true;
                         break;
                     }
-                    if(zMax >= reference.getNSlices() - borderDistance - 1) {
+                    if (zMax >= reference.getNSlices() - borderDistance - 1) {
                         found = true;
                         break;
                     }
                 }
             }
-            if(found) {
+            if (found) {
                 toDelete.addAll(connectedSet);
             }
         }
@@ -559,7 +556,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         do {
             updated = false;
             for (FilamentVertex vertex : ImmutableList.copyOf(vertexSet())) {
-                if(degreeOf(vertex) == 2) {
+                if (degreeOf(vertex) == 2) {
                     List<FilamentVertex> neighbors = Graphs.neighborListOf(this, vertex);
                     addEdge(neighbors.get(0), neighbors.get(1));
                     removeVertex(vertex);
@@ -567,11 +564,12 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 }
             }
         }
-        while(updated);
+        while (updated);
     }
 
     /**
      * Returns a shallow copy (the vertices and edges are not copied)
+     *
      * @return the shallow copy
      */
     public Filaments3DData shallowCopy() {
@@ -587,20 +585,21 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
     /**
      * Extracts a shallow copy of the nodes end edges that only contains the selected vertices
+     *
      * @param vertices the vertices
      * @return the shallow copy
      */
     public Filaments3DData extractShallowCopy(Set<FilamentVertex> vertices) {
         Filaments3DData copy = new Filaments3DData();
         for (FilamentVertex vertex : vertexSet()) {
-            if(vertices.contains(vertex)) {
+            if (vertices.contains(vertex)) {
                 copy.addVertex(vertex);
             }
         }
         for (FilamentEdge edge : edgeSet()) {
             FilamentVertex edgeSource = getEdgeSource(edge);
             FilamentVertex edgeTarget = getEdgeTarget(edge);
-            if(vertices.contains(edgeSource) || vertices.contains(edgeTarget)) {
+            if (vertices.contains(edgeSource) || vertices.contains(edgeTarget)) {
                 copy.addEdge(edgeSource, edgeTarget, edge);
             }
         }
@@ -650,11 +649,10 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             double sumEdgeLengthCorrected = sumEdgeLength;
             for (FilamentVertex vertex : vertices) {
                 int degree = degreeOf(vertex);
-                if(degree == 0) {
+                if (degree == 0) {
                     // Count radius 2 times
                     sumEdgeLengthCorrected += vertex.getRadius() * 2;
-                }
-                else if(degree == 1) {
+                } else if (degree == 1) {
                     // Count radius 1 time
                     sumEdgeLengthCorrected += vertex.getRadius();
                 }
@@ -671,11 +669,10 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             double simplifiedSumEdgeLengthCorrected = simplifiedSumEdgeLength;
             for (FilamentVertex vertex : simplified.vertexSet()) {
                 int degree = simplified.degreeOf(vertex);
-                if(degree == 0) {
+                if (degree == 0) {
                     // Count radius 2 times
                     simplifiedSumEdgeLengthCorrected += vertex.getRadius() * 2;
-                }
-                else if(degree == 1) {
+                } else if (degree == 1) {
                     // Count radius 1 time
                     simplifiedSumEdgeLengthCorrected += vertex.getRadius();
                 }
@@ -802,40 +799,39 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         ImageJUtils.forEachIndexedCTStack(blankCanvas, (imp, index, ctProgress) -> {
             ExtendedObjectCreator3D objectCreator3D = new ExtendedObjectCreator3D(ImageHandler.wrap(imp));
             for (int i = 0; i < connectedSets.size(); i++) {
-                if(ctProgress.isCancelled())
+                if (ctProgress.isCancelled())
                     return;
                 Set<FilamentVertex> connectedSet = connectedSets.get(i);
                 ctProgress.resolveAndLog("Component", i, connectedSets.size());
 
                 boolean found = false;
                 for (FilamentVertex vertex : connectedSet) {
-                    if(vertex.getNonSpatialLocation().getFrame() == index.getT() || vertex.getNonSpatialLocation().getChannel() == index.getC()) {
+                    if (vertex.getNonSpatialLocation().getFrame() == index.getT() || vertex.getNonSpatialLocation().getChannel() == index.getC()) {
                         found = true;
                         break;
                     }
                 }
 
-                if(!found)
+                if (!found)
                     continue;
 
                 objectCreator3D.reset();
-                if(withEdges) {
+                if (withEdges) {
                     Filaments3DData extracted = extractShallowCopy(connectedSet);
                     for (FilamentEdge edge : extracted.edgeSet()) {
-                        if(ctProgress.isCancelled())
+                        if (ctProgress.isCancelled())
                             return;
                         FilamentVertex source = extracted.getEdgeSource(edge);
                         FilamentVertex target = extracted.getEdgeTarget(edge);
-                        if(forcedLineThickness >= 0) {
+                        if (forcedLineThickness >= 0) {
                             objectCreator3D.createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
                                     target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
                                     1,
                                     forcedLineThickness);
-                        }
-                        else {
+                        } else {
                             int sourceRadius = (int) source.getRadius();
-                            int targetRadius = (int)target.getRadius();
-                            if(forcedVertexRadius > 0) {
+                            int targetRadius = (int) target.getRadius();
+                            if (forcedVertexRadius > 0) {
                                 sourceRadius = forcedVertexRadius;
                                 targetRadius = forcedVertexRadius;
                             }
@@ -847,12 +843,12 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                         }
                     }
                 }
-                if(withVertices) {
+                if (withVertices) {
                     for (FilamentVertex vertex : connectedSet) {
-                        if(ctProgress.isCancelled())
+                        if (ctProgress.isCancelled())
                             return;
                         int radius = (int) vertex.getRadius();
-                        if(forcedVertexRadius > 0) {
+                        if (forcedVertexRadius > 0) {
                             radius = forcedVertexRadius;
                         }
                         objectCreator3D.createSphere(vertex.getSpatialLocation().getX(),

@@ -41,8 +41,8 @@ import java.util.*;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ExpressionTableColumnGeneratorProcessorParameterList expressionList = new ExpressionTableColumnGeneratorProcessorParameterList();
     private final CustomExpressionVariablesParameter customExpressionVariables;
+    private ExpressionTableColumnGeneratorProcessorParameterList expressionList = new ExpressionTableColumnGeneratorProcessorParameterList();
 
     public ApplyExpressionPerRowAlgorithm(JIPipeNodeInfo info) {
         super(info);

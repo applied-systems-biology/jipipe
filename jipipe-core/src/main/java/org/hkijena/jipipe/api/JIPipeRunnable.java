@@ -14,7 +14,8 @@
 package org.hkijena.jipipe.api;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.ui.running.*;
+import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 
 import java.util.function.Consumer;
 

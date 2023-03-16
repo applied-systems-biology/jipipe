@@ -26,42 +26,35 @@ public class CustomInteractiveBehavior extends InteractiveBehavior {
         final Content c = univ.getSelected();
         CustomInteractiveViewPlatformTransformer viewTransformer = imageViewerPanel3D.getUniverse().getCustomInteractiveViewPlatformTransformer();
 
-        if(id == MouseEvent.MOUSE_WHEEL) {
+        if (id == MouseEvent.MOUSE_WHEEL) {
             MouseWheelEvent mouseWheelEvent = (MouseWheelEvent) e;
             double amount = -mouseWheelEvent.getUnitsToScroll();
             long currentTick = System.currentTimeMillis();
             long timeBetweenLastTicks = currentTick - kineticZoomLastTick;
 
             double x = Math.max(0, Math.min(500, timeBetweenLastTicks));
-            double fac = Math.exp(-x/225.5) * 1.5;
+            double fac = Math.exp(-x / 225.5) * 1.5;
 
             viewTransformer.zoom(amount * fac);
             kineticZoomLastTick = currentTick;
-        }
-        else if(id == MouseEvent.MOUSE_CLICKED) {
+        } else if (id == MouseEvent.MOUSE_CLICKED) {
 
-        }
-        else if(id == MouseEvent.MOUSE_PRESSED) {
+        } else if (id == MouseEvent.MOUSE_PRESSED) {
             viewTransformer.init(e);
-        }
-        else if(id == MouseEvent.MOUSE_DRAGGED) {
-            if(SwingUtilities.isMiddleMouseButton(e)) {
-                if(e.isShiftDown() && !e.isControlDown()) {
+        } else if (id == MouseEvent.MOUSE_DRAGGED) {
+            if (SwingUtilities.isMiddleMouseButton(e)) {
+                if (e.isShiftDown() && !e.isControlDown()) {
                     viewTransformer.translate(e);
-                }
-                else if(!e.isShiftDown() && !e.isControlDown()) {
+                } else if (!e.isShiftDown() && !e.isControlDown()) {
                     viewTransformer.rotate(e);
                 }
-            }
-            else  if(SwingUtilities.isLeftMouseButton(e)) {
-                if(e.isShiftDown() && !e.isControlDown()) {
+            } else if (SwingUtilities.isLeftMouseButton(e)) {
+                if (e.isShiftDown() && !e.isControlDown()) {
                     viewTransformer.translate(e);
-                }
-                else if(!e.isShiftDown() && !e.isControlDown()) {
+                } else if (!e.isShiftDown() && !e.isControlDown()) {
                     viewTransformer.rotate(e);
                 }
-            }
-            else if(SwingUtilities.isRightMouseButton(e)) {
+            } else if (SwingUtilities.isRightMouseButton(e)) {
                 viewTransformer.translate(e);
             }
         }

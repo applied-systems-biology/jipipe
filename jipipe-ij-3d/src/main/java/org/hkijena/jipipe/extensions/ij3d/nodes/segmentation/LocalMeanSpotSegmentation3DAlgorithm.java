@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.segmentation;
 
 import mcib3d.image3d.segment.LocalThresholder;
-import mcib3d.image3d.segment.LocalThresholderDiff;
 import mcib3d.image3d.segment.LocalThresholderMean;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -17,7 +16,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 @JIPipeDocumentation(name = "3D spot segmentation (local mean)", description = "The node works with two images, one containing the seeds of the objects, " +
         "that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. " +
         "The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. " +
-"Three circles are drawn. The user defines the radius (in pixels) of each\n" +
+        "Three circles are drawn. The user defines the radius (in pixels) of each\n" +
         "circle, given that the first circle should be located within the object, while\n" +
         "the two other circles should be located outside of the object. The mean\n" +
         "intensities of the object (within the first circle), and of the background (in\n" +

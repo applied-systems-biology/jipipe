@@ -47,30 +47,28 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
     public void onImageChanged() {
         if (getCurrentImagePlus() != null) {
 
-            if(getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
+            if (getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
                 // Set to 0-255
                 calibrationModes.setSelectedItem(ImageJCalibrationMode.Depth8Bit);
-            }
-            else {
+            } else {
                 ImageProcessor processor = getCurrentImagePlus().getProcessor();
                 double min = processor.getMin();
                 double max = processor.getMax();
-                if(min != 0 || max != 0) {
+                if (min != 0 || max != 0) {
                     boolean found = false;
                     for (ImageJCalibrationMode mode : ImageJCalibrationMode.values()) {
-                        if(mode.getMin() == min && mode.getMax() == max) {
+                        if (mode.getMin() == min && mode.getMax() == max) {
                             calibrationModes.setSelectedItem(mode);
                             found = true;
                             break;
                         }
                     }
-                    if(!found) {
+                    if (!found) {
                         calibrationModes.setSelectedItem(ImageJCalibrationMode.Custom);
                         displayRangeCalibrationControl.updateFromCurrentSlice(true);
                         displayRangeCalibrationControl.setCustomMinMax(min, max);
                     }
-                }
-                else {
+                } else {
                     calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
                 }
             }

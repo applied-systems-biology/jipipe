@@ -88,7 +88,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
 
     /**
      * @param workbenchUI     the workbench UI
-     * @param dataTableStore       The slot
+     * @param dataTableStore  The slot
      * @param updateWithCache if the table should refresh on project cache changes
      */
     public JIPipeExtendedDataTableUI(JIPipeWorkbench workbenchUI, Store<JIPipeDataTable> dataTableStore, boolean updateWithCache) {

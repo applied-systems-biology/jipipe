@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -20,12 +18,9 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurement;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -44,16 +39,13 @@ import java.util.Set;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Components", autoCreate = true)
 public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
+    private final CustomExpressionVariablesParameter customFilterVariables;
     private OptionalAnnotationNameParameter componentNameAnnotation = new OptionalAnnotationNameParameter("Component", true);
     private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter("");
     private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();
-
     private boolean measureInPhysicalUnits = true;
     private boolean requireColocalization = true;
-
     private boolean preciseColocalization = true;
-
-    private final CustomExpressionVariablesParameter customFilterVariables;
 
     public SplitRoi3DIntoConnectedComponentsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -100,29 +92,26 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         for (int row = 0; row < measurements.getRowCount(); row++) {
             int roi1Index = (int) measurements.getValueAsDouble(row, "Current.Index");
             int roi2Index = (int) measurements.getValueAsDouble(row, "Other.Index");
-            if(StringUtils.isNullOrEmpty(overlapFilter.getExpression())) {
-                if(requireColocalization && preciseColocalization) {
+            if (StringUtils.isNullOrEmpty(overlapFilter.getExpression())) {
+                if (requireColocalization && preciseColocalization) {
                     // Already fulfilled
                     componentGraph.addEdge(roi1Index, roi2Index);
-                }
-                else if(measurements.containsColumn("Colocalization")) {
-                    if(measurements.getValueAsDouble(row, "Colocalization") > 0) {
+                } else if (measurements.containsColumn("Colocalization")) {
+                    if (measurements.getValueAsDouble(row, "Colocalization") > 0) {
                         componentGraph.addEdge(roi1Index, roi2Index);
                     }
-                }
-                else {
+                } else {
                     ROI3D roi1 = roiList.get(roi1Index);
                     ROI3D roi2 = roiList.get((int) measurements.getValueAsDouble(row, "Roi2.Index"));
-                    if(roi1.getObject3D().hasOneVoxelColoc(roi2.getObject3D())) {
+                    if (roi1.getObject3D().hasOneVoxelColoc(roi2.getObject3D())) {
                         componentGraph.addEdge(roi1Index, roi2Index);
                     }
                 }
-            }
-            else {
+            } else {
                 for (int col = 0; col < measurements.getColumnCount(); col++) {
                     variables.set(measurements.getColumnName(col), measurements.getValueAt(row, col));
                 }
-                if(overlapFilter.test(variables)) {
+                if (overlapFilter.test(variables)) {
                     componentGraph.addEdge(roi1Index, roi2Index);
                 }
             }

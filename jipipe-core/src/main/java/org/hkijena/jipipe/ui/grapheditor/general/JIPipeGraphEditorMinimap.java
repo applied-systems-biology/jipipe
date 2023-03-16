@@ -4,15 +4,11 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
-import org.hkijena.jipipe.utils.ui.ScreenImage;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
 
 /**
  * Renders a overview of the graph

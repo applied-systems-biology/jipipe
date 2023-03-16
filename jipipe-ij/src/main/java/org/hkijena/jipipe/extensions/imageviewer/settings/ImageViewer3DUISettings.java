@@ -26,10 +26,9 @@ import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 public class ImageViewer3DUISettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "image-viewer-ui-3d";
-    private boolean showSideBar = true;
-
-    private int defaultAnimationSpeed = 75;
     private final Image3DRendererSettings rendererSettings = new Image3DRendererSettings();
+    private boolean showSideBar = true;
+    private int defaultAnimationSpeed = 75;
 
     public static ImageViewer3DUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ImageViewer3DUISettings.class);

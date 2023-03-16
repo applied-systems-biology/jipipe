@@ -182,8 +182,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         } else {
                             break;
                         }
-                    }
-                    else if(!settings.enforceOverlap && withFiltering) {
+                    } else if (!settings.enforceOverlap && withFiltering) {
                         putMeasurementsIntoVariable(roi, firstPrefix, roi2, secondPrefix, variableSet, overlap, referenceImage, temp, settings.measureInPhysicalUnits);
                         if (settings.getOverlapFilter().test(variableSet)) {
                             overlapSuccess = true;
@@ -198,8 +197,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         second.remove(overlappingRoi);
                     }
                     overlapSuccess = true;
-                }
-                else if(overlapSuccess) {
+                } else if (overlapSuccess) {
                     if (settings.isConsumeOnOverlap()) {
                         // We consumed this overlap. Remove Roi2
                         second.remove(overlappingRoi);
@@ -248,7 +246,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             variableSet.set(secondPrefix + "." + secondMeasurements.getColumnName(col), secondMeasurements.getValueAt(0, col));
         }
 
-        if(overlap != null) {
+        if (overlap != null) {
             // Measure overlap
             temp.clear();
             temp.add(overlap);

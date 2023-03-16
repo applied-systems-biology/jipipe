@@ -60,7 +60,7 @@ public class SaveProjectAndCacheToZipRun implements JIPipeRunnable {
             }
         }
 
-        try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, zipFile)) {
+        try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, zipFile)) {
             Path outputPath = storage.getFileSystemPath();
             SaveProjectAndCacheToDirectoryRun run = new SaveProjectAndCacheToDirectoryRun(workbench, project, outputPath, false);
             run.setProgressInfo(progressInfo);

@@ -1,16 +1,7 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.segmentation;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.process.AutoThresholder;
-import mcib3d.geom.Object3D;
-import mcib3d.geom.Objects3DPopulation;
-import mcib3d.geom.Point3D;
-import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
-import mcib3d.image3d.ImageLabeller;
-import mcib3d.image3d.IterativeThresholding.TrackThreshold;
-import mcib3d.image3d.processing.FastFilters3D;
 import mcib3d.image3d.segment.Segment3DNuclei;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -20,13 +11,8 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.AutoThreshold2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
-
-import java.util.ArrayList;
 
 @JIPipeDocumentation(name = "3D nuclei segmentation", description = "This plugin is designed to segment nuclei from cell culture (not from tissues). " +
         "The method is based on a maximum Z-projection followed by a 2D Segmentation. " +

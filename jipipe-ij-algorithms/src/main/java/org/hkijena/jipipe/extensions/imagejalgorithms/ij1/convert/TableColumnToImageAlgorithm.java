@@ -36,7 +36,7 @@ public class TableColumnToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         TableColumn tableColumn = selectedColumn.pickOrGenerateColumn(tableData);
         FloatProcessor processor = new FloatProcessor(1, tableColumn.getRows());
         for (int i = 0; i < tableColumn.getRows(); i++) {
-            processor.setf(i, (float)tableColumn.getRowAsDouble(i));
+            processor.setf(i, (float) tableColumn.getRowAsDouble(i));
         }
         ImagePlus imagePlus = new ImagePlus(selectedColumn.getValue().getExpression(), processor);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DGreyscale32FData(imagePlus), progressInfo);

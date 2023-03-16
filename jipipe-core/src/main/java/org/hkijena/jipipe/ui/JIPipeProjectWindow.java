@@ -579,9 +579,9 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public void saveProjectAndCacheToZIP(String title) {
         Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, title, UIUtils.EXTENSION_FILTER_ZIP);
-        if(file == null)
+        if (file == null)
             return;
-        if(Files.exists(file)) {
+        if (Files.exists(file)) {
             try {
                 Files.delete(file);
             } catch (IOException e) {

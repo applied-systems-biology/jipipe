@@ -101,8 +101,8 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool {
             }
 
             Calibration calibration = getViewerPanel().getImagePlus().getCalibration();
-            if(calibration != null && calibration.scaled()) {
-                if(calibration.pixelWidth == calibration.pixelHeight && Objects.equals(calibration.getXUnit(), calibration.getYUnit())) {
+            if (calibration != null && calibration.scaled()) {
+                if (calibration.pixelWidth == calibration.pixelHeight && Objects.equals(calibration.getXUnit(), calibration.getYUnit())) {
                     double a = r.getWidth() / 2.0;
                     double b = r.getHeight() / 2.0;
                     double h = Math.pow(a - b, 2) / Math.pow(a + b, 2);
@@ -129,8 +129,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool {
                             Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h))),
                             Math.PI * (a2 + b2) * (1 + (3 * h2) / (10 + Math.sqrt(4 - 3 * h2))),
                             calibration.getXUnit())); // Ramanujan approximation
-                }
-                else {
+                } else {
                     double a = r.getWidth() / 2.0;
                     double b = r.getHeight() / 2.0;
                     double h = Math.pow(a - b, 2) / Math.pow(a + b, 2);
@@ -151,8 +150,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool {
                             Math.PI * a * b,
                             Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h))))); // Ramanujan approximation
                 }
-            }
-            else {
+            } else {
                 double a = r.getWidth() / 2.0;
                 double b = r.getHeight() / 2.0;
                 double h = Math.pow(a - b, 2) / Math.pow(a + b, 2);

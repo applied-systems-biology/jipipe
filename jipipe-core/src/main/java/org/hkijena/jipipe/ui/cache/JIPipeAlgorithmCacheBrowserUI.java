@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -108,7 +110,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         List<JIPipeDataTable> result = new ArrayList<>();
         for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
             JIPipeDataTable dataTable = slotMap.getOrDefault(outputSlot.getName(), null);
-            if(dataTable != null) {
+            if (dataTable != null) {
                 result.add(dataTable);
             }
         }

@@ -23,12 +23,11 @@ import org.scijava.Disposable;
 import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Modifier;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, Disposable {
 
-    private static final Set<JIPipeImageViewer> OPEN_PANELS = new HashSet<>();
     public static final List<Class<? extends JIPipeImageViewerPlugin>> DEFAULT_PLUGINS = new ArrayList<>(Arrays.asList(CalibrationPlugin2D.class,
             PixelInfoPlugin2D.class,
             LUTManagerPlugin2D.class,
@@ -42,6 +41,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             RenderSettingsPlugin3D.class,
             AnimationSpeedPlugin3D.class,
             SlicerControlsPlugin3D.class));
+    private static final Set<JIPipeImageViewer> OPEN_PANELS = new HashSet<>();
     private static JIPipeImageViewer ACTIVE_PANEL = null;
     private final JIPipeWorkbench workbench;
     private final Map<Class<?>, Object> contextObjects;
@@ -61,18 +61,12 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
     private final List<JIPipeImageViewerPlugin3D> plugins3D = new ArrayList<>();
 
     private final Map<Class<? extends JIPipeImageViewerPlugin>, JIPipeImageViewerPlugin> pluginMap = new HashMap<>();
-
-    private ImagePlusData image;
-
     private final JButton switchModeButton = new JButton();
-
     private final JLabel imageInfoLabel = new JLabel();
-
     private final List<Object> overlays = new ArrayList<>();
-
-    private JIPipeDataSource dataSource;
-
     private final ImageViewerGeneralUISettings settings;
+    private ImagePlusData image;
+    private JIPipeDataSource dataSource;
 
     /**
      * Initializes a new image viewer
@@ -84,10 +78,9 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         this.contextObjects = contextObjects;
         imageViewerPanel2D = new ImageViewerPanel2D(this);
         imageViewerPanel3D = new ImageViewerPanel3D(this);
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             settings = ImageViewerGeneralUISettings.getInstance();
-        }
-        else {
+        } else {
             settings = new ImageViewerGeneralUISettings();
         }
         initializePlugins(pluginTypes);
@@ -96,24 +89,57 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
     }
 
     public static void registerDefaultPlugin(Class<? extends JIPipeImageViewerPlugin> klass) {
-        if(!DEFAULT_PLUGINS.contains(klass)) {
-            if(Modifier.isAbstract(klass.getModifiers())) {
+        if (!DEFAULT_PLUGINS.contains(klass)) {
+            if (Modifier.isAbstract(klass.getModifiers())) {
                 throw new IllegalArgumentException("Plugin is abstract!");
             }
             DEFAULT_PLUGINS.add(klass);
         }
     }
 
+    public static JIPipeImageViewer getActiveViewerPanel() {
+        return ACTIVE_PANEL;
+    }
+
+    public static Set<JIPipeImageViewer> getOpenViewerPanels() {
+        return OPEN_PANELS;
+    }
+
+    /**
+     * Opens the image in a new frame
+     *
+     * @param workbench the workbench
+     * @param image     the image
+     * @param title     the title
+     * @return the panel
+     */
+    public static JIPipeImageViewer showImage(JIPipeWorkbench workbench, ImagePlus image, String title) {
+        JIPipeImageViewer dataDisplay = new JIPipeImageViewer(workbench,
+                Arrays.asList(CalibrationPlugin2D.class,
+                        PixelInfoPlugin2D.class,
+                        LUTManagerPlugin2D.class,
+                        ROIManagerPlugin2D.class,
+                        AnimationSpeedPlugin2D.class,
+                        MeasurementDrawerPlugin2D.class,
+                        LUTManagerPlugin3D.class,
+                        CalibrationPlugin3D.class),
+                Collections.emptyMap());
+        dataDisplay.setImageData(new ImagePlusData(image));
+        JIPipeImageViewerWindow window = new JIPipeImageViewerWindow(dataDisplay);
+        window.setTitle(title);
+        window.setVisible(true);
+        return dataDisplay;
+    }
+
     private void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> pluginTypes) {
         for (Class<? extends JIPipeImageViewerPlugin> pluginType : pluginTypes) {
             Object plugin = ReflectionUtils.newInstance(pluginType, this);
-            if(plugin instanceof JIPipeImageViewerPlugin2D) {
+            if (plugin instanceof JIPipeImageViewerPlugin2D) {
                 JIPipeImageViewerPlugin2D plugin2D = (JIPipeImageViewerPlugin2D) plugin;
                 plugins.add(plugin2D);
                 plugins2D.add(plugin2D);
                 pluginMap.put(pluginType, plugin2D);
-            }
-            else if(plugin instanceof JIPipeImageViewerPlugin3D) {
+            } else if (plugin instanceof JIPipeImageViewerPlugin3D) {
                 JIPipeImageViewerPlugin3D plugin3D = (JIPipeImageViewerPlugin3D) plugin;
                 plugins.add(plugin3D);
                 plugins3D.add(plugin3D);
@@ -135,7 +161,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
     }
 
     public void clearOverlays() {
-        while(!overlays.isEmpty()) {
+        while (!overlays.isEmpty()) {
             Object o = overlays.get(0);
             overlays.remove(o);
             for (JIPipeImageViewerPlugin plugin : plugins) {
@@ -276,14 +302,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         repaint();
     }
 
-    public static JIPipeImageViewer getActiveViewerPanel() {
-        return ACTIVE_PANEL;
-    }
-
-    public static Set<JIPipeImageViewer> getOpenViewerPanels() {
-        return OPEN_PANELS;
-    }
-
     public List<JIPipeImageViewerPlugin> getPlugins() {
         return Collections.unmodifiableList(plugins);
     }
@@ -317,32 +335,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         this.dataSource = dataSource;
     }
 
-    /**
-     * Opens the image in a new frame
-     *
-     * @param workbench the workbench
-     * @param image     the image
-     * @param title     the title
-     * @return the panel
-     */
-    public static JIPipeImageViewer showImage(JIPipeWorkbench workbench, ImagePlus image, String title) {
-        JIPipeImageViewer dataDisplay = new JIPipeImageViewer(workbench,
-                Arrays.asList(CalibrationPlugin2D.class,
-                        PixelInfoPlugin2D.class,
-                        LUTManagerPlugin2D.class,
-                        ROIManagerPlugin2D.class,
-                        AnimationSpeedPlugin2D.class,
-                        MeasurementDrawerPlugin2D.class,
-                        LUTManagerPlugin3D.class,
-                        CalibrationPlugin3D.class),
-                Collections.emptyMap());
-        dataDisplay.setImageData(new ImagePlusData(image));
-        JIPipeImageViewerWindow window = new JIPipeImageViewerWindow(dataDisplay);
-        window.setTitle(title);
-        window.setVisible(true);
-        return dataDisplay;
-    }
-
     public void fitImageToScreen() {
         imageViewerPanel2D.fitImageToScreen();
     }
@@ -353,7 +345,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             ACTIVE_PANEL = null;
         }
         OPEN_PANELS.remove(this);
-        if(contextObjects != null) {
+        if (contextObjects != null) {
             contextObjects.clear();
         }
         clearOverlays();
@@ -366,15 +358,6 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         imageViewerPanel3D.dispose();
     }
 
-    @Deprecated
-    public void setImage(ImagePlus image) {
-        setImagePlus(image);
-    }
-
-    public void setImagePlus(ImagePlus image) {
-        setImageData(new ImagePlusData(image));
-    }
-
     public void setImageData(ImagePlusData image) {
         this.image = image;
         imageViewerPanel2D.setImage(image);
@@ -382,11 +365,10 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
 
         refreshImageInfo();
 
-        if(settings.isAutoSwitch2D3DViewer()) {
-            if(image.getImage().getNSlices() > 1) {
+        if (settings.isAutoSwitch2D3DViewer()) {
+            if (image.getImage().getNSlices() > 1) {
                 switchTo3D();
-            }
-            else {
+            } else {
                 switchTo2D();
             }
         }
@@ -396,8 +378,17 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         return image;
     }
 
+    @Deprecated
+    public void setImage(ImagePlus image) {
+        setImagePlus(image);
+    }
+
     public ImagePlus getImagePlus() {
         return ImageJUtils.unwrap(image);
+    }
+
+    public void setImagePlus(ImagePlus image) {
+        setImageData(new ImagePlusData(image));
     }
 
     public ImageViewerPanel2D getViewerPanel2D() {
@@ -405,17 +396,16 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
     }
 
     public <T> T getContextObject(Class<T> klass) {
-        return (T)contextObjects.getOrDefault(klass, null);
+        return (T) contextObjects.getOrDefault(klass, null);
     }
 
     public void setError(String errorMessage) {
-        if(errorMessage != null) {
+        if (errorMessage != null) {
             JLabel errorLabel2D = new JLabel(errorMessage, UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
             JLabel errorLabel3D = new JLabel(errorMessage, UIUtils.getIconFromResources("emblems/no-data.png"), JLabel.LEFT);
             imageViewerPanel2D.getCanvas().setError(errorLabel2D);
             imageViewerPanel3D.showDataError(errorLabel3D);
-        }
-        else {
+        } else {
             imageViewerPanel2D.getCanvas().setError(null);
             imageViewerPanel3D.showDataError(null);
         }

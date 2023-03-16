@@ -386,7 +386,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if(overlay instanceof TrackCollectionData) {
+        if (overlay instanceof TrackCollectionData) {
             TrackCollectionData trackCollectionData = (TrackCollectionData) overlay;
             setTrackCollection(trackCollectionData);
         }
@@ -394,8 +394,8 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     @Override
     public void onOverlayRemoved(Object overlay) {
-        if(overlay instanceof TrackCollectionData) {
-            setTrackCollection(new TrackCollectionData(new Model(), new Settings(), IJ.createImage("",1,1,1,8)));
+        if (overlay instanceof TrackCollectionData) {
+            setTrackCollection(new TrackCollectionData(new Model(), new Settings(), IJ.createImage("", 1, 1, 1, 8)));
         }
     }
 

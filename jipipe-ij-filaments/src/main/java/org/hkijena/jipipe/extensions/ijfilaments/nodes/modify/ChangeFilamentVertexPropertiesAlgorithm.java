@@ -22,20 +22,15 @@ import java.util.Map;
 @JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Output", autoCreate = true)
 public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customExpressionVariables;
     private DefaultExpressionParameter centroidX = new DefaultExpressionParameter("default");
     private DefaultExpressionParameter centroidY = new DefaultExpressionParameter("default");
-
     private DefaultExpressionParameter centroidZ = new DefaultExpressionParameter("default");
-
     private DefaultExpressionParameter centroidC = new DefaultExpressionParameter("default");
-
     private DefaultExpressionParameter centroidT = new DefaultExpressionParameter("default");
-
     private DefaultExpressionParameter radius = new DefaultExpressionParameter("default");
-
     private DefaultExpressionParameter value = new DefaultExpressionParameter("default");
 
-    private final CustomExpressionVariablesParameter customExpressionVariables;
     public ChangeFilamentVertexPropertiesAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
@@ -191,6 +186,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     public DefaultExpressionParameter getCentroidT() {
         return centroidT;
     }
+
     @JIPipeParameter("centroid-t")
     public void setCentroidT(DefaultExpressionParameter centroidT) {
         this.centroidT = centroidT;

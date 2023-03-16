@@ -36,6 +36,7 @@ public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess, 
 
     /**
      * Gets the current data source if any is set
+     *
      * @return the data source or null
      */
     public JIPipeDataSource getDataSource() {
@@ -74,6 +75,7 @@ public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess, 
 
     /**
      * Called if an overlay was added
+     *
      * @param overlay the overlay
      */
     public void onOverlayAdded(Object overlay) {
@@ -82,6 +84,7 @@ public abstract class JIPipeImageViewerPlugin implements JIPipeWorkbenchAccess, 
 
     /**
      * Called if an overlay was removed
+     *
      * @param overlay the overlay
      */
     public void onOverlayRemoved(Object overlay) {

@@ -41,42 +41,42 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
         String option = null;
 
         if (RGBImage) {
-            if (imp.getStackSize()>1)
+            if (imp.getStackSize() > 1)
                 applyRGBStack(imp);
             else
-                applyRGB(imp,ip);
+                applyRGB(imp, ip);
             return;
         }
-        if (bitDepth==32) {
+        if (bitDepth == 32) {
             return;
         }
         int range = 256;
-        if (bitDepth==16) {
+        if (bitDepth == 16) {
             range = 65536;
             int defaultRange = ImagePlus.getDefault16bitRange();
-            if (defaultRange>0)
-                range = (int)Math.pow(2,defaultRange)-1;
+            if (defaultRange > 0)
+                range = (int) Math.pow(2, defaultRange) - 1;
         }
-        int tableSize = bitDepth==16?65536:256;
+        int tableSize = bitDepth == 16 ? 65536 : 256;
         int[] table = new int[tableSize];
-        int min = (int)imp.getDisplayRangeMin();
-        int max = (int)imp.getDisplayRangeMax();
-        for (int i=0; i<tableSize; i++) {
-            if (i<=min)
+        int min = (int) imp.getDisplayRangeMin();
+        int max = (int) imp.getDisplayRangeMax();
+        for (int i = 0; i < tableSize; i++) {
+            if (i <= min)
                 table[i] = 0;
-            else if (i>=max)
-                table[i] = range-1;
+            else if (i >= max)
+                table[i] = range - 1;
             else
-                table[i] = (int)(((double)(i-min)/(max-min))*range);
+                table[i] = (int) (((double) (i - min) / (max - min)) * range);
         }
         ip.setRoi(imp.getRoi());
-        if (imp.getStackSize()>1 && !imp.isComposite()) {
+        if (imp.getStackSize() > 1 && !imp.isComposite()) {
             int current = imp.getCurrentSlice();
             ImageProcessor mask = imp.getMask();
-            for (int i=1; i<=imp.getStackSize(); i++) {
+            for (int i = 1; i <= imp.getStackSize(); i++) {
                 imp.setSlice(i);
                 ip = imp.getProcessor();
-                if (mask!=null) ip.snapshot();
+                if (mask != null) ip.snapshot();
                 ip.applyTable(table);
                 ip.reset(mask);
             }
@@ -124,19 +124,19 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
         int current = imp.getCurrentSlice();
         int n = imp.getStackSize();
         ImageProcessor mask = imp.getMask();
-        Rectangle roi = imp.getRoi()!=null?imp.getRoi().getBounds():null;
+        Rectangle roi = imp.getRoi() != null ? imp.getRoi().getBounds() : null;
         ImageStack stack = imp.getStack();
-        for (int i=1; i<=n; i++) {
-            if (i!=current) {
+        for (int i = 1; i <= n; i++) {
+            if (i != current) {
                 ImageProcessor ip = stack.getProcessor(i);
                 ip.setRoi(roi);
-                if (mask!=null) ip.snapshot();
+                if (mask != null) ip.snapshot();
 //                if (channels!=7)
 //                    ((ColorProcessor)ip).setMinAndMax(min, max, channels);
 //                else
 //                    ip.setMinAndMax(min, max);
                 ip.setMinAndMax(min, max);
-                if (mask!=null) ip.reset(mask);
+                if (mask != null) ip.reset(mask);
             }
         }
         imp.setStack(null, stack);
@@ -149,7 +149,7 @@ public class ApplyDisplayContrastAlgorithm extends JIPipeSimpleIteratingAlgorith
         if (RGBImage)
             ip.reset();
         int bitDepth = imp.getBitDepth();
-        if (bitDepth==16 || bitDepth==32) {
+        if (bitDepth == 16 || bitDepth == 32) {
             imp.resetDisplayRange();
         }
     }

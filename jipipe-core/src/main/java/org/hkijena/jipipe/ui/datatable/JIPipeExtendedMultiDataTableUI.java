@@ -74,8 +74,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -94,7 +94,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
 
     /**
      * @param workbenchUI                 the workbench UI
-     * @param dataTableStores                  The slots
+     * @param dataTableStores             The slots
      * @param withCompartmentAndAlgorithm if the compartment and algorithm are included as columns
      */
     public JIPipeExtendedMultiDataTableUI(JIPipeWorkbench workbenchUI, List<Store<JIPipeDataTable>> dataTableStores, boolean withCompartmentAndAlgorithm) {
@@ -264,7 +264,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     private void openFilteredTableInNewTab() {
         String name = dataTableStores.stream().map(slotReference -> {
             JIPipeDataTable slot = slotReference.get();
-            if(slot != null)
+            if (slot != null)
                 return slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
             else
                 return "[NA]";
@@ -279,7 +279,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
             for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
                 int modelRow = table.convertRowIndexToModel(viewRow);
                 Store<JIPipeDataTable> slotStore = multiSlotTable.getSlotStore(modelRow);
-                if(slotStore.isPresent()) {
+                if (slotStore.isPresent()) {
                     JIPipeDataTable slot = slotStore.get();
                     int row = multiSlotTable.getRow(modelRow);
                     copy.addData(slot.getDataItemStore(row),
@@ -287,8 +287,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             slot.getDataAnnotations(row),
                             JIPipeDataAnnotationMergeMode.OverwriteExisting);
-                }
-                else {
+                } else {
                     throw new RuntimeException("Data table was already cleared!");
                 }
             }
@@ -304,7 +303,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     private void openTableInNewTab() {
         String name = "Cache: " + dataTableStores.stream().map(slotReference -> {
             JIPipeDataTable slot = slotReference.get();
-            if(slot != null)
+            if (slot != null)
                 return slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
             else
                 return "[NA]";
@@ -370,7 +369,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         List<JIPipeDataTable> dataTables = new ArrayList<>();
         for (Store<JIPipeDataTable> dataTableReference : dataTableStores) {
             JIPipeDataTable dataTable = dataTableReference.get();
-            if(dataTable == null) {
+            if (dataTable == null) {
                 throw new RuntimeException("Data table has been cleared!");
             }
             dataTables.add(dataTable);
@@ -383,7 +382,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         JIPipeDataTable mergedTable = new JIPipeDataTable(JIPipeData.class);
         for (Store<JIPipeDataTable> dataTableReference : dataTableStores) {
             JIPipeDataTable dataTable = dataTableReference.get();
-            if(dataTable == null) {
+            if (dataTable == null) {
                 throw new RuntimeException("Data table has been cleared!");
             }
             mergedTable.addDataFromTable(dataTable, new JIPipeProgressInfo());
@@ -438,7 +437,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         int multiRow = table.getRowSorter().convertRowIndexToModel(selectedRow);
         int multiDataAnnotationColumn = selectedColumn >= 0 ? multiSlotTable.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
         Store<JIPipeDataTable> slotStore = multiSlotTable.getSlotStore(multiRow);
-        if(slotStore.isPresent()) {
+        if (slotStore.isPresent()) {
             JIPipeDataTable slot = slotStore.get();
 
             int row = multiSlotTable.getRow(multiRow);
@@ -450,8 +449,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
             JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), slotStore, row);
             rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
 //        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
-        }
-        else {
+        } else {
             throw new RuntimeException("Data was already cleared!");
         }
     }
@@ -462,7 +460,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         List<JIPipeDataTable> dataTables = new ArrayList<>();
         for (Store<JIPipeDataTable> dataTableReference : dataTableStores) {
             JIPipeDataTable dataTable = dataTableReference.get();
-            if(dataTable == null) {
+            if (dataTable == null) {
                 return;
             }
             dataTables.add(dataTable);
@@ -477,7 +475,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         for (int viewRow : selectedRows) {
             int multiRow = table.getRowSorter().convertRowIndexToModel(viewRow);
             Store<JIPipeDataTable> slotStore = multiSlotTable.getSlotStore(multiRow);
-            if(slotStore.isPresent()) {
+            if (slotStore.isPresent()) {
                 JIPipeDataTable slot = slotStore.get();
                 int row = multiSlotTable.getRow(multiRow);
                 Class<? extends JIPipeData> dataClass = slot.getDataClass(row);
@@ -487,8 +485,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
                 nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(slot));
                 JIPipeDataTableRowUI JIPipeDataTableRowUI = new JIPipeDataTableRowUI(getWorkbench(), slotStore, row);
                 rowUIList.addToForm(JIPipeDataTableRowUI, nameLabel, null);
-            }
-            else {
+            } else {
                 throw new RuntimeException("Data was already cleared!");
             }
         }
@@ -508,7 +505,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         List<JIPipeDataTable> dataTables = new ArrayList<>();
         for (Store<JIPipeDataTable> dataTableReference : dataTableStores) {
             JIPipeDataTable dataTable = dataTableReference.get();
-            if(dataTable == null) {
+            if (dataTable == null) {
                 return;
             }
             dataTables.add(dataTable);

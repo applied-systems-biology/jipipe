@@ -38,7 +38,8 @@ public abstract class JIPipeImageViewerCacheDataViewerWindow extends JIPipeCache
     /**
      * Override this method to register plugins and set context objects
      * By default, it will register {@link JIPipeImageViewer}.DEFAULT_PLUGINS and the window as context object (accessor JIPipeCacheDataViewerWindow)
-     * @param plugins plugins to register
+     *
+     * @param plugins        plugins to register
      * @param contextObjects the context objects to register
      */
     protected void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
@@ -51,7 +52,7 @@ public abstract class JIPipeImageViewerCacheDataViewerWindow extends JIPipeCache
      * Triggers the fitImage() command if applied once
      */
     public void fitImageToScreenOnce() {
-        if(!fitImageTriggered && imageViewer.getImagePlus() != null) {
+        if (!fitImageTriggered && imageViewer.getImagePlus() != null) {
             SwingUtilities.invokeLater(imageViewer::fitImageToScreen);
             fitImageTriggered = true;
         }

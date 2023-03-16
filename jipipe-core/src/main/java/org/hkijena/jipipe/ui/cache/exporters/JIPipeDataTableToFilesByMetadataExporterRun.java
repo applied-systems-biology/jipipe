@@ -141,8 +141,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
                     throw new RuntimeException(e);
                 }
             }
-        }
-        finally {
+        } finally {
             dataTables.clear();
         }
     }

@@ -18,6 +18,6 @@ public class FilamentsToRoiDataTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return ((Filaments3DData)input).toRoi(false, true, true, -1,-1);
+        return ((Filaments3DData) input).toRoi(false, true, true, -1, -1);
     }
 }

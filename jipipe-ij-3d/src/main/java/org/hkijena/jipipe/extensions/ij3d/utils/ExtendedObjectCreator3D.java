@@ -28,7 +28,7 @@ public class ExtendedObjectCreator3D extends ObjectCreator3D {
         double vz = V.getZ();
         for (int i = 0; i < (int) len; i++) {
             double perc = i / len;
-            int rad = (int)(rad0 + perc * (rad1 - rad0));
+            int rad = (int) (rad0 + perc * (rad1 - rad0));
             if (rad <= 0) {
                 int xx = (int) (x0 + i * vx);
                 int yy = (int) (y0 + i * vy);

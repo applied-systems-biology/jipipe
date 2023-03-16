@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
-import org.hkijena.jipipe.ui.components.renderers.InheritedSlotListCellRenderer;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeDataInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -33,8 +32,9 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Comparator;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 

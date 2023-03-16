@@ -19,8 +19,8 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * A parameter that contains an expression.
@@ -94,7 +94,7 @@ public abstract class AbstractExpressionParameter {
      * @return the result
      */
     public int evaluateToInteger(ExpressionVariables variables) {
-        return (int)evaluateToDouble(variables);
+        return (int) evaluateToDouble(variables);
     }
 
     /**
@@ -105,10 +105,9 @@ public abstract class AbstractExpressionParameter {
      */
     public double evaluateToDouble(ExpressionVariables variables) {
         Object result = evaluate(variables);
-        if(result instanceof Number) {
+        if (result instanceof Number) {
             return ((Number) result).doubleValue();
-        }
-        else {
+        } else {
             return StringUtils.parseDouble(StringUtils.nullToEmpty(result));
         }
     }
@@ -121,22 +120,19 @@ public abstract class AbstractExpressionParameter {
      */
     public List<Double> evaluateToDoubleList(ExpressionVariables variables) {
         Object result = evaluate(variables);
-        if(result instanceof Number) {
+        if (result instanceof Number) {
             return Collections.singletonList(((Number) result).doubleValue());
-        }
-        else if(result instanceof Collection) {
+        } else if (result instanceof Collection) {
             List<Double> list = new ArrayList<>();
             for (Object o : (Collection) result) {
-                if(o instanceof Number) {
+                if (o instanceof Number) {
                     list.add(((Number) o).doubleValue());
-                }
-                else {
+                } else {
                     list.add(StringUtils.parseDouble(StringUtils.nullToEmpty(o)));
                 }
             }
             return list;
-        }
-        else {
+        } else {
             return Collections.singletonList(StringUtils.parseDouble(StringUtils.nullToEmpty(result)));
         }
     }
@@ -149,10 +145,9 @@ public abstract class AbstractExpressionParameter {
      */
     public float evaluateToFloat(ExpressionVariables variables) {
         Object result = evaluate(variables);
-        if(result instanceof Number) {
+        if (result instanceof Number) {
             return ((Number) result).floatValue();
-        }
-        else {
+        } else {
             return StringUtils.parseFloat(StringUtils.nullToEmpty(result));
         }
     }

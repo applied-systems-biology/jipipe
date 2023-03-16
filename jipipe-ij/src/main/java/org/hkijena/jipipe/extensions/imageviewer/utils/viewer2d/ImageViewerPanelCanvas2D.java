@@ -154,13 +154,12 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     }
 
     private void ensureScaledImage() {
-        if(image != null && scaledImage == null) {
-            if(zoom != 1.0) {
+        if (image != null && scaledImage == null) {
+            if (zoom != 1.0) {
                 scaledImage = image.getScaledInstance((int) (zoom * image.getWidth()),
                         (int) (zoom * image.getHeight()),
                         zoom < 1 ? Image.SCALE_SMOOTH : Image.SCALE_REPLICATE);
-            }
-            else {
+            } else {
                 scaledImage = image;
             }
         }
@@ -325,7 +324,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
         contentX = Math.max(-w + 10, contentX);
         contentY = Math.max(-h + 10, contentY);
 
-        if(contentX + w > getWidth() || contentY + h > getHeight()) {
+        if (contentX + w > getWidth() || contentY + h > getHeight()) {
             revalidate();
         }
 
@@ -488,7 +487,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     /**
      * Gets the pixel coordinates inside the shown image under the mouse.
      *
-     * @param mouseEvent the mouse event. can be null
+     * @param mouseEvent  the mouse event. can be null
      * @param checkBounds If true, check for bounds (if false, negative and larger than the image coordinates will be returned)
      * @return the pixel coordinates. Null if the current mouse position is invalid.
      */
@@ -496,10 +495,9 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
         if (image == null)
             return null;
         Point mousePosition;
-        if(mouseEvent == null) {
+        if (mouseEvent == null) {
             mousePosition = getMousePosition();
-        }
-        else {
+        } else {
             mousePosition = SwingUtilities.convertMouseEvent(mouseEvent.getComponent(), mouseEvent, this).getPoint();
         }
         if (mousePosition != null) {

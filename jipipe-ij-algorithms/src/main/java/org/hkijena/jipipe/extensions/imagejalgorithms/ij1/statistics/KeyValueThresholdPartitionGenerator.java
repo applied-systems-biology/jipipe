@@ -3,8 +3,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics;
 import com.google.common.primitives.Floats;
 import gnu.trove.list.TFloatList;
 import gnu.trove.list.array.TFloatArrayList;
-import gnu.trove.map.TDoubleDoubleMap;
-import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -29,9 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.python.antlr.ast.Num;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -109,7 +105,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
             float[] keyPixels = (float[]) keyIp.getPixels();
             float[] valuePixels = (float[]) valueIp.getPixels();
             for (int i = 0; i < keyPixels.length; i++) {
-                if(mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                if (mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
                     float key = keyPixels[i];
                     float value = valuePixels[i];
                     TFloatList list = bucketedValues.get(key);

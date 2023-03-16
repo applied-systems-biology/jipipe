@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 @JIPipeDocumentation(name = "3D spot segmentation (constant)", description = "The node works with two images, one containing the seeds of the objects, " +
         "that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. " +
         "The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. " +
-"The same threshold will be applied to all the objects. This threshold is defined by the user as Local Background")
+        "The same threshold will be applied to all the objects. This threshold is defined by the user as Local Background")
 @JIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Spots-Segmentation/")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Spots", autoCreate = true)

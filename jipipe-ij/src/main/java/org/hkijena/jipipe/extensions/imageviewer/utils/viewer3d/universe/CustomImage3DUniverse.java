@@ -23,12 +23,12 @@ public class CustomImage3DUniverse extends Image3DUniverse {
 
         // Remove context menu and other listeners from the canvas
         for (MouseListener listener : ImmutableList.copyOf(getCanvas().getMouseListeners())) {
-            if(listener.getClass().getName().startsWith("ij3d.Image3DUniverse")) {
+            if (listener.getClass().getName().startsWith("ij3d.Image3DUniverse")) {
                 getCanvas().removeMouseListener(listener);
             }
         }
         for (MouseMotionListener listener : ImmutableList.copyOf(getCanvas().getMouseMotionListeners())) {
-            if(listener.getClass().getName().startsWith("ij3d.Image3DUniverse")) {
+            if (listener.getClass().getName().startsWith("ij3d.Image3DUniverse")) {
                 getCanvas().removeMouseMotionListener(listener);
             }
         }

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.ij3d.imageviewer;
 
-import ij.gui.Roi;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;

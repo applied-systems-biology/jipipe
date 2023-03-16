@@ -33,26 +33,19 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
 
     private final JIPipeWorkbench workbench;
     private final JIPipeRunnerQueue runnerQueue;
-
-    private boolean processAlreadyQueued;
-
-    private JIPipeRunnerQueueThrobberIcon throbberIcon;
-
-    private boolean showProgress;
-
-    private int lastProgress;
-
-    private int lastMaxProgress;
-
     private final JPopupMenu menu = new JPopupMenu();
-
+    private boolean processAlreadyQueued;
+    private JIPipeRunnerQueueThrobberIcon throbberIcon;
+    private boolean showProgress;
+    private int lastProgress;
+    private int lastMaxProgress;
     private boolean flatMode = false;
 
     /**
      * Creates new instance
      */
     public JIPipeRunnerQueueUI(JIPipeWorkbench workbench) {
-       this(workbench, JIPipeRunnerQueue.getInstance());
+        this(workbench, JIPipeRunnerQueue.getInstance());
     }
 
     public JIPipeRunnerQueueUI(JIPipeWorkbench workbench, JIPipeRunnerQueue runnerQueue) {
@@ -73,7 +66,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
     }
 
     public void makeFlat() {
-        setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         flatMode = true;
     }
 
@@ -84,7 +77,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
     private void reloadMenu() {
         menu.removeAll();
 
-        if(runnerQueue.size() > 0) {
+        if (runnerQueue.size() > 0) {
 
             JMenuItem cancelAllItem = new JMenuItem("Cancel all tasks", UIUtils.getIcon32FromResources("actions/stock_calc-cancel.png"));
             cancelAllItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
@@ -96,7 +89,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
             });
             menu.add(cancelAllItem);
 
-            if(runnerQueue.size() > 1) {
+            if (runnerQueue.size() > 1) {
                 JMenuItem cancelQueuedItem = new JMenuItem("Cancel only enqueued tasks", UIUtils.getIcon32FromResources("actions/rabbitvcs-clear.png"));
                 cancelQueuedItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
                 cancelQueuedItem.setToolTipText("Cancels enqueued tasks. Currently running operations are not cancelled.");
@@ -109,20 +102,19 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
             menu.addSeparator();
 
             JIPipeRunWorker currentRun = runnerQueue.getCurrentRunWorker();
-            if(currentRun != null) {
+            if (currentRun != null) {
                 menu.add(new RunMenuItem(runnerQueue, currentRun));
             }
             for (JIPipeRunWorker runWorker : runnerQueue.getQueue()) {
                 menu.add(new RunMenuItem(runnerQueue, runWorker));
             }
-        }
-        else {
+        } else {
             JMenuItem noTasksItem = new JMenuItem("There are currently no tasks running", UIUtils.getIcon32FromResources("emblems/vcs-normal.png"));
             noTasksItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
             menu.add(noTasksItem);
         }
 
-        if(workbench instanceof JIPipeProjectWorkbench && isOnGlobalRunnerQueue()) {
+        if (workbench instanceof JIPipeProjectWorkbench && isOnGlobalRunnerQueue()) {
             menu.addSeparator();
             JMenuItem openLogsItem = new JMenuItem("Open logs", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"));
             openLogsItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
@@ -156,10 +148,9 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
         } else {
             showProgress = false;
             setIcon(UIUtils.getIconFromResources("actions/check-circle.png"));
-            if(!processAlreadyQueued) {
+            if (!processAlreadyQueued) {
                 setText("Ready");
-            }
-            else {
+            } else {
                 setText("All tasks finished");
             }
             repaint();
@@ -171,8 +162,8 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
     @Override
     public void paint(Graphics g) {
         super.paint(g);
-        if(showProgress) {
-            if(!flatMode) {
+        if (showProgress) {
+            if (!flatMode) {
                 g.setColor(Color.LIGHT_GRAY);
                 g.fillRect(15, getHeight() - 6, getWidth() - 15 * 2, 2);
                 if (lastMaxProgress > 0) {
@@ -184,8 +175,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
                     g.setColor(ModernMetalTheme.PRIMARY5);
                     g.fillRect(15, getHeight() - 6, (int) ((getWidth() - 15 * 2) * perc), 2);
                 }
-            }
-            else {
+            } else {
                 g.setColor(Color.LIGHT_GRAY);
                 g.fillRect(22, getHeight() - 4, getWidth() - 22, 2);
                 if (lastMaxProgress > 0) {
@@ -261,14 +251,12 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
     public static class RunMenuItem extends JMenuItem {
 
         private final JIPipeRunnerQueue runnerQueue;
-        private JIPipeRunWorker worker;
         private final JLabel titleLabel = new JLabel("Status");
-
         private final JLabel iconLabel = new JLabel();
         private final JLabel statusLabel = new JLabel();
         private final JProgressBar progressBar = new JProgressBar();
-
         private final JButton cancelButton = new JButton(UIUtils.getIcon32FromResources("actions/cancel.png"));
+        private JIPipeRunWorker worker;
 
         public RunMenuItem(JIPipeRunnerQueue runnerQueue, JIPipeRunWorker worker) {
             this.runnerQueue = runnerQueue;
@@ -291,13 +279,13 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
             progressBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 8));
             progressBar.setBorder(null);
 
-            add(iconLabel, new GridBagConstraints(0,0,1,1,0,0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(2,2,2,2), 0, 0));
-            add(titleLabel, new GridBagConstraints(1,0,1,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,new Insets(2,2,2,2), 0, 0));
-            add(statusLabel, new GridBagConstraints(1,1,1,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,new Insets(2,2,2,2), 0, 0));
-            add(progressBar, new GridBagConstraints(1,2,1,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,new Insets(2,2,2,2), 0, 0));
-            add(cancelButton, new GridBagConstraints(2,0,1,3,0,1,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(2,2,2,2), 0,0));
+            add(iconLabel, new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(2, 2, 2, 2), 0, 0));
+            add(titleLabel, new GridBagConstraints(1, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+            add(statusLabel, new GridBagConstraints(1, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+            add(progressBar, new GridBagConstraints(1, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(2, 2, 2, 2), 0, 0));
+            add(cancelButton, new GridBagConstraints(2, 0, 1, 3, 0, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(2, 2, 2, 2), 0, 0));
 
-            cancelButton.addActionListener(e-> cancelClicked());
+            cancelButton.addActionListener(e -> cancelClicked());
         }
 
         private void cancelClicked() {
@@ -307,15 +295,14 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
         }
 
         private void updateStatus(JIPipeProgressInfo.StatusUpdatedEvent status) {
-            if(worker == null) {
+            if (worker == null) {
                 return;
             }
-            if(worker.isDone()) {
-                if(worker.isCancelled()) {
+            if (worker.isDone()) {
+                if (worker.isCancelled()) {
                     iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-error.png"));
                     statusLabel.setText("Cancelled.");
-                }
-                else {
+                } else {
                     iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-success.png"));
                     statusLabel.setText("Done.");
                 }
@@ -324,24 +311,21 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
                 progressBar.setIndeterminate(false);
                 cancelButton.setEnabled(false);
                 worker = null;
-            }
-            else if(runnerQueue.getCurrentRunWorker() == worker) {
+            } else if (runnerQueue.getCurrentRunWorker() == worker) {
                 cancelButton.setEnabled(true);
                 iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-insync-syncing.png"));
-                if(status != null) {
+                if (status != null) {
                     progressBar.setIndeterminate(false);
                     progressBar.setMaximum(status.getMaxProgress());
                     progressBar.setValue(status.getProgress());
                     statusLabel.setText(status.getMessage());
-                }
-                else {
+                } else {
                     statusLabel.setText("In progress ...");
                     progressBar.setMaximum(1);
                     progressBar.setValue(0);
                     progressBar.setIndeterminate(true);
                 }
-            }
-            else {
+            } else {
                 iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-hourglass.png"));
                 cancelButton.setEnabled(true);
                 statusLabel.setText("Enqueued.");

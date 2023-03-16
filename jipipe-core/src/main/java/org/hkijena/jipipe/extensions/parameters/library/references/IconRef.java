@@ -47,7 +47,7 @@ public class IconRef {
      * @param other the original
      */
     public IconRef(IconRef other) {
-        if(other != null) {
+        if (other != null) {
             this.iconName = other.iconName;
         }
     }

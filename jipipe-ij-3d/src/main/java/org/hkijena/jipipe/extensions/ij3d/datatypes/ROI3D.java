@@ -31,15 +31,15 @@ public class ROI3D {
         copyMetadata(other);
     }
 
+    public ROI3D(Object3D object3D) {
+        this.object3D = object3D;
+    }
+
     public void copyMetadata(ROI3D other) {
         this.metadata = new HashMap<>(other.metadata);
         this.channel = other.channel;
         this.frame = other.frame;
         this.fillColor = other.fillColor;
-    }
-
-    public ROI3D(Object3D object3D) {
-        this.object3D = object3D;
     }
 
     public Object3D getObject3D() {

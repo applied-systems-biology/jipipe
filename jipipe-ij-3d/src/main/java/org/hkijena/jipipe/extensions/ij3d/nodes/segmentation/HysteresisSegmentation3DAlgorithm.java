@@ -12,7 +12,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
 @JIPipeDocumentation(name = "3D hysteresis segmentation", description = "Will perform 3-levels thresholding based on two thresholds. " +
         "The low threshold will determine background (for values below), " +
@@ -27,6 +26,7 @@ public class HysteresisSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgo
     private float lowThreshold = 50;
 
     private boolean labeling = false;
+
     public HysteresisSegmentation3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -61,7 +61,7 @@ public class HysteresisSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgo
     }
 
     @JIPipeDocumentation(name = "High threshold", description = "Determines the object cores (for values above)")
-   @JIPipeParameter("high-threshold")
+    @JIPipeParameter("high-threshold")
     public float getHighThreshold() {
         return highThreshold;
     }

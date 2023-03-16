@@ -77,7 +77,7 @@ public class ReflectionUtils {
      *
      * @param fieldName the field name
      * @param instance  the instance
-     * @param klass the class
+     * @param klass     the class
      * @return the return value
      */
     public static Object getDeclaredFieldValue(String fieldName, Object instance, Class<?> klass) {
@@ -191,7 +191,7 @@ public class ReflectionUtils {
      * @param fieldName the field name
      * @param value     the value
      */
-    public static void setFieldValue(Class<?> klass,Object instance, String fieldName, Object value) {
+    public static void setFieldValue(Class<?> klass, Object instance, String fieldName, Object value) {
         try {
             Field field = klass.getField(fieldName);
             field.setAccessible(true);

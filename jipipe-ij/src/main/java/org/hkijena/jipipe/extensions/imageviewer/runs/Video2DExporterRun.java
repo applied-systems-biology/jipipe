@@ -80,7 +80,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
                 BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(referencePosition.getC(), z,
                         referencePosition.getT(),
                         magnification, true).getBufferedImage();
-                if(generatedStack == null) {
+                if (generatedStack == null) {
                     generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
                 }
                 generatedStack.addSlice(new ColorProcessor(bufferedImage));
@@ -96,7 +96,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
                 BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(c, referencePosition.getZ(),
                         referencePosition.getT(),
                         magnification, true).getBufferedImage();
-                if(generatedStack == null) {
+                if (generatedStack == null) {
                     generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
                 }
                 generatedStack.addSlice(new ColorProcessor(bufferedImage));
@@ -112,7 +112,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
                 BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(referencePosition.getC(), referencePosition.getZ(),
                         t,
                         magnification, true).getBufferedImage();
-                if(generatedStack == null) {
+                if (generatedStack == null) {
                     generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
                 }
                 generatedStack.addSlice(new ColorProcessor(bufferedImage));

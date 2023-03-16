@@ -77,13 +77,13 @@ public class JIPipeProject implements JIPipeValidatable {
     private final JIPipeGraph graph = new JIPipeGraph();
     private final JIPipeGraph compartmentGraph = new JIPipeGraph();
     private final BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
+    private final JIPipeLocalProjectMemoryCache cache;
+    private final JIPipeProjectHistoryJournal historyJournal;
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private Map<String, Object> additionalMetadata = new HashMap<>();
     private Path workDirectory;
-    private final JIPipeLocalProjectMemoryCache cache;
     private boolean isCleaningUp;
     private boolean isLoading;
-    private final JIPipeProjectHistoryJournal historyJournal;
 
     /**
      * A JIPipe project
@@ -348,10 +348,10 @@ public class JIPipeProject implements JIPipeValidatable {
         for (JIPipeGraphConnection connection : toDisconnect) {
             JIPipeDataSlot source = connection.getSource();
             JIPipeDataSlot target = connection.getTarget();
-            if(fixedCompartments.contains(target.getNode().getCompartmentUUIDInParentGraph())) {
+            if (fixedCompartments.contains(target.getNode().getCompartmentUUIDInParentGraph())) {
                 continue;
             }
-            if(source.getNode() instanceof JIPipeCompartmentOutput) {
+            if (source.getNode() instanceof JIPipeCompartmentOutput) {
                 if (!(target.getNode() instanceof IOInterfaceAlgorithm) || !source.getNode().getOutputSlotMap().keySet().equals(target.getNode().getInputSlotMap().keySet())) {
                     // Place IOInterface at the same location as the compartment output
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
@@ -361,7 +361,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
                     for (JIPipeOutputDataSlot outputSlot : source.getNode().getOutputSlots()) {
                         for (JIPipeDataSlot outputOutgoingTargetSlot : graph.getOutputOutgoingTargetSlots(outputSlot)) {
-                            if(Objects.equals(outputOutgoingTargetSlot.getNode().getCompartmentUUIDInParentGraph(), target.getNode().getCompartmentUUIDInParentGraph())) {
+                            if (Objects.equals(outputOutgoingTargetSlot.getNode().getCompartmentUUIDInParentGraph(), target.getNode().getCompartmentUUIDInParentGraph())) {
                                 graph.connect(ioInterfaceAlgorithm.getOutputSlot(outputSlot.getName()), outputOutgoingTargetSlot);
                             }
                         }
@@ -448,17 +448,16 @@ public class JIPipeProject implements JIPipeValidatable {
                 boolean needsFixing = false;
                 for (JIPipeOutputDataSlot outputSlot : outputNode.getOutputSlots()) {
                     for (JIPipeDataSlot outgoingTargetSlot : graph.getOutputOutgoingTargetSlots(outputSlot)) {
-                        if(outgoingTargetSlot.getNode() instanceof IOInterfaceAlgorithm &&
+                        if (outgoingTargetSlot.getNode() instanceof IOInterfaceAlgorithm &&
                                 outgoingTargetSlot.getNode().getInputSlotMap().keySet().equals(outputNode.getOutputSlotMap().keySet())) {
                             // Do nothing
-                        }
-                        else {
+                        } else {
                             needsFixing = true;
                         }
                     }
                 }
 
-                if(needsFixing) {
+                if (needsFixing) {
                     IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode(IOInterfaceAlgorithm.class);
                     ioInterfaceAlgorithm.setCustomName(outputNode.getName());
                     ioInterfaceAlgorithm.getSlotConfiguration().setTo(outputNode.getSlotConfiguration());

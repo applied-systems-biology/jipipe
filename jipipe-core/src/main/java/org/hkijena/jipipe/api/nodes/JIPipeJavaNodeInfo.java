@@ -144,6 +144,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
             return JIPipeEmptyData.class;
         }
     }
+
     /**
      * Gets alternative menu locations
      *

@@ -34,7 +34,7 @@ public class RoundedButtonUI extends BasicButtonUI {
             }
 
             g.setColor(fillColor);
-            g.fillRoundRect(0, 0, c.getWidth(),c.getHeight(), cornerSize, cornerSize);
+            g.fillRoundRect(0, 0, c.getWidth(), c.getHeight(), cornerSize, cornerSize);
         }
         paint(g, c);
     }

@@ -63,7 +63,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-        if(imagePlusData != null) {
+        if (imagePlusData != null) {
             variables.set("width", imagePlusData.getImage().getWidth());
             variables.set("height", imagePlusData.getImage().getHeight());
             variables.set("num_z", imagePlusData.getImage().getNSlices());

@@ -28,7 +28,6 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
-import org.jdesktop.swingx.color.GradientThumbRenderer;
 import org.jdesktop.swingx.multislider.Thumb;
 import org.jdesktop.swingx.multislider.ThumbListener;
 
@@ -127,9 +126,9 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,4,4,4),
+        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
                 BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
-                        BorderFactory.createEmptyBorder(4,4,0,4))));
+                        BorderFactory.createEmptyBorder(4, 4, 0, 4))));
         slider = new JXMultiThumbSlider<>();
         slider.getModel().addThumb(0, Color.BLACK);
         slider.getModel().addThumb(1, Color.WHITE);
@@ -145,12 +144,12 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
                 1,
                 GridBagConstraints.WEST,
                 GridBagConstraints.BOTH,
-                new Insets(0,0,0,0),
+                new Insets(0, 0, 0, 0),
                 0,
                 0));
 
         changeColorButton = new JButton("Edit", changeColorButtonDisplayedColor);
-        changeColorButton.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        changeColorButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         changeColorButton.setToolTipText("Set color of selected gradient stop");
         changeColorButton.addActionListener(e -> changeColor());
         changeColorButton.setHorizontalAlignment(SwingConstants.LEFT);
@@ -162,14 +161,14 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(14,0,0,0),
+                new Insets(14, 0, 0, 0),
                 0,
                 0));
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        toolBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(8,0,0,0),
-                BorderFactory.createMatteBorder(1,0,0,0, UIManager.getColor("Button.borderColor"))));
+        toolBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0),
+                BorderFactory.createMatteBorder(1, 0, 0, 0, UIManager.getColor("Button.borderColor"))));
         add(toolBar, new GridBagConstraints(0,
                 4,
                 4,
@@ -178,7 +177,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(0,0,0,0),
+                new Insets(0, 0, 0, 0),
                 0,
                 0));
 
@@ -195,7 +194,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(12,0,0,0),
+                new Insets(12, 0, 0, 0),
                 0,
                 0));
 
@@ -212,7 +211,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
                 0,
                 GridBagConstraints.NORTHWEST,
                 GridBagConstraints.HORIZONTAL,
-                new Insets(12,0,0,0),
+                new Insets(12, 0, 0, 0),
                 0,
                 0));
 
@@ -402,7 +401,6 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
             changeColor();
         }
     }
-
 
 
     public JIPipeImageViewer getImageViewerPanel() {

@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.binary;
 
 import ij.ImagePlus;
-import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.distanceMap3d.EDT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;

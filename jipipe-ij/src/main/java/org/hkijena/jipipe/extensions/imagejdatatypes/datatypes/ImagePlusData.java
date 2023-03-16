@@ -35,7 +35,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -152,7 +151,7 @@ public class ImagePlusData implements JIPipeData {
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         ImagePlus imagePlus = importImagePlusFrom(storage, progressInfo);
         ImagePlusData imagePlusData = new ImagePlusData(imagePlus);
-        if(storage.exists("overlays") && storage.isDirectory("overlays")) {
+        if (storage.exists("overlays") && storage.isDirectory("overlays")) {
             JIPipeDataTable dataTable = JIPipeDataTable.importData(storage.resolve("overlays"), progressInfo.resolve("Import overlays"));
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 imagePlusData.addOverlay(dataTable.getData(i, JIPipeData.class, progressInfo));
@@ -163,41 +162,6 @@ public class ImagePlusData implements JIPipeData {
 
     public static ColorSpace getColorSpaceOf(Class<? extends ImagePlusData> dataType) {
         return (ColorSpace) ReflectionUtils.newInstance(dataType.getAnnotation(ImageTypeInfo.class).colorSpace());
-    }
-
-    /**
-     * Gets overlay data
-     * @return the overlays
-     */
-    public List<JIPipeData> getOverlays() {
-        return overlays;
-    }
-
-    /**
-     * Sets overlay data
-     * @param overlays the overlay
-     */
-    public void setOverlays(List<JIPipeData> overlays) {
-        this.overlays = overlays;
-    }
-
-    public void removeOverlay(JIPipeData overlay) {
-        if(overlays != null) {
-            overlays.remove(overlay);
-        }
-    }
-
-    public void addOverlay(JIPipeData overlay) {
-        if(overlays == null) {
-            overlays = new ArrayList<>();
-        }
-        overlays.add(overlay);
-    }
-
-    public void removeOverlaysOfType(Class<? extends JIPipeData> klass) {
-        if(overlays != null) {
-            overlays.removeIf(overlay -> klass.isAssignableFrom(overlay.getClass()));
-        }
     }
 
     /**
@@ -221,6 +185,43 @@ public class ImagePlusData implements JIPipeData {
             return new ImagePlusData(data.getImage(), data.getColorSpace());
         else
             return new ImagePlusData(data.getImageSource(), data.getColorSpace());
+    }
+
+    /**
+     * Gets overlay data
+     *
+     * @return the overlays
+     */
+    public List<JIPipeData> getOverlays() {
+        return overlays;
+    }
+
+    /**
+     * Sets overlay data
+     *
+     * @param overlays the overlay
+     */
+    public void setOverlays(List<JIPipeData> overlays) {
+        this.overlays = overlays;
+    }
+
+    public void removeOverlay(JIPipeData overlay) {
+        if (overlays != null) {
+            overlays.remove(overlay);
+        }
+    }
+
+    public void addOverlay(JIPipeData overlay) {
+        if (overlays == null) {
+            overlays = new ArrayList<>();
+        }
+        overlays.add(overlay);
+    }
+
+    public void removeOverlaysOfType(Class<? extends JIPipeData> klass) {
+        if (overlays != null) {
+            overlays.removeIf(overlay -> klass.isAssignableFrom(overlay.getClass()));
+        }
     }
 
     public int getWidth() {
@@ -351,7 +352,7 @@ public class ImagePlusData implements JIPipeData {
         } else {
             imageSource.saveTo(storage.getFileSystemPath(), name, forceName, progressInfo);
         }
-        if(overlays != null && !overlays.isEmpty()) {
+        if (overlays != null && !overlays.isEmpty()) {
             JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
             for (JIPipeData overlay : overlays) {
                 dataTable.addData(overlay, progressInfo);
@@ -418,14 +419,13 @@ public class ImagePlusData implements JIPipeData {
 //            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
 //                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
 //            }
-            if(rgbImage.getType() != ImagePlus.COLOR_RGB) {
+            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
                 // Copy LUT
                 rgbImage.setLut(image.getProcessor().getLut());
 
                 // Render to RGB
                 rgbImage = ImageJUtils.renderToRGBWithLUTIfNeeded(rgbImage, new JIPipeProgressInfo());
-            }
-            else {
+            } else {
                 // Convert to RGB if necessary (HSB, LAB, ...)
                 getColorSpace().convertToRGB(rgbImage, new JIPipeProgressInfo());
             }
@@ -438,7 +438,7 @@ public class ImagePlusData implements JIPipeData {
                 rois.addAll(Arrays.asList(image.getOverlay().toArray()));
             }
             if (!rois.isEmpty()) {
-                if(rgbImage == image || rgbImage.getProcessor() == image.getProcessor()) {
+                if (rgbImage == image || rgbImage.getProcessor() == image.getProcessor()) {
                     rgbImage = ImageJUtils.duplicate(rgbImage);
                 }
                 rois.draw(rgbImage.getProcessor(),
@@ -485,10 +485,10 @@ public class ImagePlusData implements JIPipeData {
 
     public <T extends JIPipeData> List<T> extractOverlaysOfType(Class<T> klass) {
         List<T> result = new ArrayList<>();
-        if(overlays != null) {
+        if (overlays != null) {
             for (JIPipeData overlay : overlays) {
-                if(klass.isAssignableFrom(overlay.getClass())) {
-                    result.add((T)overlay);
+                if (klass.isAssignableFrom(overlay.getClass())) {
+                    result.add((T) overlay);
                 }
             }
         }
@@ -502,7 +502,7 @@ public class ImagePlusData implements JIPipeData {
     }
 
     public void copyMetadata(ImagePlusData other) {
-        if(other.overlays!=null) {
+        if (other.overlays != null) {
             setOverlays(new ArrayList<>(other.overlays));
         }
     }

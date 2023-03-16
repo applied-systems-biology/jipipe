@@ -39,33 +39,33 @@ public class RemoveBorderRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
         ROI3DListData data = dataBatch.getInputData("Input", ROI3DListData.class, progressInfo).shallowCopy();
         ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
         data.removeIf(roi3D -> {
-            if(removeInX) {
+            if (removeInX) {
                 int xMin = roi3D.getObject3D().getXmin();
                 int xMax = roi3D.getObject3D().getXmax();
-                if(xMin <= borderDistance) {
+                if (xMin <= borderDistance) {
                     return true;
                 }
-                if(xMax >= reference.getWidth() - borderDistance - 1) {
+                if (xMax >= reference.getWidth() - borderDistance - 1) {
                     return true;
                 }
             }
-            if(removeInY) {
+            if (removeInY) {
                 int yMin = roi3D.getObject3D().getYmin();
                 int yMax = roi3D.getObject3D().getYmax();
-                if(yMin <= borderDistance) {
+                if (yMin <= borderDistance) {
                     return true;
                 }
-                if(yMax >= reference.getHeight() - borderDistance - 1) {
+                if (yMax >= reference.getHeight() - borderDistance - 1) {
                     return true;
                 }
             }
-            if(removeInZ) {
+            if (removeInZ) {
                 int zMin = roi3D.getObject3D().getZmin();
                 int zMax = roi3D.getObject3D().getZmax();
-                if(zMin <= borderDistance) {
+                if (zMin <= borderDistance) {
                     return true;
                 }
-                if(zMax >= reference.getNSlices() - borderDistance - 1) {
+                if (zMax >= reference.getNSlices() - borderDistance - 1) {
                     return true;
                 }
             }

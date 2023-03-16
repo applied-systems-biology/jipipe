@@ -14,11 +14,6 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.overlay;
 
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.gui.ImageCanvas;
-import ij.gui.Roi;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -27,23 +22,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.Roi3DDrawer;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiLabel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
-import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
-import org.hkijena.jipipe.utils.BufferedImageUtils;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.Arrays;
-import java.util.Collections;
 
 /**
  * Wrapper around {@link RoiDrawer}

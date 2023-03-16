@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -58,7 +57,6 @@ public class FilamentEdge {
     public void setColor(Color color) {
         this.color = color;
     }
-
 
 
     public void setMetadata(String key, Object value) {

@@ -22,14 +22,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Defines an {@link JIPipeGraphNode} data slot.
@@ -217,12 +217,12 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         return result;
     }
 
-    public void setDataClass(Class<? extends JIPipeData> dataClass) {
-        this.dataClass = dataClass;
-    }
-
     public Class<? extends JIPipeData> getDataClass() {
         return dataClass;
+    }
+
+    public void setDataClass(Class<? extends JIPipeData> dataClass) {
+        this.dataClass = dataClass;
     }
 
     public JIPipeSlotType getSlotType() {

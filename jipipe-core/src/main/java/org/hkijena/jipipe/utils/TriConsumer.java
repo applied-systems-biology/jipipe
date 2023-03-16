@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.utils;
 
-import java.util.Objects;
-
 @FunctionalInterface
 public interface TriConsumer<T, U, V> {
 

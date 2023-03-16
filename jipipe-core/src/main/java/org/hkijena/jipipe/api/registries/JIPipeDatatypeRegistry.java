@@ -153,7 +153,7 @@ public class JIPipeDatatypeRegistry {
      *
      * @param inputData      the input data
      * @param outputDataType the output data type
-     * @param progressInfo the progress info
+     * @param progressInfo   the progress info
      * @return the converted input data. Throws an exception if conversion is not possible
      */
     public <T extends JIPipeData> T convert(JIPipeData inputData, Class<T> outputDataType, JIPipeProgressInfo progressInfo) {

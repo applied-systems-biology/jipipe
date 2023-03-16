@@ -331,7 +331,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
             } else {
                 slice = IJ.openImage(imageFile.toString());
             }
-            if(slice == null) {
+            if (slice == null) {
                 throw new NullPointerException("Unable to read image from " + imageFile + "! Bio-Formats: " + useBioFormats);
             }
             sliceMap.put(entry.getKey(), slice);

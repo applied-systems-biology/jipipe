@@ -40,7 +40,6 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParamet
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -430,12 +429,13 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Returns true if this node and the other node are functionally equal (i.e. they have the same functional parameters).
      * For non-functional nodes, this determines if the {@link JIPipeNodeInfo} is equal
+     *
      * @param other the other node
      * @return if the nodes are functionally equal
      */
     @Override
     public boolean functionallyEquals(Object other) {
-        if(other instanceof JIPipeGraphNode) {
+        if (other instanceof JIPipeGraphNode) {
             return getInfo() == ((JIPipeGraphNode) other).getInfo();
         }
         return false;
@@ -658,7 +658,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public JIPipeDataSlot getOutputSlot(String name) {
         JIPipeDataSlot slot = outputSlotMap.get(name);
-        if(slot == null)
+        if (slot == null)
             return null;
         if (!slot.isOutput())
             throw new IllegalArgumentException("The slot " + name + " is not an output slot!");
@@ -674,7 +674,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public JIPipeInputDataSlot getInputSlot(String name) {
         JIPipeInputDataSlot slot = inputSlotMap.get(name);
-        if(slot == null)
+        if (slot == null)
             return null;
         if (!slot.isInput())
             throw new IllegalArgumentException("The slot " + name + " is not an input slot!");
@@ -880,7 +880,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param projectStorage         the storage where the data will be archived. storage where the project itself is located.
      * @param wrappedExternalStorage storage where wrapped external files are put
      * @param progressInfo           the progress info
-     * @param originalBaseDirectory current project directory
+     * @param originalBaseDirectory  current project directory
      */
     public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
         // Do nothing
@@ -1062,7 +1062,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         UUID currentCompartmentUUID = getCompartmentUUIDInParentGraph();
         if (Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID))
             return true;
-        if(parentGraph == null)
+        if (parentGraph == null)
             return false;
         return parentGraph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
     }
@@ -1171,6 +1171,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * An icon that is displayed on the right-hand side of the input slot
      * Can be null
+     *
      * @param slotName the slot name
      * @return the icon or null
      */
@@ -1181,8 +1182,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Explanations added to the slot menu
      * Can be null
+     *
      * @param slotName the slot name
-     * @param target the list of menu items
+     * @param target   the list of menu items
      */
     public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
     }
@@ -1191,6 +1193,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * Size of the icon returned by getUIInputSlotIcon
      * Should be at most 16x16
      * Defaults to 12x12
+     *
      * @param slotName the slot name
      * @return the icon size
      */

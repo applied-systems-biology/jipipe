@@ -30,8 +30,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * Displays the contents of {@link JIPipeParameterTree}.
@@ -160,9 +160,9 @@ public class ParameterTreeUI extends JPanel {
         Set<JIPipeParameterTree.Node> ignored = new HashSet<>();
         Multimap<JIPipeProjectCompartment, JIPipeParameterTree.Node> perCompartment = HashMultimap.create();
         for (JIPipeParameterTree.Node node : tree.getRoot().getChildren().values()) {
-            if(node.getCollection() instanceof JIPipeGraphNode) {
+            if (node.getCollection() instanceof JIPipeGraphNode) {
                 JIPipeGraphNode graphNode = (JIPipeGraphNode) node.getCollection();
-                if(graphNode.getCompartmentUUIDInParentGraph() != null && graphNode.getParentGraph().getProject() != null) {
+                if (graphNode.getCompartmentUUIDInParentGraph() != null && graphNode.getParentGraph().getProject() != null) {
                     JIPipeProjectCompartment compartment = graphNode.getParentGraph().getProject().getCompartments().getOrDefault(graphNode.getCompartmentUUIDInParentGraph(), null);
                     perCompartment.put(compartment, node);
                     ignored.add(node);
@@ -238,12 +238,10 @@ public class ParameterTreeUI extends JPanel {
                     if (name == null)
                         name = node.getKey();
                     setText(name);
-                }
-                else if(userObject instanceof JIPipeProjectCompartment) {
+                } else if (userObject instanceof JIPipeProjectCompartment) {
                     setIcon(UIUtils.getIconFromResources("data-types/graph-compartment.png"));
                     setText(((JIPipeProjectCompartment) userObject).getName());
-                }
-                else if (userObject instanceof JIPipeParameterAccess) {
+                } else if (userObject instanceof JIPipeParameterAccess) {
                     JIPipeParameterAccess access = (JIPipeParameterAccess) userObject;
                     setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
                     String name = access.getName();

@@ -112,7 +112,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         JLabel expressionHintLabel = new JLabel("Expression");
         expressionHintLabel.setForeground(Color.GRAY);
         expressionHintLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
-        expressionHintLabel.setBorder(BorderFactory.createEmptyBorder(0,2,4,0));
+        expressionHintLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 4, 0));
         borderPanel.add(expressionHintLabel, BorderLayout.NORTH);
 
         expressionEditorPanel.add(borderPanel, BorderLayout.CENTER);
@@ -121,7 +121,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
 
         ExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(ExpressionParameterSettings.class);
         if (settings != null) {
-            if(!StringUtils.isNullOrEmpty(settings.hint())) {
+            if (!StringUtils.isNullOrEmpty(settings.hint())) {
                 expressionHintLabel.setText("Expression: " + settings.hint());
             }
         }

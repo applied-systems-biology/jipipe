@@ -100,8 +100,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
             } else {
                 backgroundImage = ImageIO.read(ResourceUtils.getPluginResource("welcome-hero.png"));
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             backgroundImage = null;
         }
         JPanel heroPanel = new ImageFrame(backgroundImage, false, ImageFrame.Mode.Cover, true);
@@ -127,12 +126,12 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
 
         JTextPane textPane = UIUtils.makeBorderlessReadonlyTextPane("<html>... or <a href=\"https://www.jipipe.org/tutorials/\">learn</a> how to use JIPipe (online tutorials)" +
                 "</html>", false);
-        textPane.setMaximumSize(new Dimension(300,40));
+        textPane.setMaximumSize(new Dimension(300, 40));
         actionPanel.add(textPane);
 
         actionPanel.add(Box.createHorizontalGlue());
 
-        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE,  32));
+        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 32));
         heroPanel.add(actionPanel);
     }
 
@@ -151,7 +150,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         startNowButton.setForeground(Color.WHITE);
         startNowButton.setUI(new RoundedButtonUI(8, colorHover, colorHover));
         startNowButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 28));
-        startNowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,4,4,4), BorderFactory.createEmptyBorder(16,16,16,16)));
+        startNowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEmptyBorder(16, 16, 16, 16)));
         startNowButton.addActionListener(e -> doActionStartNow());
         actionPanel.add(startNowButton);
 
@@ -160,11 +159,11 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         JButton openButton = new JButton("Open a project");
         openButton.setOpaque(false);
         openButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 28));
-        openButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12,12,12,12)));
+        openButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12, 12, 12, 12)));
         openButton.addActionListener(e -> doActionOpenProject());
         actionPanel.add(openButton);
 
-        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE,  120));
+        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 120));
 
         actionPanel.add(Box.createHorizontalGlue());
         heroPanel.add(actionPanel);
@@ -180,7 +179,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
 
         // Search for a compartment tab
         for (DocumentTabPane.DocumentTab tab : documentTabPane.getTabs()) {
-            if(tab.getContent() instanceof JIPipePipelineGraphEditorUI)   {
+            if (tab.getContent() instanceof JIPipePipelineGraphEditorUI) {
                 documentTabPane.switchToTab(tab);
                 return;
             }
@@ -189,11 +188,10 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         // No compartment found! Open a new one
         JIPipeProject project = getProjectWorkbench().getProject();
         JIPipeProjectCompartment compartment;
-        if(project.getCompartments().isEmpty()) {
+        if (project.getCompartments().isEmpty()) {
             // Create a new one
             compartment = project.addCompartment("Analysis");
-        }
-        else {
+        } else {
             compartment = project.getCompartments().values().iterator().next();
         }
         getProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);

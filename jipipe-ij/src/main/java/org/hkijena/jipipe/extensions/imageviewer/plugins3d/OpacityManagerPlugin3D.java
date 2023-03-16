@@ -2,19 +2,13 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import ij.ImagePlus;
 import ij3d.Content;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerGrayscaleLUTEditor;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerLUTEditor;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DGreyscaleLUTEditor;
-import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.ImageViewer3DLUTEditor;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +31,7 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
         }
         formPanel.addGroupHeader("Opacity", UIUtils.getIconFromResources("actions/edit-opacity.png"));
         if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
-            if(alphaLutEditors.isEmpty()) {
+            if (alphaLutEditors.isEmpty()) {
                 alphaLutEditors.add(new ImageViewer3DGreyscaleLUTEditor(getViewerPanel(), 0));
             }
             ImageViewerGrayscaleLUTEditor alphaEditor = alphaLutEditors.get(0);
