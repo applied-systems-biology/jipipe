@@ -352,11 +352,11 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         initializeExportMenu();
         toolBar.addSeparator();
 
-        JButton centerImageButton = new JButton("Center image", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
+        JButton centerImageButton = new JButton("Center", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
         centerImageButton.addActionListener(e -> canvas.centerImage());
         toolBar.add(centerImageButton);
 
-        JButton fitImageButton = new JButton("Fit image", UIUtils.getIconFromResources("actions/zoom-select-fit.png"));
+        JButton fitImageButton = new JButton("Fit", UIUtils.getIconFromResources("actions/zoom-select-fit.png"));
         fitImageButton.addActionListener(e -> fitImageToScreen());
         toolBar.add(fitImageButton);
 
