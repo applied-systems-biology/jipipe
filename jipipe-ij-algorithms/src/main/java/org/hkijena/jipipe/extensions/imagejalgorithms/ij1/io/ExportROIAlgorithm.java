@@ -95,10 +95,13 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
                 } else {
                     roiName = StringUtils.makeUniqueString(baseName, "_", existing);
                 }
-                ROIListData.saveSingleRoi(roi, PathUtils.ensureExtension(outputPath.getParent().resolve(roiName), ".roi"));
+                Path path = PathUtils.ensureExtension(outputPath.getParent().resolve(roiName), ".roi");
+                ROIListData.saveSingleRoi(roi, path);
+                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(path), progressInfo);
             }
         } else {
             rois.saveToRoiOrZip(outputPath);
+            dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
         }
     }
 
