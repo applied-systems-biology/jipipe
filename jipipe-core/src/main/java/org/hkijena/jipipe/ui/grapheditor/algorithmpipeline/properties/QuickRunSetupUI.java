@@ -29,7 +29,6 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
-import org.hkijena.jipipe.ui.quickrun.QuickRunSetupWindow;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
@@ -119,7 +118,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             currentSettings.setLoadFromCache(true);
             currentSettings.setStoreToCache(false);
             currentSettings.setStoreIntermediateResults(true);
-            generateQuickRun(true, true);
+            generateQuickRun(true);
         }
     }
 
@@ -156,7 +155,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             currentSettings.setLoadFromCache(true);
             currentSettings.setStoreToCache(true);
             currentSettings.setStoreIntermediateResults(cacheIntermediateResults);
-            generateQuickRun(false, true);
+            generateQuickRun(false);
         }
     }
 
@@ -173,7 +172,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
             return false;
         currentSettings = settings;
         nextRunOnSuccess = onSuccess;
-        generateQuickRun(showResults, true);
+        generateQuickRun(showResults);
         return true;
     }
 
@@ -217,11 +216,11 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton runOnly = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
-        runOnly.addActionListener(e -> generateQuickRun(false, false));
+        runOnly.addActionListener(e -> generateQuickRun(false));
         toolBar.add(runOnly);
 
         JButton runAndOpen = new JButton("Run & open results", UIUtils.getIconFromResources("actions/run-build.png"));
-        runAndOpen.addActionListener(e -> generateQuickRun(true, false));
+        runAndOpen.addActionListener(e -> generateQuickRun(true));
         toolBar.add(runAndOpen);
 
         setupPanel.add(toolBar, BorderLayout.NORTH);
@@ -332,30 +331,13 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void generateQuickRun(boolean showResults, boolean showSetupPanel) {
+    private void generateQuickRun(boolean showResults) {
 
         JIPipeIssueReport report = new JIPipeIssueReport();
         getProject().reportValidity(report, algorithm);
         if (!report.isValid()) {
             tryShowSelectionPanel();
             return;
-        }
-
-        // Setup panel
-        if (showSetupPanel && RuntimeSettings.getInstance().isShowQuickRunSetupWindow()) {
-            QuickRunSetupWindow window = new QuickRunSetupWindow(getWorkbench());
-            window.revalidate();
-            window.repaint();
-            window.setLocationRelativeTo(getProjectWorkbench().getWindow());
-            window.setVisible(true);
-            if (window.isCancelled()) {
-                tryShowSelectionPanel();
-                return;
-            }
-        }
-        if (!showSetupPanel) {
-            RuntimeSettings.getInstance().setShowQuickRunSetupWindow(false);
-            RuntimeSettings.getInstance().triggerParameterChange("show-quick-run-setup-window");
         }
 
         currentQuickRun = new QuickRun(getProject(), algorithm, currentSettings);

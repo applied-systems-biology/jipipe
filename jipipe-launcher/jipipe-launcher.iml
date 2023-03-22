@@ -9,6 +9,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="jipipe-ij-filaments" scope="RUNTIME" />
+    <orderEntry type="module" module-name="jipipe-ij-3d" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.11.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:2.0.3" level="project" />
@@ -244,7 +246,7 @@
     <orderEntry type="module-library">
       <library name="Maven: com.sun:tools:1.8.0">
         <CLASSES>
-          <root url="jar:///usr/lib/jvm/java-1.8.0-openjdk-amd64/jre/../lib/tools.jar!/" />
+          <root url="jar://C:/Program Files/AdoptOpenJDK/jdk-8.0.275.1-hotspot/jre/../lib/tools.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />

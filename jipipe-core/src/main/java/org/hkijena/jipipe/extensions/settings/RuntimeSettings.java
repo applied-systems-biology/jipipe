@@ -42,7 +42,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     private int realTimeRunDelay = 400;
     private boolean realTimeRunEnabled = false;
     private int logLimit = 15;
-    private boolean showQuickRunSetupWindow = true;
 
     /**
      * Creates a new instance
@@ -111,18 +110,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "Show Quick Run setup window", description = "If enabled, a setup window is shown on executing a Quick Run or Update Cache command. " +
-            "This setting is automatically disabled when the user changed the settings.")
-    @JIPipeParameter("show-quick-run-setup-window")
-    public boolean isShowQuickRunSetupWindow() {
-        return showQuickRunSetupWindow;
-    }
-
-    @JIPipeParameter("show-quick-run-setup-window")
-    public void setShowQuickRunSetupWindow(boolean showQuickRunSetupWindow) {
-        this.showQuickRunSetupWindow = showQuickRunSetupWindow;
     }
 
     @JIPipeDocumentation(name = "Automatically skip algorithms without input", description = "If enabled, algorithms and their dependents without " +
