@@ -28,13 +28,13 @@ import java.nio.file.Path;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = FileData.class, slotName = "Input", autoCreate = true, description = "A *.zip file")
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
-public class ImportROI3D extends JIPipeSimpleIteratingAlgorithm {
+public class ImportROI3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    public ImportROI3D(JIPipeNodeInfo info) {
+    public ImportROI3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ImportROI3D(ImportROI3D other) {
+    public ImportROI3DAlgorithm(ImportROI3DAlgorithm other) {
         super(other);
     }
 
