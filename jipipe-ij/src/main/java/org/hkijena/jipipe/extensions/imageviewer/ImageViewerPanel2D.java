@@ -69,7 +69,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
+    private final JSpinner animationFPSControl = new JSpinner(new SpinnerNumberModel(24, 0.01, 1000, 0.1));
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
     private final DocumentTabPane tabPane = new DocumentTabPane(false);
@@ -166,8 +166,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
         // Load default animation speed
         if (settings != null) {
-            animationSpeedControl.getModel().setValue(settings.getDefaultAnimationSpeed());
-            animationTimer.setDelay(settings.getDefaultAnimationSpeed());
+            double fps = settings.getDefaultAnimationFPS();
+            animationFPSControl.getModel().setValue(fps);
+            animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
         }
 
         setLayout(new BorderLayout());
@@ -224,13 +225,13 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);
-        animationSpeedControl.addChangeListener(e -> {
-            int delay = ((SpinnerNumberModel) animationSpeedControl.getModel()).getNumber().intValue();
+        animationFPSControl.addChangeListener(e -> {
+            double fps = ((SpinnerNumberModel) animationFPSControl.getModel()).getNumber().doubleValue();
             if (settings != null) {
-                settings.setDefaultAnimationSpeed(delay);
+                settings.setDefaultAnimationFPS(fps);
             }
             stopAnimations();
-            animationTimer.setDelay(delay);
+            animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
         });
         animationFrameToggle.addActionListener(e -> {
             if (animationFrameToggle.isSelected()) {
@@ -719,8 +720,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
-    public JSpinner getAnimationSpeedControl() {
-        return animationSpeedControl;
+    public JSpinner getAnimationFPSControl() {
+        return animationFPSControl;
     }
 
     /**

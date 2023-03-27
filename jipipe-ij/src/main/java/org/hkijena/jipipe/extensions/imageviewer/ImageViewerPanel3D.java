@@ -82,7 +82,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             UIUtils.getIconFromResources("devices/video-display.png"), JLabel.LEFT);
     private final JSlider frameSlider = new JSlider(1, 100, 1);
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
+    private final JSpinner animationFPSControl = new JSpinner(new SpinnerNumberModel(24, 0.01, 1000, 0.1));
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
     private ImagePlusData image;
     private JComponent currentContentPanel;
@@ -94,7 +94,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private List<Content> currentImageContents;
     private int currentImageContentsResamplingFactor;
     private ImageStatistics imageStatistics;
-    private boolean isUpdatingSliders = false;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private boolean isUpdatingSliders = false;
+    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private FormPanel bottomPanel;
     private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;
 
@@ -171,8 +172,9 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         // Load default animation speed
         if (settings != null) {
-            animationSpeedControl.getModel().setValue(settings.getDefaultAnimationSpeed());
-            animationTimer.setDelay(settings.getDefaultAnimationSpeed());
+            double fps = settings.getDefaultAnimationFPS();
+            animationFPSControl.getModel().setValue(fps);
+            animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
         }
 
         setLayout(new BorderLayout());
@@ -484,8 +486,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
     }
 
-    public JSpinner getAnimationSpeedControl() {
-        return animationSpeedControl;
+    public JSpinner getAnimationFPSControl() {
+        return animationFPSControl;
     }
 
     public void rebuildImageLater() {
@@ -782,13 +784,13 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                 setAnimationFrameFromSlider();
         });
         animationTimer.setRepeats(true);
-        animationSpeedControl.addChangeListener(e -> {
-            int delay = ((SpinnerNumberModel) animationSpeedControl.getModel()).getNumber().intValue();
+        animationFPSControl.addChangeListener(e -> {
+            double fps = ((SpinnerNumberModel) animationFPSControl.getModel()).getNumber().doubleValue();
             if (settings != null) {
-                settings.setDefaultAnimationSpeed(delay);
+                settings.setDefaultAnimationFPS(fps);
             }
             stopAnimations();
-            animationTimer.setDelay(delay);
+            animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
         });
         animationFrameToggle.addActionListener(e -> {
             if (animationFrameToggle.isSelected()) {

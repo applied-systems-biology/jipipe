@@ -17,7 +17,7 @@ public class AnimationSpeedPlugin3D extends GeneralImageViewerPanelPlugin3D {
         ImagePlus image = getCurrentImagePlus();
         if (image != null && image.getNFrames() > 1) {
             formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
-            formPanel.addToForm(getViewerPanel3D().getAnimationSpeedControl(), new JLabel("Speed (ms)"), null);
+            formPanel.addToForm(getViewerPanel3D().getAnimationFPSControl(), new JLabel("Animation FPS"), null);
         }
     }
 }

@@ -17,7 +17,7 @@ public class AnimationSpeedPlugin2D extends GeneralImageViewerPanelPlugin2D {
         ImagePlus image = getCurrentImagePlus();
         if (image != null && (image.getNChannels() > 1 || image.getNSlices() > 1 || image.getNFrames() > 1)) {
             formPanel.addGroupHeader("Animation", UIUtils.getIconFromResources("actions/filmgrain.png"));
-            formPanel.addToForm(getViewerPanel2D().getAnimationSpeedControl(), new JLabel("Speed (ms)"), null);
+            formPanel.addToForm(getViewerPanel2D().getAnimationFPSControl(), new JLabel("Animation FPS"), null);
         }
     }
 }

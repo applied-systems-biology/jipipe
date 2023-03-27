@@ -1753,7 +1753,7 @@ public class ImageJUtils {
         }
     }
 
-    public static void writeImageToMovie(ImagePlus image, HyperstackDimension followedDimension, int timePerFrame, Path outputFile, AVICompression compression, int jpegQuality, JIPipeProgressInfo progressInfo) {
+    public static void writeImageToMovie(ImagePlus image, HyperstackDimension followedDimension, double fps, Path outputFile, AVICompression compression, int jpegQuality, JIPipeProgressInfo progressInfo) {
         ImageStack generatedStack = new ImageStack(image.getWidth(), image.getHeight());
 
         if (followedDimension == HyperstackDimension.Depth) {
@@ -1792,7 +1792,7 @@ public class ImageJUtils {
         }
 
         ImagePlus combined = new ImagePlus("video", generatedStack);
-        combined.getCalibration().fps = 1.0 / timePerFrame * 1000;
+        combined.getCalibration().fps = fps;
         progressInfo.log("Writing AVI with " + Math.round(combined.getCalibration().fps) + "FPS");
         AVI_Writer writer = new AVI_Writer();
         try {

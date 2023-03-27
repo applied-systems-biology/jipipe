@@ -26,7 +26,7 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "image-viewer-ui-2d";
     private boolean showSideBar = true;
-    private int defaultAnimationSpeed = 75;
+    private double defaultAnimationFPS = 24;
     private double zoomBaseSpeed = 0.05;
 
     private double zoomDynamicSpeed = 0.1;
@@ -46,15 +46,15 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
         this.showSideBar = showSideBar;
     }
 
-    @JIPipeDocumentation(name = "Animation speed", description = "The default animation speed")
-    @JIPipeParameter("default-animation-speed")
-    public int getDefaultAnimationSpeed() {
-        return defaultAnimationSpeed;
+    @JIPipeDocumentation(name = "Animation FPS", description = "The default animation FPS")
+    @JIPipeParameter("default-animation-fps")
+    public double getDefaultAnimationFPS() {
+        return defaultAnimationFPS;
     }
 
-    @JIPipeParameter("default-animation-speed")
-    public void setDefaultAnimationSpeed(int defaultAnimationSpeed) {
-        this.defaultAnimationSpeed = defaultAnimationSpeed;
+    @JIPipeParameter("default-animation-fps")
+    public void setDefaultAnimationFPS(double defaultAnimationFPS) {
+        this.defaultAnimationFPS = defaultAnimationFPS;
     }
 
     @JIPipeDocumentation(name = "Zoom base speed", description = "Determines the base speed of zoom operations. The higher, the faster the zoom. The default is 1.05")
