@@ -1002,7 +1002,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             if (slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters && slotState.getSlotName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
                 slotState.setSlotLabel("Parameters");
             }
-            if (graph != null) {
+            if (graph != null && graph.containsNode(inputSlot)) {
                 if (!inputSlot.getInfo().isOptional() && graph.getGraph().inDegreeOf(inputSlot) <= 0 && !(inputSlot.getNode() instanceof GraphWrapperAlgorithmInput)) {
                     slotState.setSlotStatus(SlotStatus.Unconnected);
                 } else {
