@@ -22,11 +22,17 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @JIPipeDocumentation(name = "Set LUT (image)", description = "Sets the LUT of the image from another image, which should be a RGB image with a width of 256 and a height of 1. " +
         "This does not change the pixel data.")
@@ -37,7 +43,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
 public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean duplicateImage = true;
-    private boolean applyToAllPlanes = true;
+
+    private OptionalIntegerRange restrictToChannels = new OptionalIntegerRange();
 
     public SetLUTFromImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -46,7 +53,7 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     public SetLUTFromImageAlgorithm(SetLUTFromImageAlgorithm other) {
         super(other);
         this.duplicateImage = other.duplicateImage;
-        this.applyToAllPlanes = other.applyToAllPlanes;
+        this.restrictToChannels = new OptionalIntegerRange(other.restrictToChannels);
     }
 
     @Override
@@ -55,22 +62,16 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlusData lutData = dataBatch.getInputData("LUT", ImagePlus2DColorRGBData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate(progressInfo);
+        data.ensureComposite();
         LUT lut = ImageJUtils.lutFromImage(lutData.getImage());
         ImagePlus image = data.getImage();
-        if (applyToAllPlanes && image.hasImageStack()) {
-            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
-            for (int z = 0; z < image.getNSlices(); z++) {
-                for (int c = 0; c < image.getNChannels(); c++) {
-                    for (int t = 0; t < image.getNFrames(); t++) {
-                        image.setPosition(c, z, t);
-                        image.getProcessor().setLut(lut);
-                    }
-                }
-            }
-            image.setPosition(original.getC(), original.getZ(), original.getT());
-        } else {
-            image.getProcessor().setLut(lut);
+        Set<Integer> channels = new HashSet<>();
+        if(restrictToChannels.isEnabled()) {
+            ExpressionVariables variables = new ExpressionVariables();
+            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            channels.addAll(restrictToChannels.getContent().getIntegers(0, data.getNChannels() - 1, variables));
         }
+        ImageJAlgorithmUtils.setLut(image, lut, channels);
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
@@ -85,14 +86,14 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
         this.duplicateImage = duplicateImage;
     }
 
-    @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all LUT are modified, not only the one of the current plane.")
-    @JIPipeParameter("apply-to-all-planes")
-    public boolean isApplyToAllPlanes() {
-        return applyToAllPlanes;
+    @JIPipeDocumentation(name = "Restrict to channels", description = "Allows to restrict setting LUT to specific channels")
+    @JIPipeParameter("restrict-to-channels")
+    public OptionalIntegerRange getRestrictToChannels() {
+        return restrictToChannels;
     }
 
-    @JIPipeParameter("apply-to-all-planes")
-    public void setApplyToAllPlanes(boolean applyToAllPlanes) {
-        this.applyToAllPlanes = applyToAllPlanes;
+    @JIPipeParameter("restrict-to-channels")
+    public void setRestrictToChannels(OptionalIntegerRange restrictToChannels) {
+        this.restrictToChannels = restrictToChannels;
     }
 }

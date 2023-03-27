@@ -59,7 +59,7 @@ public class ImagePlusFromFileImageSource implements ImageSource {
     public ImagePlus get() {
         ImagePlus image = ImagePlusFromFile.readImageFrom(path, new JIPipeProgressInfo());
         if (removeLUT) {
-            ImageJUtils.removeLUT(image, true);
+            ImageJUtils.removeLUT(image, null);
         }
         if (removeOverlay) {
             ImageJUtils.removeOverlay(image);

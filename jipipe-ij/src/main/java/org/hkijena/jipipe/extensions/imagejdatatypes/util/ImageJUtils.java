@@ -1802,21 +1802,20 @@ public class ImageJUtils {
         }
     }
 
-    public static void removeLUT(ImagePlus image, boolean applyToAllPlanes) {
-        if (applyToAllPlanes && image.hasImageStack()) {
-            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
-            for (int z = 0; z < image.getNSlices(); z++) {
-                for (int c = 0; c < image.getNChannels(); c++) {
+    public static void removeLUT(ImagePlus image, Set<Integer> channels) {
+        ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
+        for (int c = 0; c < image.getNChannels(); c++) {
+            if(channels == null || channels.isEmpty() || channels.contains(c)) {
+                for (int z = 0; z < image.getNSlices(); z++) {
                     for (int t = 0; t < image.getNFrames(); t++) {
-                        image.setPosition(c, z, t);
+                        image.setPosition(c + 1, z + 1, t + 1);
                         image.getProcessor().setLut(null);
                     }
                 }
             }
-            image.setPosition(original.getC(), original.getZ(), original.getT());
-        } else {
-            image.getProcessor().setLut(null);
         }
+
+        image.setPosition(original.getC(), original.getZ(), original.getT());
     }
 
     /**

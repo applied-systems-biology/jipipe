@@ -163,7 +163,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             ImagePlusData outputData;
             ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
             if (removeLut) {
-                ImageJUtils.removeLUT(image, true);
+                ImageJUtils.removeLUT(image, null);
             }
             if (removeOverlay) {
                 ImageJUtils.removeOverlay(image);

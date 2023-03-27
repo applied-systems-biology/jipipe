@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
+import ij.CompositeImage;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
@@ -504,6 +505,12 @@ public class ImagePlusData implements JIPipeData {
     public void copyMetadata(ImagePlusData other) {
         if (other.overlays != null) {
             setOverlays(new ArrayList<>(other.overlays));
+        }
+    }
+
+    public void ensureComposite() {
+        if(!getImage().isComposite()) {
+            image = new CompositeImage(image, CompositeImage.COMPOSITE);
         }
     }
 }

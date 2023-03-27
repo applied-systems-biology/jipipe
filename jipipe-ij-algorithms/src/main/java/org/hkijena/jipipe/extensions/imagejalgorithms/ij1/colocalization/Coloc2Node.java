@@ -216,7 +216,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             drawHistogramLine(overlay, histogram, img, autoThreshold.getAutoThresholdSlope(),
                     autoThreshold.getAutoThresholdIntercept());
             wrapped.setOverlay(overlay);
-            ImageJAlgorithmUtils.setLutFromColorMap(wrapped, ColorMap.fire, true);
+            ImageJAlgorithmUtils.setLutFromColorMap(wrapped, ColorMap.fire, null);
         }
     }
 

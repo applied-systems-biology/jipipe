@@ -21,8 +21,13 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @JIPipeDocumentation(name = "Remove LUT", description = "Removes LUT information from the input image.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
@@ -31,7 +36,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables", aliasName = "Remove LUT")
 public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean duplicateImage = true;
-    private boolean applyToAllPlanes = true;
+    private OptionalIntegerRange restrictToChannels = new OptionalIntegerRange();
 
     public RemoveLUTAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -40,7 +45,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public RemoveLUTAlgorithm(RemoveLUTAlgorithm other) {
         super(other);
         this.duplicateImage = other.duplicateImage;
-        this.applyToAllPlanes = other.applyToAllPlanes;
+        this.restrictToChannels = new OptionalIntegerRange(other.restrictToChannels);
     }
 
     @Override
@@ -49,7 +54,13 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate(progressInfo);
         ImagePlus image = data.getImage();
-        ImageJUtils.removeLUT(image, applyToAllPlanes);
+        Set<Integer> channels = new HashSet<>();
+        if(restrictToChannels.isEnabled()) {
+            ExpressionVariables variables = new ExpressionVariables();
+            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            channels.addAll(restrictToChannels.getContent().getIntegers(0, data.getNChannels() - 1, variables));
+        }
+        ImageJUtils.removeLUT(image, channels);
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
@@ -65,14 +76,14 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.duplicateImage = duplicateImage;
     }
 
-    @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all LUT are modified, not only the one of the current plane.")
-    @JIPipeParameter("apply-to-all-planes")
-    public boolean isApplyToAllPlanes() {
-        return applyToAllPlanes;
+    @JIPipeDocumentation(name = "Restrict to channels", description = "Allows to restrict setting LUT to specific channels")
+    @JIPipeParameter("restrict-to-channels")
+    public OptionalIntegerRange getRestrictToChannels() {
+        return restrictToChannels;
     }
 
-    @JIPipeParameter("apply-to-all-planes")
-    public void setApplyToAllPlanes(boolean applyToAllPlanes) {
-        this.applyToAllPlanes = applyToAllPlanes;
+    @JIPipeParameter("restrict-to-channels")
+    public void setRestrictToChannels(OptionalIntegerRange restrictToChannels) {
+        this.restrictToChannels = restrictToChannels;
     }
 }
