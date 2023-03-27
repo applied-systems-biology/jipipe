@@ -82,6 +82,8 @@ public class FormPanel extends JXPanel {
 
     private final EventBus eventBus = new EventBus();
     private final FormPanelContentPanel contentPanel = new FormPanelContentPanel();
+
+    private JPanel staticContentPanel;
     private final MarkdownReader parameterHelp;
     private final JLabel parameterHelpDrillDown = new JLabel();
     private final boolean withDocumentation;
@@ -143,13 +145,15 @@ public class FormPanel extends JXPanel {
             helpComponent = helpPanel;
         }
 
-        Component content;
+        staticContentPanel = new JPanel(new BorderLayout());
+        final Component content = staticContentPanel;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
             scrollPane = new JScrollPane(contentPanel);
             scrollPane.getVerticalScrollBar().setUnitIncrement(10);
-            content = scrollPane;
-        } else
-            content = contentPanel;
+            staticContentPanel.add(scrollPane, BorderLayout.CENTER);
+        } else {
+            staticContentPanel.add(contentPanel, BorderLayout.CENTER);
+        }
 
         if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {
             this.withDocumentation = true;
@@ -167,6 +171,14 @@ public class FormPanel extends JXPanel {
             this.documentationHasUI = false;
             add(content, BorderLayout.CENTER);
         }
+    }
+
+    /**
+     * The panel that surrounds the scroll pane or content panel
+     * @return the static content panel
+     */
+    public JPanel getStaticContentPanel() {
+        return staticContentPanel;
     }
 
     public DocumentTabPane getDocumentationTabPane() {

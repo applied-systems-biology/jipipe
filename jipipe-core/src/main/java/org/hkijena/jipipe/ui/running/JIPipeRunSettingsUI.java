@@ -28,6 +28,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
+import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
@@ -85,17 +86,14 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         MarkdownReader help = new MarkdownReader(false);
         help.setDocument(MarkdownDocument.fromPluginResource("documentation/validation.md", new HashMap<>()));
 
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, reportUI, help, AutoResizeSplitPane.RATIO_3_TO_1);
-        panel.add(splitPane, BorderLayout.CENTER);
+        JPanel reportPanel = new JPanel(new BorderLayout());
+        reportPanel.add(reportUI, BorderLayout.CENTER);
 
         // Create button panel
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        buttonPanel.add(Box.createHorizontalGlue());
+        MessagePanel messagePanel = new MessagePanel();
 
         JButton runButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        runButton.setFont(new Font(Font.DIALOG, Font.PLAIN,16));
         runButton.addActionListener(e -> {
             report.clearAll();
             getProjectWorkbench().getProject().reportValidity(report);
@@ -105,8 +103,11 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             else
                 reportUI.setReport(report);
         });
-        buttonPanel.add(runButton);
-        panel.add(buttonPanel, BorderLayout.SOUTH);
+        messagePanel.addMessage(MessagePanel.MessageType.Error, "There are errors in your project that prevent a run", false, false, runButton);
+        reportPanel.add(messagePanel, BorderLayout.NORTH);
+
+        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, reportPanel, help, AutoResizeSplitPane.RATIO_3_TO_1);
+        panel.add(splitPane, BorderLayout.CENTER);
 
         add(panel, BorderLayout.CENTER);
     }
@@ -181,17 +182,14 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         formPanel.addVerticalGlue();
         setupPanel.add(formPanel, BorderLayout.CENTER);
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        buttonPanel.add(Box.createHorizontalGlue());
+        MessagePanel messagePanel = new MessagePanel();
 
         JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("actions/run-build.png"));
+        runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> runNow());
-        buttonPanel.add(runButton);
+        messagePanel.addMessage(MessagePanel.MessageType.Success, "Please review the settings below. Then proceed to click the following button.", false, false, runButton);
 
-        add(buttonPanel, BorderLayout.SOUTH);
+        formPanel.getStaticContentPanel().add(messagePanel, BorderLayout.NORTH);
 
         add(setupPanel, BorderLayout.CENTER);
         revalidate();

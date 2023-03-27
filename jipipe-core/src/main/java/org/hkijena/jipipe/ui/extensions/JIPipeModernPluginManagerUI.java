@@ -159,7 +159,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         Set<String> newExtensions = JIPipe.getInstance().getExtensionRegistry().getNewExtensions();
         if (!newExtensions.isEmpty()) {
             addSidePanelButton("New extensions", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), () -> newExtensions.stream().map(id -> extensionRegistry.getKnownExtensionById(id)).collect(Collectors.toList()), false);
-            messagePanel.addMessage(MessagePanel.MessageType.Info, "New extensions are available");
+            messagePanel.addMessage(MessagePanel.MessageType.Info, "New extensions are available", true, true);
         }
 
         addSidePanelButton("Activated extensions", UIUtils.getIconFromResources("actions/checkmark.png"), () -> extensionRegistry.getKnownExtensionsList().stream().filter(dependency -> extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);

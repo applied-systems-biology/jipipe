@@ -70,21 +70,21 @@ public class JIPipeModernPluginManager {
     }
 
     public void initializeUpdateSites() {
-        updateSiteMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "ImageJ update sites are currently being loaded. Until this process is finished, ImageJ plugins cannot be managed.");
+        updateSiteMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "ImageJ update sites are currently being loaded. Until this process is finished, ImageJ plugins cannot be managed.", true, true);
         if (ImageJUpdater.isDebian()) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "You are using the Debian packaged version of ImageJ. " +
-                    "You should update ImageJ with your system's usual package manager instead.");
+                    "You should update ImageJ with your system's usual package manager instead.", true, true);
             onFailure();
             return;
         }
         if (!NetworkUtils.hasInternetConnection()) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "Cannot connect to the Internet. Do you have a network connection? " +
-                    "Are your proxy settings correct? See also http://forum.imagej.net/t/5070");
+                    "Are your proxy settings correct? See also http://forum.imagej.net/t/5070", true, true);
             onFailure();
             return;
         }
         if (Files.exists(CoreImageJUtils.getImageJUpdaterRoot().resolve("update"))) {
-            messagePanel.addMessage(MessagePanel.MessageType.Warning, "We recommend to restart ImageJ, as some updates were applied.");
+            messagePanel.addMessage(MessagePanel.MessageType.Warning, "We recommend to restart ImageJ, as some updates were applied.", true, true);
         }
         refreshRepositoryRun = new RefreshRepositoryRun();
         JIPipeRunnerQueue.getInstance().enqueue(refreshRepositoryRun);
@@ -98,7 +98,7 @@ public class JIPipeModernPluginManager {
         if (isUpdateSitesApplied()) {
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> System.exit(0));
-            restartMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", exitButton);
+            restartMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", true, true, exitButton);
         } else if (!getExtensionRegistry().getScheduledDeactivateExtensions().isEmpty() || !getExtensionRegistry().getScheduledActivateExtensions().isEmpty()) {
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> {
@@ -112,7 +112,7 @@ public class JIPipeModernPluginManager {
                     JIPipe.restartGUI();
                 }
             });
-            restartMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ or JIPipe.", exitButton, restartJIPipeGUIButton);
+            restartMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ or JIPipe.", true, true, exitButton, restartJIPipeGUIButton);
         }
     }
 
@@ -123,7 +123,7 @@ public class JIPipeModernPluginManager {
             resolveConflictsButton.addActionListener(e -> resolveConflicts());
             messagePanel.addMessage(MessagePanel.MessageType.Warning,
                     "There are " + conflicts.size() + " ImageJ update site conflicts. Please click the following button to resolve them.",
-                    resolveConflictsButton);
+                    true, true, resolveConflictsButton);
         }
     }
 
@@ -211,7 +211,7 @@ public class JIPipeModernPluginManager {
     @Subscribe
     public void onOperationInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.");
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.", true, true);
             onFailure();
         }
     }
