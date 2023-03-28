@@ -88,12 +88,12 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
         switch (fileFormat) {
             case CSV: {
                 outputFile = PathUtils.ensureExtension(outputPath, ".csv");
-                table.saveAsCSV(outputPath);
+                table.saveAsCSV(outputFile);
             }
             break;
             case XLSX: {
                 outputFile = PathUtils.ensureExtension(outputPath, ".xlsx");
-                table.saveAsXLSX(outputPath);
+                table.saveAsXLSX(outputFile);
             }
             break;
             default:
