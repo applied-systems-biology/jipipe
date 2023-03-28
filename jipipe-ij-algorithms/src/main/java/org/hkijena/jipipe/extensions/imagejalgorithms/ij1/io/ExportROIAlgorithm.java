@@ -100,7 +100,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(path), progressInfo);
             }
         } else {
-            rois.saveToRoiOrZip(outputPath);
+            outputPath = rois.saveToRoiOrZip(outputPath);
             dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
         }
     }
