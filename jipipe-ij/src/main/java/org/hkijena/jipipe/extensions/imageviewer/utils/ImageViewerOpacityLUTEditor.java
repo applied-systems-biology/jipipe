@@ -38,7 +38,7 @@ import java.util.List;
 /**
  * Based on {@link org.jdesktop.swingx.JXGradientChooser}
  */
-public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements ThumbListener {
+public abstract class ImageViewerOpacityLUTEditor extends JPanel implements ThumbListener {
     private final JIPipeImageViewer imageViewerPanel;
     private final int targetChannel;
     private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
@@ -53,7 +53,7 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
     private String channelName;
     private LUT cachedLUT;
 
-    public ImageViewerGrayscaleLUTEditor(JIPipeImageViewer imageViewerPanel, int targetChannel) {
+    public ImageViewerOpacityLUTEditor(JIPipeImageViewer imageViewerPanel, int targetChannel) {
         this.imageViewerPanel = imageViewerPanel;
         this.targetChannel = targetChannel;
         this.channelName = "Channel " + (targetChannel + 1);
@@ -208,7 +208,7 @@ public abstract class ImageViewerGrayscaleLUTEditor extends JPanel implements Th
         invertColorsButton.addActionListener(e -> invertColors());
         toolBar.add(invertColorsButton);
 
-        JButton setToColorBlackButton = new JButton("Black", new SolidColorIcon(16, 16, Color.BLACK));
+        JButton setToColorBlackButton = new JButton("Black", UIUtils.getIconFromResources("actions/eye-slash.png"));
         UIUtils.makeFlat(setToColorBlackButton);
         setToColorBlackButton.addActionListener(e -> setToUniformColor(Color.BLACK));
         toolBar.add(setToColorBlackButton);

@@ -1,10 +1,10 @@
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d;
 
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerGrayscaleLUTEditor;
+import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerOpacityLUTEditor;
 
-public class ImageViewer3DGreyscaleLUTEditor extends ImageViewerGrayscaleLUTEditor {
-    public ImageViewer3DGreyscaleLUTEditor(JIPipeImageViewer imageViewerPanel, int targetChannel) {
+public class ImageViewer3DOpacityLUTEditor extends ImageViewerOpacityLUTEditor {
+    public ImageViewer3DOpacityLUTEditor(JIPipeImageViewer imageViewerPanel, int targetChannel) {
         super(imageViewerPanel, targetChannel);
     }
 

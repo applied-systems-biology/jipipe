@@ -22,10 +22,7 @@ import ij.process.ImageStatistics;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Stack2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Video2DExporterRun;
@@ -45,14 +42,13 @@ import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess {
 
@@ -90,8 +86,17 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private Component currentContentPanel;
-    private boolean isUpdatingSliders = false;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private boolean isUpdatingSliders = false;
+
+    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JScrollPane canvasScrollPane;
+
+    private boolean composite;
+
+    private final List<CompositeLayer> orderedCompositeBlendLayers = new ArrayList<>();
+
+    private final Map<Integer, CompositeLayer> compositeBlendLayers = new HashMap<>();
+
     /**
      * Initializes a new image viewer
      *
@@ -143,6 +148,14 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     public ImageViewer2DUISettings getSettings() {
         return settings;
+    }
+
+    public List<CompositeLayer> getOrderedCompositeBlendLayers() {
+        return Collections.unmodifiableList(orderedCompositeBlendLayers);
+    }
+
+    public Map<Integer, CompositeLayer> getCompositeBlendLayers() {
+        return Collections.unmodifiableMap(compositeBlendLayers);
     }
 
     public void dispose() {
@@ -221,6 +234,19 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
         initializeAnimationControls();
         updateSideBar();
+    }
+
+    public boolean isComposite() {
+        return composite;
+    }
+
+    public void setComposite(boolean composite) {
+        this.composite = composite;
+        if(composite) {
+            channelSlider.setValue(1);
+        }
+        refreshSliders();
+        uploadSliceToCanvas();
     }
 
     private void initializeAnimationControls() {
@@ -658,7 +684,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 bottomPanel.setVisible(true);
                 bottomPanel.clear();
 
-                if (image.getNChannels() > 1)
+                if (image.getNChannels() > 1 && !composite)
                     addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle, "Channel", "Channel (C) %d/%d");
                 if (image.getNSlices() > 1)
                     addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle, "Slice", "Slice (Z) %d/%d");
@@ -787,37 +813,66 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      * @return the new slice
      */
     public ImageProcessor generateSlice(int c, int z, int t, double magnification, boolean withPostprocessing) {
-        image.getImage().setPosition(c + 1, z + 1, t + 1);
-        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
-            plugin.beforeDraw(c, z, t);
-        }
-//        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
-        ImageProcessor processor = image.getImage().getProcessor().duplicate();
-        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
-            processor = plugin.draw(c, z, t, processor);
-        }
-//        if (withRotation && rotation != 0) {
-//            if (rotation == 90)
-//                processor = processor.rotateRight();
-//            else if (rotation == 180)
-//                processor = processor.rotateRight().rotateRight();
-//            else if (rotation == 270)
-//                processor = processor.rotateLeft();
-//            else
-//                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
-//        }
-        if (magnification != 1.0) {
-            processor.setInterpolationMethod(ImageProcessor.NONE);
-            processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
-        }
-        if (withPostprocessing) {
-            BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
-            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
-                plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
+        if(composite && image.getNChannels() > 1) {
+
+            ColorProcessor bottom = new ColorProcessor(image.getWidth(), image.getHeight());
+
+            // Pre-generate processors for all channels
+            for (int i = 0; i < image.getNChannels(); i++) {
+                CompositeLayer layer = orderedCompositeBlendLayers.get(i);
+                int cc = layer.getChannel();
+
+                image.getImage().setPosition(cc + 1, z + 1, t + 1);
+                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                    plugin.beforeDraw(cc, z, t);
+                }
+                ImageProcessor processor = image.getImage().getProcessor().duplicate();
+                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                    processor = plugin.draw(cc, z, t, processor);
+                }
+                if (magnification != 1.0) {
+                    processor.setInterpolationMethod(ImageProcessor.NONE);
+                    processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
+                }
+                if (withPostprocessing) {
+                    BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
+                    for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                        plugin.postprocessDrawForExport(image, new ImageSliceIndex(cc, z, t), magnification);
+                    }
+                    processor = new ColorProcessor(image);
+                }
+                if(!(processor instanceof ColorProcessor)) {
+                    BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
+                    processor = new ColorProcessor(image);
+                }
+
+                layer.getBlendMode().blend(bottom, (ColorProcessor) processor, layer.getOpacity());
             }
-            processor = new ColorProcessor(image);
+
+            return bottom;
         }
-        return processor;
+        else {
+            image.getImage().setPosition(c + 1, z + 1, t + 1);
+            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                plugin.beforeDraw(c, z, t);
+            }
+            ImageProcessor processor = image.getImage().getProcessor().duplicate();
+            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                processor = plugin.draw(c, z, t, processor);
+            }
+            if (magnification != 1.0) {
+                processor.setInterpolationMethod(ImageProcessor.NONE);
+                processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
+            }
+            if (withPostprocessing) {
+                BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
+                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                    plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
+                }
+                processor = new ColorProcessor(image);
+            }
+            return processor;
+        }
     }
 
     public void uploadSliceToCanvas() {
@@ -856,11 +911,21 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     public void setImage(ImagePlusData image) {
         this.image = image;
+        compositeBlendLayers.clear();
+        orderedCompositeBlendLayers.clear();
         if (image != null) {
             ImagePlus imagePlus = image.getImage();
             this.zoomedDummyCanvas = new ImageCanvas(imagePlus);
             this.zoomedDummyCanvas.setMagnification(getCanvas().getZoom());
             this.exportDummyCanvas = new ImageCanvas(imagePlus);
+
+            // Generate blend layers
+            for (int c = 0; c < imagePlus.getNChannels(); c++) {
+                CompositeLayer layer = new CompositeLayer(c);
+                orderedCompositeBlendLayers.add(layer);
+                compositeBlendLayers.put(c, layer);
+            }
+
         } else {
             this.zoomedDummyCanvas = null;
             this.exportDummyCanvas = null;
@@ -904,5 +969,51 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return null;
     }
 
+    public void moveCompositePriorityUp(int targetChannel) {
+        CompositeLayer layer = compositeBlendLayers.getOrDefault(targetChannel, null);
+        if(layer != null) {
+            int oldIndex = orderedCompositeBlendLayers.indexOf(layer);
+            if(oldIndex > 0) {
+                int newIndex = oldIndex - 1;
+                CompositeLayer backup = orderedCompositeBlendLayers.get(newIndex);
+                orderedCompositeBlendLayers.set(newIndex, layer);
+                orderedCompositeBlendLayers.set(oldIndex, backup);
+                refreshFormPanel();
+                uploadSliceToCanvas();
+            }
+        }
+    }
+
+    public void moveCompositePriorityDown(int targetChannel) {
+        CompositeLayer layer = compositeBlendLayers.getOrDefault(targetChannel, null);
+        if(layer != null) {
+            int oldIndex = orderedCompositeBlendLayers.indexOf(layer);
+            if(oldIndex >= 0 && oldIndex < orderedCompositeBlendLayers.size() - 1) {
+                int newIndex = oldIndex + 1;
+                CompositeLayer backup = orderedCompositeBlendLayers.get(newIndex);
+                orderedCompositeBlendLayers.set(newIndex, layer);
+                orderedCompositeBlendLayers.set(oldIndex, backup);
+                refreshFormPanel();
+                uploadSliceToCanvas();
+            }
+        }
+    }
+
+    public static class CompositeLayer extends ImageBlendLayer {
+        private final int channel;
+
+        public CompositeLayer(int channel) {
+            this.channel = channel;
+        }
+
+        public CompositeLayer(CompositeLayer other) {
+            super(other);
+            this.channel = other.channel;
+        }
+
+        public int getChannel() {
+            return channel;
+        }
+    }
 
 }
