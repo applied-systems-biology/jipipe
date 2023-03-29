@@ -299,7 +299,8 @@ public class JIPipeModernPluginManager {
 
         if (!allUpdateSites.isEmpty()) {
             if (!isUpdateSitesReady()) {
-                int response = JOptionPane.showOptionDialog(SwingUtilities.getWindowAncestor(parent), "The selected extension requests various ImageJ update sites, but there is currently no connection to the update site system. You can ignore update sites or wait until the initialization is complete. If you click 'Wait' click the 'Activate' " +
+                int response = JOptionPane.showOptionDialog(SwingUtilities.getWindowAncestor(parent), "The selected extension requests various ImageJ update sites, but there is currently no connection to the update site system.\n" +
+                                "You can ignore update sites or wait until the initialization is complete. If you click 'Wait' click the 'Activate' " +
                                 "button again after the update sites have been initialized.",
                         "Activate " + extension.getMetadata().getName(), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Wait", "Ignore", "Cancel"},
                         "Wait");
