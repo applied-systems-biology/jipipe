@@ -128,6 +128,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageBlendLayer;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageBlendMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -1183,8 +1185,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerColorAlgorithms() {
         registerParameterType("ij1-color-overlay-channels:channel", OverlayImagesAlgorithm.Channel.class, "Channel settings", "Settings for a channel");
-        registerParameterType("ij1-color-blend-images:layer", BlendImagesAlgorithm.Layer.class, "Layer settings", "Settings for a layer");
-        registerEnumParameterType("ij1-color-blend-images:blend-mode", BlendImagesAlgorithm.BlendMode.class, "Layer blend mode", "Blend mode for the layer");
+        registerParameterType("ij1-color-blend-images:layer", ImageBlendLayer.class, "Layer settings", "Settings for a layer");
+        registerEnumParameterType("ij1-color-blend-images:blend-mode", ImageBlendMode.class, "Layer blend mode", "Blend mode for the layer");
 
         registerNodeType("ij1-color-invert", InvertColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
         registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
