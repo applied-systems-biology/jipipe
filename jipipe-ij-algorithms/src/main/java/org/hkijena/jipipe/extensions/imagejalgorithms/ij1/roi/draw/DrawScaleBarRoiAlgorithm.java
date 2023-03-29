@@ -119,7 +119,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         Overlay scaleBarOverlay = generator.createScaleBarOverlay();
         for (Roi roi : scaleBarOverlay) {
-           target.add(roi);
+            target.add(roi);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }

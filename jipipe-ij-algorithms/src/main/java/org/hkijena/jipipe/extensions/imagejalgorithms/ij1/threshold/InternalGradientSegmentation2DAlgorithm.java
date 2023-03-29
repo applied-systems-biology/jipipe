@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
 
-import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.ImageCalculator;
@@ -25,8 +24,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -34,11 +31,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-
 
 
 /**
@@ -61,6 +56,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final AutoThreshold2DAlgorithm autoThresholding;
+    private final CLAHEContrastEnhancer contrastEnhancer;
     private double gaussSigma = 3;
     private int internalGradientRadius = 25;
     private int dilationIterations = 3;
@@ -68,9 +65,6 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     private boolean applyFirstCLAHE = true;
     private boolean applySecondCLAHE = true;
     private boolean applyGaussian = true;
-
-    private final AutoThreshold2DAlgorithm autoThresholding;
-    private final CLAHEContrastEnhancer contrastEnhancer;
 
     /**
      * @param info the algorithm info
@@ -281,7 +275,7 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if(access.getSource() == autoThresholding && "source-area".equals(access.getKey())) {
+        if (access.getSource() == autoThresholding && "source-area".equals(access.getKey())) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);

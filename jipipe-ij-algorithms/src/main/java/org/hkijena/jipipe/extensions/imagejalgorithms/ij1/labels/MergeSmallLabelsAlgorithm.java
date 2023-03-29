@@ -69,7 +69,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         ROIListData finalRoiInput = roiInput;
         ImagePlus finalMaskInput = maskInput;
 
-        if(image.getBitDepth() == 8) {
+        if (image.getBitDepth() == 8) {
             TByteIntMap counts = new TByteIntHashMap();
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
@@ -81,7 +81,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                 byte[] maskPixels = mask != null ? (byte[]) mask.getPixels() : null;
                 byte[] pixels = (byte[]) ip.getPixels();
                 for (int i = 0; i < pixels.length; i++) {
-                    if(mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                    if (mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
                         counts.adjustOrPutValue(pixels[i], 1, 1);
                     }
                 }
@@ -96,7 +96,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
             // Sort the array
             Arrays.sort(keys);
-            if(!mergeToLargerLabel) {
+            if (!mergeToLargerLabel) {
                 keys = ArrayUtils.reverse(keys);
             }
 
@@ -104,32 +104,31 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                 byte key = keys[i];
                 int count = counts.get(key);
 
-                if(excludeZero && key == 0) {
+                if (excludeZero && key == 0) {
                     continue;
                 }
 
-                if(count < minimumNumberOfPixels) {
+                if (count < minimumNumberOfPixels) {
                     Byte targetKey = null;
-                    if(i >= keys.length - 1) {
+                    if (i >= keys.length - 1) {
                         // Fallback case
                         for (int j = i - 1; j >= 0; j--) {
                             byte candidateKey = keys[j];
-                            if(excludeZero && candidateKey == 0)
+                            if (excludeZero && candidateKey == 0)
                                 continue;
                             targetKey = candidateKey;
                             break;
                         }
-                    }
-                    else {
+                    } else {
                         for (int j = i + 1; j < keys.length; j++) {
                             byte candidateKey = keys[j];
-                            if(excludeZero && candidateKey == 0)
+                            if (excludeZero && candidateKey == 0)
                                 continue;
                             targetKey = candidateKey;
                             break;
                         }
                     }
-                    if(targetKey == null) {
+                    if (targetKey == null) {
                         progressInfo.log("Unable to find target for " + key + " with count " + count);
                         continue;
                     }
@@ -157,8 +156,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                     pixels[i] = remapping.get(pixels[i]);
                 }
             }, progressInfo.resolve("Apply remapping"));
-        }
-        else if(image.getBitDepth() == 16) {
+        } else if (image.getBitDepth() == 16) {
             TShortIntMap counts = new TShortIntHashMap();
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
@@ -170,7 +168,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                 byte[] maskPixels = mask != null ? (byte[]) mask.getPixels() : null;
                 short[] pixels = (short[]) ip.getPixels();
                 for (int i = 0; i < pixels.length; i++) {
-                    if(mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                    if (mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
                         counts.adjustOrPutValue(pixels[i], 1, 1);
                     }
                 }
@@ -185,7 +183,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
             // Sort the array
             Arrays.sort(keys);
-            if(!mergeToLargerLabel) {
+            if (!mergeToLargerLabel) {
                 keys = ArrayUtils.reverse(keys);
             }
 
@@ -193,32 +191,31 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                 short key = keys[i];
                 int count = counts.get(key);
 
-                if(excludeZero && key == 0) {
+                if (excludeZero && key == 0) {
                     continue;
                 }
 
-                if(count < minimumNumberOfPixels) {
+                if (count < minimumNumberOfPixels) {
                     Short targetKey = null;
-                    if(i >= keys.length - 1) {
+                    if (i >= keys.length - 1) {
                         // Fallback case
                         for (int j = i - 1; j >= 0; j--) {
                             short candidateKey = keys[j];
-                            if(excludeZero && candidateKey == 0)
+                            if (excludeZero && candidateKey == 0)
                                 continue;
                             targetKey = candidateKey;
                             break;
                         }
-                    }
-                    else {
+                    } else {
                         for (int j = i + 1; j < keys.length; j++) {
                             short candidateKey = keys[j];
-                            if(excludeZero && candidateKey == 0)
+                            if (excludeZero && candidateKey == 0)
                                 continue;
                             targetKey = candidateKey;
                             break;
                         }
                     }
-                    if(targetKey == null) {
+                    if (targetKey == null) {
                         progressInfo.log("Unable to find target for " + key + " with count " + count);
                         continue;
                     }
@@ -246,8 +243,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                     pixels[i] = remapping.get(pixels[i]);
                 }
             }, progressInfo.resolve("Apply remapping"));
-        }
-        else if(image.getBitDepth() == 32) {
+        } else if (image.getBitDepth() == 32) {
             TFloatIntMap counts = new TFloatIntHashMap();
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor mask = getMask(ip.getWidth(),
@@ -259,7 +255,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                 byte[] maskPixels = mask != null ? (byte[]) mask.getPixels() : null;
                 float[] pixels = (float[]) ip.getPixels();
                 for (int i = 0; i < pixels.length; i++) {
-                    if(mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                    if (mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
                         counts.adjustOrPutValue(pixels[i], 1, 1);
                     }
                 }
@@ -276,7 +272,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
             // Sort the array
             Arrays.sort(keys);
-            if(!mergeToLargerLabel) {
+            if (!mergeToLargerLabel) {
                 keys = ArrayUtils.reverse(keys);
             }
 
@@ -284,32 +280,31 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                 float key = keys[i];
                 int count = counts.get(key);
 
-                if(excludeZero && key == 0) {
+                if (excludeZero && key == 0) {
                     continue;
                 }
 
-                if(count < minimumNumberOfPixels) {
+                if (count < minimumNumberOfPixels) {
                     Float targetKey = null;
-                    if(i >= keys.length - 1) {
+                    if (i >= keys.length - 1) {
                         // Fallback case
                         for (int j = i - 1; j >= 0; j--) {
                             float candidateKey = keys[j];
-                            if(excludeZero && candidateKey == 0)
+                            if (excludeZero && candidateKey == 0)
                                 continue;
                             targetKey = candidateKey;
                             break;
                         }
-                    }
-                    else {
+                    } else {
                         for (int j = i + 1; j < keys.length; j++) {
                             float candidateKey = keys[j];
-                            if(excludeZero && candidateKey == 0)
+                            if (excludeZero && candidateKey == 0)
                                 continue;
                             targetKey = candidateKey;
                             break;
                         }
                     }
-                    if(targetKey == null) {
+                    if (targetKey == null) {
                         progressInfo.log("Unable to find target for " + key + " with count " + count);
                         continue;
                     }
@@ -337,8 +332,7 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                     pixels[i] = remapping.get(pixels[i]);
                 }
             }, progressInfo.resolve("Apply remapping"));
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported bit depth: " + image.getBitDepth());
         }
 

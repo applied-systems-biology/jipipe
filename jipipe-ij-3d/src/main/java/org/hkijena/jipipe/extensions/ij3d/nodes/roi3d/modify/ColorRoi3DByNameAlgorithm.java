@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify;
 
-import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,7 +21,6 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorMapParameter;

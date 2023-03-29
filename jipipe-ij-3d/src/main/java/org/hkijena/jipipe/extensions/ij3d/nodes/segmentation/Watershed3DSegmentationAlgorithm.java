@@ -31,10 +31,9 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Dams", autoCreate = true)
 public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final SeedSegmentationSettings seedSegmentationSettings;
     private int seedsThreshold = 70; // Default is 7000?!
     private int voxelsThreshold = 0;
-
-    private final SeedSegmentationSettings seedSegmentationSettings;
 
     public Watershed3DSegmentationAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -61,10 +60,9 @@ public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
 
             // Generate/extract seed
             ImageHandler seed3DImage;
-            if(seedsImage != null) {
-                seed3DImage=ImageHandler.wrap(ImageJUtils.extractCTStack(seedsImage, index.getC(), index.getT()));
-            }
-            else {
+            if (seedsImage != null) {
+                seed3DImage = ImageHandler.wrap(ImageJUtils.extractCTStack(seedsImage, index.getC(), index.getT()));
+            } else {
                 ctProgress.log("Detecting seeds ...");
                 if (spots3D.getImageStack().getBitDepth() < 32) {
                     seed3DImage = ImageHandler.wrap(FastFilters3D.filterIntImageStack(spots3D.getImageStack(),
@@ -74,8 +72,7 @@ public class Watershed3DSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
                             seedSegmentationSettings.getRadius(),
                             0,
                             false));
-                }
-                else {
+                } else {
                     seed3DImage = ImageHandler.wrap(FastFilters3D.filterFloatImageStack(spots3D.getImageStack(),
                             FastFilters3D.MAXLOCAL,
                             seedSegmentationSettings.getRadius(),

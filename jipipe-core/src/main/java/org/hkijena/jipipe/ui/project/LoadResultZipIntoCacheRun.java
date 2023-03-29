@@ -17,14 +17,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.importers.JIPipeImportCachedSlotOutputRun;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 
 public class LoadResultZipIntoCacheRun implements JIPipeRunnable {
     private final JIPipeWorkbench workbench;
@@ -58,7 +54,7 @@ public class LoadResultZipIntoCacheRun implements JIPipeRunnable {
     @Override
     public void run() {
         progressInfo.log("Extracting ZIP file ...");
-        try(JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, resultPath)) {
+        try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, resultPath)) {
             Path fileSystemPath = storage.getFileSystemPath();
             LoadResultDirectoryIntoCacheRun run = new LoadResultDirectoryIntoCacheRun(workbench, project, fileSystemPath, clearBefore);
             run.setProgressInfo(progressInfo);

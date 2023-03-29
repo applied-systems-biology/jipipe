@@ -66,7 +66,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     }
 
     /**
-     * Returns a {@link JIPipeDataInfo} instance for the data class.
+     * Returns an instance for the data class.
      * Does not require the data type to be registered.
      * Instances are cached.
      *
@@ -83,7 +83,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     }
 
     /**
-     * Returns a {@link JIPipeDataInfo} instance for the data type ID.
+     * Returns an instance for the data type ID.
      * Requires that the data type ID is registered.
      * Instances are cached.
      *

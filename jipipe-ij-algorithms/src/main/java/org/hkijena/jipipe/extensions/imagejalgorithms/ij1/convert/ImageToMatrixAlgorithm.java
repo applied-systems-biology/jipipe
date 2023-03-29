@@ -13,29 +13,19 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert;
 
-import gnu.trove.list.TDoubleList;
-import ij.measure.ResultsTable;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
-import java.util.Collections;
 
 /**
  * Algorithm that generates {@link ResultsTableData} as histogram
@@ -82,13 +72,12 @@ public class ImageToMatrixAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         for (int y = 0; y < ip.getHeight(); y++) {
             outputData.addRow();
             for (int x = 0; x < ip.getWidth(); x++) {
-                if(isColor) {
+                if (isColor) {
                     int pixel = ip.get(x, y);
                     int asRGB = inputData.getColorSpace().convertToRGB(pixel);
                     String hex = ColorUtils.colorToHexString(new Color(asRGB));
                     outputData.setValueAt(hex, y, x);
-                }
-                else {
+                } else {
                     outputData.setValueAt(ip.getf(x, y), y, x);
                 }
             }

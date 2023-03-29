@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics;
 
-import com.google.common.primitives.Floats;
 import gnu.trove.list.TFloatList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
@@ -12,12 +11,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -26,7 +21,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -117,7 +111,7 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
             float[] keyPixels = (float[]) keyIp.getPixels();
             float[] valuePixels = (float[]) valueIp.getPixels();
             for (int i = 0; i < keyPixels.length; i++) {
-                if(mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
+                if (mask == null || Byte.toUnsignedInt(maskPixels[i]) > 0) {
                     float key = keyPixels[i];
                     float value = valuePixels[i];
                     TFloatList list = bucketedValues.get(key);
@@ -181,19 +175,19 @@ public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIterating
 
             outputTable.addRow();
 
-            if(keyColumnName.isEnabled())
+            if (keyColumnName.isEnabled())
                 outputTable.setLastValue(key, keyColumnName.getContent());
-            if(class0CountColumnName.isEnabled())
+            if (class0CountColumnName.isEnabled())
                 outputTable.setLastValue(class0Count, class0CountColumnName.getContent());
-            if(class0SumColumnName.isEnabled())
+            if (class0SumColumnName.isEnabled())
                 outputTable.setLastValue(class0Sum, class0SumColumnName.getContent());
-            if(class0MeanColumnName.isEnabled())
+            if (class0MeanColumnName.isEnabled())
                 outputTable.setLastValue(class0Sum / class0Count, class0MeanColumnName.getContent());
-            if(class1CountColumnName.isEnabled())
+            if (class1CountColumnName.isEnabled())
                 outputTable.setLastValue(class1Count, class1CountColumnName.getContent());
-            if(class1SumColumnName.isEnabled())
+            if (class1SumColumnName.isEnabled())
                 outputTable.setLastValue(class1Sum, class1SumColumnName.getContent());
-            if(class1MeanColumnName.isEnabled())
+            if (class1MeanColumnName.isEnabled())
                 outputTable.setLastValue(class1Sum / class1Count, class1MeanColumnName.getContent());
 
             long currentTime = System.currentTimeMillis();

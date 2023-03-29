@@ -133,7 +133,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     /**
-     * Returns true if the progress was detached from the root {@link JIPipeProgressInfo}
+     * Returns true if the progress was detached from the root progress
      *
      * @return if the progress was detached
      */

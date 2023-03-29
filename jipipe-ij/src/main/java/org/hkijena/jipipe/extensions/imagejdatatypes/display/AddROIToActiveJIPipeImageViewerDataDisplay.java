@@ -16,27 +16,20 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.util.stream.Collectors;
 
 public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        ImageViewerPanel2D viewerPanel = ImageViewerPanel2D.getActiveViewerPanel();
+        JIPipeImageViewer viewerPanel = JIPipeImageViewer.getActiveViewerPanel();
         if (viewerPanel == null) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "There is no active JIPipe image viewer.", "Add to active image viewer", JOptionPane.ERROR_MESSAGE);
         } else {
-            for (ImageViewerPanelPlugin2D plugin : viewerPanel.getPlugins().stream()
-                    .filter(plugin -> plugin instanceof ROIManagerPlugin2D).collect(Collectors.toList())) {
-                ((ROIManagerPlugin2D) plugin).importROIs((ROIListData) data, false);
-            }
+            viewerPanel.addOverlay(data);
         }
     }
 

@@ -138,7 +138,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     /**
      * Allows to set a list of nodes where storing to cache is disabled
      *
-     * @return the list of nodes
+     * @return the set of nodes
      */
     public Set<JIPipeGraphNode> getDisableStoreToCacheNodes() {
         return disableStoreToCacheNodes;
@@ -151,7 +151,7 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     /**
      * Allows to exclude specific nodes from saving any outputs to the disk
      *
-     * @return the list of nodes
+     * @return the set of nodes
      */
     public Set<JIPipeGraphNode> getDisableSaveToDiskNodes() {
         return disableSaveToDiskNodes;

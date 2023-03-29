@@ -9,26 +9,18 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.filters.NonGenericImagePlusDataClassFilter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -70,29 +62,26 @@ public class MatrixToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if(parseColor) {
+                if (parseColor) {
                     String value = table.getValueAsString(y, x);
                     Color color = ColorUtils.parseColor(value);
-                    if(color == null) {
+                    if (color == null) {
                         // Parse as double
                         double numericValue = StringUtils.parseDouble(value);
-                        if(Double.isNaN(numericValue) || Double.isInfinite(numericValue)) {
+                        if (Double.isNaN(numericValue) || Double.isInfinite(numericValue)) {
                             numericValue = 0;
-                        }
-                        else {
+                        } else {
                             numericValue = Math.max(0, Math.min(255, numericValue));
                         }
-                        color = new Color((int)numericValue, (int)numericValue, (int)numericValue);
+                        color = new Color((int) numericValue, (int) numericValue, (int) numericValue);
+                        int newPixel = colorSpace.convert(color.getRGB(), rgbColorSpace);
+                        ip.set(x, y, newPixel);
+                    } else {
                         int newPixel = colorSpace.convert(color.getRGB(), rgbColorSpace);
                         ip.set(x, y, newPixel);
                     }
-                    else {
-                        int newPixel = colorSpace.convert(color.getRGB(), rgbColorSpace);
-                        ip.set(x, y, newPixel);
-                    }
-                }
-                else {
-                    ip.setf(x,y, (float) table.getValueAsDouble(y, x));
+                } else {
+                    ip.setf(x, y, (float) table.getValueAsDouble(y, x));
                 }
             }
         }

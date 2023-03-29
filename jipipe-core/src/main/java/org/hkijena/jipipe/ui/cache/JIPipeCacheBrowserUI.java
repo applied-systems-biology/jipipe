@@ -89,7 +89,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         List<JIPipeDataTable> result = new ArrayList<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
-            if(slotMap != null) {
+            if (slotMap != null) {
                 result.addAll(getSortedDataTables(slotMap, node));
             }
         }
@@ -99,8 +99,8 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private void showDataSlotsOfNode(JIPipeGraphNode node) {
         Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
         List<JIPipeDataTable> result = new ArrayList<>();
-        if(slotMap != null) {
-           result.addAll(getSortedDataTables(slotMap, node));
+        if (slotMap != null) {
+            result.addAll(getSortedDataTables(slotMap, node));
         }
         showDataTables(result);
     }
@@ -111,7 +111,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         for (JIPipeGraphNode algorithm : getProject().getGraph().getGraphNodes()) {
             if (Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), uuid)) {
                 Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(algorithm, algorithm.getUUIDInParentGraph(), new JIPipeProgressInfo());
-                if(slotMap != null) {
+                if (slotMap != null) {
                     result.addAll(getSortedDataTables(slotMap, algorithm));
                 }
             }
@@ -123,7 +123,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         List<JIPipeDataTable> result = new ArrayList<>();
         for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
             JIPipeDataTable dataTable = slotMap.getOrDefault(outputSlot.getName(), null);
-            if(dataTable != null) {
+            if (dataTable != null) {
                 result.add(dataTable);
             }
         }

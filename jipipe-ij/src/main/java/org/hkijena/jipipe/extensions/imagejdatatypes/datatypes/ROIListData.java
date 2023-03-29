@@ -633,7 +633,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        window.reloadDisplayedData();
         window.setVisible(true);
     }
 
@@ -675,7 +676,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     /**
      * Rotates the ROI around the center
      * Does not change the ROIs in this list
-     * @param angle the angle
+     *
+     * @param angle  the angle
      * @param center the center point
      * @return the rotated ROIs
      */

@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -49,14 +48,13 @@ import java.util.List;
 import java.util.Set;
 
 
-
 /**
  * Thresholding node that thresholds via an auto threshold
  */
 @JIPipeDocumentation(name = "Custom auto threshold 2D (16-bit)", description = "Allows to implement a custom thresholding method via expressions. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscale16UData.class, slotName = "Input",autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscale16UData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto threshold (custom, 16-bit)")
 public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm {

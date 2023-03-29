@@ -2,7 +2,6 @@ package org.hkijena.jipipe.api.grapheditortool;
 
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
@@ -12,13 +11,13 @@ import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jgrapht.Graph;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.util.*;
-import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorTool {
 
@@ -80,7 +79,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
     @Override
     public void paintBelowNodesAfterEdges(Graphics2D graphics2D) {
-       paintCurrentlyDraggedRewire(graphics2D);
+        paintCurrentlyDraggedRewire(graphics2D);
     }
 
     private void paintCurrentlyDraggedRewire(Graphics2D g) {
@@ -88,7 +87,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
             Point mousePosition = graphEditorUI.getCanvasUI().getMousePosition();
 
-            if(mousePosition == null) {
+            if (mousePosition == null) {
                 return;
             }
 
@@ -96,22 +95,21 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             g.setColor(Color.ORANGE);
 
             JIPipeGraph graph = graphEditorUI.getCanvasUI().getGraph();
-            if(currentRewireDragSource.isInput()) {
+            if (currentRewireDragSource.isInput()) {
                 for (JIPipeDataSlot inputIncomingSourceSlot : graph.getInputIncomingSourceSlots(currentRewireDragSource.getSlot())) {
                     // The slot is an output
                     JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(inputIncomingSourceSlot.getNode());
-                    if(nodeUI != null) {
+                    if (nodeUI != null) {
                         PointRange slotLocation = nodeUI.getSlotLocation(inputIncomingSourceSlot);
                         slotLocation.add(nodeUI.getLocation());
                         paintRewireEdge(g, slotLocation, mousePosition);
                     }
                 }
-            }
-            else {
+            } else {
                 for (JIPipeDataSlot outputOutgoingTargetSlot : graph.getOutputOutgoingTargetSlots(currentRewireDragSource.getSlot())) {
                     // The slot is an input
                     JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(outputOutgoingTargetSlot.getNode());
-                    if(nodeUI != null) {
+                    if (nodeUI != null) {
                         PointRange slotLocation = nodeUI.getSlotLocation(outputOutgoingTargetSlot);
                         slotLocation.add(nodeUI.getLocation());
                         paintRewireEdge(g, slotLocation, mousePosition);
@@ -123,13 +121,13 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
     private void paintRewireEdge(Graphics2D g, PointRange sourcePoint, Point mousePosition) {
         PointRange targetPoint = null;
-        if(currentRewireDragTarget != null) {
+        if (currentRewireDragTarget != null) {
             JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(currentRewireDragTarget.getSlot().getNode());
             PointRange slotLocation = nodeUI.getSlotLocation(currentRewireDragTarget.getSlot());
             slotLocation.add(nodeUI.getLocation());
             targetPoint = slotLocation;
         }
-        if(targetPoint == null) {
+        if (targetPoint == null) {
             targetPoint = new PointRange(mousePosition.x, mousePosition.y);
         }
         // Tighten the point ranges: Bringing the centers together
@@ -151,7 +149,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
             JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
-            if(nodeUI != null) {
+            if (nodeUI != null) {
                 JIPipeNodeUISlotActiveArea slot = nodeUI.pickSlotAtMousePosition(e);
                 setCurrentRewireDragSource(slot);
                 e.consume();
@@ -165,7 +163,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
             if (nodeUI != null) {
                 JIPipeNodeUISlotActiveArea target = nodeUI.pickSlotAtMousePosition(e);
-                if(target != null) {
+                if (target != null) {
                     currentRewireDragTarget = target;
                 }
                 rewire(currentRewireDragSource, currentRewireDragTarget);
@@ -176,13 +174,13 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     }
 
     private void rewire(JIPipeNodeUISlotActiveArea source, JIPipeNodeUISlotActiveArea target) {
-        if(source == null || target == null) {
+        if (source == null || target == null) {
             return;
         }
-        if(source == target) {
+        if (source == target) {
             return;
         }
-        if(source.isInput() != target.isInput()) {
+        if (source.isInput() != target.isInput()) {
             return;
         }
         JIPipeGraphCanvasUI graphCanvasUI = graphEditorUI.getCanvasUI();
@@ -190,15 +188,14 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         UUID compartment = graphEditorUI.getCompartment();
         Set<JIPipeDataSlot> enabledConnections;
 
-        if(currentSlot.isInput()) {
+        if (currentSlot.isInput()) {
             enabledConnections = graphCanvasUI.getGraph().getInputIncomingSourceSlots(currentSlot);
-        }
-        else {
+        } else {
             enabledConnections = graphCanvasUI.getGraph().getOutputOutgoingTargetSlots(currentSlot);
         }
 
         JIPipeDataSlot selectedAlternative = currentRewireDragTarget.getSlot();
-        if(selectedAlternative == null) {
+        if (selectedAlternative == null) {
             JOptionPane.showMessageDialog(graphEditorUI,
                     "Please select an alternative target from the list.",
                     "No alternative selected",
@@ -215,28 +212,25 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             JIPipeDataSlot copySelectedAlternative = copyGraph.getEquivalentSlot(selectedAlternative);
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
                 JIPipeDataSlot copyEnabledConnection = copyGraph.getEquivalentSlot(enabledConnection);
-                if(copyCurrentSlot.isOutput()) {
-                    if(!copyGraph.disconnect(copyCurrentSlot, copyEnabledConnection, true)) {
+                if (copyCurrentSlot.isOutput()) {
+                    if (!copyGraph.disconnect(copyCurrentSlot, copyEnabledConnection, true)) {
                         throw new RuntimeException("Unable to disconnect!");
                     }
-                }
-                else {
-                    if(!copyGraph.disconnect(copyEnabledConnection, copyCurrentSlot, true)) {
+                } else {
+                    if (!copyGraph.disconnect(copyEnabledConnection, copyCurrentSlot, true)) {
                         throw new RuntimeException("Unable to disconnect!");
                     }
                 }
             }
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
                 JIPipeDataSlot copyEnabledConnection = copyGraph.getEquivalentSlot(enabledConnection);
-                if(copyCurrentSlot.isOutput()) {
+                if (copyCurrentSlot.isOutput()) {
                     copyGraph.connect(copySelectedAlternative, copyEnabledConnection, true);
-                }
-                else {
+                } else {
                     copyGraph.connect(copyEnabledConnection, copySelectedAlternative, true);
                 }
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(graphEditorUI,
                     "The rewire operation failed. No changes were applied.\nPlease check if the new connections lead to the creation of loops.",
@@ -245,7 +239,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         }
 
         // Create snapshot
-        if(graphCanvasUI.getHistoryJournal() != null) {
+        if (graphCanvasUI.getHistoryJournal() != null) {
             graphCanvasUI.getHistoryJournal().snapshot("Rewire connection(s)",
                     "Rewire connections of " + currentSlot.getDisplayName() + " to " + selectedAlternative.getDisplayName(),
                     compartment,
@@ -255,33 +249,30 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         // Simulation OK. Apply in real graph
         try {
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
-                if(currentSlot.isOutput()) {
-                    if(!graph.disconnect(currentSlot, enabledConnection, true)) {
+                if (currentSlot.isOutput()) {
+                    if (!graph.disconnect(currentSlot, enabledConnection, true)) {
                         throw new RuntimeException("Unable to disconnect!");
                     }
-                }
-                else {
-                    if(!graph.disconnect(enabledConnection, currentSlot, true)) {
+                } else {
+                    if (!graph.disconnect(enabledConnection, currentSlot, true)) {
                         throw new RuntimeException("Unable to disconnect!");
                     }
                 }
             }
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
-                if(currentSlot.isOutput()) {
+                if (currentSlot.isOutput()) {
                     graph.connect(selectedAlternative, enabledConnection, true);
-                }
-                else {
+                } else {
                     graph.connect(enabledConnection, selectedAlternative, true);
                 }
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(graphEditorUI,
                     "The rewire operation failed at phase 2. Please report this to the developer. JIPipe will attempt to undo the changes.",
                     "Rewire not possible",
                     JOptionPane.ERROR_MESSAGE);
-            if(graphCanvasUI.getHistoryJournal() != null) {
+            if (graphCanvasUI.getHistoryJournal() != null) {
                 graphCanvasUI.getHistoryJournal().undo(compartment);
             }
         }
@@ -304,7 +295,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(currentRewireDragSource != null) {
+        if (currentRewireDragSource != null) {
 
             JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
             if (nodeUI != null) {
@@ -361,13 +352,13 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             }
 
             // Prevent rewire to the output of the current compartment
-            if(currentRewireDragSource.isOutput() && currentRewireDragTarget != null && currentRewireDragTarget.getSlot().getNode() instanceof JIPipeCompartmentOutput &&
+            if (currentRewireDragSource.isOutput() && currentRewireDragTarget != null && currentRewireDragTarget.getSlot().getNode() instanceof JIPipeCompartmentOutput &&
                     Objects.equals(currentRewireDragTarget.getNodeUI().getNode().getCompartmentUUIDInParentGraph(), graphEditorUI.getCompartment())) {
                 currentRewireDragTarget = null;
             }
 
             graphEditorUI.getCanvasUI().setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-            
+
             graphEditorUI.repaint(50);
             e.consume();
         }
@@ -375,7 +366,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if(currentRewireDragSource != null) {
+        if (currentRewireDragSource != null) {
             graphEditorUI.repaint(50);
             e.consume();
         }
@@ -396,7 +387,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
     public void setCurrentRewireDragSource(JIPipeNodeUISlotActiveArea currentRewireDragSource) {
         this.currentRewireDragSource = currentRewireDragSource;
-        if(currentRewireDragSource == null) {
+        if (currentRewireDragSource == null) {
             this.currentRewireDragTarget = null;
         }
         graphEditorUI.getCanvasUI().repaint(50);
@@ -404,17 +395,16 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
     @Override
     public boolean canRenderEdge(JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge) {
-        if(currentRewireDragSource != null) {
+        if (currentRewireDragSource != null) {
             return source != currentRewireDragSource.getSlot() && target != currentRewireDragSource.getSlot();
-        }
-        else {
+        } else {
             return true;
         }
     }
 
     @Override
     public void deactivate() {
-       setCurrentRewireDragSource(null);
+        setCurrentRewireDragSource(null);
     }
 
     @Override

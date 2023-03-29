@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 
 import java.util.ArrayList;

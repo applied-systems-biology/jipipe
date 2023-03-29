@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split;
 
-import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -14,13 +13,8 @@ import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.ChangeRoiPropertiesFromExpressionsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.split.ExplodeRoiAlgorithm;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
-import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -34,11 +28,9 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
 public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
-
-    private DefaultExpressionParameter annotationValue = new DefaultExpressionParameter("\"index=\" + index + \";name=\" + name");
-
     private final CustomExpressionVariablesParameter customExpressionVariables;
+    private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
+    private DefaultExpressionParameter annotationValue = new DefaultExpressionParameter("\"index=\" + index + \";name=\" + name");
 
     /**
      * Instantiates a new node type.

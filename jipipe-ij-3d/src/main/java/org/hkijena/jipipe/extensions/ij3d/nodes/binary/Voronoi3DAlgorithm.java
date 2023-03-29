@@ -1,16 +1,8 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.binary;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.measure.Calibration;
-import ij.plugin.GaussianBlur3D;
 import ij.process.ImageProcessor;
-import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
-import mcib3d.image3d.ImageInt;
-import mcib3d.image3d.distanceMap3d.EDT;
-import mcib3d.image3d.processing.FastFilters3D;
-import mcib3d.image3d.regionGrowing.Watershed3D;
 import mcib3d.image3d.regionGrowing.Watershed3DVoronoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;

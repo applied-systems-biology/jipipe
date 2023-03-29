@@ -54,7 +54,7 @@ public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterE
 
     @Override
     public void reload() {
-        if(isReloading)
+        if (isReloading)
             return;
         try {
             JIPipeParameterCollection parameter = getParameter(JIPipeParameterCollection.class);
@@ -66,8 +66,7 @@ public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterE
                 }
             });
             parameterPanel.setDisplayedParameters(parameter);
-        }
-        finally {
+        } finally {
             isReloading = false;
         }
     }

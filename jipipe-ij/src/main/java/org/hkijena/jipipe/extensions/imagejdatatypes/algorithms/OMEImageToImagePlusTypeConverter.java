@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -30,7 +31,7 @@ public class OMEImageToImagePlusTypeConverter implements JIPipeDataConverter {
     }
 
     @Override
-    public JIPipeData convert(JIPipeData input) {
+    public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         return new ImagePlusData(((OMEImageData) input).getImage());
     }
 }

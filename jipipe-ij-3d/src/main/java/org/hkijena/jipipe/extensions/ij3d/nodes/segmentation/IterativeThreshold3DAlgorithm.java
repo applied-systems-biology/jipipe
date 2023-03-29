@@ -10,7 +10,10 @@ import mcib3d.image3d.ImageInt;
 import mcib3d.image3d.ImageLabeller;
 import mcib3d.image3d.IterativeThresholding.TrackThreshold;
 import mcib3d.image3d.processing.FastFilters3D;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeCitation;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -73,12 +76,12 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus markersImage = ImageJUtils.unwrap(dataBatch.getInputData("Markers", ImagePlusGreyscaleMaskData.class, progressInfo));
         ImagePlus outputImage = IJ3DUtils.forEach3DIn5DGenerate(inputImage, (ih, index, ctProgress) -> {
             ArrayList<Point3D> point3Ds = null;
-            if(markersImage != null) {
+            if (markersImage != null) {
                 ImagePlus seeds = ImageJUtils.extractCTStack(markersImage, index.getC(), index.getT());
                 point3Ds = computeMarkers(ImageInt.wrap(seeds));
             }
             ImagePlus duplicate = ImageJUtils.duplicate(ih.getImagePlus());
-            if(enableFiltering) {
+            if (enableFiltering) {
                 applyFilter(duplicate, ctProgress);
             }
             ctProgress.log("Threshold method " + thresholdMethod);
@@ -93,11 +96,10 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
             TrackThreshold TT = new TrackThreshold(minVolumePixels, maxVolumePixels, minContrastExp, valueMethod, valueMethod, thmin);
             TT.setMarkers(point3Ds);
 
-            if(duplicate.getBitDepth() == 8) {
+            if (duplicate.getBitDepth() == 8) {
                 ctProgress.log("Threshold method was set to 'Step' (8-bit input)");
                 TT.setMethodThreshold(ThresholdMethod.Step.nativeValue);
-            }
-            else {
+            } else {
                 TT.setMethodThreshold(thresholdMethod.nativeValue);
             }
             TT.setCriteriaMethod(criteriaMethod.nativeValue);

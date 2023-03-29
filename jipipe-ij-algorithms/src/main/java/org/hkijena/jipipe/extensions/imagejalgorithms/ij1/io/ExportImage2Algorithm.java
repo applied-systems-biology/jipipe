@@ -45,7 +45,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
     private final Set<String> existingMetadata = new HashSet<>();
     private JIPipeDataByMetadataExporter exporter;
     private ExportImageAlgorithm.FileFormat fileFormat = ExportImageAlgorithm.FileFormat.PNG;
-    private int movieFrameTime = 100;
+    private int movieFPS = 100;
     private HyperstackDimension movieAnimatedDimension = HyperstackDimension.Frame;
     private AVICompression aviCompression = AVICompression.PNG;
     private int jpegQuality = 100;
@@ -60,7 +60,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.fileFormat = other.fileFormat;
-        this.movieFrameTime = other.movieFrameTime;
+        this.movieFPS = other.movieFPS;
         this.movieAnimatedDimension = other.movieAnimatedDimension;
         this.aviCompression = other.aviCompression;
         this.jpegQuality = other.jpegQuality;
@@ -125,7 +125,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
             case AVI: {
                 outputFile = PathUtils.ensureExtension(outputPath, ".avi");
                 PathUtils.ensureParentDirectoriesExist(outputFile);
-                ImageJUtils.writeImageToMovie(image, movieAnimatedDimension, movieFrameTime, outputFile, aviCompression, jpegQuality, progressInfo.detachProgress());
+                ImageJUtils.writeImageToMovie(image, movieAnimatedDimension, movieFPS, outputFile, aviCompression, jpegQuality, progressInfo.detachProgress());
             }
             break;
             default:
@@ -158,15 +158,15 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         triggerParameterUIChange();
     }
 
-    @JIPipeDocumentation(name = "Animation speed (ms)", description = "Only used if the format is AVI. Determines how long a frame is shown.")
-    @JIPipeParameter("movie-frame-time")
-    public int getMovieFrameTime() {
-        return movieFrameTime;
+    @JIPipeDocumentation(name = "Animation FPS", description = "Only used if the format is AVI. The number of frames shown per second.")
+    @JIPipeParameter("movie-fps")
+    public int getMovieFPS() {
+        return movieFPS;
     }
 
-    @JIPipeParameter("movie-frame-time")
-    public void setMovieFrameTime(int movieFrameTime) {
-        this.movieFrameTime = movieFrameTime;
+    @JIPipeParameter("movie-fps")
+    public void setMovieFPS(int movieFPS) {
+        this.movieFPS = movieFPS;
     }
 
     @JIPipeDocumentation(name = "Animated dimension", description = "Only used if the format is AVI. Determines which dimension is animated")
@@ -209,7 +209,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (fileFormat != ExportImageAlgorithm.FileFormat.AVI) {
-            if ("movie-frame-time".equals(access.getKey())) {
+            if ("movie-fps".equals(access.getKey())) {
                 return false;
             }
             if ("movie-animated-dimension".equals(access.getKey())) {

@@ -15,11 +15,13 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 
 import com.google.common.primitives.Ints;
+import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
+import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
@@ -32,8 +34,8 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -58,19 +60,18 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class TracksManagerPlugin2D extends ImageViewerPanelPlugin2D {
+public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private final JList<Integer> tracksListControl = new JList<>();
     private final SmallToggleButtonAction displayTracksViewMenuItem = new SmallToggleButtonAction("Display tracks", "Determines whether tracks are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private final Ribbon ribbon = new Ribbon(3);
     private TrackCollectionData tracksCollection;
-    private JIPipeDataTableDataSource dataSource;
     private TrackDrawer trackDrawer = new TrackDrawer();
     private TrackListCellRenderer tracksListCellRenderer;
     private JPanel mainPanel;
 
-    public TracksManagerPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public TracksManagerPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
@@ -184,7 +185,7 @@ public class TracksManagerPlugin2D extends ImageViewerPanelPlugin2D {
 
     private void openTrackScheme() {
         TrackSchemeDataDisplayOperation operation = new TrackSchemeDataDisplayOperation();
-        operation.display(tracksCollection, "Track scheme", getWorkbench(), dataSource);
+        operation.display(tracksCollection, "Track scheme", getWorkbench(), getDataSource());
     }
 
     private void exportTracksToFile() {
@@ -266,7 +267,7 @@ public class TracksManagerPlugin2D extends ImageViewerPanelPlugin2D {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
                 TrackCollectionData trackCollectionData = TrackCollectionData.importData(storage, progressInfo);
-                setTrackCollection(trackCollectionData, null, false);
+                setTrackCollection(trackCollectionData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -376,12 +377,26 @@ public class TracksManagerPlugin2D extends ImageViewerPanelPlugin2D {
         mainPanel.add(selectionContentPanelUI, BorderLayout.SOUTH);
     }
 
-    public void setTrackCollection(TrackCollectionData tracksCollection, JIPipeDataTableDataSource dataSource, boolean deferUploadSlice) {
+    public void setTrackCollection(TrackCollectionData tracksCollection) {
         this.tracksCollection = new TrackCollectionData(tracksCollection);
-        this.dataSource = dataSource;
         tracksListCellRenderer.updateColorMaps();
-        updateTrackJList(deferUploadSlice);
+        updateTrackJList(false);
         uploadSliceToCanvas();
+    }
+
+    @Override
+    public void onOverlayAdded(Object overlay) {
+        if (overlay instanceof TrackCollectionData) {
+            TrackCollectionData trackCollectionData = (TrackCollectionData) overlay;
+            setTrackCollection(trackCollectionData);
+        }
+    }
+
+    @Override
+    public void onOverlayRemoved(Object overlay) {
+        if (overlay instanceof TrackCollectionData) {
+            setTrackCollection(new TrackCollectionData(new Model(), new Settings(), IJ.createImage("", 1, 1, 1, 8)));
+        }
     }
 
     public void removeSelectedTracks(boolean deferUploadSlice) {
@@ -455,7 +470,7 @@ public class TracksManagerPlugin2D extends ImageViewerPanelPlugin2D {
             return tracksManagerPlugin;
         }
 
-        public ImageViewerPanel2D getViewerPanel() {
+        public JIPipeImageViewer getViewerPanel() {
             return tracksManagerPlugin.getViewerPanel();
         }
 

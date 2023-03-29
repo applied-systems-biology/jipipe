@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagej2.converters;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
@@ -17,7 +18,7 @@ public class ImageJ2ToImageJ1Converter implements JIPipeDataConverter {
     }
 
     @Override
-    public JIPipeData convert(JIPipeData input) {
+    public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         return ((ImageJ2DatasetData) input).wrap();
     }
 }

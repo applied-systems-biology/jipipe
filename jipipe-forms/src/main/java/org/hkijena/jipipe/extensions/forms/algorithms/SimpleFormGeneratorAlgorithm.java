@@ -17,7 +17,7 @@ public abstract class SimpleFormGeneratorAlgorithm extends FormGeneratorAlgorith
     private FormData formData;
 
     /**
-     * Constructor for a new {@link SimpleFormGeneratorAlgorithm}.
+     * Constructor for a new  instance
      *
      * @param info     the node info
      * @param formData the initial formData object

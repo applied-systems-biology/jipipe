@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmarkList;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.ui.components.AdvancedFileChooser;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;

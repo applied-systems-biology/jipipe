@@ -492,6 +492,11 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Median",
                 "median",
                 "Calculates the median of all numeric values. String values are converted to numbers or zero.");
+        registerTableColumnOperationAndExpressionFunction("statistics-mode",
+                new StatisticsModeIntegratingColumnOperation(),
+                "Mode",
+                "mode",
+                "Calculates the mode of all numeric values. String values are converted to numbers or zero.");
         registerTableColumnOperationAndExpressionFunction("statistics-skewness",
                 new StatisticsSkewnessIntegratingColumnOperation(),
                 "Skewness",

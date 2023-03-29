@@ -52,7 +52,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
     }
 
     /**
-     * Replaces the targeted {@link JsonAlgorithm} by a {@link NodeGroup}
+     * Replaces the targeted algorithm by a {@link NodeGroup}
      *
      * @param algorithm the algorithm
      */

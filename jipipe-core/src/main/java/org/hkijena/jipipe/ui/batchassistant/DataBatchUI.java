@@ -74,7 +74,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
             Set<Integer> rows = batch.getInputSlotRows().getOrDefault(slot, Collections.emptySet());
             Icon dataTypeIcon = JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType());
             JButton displayButton = new JButton(slot.getName(), dataTypeIcon);
-            UIUtils.makeFlat(displayButton);
+            UIUtils.setStandardButtonBorder(displayButton);
             if (!rows.isEmpty()) {
                 displayButton.setHorizontalAlignment(SwingConstants.LEFT);
                 displayButton.addActionListener(e -> {

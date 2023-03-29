@@ -36,7 +36,6 @@ import org.hkijena.jipipe.ui.project.*;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -45,8 +44,6 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -260,7 +257,7 @@ public class JIPipeProjectWindow extends JFrame {
             Path finalLoadZipTarget = loadZipTarget;
             JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
                 @Subscribe
-                public void onRunFinished(RunWorkerFinishedEvent event) {
+                public void onRunFinished(JIPipeRunnable.FinishedEvent event) {
                     if (event.getRun() == run) {
                         SwingUtilities.invokeLater(() -> {
                             Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
@@ -582,9 +579,9 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public void saveProjectAndCacheToZIP(String title) {
         Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, title, UIUtils.EXTENSION_FILTER_ZIP);
-        if(file == null)
+        if (file == null)
             return;
-        if(Files.exists(file)) {
+        if (Files.exists(file)) {
             try {
                 Files.delete(file);
             } catch (IOException e) {

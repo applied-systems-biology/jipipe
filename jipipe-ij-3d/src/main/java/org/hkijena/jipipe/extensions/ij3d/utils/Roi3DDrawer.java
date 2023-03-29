@@ -71,10 +71,10 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
 
     public ImagePlus draw(ROI3DListData roi3DListData, ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {
 
-        if(referenceImage == null) {
+        if (referenceImage == null) {
             referenceImage = roi3DListData.createBlankCanvas("RGB", 24);
         }
-        if(drawOver && referenceImage.getType() != ImagePlus.COLOR_RGB) {
+        if (drawOver && referenceImage.getType() != ImagePlus.COLOR_RGB) {
             referenceImage = ImageJUtils.renderToRGBWithLUTIfNeeded(referenceImage, progressInfo.resolve("Convert to RGB"));
         }
 
@@ -82,7 +82,7 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
         byte[][] lut = new byte[roi3DListData.size()][];
         for (int i = 0; i < roi3DListData.size(); i++) {
             ROI3D roi3D = roi3DListData.get(i);
-            lut[i] = new byte[] {
+            lut[i] = new byte[]{
                     (byte) roi3D.getFillColor().getRed(),
                     (byte) roi3D.getFillColor().getGreen(),
                     (byte) roi3D.getFillColor().getBlue()
@@ -92,21 +92,20 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
         ImagePlus rgbLabels = LabelImages.labelToRgb(labels, lut, Color.BLACK);
         ImageJUtils.copyHyperstackDimensions(referenceImage, rgbLabels);
 
-        if(drawOver) {
+        if (drawOver) {
             ImagePlus rgbImage = ImageJUtils.duplicate(referenceImage);
             ImageJUtils.forEachIndexedZCTSlice(rgbImage, (outputIp, index) -> {
                 ImageProcessor colorIp = ImageJUtils.getSliceZero(rgbLabels, index);
                 int[] outputPixels = (int[]) outputIp.getPixels();
                 int[] colorPixels = (int[]) colorIp.getPixels();
                 for (int i = 0; i < outputPixels.length; i++) {
-                    if(colorPixels[i] > 0) {
+                    if (colorPixels[i] > 0) {
                         outputPixels[i] = ImageJUtils.rgbPixelLerp(outputPixels[i], colorPixels[i], opacity);
                     }
                 }
             }, progressInfo.resolve("Blending"));
             return rgbImage;
-        }
-        else {
+        } else {
             return rgbLabels;
         }
     }

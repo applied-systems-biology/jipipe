@@ -354,13 +354,12 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
          */
         public int toAnnotationColumnIndex(int columnIndex) {
             JIPipeDataTable dataTable = dataTableStore.get();
-            if(dataTable != null) {
+            if (dataTable != null) {
                 if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 2)
                     return columnIndex - dataTable.getDataAnnotationColumns().size() - 2;
                 else
                     return -1;
-            }
-            else {
+            } else {
                 return -1;
             }
         }
@@ -373,14 +372,13 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
          */
         public int toDataAnnotationColumnIndex(int columnIndex) {
             JIPipeDataTable dataTable = dataTableStore.get();
-            if(dataTable != null) {
+            if (dataTable != null) {
                 if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 2) < dataTable.getDataAnnotationColumns().size()) {
                     return columnIndex - 2;
                 } else {
                     return -1;
                 }
-            }
-            else {
+            } else {
                 return -1;
             }
         }
@@ -393,26 +391,24 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else if (toDataAnnotationColumnIndex(modelColumn) != -1) {
                 JIPipeDataTable dataTable = dataTableStore.get();
-                if(dataTable != null) {
+                if (dataTable != null) {
                     String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                             UIUtils.getIconFromResources("data-types/slot.png"),
                             info);
                     return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
-                }
-                else {
+                } else {
                     return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 }
             } else {
                 JIPipeDataTable dataTable = dataTableStore.get();
-                if(dataTable != null) {
+                if (dataTable != null) {
                     String info = dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                             UIUtils.getIconFromResources("data-types/annotation.png"),
                             info);
                     return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
-                }
-                else {
+                } else {
                     return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 }
             }

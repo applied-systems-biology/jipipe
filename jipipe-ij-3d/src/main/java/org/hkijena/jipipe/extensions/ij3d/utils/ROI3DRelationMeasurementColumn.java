@@ -162,8 +162,7 @@ public enum ROI3DRelationMeasurementColumn {
 
     OtherLocationChannel(131072, "Other.Channel", "Other: Channel", "The channel of the ROI (0 = all channels)"),
     OtherLocationFrame(131072, "Other.Frame", "Other: Frame", "The frame of the ROI (0 = all frames)"),
-    OtherFillColor(131072, "Other.FillColor", "Other: Fill color", "The fill color (HEX string)")
-    ;
+    OtherFillColor(131072, "Other.FillColor", "Other: Fill color", "The fill color (HEX string)");
 
     private final int nativeValue;
     private final String columnName;

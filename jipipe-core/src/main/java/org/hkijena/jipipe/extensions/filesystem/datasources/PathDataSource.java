@@ -138,25 +138,23 @@ public class PathDataSource extends JIPipeAlgorithm {
     @Override
     public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
         Path source = getAbsolutePath();
-        if(source == null || !Files.exists(source)) {
-            if(isNeedsToExist()) {
+        if (source == null || !Files.exists(source)) {
+            if (isNeedsToExist()) {
                 throw new RuntimeException("Path " + getPath() + " does not exist!");
             }
             progressInfo.log("Unable to archive: " + getPath());
-        }
-        else {
+        } else {
             Path target;
-            if(source.startsWith(originalBaseDirectory)) {
+            if (source.startsWith(originalBaseDirectory)) {
                 // The data is located in the project directory. We can directly copy the file.
                 Path relativePath = originalBaseDirectory.relativize(source);
                 target = projectStorage.getFileSystemPath().resolve(relativePath);
-            }
-            else {
+            } else {
                 // The data is located outside the project directory. Needs to be copied into a unique directory.
                 target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(getPath().getFileName());
             }
 
-            if(Files.exists(target)) {
+            if (Files.exists(target)) {
                 progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
                 return;
             }
@@ -164,10 +162,9 @@ public class PathDataSource extends JIPipeAlgorithm {
             progressInfo.log("Copy " + source + " -> " + target);
             try {
                 Files.createDirectories(target.getParent());
-                if(Files.isRegularFile(source)) {
+                if (Files.isRegularFile(source)) {
                     Files.copy(source, target);
-                }
-                else {
+                } else {
                     FileUtils.copyDirectory(source.toFile(), target.toFile());
                 }
             } catch (IOException e) {

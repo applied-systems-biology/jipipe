@@ -22,15 +22,10 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurementSetParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter.FilterROIByOverlapAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.jgrapht.graph.DefaultEdge;
-import org.jgrapht.graph.DefaultUndirectedGraph;
-
-import java.util.Collection;
 
 @JIPipeDocumentation(name = "Filter 3D ROI by overlap", description = "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
         "The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI.")
@@ -40,7 +35,7 @@ import java.util.Collection;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, description = "An optional reference image", optional = true)
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 1", autoCreate = true)
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "ROI 2", autoCreate = true)
-public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm  {
+public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customVariables;
     private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();
@@ -109,7 +104,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm  {
         ROI3DListData roi2List = dataBatch.getInputData("ROI 2", ROI3DListData.class, progressInfo);
         ImageHandler imageHandler = IJ3DUtils.wrapImage(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
 
-        if(roi1Settings.isEnabled()) {
+        if (roi1Settings.isEnabled()) {
 
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(dataBatch.getMergedTextAnnotations());
@@ -122,7 +117,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm  {
             ROI3DListData filtered = applyFilter(copy1, copy2, roi1Settings, imageHandler, variables, progressInfo.resolve("Filter ROI 1"));
             dataBatch.addOutputData("ROI 1", filtered, progressInfo);
         }
-        if(roi2Settings.isEnabled()) {
+        if (roi2Settings.isEnabled()) {
 
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(dataBatch.getMergedTextAnnotations());
@@ -158,29 +153,26 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm  {
             int roi1Index = (int) measurements.getValueAsDouble(row, "Current.Index");
             int roi2Index = (int) measurements.getValueAsDouble(row, "Other.Index");
 
-            if(StringUtils.isNullOrEmpty(settings.overlapFilter.getExpression())) {
-                if(settings.requireColocalization && settings.preciseColocalization) {
+            if (StringUtils.isNullOrEmpty(settings.overlapFilter.getExpression())) {
+                if (settings.requireColocalization && settings.preciseColocalization) {
                     // Already fulfilled
                     roi1To2Overlaps.put(roi1Index, roi2Index);
-                }
-                else if(measurements.containsColumn("Colocalization")) {
-                    if(measurements.getValueAsDouble(row, "Colocalization") > 0) {
+                } else if (measurements.containsColumn("Colocalization")) {
+                    if (measurements.getValueAsDouble(row, "Colocalization") > 0) {
                         roi1To2Overlaps.put(roi1Index, roi2Index);
                     }
-                }
-                else {
+                } else {
                     ROI3D roi1 = roi1List.get(roi1Index);
                     ROI3D roi2 = roi2List.get((int) measurements.getValueAsDouble(row, "Roi2.Index"));
-                    if(roi1.getObject3D().hasOneVoxelColoc(roi2.getObject3D())) {
+                    if (roi1.getObject3D().hasOneVoxelColoc(roi2.getObject3D())) {
                         roi1To2Overlaps.put(roi1Index, roi2Index);
                     }
                 }
-            }
-            else {
+            } else {
                 for (int col = 0; col < measurements.getColumnCount(); col++) {
                     variables.set(measurements.getColumnName(col), measurements.getValueAt(row, col));
                 }
-                if(settings.overlapFilter.test(variables)) {
+                if (settings.overlapFilter.test(variables)) {
                     roi1To2Overlaps.put(roi1Index, roi2Index);
                 }
             }
@@ -189,20 +181,19 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm  {
         TIntSet consumedRoi2 = new TIntHashSet();
         for (int i = 0; i < roi1List.size(); i++) {
             TIntSet overlappingRoi2 = new TIntHashSet(roi1To2Overlaps.get(i));
-            if(settings.consumeOnOverlap) {
+            if (settings.consumeOnOverlap) {
                 overlappingRoi2.removeAll(consumedRoi2);
             }
             boolean canOutput;
-            if(settings.invert) {
+            if (settings.invert) {
                 canOutput = overlappingRoi2.isEmpty();
-            }
-            else {
+            } else {
                 canOutput = !overlappingRoi2.isEmpty();
             }
-            if(settings.consumeOnOverlap && canOutput && !overlappingRoi2.isEmpty()) {
+            if (settings.consumeOnOverlap && canOutput && !overlappingRoi2.isEmpty()) {
                 consumedRoi2.add(overlappingRoi2.iterator().next());
             }
-            if(canOutput) {
+            if (canOutput) {
                 output.add(roi1List.get(i));
             }
         }

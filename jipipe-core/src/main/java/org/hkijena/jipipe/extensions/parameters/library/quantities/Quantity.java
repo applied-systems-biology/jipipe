@@ -152,8 +152,8 @@ public class Quantity {
             return this;
         }
         // Pixel special case
-        if(unitIsPixels()) {
-            if("px".equals(targetUnit) || "pixels".equals(targetUnit) || "pixel".equals(targetUnit)) {
+        if (unitIsPixels()) {
+            if ("px".equals(targetUnit) || "pixels".equals(targetUnit) || "pixel".equals(targetUnit)) {
                 return this;
             }
         }
@@ -176,15 +176,13 @@ public class Quantity {
     }
 
     public Quantity convertToPixels(Quantity pixelSize) {
-        if(unitIsPixels()) {
+        if (unitIsPixels()) {
             // Already pixels
             return this;
-        }
-        else if(unit.equalsIgnoreCase(pixelSize.unit)) {
+        } else if (unit.equalsIgnoreCase(pixelSize.unit)) {
             // Same unit
             return new Quantity(value / pixelSize.value, "pixels");
-        }
-        else {
+        } else {
             // Different unit -> convert to same unit first
             Quantity converted = convertTo(pixelSize.getUnit());
             return converted.convertToPixels(pixelSize);

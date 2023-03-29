@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -31,10 +30,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class CropRoiListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-  private boolean cropXY = true;
-  private boolean cropZ = false;
-  private boolean cropT = false;
-  private boolean cropC = false;
+    private boolean cropXY = true;
+    private boolean cropZ = false;
+    private boolean cropT = false;
+    private boolean cropC = false;
 
     /**
      * Instantiates a new node type.

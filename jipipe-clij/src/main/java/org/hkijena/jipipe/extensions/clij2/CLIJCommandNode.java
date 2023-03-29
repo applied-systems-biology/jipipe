@@ -10,7 +10,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -45,48 +44,47 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
     }
 
     private void updateSlots() {
-        if(avoidGPUMemory) {
+        if (avoidGPUMemory) {
             for (JIPipeDataSlotInfo info : getSlotConfiguration().getInputSlots().values()) {
-                if(info.getDataClass().equals(CLIJImageData.class)) {
+                if (info.getDataClass().equals(CLIJImageData.class)) {
                     info.setDataClass(ImagePlusData.class);
                 }
             }
             for (JIPipeDataSlotInfo info : getSlotConfiguration().getOutputSlots().values()) {
-                if(info.getDataClass().equals(CLIJImageData.class)) {
+                if (info.getDataClass().equals(CLIJImageData.class)) {
                     info.setDataClass(ImagePlusData.class);
                 }
             }
             for (JIPipeDataSlot slot : getInputSlots()) {
-                if(slot.getAcceptedDataType().equals(CLIJImageData.class)) {
+                if (slot.getAcceptedDataType().equals(CLIJImageData.class)) {
                     slot.setAcceptedDataType(ImagePlusData.class);
                 }
             }
             for (JIPipeDataSlot slot : getOutputSlots()) {
-                if(slot.getAcceptedDataType().equals(CLIJImageData.class)) {
+                if (slot.getAcceptedDataType().equals(CLIJImageData.class)) {
                     slot.setAcceptedDataType(ImagePlusData.class);
                 }
             }
             updateGraphNodeSlots();
             triggerSlotsChangedEvent();
-        }
-        else {
+        } else {
             for (JIPipeDataSlotInfo info : getSlotConfiguration().getInputSlots().values()) {
-                if(info.getDataClass().equals(ImagePlusData.class)) {
+                if (info.getDataClass().equals(ImagePlusData.class)) {
                     info.setDataClass(CLIJImageData.class);
                 }
             }
             for (JIPipeDataSlotInfo info : getSlotConfiguration().getOutputSlots().values()) {
-                if(info.getDataClass().equals(ImagePlusData.class)) {
+                if (info.getDataClass().equals(ImagePlusData.class)) {
                     info.setDataClass(CLIJImageData.class);
                 }
             }
             for (JIPipeDataSlot slot : getInputSlots()) {
-                if(slot.getAcceptedDataType().equals(ImagePlusData.class)) {
+                if (slot.getAcceptedDataType().equals(ImagePlusData.class)) {
                     slot.setAcceptedDataType(CLIJImageData.class);
                 }
             }
             for (JIPipeDataSlot slot : getOutputSlots()) {
-                if(slot.getAcceptedDataType().equals(ImagePlusData.class)) {
+                if (slot.getAcceptedDataType().equals(ImagePlusData.class)) {
                     slot.setAcceptedDataType(CLIJImageData.class);
                 }
             }
@@ -145,81 +143,96 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             args[argIndex] = clijParameters.getParameter(key).get(Object.class);
         }
         Map<String, ClearCLBuffer> outputs = new HashMap<>();
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            int argIndex = info.getInputSlotToArgIndexMap().get(inputSlot.getName());
-            if(!avoidGPUMemory) {
-                CLIJImageData imageData = dataBatch.getInputData(inputSlot, CLIJImageData.class, progressInfo);
-                if (info.getIoInputSlots().contains(inputSlot.getName())) {
-                    imageData = (CLIJImageData) imageData.duplicate(progressInfo);
-                    outputs.put(inputSlot.getName(), imageData.getImage());
-                }
-                args[argIndex] = imageData.getImage();
-            }
-            else {
-                ImagePlusData imageData = dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo);
-                if (info.getIoInputSlots().contains(inputSlot.getName())) {
-                    imageData = (ImagePlusData) imageData.duplicate(progressInfo);
+
+
+        try {
+            for (JIPipeDataSlot inputSlot : getInputSlots()) {
+                int argIndex = info.getInputSlotToArgIndexMap().get(inputSlot.getName());
+                if (!avoidGPUMemory) {
+                    CLIJImageData imageData = dataBatch.getInputData(inputSlot, CLIJImageData.class, progressInfo);
+                    if (info.getIoInputSlots().contains(inputSlot.getName())) {
+                        imageData = (CLIJImageData) imageData.duplicate(progressInfo);
+                        outputs.put(inputSlot.getName(), imageData.getImage());
+                    }
+                    args[argIndex] = imageData.getImage();
+                } else {
+                    ImagePlusData cpuImageData = dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo);
                     CLIJ2 clij = CLIJ2.getInstance();
-                    outputs.put(inputSlot.getName(), clij.push(imageData.getImage()));
+                    if (info.getIoInputSlots().contains(inputSlot.getName())) {
+                        outputs.put(inputSlot.getName(), clij.push(cpuImageData.getImage()));
+                    }
+                    args[argIndex] = clij.push(cpuImageData.getImage());
                 }
-                args[argIndex] = imageData.getImage();
             }
-        }
 
-        // Prepare outputs (dst buffer)
-        ClearCLBuffer referenceImage = null;
-        for (Object arg : args) {
-            if (arg instanceof ClearCLBuffer) {
-                referenceImage = (ClearCLBuffer) arg;
-                break;
+            // Prepare outputs (dst buffer)
+            ClearCLBuffer referenceImage = null;
+            for (Object arg : args) {
+                if (arg instanceof ClearCLBuffer) {
+                    referenceImage = (ClearCLBuffer) arg;
+                    break;
+                }
             }
-        }
 
-        for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            if (outputs.containsKey(outputSlot.getName()))
-                continue;
-            if (outputSlot.getName().equals("Results table"))
-                continue;
-            int argIndex = info.getOutputSlotToArgIndexMap().get(outputSlot.getName());
-            ClearCLBuffer buffer = pluginInstance.createOutputBufferFromSource(referenceImage);
-            args[argIndex] = buffer;
-            outputs.put(outputSlot.getName(), buffer);
-        }
+            for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                if (outputs.containsKey(outputSlot.getName()))
+                    continue;
+                if (outputSlot.getName().equals("Results table"))
+                    continue;
+                int argIndex = info.getOutputSlotToArgIndexMap().get(outputSlot.getName());
+                ClearCLBuffer buffer = pluginInstance.createOutputBufferFromSource(referenceImage);
+                args[argIndex] = buffer;
+                outputs.put(outputSlot.getName(), buffer);
+            }
 
-        // Run algorithm
-        if (pluginInstance instanceof CLIJOpenCLProcessor) {
-            ((CLIJOpenCLProcessor) pluginInstance).executeCL();
-        } else if (pluginInstance instanceof CLIJImageJProcessor) {
-            ((CLIJImageJProcessor) pluginInstance).executeIJ();
-        } else {
-            throw new UnsupportedOperationException("Unable to run CLIJ plugin of type " + pluginInstance.getClass());
-        }
+            // Run algorithm
+            if (pluginInstance instanceof CLIJOpenCLProcessor) {
+                ((CLIJOpenCLProcessor) pluginInstance).executeCL();
+            } else if (pluginInstance instanceof CLIJImageJProcessor) {
+                ((CLIJImageJProcessor) pluginInstance).executeIJ();
+            } else {
+                throw new UnsupportedOperationException("Unable to run CLIJ plugin of type " + pluginInstance.getClass());
+            }
 
-        // Extract outputs
-        for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            ClearCLBuffer buffer = outputs.get(outputSlot.getName());
-            CLIJImageData imageData = new CLIJImageData(buffer);
-            if(!avoidGPUMemory) {
-                dataBatch.addOutputData(outputSlot, imageData, progressInfo);
+            // Extract outputs
+            for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                ClearCLBuffer buffer = outputs.get(outputSlot.getName());
+                CLIJImageData imageData = new CLIJImageData(buffer);
+                if (!avoidGPUMemory) {
+                    dataBatch.addOutputData(outputSlot, imageData, progressInfo);
+                } else {
+                    dataBatch.addOutputData(outputSlot, imageData.pull(), progressInfo);
+                }
             }
-            else {
-                dataBatch.addOutputData(outputSlot, imageData.pull(), progressInfo);
-                imageData.close();
-            }
-        }
 
-        // Extract outputs table
-        if (!info.getOutputTableColumnInfos().isEmpty()) {
-            ResultsTableData resultsTableData = new ResultsTableData();
-            for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
-                resultsTableData.addColumn(columnInfo.getName(), columnInfo.isStringColumn());
+            // Extract outputs table
+            if (!info.getOutputTableColumnInfos().isEmpty()) {
+                ResultsTableData resultsTableData = new ResultsTableData();
+                for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
+                    resultsTableData.addColumn(columnInfo.getName(), columnInfo.isStringColumn());
+                }
+                resultsTableData.addRow();
+                for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
+                    Object value = args[columnInfo.getArgIndex()];
+                    resultsTableData.setValueAt(value, 0, columnInfo.getName());
+                }
+                dataBatch.addOutputData("Results table", resultsTableData, progressInfo);
             }
-            resultsTableData.addRow();
-            for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
-                Object value = args[columnInfo.getArgIndex()];
-                resultsTableData.setValueAt(value, 0, columnInfo.getName());
+        } finally {
+            // Close inputs and outputs
+            if (avoidGPUMemory) {
+                for (Object arg : args) {
+                    if (arg instanceof ClearCLBuffer) {
+                        ((ClearCLBuffer) arg).close();
+                    }
+                }
+                for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                    ClearCLBuffer buffer = outputs.get(outputSlot.getName());
+                    if (buffer != null) {
+                        buffer.close();
+                    }
+                }
             }
-            dataBatch.addOutputData("Results table", resultsTableData, progressInfo);
         }
     }
 }

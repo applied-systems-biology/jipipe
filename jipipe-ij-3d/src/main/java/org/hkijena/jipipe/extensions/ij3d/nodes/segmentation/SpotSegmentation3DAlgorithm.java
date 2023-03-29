@@ -7,7 +7,9 @@ import mcib3d.image3d.processing.FastFilters3D;
 import mcib3d.image3d.segment.*;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
@@ -18,19 +20,16 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.util.HashMap;
 import java.util.Map;
+
 public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final SeedSegmentationSettings seedSegmentationSettings;
+    private final SpotSegmentationSettings spotSegmentationSettings;
     private int seedsThreshold = 15;
     private boolean output32bit = false;
-
     private int minVolumePixels = 1;
     private int maxVolumePixels = 1000000;
-
     private boolean enableWatershed = true;
-
-    private final SeedSegmentationSettings seedSegmentationSettings;
-
-    private final SpotSegmentationSettings spotSegmentationSettings;
 
     public SpotSegmentation3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -63,10 +62,9 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
 
             // Generate/extract seed
             ImageHandler seed3DImage;
-            if(seedsImage != null) {
-                seed3DImage=ImageHandler.wrap(ImageJUtils.extractCTStack(seedsImage, index.getC(), index.getT()));
-            }
-            else {
+            if (seedsImage != null) {
+                seed3DImage = ImageHandler.wrap(ImageJUtils.extractCTStack(seedsImage, index.getC(), index.getT()));
+            } else {
                 ctProgress.log("Detecting seeds ...");
                 seed3DImage = ImageHandler.wrap(FastFilters3D.filterIntImageStack(spots3D.getImageStack(),
                         FastFilters3D.MAXLOCAL,

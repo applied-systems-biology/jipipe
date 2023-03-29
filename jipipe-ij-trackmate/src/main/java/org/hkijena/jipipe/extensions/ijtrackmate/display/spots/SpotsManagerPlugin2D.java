@@ -15,8 +15,11 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
 
 import com.google.common.primitives.Ints;
+import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
+import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -29,8 +32,8 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -53,7 +56,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class SpotsManagerPlugin2D extends ImageViewerPanelPlugin2D {
+public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     private final JList<Spot> spotsListControl = new JList<>();
     private final SmallToggleButtonAction displaySpotsViewMenuItem = new SmallToggleButtonAction("Display spots", "Determines whether spots are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final SmallToggleButtonAction displayLabelsViewMenuItem = new SmallToggleButtonAction("Display labels", "Determines whether spot labels are displayed", UIUtils.getIconFromResources("actions/tag.png"));
@@ -65,7 +68,7 @@ public class SpotsManagerPlugin2D extends ImageViewerPanelPlugin2D {
     private SpotListCellRenderer spotsListCellRenderer;
     private JPanel mainPanel;
 
-    public SpotsManagerPlugin2D(ImageViewerPanel2D viewerPanel) {
+    public SpotsManagerPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
@@ -77,6 +80,21 @@ public class SpotsManagerPlugin2D extends ImageViewerPanelPlugin2D {
         spotDrawer = new SpotDrawer(settings.getSpotDrawer());
         displaySpotsViewMenuItem.setState(settings.isShowSpots());
         displayLabelsViewMenuItem.setState(spotDrawer.getLabelSettings().isDrawLabels());
+    }
+
+    @Override
+    public void onOverlayAdded(Object overlay) {
+        if (overlay instanceof SpotsCollectionData) {
+            SpotsCollectionData trackCollectionData = (SpotsCollectionData) overlay;
+            setSpotCollection(trackCollectionData, false);
+        }
+    }
+
+    @Override
+    public void onOverlayRemoved(Object overlay) {
+        if (overlay instanceof SpotsCollectionData) {
+            setSpotCollection(new SpotsCollectionData(new Model(), new Settings(), IJ.createImage("", 1, 1, 1, 8)), false);
+        }
     }
 
     private void initializeRibbon() {
@@ -432,7 +450,7 @@ public class SpotsManagerPlugin2D extends ImageViewerPanelPlugin2D {
             return spotsManagerPlugin;
         }
 
-        public ImageViewerPanel2D getViewerPanel() {
+        public JIPipeImageViewer getViewerPanel() {
             return spotsManagerPlugin.getViewerPanel();
         }
 

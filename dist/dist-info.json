@@ -76,6 +76,7 @@
     "jipipe-ij-weka",
     "jipipe-ij-multi-template-matching",
     "jipipe-ij-trackmate",
+    "jipipe-ij-3d",
     "jipipe-ij-filaments",
     "jipipe-python",
     "jipipe-plots",

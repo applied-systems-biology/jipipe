@@ -47,11 +47,11 @@ public class ColorParameterEditorUI extends JIPipeParameterEditorUI {
         setLayout(new BorderLayout());
         currentlyDisplayed = new JButton(icon);
         currentlyDisplayed.addActionListener(e -> pickColor());
-        UIUtils.makeFlat(currentlyDisplayed);
+        UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        UIUtils.makeFlat(selectButton);
+        UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select color");
         selectButton.addActionListener(e -> pickColor());
         add(selectButton, BorderLayout.EAST);

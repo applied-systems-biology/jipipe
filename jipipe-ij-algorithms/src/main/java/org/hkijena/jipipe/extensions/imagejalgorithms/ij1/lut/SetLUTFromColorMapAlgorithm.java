@@ -20,10 +20,15 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @JIPipeDocumentation(name = "Set LUT (color map)", description = "Sets the LUT of the image from a predefined color map. " +
         "This does not change the pixel data.")
@@ -34,7 +39,7 @@ import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean duplicateImage = true;
     private ColorMap colorMap = ColorMap.viridis;
-    private boolean applyToAllPlanes = true;
+    private OptionalIntegerRange restrictToChannels = new OptionalIntegerRange();
 
     public SetLUTFromColorMapAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -44,7 +49,7 @@ public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         super(other);
         this.duplicateImage = other.duplicateImage;
         this.colorMap = other.colorMap;
-        this.applyToAllPlanes = other.applyToAllPlanes;
+        this.restrictToChannels = new OptionalIntegerRange(other.restrictToChannels);
     }
 
     @Override
@@ -52,7 +57,14 @@ public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate(progressInfo);
-        ImageJAlgorithmUtils.setLutFromColorMap(data.getImage(), colorMap, applyToAllPlanes);
+        data.ensureComposite();
+        Set<Integer> channels = new HashSet<>();
+        if(restrictToChannels.isEnabled()) {
+            ExpressionVariables variables = new ExpressionVariables();
+            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            channels.addAll(restrictToChannels.getContent().getIntegers(0, data.getNChannels() - 1, variables));
+        }
+        ImageJAlgorithmUtils.setLutFromColorMap(data.getImage(), colorMap, channels);
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
@@ -78,14 +90,14 @@ public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.colorMap = colorMap;
     }
 
-    @JIPipeDocumentation(name = "Apply to all planes", description = "If enabled, all LUT are modified, not only the one of the current plane.")
-    @JIPipeParameter("apply-to-all-planes")
-    public boolean isApplyToAllPlanes() {
-        return applyToAllPlanes;
+    @JIPipeDocumentation(name = "Restrict to channels", description = "Allows to restrict setting LUT to specific channels")
+    @JIPipeParameter("restrict-to-channels")
+    public OptionalIntegerRange getRestrictToChannels() {
+        return restrictToChannels;
     }
 
-    @JIPipeParameter("apply-to-all-planes")
-    public void setApplyToAllPlanes(boolean applyToAllPlanes) {
-        this.applyToAllPlanes = applyToAllPlanes;
+    @JIPipeParameter("restrict-to-channels")
+    public void setRestrictToChannels(OptionalIntegerRange restrictToChannels) {
+        this.restrictToChannels = restrictToChannels;
     }
 }

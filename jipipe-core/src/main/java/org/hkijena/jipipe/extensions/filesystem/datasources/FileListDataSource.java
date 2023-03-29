@@ -43,8 +43,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.antlr.runtime.misc.Stats.getAbsoluteFileName;
-
 /**
  * Provides an input file
  */
@@ -156,25 +154,22 @@ public class FileListDataSource extends JIPipeAlgorithm {
 
         for (int i = 0; i < relativeFileNames.size(); i++) {
             Path source = absoluteFileNames.get(i);
-            if(source == null || !Files.isRegularFile(source)) {
+            if (source == null || !Files.isRegularFile(source)) {
                 throw new RuntimeException("File " + relativeFileNames.get(i) + " does not exist!");
-            }
-            else {
+            } else {
                 Path target;
-                if(source.startsWith(originalBaseDirectory)) {
+                if (source.startsWith(originalBaseDirectory)) {
                     // The data is located in the project directory. We can directly copy the file.
                     Path relativePath = originalBaseDirectory.relativize(source);
                     target = projectStorage.getFileSystemPath().resolve(relativePath);
-                }
-                else {
+                } else {
                     // The data is located outside the project directory. Needs to be copied into a unique directory.
                     String externalFileName = relativeFileNames.get(i).getFileName().toString();
-                    if(!externalFileNames.contains(externalFileName)) {
+                    if (!externalFileNames.contains(externalFileName)) {
                         // Not yet in external storage. Add it
                         target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(externalFileName);
                         externalFileNames.add(externalFileName);
-                    }
-                    else {
+                    } else {
                         // We need to make a new target dir (UUID)
                         progressInfo.log("Warning: Duplicate file name in external storage (" + externalFileName + "). Creating new UUID sub-storage in " + getAliasIdInParentGraph());
                         target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).resolve(UUID.randomUUID().toString()).getFileSystemPath().resolve(externalFileName);
@@ -182,7 +177,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
                     }
                 }
 
-                if(Files.exists(target)) {
+                if (Files.exists(target)) {
                     progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
                     continue;
                 }

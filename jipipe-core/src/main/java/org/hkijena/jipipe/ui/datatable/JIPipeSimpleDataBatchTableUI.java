@@ -131,8 +131,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
             dataBatchList = new ArrayList<>();
             dataTableModel = null;
             table.setModel(new DefaultTableModel());
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }

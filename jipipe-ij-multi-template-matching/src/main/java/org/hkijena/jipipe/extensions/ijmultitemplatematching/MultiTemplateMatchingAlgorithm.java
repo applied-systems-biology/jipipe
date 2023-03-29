@@ -179,7 +179,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
                 ImagePlus assembled = assembleTemplates(image, templates, measurements, progressInfo.resolveAndLog("Assemble templates", i, images.size()));
                 dataBatch.addOutputData("Assembled templates", new ImagePlusData(assembled), progressInfo);
             }
-            if(outputMatchedTemplates) {
+            if (outputMatchedTemplates) {
                 JIPipeDataTable matchedTemplates = new JIPipeDataTable(ImagePlus2DData.class);
                 for (int j = 0; j < measurements.getRowCount(); j++) {
                     String templateName = measurements.getValueAsString(j, "Template");

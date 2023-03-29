@@ -30,8 +30,8 @@ public class Clij2PullAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJImageData inputData = dataBatch.getInputData(getFirstInputSlot(), CLIJImageData.class, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.getDataTypes().convert(inputData, ImagePlusData.class), progressInfo);
-        if(deallocate) {
+        dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.getDataTypes().convert(inputData, ImagePlusData.class, progressInfo), progressInfo);
+        if (deallocate) {
             inputData.getImage().close();
         }
     }

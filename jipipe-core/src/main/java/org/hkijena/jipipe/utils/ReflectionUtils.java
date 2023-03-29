@@ -69,8 +69,20 @@ public class ReflectionUtils {
      * @return the return value
      */
     public static Object getDeclaredFieldValue(String fieldName, Object instance) {
+        return getDeclaredFieldValue(fieldName, instance, instance.getClass());
+    }
+
+    /**
+     * Gets the value of a field
+     *
+     * @param fieldName the field name
+     * @param instance  the instance
+     * @param klass     the class
+     * @return the return value
+     */
+    public static Object getDeclaredFieldValue(String fieldName, Object instance, Class<?> klass) {
         try {
-            Field field = instance.getClass().getDeclaredField(fieldName);
+            Field field = klass.getDeclaredField(fieldName);
             field.setAccessible(true);
             return field.get(instance);
         } catch (IllegalAccessException | NoSuchFieldException e) {
@@ -120,13 +132,28 @@ public class ReflectionUtils {
      * @return the return value
      */
     public static Object getFieldValue(String fieldName, Object instance) {
+        return getFieldValue(fieldName, instance, instance.getClass());
+    }
+
+    /**
+     * Gets the value of a field
+     *
+     * @param fieldName the field name
+     * @param instance  the instance
+     * @return the return value
+     */
+    public static Object getFieldValue(String fieldName, Object instance, Class<?> klass) {
         try {
-            Field field = instance.getClass().getField(fieldName);
+            Field field = klass.getField(fieldName);
             field.setAccessible(true);
             return field.get(instance);
         } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void setDeclaredFieldValue(Object instance, String fieldName, Object value) {
+        setDeclaredFieldValue(instance.getClass(), instance, fieldName, value);
     }
 
     /**
@@ -136,9 +163,9 @@ public class ReflectionUtils {
      * @param fieldName the field name
      * @param value     the value
      */
-    public static void setDeclaredFieldValue(Object instance, String fieldName, Object value) {
+    public static void setDeclaredFieldValue(Class<?> klass, Object instance, String fieldName, Object value) {
         try {
-            Field field = instance.getClass().getDeclaredField(fieldName);
+            Field field = klass.getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(instance, value);
         } catch (IllegalAccessException | NoSuchFieldException e) {
@@ -154,8 +181,19 @@ public class ReflectionUtils {
      * @param value     the value
      */
     public static void setFieldValue(Object instance, String fieldName, Object value) {
+        setFieldValue(instance.getClass(), instance, fieldName, value);
+    }
+
+    /**
+     * Sets the field value
+     *
+     * @param instance  the object
+     * @param fieldName the field name
+     * @param value     the value
+     */
+    public static void setFieldValue(Class<?> klass, Object instance, String fieldName, Object value) {
         try {
-            Field field = instance.getClass().getField(fieldName);
+            Field field = klass.getField(fieldName);
             field.setAccessible(true);
             field.set(instance, value);
         } catch (IllegalAccessException | NoSuchFieldException e) {
@@ -171,6 +209,17 @@ public class ReflectionUtils {
      * @return the return value
      */
     public static Object getFieldValue(Field field, Object instance) {
+        return getFieldValue(field, instance, instance.getClass());
+    }
+
+    /**
+     * Gets the value of a field
+     *
+     * @param field    the field
+     * @param instance the instance
+     * @return the return value
+     */
+    public static Object getFieldValue(Field field, Object instance, Class<?> klass) {
         try {
             return field.get(instance);
         } catch (IllegalAccessException e) {

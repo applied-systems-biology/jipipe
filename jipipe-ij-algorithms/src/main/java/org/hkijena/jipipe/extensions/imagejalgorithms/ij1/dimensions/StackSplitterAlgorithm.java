@@ -29,7 +29,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariables;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;

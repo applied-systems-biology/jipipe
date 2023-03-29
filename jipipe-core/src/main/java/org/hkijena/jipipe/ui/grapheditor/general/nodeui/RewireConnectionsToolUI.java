@@ -13,8 +13,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -33,7 +31,7 @@ public class RewireConnectionsToolUI extends JDialog {
     private final SearchTextField searchTextField = new SearchTextField();
 
     private final JList<JIPipeDataSlot> alternativesList = new JList<>();
-    
+
     private final UUID compartment;
 
     public RewireConnectionsToolUI(JIPipeGraphCanvasUI graphCanvasUI, JIPipeDataSlot currentSlot, Set<JIPipeDataSlot> currentConnections) {
@@ -65,23 +63,23 @@ public class RewireConnectionsToolUI extends JDialog {
         getContentPane().add(splitPane, BorderLayout.CENTER);
 
         JButton rewireButton = new JButton("Rewire", UIUtils.getIconFromResources("actions/checkmark.png"));
-        rewireButton.addActionListener( e -> applyRewire());
+        rewireButton.addActionListener(e -> applyRewire());
 
         JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener( e -> setVisible(false));
+        cancelButton.addActionListener(e -> setVisible(false));
 
         JPanel buttonPanel = UIUtils.boxHorizontal(Box.createHorizontalGlue(), cancelButton, rewireButton);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         add(buttonPanel, BorderLayout.SOUTH);
 
         pack();
         setModal(true);
-        setSize(800,600);
+        setSize(800, 600);
     }
 
     private void applyRewire() {
         JIPipeDataSlot selectedAlternative = alternativesList.getSelectedValue();
-        if(selectedAlternative == null) {
+        if (selectedAlternative == null) {
             JOptionPane.showMessageDialog(this,
                     "Please select an alternative target from the list.",
                     "No alternative selected",
@@ -98,28 +96,25 @@ public class RewireConnectionsToolUI extends JDialog {
             JIPipeDataSlot copySelectedAlternative = copyGraph.getEquivalentSlot(selectedAlternative);
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
                 JIPipeDataSlot copyEnabledConnection = copyGraph.getEquivalentSlot(enabledConnection);
-                if(copyCurrentSlot.isOutput()) {
-                    if(!copyGraph.disconnect(copyCurrentSlot, copyEnabledConnection, true)) {
+                if (copyCurrentSlot.isOutput()) {
+                    if (!copyGraph.disconnect(copyCurrentSlot, copyEnabledConnection, true)) {
                         throw new RuntimeException("Unable to disconnect!");
                     }
-                }
-                else {
-                    if(!copyGraph.disconnect(copyEnabledConnection, copyCurrentSlot, true)) {
+                } else {
+                    if (!copyGraph.disconnect(copyEnabledConnection, copyCurrentSlot, true)) {
                         throw new RuntimeException("Unable to disconnect!");
                     }
                 }
             }
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
                 JIPipeDataSlot copyEnabledConnection = copyGraph.getEquivalentSlot(enabledConnection);
-                if(copyCurrentSlot.isOutput()) {
+                if (copyCurrentSlot.isOutput()) {
                     copyGraph.connect(copySelectedAlternative, copyEnabledConnection, true);
-                }
-                else {
+                } else {
                     copyGraph.connect(copyEnabledConnection, copySelectedAlternative, true);
                 }
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "The rewire operation failed. No changes were applied.\nPlease check if the new connections lead to the creation of loops.",
@@ -128,7 +123,7 @@ public class RewireConnectionsToolUI extends JDialog {
         }
 
         // Create snapshot
-        if(graphCanvasUI.getHistoryJournal() != null) {
+        if (graphCanvasUI.getHistoryJournal() != null) {
             graphCanvasUI.getHistoryJournal().snapshot("Rewire connection(s)",
                     "Rewire connections of " + currentSlot.getDisplayName() + " to " + selectedAlternative.getDisplayName(),
                     compartment,
@@ -138,33 +133,30 @@ public class RewireConnectionsToolUI extends JDialog {
         // Simulation OK. Apply in real graph
         try {
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
-                if(currentSlot.isOutput()) {
-                    if(!graph.disconnect(currentSlot, enabledConnection, true)) {
+                if (currentSlot.isOutput()) {
+                    if (!graph.disconnect(currentSlot, enabledConnection, true)) {
                         throw new RuntimeException("Unable to disconnect!");
                     }
-                }
-                else {
-                    if(!graph.disconnect(enabledConnection, currentSlot, true)) {
+                } else {
+                    if (!graph.disconnect(enabledConnection, currentSlot, true)) {
                         throw new RuntimeException("Unable to disconnect!");
                     }
                 }
             }
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
-                if(currentSlot.isOutput()) {
+                if (currentSlot.isOutput()) {
                     graph.connect(selectedAlternative, enabledConnection, true);
-                }
-                else {
+                } else {
                     graph.connect(enabledConnection, selectedAlternative, true);
                 }
             }
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
                     "The rewire operation failed at phase 2. Please report this to the developer. JIPipe will attempt to undo the changes.",
                     "Rewire not possible",
                     JOptionPane.ERROR_MESSAGE);
-            if(graphCanvasUI.getHistoryJournal() != null) {
+            if (graphCanvasUI.getHistoryJournal() != null) {
                 graphCanvasUI.getHistoryJournal().undo(compartment);
             }
         }
@@ -195,11 +187,10 @@ public class RewireConnectionsToolUI extends JDialog {
 
         searchTextField.addActionListener(e -> refreshAlternativesList());
         alternativesList.addListSelectionListener(e -> {
-            if(alternativesList.getSelectedValue() != null) {
+            if (alternativesList.getSelectedValue() != null) {
                 // Select the alternative node
                 graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(alternativesList.getSelectedValue().getNode()));
-            }
-            else {
+            } else {
                 // Select the source node
                 graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(currentSlot.getNode()));
             }
@@ -212,26 +203,25 @@ public class RewireConnectionsToolUI extends JDialog {
 
         Set<JIPipeDataSlot> alternatives = new HashSet<>();
         for (JIPipeDataSlot enabledConnection : enabledConnections) {
-            if(enabledConnection.isInput()) {
+            if (enabledConnection.isInput()) {
                 // Search for another output that produces compatible data
                 for (JIPipeDataSlot availableSource : enabledConnection.getNode().getParentGraph().getAvailableSources(enabledConnection, true, false)) {
-                    if(availableSource == currentSlot)
+                    if (availableSource == currentSlot)
                         continue;
-                    if(!availableSource.getNode().getInfo().isRunnable())
+                    if (!availableSource.getNode().getInfo().isRunnable())
                         continue;
-                    if(availableSource.getNode().isVisibleIn(compartment)) {
+                    if (availableSource.getNode().isVisibleIn(compartment)) {
                         alternatives.add(availableSource);
                     }
                 }
-            }
-            else {
+            } else {
                 // Search for another input that is compatible to the produced data
                 for (JIPipeDataSlot availableTarget : enabledConnection.getNode().getParentGraph().getAvailableTargets(enabledConnection, true, false)) {
-                    if(availableTarget == currentSlot)
+                    if (availableTarget == currentSlot)
                         continue;
-                    if(!availableTarget.getNode().getInfo().isRunnable())
+                    if (!availableTarget.getNode().getInfo().isRunnable())
                         continue;
-                    if(availableTarget.getNode().isVisibleIn(compartment)) {
+                    if (availableTarget.getNode().isVisibleIn(compartment)) {
                         alternatives.add(availableTarget);
                     }
                 }
@@ -242,13 +232,12 @@ public class RewireConnectionsToolUI extends JDialog {
         // Search filter
         alternatives.removeIf(alternative -> {
             for (JIPipeDataSlot enabledConnection : enabledConnections) {
-                if(enabledConnection.isInput()) {
-                    if(!JIPipe.getDataTypes().isConvertible(alternative.getAcceptedDataType(), enabledConnection.getAcceptedDataType())) {
+                if (enabledConnection.isInput()) {
+                    if (!JIPipe.getDataTypes().isConvertible(alternative.getAcceptedDataType(), enabledConnection.getAcceptedDataType())) {
                         return true;
                     }
-                }
-                else {
-                    if(!JIPipe.getDataTypes().isConvertible(enabledConnection.getAcceptedDataType(), alternative.getAcceptedDataType())) {
+                } else {
+                    if (!JIPipe.getDataTypes().isConvertible(enabledConnection.getAcceptedDataType(), alternative.getAcceptedDataType())) {
                         return true;
                     }
                 }
@@ -256,14 +245,13 @@ public class RewireConnectionsToolUI extends JDialog {
             return !searchTextField.test(alternative.getName() + " " + alternative.getNode().getName());
         });
         DefaultListModel<JIPipeDataSlot> model = new DefaultListModel<>();
-        alternatives.stream().sorted(Comparator.comparing( (JIPipeDataSlot alternative) -> {
+        alternatives.stream().sorted(Comparator.comparing((JIPipeDataSlot alternative) -> {
                     int sumDistance = 0;
                     for (JIPipeDataSlot enabledConnection : enabledConnections) {
-                        if(enabledConnection.isInput()) {
+                        if (enabledConnection.isInput()) {
                             int d = JIPipe.getDataTypes().getConversionDistance(alternative.getAcceptedDataType(), enabledConnection.getAcceptedDataType());
                             sumDistance += d;
-                        }
-                        else {
+                        } else {
                             int d = JIPipe.getDataTypes().getConversionDistance(enabledConnection.getAcceptedDataType(), alternative.getAcceptedDataType());
                             sumDistance += d;
                         }
@@ -282,13 +270,12 @@ public class RewireConnectionsToolUI extends JDialog {
         groupHeader.setDescription("You have the option to only move specific connections to another output.");
         for (JIPipeDataSlot currentConnection : currentConnections) {
             JCheckBox checkBox;
-            if(currentConnection.isInput()) {
+            if (currentConnection.isInput()) {
                 // Output to input
                 checkBox = new JCheckBox("<html>" + "<span style=\"color: gray;\">To input</span> " + currentConnection.getName() + "<br/><small>" +
                         StringUtils.createIconTextHTMLTable(currentConnection.getNode().getDisplayName(), JIPipe.getNodes().getIconURLFor(currentConnection.getNode().getInfo()))
                         + "</small></html>");
-            }
-            else {
+            } else {
                 // Input to output
                 checkBox = new JCheckBox("<html>" + "<span style=\"color: gray;\">From output</span> " + currentConnection.getName() + "<br/><small>" +
                         StringUtils.createIconTextHTMLTable(currentConnection.getNode().getDisplayName(), JIPipe.getNodes().getIconURLFor(currentConnection.getNode().getInfo()))
@@ -296,10 +283,9 @@ public class RewireConnectionsToolUI extends JDialog {
             }
             checkBox.setSelected(true);
             checkBox.addActionListener(e -> {
-                if(checkBox.isSelected()) {
+                if (checkBox.isSelected()) {
                     enabledConnections.add(currentConnection);
-                }
-                else {
+                } else {
                     enabledConnections.remove(currentConnection);
                 }
                 refreshAlternativesList();

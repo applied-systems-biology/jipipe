@@ -20,7 +20,9 @@ import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJExporter;
 import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.display.AddROI3DToManagerOperation;
-import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
+import org.hkijena.jipipe.extensions.ij3d.imageviewer.ImageViewerUIROI3DDisplaySettings;
+import org.hkijena.jipipe.extensions.ij3d.imageviewer.ROIManagerPlugin3D;
+import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.binary.DistanceMap3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.binary.ErodedVolumeFraction3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.binary.Voronoi3DAlgorithm;
@@ -29,10 +31,15 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.features.EdgeFilter3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.features.FindMaxima3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.features.SymmetryFilter3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.filters.*;
+import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.ExtractOverlay3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.RemoveOverlay3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.RenderOverlay3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.SetOverlay3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.ExportROI3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.FindParticles3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.generate.Roi3DFromLabelsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure.ExtractRoi3DRelationStatisticsAlgorithm;
@@ -51,6 +58,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgo
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -98,7 +106,21 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
+    public boolean isBeta() {
+        return true;
+    }
+
+    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+
+        registerSettingsSheet(ImageViewerUIROI3DDisplaySettings.ID,
+                "3D ROI display",
+                "Settings for the ROI manager component of the JIPipe image viewer",
+                IJ3DExtension.RESOURCES.getIconFromResources("data-type-roi3d.png"),
+                "Image viewer",
+                UIUtils.getIconFromResources("actions/viewimage.png"),
+                new ImageViewerUIROI3DDisplaySettings());
+        JIPipeImageViewer.registerDefaultPlugin(ROIManagerPlugin3D.class);
 
         registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");
         registerEnumParameterType("ij3d-measurement-column", ROI3DMeasurementColumn.class, "3D measurement column", "A 3D object measurement column");
@@ -111,7 +133,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URLFromResources("data-type-roi3d.png"), new AddROI3DToManagerOperation());
         registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);
         registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
-        registerNodeType("import-roi-3d", ImportROI3D.class);
+        registerNodeType("import-roi-3d", ImportROI3DAlgorithm.class);
+        registerNodeType("export-roi-3d", ExportROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
 
         registerNodeType("ij3d-analyze-find-particles", FindParticles3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
         registerNodeType("ij3d-labels-to-roi", Roi3DFromLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
@@ -146,6 +169,11 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-extract-metadata", ExtractROI3DMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
         registerNodeType("ij3d-roi-set-metadata-from-table", SetROI3DMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
         registerNodeType("ij3d-roi-remove-metadata", RemoveROI3DMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+
+        registerNodeType("ij3d-roi-remove-overlay", RemoveOverlay3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/editclear.png"));
+        registerNodeType("ij3d-roi-render-overlay", RenderOverlay3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
+        registerNodeType("ij3d-roi-set-overlay", SetOverlay3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+        registerNodeType("ij3d-roi-extract-overlay", ExtractOverlay3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
 
         registerNodeType("ij3d-math-distance-map-3d", DistanceMap3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij3d-binary-watershed-3d-splitting", Watershed3DSplittingAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));

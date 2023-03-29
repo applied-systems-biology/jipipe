@@ -16,51 +16,45 @@ package org.hkijena.jipipe.extensions.imageviewer;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
-import ij.gui.ImageWindow;
-import ij.measure.Calibration;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import ij.util.Tools;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
 import org.hkijena.jipipe.extensions.imageviewer.runs.RawImage2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Stack2DExporterRun;
 import org.hkijena.jipipe.extensions.imageviewer.runs.Video2DExporterRun;
-import org.hkijena.jipipe.extensions.imageviewer.utils.ImageViewerPanelCanvas;
+import org.hkijena.jipipe.extensions.imageviewer.settings.ImageViewer2DUISettings;
+import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 
 import javax.imageio.ImageIO;
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess {
-    private static final Set<ImageViewerPanel2D> OPEN_PANELS = new HashSet<>();
-    private static ImageViewerPanel2D ACTIVE_PANEL = null;
+
+    private final JIPipeImageViewer imageViewer;
     private final JButton zoomStatusButton = new JButton();
-    private final ImageViewerUISettings settings;
+    private final ImageViewer2DUISettings settings;
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private final JLabel channelSliderLabel = new JLabel("Channel (C)");
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
@@ -71,8 +65,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private final JLabel imageInfoLabel = new JLabel();
-    private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
+    private final JSpinner animationFPSControl = new JSpinner(new SpinnerNumberModel(24, 0.01, 1000, 0.1));
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
     private final DocumentTabPane tabPane = new DocumentTabPane(false);
@@ -80,68 +73,61 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private final JIPipeWorkbench workbench;
     private final JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
     private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
-    private ImagePlus image;
+    private final JPanel viewerPanel = new JPanel(new BorderLayout());
+    private final JIPipeRunnerQueue viewerRunnerQueue = new JIPipeRunnerQueue("Image Viewer 2D");
+    private ImagePlusData image;
     private ImageCanvas zoomedDummyCanvas;
     private ImageCanvas exportDummyCanvas;
     private ImageProcessor currentSlice;
-    private ImageViewerPanelCanvas canvas;
+    private ImageViewerPanelCanvas2D canvas;
     private FormPanel bottomPanel;
     private long lastTimeZoomed;
-    private JScrollPane scrollPane;
     //    private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
-    private List<ImageViewerPanelPlugin2D> plugins = new ArrayList<>();
     private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
+
     private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private JScrollPane canvasScrollPane;
+
+    private boolean composite;
+
+    private final List<CompositeLayer> orderedCompositeBlendLayers = new ArrayList<>();
+
+    private final Map<Integer, CompositeLayer> compositeBlendLayers = new HashMap<>();
+
     /**
      * Initializes a new image viewer
      *
-     * @param workbench the workbench. Use {@link org.hkijena.jipipe.ui.JIPipeDummyWorkbench} if you do not have access to one.
+     * @param imageViewer the viewer
      */
-    public ImageViewerPanel2D(JIPipeWorkbench workbench) {
-        this.workbench = workbench;
+    public ImageViewerPanel2D(JIPipeImageViewer imageViewer) {
+        this.imageViewer = imageViewer;
+        this.workbench = imageViewer.getWorkbench();
         if (JIPipe.getInstance() != null) {
-            settings = ImageViewerUISettings.getInstance();
+            settings = ImageViewer2DUISettings.getInstance();
         } else {
-            settings = null;
+            settings = new ImageViewer2DUISettings();
         }
         initialize();
         updateZoomStatus();
     }
 
-    public static ImageViewerPanel2D getActiveViewerPanel() {
-        return ACTIVE_PANEL;
+    private static void incrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = ((value) % maximum) + 1;
+        slider.setValue(newIndex);
     }
 
-    public static Set<ImageViewerPanel2D> getOpenViewerPanels() {
-        return OPEN_PANELS;
-    }
-
-    /**
-     * Opens the image in a new frame
-     *
-     * @param workbench the workbench
-     * @param image     the image
-     * @param title     the title
-     * @return the panel
-     */
-    public static ImageViewerPanel2D showImage(JIPipeWorkbench workbench, ImagePlus image, String title) {
-        ImageViewerPanel2D dataDisplay = new ImageViewerPanel2D(workbench);
-        List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin2D(dataDisplay));
-        pluginList.add(new PixelInfoPlugin2D(dataDisplay));
-        pluginList.add(new LUTManagerPlugin2D(dataDisplay));
-        pluginList.add(new ROIManagerPlugin2D(dataDisplay));
-        pluginList.add(new AnimationSpeedPlugin2D(dataDisplay));
-        pluginList.add(new MeasurementDrawerPlugin2D(dataDisplay));
-        dataDisplay.setPlugins(pluginList);
-        dataDisplay.setImage(image);
-        ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
-        window.setTitle(title);
-        window.setVisible(true);
-        return dataDisplay;
+    private static void decrementSlider(JSlider slider) {
+        int value = slider.getValue();
+        int maximum = slider.getMaximum();
+        int newIndex = value - 1;
+        if (newIndex < 1)
+            newIndex += maximum;
+        slider.setValue(newIndex);
     }
 
     @Override
@@ -149,42 +135,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return workbench;
     }
 
-    public ImageViewerUISettings getSettings() {
-        return settings;
-    }
-
-    public <T extends ImageViewerPanelPlugin2D> T getPlugin(Class<T> klass) {
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
-            if (klass.isAssignableFrom(plugin.getClass()))
-                return (T) plugin;
-        }
-        return null;
-    }
-
-    public List<ImageViewerPanelPlugin2D> getPlugins() {
-        return plugins;
-    }
-
-    public void setPlugins(List<ImageViewerPanelPlugin2D> plugins) {
-        this.plugins = plugins;
-    }
-
-    public <T extends ImageViewerPanelPlugin2D> T findPlugin(Class<T> klass) {
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
-            if (klass.isAssignableFrom(plugin.getClass())) {
-                return (T) plugin;
-            }
-        }
-        return null;
-    }
-
-    public void setAsActiveViewerPanel() {
-        ACTIVE_PANEL = this;
-    }
-
-    public void addToOpenPanels() {
-        OPEN_PANELS.add(this);
-    }
 
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
@@ -196,11 +146,19 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 //        }
 //    }
 
+    public ImageViewer2DUISettings getSettings() {
+        return settings;
+    }
+
+    public List<CompositeLayer> getOrderedCompositeBlendLayers() {
+        return Collections.unmodifiableList(orderedCompositeBlendLayers);
+    }
+
+    public Map<Integer, CompositeLayer> getCompositeBlendLayers() {
+        return Collections.unmodifiableMap(compositeBlendLayers);
+    }
+
     public void dispose() {
-        if (ACTIVE_PANEL == this) {
-            ACTIVE_PANEL = null;
-        }
-        OPEN_PANELS.remove(this);
         try {
             setImage(null);
         } catch (Exception | Error e) {
@@ -213,18 +171,24 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
+    public JIPipeRunnerQueue getViewerRunnerQueue() {
+        return viewerRunnerQueue;
+    }
+
     private void initialize() {
 
         // Load default animation speed
         if (settings != null) {
-            animationSpeedControl.getModel().setValue(settings.getDefaultAnimationSpeed());
-            animationTimer.setDelay(settings.getDefaultAnimationSpeed());
+            double fps = settings.getDefaultAnimationFPS();
+            animationFPSControl.getModel().setValue(fps);
+            animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
         }
 
         setLayout(new BorderLayout());
-        canvas = new ImageViewerPanelCanvas(this);
-        scrollPane = new JScrollPane(canvas);
-        canvas.setScrollPane(scrollPane);
+
+        canvas = new ImageViewerPanelCanvas2D(this);
+        canvasScrollPane = new JScrollPane(canvas);
+        canvas.setScrollPane(canvasScrollPane);
         initializeToolbar();
         canvas.addMouseWheelListener(e -> {
             if (e.isControlDown()) {
@@ -239,6 +203,18 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         });
         canvas.getEventBus().register(this);
 
+        // Viewer panel, status bar
+        viewerPanel.add(canvasScrollPane, BorderLayout.CENTER);
+        JToolBar statusBar = new JToolBar();
+        statusBar.setFloatable(false);
+        statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, UIManager.getColor("MenuBar.borderColor")));
+        viewerPanel.add(statusBar, BorderLayout.SOUTH);
+
+        JIPipeRunnerQueueUI runnerQueueUI = new JIPipeRunnerQueueUI(getWorkbench(), viewerRunnerQueue);
+        runnerQueueUI.makeFlat();
+        statusBar.add(runnerQueueUI);
+
+        // Bottom panel (sliders)
         bottomPanel = new FormPanel(null, FormPanel.NONE);
         add(bottomPanel, BorderLayout.SOUTH);
 
@@ -260,15 +236,28 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         updateSideBar();
     }
 
+    public boolean isComposite() {
+        return composite;
+    }
+
+    public void setComposite(boolean composite) {
+        this.composite = composite;
+        if(composite) {
+            channelSlider.setValue(1);
+        }
+        refreshSliders();
+        uploadSliceToCanvas();
+    }
+
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);
-        animationSpeedControl.addChangeListener(e -> {
-            int delay = ((SpinnerNumberModel) animationSpeedControl.getModel()).getNumber().intValue();
+        animationFPSControl.addChangeListener(e -> {
+            double fps = ((SpinnerNumberModel) animationFPSControl.getModel()).getNumber().doubleValue();
             if (settings != null) {
-                settings.setDefaultAnimationSpeed(delay);
+                settings.setDefaultAnimationFPS(fps);
             }
             stopAnimations();
-            animationTimer.setDelay(delay);
+            animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
         });
         animationFrameToggle.addActionListener(e -> {
             if (animationFrameToggle.isSelected()) {
@@ -316,6 +305,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             label.setPreferredSize(new Dimension(bufferedSw, 16));
         }
 
+
         animation.setToolTipText("Toggle animation");
         UIUtils.makeFlat25x25(animation);
         JPanel descriptionPanel = new JPanel();
@@ -350,12 +340,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         UIUtils.makeFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
-            int value = slider.getValue();
-            int maximum = slider.getMaximum();
-            int newIndex = value - 1;
-            if (newIndex < 1)
-                newIndex += maximum;
-            slider.setValue(newIndex);
+            decrementSlider(slider);
         });
         rightPanel.add(lastFrame);
 
@@ -363,12 +348,17 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         UIUtils.makeFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
-            int value = slider.getValue();
-            int maximum = slider.getMaximum();
-            int newIndex = ((value) % maximum) + 1;
-            slider.setValue(newIndex);
+            incrementSlider(slider);
         });
         rightPanel.add(nextFrame);
+
+        slider.addMouseWheelListener(e -> {
+            if (e.getWheelRotation() < 0) {
+                incrementSlider(slider);
+            } else {
+                decrementSlider(slider);
+            }
+        });
 
         bottomPanel.addToForm(contentPanel, descriptionPanel, null);
     }
@@ -380,33 +370,16 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private void initializeToolbar() {
         toolBar.setFloatable(false);
 
-        JButton openInImageJButton = new JButton("Open in ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
-        openInImageJButton.addActionListener(e -> openInImageJ());
-
-        toolBar.add(openInImageJButton);
-        toolBar.add(Box.createHorizontalStrut(8));
-        toolBar.add(imageInfoLabel);
-
         toolBar.add(Box.createHorizontalGlue());
 
         initializeExportMenu();
         toolBar.addSeparator();
 
-//        rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
-//        rotateLeftButton.setToolTipText("Rotate 90° to the left");
-//        rotateLeftButton.addActionListener(e -> rotateLeft());
-//        toolBar.add(rotateLeftButton);
-//
-//        rotateRightButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate.png"));
-//        rotateRightButton.setToolTipText("Rotate 90° to the right");
-//        rotateRightButton.addActionListener(e -> rotateRight());
-//        toolBar.add(rotateRightButton);
-
-        JButton centerImageButton = new JButton("Center image", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
+        JButton centerImageButton = new JButton("Center", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
         centerImageButton.addActionListener(e -> canvas.centerImage());
         toolBar.add(centerImageButton);
 
-        JButton fitImageButton = new JButton("Fit image", UIUtils.getIconFromResources("actions/zoom-select-fit.png"));
+        JButton fitImageButton = new JButton("Fit", UIUtils.getIconFromResources("actions/zoom-select-fit.png"));
         fitImageButton.addActionListener(e -> fitImageToScreen());
         toolBar.add(fitImageButton);
 
@@ -465,8 +438,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             updateSideBar();
         });
         toolBar.add(enableSideBarButton);
-
-        add(toolBar, BorderLayout.NORTH);
     }
 
     private void initializeExportMenu() {
@@ -507,7 +478,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeRunExecuterUI.runInDialog(this, new RawImage2DExporterRun(getImage(), path));
+            JIPipeRunExecuterUI.runInDialog(this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
         }
     }
 
@@ -517,13 +488,13 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
         if (enableSideBarButton.isSelected()) {
             JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                    scrollPane,
+                    viewerPanel,
                     tabPane, AutoResizeSplitPane.RATIO_3_TO_1);
             add(splitPane, BorderLayout.CENTER);
             currentContentPanel = splitPane;
         } else {
-            add(scrollPane, BorderLayout.CENTER);
-            currentContentPanel = scrollPane;
+            add(viewerPanel, BorderLayout.CENTER);
+            currentContentPanel = viewerPanel;
         }
         revalidate();
         repaint();
@@ -601,8 +572,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             Path targetPath = exportPathEditor.getPath();
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
-            Stack2DExporterRun run = new Stack2DExporterRun(this, targetPath, baseName, format);
-            JIPipeRunExecuterUI.runInDialog(this, run);
+            Stack2DExporterRun run = new Stack2DExporterRun(imageViewer, targetPath, baseName, format);
+            JIPipeRunExecuterUI.runInDialog(this, run, viewerRunnerQueue);
         }
     }
 
@@ -642,14 +613,14 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 null);
         if (response == JOptionPane.OK_OPTION) {
             Video2DExporterRun run = new Video2DExporterRun(
-                    this,
+                    imageViewer,
                     path,
                     getCurrentSliceIndex(),
                     (HyperstackDimension) dimensionEditor.getSelectedItem(),
                     animationTimer.getDelay(),
                     (AVICompression) compressionEditor.getSelectedItem(),
                     compressionQualityEditor.getValue());
-            JIPipeRunExecuterUI.runInDialog(this, run);
+            JIPipeRunExecuterUI.runInDialog(this, run, viewerRunnerQueue);
         }
     }
 
@@ -659,7 +630,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
     /**
      * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
-     * It is updated by {@link ImageViewerPanelCanvas}
+     * It is updated by {@link ImageViewerPanelCanvas2D}
      * Please do not make any changes to the display properties here, as the image viewer has its own canvas
      *
      * @return the dummy canvas
@@ -667,21 +638,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     public ImageCanvas getZoomedDummyCanvas() {
         return zoomedDummyCanvas;
     }
-
-//    private void rotateLeft() {
-//        if (rotation == 0)
-//            rotation = 270;
-//        else
-//            rotation -= 90;
-//        refreshImageInfo();
-//        refreshSlice();
-//    }
-//
-//    public void rotateRight() {
-//        rotation = (rotation + 90) % 360;
-//        refreshImageInfo();
-//        refreshSlice();
-//    }
 
     /**
      * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
@@ -721,15 +677,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         updateZoomStatus();
     }
 
-    private void openInImageJ() {
-        if (image != null) {
-            String title = image.getTitle();
-            ImagePlus duplicate = ImageJUtils.duplicate(image);
-            duplicate.setTitle(title);
-            duplicate.show();
-        }
-    }
-
     private void refreshSliders() {
         try {
             isUpdatingSliders = true;
@@ -737,7 +684,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 bottomPanel.setVisible(true);
                 bottomPanel.clear();
 
-                if (image.getNChannels() > 1)
+                if (image.getNChannels() > 1 && !composite)
                     addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle, "Channel", "Channel (C) %d/%d");
                 if (image.getNSlices() > 1)
                     addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle, "Slice", "Slice (Z) %d/%d");
@@ -758,37 +705,12 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
-    public ImagePlus getImage() {
-        return image;
-    }
-
-    public void setImage(ImagePlus image) {
-        this.image = image;
-        if (image != null) {
-            this.zoomedDummyCanvas = new ImageCanvas(image);
-            this.zoomedDummyCanvas.setMagnification(getCanvas().getZoom());
-            this.exportDummyCanvas = new ImageCanvas(image);
-        } else {
-            this.zoomedDummyCanvas = null;
-            this.exportDummyCanvas = null;
-        }
-        this.currentSlice = null;
-        this.statisticsMap.clear();
-        refreshSliders();
-        refreshSlice();
-        refreshImageInfo();
-        refreshFormPanel();
-        refreshMenus();
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
-            plugin.onImageChanged();
-        }
-        revalidate();
-        repaint();
-        uploadSliceToCanvas();
+    public ImagePlus getImagePlus() {
+        return imageViewer.getImagePlus();
     }
 
     private void refreshMenus() {
-        boolean hasMultipleSlices = image != null && image.getNDimensions() > 2;
+        boolean hasMultipleSlices = image != null && image.getImage().getNDimensions() > 2;
         exportAllSlicesItem.setVisible(hasMultipleSlices);
         exportMovieItem.setVisible(hasMultipleSlices);
     }
@@ -799,7 +721,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             scrollValues.put(entry.getKey(), entry.getValue().getScrollPane().getVerticalScrollBar().getValue());
             entry.getValue().clear();
         }
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
+        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             FormPanel formPanel = formPanels.getOrDefault(plugin.getCategory(), null);
             if (formPanel == null) {
                 formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
@@ -824,8 +746,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
-    public JSpinner getAnimationSpeedControl() {
-        return animationSpeedControl;
+    public JSpinner getAnimationFPSControl() {
+        return animationFPSControl;
     }
 
     /**
@@ -837,52 +759,8 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return new ImageSliceIndex(channelSlider.getValue() - 1, stackSlider.getValue() - 1, frameSlider.getValue() - 1);
     }
 
-    public void refreshImageInfo() {
-        String s = "";
-        if (image == null) {
-            imageInfoLabel.setText("");
-            return;
-        }
-        int type = image.getType();
-        Calibration cal = image.getCalibration();
-        if (cal.scaled()) {
-            boolean unitsMatch = cal.getXUnit().equals(cal.getYUnit());
-            double cwidth = image.getWidth() * cal.pixelWidth;
-            double cheight = image.getHeight() * cal.pixelHeight;
-            int digits = Tools.getDecimalPlaces(cwidth, cheight);
-            if (digits > 2) digits = 2;
-            if (unitsMatch) {
-                s += IJ.d2s(cwidth, digits) + "x" + IJ.d2s(cheight, digits)
-                        + " " + cal.getUnits() + " (" + image.getWidth() + "x" + image.getHeight() + "); ";
-            } else {
-                s += (cwidth) + " " + cal.getXUnit() + " x "
-                        + (cheight) + " " + cal.getYUnit()
-                        + " (" + image.getWidth() + "x" + image.getHeight() + "); ";
-            }
-        } else
-            s += image.getWidth() + "x" + image.getHeight() + " pixels; ";
-        switch (type) {
-            case ImagePlus.GRAY8:
-            case ImagePlus.COLOR_256:
-                s += "8-bit";
-                break;
-            case ImagePlus.GRAY16:
-                s += "16-bit";
-                break;
-            case ImagePlus.GRAY32:
-                s += "32-bit";
-                break;
-            case ImagePlus.COLOR_RGB:
-                s += "RGB";
-                break;
-        }
-        if (image.isInvertedLut())
-            s += " (inverting LUT)";
-        s += "; " + ImageWindow.getImageSize(image);
-//        if (rotation != 0) {
-//            s += " (Rotated " + rotation + "°)";
-//        }
-        imageInfoLabel.setText(s);
+    public JIPipeImageViewer getImageViewer() {
+        return imageViewer;
     }
 
     private void animateNextSlice() {
@@ -891,13 +769,13 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             return;
         }
         if (animationStackToggle.isSelected()) {
-            int newIndex = (image.getZ() % image.getNSlices()) + 1;
+            int newIndex = (image.getImage().getZ() % image.getNSlices()) + 1;
             stackSlider.setValue(newIndex);
         } else if (animationChannelToggle.isSelected()) {
-            int newIndex = (image.getC() % image.getNChannels()) + 1;
+            int newIndex = (image.getImage().getC() % image.getNChannels()) + 1;
             channelSlider.setValue(newIndex);
         } else if (animationFrameToggle.isSelected()) {
-            int newIndex = (image.getT() % image.getNFrames()) + 1;
+            int newIndex = (image.getImage().getT() % image.getNFrames()) + 1;
             frameSlider.setValue(newIndex);
         } else {
             stopAnimations();
@@ -913,9 +791,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             frameSliderLabel.setText(String.format("Frame (T) %d/%d", frame, image.getNFrames()));
             channelSliderLabel.setText(String.format("Channel (C) %d/%d", channel, image.getNChannels()));
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
-            image.setPosition(channel, stack, frame);
-            this.currentSlice = image.getProcessor();
-            for (ImageViewerPanelPlugin2D plugin : plugins) {
+            image.getImage().setPosition(channel, stack, frame);
+            this.currentSlice = image.getImage().getProcessor();
+            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged(true);
 //                System.out.println(plugin + "(A): " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
@@ -935,37 +813,66 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
      * @return the new slice
      */
     public ImageProcessor generateSlice(int c, int z, int t, double magnification, boolean withPostprocessing) {
-        image.setPosition(c + 1, z + 1, t + 1);
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
-            plugin.beforeDraw(c, z, t);
-        }
-//        System.out.println(Arrays.stream(image.getLuts()).map(Object::toString).collect(Collectors.joining(" ")));
-        ImageProcessor processor = image.getProcessor().duplicate();
-        for (ImageViewerPanelPlugin2D plugin : plugins) {
-            processor = plugin.draw(c, z, t, processor);
-        }
-//        if (withRotation && rotation != 0) {
-//            if (rotation == 90)
-//                processor = processor.rotateRight();
-//            else if (rotation == 180)
-//                processor = processor.rotateRight().rotateRight();
-//            else if (rotation == 270)
-//                processor = processor.rotateLeft();
-//            else
-//                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
-//        }
-        if (magnification != 1.0) {
-            processor.setInterpolationMethod(ImageProcessor.NONE);
-            processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
-        }
-        if (withPostprocessing) {
-            BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
-            for (ImageViewerPanelPlugin2D plugin : getPlugins()) {
-                plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
+        if(composite && image.getNChannels() > 1) {
+
+            ColorProcessor bottom = new ColorProcessor(image.getWidth(), image.getHeight());
+
+            // Pre-generate processors for all channels
+            for (int i = 0; i < image.getNChannels(); i++) {
+                CompositeLayer layer = orderedCompositeBlendLayers.get(i);
+                int cc = layer.getChannel();
+
+                image.getImage().setPosition(cc + 1, z + 1, t + 1);
+                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                    plugin.beforeDraw(cc, z, t);
+                }
+                ImageProcessor processor = image.getImage().getProcessor().duplicate();
+                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                    processor = plugin.draw(cc, z, t, processor);
+                }
+                if (magnification != 1.0) {
+                    processor.setInterpolationMethod(ImageProcessor.NONE);
+                    processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
+                }
+                if (withPostprocessing) {
+                    BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
+                    for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                        plugin.postprocessDrawForExport(image, new ImageSliceIndex(cc, z, t), magnification);
+                    }
+                    processor = new ColorProcessor(image);
+                }
+                if(!(processor instanceof ColorProcessor)) {
+                    BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
+                    processor = new ColorProcessor(image);
+                }
+
+                layer.getBlendMode().blend(bottom, (ColorProcessor) processor, layer.getOpacity());
             }
-            processor = new ColorProcessor(image);
+
+            return bottom;
         }
-        return processor;
+        else {
+            image.getImage().setPosition(c + 1, z + 1, t + 1);
+            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                plugin.beforeDraw(c, z, t);
+            }
+            ImageProcessor processor = image.getImage().getProcessor().duplicate();
+            for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                processor = plugin.draw(c, z, t, processor);
+            }
+            if (magnification != 1.0) {
+                processor.setInterpolationMethod(ImageProcessor.NONE);
+                processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
+            }
+            if (withPostprocessing) {
+                BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
+                for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+                    plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
+                }
+                processor = new ColorProcessor(image);
+            }
+            return processor;
+        }
     }
 
     public void uploadSliceToCanvas() {
@@ -984,18 +891,57 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
     }
 
-    public ImageViewerPanelCanvas getCanvas() {
+    public ImageViewerPanelCanvas2D getCanvas() {
         return canvas;
     }
 
     public void fitImageToScreen() {
         if (image != null) {
-            double zoomx = scrollPane.getViewport().getWidth() / (1.0 * image.getWidth());
-            double zoomy = scrollPane.getViewport().getHeight() / (1.0 * image.getHeight());
+            double zoomx = canvasScrollPane.getViewport().getWidth() / (1.0 * image.getWidth());
+            double zoomy = canvasScrollPane.getViewport().getHeight() / (1.0 * image.getHeight());
             canvas.setZoom(Math.min(zoomx, zoomy));
             canvas.setContentXY(0, 0);
             updateZoomStatus();
         }
+    }
+
+    public ImagePlusData getImage() {
+        return image;
+    }
+
+    public void setImage(ImagePlusData image) {
+        this.image = image;
+        compositeBlendLayers.clear();
+        orderedCompositeBlendLayers.clear();
+        if (image != null) {
+            ImagePlus imagePlus = image.getImage();
+            this.zoomedDummyCanvas = new ImageCanvas(imagePlus);
+            this.zoomedDummyCanvas.setMagnification(getCanvas().getZoom());
+            this.exportDummyCanvas = new ImageCanvas(imagePlus);
+
+            // Generate blend layers
+            for (int c = 0; c < imagePlus.getNChannels(); c++) {
+                CompositeLayer layer = new CompositeLayer(c);
+                orderedCompositeBlendLayers.add(layer);
+                compositeBlendLayers.put(c, layer);
+            }
+
+        } else {
+            this.zoomedDummyCanvas = null;
+            this.exportDummyCanvas = null;
+        }
+        this.currentSlice = null;
+        this.statisticsMap.clear();
+        refreshSliders();
+        refreshSlice();
+        refreshFormPanel();
+        refreshMenus();
+        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            plugin.onImageChanged();
+        }
+        revalidate();
+        repaint();
+        uploadSliceToCanvas();
     }
 
     public ImageProcessor getCurrentSlice() {
@@ -1003,7 +949,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     }
 
     public ImageStatistics getCurrentSliceStats() {
-        if (getImage() != null && getCurrentSliceIndex() != null) {
+        if (getImagePlus() != null && getCurrentSliceIndex() != null) {
             return getSliceStats(getCurrentSliceIndex());
         } else {
             return null;
@@ -1011,10 +957,10 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     }
 
     public ImageStatistics getSliceStats(ImageSliceIndex sliceIndex) {
-        if (getImage() != null) {
+        if (getImagePlus() != null) {
             ImageStatistics stats = statisticsMap.getOrDefault(sliceIndex, null);
             if (stats == null) {
-                ImageProcessor processor = ImageJUtils.getSliceZero(image, sliceIndex);
+                ImageProcessor processor = ImageJUtils.getSliceZero(image.getImage(), sliceIndex);
                 stats = processor.getStats();
                 statisticsMap.put(sliceIndex, stats);
             }
@@ -1023,7 +969,51 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return null;
     }
 
+    public void moveCompositePriorityUp(int targetChannel) {
+        CompositeLayer layer = compositeBlendLayers.getOrDefault(targetChannel, null);
+        if(layer != null) {
+            int oldIndex = orderedCompositeBlendLayers.indexOf(layer);
+            if(oldIndex > 0) {
+                int newIndex = oldIndex - 1;
+                CompositeLayer backup = orderedCompositeBlendLayers.get(newIndex);
+                orderedCompositeBlendLayers.set(newIndex, layer);
+                orderedCompositeBlendLayers.set(oldIndex, backup);
+                refreshFormPanel();
+                uploadSliceToCanvas();
+            }
+        }
+    }
 
+    public void moveCompositePriorityDown(int targetChannel) {
+        CompositeLayer layer = compositeBlendLayers.getOrDefault(targetChannel, null);
+        if(layer != null) {
+            int oldIndex = orderedCompositeBlendLayers.indexOf(layer);
+            if(oldIndex >= 0 && oldIndex < orderedCompositeBlendLayers.size() - 1) {
+                int newIndex = oldIndex + 1;
+                CompositeLayer backup = orderedCompositeBlendLayers.get(newIndex);
+                orderedCompositeBlendLayers.set(newIndex, layer);
+                orderedCompositeBlendLayers.set(oldIndex, backup);
+                refreshFormPanel();
+                uploadSliceToCanvas();
+            }
+        }
+    }
 
+    public static class CompositeLayer extends ImageBlendLayer {
+        private final int channel;
+
+        public CompositeLayer(int channel) {
+            this.channel = channel;
+        }
+
+        public CompositeLayer(CompositeLayer other) {
+            super(other);
+            this.channel = other.channel;
+        }
+
+        public int getChannel() {
+            return channel;
+        }
+    }
 
 }

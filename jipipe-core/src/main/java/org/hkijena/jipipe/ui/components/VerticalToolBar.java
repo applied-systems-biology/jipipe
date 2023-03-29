@@ -16,10 +16,10 @@ public class VerticalToolBar extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         switch (GeneralUISettings.getInstance().getTheme()) {
             case ModernLight:
-                setBorder(BorderFactory.createMatteBorder(0,0,0,1, ModernMetalTheme.GRAY));
+                setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, ModernMetalTheme.GRAY));
                 break;
             case ModernDark:
-                setBorder(BorderFactory.createMatteBorder(0,0,0,1, DarkModernMetalTheme.GRAY));
+                setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, DarkModernMetalTheme.GRAY));
                 break;
         }
     }
@@ -32,7 +32,7 @@ public class VerticalToolBar extends JPanel {
 
     @Override
     public Component add(Component comp) {
-        if(comp instanceof JComponent) {
+        if (comp instanceof JComponent) {
             ((JComponent) comp).setAlignmentY(JComponent.TOP_ALIGNMENT);
         }
         return super.add(comp);

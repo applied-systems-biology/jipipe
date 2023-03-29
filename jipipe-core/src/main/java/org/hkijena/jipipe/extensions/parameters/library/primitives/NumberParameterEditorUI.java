@@ -180,7 +180,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
                 return Double.NEGATIVE_INFINITY;
             if (text.toLowerCase().startsWith("inf"))
                 return Double.POSITIVE_INFINITY;
-            if(text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na"))
+            if (text.equalsIgnoreCase("nan") || text.equalsIgnoreCase("na"))
                 return Double.NaN;
         }
         return 0;

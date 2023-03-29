@@ -9,8 +9,7 @@ public enum RoiRelationMeasurement {
     MinDistanceBorder(32),
     IntersectionStatistics(64),
     CurrentStatistics(128),
-    OtherStatistics(256)
-    ;
+    OtherStatistics(256);
 
     private final int nativeValue;
 
@@ -19,14 +18,13 @@ public enum RoiRelationMeasurement {
         this.nativeValue = nativeValue;
     }
 
-    public int getNativeValue() {
-        return nativeValue;
-    }
-
     public static boolean includes(int nativeValue, RoiRelationMeasurement target) {
         return (nativeValue & target.nativeValue) == target.nativeValue;
     }
 
+    public int getNativeValue() {
+        return nativeValue;
+    }
 
     @Override
     public String toString() {

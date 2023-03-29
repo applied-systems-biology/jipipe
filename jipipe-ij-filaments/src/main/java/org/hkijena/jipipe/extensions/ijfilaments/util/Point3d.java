@@ -72,6 +72,7 @@ public class Point3d {
     /**
      * Calculates the distances between two locations
      * Accounts for negative Z/C/T locations (location everywhere)
+     *
      * @param other the other location
      * @return the euclidean distance
      */
@@ -81,7 +82,7 @@ public class Point3d {
     }
 
     public Vector3d toVector3d() {
-        return new Vector3d(x,y,z);
+        return new Vector3d(x, y, z);
     }
 
     public Vector3d toNormalizedVector3d() {

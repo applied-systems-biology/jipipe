@@ -35,11 +35,15 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
     private final AtomicLong startTime = new AtomicLong();
     private final AtomicLong endTime = new AtomicLong();
 
+    private final boolean silent;
+
     /**
-     * @param run The executed run
+     * @param run    The executed run
+     * @param silent if no stdout should be printed
      */
-    public JIPipeRunWorker(JIPipeRunnable run) {
+    public JIPipeRunWorker(JIPipeRunnable run, boolean silent) {
         this.run = run;
+        this.silent = silent;
         this.run.getProgressInfo().getEventBus().register(this);
     }
 
@@ -54,11 +58,13 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
         try {
             run.run();
         } catch (Error | Exception e) {
-            run.getProgressInfo().log("An error was encountered");
-            run.getProgressInfo().log("------------------------");
-            run.getProgressInfo().log(e.toString());
-            run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
-            e.printStackTrace();
+            if (!silent) {
+                run.getProgressInfo().log("An error was encountered");
+                run.getProgressInfo().log("------------------------");
+                run.getProgressInfo().log(e.toString());
+                run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
+                e.printStackTrace();
+            }
             return e;
         }
         endTime.set(System.currentTimeMillis());
@@ -70,7 +76,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
         super.process(chunks);
         for (Object chunk : chunks) {
             if (chunk instanceof JIPipeProgressInfo.StatusUpdatedEvent) {
-                eventBus.post(new RunWorkerProgressEvent(this, (JIPipeProgressInfo.StatusUpdatedEvent) chunk));
+                eventBus.post(new JIPipeRunnable.ProgressEvent(this, (JIPipeProgressInfo.StatusUpdatedEvent) chunk));
             }
         }
     }
@@ -97,16 +103,18 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
     }
 
     private void postFinishedEvent() {
-        eventBus.post(new RunWorkerFinishedEvent(this));
+        eventBus.post(new JIPipeRunnable.FinishedEvent(this));
     }
 
     private void postInterruptedEvent(Throwable e) {
-        run.getProgressInfo().log("An error was encountered");
-        run.getProgressInfo().log("------------------------");
-        run.getProgressInfo().log(e.toString());
-        run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
+        if (!silent) {
+            run.getProgressInfo().log("An error was encountered");
+            run.getProgressInfo().log("------------------------");
+            run.getProgressInfo().log(e.toString());
+            run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
+        }
 
-        eventBus.post(new RunWorkerInterruptedEvent(this, e));
+        eventBus.post(new JIPipeRunnable.InterruptedEvent(this, e));
     }
 
     /**

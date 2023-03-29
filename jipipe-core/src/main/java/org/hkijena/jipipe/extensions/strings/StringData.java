@@ -75,7 +75,7 @@ public class StringData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTextViewerWindow window = new CachedTextViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedTextViewerWindow window = new CachedTextViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
     }

@@ -201,7 +201,6 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
     }
 
 
-
     @JIPipeDocumentation(name = "Rows", description = "The number of rows to generate. If disabled, rows are generated automatically.")
     @JIPipeParameter(value = "rows", uiOrder = 10)
     public OptionalIntegerParameter getRows() {

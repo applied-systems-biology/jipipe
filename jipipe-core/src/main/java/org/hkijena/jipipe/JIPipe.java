@@ -198,15 +198,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
         return instance.datatypeRegistry;
     }
 
-    public JIPipeExpressionRegistry getTableOperationRegistry() {
-        return tableOperationRegistry;
-    }
-
-    @Override
-    public JIPipeGraphEditorToolRegistry getGraphEditorToolRegistry() {
-        return graphEditorToolRegistry;
-    }
-
     /**
      * @return Singleton instance
      */
@@ -531,6 +522,15 @@ public class JIPipe extends AbstractService implements JIPipeService {
         return false;
     }
 
+    public JIPipeExpressionRegistry getTableOperationRegistry() {
+        return tableOperationRegistry;
+    }
+
+    @Override
+    public JIPipeGraphEditorToolRegistry getGraphEditorToolRegistry() {
+        return graphEditorToolRegistry;
+    }
+
     @Override
     public JIPipeProjectTemplateRegistry getProjectTemplateRegistry() {
         return projectTemplateRegistry;
@@ -807,8 +807,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         for (Map.Entry<String, JIPipeParameterTypeInfo> entry : parameterTypeRegistry.getRegisteredParameters().entrySet()) {
             try {
                 entry.getValue().newInstance();
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 logService.warn("Parameter type '" + entry.getKey() + "' cannot be initialized.");
                 issues.getErroneousParameterTypes().add(entry.getValue());
                 t.printStackTrace();
@@ -816,8 +815,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             try {
                 Object o = entry.getValue().newInstance();
                 entry.getValue().duplicate(o);
-            }
-            catch (Throwable t) {
+            } catch (Throwable t) {
                 logService.warn("Parameter type '" + entry.getKey() + "' cannot be duplicated.");
                 issues.getErroneousParameterTypes().add(entry.getValue());
                 t.printStackTrace();
@@ -896,7 +894,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
                 // Test cache state generation
                 try {
-                    if(!algorithm.functionallyEquals(algorithm)) {
+                    if (!algorithm.functionallyEquals(algorithm)) {
                         throw new RuntimeException("Node " + algorithm.getInfo().getId() + " is not functionally equal to itself!");
                     }
                 } catch (Exception e1) {

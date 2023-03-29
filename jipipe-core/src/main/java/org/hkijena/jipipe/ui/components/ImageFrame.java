@@ -40,6 +40,11 @@ public class ImageFrame extends JPanel {
         return backgroundImage;
     }
 
+    public void setBackgroundImage(BufferedImage backgroundImage) {
+        this.backgroundImage = backgroundImage;
+        repaint();
+    }
+
     public double getScaleFactor() {
         return scaleFactor;
     }
@@ -72,16 +77,11 @@ public class ImageFrame extends JPanel {
         this.center = center;
     }
 
-    public void setBackgroundImage(BufferedImage backgroundImage) {
-        this.backgroundImage = backgroundImage;
-        repaint();
-    }
-
     @Override
     public void paint(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-        if(isOpaque()) {
+        if (isOpaque()) {
             if (UIUtils.DARK_THEME) {
                 g.setColor(Color.BLACK);
             } else {
@@ -96,33 +96,32 @@ public class ImageFrame extends JPanel {
             switch (mode) {
                 case Cover: {
                     double factor = Math.max(factorH, factorW) * scaleFactor;
-                    newWidth = (int)(factor * backgroundImage.getWidth());
-                    newHeight = (int)(factor * backgroundImage.getHeight());
+                    newWidth = (int) (factor * backgroundImage.getWidth());
+                    newHeight = (int) (factor * backgroundImage.getHeight());
                 }
                 break;
                 case FitHeight: {
-                    newWidth = (int)(factorH * scaleFactor * backgroundImage.getWidth());
-                    newHeight = (int)(factorH * scaleFactor * backgroundImage.getHeight());
+                    newWidth = (int) (factorH * scaleFactor * backgroundImage.getWidth());
+                    newHeight = (int) (factorH * scaleFactor * backgroundImage.getHeight());
                 }
                 break;
                 case FitWidth: {
-                    newWidth = (int)(factorW * scaleFactor * backgroundImage.getWidth());
-                    newHeight = (int)(factorW * scaleFactor * backgroundImage.getHeight());
+                    newWidth = (int) (factorW * scaleFactor * backgroundImage.getWidth());
+                    newHeight = (int) (factorW * scaleFactor * backgroundImage.getHeight());
                 }
                 break;
                 case Fit: {
                     double factor = Math.min(factorH, factorW) * scaleFactor;
-                    newWidth = (int)(factor * backgroundImage.getWidth());
-                    newHeight = (int)(factor * backgroundImage.getHeight());
+                    newWidth = (int) (factor * backgroundImage.getWidth());
+                    newHeight = (int) (factor * backgroundImage.getHeight());
                 }
                 break;
                 default:
                     throw new IllegalStateException();
             }
-            if(center) {
+            if (center) {
                 g.drawImage(backgroundImage, getWidth() / 2 - newWidth / 2, getHeight() / 2 - newHeight / 2, newWidth, newHeight, null);
-            }
-            else {
+            } else {
                 g.drawImage(backgroundImage, 0, 0, newWidth, newHeight, null);
             }
         }

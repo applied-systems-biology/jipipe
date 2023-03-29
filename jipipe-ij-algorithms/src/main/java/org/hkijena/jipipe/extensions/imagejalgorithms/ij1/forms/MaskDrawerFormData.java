@@ -10,16 +10,17 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MaskDrawerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.imageviewer.plugins2d.CalibrationPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins2d.LUTManagerPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins2d.PixelInfoPlugin2D;
+import org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer.MaskDrawerPlugin2D;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public class MaskDrawerFormData extends FormData {
 
     private final List<JIPipeMergingDataBatch> dataBatches;
     private final DrawMaskAlgorithm drawMaskAlgorithm;
-    private ImageViewerPanel2D imageViewerPanel;
+    private JIPipeImageViewer imageViewerPanel;
     private MaskDrawerPlugin2D maskDrawerPlugin;
     private ImagePlus lazyLoadedImage;
     private ImagePlus lazyLoadedMask;
@@ -40,21 +41,22 @@ public class MaskDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new ImageViewerPanel2D(new JIPipeDummyWorkbench());
-        maskDrawerPlugin = new MaskDrawerPlugin2D(imageViewerPanel);
-        imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin2D(imageViewerPanel),
-                new PixelInfoPlugin2D(imageViewerPanel),
-                new LUTManagerPlugin2D(imageViewerPanel),
-                maskDrawerPlugin));
+        imageViewerPanel = new JIPipeImageViewer(new JIPipeDummyWorkbench(),
+                Arrays.asList(CalibrationPlugin2D.class,
+                        PixelInfoPlugin2D.class,
+                        LUTManagerPlugin2D.class,
+                        MaskDrawerPlugin2D.class),
+                Collections.emptyMap());
+        maskDrawerPlugin = imageViewerPanel.getPlugin(MaskDrawerPlugin2D.class);
         if (lazyLoadedImage != null) {
-            imageViewerPanel.setImage(lazyLoadedImage);
+            imageViewerPanel.setImageData(new ImagePlusData(lazyLoadedImage));
             maskDrawerPlugin.setMask(lazyLoadedMask);
             lazyLoadedImage = null;
             lazyLoadedMask = null;
         }
     }
 
-    public ImageViewerPanel2D getImageViewerPanel() {
+    public JIPipeImageViewer getImageViewerPanel() {
         if (imageViewerPanel == null || maskDrawerPlugin == null) {
             initializeImageViewer();
         }
@@ -134,7 +136,7 @@ public class MaskDrawerFormData extends FormData {
         ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusGreyscaleMaskData.class, new JIPipeProgressInfo()).getImage();
 
         if (imageViewerPanel != null) {
-            imageViewerPanel.setImage(referenceImage);
+            imageViewerPanel.setImagePlus(referenceImage);
             maskDrawerPlugin.setMask(maskImage);
         } else {
             lazyLoadedImage = referenceImage;

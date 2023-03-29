@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.clij2.datatypes;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -29,7 +30,7 @@ public class CLIJImageToImagePlusDataConverter implements JIPipeDataConverter {
     }
 
     @Override
-    public JIPipeData convert(JIPipeData input) {
+    public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         return (JIPipeData) ReflectionUtils.newInstance(outputType, ((CLIJImageData) input).pull().getImage());
     }
 }

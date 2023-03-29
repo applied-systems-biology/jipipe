@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
@@ -36,7 +37,7 @@ public class DoubleArrayColumnToTableConverter implements JIPipeDataConverter {
     }
 
     @Override
-    public JIPipeData convert(JIPipeData input) {
+    public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
         return new ResultsTableData(Collections.singletonList((TableColumn) input));
     }
 }

@@ -19,14 +19,15 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.Image5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Map;
@@ -62,6 +63,7 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
         this.imageTitle = new OptionalDefaultExpressionParameter(other.imageTitle);
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
+
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus imagePlus = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
@@ -84,7 +86,7 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
             variables.set("metadata." + entry.getKey(), entry.getValue());
         }
 
-        if(imageTitle.isEnabled()) {
+        if (imageTitle.isEnabled()) {
             imagePlus.setTitle(imageTitle.getContent().evaluateToString(variables));
         }
 

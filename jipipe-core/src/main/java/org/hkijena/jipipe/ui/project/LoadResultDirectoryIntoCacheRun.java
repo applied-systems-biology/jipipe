@@ -58,7 +58,7 @@ public class LoadResultDirectoryIntoCacheRun implements JIPipeRunnable {
     public void run() {
         ArrayList<JIPipeGraphNode> nodes = new ArrayList<>(project.getGraph().getGraphNodes());
         progressInfo.setProgress(0, nodes.size());
-        if(clearBefore) {
+        if (clearBefore) {
             progressInfo.log("Clearing existing cache ...");
             project.getCache().clearAll(progressInfo.resolve("Clear cache"));
         }

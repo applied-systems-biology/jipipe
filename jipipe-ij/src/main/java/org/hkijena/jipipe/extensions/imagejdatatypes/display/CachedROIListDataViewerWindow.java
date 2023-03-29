@@ -18,91 +18,24 @@ import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer2d.MeasurementDrawerPlugin2D;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager2d.ROIManagerPlugin2D;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.util.ArrayList;
-import java.util.List;
 
-public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
+public class CachedROIListDataViewerWindow extends CachedImagePlusDataViewerWindow {
 
-    private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
-    private ImageViewerPanel2D imageViewerPanel;
-
-    public CachedROIListDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedROIListDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
-        initialize();
-        if (!deferLoading)
-            reloadDisplayedData();
-        addWindowListener(this);
-    }
-
-    private void initialize() {
-        imageViewerPanel = new ImageViewerPanel2D(getWorkbench());
-        List<ImageViewerPanelPlugin2D> pluginList = new ArrayList<>();
-        pluginList.add(new CalibrationPlugin2D(imageViewerPanel));
-        pluginList.add(new PixelInfoPlugin2D(imageViewerPanel));
-        pluginList.add(new LUTManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new ROIManagerPlugin2D(imageViewerPanel));
-        pluginList.add(new AnimationSpeedPlugin2D(imageViewerPanel));
-        pluginList.add(new MeasurementDrawerPlugin2D(imageViewerPanel));
-        pluginList.add(new AnnotationInfoPlugin2D(imageViewerPanel, this));
-        imageViewerPanel.setPlugins(pluginList);
-        setContentPane(imageViewerPanel);
-        revalidate();
-        repaint();
-    }
-
-    @Override
-    public JToolBar getToolBar() {
-        if (imageViewerPanel == null)
-            return null;
-        else
-            return imageViewerPanel.getToolBar();
-    }
-
-    @Override
-    protected void beforeSetRow() {
-
-    }
-
-    @Override
-    protected void afterSetRow() {
-    }
-
-    @Override
-    protected void hideErrorUI() {
-        imageViewerPanel.getCanvas().setError(null);
-    }
-
-    @Override
-    protected void showErrorUI() {
-        if (getAlgorithm() != null) {
-            errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
-        } else {
-            errorLabel.setText("No data available");
-        }
-        imageViewerPanel.getCanvas().setError(errorLabel);
     }
 
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
-        ROIManagerPlugin2D plugin = imageViewerPanel.getPlugin(ROIManagerPlugin2D.class);
-        ROIListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROIListData.class);
+        ROIListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROIListData.class, progressInfo);
         int width;
         int height;
         int numZ = 1;
@@ -123,52 +56,17 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
             }
         }
 
-        imageViewerPanel.getCanvas().setError(null);
+        getImageViewer().setError(null);
         ImagePlus image = IJ.createImage("empty", "8-bit", width, height, numC, numZ, numT);
         ImageJUtils.forEachSlice(image, ip -> {
             ip.setColor(0);
             ip.fill();
         }, new JIPipeProgressInfo());
-        boolean fitImage = imageViewerPanel.getImage() == null;
-        plugin.clearROIs(true);
-        plugin.importROIs(data, true);
-        imageViewerPanel.setImage(image);
-        if (fitImage)
-            SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
+        getImageViewer().clearOverlays();
+        getImageViewer().setImageData(new ImagePlusData(image));
+        getImageViewer().addOverlay(data);
+
+        fitImageToScreenOnce();
     }
 
-    @Override
-    public void windowOpened(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowClosing(WindowEvent e) {
-        imageViewerPanel.dispose();
-    }
-
-    @Override
-    public void windowClosed(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowIconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeiconified(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowActivated(WindowEvent e) {
-
-    }
-
-    @Override
-    public void windowDeactivated(WindowEvent e) {
-
-    }
 }

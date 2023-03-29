@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 @JIPipeDocumentation(name = "3D spot segmentation (difference)", description = "The node works with two images, one containing the seeds of the objects, " +
         "that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. " +
         "The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. " +
-"A constant difference is used to compute local threshold. The local threshold value is then computed as ValueOfSeed – diff.")
+        "A constant difference is used to compute local threshold. The local threshold value is then computed as ValueOfSeed – diff.")
 @JIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Spots-Segmentation/")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Spots", autoCreate = true)

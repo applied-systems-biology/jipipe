@@ -32,7 +32,6 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
@@ -102,18 +101,17 @@ public class IJ3DUtils {
 
         // Put into groups
         Map<ImageSliceIndex, List<Roi>> grouped;
-        if(force2D || !fast) {
+        if (force2D || !fast) {
             grouped = roi2DList.groupByPosition(true, true, true);
-        }
-        else {
+        } else {
             grouped = roi2DList.groupByPosition(false, true, true);
         }
         ImmutableList<Map.Entry<ImageSliceIndex, List<Roi>>> groups = ImmutableList.copyOf(grouped.entrySet());
 
-        if(fast) {
+        if (fast) {
             // Use mask-based object generation, but per group
             for (int i = 0; i < groups.size(); i++) {
-                if(progressInfo.isCancelled())
+                if (progressInfo.isCancelled())
                     return null;
                 Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
                 progressInfo.resolveAndLog("Slice", i, groups.size());
@@ -129,10 +127,9 @@ public class IJ3DUtils {
 
                 roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1);
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < groups.size(); i++) {
-                if(progressInfo.isCancelled())
+                if (progressInfo.isCancelled())
                     return null;
                 Map.Entry<ImageSliceIndex, List<Roi>> group = groups.get(i);
                 JIPipeProgressInfo sliceProgress = progressInfo.resolveAndLog("Slice", i, groups.size());
@@ -149,10 +146,10 @@ public class IJ3DUtils {
                     Objects3DPopulation population = new Objects3DPopulation(imageHandler);
 
                     for (ROI3D roi3D : roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1)) {
-                        if(roi.getFillColor() != null) {
+                        if (roi.getFillColor() != null) {
                             roi3D.setFillColor(roi.getFillColor());
                         }
-                        if(!StringUtils.isNullOrEmpty(roi.getName())) {
+                        if (!StringUtils.isNullOrEmpty(roi.getName())) {
                             roi3D.getObject3D().setName(roi.getName());
                         }
                     }
@@ -164,16 +161,16 @@ public class IJ3DUtils {
     }
 
     public static ImageHandler wrapImage(ImagePlusData imagePlusData) {
-        if(imagePlusData != null) {
+        if (imagePlusData != null) {
             return ImageHandler.wrap(imagePlusData.getImage());
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     /**
      * Duplicates an {@link Object3D}
+     *
      * @param other the object to copy
      * @return the copied object
      */
@@ -191,12 +188,12 @@ public class IJ3DUtils {
     public static void measureRoi3d(ImageHandler referenceImage, ROI3DListData roiList, int measurements, boolean physicalUnits, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
         int lastPercentage = 0;
         for (int i = 0; i < roiList.size(); i++) {
-            if(progressInfo.isCancelled()) {
+            if (progressInfo.isCancelled()) {
                 return;
             }
-            int newPercentage = (int)(1.0 * i / roiList.size() * 100);
-            if(lastPercentage != newPercentage) {
-                progressInfo.log( i + "/" + roiList.size() +  " (" + newPercentage + "%)");
+            int newPercentage = (int) (1.0 * i / roiList.size() * 100);
+            if (lastPercentage != newPercentage) {
+                progressInfo.log(i + "/" + roiList.size() + " (" + newPercentage + "%)");
                 lastPercentage = newPercentage;
             }
             int row = target.addRow();
@@ -222,12 +219,12 @@ public class IJ3DUtils {
                     lastPercentage = newPercentage;
                 }
 
-                if(requireColocalization) {
-                    if(!roi1.getObject3D().overlapBox(roi2.getObject3D())) {
+                if (requireColocalization) {
+                    if (!roi1.getObject3D().overlapBox(roi2.getObject3D())) {
                         continue;
                     }
-                    if(preciseColocalization) {
-                        if(!roi1.getObject3D().hasOneVoxelColoc(roi2.getObject3D())) {
+                    if (preciseColocalization) {
+                        if (!roi1.getObject3D().hasOneVoxelColoc(roi2.getObject3D())) {
                             continue;
                         }
                     }
@@ -250,7 +247,7 @@ public class IJ3DUtils {
         double object2ResZ = object2.getResZ();
         String object2Unit = object2.getUnits();
 
-        if(!physicalUnits) {
+        if (!physicalUnits) {
             object1.setResXY(1);
             object1.setResZ(1);
             object1.setUnits("pixels");
@@ -335,8 +332,7 @@ public class IJ3DUtils {
             if (ROI3DRelationMeasurement.includes(measurements, ROI3DRelationMeasurement.OtherStats)) {
                 generateRoi3dRowMeasurements(reference, roi2Index, roi2, 65536, physicalUnits, target, row, "Other.");
             }
-        }
-        finally {
+        } finally {
             // Restore units
             object1.setResXY(object1ResXY);
             object1.setResZ(object1ResZ);
@@ -350,77 +346,73 @@ public class IJ3DUtils {
     public static void generateRoi3dRowMeasurements(ImageHandler referenceImage, int index, ROI3D roi3D, int measurements, boolean physicalUnits, ResultsTableData target, int row, String columnPrefix) {
         Object3D object3D = roi3D.getObject3D();
 
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Index)) {
-            target.setValueAt(index, row,  columnPrefix + "Index");
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Index)) {
+            target.setValueAt(index, row, columnPrefix + "Index");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Name)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Name)) {
             target.setValueAt(StringUtils.nullToEmpty(object3D.getName()), row, columnPrefix + "Name");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Comment)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Comment)) {
             target.setValueAt(StringUtils.nullToEmpty(object3D.getComment()), row, columnPrefix + "Comment");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Location)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Location)) {
             target.setValueAt(StringUtils.nullToEmpty(roi3D.getChannel()), row, columnPrefix + "Channel");
             target.setValueAt(StringUtils.nullToEmpty(roi3D.getFrame()), row, columnPrefix + "Frame");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Color)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Color)) {
             target.setValueAt(ColorUtils.colorToHexString(roi3D.getFillColor()), row, columnPrefix + "FillColor");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.CustomMetadata)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.CustomMetadata)) {
             for (Map.Entry<String, String> entry : roi3D.getMetadata().entrySet()) {
                 target.setValueAt(entry.getValue(), row, columnPrefix + "Metadata." + entry.getKey());
             }
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Area)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Area)) {
             double value;
-            if(physicalUnits) {
+            if (physicalUnits) {
                 value = object3D.getAreaUnit();
-            }
-            else {
+            } else {
                 value = object3D.getAreaPixels();
             }
             target.setValueAt(value, row, columnPrefix + "Area");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Volume)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Volume)) {
             double value;
-            if(physicalUnits) {
+            if (physicalUnits) {
                 value = object3D.getVolumeUnit();
-            }
-            else {
+            } else {
                 value = object3D.getVolumePixels();
             }
             target.setValueAt(value, row, columnPrefix + "Volume");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Center)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Center)) {
             Vector3D value;
-            if(physicalUnits) {
+            if (physicalUnits) {
                 value = object3D.getCenterAsVectorUnit();
-            }
-            else {
+            } else {
                 value = object3D.getCenterAsVector();
             }
             target.setValueAt(value.getX(), row, columnPrefix + "CenterX");
             target.setValueAt(value.getY(), row, columnPrefix + "CenterY");
             target.setValueAt(value.getZ(), row, columnPrefix + "CenterZ");
 
-            if(referenceImage != null) {
+            if (referenceImage != null) {
                 double centerValue = object3D.getPixCenterValue(referenceImage);
                 target.setValueAt(centerValue, row, columnPrefix + "CenterPixelValue");
-            }
-            else {
+            } else {
                 target.setValueAt(Double.NaN, row, columnPrefix + "CenterPixelValue");
             }
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.ShapeMeasurements)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.ShapeMeasurements)) {
             target.setValueAt(object3D.getCompactness(), row, columnPrefix + "Compactness");
             target.setValueAt(object3D.getSphericity(), row, columnPrefix + "Sphericity");
             target.setValueAt(object3D.getFeret(), row, columnPrefix + "Feret");
-            target.setValueAt( object3D.getMainElongation(), row, columnPrefix + "MainElongation");
-            target.setValueAt( object3D.getMedianElongation(), row, columnPrefix + "MedianElongation");
-            target.setValueAt( object3D.getRatioBox(), row, columnPrefix + "RatioBox");
-            target.setValueAt( object3D.getRatioEllipsoid(), row, columnPrefix + "RatioEllipsoid");
+            target.setValueAt(object3D.getMainElongation(), row, columnPrefix + "MainElongation");
+            target.setValueAt(object3D.getMedianElongation(), row, columnPrefix + "MedianElongation");
+            target.setValueAt(object3D.getRatioBox(), row, columnPrefix + "RatioBox");
+            target.setValueAt(object3D.getRatioEllipsoid(), row, columnPrefix + "RatioEllipsoid");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.BoundingBox)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.BoundingBox)) {
             target.setValueAt(object3D.getXmin(), row, columnPrefix + "BoundingBoxMinX");
             target.setValueAt(object3D.getXmax(), row, columnPrefix + "BoundingBoxMaxX");
             target.setValueAt(object3D.getYmin(), row, columnPrefix + "BoundingBoxMinY");
@@ -428,32 +420,29 @@ public class IJ3DUtils {
             target.setValueAt(object3D.getZmin(), row, columnPrefix + "BoundingBoxMinZ");
             target.setValueAt(object3D.getZmax(), row, columnPrefix + "BoundingBoxMaxZ");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.DistCenterStats)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.DistCenterStats)) {
             double max, mean, sigma;
-            if(physicalUnits) {
+            if (physicalUnits) {
                 max = object3D.getDistCenterMax();
-            }
-            else {
+            } else {
                 max = object3D.getDistCenterMaxPixel();
             }
-            if(physicalUnits) {
+            if (physicalUnits) {
                 mean = object3D.getDistCenterMean();
-            }
-            else {
+            } else {
                 mean = object3D.getDistCenterMeanPixel();
             }
-            if(physicalUnits) {
+            if (physicalUnits) {
                 sigma = object3D.getDistCenterSigma();
-            }
-            else {
+            } else {
                 sigma = object3D.getDistCenterSigmaPixel();
             }
             target.setValueAt(max, row, columnPrefix + "DistCenterMax");
             target.setValueAt(mean, row, columnPrefix + "DistCenterMean");
             target.setValueAt(sigma, row, columnPrefix + "DistCenterSigma");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.PixelValueStats)) {
-            if(referenceImage != null) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.PixelValueStats)) {
+            if (referenceImage != null) {
                 double max = object3D.getPixMaxValue(referenceImage);
                 double min = object3D.getPixMinValue(referenceImage);
                 double mean = object3D.getPixMeanValue(referenceImage);
@@ -470,8 +459,7 @@ public class IJ3DUtils {
                 target.setValueAt(mode, row, columnPrefix + "PixelValueMode");
                 target.setValueAt(modeNonZero, row, columnPrefix + "PixelValueModeNonZero");
                 target.setValueAt(intDen, row, columnPrefix + "PixelValueIntDen");
-            }
-            else {
+            } else {
                 target.setValueAt(Double.NaN, row, columnPrefix + "PixelValueMax");
                 target.setValueAt(Double.NaN, row, columnPrefix + "PixelValueMin");
                 target.setValueAt(Double.NaN, row, columnPrefix + "PixelValueMean");
@@ -482,30 +470,28 @@ public class IJ3DUtils {
                 target.setValueAt(Double.NaN, row, columnPrefix + "PixelValueIntDen");
             }
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.ContourPixelValueStats)) {
-            if(referenceImage != null) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.ContourPixelValueStats)) {
+            if (referenceImage != null) {
                 double mean = object3D.getPixMeanValueContour(referenceImage);
                 target.setValueAt(mean, row, columnPrefix + "ContourPixelValueMean");
-            }
-            else {
+            } else {
                 target.setValueAt(Double.NaN, row, columnPrefix + "ContourPixelValueMean");
             }
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Calibration)) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Calibration)) {
             target.setValueAt(object3D.getResXY(), row, columnPrefix + "ResolutionXY");
             target.setValueAt(object3D.getResZ(), row, columnPrefix + "ResolutionZ");
             target.setValueAt(object3D.getUnits(), row, columnPrefix + "ResolutionUnit");
         }
-        if(ROI3DMeasurement.includes(measurements, ROI3DMeasurement.MassCenter)) {
-            if(referenceImage != null) {
+        if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.MassCenter)) {
+            if (referenceImage != null) {
                 double x = object3D.getMassCenterX(referenceImage);
                 double y = object3D.getMassCenterY(referenceImage);
                 double z = object3D.getMassCenterZ(referenceImage);
                 target.setValueAt(x, row, columnPrefix + "MassCenterX");
                 target.setValueAt(y, row, columnPrefix + "MassCenterY");
                 target.setValueAt(z, row, columnPrefix + "MassCenterZ");
-            }
-            else {
+            } else {
                 target.setValueAt(Double.NaN, row, columnPrefix + "MassCenterX");
                 target.setValueAt(Double.NaN, row, columnPrefix + "MassCenterY");
                 target.setValueAt(Double.NaN, row, columnPrefix + "MassCenterZ");

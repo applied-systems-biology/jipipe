@@ -7,7 +7,6 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 
 @JIPipeDocumentation(name = "ROI 3D calculator", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +

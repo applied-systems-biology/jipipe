@@ -1,8 +1,6 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.binary;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.WindowManager;
 import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.ImageInt;

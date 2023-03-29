@@ -45,10 +45,9 @@ import java.util.*;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customExpressionVariables;
     private ExpressionTableColumnProcessorParameterList processorParameters = new ExpressionTableColumnProcessorParameterList();
     private boolean append = false;
-
-    private final CustomExpressionVariablesParameter customExpressionVariables;
 
     /**
      * Creates a new instance

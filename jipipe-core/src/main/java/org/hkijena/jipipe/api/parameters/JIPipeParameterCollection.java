@@ -169,9 +169,10 @@ public interface JIPipeParameterCollection {
     /**
      * Allows to install additional operations into the context menu of each parameter (triangle menu next to the help)
      * Please note that the root parameter collection handles this task for all sub-parameters
-     * @param parameterPanel the parameter panel
+     *
+     * @param parameterPanel    the parameter panel
      * @param parameterEditorUI the currently handled parameter editor
-     * @param menu the menu
+     * @param menu              the menu
      */
     default void installUIParameterOptions(ParameterPanel parameterPanel, JIPipeParameterEditorUI parameterEditorUI, JPopupMenu menu) {
 
@@ -181,7 +182,8 @@ public interface JIPipeParameterCollection {
      * Allows to replace the UI that is inserted into the parameter panel with a different component
      * Labels are not affected
      * Please note that the root parameter collection handles this task for all sub-parameters
-     * @param parameterPanel the parameter panel
+     *
+     * @param parameterPanel    the parameter panel
      * @param parameterEditorUI the currently handled parameter editor
      * @return the component to be inserted into the parameter panel
      */

@@ -26,6 +26,7 @@ import java.util.Set;
 public class SplitFilamentsIntoConnectedComponentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter componentIdAnnotation = new OptionalAnnotationNameParameter("#Component", true);
+
     public SplitFilamentsIntoConnectedComponentsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }

@@ -15,8 +15,8 @@
 package org.hkijena.jipipe.ui.datatable;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
 import org.hkijena.jipipe.utils.ReflectionUtils;

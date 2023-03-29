@@ -49,11 +49,11 @@ public class ImageJDataExporterRefParameterEditorUI extends JIPipeParameterEdito
 
         currentlyDisplayed = new JButton();
         currentlyDisplayed.addActionListener(e -> pick());
-        UIUtils.makeFlat(currentlyDisplayed);
+        UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        UIUtils.makeFlat(selectButton);
+        UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select algorithm type");
         selectButton.addActionListener(e -> pick());
         add(selectButton, BorderLayout.EAST);

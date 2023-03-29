@@ -64,8 +64,7 @@ public enum ROI3DMeasurementColumn {
 
     LocationChannel(8192, "Channel", "Channel", "The channel of the ROI (0 = all channels)"),
     LocationFrame(8192, "Frame", "Frame", "The frame of the ROI (0 = all frames)"),
-    FillColor(16384, "FillColor", "Fill color", "The fill color (HEX string)")
-    ;
+    FillColor(16384, "FillColor", "Fill color", "The fill color (HEX string)");
 
     private final int nativeValue;
     private final String columnName;

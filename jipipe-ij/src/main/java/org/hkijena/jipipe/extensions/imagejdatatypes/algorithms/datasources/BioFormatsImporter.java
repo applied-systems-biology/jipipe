@@ -26,7 +26,6 @@ import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -149,7 +148,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
             options.setCropRegion(i, new Region(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
         }
 
-        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             ImportProcess process = new ImportProcess(options);
             if (!process.execute()) {
                 throw new NullPointerException();

@@ -34,6 +34,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -83,8 +84,8 @@ public class ParametersData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         CachedParametersDataViewerWindow window = new CachedParametersDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
-        window.reloadDisplayedData();
         window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     public Map<String, Object> getParameterData() {

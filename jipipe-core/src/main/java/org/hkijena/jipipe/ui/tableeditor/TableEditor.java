@@ -77,7 +77,7 @@ public class TableEditor extends FlexContentWorkbenchPanel {
     }
 
     /**
-     * Imports a table from CSV and creates a new {@link TableEditor} tab
+     * Imports a table from CSV and creates a new editor tab
      *
      * @param fileName    CSV file
      * @param workbenchUI workbench
@@ -660,20 +660,15 @@ public class TableEditor extends FlexContentWorkbenchPanel {
                 editingValue = editingValue.replace(',', '.').replace(" ", "");
                 if (NumberUtils.isCreatable(editingValue)) {
                     value = NumberUtils.createDouble(editingValue);
-                }
-                else if(StringUtils.isNullOrEmpty(editingValue)) {
+                } else if (StringUtils.isNullOrEmpty(editingValue)) {
                     value = 0d;
-                }
-                else if(editingValue.toLowerCase().startsWith("-inf")) {
+                } else if (editingValue.toLowerCase().startsWith("-inf")) {
                     value = Double.NEGATIVE_INFINITY;
-                }
-                else if(editingValue.toLowerCase().startsWith("inf")) {
+                } else if (editingValue.toLowerCase().startsWith("inf")) {
                     value = Double.POSITIVE_INFINITY;
-                }
-                else if(editingValue.equalsIgnoreCase("na") || editingValue.equalsIgnoreCase("nan")) {
+                } else if (editingValue.equalsIgnoreCase("na") || editingValue.equalsIgnoreCase("nan")) {
                     value = Double.NaN;
-                }
-                else {
+                } else {
                     success = false;
                 }
             } catch (NumberFormatException exception) {

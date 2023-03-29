@@ -73,10 +73,10 @@ public class DocumentTabPane extends JPanel implements Disposable {
      */
     public DocumentTabPane(boolean scrollable) {
         this.scrollable = scrollable;
-        initialize(scrollable);
+        initialize();
     }
 
-    private void initialize(boolean scrollable) {
+    private void initialize() {
         setLayout(new BorderLayout());
         tabbedPane = new DnDTabbedPane();
         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
@@ -188,7 +188,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
     @Override
     public void dispose() {
         for (DocumentTab tab : tabs) {
-            if(tab.content instanceof Disposable) {
+            if (tab.content instanceof Disposable) {
                 ((Disposable) tab.content).dispose();
             }
         }
@@ -423,7 +423,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
             addTab(tab);
             switchToLastTab();
         });
-        UIUtils.makeFlatH25(reAttachButton);
+        UIUtils.makeFlat(reAttachButton);
         statusBar.add(reAttachButton);
 
         contentPane.add(statusBar, BorderLayout.SOUTH);

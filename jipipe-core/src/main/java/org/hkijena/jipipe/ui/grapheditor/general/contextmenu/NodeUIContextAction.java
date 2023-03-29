@@ -81,9 +81,12 @@ public interface NodeUIContextAction {
 
     /**
      * Determines if the item should be shown in the multi-node selection panel
+     *
      * @return if the item should be shown in the multi-node selection panel
      */
-    default boolean showInMultiSelectionPanel() { return true; }
+    default boolean showInMultiSelectionPanel() {
+        return true;
+    }
 
     /**
      * Returns an optional keyboard shortcut. Can be null

@@ -19,8 +19,7 @@ public class StringFormatFunction extends ExpressionFunction {
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
             return new ParameterInfo("Format string", "String containing the format codes (see https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html)", String.class);
-        }
-        else {
+        } else {
             return new ParameterInfo("Value " + index, "Value that will be passed to the formatter", Object.class);
         }
     }

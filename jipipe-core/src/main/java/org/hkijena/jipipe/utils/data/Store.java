@@ -6,12 +6,14 @@ package org.hkijena.jipipe.utils.data;
 public interface Store<T> {
     /**
      * Gets the stored data or null if the data is not present
+     *
      * @return the stored data or null
      */
     T get();
 
     /**
      * Returns true if the stored data is present
+     *
      * @return true if the stored data is present
      */
     boolean isPresent();

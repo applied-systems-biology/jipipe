@@ -907,6 +907,71 @@ public class ExtendedImageView extends View {
     }
 
     /**
+     * ImageLabelView is used if the image can't be loaded, and
+     * the attribute specified an alt attribute. It overriden a handle of
+     * methods as the text is hardcoded and does not come from the document.
+     */
+    private static class ImageLabelView extends InlineView {
+        private Segment segment;
+        private Color fg;
+
+        ImageLabelView(Element e, String text) {
+            super(e);
+            reset(text);
+        }
+
+        public void reset(String text) {
+            segment = new Segment(text.toCharArray(), 0, text.length());
+        }
+
+        public void paint(Graphics g, Shape a) {
+            // Don't use supers paint, otherwise selection will be wrong
+            // as our start/end offsets are fake.
+            GlyphPainter painter = getGlyphPainter();
+
+            if (painter != null) {
+                g.setColor(getForeground());
+                painter.paint(this, g, a, getStartOffset(), getEndOffset());
+            }
+        }
+
+        public Segment getText(int p0, int p1) {
+            if (p0 < 0 || p1 > segment.array.length) {
+                throw new RuntimeException("ImageLabelView: Stale view");
+            }
+            segment.offset = p0;
+            segment.count = p1 - p0;
+            return segment;
+        }
+
+        public int getStartOffset() {
+            return 0;
+        }
+
+        public int getEndOffset() {
+            return segment.array.length;
+        }
+
+        public View breakView(int axis, int p0, float pos, float len) {
+            // Don't allow a break
+            return this;
+        }
+
+        public Color getForeground() {
+            View parent;
+            if (fg == null && (parent = getParent()) != null) {
+                Document doc = getDocument();
+                AttributeSet attr = parent.getAttributes();
+
+                if (attr != null && (doc instanceof StyledDocument)) {
+                    fg = ((StyledDocument) doc).getForeground(attr);
+                }
+            }
+            return fg;
+        }
+    }
+
+    /**
      * ImageHandler implements the ImageObserver to correctly update the
      * display as new parts of the image become available.
      */
@@ -1003,72 +1068,6 @@ public class ExtendedImageView extends View {
                 repaint(sIncRate);
             }
             return ((flags & ALLBITS) == 0);
-        }
-    }
-
-
-    /**
-     * ImageLabelView is used if the image can't be loaded, and
-     * the attribute specified an alt attribute. It overriden a handle of
-     * methods as the text is hardcoded and does not come from the document.
-     */
-    private static class ImageLabelView extends InlineView {
-        private Segment segment;
-        private Color fg;
-
-        ImageLabelView(Element e, String text) {
-            super(e);
-            reset(text);
-        }
-
-        public void reset(String text) {
-            segment = new Segment(text.toCharArray(), 0, text.length());
-        }
-
-        public void paint(Graphics g, Shape a) {
-            // Don't use supers paint, otherwise selection will be wrong
-            // as our start/end offsets are fake.
-            GlyphPainter painter = getGlyphPainter();
-
-            if (painter != null) {
-                g.setColor(getForeground());
-                painter.paint(this, g, a, getStartOffset(), getEndOffset());
-            }
-        }
-
-        public Segment getText(int p0, int p1) {
-            if (p0 < 0 || p1 > segment.array.length) {
-                throw new RuntimeException("ImageLabelView: Stale view");
-            }
-            segment.offset = p0;
-            segment.count = p1 - p0;
-            return segment;
-        }
-
-        public int getStartOffset() {
-            return 0;
-        }
-
-        public int getEndOffset() {
-            return segment.array.length;
-        }
-
-        public View breakView(int axis, int p0, float pos, float len) {
-            // Don't allow a break
-            return this;
-        }
-
-        public Color getForeground() {
-            View parent;
-            if (fg == null && (parent = getParent()) != null) {
-                Document doc = getDocument();
-                AttributeSet attr = parent.getAttributes();
-
-                if (attr != null && (doc instanceof StyledDocument)) {
-                    fg = ((StyledDocument) doc).getForeground(attr);
-                }
-            }
-            return fg;
         }
     }
 }

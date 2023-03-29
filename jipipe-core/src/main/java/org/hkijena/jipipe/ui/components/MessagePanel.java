@@ -34,9 +34,9 @@ public class MessagePanel extends FormPanel {
         super(null, FormPanel.NONE);
     }
 
-    public Message addMessage(MessageType type, String message, JButton... actionButtons) {
+    public Message addMessage(MessageType type, String message, boolean withCloseButton, boolean autoClose, JButton... actionButtons) {
         if (!existingMessages.contains(message)) {
-            Message instance = new Message(this, type, message, actionButtons);
+            Message instance = new Message(this, type, message, withCloseButton, autoClose, actionButtons);
             addWideToForm(instance, null);
             revalidate();
             repaint();
@@ -61,6 +61,7 @@ public class MessagePanel extends FormPanel {
 
     public enum MessageType {
         Info(new Color(0x65a4e3), Color.WHITE),
+        Success(new Color(0x5CB85C), Color.WHITE),
         Warning(new Color(0xffc155), Color.DARK_GRAY),
         Error(new Color(0xd7263b), Color.WHITE);
 
@@ -78,38 +79,51 @@ public class MessagePanel extends FormPanel {
         private final MessagePanel parent;
         private final MessageType type;
         private final String text;
+        private final boolean withCloseButton;
+        private final boolean autoClose;
         private final JButton[] actionButtons;
 
-        public Message(MessagePanel parent, MessageType type, String text, JButton[] actionButtons) {
+        public Message(MessagePanel parent, MessageType type, String text, boolean withCloseButton, boolean autoClose, JButton[] actionButtons) {
             this.parent = parent;
             this.type = type;
             this.text = text;
+            this.withCloseButton = withCloseButton;
+            this.autoClose = autoClose;
             this.actionButtons = actionButtons;
             this.setOpaque(false);
             initialize();
         }
 
         private void initialize() {
-            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            setLayout(new BorderLayout());
             setBorder(new RoundedLineBorder(type.background.darker(), 1, 4));
             JTextArea messageTextArea = UIUtils.makeReadonlyBorderlessTextArea(text);
             messageTextArea.setForeground(type.foreground);
 
-            add(messageTextArea);
-            add(Box.createHorizontalGlue());
+            add(messageTextArea, BorderLayout.CENTER);
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.setOpaque(false);
+            buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
             for (JButton actionButton : actionButtons) {
                 if (actionButton != null) {
-                    add(actionButton);
-                    add(Box.createHorizontalStrut(8));
-                    actionButton.addActionListener(e -> closeMessage());
+                    buttonPanel.add(Box.createHorizontalStrut(8));
+                    buttonPanel.add(actionButton);
+                    if(autoClose) {
+                        actionButton.addActionListener(e -> closeMessage());
+                    }
                 }
             }
-            JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-            UIUtils.makeFlat25x25(closeButton);
-            closeButton.addActionListener(e -> {
-                closeMessage();
-            });
-            add(closeButton);
+            if(withCloseButton) {
+                JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+                UIUtils.makeFlat25x25(closeButton);
+                closeButton.addActionListener(e -> {
+                    closeMessage();
+                });
+                buttonPanel.add(Box.createHorizontalStrut(8));
+                buttonPanel.add(closeButton);
+            }
+
+            add(buttonPanel, BorderLayout.EAST);
         }
 
         public void closeMessage() {

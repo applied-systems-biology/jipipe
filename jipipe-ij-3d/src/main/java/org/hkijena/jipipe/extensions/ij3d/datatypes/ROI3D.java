@@ -28,21 +28,18 @@ public class ROI3D {
 
     public ROI3D(ROI3D other) {
         this.object3D = IJ3DUtils.duplicateObject3D(other.object3D);
-        this.metadata = other.metadata;
-        this.channel = other.channel;
-        this.frame = other.frame;
-        this.fillColor = other.fillColor;
-    }
-
-    public void copyMetadata(ROI3D other) {
-        this.metadata = other.metadata;
-        this.channel = other.channel;
-        this.frame = other.frame;
-        this.fillColor = other.fillColor;
+        copyMetadata(other);
     }
 
     public ROI3D(Object3D object3D) {
         this.object3D = object3D;
+    }
+
+    public void copyMetadata(ROI3D other) {
+        this.metadata = new HashMap<>(other.metadata);
+        this.channel = other.channel;
+        this.frame = other.frame;
+        this.fillColor = other.fillColor;
     }
 
     public Object3D getObject3D() {
@@ -101,5 +98,11 @@ public class ROI3D {
         return this.frame <= 0 || frame <= 0 || frame == this.frame;
     }
 
+    public String getName() {
+        return object3D.getName();
+    }
 
+    public void setName(String name) {
+        object3D.setName(name);
+    }
 }

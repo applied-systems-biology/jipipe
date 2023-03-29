@@ -145,7 +145,7 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
         JToolBar infoToolbar = new JToolBar();
         infoToolbar.setFloatable(false);
         infoToolbar.add(new JLabel("Selected slot"));
-        infoToolbar.add(Box.createRigidArea(new Dimension(8,32)));
+        infoToolbar.add(Box.createRigidArea(new Dimension(8, 32)));
         JLabel algorithmNameLabel = new JLabel(algorithm.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getInfo())), JLabel.LEFT);
         algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
         infoToolbar.add(algorithmNameLabel);

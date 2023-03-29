@@ -30,21 +30,16 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
-import org.hkijena.jipipe.ui.components.VerticalToolBar;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
-import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.theme.DarkModernMetalTheme;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -205,8 +200,7 @@ public class UIUtils {
         for (int c = 0; c < table.getColumnCount(); c++) {
             try {
                 table.packColumn(c, -1, max);
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
@@ -720,7 +714,7 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeFlat(AbstractButton component) {
+    public static void setStandardButtonBorder(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         Border margin = new EmptyBorder(5, 15, 5, 15);
@@ -741,7 +735,7 @@ public class UIUtils {
      * @param right       right border size
      * @param bottom      bottom border size
      */
-    public static void makeFlat(AbstractButton component, Color borderColor, int top, int left, int right, int bottom) {
+    public static void setStandardButtonBorder(AbstractButton component, Color borderColor, int top, int left, int right, int bottom) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         Border margin = new EmptyBorder(5, 15, 5, 15);
@@ -783,7 +777,7 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void makeFlatH25(AbstractButton component) {
+    public static void makeFlat(AbstractButton component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
 //        component.setPreferredSize(new Dimension(component.getPreferredSize().width, 25));
@@ -1771,26 +1765,28 @@ public class UIUtils {
 
     /**
      * Adds a separator if there is at least one component in the menu and the last item is not a separator
+     *
      * @param menu the menu
      */
     public static void addSeparatorIfNeeded(JPopupMenu menu) {
-        if(menu.getComponentCount() == 0)
+        if (menu.getComponentCount() == 0)
             return;
         Component lastComponent = menu.getComponent(menu.getComponentCount() - 1);
-        if(lastComponent instanceof JSeparator)
+        if (lastComponent instanceof JSeparator)
             return;
         menu.addSeparator();
     }
 
     /**
      * Adds a separator if there is at least one component in the menu and the last item is not a separator
+     *
      * @param menu the menu
      */
     public static void addSeparatorIfNeeded(JMenu menu) {
-        if(menu.getComponentCount() == 0)
+        if (menu.getComponentCount() == 0)
             return;
         Component lastComponent = menu.getComponent(menu.getComponentCount() - 1);
-        if(lastComponent instanceof JSeparator)
+        if (lastComponent instanceof JSeparator)
             return;
         menu.addSeparator();
     }
@@ -1844,7 +1840,7 @@ public class UIUtils {
 
     public static void removeAllWithDispose(JComponent component) {
         for (Component child : component.getComponents()) {
-            if(child instanceof Disposable) {
+            if (child instanceof Disposable) {
                 ((Disposable) child).dispose();
             }
         }
@@ -1853,12 +1849,18 @@ public class UIUtils {
 
     public static Map<?, ?> getDesktopRenderingHints() {
         Map<?, ?> result = (Map<?, ?>) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
-        if(result == null) {
+        if (result == null) {
             return Collections.emptyMap();
-        }
-        else {
+        } else {
             return result;
         }
+    }
+
+    public static JButton createFlatButton(String text, Icon icon, Runnable function) {
+        JButton button = new JButton(text, icon);
+        UIUtils.setStandardButtonBorder(button);
+        button.addActionListener(e -> function.run());
+        return button;
     }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

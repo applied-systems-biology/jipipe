@@ -8,7 +8,6 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,7 +40,7 @@ public abstract class ArchiveProjectRun implements JIPipeRunnable {
         progressInfo.setProgress(0, 3);
         progressInfo.log("Copying project ...");
         // Store the project into a temporary file
-        Path tempFile =  Files.createTempFile(getProject().getWorkDirectory(), "archive-project", ".jip");
+        Path tempFile = Files.createTempFile(getProject().getWorkDirectory(), "archive-project", ".jip");
         project.saveProject(tempFile);
 
         // Load the project again
@@ -59,7 +58,7 @@ public abstract class ArchiveProjectRun implements JIPipeRunnable {
         Path fileSystemPath = projectStorage.getFileSystemPath();
         copyProject.setWorkDirectory(fileSystemPath);
         copyProject.saveProject(fileSystemPath.resolve("project.jip"));
-        progressInfo.setProgress(3,3);
+        progressInfo.setProgress(3, 3);
 
         Files.delete(tempFile);
     }

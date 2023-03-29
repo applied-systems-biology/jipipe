@@ -97,8 +97,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
             try {
                 JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), dataType, progressInfo);
                 outputTable.addData(data, metadataRow.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
-            }
-            finally {
+            } finally {
                 outputTable = null;
             }
         }

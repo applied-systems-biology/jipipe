@@ -14,9 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut;
 
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.ColorProcessor;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;

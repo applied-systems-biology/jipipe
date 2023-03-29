@@ -54,7 +54,7 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
                 variables.set("metadata." + entry.getKey(), entry.getValue());
             }
             FilamentVertexVariableSource.writeToVariables(outputData, vertex, variables, "");
-            if(!filter.test(variables)) {
+            if (!filter.test(variables)) {
                 toDelete.add(vertex);
             }
         }

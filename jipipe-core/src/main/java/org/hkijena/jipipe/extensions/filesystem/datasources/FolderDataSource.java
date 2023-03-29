@@ -117,25 +117,23 @@ public class FolderDataSource extends JIPipeAlgorithm {
     @Override
     public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
         Path source = getAbsoluteFolderPath();
-        if(source == null || !Files.isDirectory(source)) {
-            if(isNeedsToExist()) {
+        if (source == null || !Files.isDirectory(source)) {
+            if (isNeedsToExist()) {
                 throw new RuntimeException("Directory " + getFolderPath() + " does not exist!");
             }
             progressInfo.log("Unable to archive: " + getFolderPath());
-        }
-        else {
+        } else {
             Path target;
-            if(source.startsWith(originalBaseDirectory)) {
+            if (source.startsWith(originalBaseDirectory)) {
                 // The data is located in the project directory. We can directly copy the file.
                 Path relativePath = originalBaseDirectory.relativize(source);
                 target = projectStorage.getFileSystemPath().resolve(relativePath);
-            }
-            else {
+            } else {
                 // The data is located outside the project directory. Needs to be copied into a unique directory.
                 target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(source.getFileName());
             }
 
-            if(Files.exists(target)) {
+            if (Files.exists(target)) {
                 progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
                 return;
             }

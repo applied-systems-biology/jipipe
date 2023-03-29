@@ -182,6 +182,12 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         } else {
                             break;
                         }
+                    } else if (!settings.enforceOverlap && withFiltering) {
+                        putMeasurementsIntoVariable(roi, firstPrefix, roi2, secondPrefix, variableSet, overlap, referenceImage, temp, settings.measureInPhysicalUnits);
+                        if (settings.getOverlapFilter().test(variableSet)) {
+                            overlapSuccess = true;
+                            break;
+                        }
                     }
                 }
                 if (overlap != null) {
@@ -191,6 +197,11 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         second.remove(overlappingRoi);
                     }
                     overlapSuccess = true;
+                } else if (overlapSuccess) {
+                    if (settings.isConsumeOnOverlap()) {
+                        // We consumed this overlap. Remove Roi2
+                        second.remove(overlappingRoi);
+                    }
                 }
             }
             if (settings.isInvert())
@@ -235,12 +246,14 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             variableSet.set(secondPrefix + "." + secondMeasurements.getColumnName(col), secondMeasurements.getValueAt(0, col));
         }
 
-        // Measure overlap
-        temp.clear();
-        temp.add(overlap);
-        ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, false, measureInPhysicalUnits);
-        for (int col = 0; col < overlapMeasurements.getColumnCount(); col++) {
-            variableSet.set("Overlap." + overlapMeasurements.getColumnName(col), overlapMeasurements.getValueAt(0, col));
+        if (overlap != null) {
+            // Measure overlap
+            temp.clear();
+            temp.add(overlap);
+            ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, false, measureInPhysicalUnits);
+            for (int col = 0; col < overlapMeasurements.getColumnCount(); col++) {
+                variableSet.set("Overlap." + overlapMeasurements.getColumnName(col), overlapMeasurements.getValueAt(0, col));
+            }
         }
     }
 
@@ -313,6 +326,8 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean outputOverlaps = false;
         private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
         private boolean consumeOnOverlap = false;
+
+        private boolean enforceOverlap = true;
         private boolean fastMode = false;
 
         private boolean measureInPhysicalUnits = true;
@@ -328,11 +343,23 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.consumeOnOverlap = other.consumeOnOverlap;
             this.fastMode = other.fastMode;
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
+            this.enforceOverlap = other.enforceOverlap;
         }
 
         @Override
         public EventBus getEventBus() {
             return eventBus;
+        }
+
+        @JIPipeDocumentation(name = "Overlap filter: enforce overlap", description = "If enabled, a pair of ROI is not considered for custom filtering if it does not overlap. Disable this setting if you want to implement special behavior.")
+        @JIPipeParameter("enforce-overlap")
+        public boolean isEnforceOverlap() {
+            return enforceOverlap;
+        }
+
+        @JIPipeParameter("enforce-overlap")
+        public void setEnforceOverlap(boolean enforceOverlap) {
+            this.enforceOverlap = enforceOverlap;
         }
 
         @JIPipeDocumentation(name = "Enabled", description = "You can use this setting to disable generating this output.")

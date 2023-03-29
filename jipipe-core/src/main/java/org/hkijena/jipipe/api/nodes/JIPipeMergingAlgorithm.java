@@ -42,8 +42,8 @@ import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -319,7 +319,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     @Override
     public Dimension getUIInputSlotIconBaseDimensions(String slotName) {
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
-        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+        if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
             return new Dimension(16, 16);
         }
         return super.getUIInputSlotIconBaseDimensions(slotName);
@@ -328,7 +328,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     @Override
     public ImageIcon getUIInputSlotIcon(String slotName) {
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
-        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+        if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
             return UIUtils.getIconInvertedFromResources("actions/merge-down.png");
         }
         return super.getUIInputSlotIcon(slotName);
@@ -338,7 +338,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
         super.createUIInputSlotIconDescriptionMenuItems(slotName, target);
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
-        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+        if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
             target.add(new ViewOnlyMenuItem("<html>Many-to-Many processing<br/><small>The data within this slot is merged based on annotations (N inputs produce M outputs)</small>",
                     UIUtils.getIconFromResources("actions/merge-down.png")));
         }

@@ -22,14 +22,14 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
 public class Video2DExporterRun implements JIPipeRunnable {
-    private final ImageViewerPanel2D viewerPanel;
+    private final JIPipeImageViewer viewerPanel;
     private final Path outputFile;
     private final ImageSliceIndex referencePosition;
     private final HyperstackDimension followedDimension;
@@ -39,7 +39,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
     private final double magnification;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public Video2DExporterRun(ImageViewerPanel2D viewerPanel, Path outputFile, ImageSliceIndex referencePosition, HyperstackDimension followedDimension, int timePerFrame, AVICompression compression, int jpegQuality) {
+    public Video2DExporterRun(JIPipeImageViewer viewerPanel, Path outputFile, ImageSliceIndex referencePosition, HyperstackDimension followedDimension, int timePerFrame, AVICompression compression, int jpegQuality) {
         this.viewerPanel = viewerPanel;
         this.outputFile = outputFile;
         this.referencePosition = referencePosition;
@@ -47,7 +47,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
         this.timePerFrame = timePerFrame;
         this.compression = compression;
         this.jpegQuality = jpegQuality;
-        this.magnification = viewerPanel.getExportedMagnification();
+        this.magnification = viewerPanel.getViewerPanel2D().getExportedMagnification();
     }
 
     @Override
@@ -66,7 +66,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
 
     @Override
     public void run() {
-        ImagePlus image = viewerPanel.getImage();
+        ImagePlus image = viewerPanel.getImagePlus();
         ImageStack generatedStack = null;
 
         if (followedDimension == HyperstackDimension.Depth) {
@@ -77,10 +77,10 @@ public class Video2DExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
-                BufferedImage bufferedImage = viewerPanel.generateSlice(referencePosition.getC(), z,
+                BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(referencePosition.getC(), z,
                         referencePosition.getT(),
                         magnification, true).getBufferedImage();
-                if(generatedStack == null) {
+                if (generatedStack == null) {
                     generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
                 }
                 generatedStack.addSlice(new ColorProcessor(bufferedImage));
@@ -93,10 +93,10 @@ public class Video2DExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
-                BufferedImage bufferedImage = viewerPanel.generateSlice(c, referencePosition.getZ(),
+                BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(c, referencePosition.getZ(),
                         referencePosition.getT(),
                         magnification, true).getBufferedImage();
-                if(generatedStack == null) {
+                if (generatedStack == null) {
                     generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
                 }
                 generatedStack.addSlice(new ColorProcessor(bufferedImage));
@@ -109,10 +109,10 @@ public class Video2DExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);
-                BufferedImage bufferedImage = viewerPanel.generateSlice(referencePosition.getC(), referencePosition.getZ(),
+                BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(referencePosition.getC(), referencePosition.getZ(),
                         t,
                         magnification, true).getBufferedImage();
-                if(generatedStack == null) {
+                if (generatedStack == null) {
                     generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
                 }
                 generatedStack.addSlice(new ColorProcessor(bufferedImage));
@@ -130,7 +130,7 @@ public class Video2DExporterRun implements JIPipeRunnable {
         }
     }
 
-    public ImageViewerPanel2D getViewerPanel() {
+    public JIPipeImageViewer getViewerPanel() {
         return viewerPanel;
     }
 

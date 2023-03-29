@@ -20,6 +20,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -152,9 +153,10 @@ public class JIPipeDatatypeRegistry {
      *
      * @param inputData      the input data
      * @param outputDataType the output data type
+     * @param progressInfo   the progress info
      * @return the converted input data. Throws an exception if conversion is not possible
      */
-    public <T extends JIPipeData> T convert(JIPipeData inputData, Class<T> outputDataType) {
+    public <T extends JIPipeData> T convert(JIPipeData inputData, Class<T> outputDataType, JIPipeProgressInfo progressInfo) {
         if (isTriviallyConvertible(inputData.getClass(), outputDataType))
             return (T) inputData;
         else {
@@ -170,7 +172,7 @@ public class JIPipeDatatypeRegistry {
             JIPipeData data = inputData;
             for (DataConverterEdge edge : path.getEdgeList()) {
                 if (edge.getConverter() != null) {
-                    data = edge.getConverter().convert(data);
+                    data = edge.getConverter().convert(data, progressInfo);
                 }
             }
             assert outputDataType.isAssignableFrom(data.getClass());

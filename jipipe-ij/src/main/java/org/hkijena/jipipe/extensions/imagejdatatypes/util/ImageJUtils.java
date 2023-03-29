@@ -39,10 +39,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TriConsumer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -70,28 +72,25 @@ import java.util.stream.Collectors;
 public class ImageJUtils {
 
     public static Quantity getPixelSizeX(ImagePlus imp) {
-        if(imp.getCalibration() != null) {
+        if (imp.getCalibration() != null) {
             return new Quantity(imp.getCalibration().pixelWidth, StringUtils.orElse(imp.getCalibration().getXUnit(), Quantity.UNIT_PIXELS));
-        }
-        else {
+        } else {
             return new Quantity(1, Quantity.UNIT_PIXELS);
         }
     }
 
     public static Quantity getPixelSizeY(ImagePlus imp) {
-        if(imp.getCalibration() != null) {
+        if (imp.getCalibration() != null) {
             return new Quantity(imp.getCalibration().pixelHeight, StringUtils.orElse(imp.getCalibration().getYUnit(), Quantity.UNIT_PIXELS));
-        }
-        else {
+        } else {
             return new Quantity(1, Quantity.UNIT_PIXELS);
         }
     }
 
     public static Quantity getPixelSizeZ(ImagePlus imp) {
-        if(imp.getCalibration() != null) {
+        if (imp.getCalibration() != null) {
             return new Quantity(imp.getCalibration().pixelDepth, StringUtils.orElse(imp.getCalibration().getZUnit(), Quantity.UNIT_PIXELS));
-        }
-        else {
+        } else {
             return new Quantity(1, Quantity.UNIT_PIXELS);
         }
     }
@@ -128,7 +127,7 @@ public class ImageJUtils {
      */
     public static Map<String, String> getImageProperties(ImagePlus imagePlus) {
         HashMap<String, String> map = new HashMap<>();
-        if(imagePlus.getImageProperties() != null) {
+        if (imagePlus.getImageProperties() != null) {
             for (Map.Entry<Object, Object> entry : imagePlus.getImageProperties().entrySet()) {
                 map.put("" + entry.getKey(), "" + entry.getValue());
             }
@@ -160,7 +159,7 @@ public class ImageJUtils {
     /**
      * Sets the properties of a {@link ImagePlus} from a map
      *
-     * @param imagePlus        the image
+     * @param imagePlus  the image
      * @param properties the properties
      */
     public static void setImageProperties(ImagePlus imagePlus, Map<String, String> properties) {
@@ -298,9 +297,9 @@ public class ImageJUtils {
             imp2.setOverlay(overlay);
 
         // Copy the LUT
-        if(imp.getType() != ImagePlus.COLOR_RGB) {
+        if (imp.getType() != ImagePlus.COLOR_RGB) {
             imp2.setLut(imp.getProcessor().getLut());
-            if(imp2.hasImageStack()) {
+            if (imp2.hasImageStack()) {
                 imp2.getStack().setColorModel(imp.getStack().getColorModel());
             }
         }
@@ -1075,6 +1074,7 @@ public class ImageJUtils {
         return new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
     }
 
+
     /**
      * Runs the function for each Z, C, and T slice.
      *
@@ -1089,7 +1089,7 @@ public class ImageJUtils {
                 for (int c = 0; c < img.getNChannels(); c++) {
                     if (progressInfo.isCancelled())
                         return;
-                    ImagePlus cube =  extractCTStack(img, c, t);
+                    ImagePlus cube = extractCTStack(img, c, t);
                     progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).log("c=" + c + ", t=" + t);
                     JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Frame/Channel", iterationIndex++, img.getNChannels() * img.getNFrames()).resolve("c=" + c + ", t=" + t);
                     function.accept(cube, new ImageSliceIndex(c, -1, t), stackProgress);
@@ -1372,6 +1372,44 @@ public class ImageJUtils {
         return image;
     }
 
+    public static LUT createGrayscaleLUTFromGradient(List<ColorUtils.GradientStop> stops) {
+        stops.sort(Comparator.naturalOrder());
+        if (stops.get(0).getPosition() > 0)
+            stops.add(0, new ColorUtils.GradientStop(0, stops.get(0).getColor()));
+        if (stops.get(stops.size() - 1).getPosition() < 1)
+            stops.add(new ColorUtils.GradientStop(1, stops.get(stops.size() - 1).getColor()));
+        byte[] reds = new byte[256];
+        byte[] greens = new byte[256];
+        byte[] blues = new byte[256];
+        int currentFirstStop = 0;
+        int currentLastStop = 1;
+        int startIndex = 0;
+        int endIndex = (int) (255 * stops.get(currentLastStop).getPosition());
+        for (int i = 0; i < 256; i++) {
+            if (i != 255 && i >= endIndex) {
+                startIndex = i;
+                ++currentFirstStop;
+                ++currentLastStop;
+                endIndex = (int) (255 * stops.get(currentLastStop).getPosition());
+            }
+            Color currentStart = stops.get(currentFirstStop).getColor();
+            Color currentEnd = stops.get(currentLastStop).getColor();
+            int r0 = currentStart.getRed();
+            int g0 = currentStart.getGreen();
+            int b0 = currentStart.getBlue();
+            int r1 = currentEnd.getRed();
+            int g1 = currentEnd.getGreen();
+            int b1 = currentEnd.getBlue();
+            int r = (int) (r0 + (r1 - r0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            int g = (int) (g0 + (g1 - g0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            int b = (int) (b0 + (b1 - b0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
+            reds[i] = (byte) ((r + g + b) / 3);
+            greens[i] = (byte) ((r + g + b) / 3);
+            blues[i] = (byte) ((r + g + b) / 3);
+        }
+        return new LUT(reds, greens, blues);
+    }
+
     public static LUT createLUTFromGradient(List<ColorUtils.GradientStop> stops) {
 //        MultipleGradientPaint paint = new LinearGradientPaint(0, 0, 128, 1, fractions, colors);
 //        BufferedImage img = new BufferedImage(256,1, BufferedImage.TYPE_INT_RGB);
@@ -1431,7 +1469,7 @@ public class ImageJUtils {
     public static void writeCalibration(ImagePlus imagePlus, Map<ImageSliceIndex, DisplayRange> calibrationMap) {
         ImageJUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
             DisplayRange displayRange = calibrationMap.getOrDefault(index, null);
-            if(displayRange != null) {
+            if (displayRange != null) {
                 ip.setMinAndMax(displayRange.getDisplayedMin(), displayRange.getDisplayedMax());
             }
         }, new JIPipeProgressInfo());
@@ -1546,8 +1584,8 @@ public class ImageJUtils {
     public static void calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
         ImageProcessor ip = imp.getProcessor();
         ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
-        if(imp.hasImageStack()) {
-          imp.getImageStack().update(ip);
+        if (imp.hasImageStack()) {
+            imp.getImageStack().update(ip);
         }
     }
 
@@ -1715,7 +1753,7 @@ public class ImageJUtils {
         }
     }
 
-    public static void writeImageToMovie(ImagePlus image, HyperstackDimension followedDimension, int timePerFrame, Path outputFile, AVICompression compression, int jpegQuality, JIPipeProgressInfo progressInfo) {
+    public static void writeImageToMovie(ImagePlus image, HyperstackDimension followedDimension, double fps, Path outputFile, AVICompression compression, int jpegQuality, JIPipeProgressInfo progressInfo) {
         ImageStack generatedStack = new ImageStack(image.getWidth(), image.getHeight());
 
         if (followedDimension == HyperstackDimension.Depth) {
@@ -1754,7 +1792,7 @@ public class ImageJUtils {
         }
 
         ImagePlus combined = new ImagePlus("video", generatedStack);
-        combined.getCalibration().fps = 1.0 / timePerFrame * 1000;
+        combined.getCalibration().fps = fps;
         progressInfo.log("Writing AVI with " + Math.round(combined.getCalibration().fps) + "FPS");
         AVI_Writer writer = new AVI_Writer();
         try {
@@ -1764,21 +1802,20 @@ public class ImageJUtils {
         }
     }
 
-    public static void removeLUT(ImagePlus image, boolean applyToAllPlanes) {
-        if (applyToAllPlanes && image.hasImageStack()) {
-            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
-            for (int z = 0; z < image.getNSlices(); z++) {
-                for (int c = 0; c < image.getNChannels(); c++) {
+    public static void removeLUT(ImagePlus image, Set<Integer> channels) {
+        ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
+        for (int c = 0; c < image.getNChannels(); c++) {
+            if(channels == null || channels.isEmpty() || channels.contains(c)) {
+                for (int z = 0; z < image.getNSlices(); z++) {
                     for (int t = 0; t < image.getNFrames(); t++) {
-                        image.setPosition(c, z, t);
+                        image.setPosition(c + 1, z + 1, t + 1);
                         image.getProcessor().setLut(null);
                     }
                 }
             }
-            image.setPosition(original.getC(), original.getZ(), original.getT());
-        } else {
-            image.getProcessor().setLut(null);
         }
+
+        image.setPosition(original.getC(), original.getZ(), original.getT());
     }
 
     /**
@@ -2081,7 +2118,7 @@ public class ImageJUtils {
     }
 
     public static void convolveSlice(Convolver convolver, int kernelWidth, int kernelHeight, float[] kernel, ImageProcessor imp) {
-        if(imp instanceof ColorProcessor) {
+        if (imp instanceof ColorProcessor) {
             // Split into channels and convolve individually
             FloatProcessor c0 = imp.toFloat(0, null);
             FloatProcessor c1 = imp.toFloat(1, null);
@@ -2092,11 +2129,9 @@ public class ImageJUtils {
             imp.setPixels(0, c0);
             imp.setPixels(1, c1);
             imp.setPixels(2, c2);
-        }
-        else if(imp instanceof FloatProcessor) {
+        } else if (imp instanceof FloatProcessor) {
             convolver.convolve(imp, kernel, kernelWidth, kernelHeight);
-        }
-        else {
+        } else {
             // Convolve directly
             FloatProcessor c0 = imp.toFloat(0, null);
             convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
@@ -2118,10 +2153,9 @@ public class ImageJUtils {
     }
 
     public static ImagePlus unwrap(ImagePlusData data) {
-        if(data != null) {
+        if (data != null) {
             return data.getImage();
-        }
-        else {
+        } else {
             return null;
         }
     }

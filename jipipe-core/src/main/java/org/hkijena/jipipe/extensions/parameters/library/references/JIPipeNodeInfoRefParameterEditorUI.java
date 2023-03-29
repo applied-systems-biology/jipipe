@@ -52,11 +52,11 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
 
         currentlyDisplayed = new JButton();
         currentlyDisplayed.addActionListener(e -> pickNodeInfo());
-        UIUtils.makeFlat(currentlyDisplayed);
+        UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        UIUtils.makeFlat(selectButton);
+        UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select algorithm type");
         selectButton.addActionListener(e -> pickNodeInfo());
         add(selectButton, BorderLayout.EAST);

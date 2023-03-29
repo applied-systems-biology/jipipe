@@ -54,7 +54,7 @@ public class FilterFilamentEdgesByProperties extends JIPipeSimpleIteratingAlgori
                 variables.set("metadata." + entry.getKey(), entry.getValue());
             }
             FilamentEdgeVariableSource.writeToVariables(outputData, edge, variables, "");
-            if(!filter.test(variables)) {
+            if (!filter.test(variables)) {
                 toDelete.add(edge);
             }
         }

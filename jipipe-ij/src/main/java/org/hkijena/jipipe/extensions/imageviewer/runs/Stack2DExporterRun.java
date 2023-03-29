@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imageviewer.runs;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -26,19 +26,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class Stack2DExporterRun implements JIPipeRunnable {
-    private final ImageViewerPanel2D viewerPanel;
+    private final JIPipeImageViewer viewerPanel;
     private final Path outputFolder;
     private final String baseName;
     private final String formatName;
     private final double magnification;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public Stack2DExporterRun(ImageViewerPanel2D viewerPanel, Path outputFolder, String baseName, String formatName) {
+    public Stack2DExporterRun(JIPipeImageViewer viewerPanel, Path outputFolder, String baseName, String formatName) {
         this.viewerPanel = viewerPanel;
         this.outputFolder = outputFolder;
         this.baseName = baseName;
         this.formatName = formatName;
-        this.magnification = viewerPanel.getExportedMagnification();
+        this.magnification = viewerPanel.getViewerPanel2D().getExportedMagnification();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Stack2DExporterRun implements JIPipeRunnable {
             }
         }
 
-        ImagePlus image = viewerPanel.getImage();
+        ImagePlus image = viewerPanel.getImagePlus();
         progressInfo.setMaxProgress(image.getStackSize());
         for (int c = 0; c < image.getNChannels(); c++) {
             for (int t = 0; t < image.getNFrames(); t++) {
@@ -75,7 +75,7 @@ public class Stack2DExporterRun implements JIPipeRunnable {
                     String fileName = String.format("%sc%d_t%d_z%d.%s", StringUtils.isNullOrEmpty(baseName) ? "" : baseName + "_", c, t, z, formatName.toLowerCase());
                     progressInfo.incrementProgress();
                     progressInfo.log(fileName);
-                    BufferedImage bufferedImage = viewerPanel.generateSlice(c, z,
+                    BufferedImage bufferedImage = viewerPanel.getViewerPanel2D().generateSlice(c, z,
                             t,
                             magnification, true).getBufferedImage();
                     try {
@@ -88,7 +88,7 @@ public class Stack2DExporterRun implements JIPipeRunnable {
         }
     }
 
-    public ImageViewerPanel2D getViewerPanel() {
+    public JIPipeImageViewer getViewerPanel() {
         return viewerPanel;
     }
 

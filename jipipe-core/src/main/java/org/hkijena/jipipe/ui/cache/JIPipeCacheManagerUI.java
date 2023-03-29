@@ -14,11 +14,12 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearAllRun;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;
-import org.hkijena.jipipe.ui.*;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 

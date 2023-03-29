@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
 import de.biomedical_imaging.ij.steger.OverlapOption;
 import ij.process.AutoThresholder;
@@ -27,7 +26,6 @@ import inra.ijpb.morphology.directional.DirectionalFilter;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
@@ -104,7 +102,6 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.Extract
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.RemoveROIMetadataAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetROIMetadataFromTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetRoiMetadataByStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.register.RegisterRoiToImageByBrightnessAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm2;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortRoiListByExpressionsAndMeasurementsAlgorithm;
@@ -130,27 +127,9 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SourceWrapMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.color.ImagePlus4DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorHSBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageBlendLayer;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageBlendMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -170,7 +149,9 @@ import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import sc.fiji.coloc.algorithms.AutoThresholdRegression;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Extension that adds ImageJ2 algorithms
@@ -1204,8 +1185,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerColorAlgorithms() {
         registerParameterType("ij1-color-overlay-channels:channel", OverlayImagesAlgorithm.Channel.class, "Channel settings", "Settings for a channel");
-        registerParameterType("ij1-color-blend-images:layer", BlendImagesAlgorithm.Layer.class, "Layer settings", "Settings for a layer");
-        registerEnumParameterType("ij1-color-blend-images:blend-mode", BlendImagesAlgorithm.BlendMode.class, "Layer blend mode", "Blend mode for the layer");
+        registerParameterType("ij1-color-blend-images:layer", ImageBlendLayer.class, "Layer settings", "Settings for a layer");
+        registerEnumParameterType("ij1-color-blend-images:blend-mode", ImageBlendMode.class, "Layer blend mode", "Blend mode for the layer");
 
         registerNodeType("ij1-color-invert", InvertColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
         registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));

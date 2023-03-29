@@ -48,4 +48,8 @@ public class OptionalDoubleParameter extends OptionalParameter<Double> {
         setContent(0.0);
         return 0.0;
     }
+
+    public double orElse(double defaultValue) {
+        return isEnabled() ? getContent() : defaultValue;
+    }
 }

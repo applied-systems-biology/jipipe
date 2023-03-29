@@ -206,13 +206,13 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         JButton validateProjectButton = new JButton("Validate", UIUtils.getIconFromResources("actions/checkmark.png"));
         validateProjectButton.setToolTipText("Opens a new tab to check parameters and graph for validity.");
         validateProjectButton.addActionListener(e -> validateProject());
-        UIUtils.makeFlat(validateProjectButton);
+        UIUtils.setStandardButtonBorder(validateProjectButton);
         menu.add(validateProjectButton);
 
         // "Run" entry
         JButton installButton = new JButton("Install", UIUtils.getIconFromResources("actions/run-install.png"));
         installButton.setToolTipText("Installs the current extension.");
-        UIUtils.makeFlat(installButton);
+        UIUtils.setStandardButtonBorder(installButton);
         installButton.addActionListener(e -> installProject());
         menu.add(installButton);
 

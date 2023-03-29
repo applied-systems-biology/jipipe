@@ -4,7 +4,6 @@ import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmark;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmarkList;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -369,7 +368,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                             null,
                             null,
                             path.getFileName().toString());
-                    if(name != null && !StringUtils.nullToEmpty(name).trim().isEmpty()) {
+                    if (name != null && !StringUtils.nullToEmpty(name).trim().isEmpty()) {
                         settings.getBookmarks().add(new FileChooserBookmark(name.toString(), path));
                         settings.triggerParameterChange("bookmarks");
                     }

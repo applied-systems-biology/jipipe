@@ -51,13 +51,13 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
             for (Map.Entry<UUID, JIPipeGraphNode> entry : pastedNodes.entrySet()) {
                 JIPipeGraphNode copyNode = entry.getValue();
                 JIPipeGraphNode originalNode = canvasUI.getGraph().getNodeByUUID(entry.getKey());
-                if(originalNode == null || originalNode instanceof JIPipeCompartmentOutput) {
+                if (originalNode == null || originalNode instanceof JIPipeCompartmentOutput) {
                     continue;
                 }
                 for (JIPipeInputDataSlot originalInputSlot : originalNode.getInputSlots()) {
                     JIPipeInputDataSlot copyInputSlot = copyNode.getInputSlot(originalInputSlot.getName());
                     for (JIPipeDataSlot sourceSlot : canvasUI.getGraph().getInputIncomingSourceSlots(originalInputSlot)) {
-                        if(!copyGraph.containsNode(sourceSlot.getNode().getUUIDInParentGraph())) {
+                        if (!copyGraph.containsNode(sourceSlot.getNode().getUUIDInParentGraph())) {
                             canvasUI.getGraph().connect(sourceSlot, copyInputSlot);
                         }
                     }

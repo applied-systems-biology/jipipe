@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 public class JIPipeConnectGraphEditorTool implements JIPipeToggleableGraphEditorTool {
 
     private JIPipeGraphEditorUI graphEditorUI;
+
     @Override
     public String getName() {
         return "Connect slots";

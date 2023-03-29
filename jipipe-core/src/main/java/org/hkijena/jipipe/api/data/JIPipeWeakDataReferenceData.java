@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.data;
 
-import org.hkijena.jipipe.api.JIPipeCommonData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,10 +25,14 @@ public class JIPipeWeakDataReferenceData implements JIPipeData {
         dataReference = new WeakReference<>(target);
     }
 
+    public static JIPipeWeakDataReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new JIPipeWeakDataReferenceData(null);
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         JIPipeData data = dataReference.get();
-        if(data != null) {
+        if (data != null) {
             data.exportData(storage, name, forceName, progressInfo);
         }
     }
@@ -42,7 +45,7 @@ public class JIPipeWeakDataReferenceData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         JIPipeData data = dataReference.get();
-        if(data != null) {
+        if (data != null) {
             data.display(displayName, workbench, source);
         }
     }
@@ -50,16 +53,11 @@ public class JIPipeWeakDataReferenceData implements JIPipeData {
     @Override
     public Component preview(int width, int height) {
         JIPipeData data = dataReference.get();
-        if(data != null) {
+        if (data != null) {
             return data.preview(width, height);
-        }
-        else {
+        } else {
             return null;
         }
-    }
-
-    public static JIPipeWeakDataReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return new JIPipeWeakDataReferenceData(null);
     }
 
     public WeakReference<JIPipeData> getDataReference() {

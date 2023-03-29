@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.ui.cache.importers;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;

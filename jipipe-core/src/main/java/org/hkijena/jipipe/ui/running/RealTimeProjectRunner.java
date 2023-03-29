@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -129,7 +130,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
 //    }
 
     @Subscribe
-    public void onRunFinished(RunWorkerFinishedEvent event) {
+    public void onRunFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == currentRun) {
             getWorkbench().sendStatusBarText("Real-time: Update finished");
             currentRun = null;
@@ -137,7 +138,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
     }
 
     @Subscribe
-    public void onRunCancelled(RunWorkerInterruptedEvent event) {
+    public void onRunCancelled(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == currentRun) {
             getWorkbench().sendStatusBarText("Real-time: Update failed");
             currentRun = null;

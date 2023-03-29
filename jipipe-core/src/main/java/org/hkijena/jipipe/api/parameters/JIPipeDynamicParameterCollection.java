@@ -304,7 +304,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     }
 
     /**
-     * Halts all {@link ParameterStructureChangedEvent} until endModificationBlock() is called.
+     * Halts all {@link JIPipeParameterCollection.ParameterStructureChangedEvent} until endModificationBlock() is called.
      * Use this method for many changes at once
      */
     public void beginModificationBlock() {
@@ -315,7 +315,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
 
     /**
      * Ends a modification block started by beginModificationBlock().
-     * Triggers a {@link ParameterStructureChangedEvent}
+     * Triggers a {@link JIPipeParameterCollection.ParameterStructureChangedEvent}
      */
     public void endModificationBlock() {
         if (!delayEvents)

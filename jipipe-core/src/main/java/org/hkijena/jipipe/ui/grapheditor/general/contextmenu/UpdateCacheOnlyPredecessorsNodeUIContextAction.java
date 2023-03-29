@@ -27,8 +27,6 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.event.InputEvent;
-import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUIContextAction {
@@ -50,20 +48,19 @@ public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUICon
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        if(selection.size() == 1) {
+        if (selection.size() == 1) {
             // Classic mode (via UI)
             JIPipeNodeUI ui = selection.iterator().next();
             ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false, true)));
-        }
-        else {
+        } else {
             // Batch mode (enqueue)
             for (JIPipeNodeUI nodeUI : selection) {
                 JIPipeGraphNode node = nodeUI.getNode();
                 JIPipeProject project = node.getParentGraph().getProject();
-                if(node instanceof JIPipeProjectCompartment) {
+                if (node instanceof JIPipeProjectCompartment) {
                     node = ((JIPipeProjectCompartment) node).getOutputNode();
                 }
-                if(node instanceof JIPipeAlgorithm || node.getInfo().isRunnable()) {
+                if (node instanceof JIPipeAlgorithm || node.getInfo().isRunnable()) {
                     QuickRunSettings settings = new QuickRunSettings();
                     settings.setSaveToDisk(false);
                     settings.setStoreToCache(true);

@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.segmentation;
 
 import mcib3d.image3d.segment.LocalThresholder;
-import mcib3d.image3d.segment.LocalThresholderConstant;
 import mcib3d.image3d.segment.LocalThresholderGaussFit;
 import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -17,7 +16,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 @JIPipeDocumentation(name = "3D spot segmentation (Gaussian fit)", description = "The node works with two images, one containing the seeds of the objects, " +
         "that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. " +
         "The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. " +
-"First the radial distribution of the object is computed (see plugin 3D Radial\n" +
+        "First the radial distribution of the object is computed (see plugin 3D Radial\n" +
         "Distribution), as concentric circles centred on the seed define growing\n" +
         "regions of interest in which mean intensity values are measured. A\n" +
         "gaussian fit of the radial distribution is computed in a given radius around the seed (Radius Max, in pixels)). The standard deviation of the fitted\n" +

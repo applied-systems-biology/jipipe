@@ -26,7 +26,7 @@ public class ArchiveProjectToDirectoryRun extends ArchiveProjectRun {
     @Override
     public void run() {
         getProgressInfo().log("The archive will be written to " + outputDirectory);
-        if(Files.exists(outputDirectory)) {
+        if (Files.exists(outputDirectory)) {
             PathUtils.deleteDirectoryRecursively(outputDirectory, getProgressInfo().resolve("Removing existing directory"));
         }
         try {
@@ -34,7 +34,7 @@ public class ArchiveProjectToDirectoryRun extends ArchiveProjectRun {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        try(JIPipeFileSystemWriteDataStorage projectStorage = new JIPipeFileSystemWriteDataStorage(getProgressInfo(), outputDirectory)) {
+        try (JIPipeFileSystemWriteDataStorage projectStorage = new JIPipeFileSystemWriteDataStorage(getProgressInfo(), outputDirectory)) {
             archive(projectStorage, projectStorage.resolve(UUID.randomUUID().toString()));
         } catch (IOException e) {
             throw new RuntimeException(e);

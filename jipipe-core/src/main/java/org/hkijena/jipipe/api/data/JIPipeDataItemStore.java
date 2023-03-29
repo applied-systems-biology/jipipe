@@ -28,9 +28,9 @@ import java.util.WeakHashMap;
  */
 public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPipeData> {
     private final Class<? extends JIPipeData> dataClass;
-    private JIPipeData data;
     private final String stringRepresentation;
     private final WeakHashMap<Object, Boolean> users = new WeakHashMap<>();
+    private JIPipeData data;
     private boolean closed = false;
 
     /**
@@ -76,7 +76,7 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
      */
     public synchronized <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
         JIPipeData data = getData(progressInfo);
-        data = JIPipe.getDataTypes().convert(data, klass);
+        data = JIPipe.getDataTypes().convert(data, klass, progressInfo);
         return (T) data;
     }
 

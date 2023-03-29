@@ -63,7 +63,7 @@ public class QuantityParameterEditorUI extends JIPipeParameterEditorUI {
         for (int i = 0; i < unitEditor.getComponentCount(); i++) {
             Component component = unitEditor.getComponent(i);
             if (component instanceof AbstractButton) {
-                UIUtils.makeFlat((AbstractButton) component);
+                UIUtils.setStandardButtonBorder((AbstractButton) component);
                 ((AbstractButton) component).setBorder(null);
                 ((AbstractButton) component).setOpaque(true);
                 component.setBackground(UIManager.getColor("TextField.background"));

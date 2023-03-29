@@ -368,7 +368,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         // Virtual control
         JButton optionsButton = memoryOptionsControl.createOptionsButton();
-        UIUtils.makeFlatH25(optionsButton);
+        UIUtils.makeFlat(optionsButton);
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
         statusBar.add(new MemoryStatusUI());
@@ -594,12 +594,12 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         // Real-time runner control
         JToggleButton realtimeToggleButton = realTimeProjectRunner.createToggleButton();
-        UIUtils.makeFlat(realtimeToggleButton);
+        UIUtils.setStandardButtonBorder(realtimeToggleButton);
         menu.add(realtimeToggleButton);
 
         // Cache monitor
         JIPipeCacheManagerUI cacheManagerUI = new JIPipeCacheManagerUI(this);
-        UIUtils.makeFlat(cacheManagerUI);
+        UIUtils.setStandardButtonBorder(cacheManagerUI);
         menu.add(cacheManagerUI);
 
         // Queue monitor
@@ -608,7 +608,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
         runProjectButton.setToolTipText("Opens a new interface to run the analysis.");
-        UIUtils.makeFlat(runProjectButton);
+        UIUtils.setStandardButtonBorder(runProjectButton);
 
         runProjectButton.addActionListener(e -> openRunUI());
         menu.add(runProjectButton);
@@ -675,7 +675,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     private void archiveProject() {
-        if(getProject().getWorkDirectory() == null) {
+        if (getProject().getWorkDirectory() == null) {
             JOptionPane.showMessageDialog(this, "Please save the project once before using the archive function.", "Archive project", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -699,14 +699,14 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     private void archiveProjectAsDirectory() {
         Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as directory");
-        if(directory != null) {
+        if (directory != null) {
             JIPipeRunExecuterUI.runInDialog(this, new ArchiveProjectToDirectoryRun(getProject(), directory));
         }
     }
 
     private void archiveProjectAsZIP() {
         Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as ZIP", UIUtils.EXTENSION_FILTER_ZIP);
-        if(file != null) {
+        if (file != null) {
             JIPipeRunExecuterUI.runInDialog(this, new ArchiveProjectToZIPRun(getProject(), file));
         }
     }
@@ -741,12 +741,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     public void restoreCacheFromZIPOrDirectory() {
         Path path = FileChooserSettings.openPath(this, FileChooserSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
-        if(path != null) {
-            if(Files.isRegularFile(path)) {
+        if (path != null) {
+            if (Files.isRegularFile(path)) {
                 // Load into cache with a run
                 JIPipeRunExecuterUI.runInDialog(this, new LoadResultZipIntoCacheRun(this, project, path, true));
-            }
-            else {
+            } else {
                 // Load into cache with a run
                 JIPipeRunExecuterUI.runInDialog(this, new LoadResultDirectoryIntoCacheRun(this, project, path, true));
             }

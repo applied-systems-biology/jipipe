@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.grapheditor.general.properties;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,11 +44,11 @@ public class JIPipeDataSlotListCellRenderer extends JPanel implements ListCellRe
         dataTypeLabel.setForeground(Color.GRAY);
         nodeLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
 
-        add(slotNameLabel, new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,border,0,0));
-        add(dataTypeLabel, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.EAST, GridBagConstraints.NONE,border,0,0));
-        add(nodeLabel, new GridBagConstraints(0,1,2,1,1,0,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL,border,0,0));
+        add(slotNameLabel, new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, border, 0, 0));
+        add(dataTypeLabel, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.EAST, GridBagConstraints.NONE, border, 0, 0));
+        add(nodeLabel, new GridBagConstraints(0, 1, 2, 1, 1, 0, GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, border, 0, 0));
 
-        setBorder(BorderFactory.createMatteBorder(0,0,1,0, Color.LIGHT_GRAY));
+        setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
     }
 
     @Override

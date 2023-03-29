@@ -123,28 +123,28 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
                 double x = roi.getObject3D().getCenterX();
                 double y = roi.getObject3D().getCenterY();
                 double z = roi.getObject3D().getCenterZ();
-                if(centerX.isEnabled()) {
+                if (centerX.isEnabled()) {
                     x = centerX.getContent().evaluateToDouble(variableSet);
                 }
-                if(centerY.isEnabled()) {
+                if (centerY.isEnabled()) {
                     y = centerY.getContent().evaluateToDouble(variableSet);
                 }
-                if(centerZ.isEnabled()) {
+                if (centerZ.isEnabled()) {
                     z = centerZ.getContent().evaluateToDouble(variableSet);
                 }
-                roi.getObject3D().setNewCenter(x,y,z);
+                roi.getObject3D().setNewCenter(x, y, z);
             }
-            if(channelLocation.isEnabled()) {
+            if (channelLocation.isEnabled()) {
                 roi.setChannel(channelLocation.getContent().evaluateToInteger(variableSet));
             }
-            if(frameLocation.isEnabled()) {
+            if (frameLocation.isEnabled()) {
                 roi.setFrame(frameLocation.getContent().evaluateToInteger(variableSet));
             }
-            if(fillColor.isEnabled()) {
+            if (fillColor.isEnabled()) {
                 roi.setFillColor(fillColor.getContent().evaluateToColor(variableSet));
             }
             for (MetadataEntry entry : evaluatedMetadataEntries) {
-                if(entry.getMetadataValue().isEnabled()) {
+                if (entry.getMetadataValue().isEnabled()) {
                     roi.getMetadata().put(entry.getMetadataName(),
                             entry.getMetadataValue().getContent().evaluateToString(variableSet));
                 }

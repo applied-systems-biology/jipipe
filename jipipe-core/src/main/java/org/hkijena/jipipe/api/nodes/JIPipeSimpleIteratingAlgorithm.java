@@ -38,10 +38,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
-import javax.swing.*;
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -284,7 +281,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     public void createUIInputSlotIconDescriptionMenuItems(String slotName, List<ViewOnlyMenuItem> target) {
         super.createUIInputSlotIconDescriptionMenuItems(slotName, target);
         JIPipeInputDataSlot inputSlot = getInputSlot(slotName);
-        if(inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
+        if (inputSlot != null && inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Data) {
             target.add(new ViewOnlyMenuItem("<html>One-to-Many processing<br/><small>The data within this slot is processed one-by-one (1 input can produce N outputs)</small>",
                     UIUtils.getIconFromResources("actions/1-to-n.png")));
         }

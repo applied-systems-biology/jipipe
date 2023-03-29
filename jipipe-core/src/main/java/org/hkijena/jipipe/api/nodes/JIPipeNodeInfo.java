@@ -85,6 +85,7 @@ public interface JIPipeNodeInfo {
     /**
      * If the node is of category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}, allows to re-assign them to a new menu
      * If {@link JIPipeEmptyData} is returned, no re-assignment is applied
+     *
      * @return the re-assigned data type menu or {@link JIPipeEmptyData}
      */
     default Class<? extends JIPipeData> getDataSourceMenuLocation() {
@@ -180,7 +181,7 @@ public interface JIPipeNodeInfo {
     /**
      * Returns all dependencies
      *
-     * @return List of dependencies
+     * @return set of dependencies
      */
     Set<JIPipeDependency> getDependencies();
 

@@ -94,7 +94,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
-     * Creates a {@link ResultsTableData} from a map of column name to column data
+     * Creates a table from a map of column name to column data
      *
      * @param columns key is column heading
      */
@@ -103,7 +103,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     /**
-     * Creates a {@link ResultsTableData} from a list of columns.
+     * Creates a table from a list of columns.
      * Column headings are extracted from the column labels
      *
      * @param columns the columns
@@ -817,8 +817,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, true);
         window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     public ResultsTable getTable() {

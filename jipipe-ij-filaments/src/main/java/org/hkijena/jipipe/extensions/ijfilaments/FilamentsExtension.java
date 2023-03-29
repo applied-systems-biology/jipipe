@@ -14,21 +14,29 @@
 package org.hkijena.jipipe.extensions.ijfilaments;
 
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.*;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.ij3d.IJ3DExtension;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
+import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsToRoi3dDataTypeConverter;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsToRoiDataTypeConverter;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsToLabelsAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsToMaskAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsToRoi3DAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsToRoiAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentEdgesByProperties;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentVerticesByProperties;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.RemoveBorderFilaments;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.RemoveDuplicateVerticesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.ImportFilamentsFromJsonAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToFilaments2DAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToSimplifiedFilamentsFijiAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureEdgesAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureVerticesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.merge.MergeFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.ChangeFilamentVertexPropertiesAlgorithm;
@@ -36,6 +44,8 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexIntensity
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexMetadataFromImageAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexRadiusFromImageAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.FixOverlapsNonBranchingAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.RemoveDuplicateVerticesAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SimplifyFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
@@ -73,7 +83,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public Set<JIPipeDependency> getDependencies() {
-        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY);
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY, IJ3DExtension.AS_DEPENDENCY);
     }
 
     @Override
@@ -117,6 +127,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerDatatype("filaments", Filaments3DData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());
+        registerDatatypeConversion(new FilamentsToRoi3dDataTypeConverter());
 
         registerNodeType("filaments-from-json", ImportFilamentsFromJsonAlgorithm.class);
         registerNodeType("filaments-skeleton-to-filaments-2d3d-simplified", SkeletonToSimplifiedFilamentsFijiAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
@@ -133,16 +144,21 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("filaments-merge", MergeFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
 
         registerNodeType("filaments-convert-to-roi", ConvertFilamentsToRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+        registerNodeType("filaments-convert-to-roi3d", ConvertFilamentsToRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+        registerNodeType("filaments-convert-to-mask", ConvertFilamentsToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
+        registerNodeType("filaments-convert-to-labels", ConvertFilamentsToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
 
         registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexRadiusFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-set-vertex-intensity-from-image", SetVertexIntensityFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-set-vertex-metadata-from-image", SetVertexMetadataFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-remove-duplicate-vertices", RemoveDuplicateVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("filaments-smooth-downscale", SmoothFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("filaments-simplify", SimplifyFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
         registerNodeType("filaments-fix-overlaps-non-branching", FixOverlapsNonBranchingAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-perpendicular.png"));
 
         registerNodeType("filaments-measure-vertices", MeasureVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("filaments-measure-edges", MeasureEdgesAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("filaments-measure-filaments", MeasureFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
     }
 
 

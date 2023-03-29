@@ -81,7 +81,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         Set<UUID> inputUUIDs = new HashSet<>();
         for (JIPipeInputDataSlot inputSlot : graphNode.getInputSlots()) {
             Set<JIPipeDataSlot> inputIncomingSourceSlots = graphNode.getParentGraph().getInputIncomingSourceSlots(inputSlot);
-            if(inputIncomingSourceSlots != null) {
+            if (inputIncomingSourceSlots != null) {
                 for (JIPipeDataSlot sourceSlot : inputIncomingSourceSlots) {
                     inputUUIDs.add(sourceSlot.getNode().getUUIDInParentGraph());
                 }
@@ -146,7 +146,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             JIPipeGraphNode cachedNode = currentNodeStates.get(uuid);
 
             // Remove deleted node
-            if(currentNode == null) {
+            if (currentNode == null) {
                 updated = true;
                 removeAndInvalidateNodeCache(uuid, progressInfo);
                 progressInfo.log("Removed invalid node state for " + uuid + " [node deleted]");
@@ -155,7 +155,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
             // Check inputs
             Set<UUID> directParentNodeUUIDs = getDirectParentNodeUUIDs(currentNode);
-            if(!Objects.equals(directParentNodeUUIDs, currentNodeStateInputs.get(uuid))) {
+            if (!Objects.equals(directParentNodeUUIDs, currentNodeStateInputs.get(uuid))) {
                 updated = true;
                 removeAndInvalidateNodeCache(uuid, progressInfo);
                 progressInfo.log("Removed invalid node state for " + uuid + " [inputs changed]");
@@ -265,10 +265,9 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     @Override
     public void clearAll(UUID nodeUUID, boolean invalidateChildren, JIPipeProgressInfo progressInfo) {
-        if(invalidateChildren) {
+        if (invalidateChildren) {
             removeAndInvalidateNodeCache(nodeUUID, progressInfo);
-        }
-        else {
+        } else {
             // Only remove the data
             cachedOutputSlots.remove(nodeUUID);
         }

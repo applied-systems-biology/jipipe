@@ -261,7 +261,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      * @param inherited   inherited slot can be null or '*' or the slot name
      * @param user        if the user triggered this
      * @return the slot info
-     * @deprecated  Inherited slot is non-functional
+     * @deprecated Inherited slot is non-functional
      */
     @Deprecated
     public JIPipeDataSlotInfo addOutputSlot(String name, String description, Class<? extends JIPipeData> dataClass, String inherited, boolean user) {
@@ -878,9 +878,9 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         /**
          * Adds an output slot
          *
-         * @param name          Unique slot name
-         * @param description   the description
-         * @param klass         Slot data class
+         * @param name        Unique slot name
+         * @param description the description
+         * @param klass       Slot data class
          * @return The builder
          */
         public Builder addOutputSlot(String name, String description, Class<? extends JIPipeData> klass) {
@@ -902,10 +902,10 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         /**
          * Adds an output slot
          *
-         * @param name                   Unique slot name
-         * @param description            the description
-         * @param klass                  Slot data class
-         * @param userModifiable         Make slot user-modifiable (default true in other overloads)
+         * @param name           Unique slot name
+         * @param description    the description
+         * @param klass          Slot data class
+         * @param userModifiable Make slot user-modifiable (default true in other overloads)
          * @return The builder
          */
         public Builder addOutputSlot(String name, String description, Class<? extends JIPipeData> klass, boolean userModifiable) {

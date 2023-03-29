@@ -12,7 +12,6 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -208,7 +207,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
      * Workaround for bug #458 due to modal windows
      */
     @Subscribe
-    public void onInstallationFinished(RunWorkerFinishedEvent event) {
+    public void onInstallationFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable()) {
             JIPipeRunnerQueue.getInstance().getEventBus().unregister(this);
             return;

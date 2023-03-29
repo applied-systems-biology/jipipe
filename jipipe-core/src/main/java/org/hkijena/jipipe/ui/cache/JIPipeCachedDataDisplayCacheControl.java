@@ -2,11 +2,13 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
-import org.hkijena.jipipe.ui.running.*;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -33,17 +35,17 @@ public class JIPipeCachedDataDisplayCacheControl {
     }
 
     @Subscribe
-    public void onRunnerFinished(RunWorkerFinishedEvent event) {
+    public void onRunnerFinished(JIPipeRunnable.FinishedEvent event) {
         updateRunnerQueueStatus();
     }
 
     @Subscribe
-    public void onRunnerInterrupted(RunWorkerInterruptedEvent event) {
+    public void onRunnerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         updateRunnerQueueStatus();
     }
 
     @Subscribe
-    public void onRunnerStarted(RunWorkerStartedEvent event) {
+    public void onRunnerStarted(JIPipeRunnable.StartedEvent event) {
         updateRunnerQueueStatus();
     }
 

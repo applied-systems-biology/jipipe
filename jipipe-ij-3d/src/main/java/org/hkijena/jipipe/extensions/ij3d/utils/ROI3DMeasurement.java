@@ -24,13 +24,14 @@ public enum ROI3DMeasurement {
         this.nativeValue = nativeValue;
     }
 
+    public static boolean includes(int nativeValue, ROI3DMeasurement target) {
+        return (nativeValue & target.nativeValue) == target.nativeValue;
+    }
+
     public int getNativeValue() {
         return nativeValue;
     }
 
-    public static boolean includes(int nativeValue, ROI3DMeasurement target) {
-        return (nativeValue & target.nativeValue) == target.nativeValue;
-    }
     @Override
     public String toString() {
         switch (this) {

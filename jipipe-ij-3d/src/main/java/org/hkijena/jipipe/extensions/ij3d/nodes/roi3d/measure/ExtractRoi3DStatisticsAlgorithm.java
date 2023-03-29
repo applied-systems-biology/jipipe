@@ -40,10 +40,9 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ROI3DListData roi = dataBatch.getInputData("ROI", ROI3DListData.class, progressInfo);
         ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
         ImageHandler referenceHandler;
-        if(reference == null) {
+        if (reference == null) {
             referenceHandler = null;
-        }
-        else {
+        } else {
             referenceHandler = ImageHandler.wrap(reference.getImage());
         }
         ResultsTableData result = roi.measure(referenceHandler, measurements.getNativeValue(), measureInPhysicalUnits, "", progressInfo.resolve("Measure 3D objects"));

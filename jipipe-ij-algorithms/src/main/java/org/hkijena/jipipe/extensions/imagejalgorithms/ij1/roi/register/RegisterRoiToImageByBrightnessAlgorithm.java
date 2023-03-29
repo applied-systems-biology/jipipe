@@ -66,7 +66,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
         MinMaxPriorityQueue<Candidate> candidates = MinMaxPriorityQueue.maximumSize(5).create();
 
         for (double scale : scales) {
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return;
 
             // Generate the scaled ROI
@@ -80,7 +80,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
             int yEnd = ip.getHeight() - scaledBounds.height;
 
             for (double rotation : rotations) {
-                if(progressInfo.isCancelled())
+                if (progressInfo.isCancelled())
                     return;
 
                 // Generate new roi
@@ -92,9 +92,9 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
 
                 int xBase = xStart;
 
-                while(xBase < xEnd) {
+                while (xBase < xEnd) {
                     int yBase = yStart;
-                    while(yBase < yEnd) {
+                    while (yBase < yEnd) {
 
                         roi.setLocation(xBase, yBase);
                         ip.setRoi(roi);
@@ -108,15 +108,15 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
 
                 // Track progress
                 ++finishedTasks;
-                int percentage = (int)(100.0 * finishedTasks / maxTasks);
-                if(percentage != oldPercentage) {
+                int percentage = (int) (100.0 * finishedTasks / maxTasks);
+                if (percentage != oldPercentage) {
                     progressInfo.log(percentage + "% (" + finishedTasks + " / " + maxTasks + " ROI)");
                     oldPercentage = percentage;
                 }
             }
         }
 
-       if(!candidates.isEmpty()) {
+        if (!candidates.isEmpty()) {
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             Candidate candidate = candidates.peekFirst();
             annotations.add(new JIPipeTextAnnotation("Scale", candidate.scale + ""));
@@ -163,7 +163,7 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
         this.scaleRange = scaleRange;
     }
 
-    private static class Candidate implements Comparable<Candidate>{
+    private static class Candidate implements Comparable<Candidate> {
         private final Roi roi;
         private final double scale;
         private final double angle;

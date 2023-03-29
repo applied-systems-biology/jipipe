@@ -61,7 +61,7 @@ public class RectangularLine {
     }
 
     /**
-     * Returns true if this line intersects with the other line
+     * Returns number of pixels that intersect with another line
      *
      * @param other the other line
      * @return how many pixels intersect. Can be negative

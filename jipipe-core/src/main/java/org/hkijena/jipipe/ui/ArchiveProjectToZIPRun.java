@@ -24,14 +24,14 @@ public class ArchiveProjectToZIPRun extends ArchiveProjectRun {
 
     @Override
     public void run() {
-        if(Files.exists(outputFile)) {
+        if (Files.exists(outputFile)) {
             try {
                 Files.delete(outputFile);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        try(JIPipeZIPWriteDataStorage projectStorage = new JIPipeZIPWriteDataStorage(getProgressInfo(), outputFile)) {
+        try (JIPipeZIPWriteDataStorage projectStorage = new JIPipeZIPWriteDataStorage(getProgressInfo(), outputFile)) {
             archive(projectStorage, projectStorage.resolve(UUID.randomUUID().toString()));
         } catch (IOException e) {
             throw new RuntimeException(e);

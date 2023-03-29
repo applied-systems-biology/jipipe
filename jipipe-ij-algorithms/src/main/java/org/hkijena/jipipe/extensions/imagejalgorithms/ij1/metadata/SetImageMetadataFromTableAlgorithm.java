@@ -1,20 +1,15 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata;
 
 import ij.ImagePlus;
-import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,14 +29,15 @@ public class SetImageMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
 
     public SetImageMetadataFromTableAlgorithm(SetImageMetadataFromTableAlgorithm other) {
         super(other);
-        this.clearBeforeWrite = other.clearBeforeWrite;    }
+        this.clearBeforeWrite = other.clearBeforeWrite;
+    }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus imagePlus = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
         ResultsTableData metadata = dataBatch.getInputData("Metadata", ResultsTableData.class, progressInfo);
 
-        if(metadata.getRowCount() > 0) {
+        if (metadata.getRowCount() > 0) {
             Map<String, String> properties = clearBeforeWrite ? new HashMap<>() : ImageJUtils.getImageProperties(imagePlus);
             for (String columnName : metadata.getColumnNames()) {
                 properties.put(columnName, metadata.getValueAsString(0, columnName));

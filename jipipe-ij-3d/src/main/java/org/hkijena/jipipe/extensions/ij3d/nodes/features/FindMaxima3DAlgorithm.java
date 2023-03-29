@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.ij3d.nodes.features;
 
-import ij.IJ;
 import ij.ImagePlus;
 import mcib3d.image3d.ImageHandler;
 import mcib3d.image3d.processing.MaximaFinder;
@@ -12,7 +11,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
 @JIPipeDocumentation(name = "3D maxima finder", description = "Detects local maxima with high contrast. " +
         "Local maxima in a specified radius are computed and sorted by intensity. " +

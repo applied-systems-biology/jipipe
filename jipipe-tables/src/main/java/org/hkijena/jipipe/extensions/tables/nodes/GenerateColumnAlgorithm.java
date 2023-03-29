@@ -73,7 +73,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
-        if(ensureMinNumberOfRows.isEnabled()) {
+        if (ensureMinNumberOfRows.isEnabled()) {
             table.addRows(ensureMinNumberOfRows.getContent() - table.getRowCount());
         }
         ExpressionVariables variableSet = new ExpressionVariables();

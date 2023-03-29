@@ -58,11 +58,11 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
 
         currentlyDisplayed = new JButton();
         currentlyDisplayed.addActionListener(e -> pickDataInfo());
-        UIUtils.makeFlat(currentlyDisplayed);
+        UIUtils.setStandardButtonBorder(currentlyDisplayed);
         add(currentlyDisplayed, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        UIUtils.makeFlat(selectButton);
+        UIUtils.setStandardButtonBorder(selectButton);
         selectButton.setToolTipText("Select data type");
         selectButton.addActionListener(e -> pickDataInfo());
         add(selectButton, BorderLayout.EAST);

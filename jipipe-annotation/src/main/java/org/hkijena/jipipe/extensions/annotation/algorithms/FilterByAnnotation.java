@@ -27,7 +27,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.List;

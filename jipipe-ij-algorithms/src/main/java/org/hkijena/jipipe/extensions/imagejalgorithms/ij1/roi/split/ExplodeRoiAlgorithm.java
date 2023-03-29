@@ -28,7 +28,6 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.ChangeRoiPropertiesFromExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -48,11 +47,9 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
-
-    private DefaultExpressionParameter annotationValue = new DefaultExpressionParameter("\"index=\" + index + \";name=\" + name");
-
     private final CustomExpressionVariablesParameter customExpressionVariables;
+    private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
+    private DefaultExpressionParameter annotationValue = new DefaultExpressionParameter("\"index=\" + index + \";name=\" + name");
 
     /**
      * Instantiates a new node type.

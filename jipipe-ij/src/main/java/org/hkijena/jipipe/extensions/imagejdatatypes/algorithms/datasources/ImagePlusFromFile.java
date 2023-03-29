@@ -95,7 +95,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
         } else {
-            try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
                 image = IJ.openImage(fileName.toString());
             }
         }
@@ -163,7 +163,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             ImagePlusData outputData;
             ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
             if (removeLut) {
-                ImageJUtils.removeLUT(image, true);
+                ImageJUtils.removeLUT(image, null);
             }
             if (removeOverlay) {
                 ImageJUtils.removeOverlay(image);

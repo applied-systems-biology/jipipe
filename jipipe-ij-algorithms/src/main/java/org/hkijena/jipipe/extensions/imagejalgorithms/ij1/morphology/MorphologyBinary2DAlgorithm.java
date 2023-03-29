@@ -17,7 +17,6 @@ import ij.ImagePlus;
 import ij.Prefs;
 import ij.process.ByteProcessor;
 import org.hkijena.jipipe.api.*;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;

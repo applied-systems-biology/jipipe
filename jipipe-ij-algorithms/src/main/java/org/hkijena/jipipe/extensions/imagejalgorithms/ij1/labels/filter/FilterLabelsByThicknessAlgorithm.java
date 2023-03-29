@@ -57,7 +57,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
 
-        if(image.getBitDepth() == 8) {
+        if (image.getBitDepth() == 8) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
             ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
 
@@ -81,12 +81,12 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
                     final int targetLabel = existingLabelsList.get(labelIndex);
 
-                    if(excludeZero && targetLabel == 0)
+                    if (excludeZero && targetLabel == 0)
                         continue;
 
                     // Give progress info
-                    int newPercentage = (int)(1.0 * labelIndex / existingLabelsList.size() * 100);
-                    if(newPercentage != lastPercentage) {
+                    int newPercentage = (int) (1.0 * labelIndex / existingLabelsList.size() * 100);
+                    if (newPercentage != lastPercentage) {
                         stackProgress.log("Processing labels ... " + newPercentage + "%");
                         lastPercentage = newPercentage;
                     }
@@ -96,8 +96,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     for (int i = 0; i < pixels.length; i++) {
                         if (Byte.toUnsignedInt(pixels[i]) == targetLabel) {
                             tempPixels[i] = (byte) 255;
-                        }
-                        else {
+                        } else {
                             tempPixels[i] = 0;
                         }
                     }
@@ -108,25 +107,23 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     byte deletedLabel_ = (byte) deletedLabel;
                     double thickness = edtProcessor.getStats().max;
                     variables.set("thickness", thickness);
-                    if(filter.test(variables)) {
+                    if (filter.test(variables)) {
                         // Remap
                         mapping.put((byte) targetLabel, (byte) targetLabel);
-                    }
-                    else {
+                    } else {
                         mapping.put((byte) targetLabel, deletedLabel_);
                     }
                 }
 
                 // Remap
                 for (int i = 0; i < pixels.length; i++) {
-                    if(mapping.containsKey(pixels[i])) {
+                    if (mapping.containsKey(pixels[i])) {
                         pixels[i] = mapping.get(pixels[i]);
                     }
                 }
 
             }, progressInfo.resolve("Processing"));
-        }
-        else if(image.getBitDepth() == 16) {
+        } else if (image.getBitDepth() == 16) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
             ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
                 // Collect existing labels
@@ -149,12 +146,12 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
                     final int targetLabel = existingLabelsList.get(labelIndex);
 
-                    if(excludeZero && targetLabel == 0)
+                    if (excludeZero && targetLabel == 0)
                         continue;
 
                     // Give progress info
-                    int newPercentage = (int)(1.0 * labelIndex / existingLabelsList.size() * 100);
-                    if(newPercentage != lastPercentage) {
+                    int newPercentage = (int) (1.0 * labelIndex / existingLabelsList.size() * 100);
+                    if (newPercentage != lastPercentage) {
                         stackProgress.log("Processing labels ... " + newPercentage + "%");
                         lastPercentage = newPercentage;
                     }
@@ -164,8 +161,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     for (int i = 0; i < pixels.length; i++) {
                         if (Short.toUnsignedInt(pixels[i]) == targetLabel) {
                             tempPixels[i] = (byte) 255;
-                        }
-                        else {
+                        } else {
                             tempPixels[i] = 0;
                         }
                     }
@@ -176,25 +172,23 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     short deletedLabel_ = (short) deletedLabel;
                     double thickness = edtProcessor.getStats().max;
                     variables.set("thickness", thickness);
-                    if(filter.test(variables)) {
+                    if (filter.test(variables)) {
                         // Remap
                         mapping.put((short) targetLabel, (short) targetLabel);
-                    }
-                    else {
+                    } else {
                         mapping.put((short) targetLabel, deletedLabel_);
                     }
                 }
 
                 // Remap
                 for (int i = 0; i < pixels.length; i++) {
-                    if(mapping.containsKey(pixels[i])) {
+                    if (mapping.containsKey(pixels[i])) {
                         pixels[i] = mapping.get(pixels[i]);
                     }
                 }
 
             }, progressInfo.resolve("Processing"));
-        }
-        else if(image.getBitDepth() == 32) {
+        } else if (image.getBitDepth() == 32) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
             ImageJUtils.forEachIndexedZCTSliceWithProgress(image, (ip, index, stackProgress) -> {
                 // Collect existing labels
@@ -217,12 +211,12 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
                     final float targetLabel = existingLabelsList.get(labelIndex);
 
-                    if(excludeZero && targetLabel == 0)
+                    if (excludeZero && targetLabel == 0)
                         continue;
 
                     // Give progress info
-                    int newPercentage = (int)(1.0 * labelIndex / existingLabelsList.size() * 100);
-                    if(newPercentage != lastPercentage) {
+                    int newPercentage = (int) (1.0 * labelIndex / existingLabelsList.size() * 100);
+                    if (newPercentage != lastPercentage) {
                         stackProgress.log("Processing labels ... " + newPercentage + "%");
                         lastPercentage = newPercentage;
                     }
@@ -232,8 +226,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     for (int i = 0; i < pixels.length; i++) {
                         if (pixels[i] == targetLabel) {
                             tempPixels[i] = (byte) 255;
-                        }
-                        else {
+                        } else {
                             tempPixels[i] = 0;
                         }
                     }
@@ -243,25 +236,23 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
                     double thickness = edtProcessor.getStats().max;
                     variables.set("thickness", thickness);
-                    if(filter.test(variables)) {
+                    if (filter.test(variables)) {
                         // Remap
                         mapping.put(targetLabel, targetLabel);
-                    }
-                    else {
+                    } else {
                         mapping.put(targetLabel, deletedLabel);
                     }
                 }
 
                 // Remap
                 for (int i = 0; i < pixels.length; i++) {
-                    if(mapping.containsKey(pixels[i])) {
+                    if (mapping.containsKey(pixels[i])) {
                         pixels[i] = mapping.get(pixels[i]);
                     }
                 }
 
             }, progressInfo.resolve("Processing"));
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported bit depth: " + image.getBitDepth());
         }
 
