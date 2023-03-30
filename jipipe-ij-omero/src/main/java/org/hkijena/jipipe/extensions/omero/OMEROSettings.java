@@ -19,12 +19,15 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 
 public class OMEROSettings implements JIPipeParameterCollection {
     public static final String ID = "org.hkijena.jipipe:omero";
     private final EventBus eventBus = new EventBus();
 
-    private String defaultServer = "";
+    private String defaultHost = "localhost";
+
+    private int defaultPort = 4064;
     private String defaultUserName = "";
     private PasswordParameter defaultPassword = new PasswordParameter();
     private String email = "";
@@ -38,19 +41,32 @@ public class OMEROSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Default server URL", description = "The server URL used as default if none is provided. It has the following format [Host]:[Port] or [Host]. If only the host is provided, the port 4064 is assumed.")
-    @JIPipeParameter("default-server")
-    public String getDefaultServer() {
-        return defaultServer;
+    @JIPipeDocumentation(name = "Default server host", description = "The server host used as default if none is provided. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")
+    @JIPipeParameter("default-host")
+    @StringParameterSettings(monospace = true)
+    public String getDefaultHost() {
+        return defaultHost;
     }
 
-    @JIPipeParameter("default-server")
-    public void setDefaultServer(String defaultServer) {
-        this.defaultServer = defaultServer;
+    @JIPipeParameter("default-host")
+    public void setDefaultHost(String defaultHost) {
+        this.defaultHost = defaultHost;
+    }
+
+    @JIPipeDocumentation(name = "Default server port", description = "The server port used as default if none is provided.")
+    @JIPipeParameter("default-port")
+    public int getDefaultPort() {
+        return defaultPort;
+    }
+
+    @JIPipeParameter("default-port")
+    public void setDefaultPort(int defaultPort) {
+        this.defaultPort = defaultPort;
     }
 
     @JIPipeDocumentation(name = "Default user name", description = "The user name used as default if none is provided.")
     @JIPipeParameter("default-user-name")
+    @StringParameterSettings(monospace = true)
     public String getDefaultUserName() {
         return defaultUserName;
     }

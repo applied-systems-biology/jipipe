@@ -19,11 +19,14 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 public class OMEROCredentials implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private String server = "";
+    private String host = "localhost";
+
+    private int port = 4064;
     private String userName = "";
     private PasswordParameter password = new PasswordParameter();
 
@@ -31,8 +34,9 @@ public class OMEROCredentials implements JIPipeParameterCollection {
     }
 
     public OMEROCredentials(OMEROCredentials other) {
-        this.server = other.server;
+        this.host = other.host;
         this.userName = other.userName;
+        this.port = other.port;
         this.password = new PasswordParameter(other.password);
     }
 
@@ -41,19 +45,32 @@ public class OMEROCredentials implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Server", description = "The server URL. It has the following format [Host]:[Port] or [Host]. If only the host is provided, the port 4064 is assumed.")
-    @JIPipeParameter(value = "server", uiOrder = 1)
-    public String getServer() {
-        return server;
+    @JIPipeDocumentation(name = "Host", description = "The server host. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")
+    @JIPipeParameter(value = "host", uiOrder = 1)
+    @StringParameterSettings(monospace = true)
+    public String getHost() {
+        return host;
     }
 
-    @JIPipeParameter("server")
-    public void setServer(String server) {
-        this.server = server;
+    @JIPipeParameter("host")
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    @JIPipeDocumentation(name = "Port", description = "The server port. Set to zero to use the global default port.")
+    @JIPipeParameter(value = "port", uiOrder = 2)
+    public int getPort() {
+        return port;
+    }
+
+    @JIPipeParameter("port")
+    public void setPort(int port) {
+        this.port = port;
     }
 
     @JIPipeDocumentation(name = "User name", description = "The user name")
-    @JIPipeParameter(value = "user-name", uiOrder = 2)
+    @JIPipeParameter(value = "user-name", uiOrder = 3)
+    @StringParameterSettings(monospace = true)
     public String getUserName() {
         return userName;
     }
@@ -65,7 +82,7 @@ public class OMEROCredentials implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Password", description = "The password. The password is not saved in clear text, but encoded in Base64, which can be easily decoded by scripts. " +
             "If you use JIPipe in a GUI environment, it will ask for the credentials when running a pipeline if you do not provide the password. In a CLI environment, the pipeline will fail.")
-    @JIPipeParameter(value = "password", uiOrder = 3)
+    @JIPipeParameter(value = "password", uiOrder = 4)
     public PasswordParameter getPassword() {
         return password;
     }
@@ -81,11 +98,11 @@ public class OMEROCredentials implements JIPipeParameterCollection {
      * @return the location
      */
     public LoginCredentials getCredentials() {
-        String server_ = StringUtils.orElse(server, OMEROSettings.getInstance().getDefaultServer());
+        String host_ = StringUtils.orElse(host, OMEROSettings.getInstance().getDefaultHost());
+        int port_ = port > 0 ? port : OMEROSettings.getInstance().getDefaultPort();
         String user_ = StringUtils.orElse(userName, OMEROSettings.getInstance().getDefaultUserName());
         String password_ = StringUtils.orElse(password.getPassword(), OMEROSettings.getInstance().getDefaultPassword().getPassword());
-        int port_ = server_.contains(":") ? Integer.parseInt(server_.substring(server_.indexOf(':') + 1)) : 4064;
-        String host_ = server_.contains(":") ? server_.substring(0, server_.indexOf(':')) : server_;
+
         return new LoginCredentials(user_, password_, host_, port_);
     }
 }
