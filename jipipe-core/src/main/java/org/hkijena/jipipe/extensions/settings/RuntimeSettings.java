@@ -39,8 +39,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
     private int defaultRunThreads = 1;
     private int defaultQuickRunThreads = 1;
-    private int realTimeRunDelay = 400;
-    private boolean realTimeRunEnabled = false;
     private int logLimit = 15;
 
     /**
@@ -193,28 +191,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
         this.defaultQuickRunThreads = defaultTestBenchThreads;
         eventBus.post(new ParameterChangedEvent(this, "default-test-bench-threads"));
         return true;
-    }
-
-    @JIPipeDocumentation(name = "Real-time update delay", description = "Delay in milliseconds that is added to after the graph was changed and a real-time update is started. A higher delay decreases the required resources.")
-    @JIPipeParameter("real-time-run-delay")
-    public int getRealTimeRunDelay() {
-        return realTimeRunDelay;
-    }
-
-    @JIPipeParameter("real-time-run-delay")
-    public void setRealTimeRunDelay(int realTimeRunDelay) {
-        this.realTimeRunDelay = realTimeRunDelay;
-    }
-
-    @JIPipeDocumentation(name = "Real-time update caches", description = "If enabled, caches are automatically updated on changes in the graph or parameters. Please note that this can require a lot of resources from your machine depending on the workload.")
-    @JIPipeParameter("real-time-run-enabled")
-    public boolean isRealTimeRunEnabled() {
-        return realTimeRunEnabled;
-    }
-
-    @JIPipeParameter("real-time-run-enabled")
-    public void setRealTimeRunEnabled(boolean realTimeRunEnabled) {
-        this.realTimeRunEnabled = realTimeRunEnabled;
     }
 
     @JIPipeDocumentation(name = "Log limit", description = "Limits how many logs are kept")

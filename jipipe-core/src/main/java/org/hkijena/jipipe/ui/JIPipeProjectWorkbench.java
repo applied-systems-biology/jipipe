@@ -91,7 +91,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private final JIPipeProjectWindow window;
     private final JIPipeProject project;
     private final Context context;
-    private final RealTimeProjectRunner realTimeProjectRunner;
     private final MemoryOptionsControl memoryOptionsControl;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
     private final NotificationButton notificationButton = new NotificationButton(this);
@@ -112,7 +111,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.window = window;
         this.project = project;
         this.context = context;
-        this.realTimeProjectRunner = new RealTimeProjectRunner(this);
         this.memoryOptionsControl = new MemoryOptionsControl(this);
         initialize(showIntroduction, isNewProject);
         project.getEventBus().register(this);
@@ -125,9 +123,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             restoreTabs();
         if (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction)
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
-        if (!isNewProject && RuntimeSettings.getInstance().isRealTimeRunEnabled()) {
-            SwingUtilities.invokeLater(() -> realTimeProjectRunner.scheduleRun());
-        }
 
         // Register modification state watchers
         project.getGraph().getEventBus().register(new Object() {
@@ -591,11 +586,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
-
-        // Real-time runner control
-        JToggleButton realtimeToggleButton = realTimeProjectRunner.createToggleButton();
-        UIUtils.setStandardButtonBorder(realtimeToggleButton);
-        menu.add(realtimeToggleButton);
 
         // Cache monitor
         JIPipeCacheManagerUI cacheManagerUI = new JIPipeCacheManagerUI(this);
