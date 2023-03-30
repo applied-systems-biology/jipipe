@@ -125,10 +125,27 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
     }
 
     private void initialize() {
-        setLayout(new GridBagLayout());
+        setLayout(new BorderLayout());
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
                 BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor"), 1, true),
                         BorderFactory.createEmptyBorder(4, 4, 0, 4))));
+
+        // Left (info) panel
+        JPanel leftLabel = new JPanel(new BorderLayout());
+
+        JLabel channelLabel = new JLabel("C" + (targetChannel + 1));
+        channelLabel.setBorder(BorderFactory.createEmptyBorder(0,2,0,4));
+        channelLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        leftLabel.add(channelLabel, BorderLayout.CENTER);
+        leftLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,0,0,4),
+                BorderFactory.createMatteBorder(0,0,0,1,UIManager.getColor("Button.borderColor"))));
+
+        add(leftLabel, BorderLayout.WEST);
+
+        // Center panel
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        add(centerPanel, BorderLayout.CENTER);
+
         slider = new JXMultiThumbSlider<>();
         slider.getModel().addThumb(0, Color.BLACK);
         slider.getModel().addThumb(1, Color.WHITE);
@@ -136,7 +153,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
         slider.setThumbRenderer(new CustomGradientThumbRenderer());
         slider.setPreferredSize(new Dimension(100, 35));
         slider.addMultiThumbListener(this);
-        add(slider, new GridBagConstraints(0,
+        centerPanel.add(slider, new GridBagConstraints(0,
                 0,
                 1,
                 3,
@@ -153,7 +170,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
         changeColorButton.setToolTipText("Set color of selected gradient stop");
         changeColorButton.addActionListener(e -> changeColor());
         changeColorButton.setHorizontalAlignment(SwingConstants.LEFT);
-        add(changeColorButton, new GridBagConstraints(1,
+        centerPanel.add(changeColorButton, new GridBagConstraints(1,
                 0,
                 1,
                 1,
@@ -169,7 +186,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
         toolBar.setFloatable(false);
         toolBar.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0),
                 BorderFactory.createMatteBorder(1, 0, 0, 0, UIManager.getColor("Button.borderColor"))));
-        add(toolBar, new GridBagConstraints(0,
+        centerPanel.add(toolBar, new GridBagConstraints(0,
                 4,
                 4,
                 1,
@@ -186,7 +203,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
         UIUtils.makeFlat(addThumbButton);
         addThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
         addThumbButton.addActionListener(e -> addColor());
-        add(addThumbButton, new GridBagConstraints(2,
+        centerPanel.add(addThumbButton, new GridBagConstraints(2,
                 0,
                 1,
                 1,
@@ -203,7 +220,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
         UIUtils.makeFlat(deleteThumbButton);
         deleteThumbButton.setHorizontalAlignment(SwingConstants.LEFT);
         deleteThumbButton.addActionListener(e -> removeColor());
-        add(deleteThumbButton, new GridBagConstraints(3,
+        centerPanel.add(deleteThumbButton, new GridBagConstraints(3,
                 0,
                 1,
                 1,
