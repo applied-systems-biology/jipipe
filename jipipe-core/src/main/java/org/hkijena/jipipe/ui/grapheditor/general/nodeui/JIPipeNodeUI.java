@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
+import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -116,6 +117,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private boolean nodeBufferInvalid = true;
 
+    private final boolean showInputs;
+
+    private final boolean showOutputs;
+
     /**
      * Creates a new UI
      *
@@ -136,6 +141,29 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
+
+        if(node instanceof JIPipeCompartmentOutput) {
+            if(Objects.equals(node.getCompartmentUUIDInParentGraph(), graphCanvasUI.getCompartment())) {
+                showInputs = true;
+                showOutputs = false;
+            }
+            else {
+                showInputs = false;
+                showOutputs = true;
+            }
+        }
+        else if(node instanceof GraphWrapperAlgorithmInput) {
+            showInputs = false;
+            showOutputs = true;
+        }
+        else if(node instanceof GraphWrapperAlgorithmOutput) {
+            showInputs = true;
+            showOutputs = false;
+        }
+        else {
+            showInputs = true;
+            showOutputs = true;
+        }
 
         // Slot information
         if (node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
@@ -420,38 +448,43 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         double sumInputSlotWidths = 0;
         double sumOutputSlotWidths = 0;
 
-        for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
-            JIPipeNodeUISlotActiveArea slotState = inputSlotMap.get(inputSlot.getName());
-            double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
-            slotState.setNativeWidth(nativeWidth);
-            slotState.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
-            sumInputSlotWidths += nativeWidth;
+        if(showInputs) {
+            for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+                JIPipeNodeUISlotActiveArea slotState = inputSlotMap.get(inputSlot.getName());
+                double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
+                slotState.setNativeWidth(nativeWidth);
+                slotState.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
+                sumInputSlotWidths += nativeWidth;
+            }
+            if (slotsInputsEditable) {
+                addInputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(JIPipeSlotType.Input);
+                double nativeWidth = 22;
+                addInputSlotArea.setNativeWidth(nativeWidth);
+                addInputSlotArea.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
+                sumInputSlotWidths += nativeWidth;
+            } else {
+                addInputSlotArea = null;
+            }
         }
-        if (slotsInputsEditable) {
-            addInputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(JIPipeSlotType.Input);
-            double nativeWidth = 22;
-            addInputSlotArea.setNativeWidth(nativeWidth);
-            addInputSlotArea.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
-            sumInputSlotWidths += nativeWidth;
-        } else {
-            addInputSlotArea = null;
-        }
-
-        for (JIPipeDataSlot outputSlots : node.getOutputSlots()) {
-            JIPipeNodeUISlotActiveArea slotState = outputSlotMap.get(outputSlots.getName());
-            double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
-            slotState.setNativeWidth(nativeWidth);
-            slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
-            sumOutputSlotWidths += nativeWidth;
-        }
-        if (slotsOutputsEditable) {
-            addOutputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(JIPipeSlotType.Output);
-            double nativeWidth = 22;
-            addOutputSlotArea.setNativeWidth(nativeWidth);
-            addOutputSlotArea.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
-            sumOutputSlotWidths += nativeWidth;
-        } else {
-            addOutputSlotArea = null;
+        if(showOutputs) {
+            for (JIPipeDataSlot outputSlots : node.getOutputSlots()) {
+                JIPipeNodeUISlotActiveArea slotState = outputSlotMap.get(outputSlots.getName());
+                if (slotState == null)
+                    continue;
+                double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
+                slotState.setNativeWidth(nativeWidth);
+                slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
+                sumOutputSlotWidths += nativeWidth;
+            }
+            if (slotsOutputsEditable) {
+                addOutputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(JIPipeSlotType.Output);
+                double nativeWidth = 22;
+                addOutputSlotArea.setNativeWidth(nativeWidth);
+                addOutputSlotArea.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
+                sumOutputSlotWidths += nativeWidth;
+            } else {
+                addOutputSlotArea = null;
+            }
         }
 
         // Calculate the grid width
@@ -663,16 +696,16 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         boolean hasOutputs = node.getOutputSlots().size() > 0 || slotsOutputsEditable;
 
         // Paint controls
-        paintNodeControls(g2, fontMetrics, realSlotHeight, hasInputs, hasOutputs);
+        paintNodeControls(g2, fontMetrics, realSlotHeight, hasInputs && showInputs, hasOutputs && showOutputs);
 
         // Paint slots
         g2.setFont(zoomedSecondaryFont);
         g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
 
-        if (hasInputs) {
+        if (hasInputs && showInputs) {
             paintInputSlots(g2, realSlotHeight);
         }
-        if (hasOutputs) {
+        if (hasOutputs && showOutputs) {
             paintOutputSlots(g2, realSlotHeight);
         }
 
@@ -985,28 +1018,29 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         inputSlotMap.clear();
         outputSlotMap.clear();
 
-        for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+        if(showInputs) {
+            for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+                inputSlot.getInfo().getEventBus().register(this);
 
-            inputSlot.getInfo().getEventBus().register(this);
-
-            JIPipeNodeUISlotActiveArea slotState = new JIPipeNodeUISlotActiveArea(this, JIPipeSlotType.Input, inputSlot.getName(), inputSlot);
-            slotState.setIcon(JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()).getImage());
-            inputSlotMap.put(inputSlot.getName(), slotState);
-            if (StringUtils.isNullOrEmpty(inputSlot.getInfo().getCustomName())) {
-                slotState.setSlotLabel(inputSlot.getName());
-                slotState.setSlotLabelIsCustom(false);
-            } else {
-                slotState.setSlotLabel(inputSlot.getInfo().getCustomName());
-                slotState.setSlotLabelIsCustom(true);
-            }
-            if (slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters && slotState.getSlotName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
-                slotState.setSlotLabel("Parameters");
-            }
-            if (graph != null && graph.containsNode(inputSlot)) {
-                if (!inputSlot.getInfo().isOptional() && graph.getGraph().inDegreeOf(inputSlot) <= 0 && !(inputSlot.getNode() instanceof GraphWrapperAlgorithmInput)) {
-                    slotState.setSlotStatus(SlotStatus.Unconnected);
+                JIPipeNodeUISlotActiveArea slotState = new JIPipeNodeUISlotActiveArea(this, JIPipeSlotType.Input, inputSlot.getName(), inputSlot);
+                slotState.setIcon(JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()).getImage());
+                inputSlotMap.put(inputSlot.getName(), slotState);
+                if (StringUtils.isNullOrEmpty(inputSlot.getInfo().getCustomName())) {
+                    slotState.setSlotLabel(inputSlot.getName());
+                    slotState.setSlotLabelIsCustom(false);
                 } else {
-                    slotState.setSlotStatus(SlotStatus.Default);
+                    slotState.setSlotLabel(inputSlot.getInfo().getCustomName());
+                    slotState.setSlotLabelIsCustom(true);
+                }
+                if (slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters && slotState.getSlotName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
+                    slotState.setSlotLabel("Parameters");
+                }
+                if (graph != null && graph.containsNode(inputSlot)) {
+                    if (!inputSlot.getInfo().isOptional() && graph.getGraph().inDegreeOf(inputSlot) <= 0 && !(inputSlot.getNode() instanceof GraphWrapperAlgorithmInput)) {
+                        slotState.setSlotStatus(SlotStatus.Unconnected);
+                    } else {
+                        slotState.setSlotStatus(SlotStatus.Default);
+                    }
                 }
             }
         }
@@ -1015,25 +1049,27 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         if (graph != null && graph.getProject() != null) {
             cachedData = graph.getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
         }
-        for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
 
-            outputSlot.getInfo().getEventBus().register(this);
+        if(showOutputs) {
+            for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+                outputSlot.getInfo().getEventBus().register(this);
 
-            JIPipeNodeUISlotActiveArea slotState = new JIPipeNodeUISlotActiveArea(this, JIPipeSlotType.Output, outputSlot.getName(), outputSlot);
-            slotState.setIcon(JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()).getImage());
-            outputSlotMap.put(outputSlot.getName(), slotState);
-            if (StringUtils.isNullOrEmpty(outputSlot.getInfo().getCustomName())) {
-                slotState.setSlotLabel(outputSlot.getName());
-                slotState.setSlotLabelIsCustom(false);
-            } else {
-                slotState.setSlotLabel(outputSlot.getInfo().getCustomName());
-                slotState.setSlotLabelIsCustom(true);
-            }
+                JIPipeNodeUISlotActiveArea slotState = new JIPipeNodeUISlotActiveArea(this, JIPipeSlotType.Output, outputSlot.getName(), outputSlot);
+                slotState.setIcon(JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()).getImage());
+                outputSlotMap.put(outputSlot.getName(), slotState);
+                if (StringUtils.isNullOrEmpty(outputSlot.getInfo().getCustomName())) {
+                    slotState.setSlotLabel(outputSlot.getName());
+                    slotState.setSlotLabelIsCustom(false);
+                } else {
+                    slotState.setSlotLabel(outputSlot.getInfo().getCustomName());
+                    slotState.setSlotLabelIsCustom(true);
+                }
 
-            if (cachedData != null && cachedData.containsKey(outputSlot.getName())) {
-                slotState.setSlotStatus(SlotStatus.Cached);
-            } else {
-                slotState.setSlotStatus(SlotStatus.Default);
+                if (cachedData != null && cachedData.containsKey(outputSlot.getName())) {
+                    slotState.setSlotStatus(SlotStatus.Cached);
+                } else {
+                    slotState.setSlotStatus(SlotStatus.Default);
+                }
             }
         }
 

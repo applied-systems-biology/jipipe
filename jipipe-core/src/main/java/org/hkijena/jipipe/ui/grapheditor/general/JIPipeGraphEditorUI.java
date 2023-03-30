@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
  * A panel around {@link JIPipeGraphCanvasUI} that comes with scrolling/panning, properties panel,
  * and a menu bar
  */
-public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener {
+public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable {
 
     public static final int FLAGS_NONE = 0;
     public static final int FLAGS_SPLIT_PANE_VERTICAL = 1;
@@ -119,6 +119,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             canvasUI.crop(true);
             selectDefaultTool();
         });
+    }
+
+    @Override
+    public void dispose() {
+        UIUtils.unregisterEventBus(JIPipe.getNodes().getEventBus(), this);
+        UIUtils.unregisterEventBus(algorithmGraph.getEventBus(), this);
+        canvasUI.dispose();
     }
 
     /**

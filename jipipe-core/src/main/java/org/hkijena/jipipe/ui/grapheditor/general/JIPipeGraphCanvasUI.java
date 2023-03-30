@@ -49,6 +49,7 @@ import org.hkijena.jipipe.utils.ui.ScreenImage;
 import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
 import org.jetbrains.annotations.NotNull;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
+import org.scijava.Disposable;
 
 import javax.swing.FocusManager;
 import javax.swing.*;
@@ -63,7 +64,7 @@ import java.util.stream.Collectors;
 /**
  * UI that displays an {@link JIPipeGraph}
  */
-public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbenchAccess, MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort {
+public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbenchAccess, MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort, Disposable {
 
     public static final DropShadowRenderer DROP_SHADOW_BORDER = new DropShadowRenderer(Color.BLACK,
             5,
@@ -170,6 +171,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         graph.getEventBus().register(this);
         initializeHotkeys();
         updateAssets();
+    }
+
+    @Override
+    public void dispose() {
+        graph.getEventBus().unregister(this);
+        for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
+            try {
+                nodeUI.getEventBus().unregister(this);
+            }
+            catch (Throwable e) {
+            }
+        }
+        removeAllNodes();
     }
 
     public boolean isAutoHideEdges() {
@@ -284,6 +298,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private void removeAllNodes() {
         for (JIPipeNodeUI ui : ImmutableList.copyOf(nodeUIs.values())) {
             remove(ui);
+            try {
+                ui.getEventBus().unregister(this);
+            }
+            catch (Throwable e) {
+            }
         }
         nodeUIs.clear();
         selection.clear();

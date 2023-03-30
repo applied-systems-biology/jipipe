@@ -475,6 +475,9 @@ public class DocumentTabPane extends JPanel implements Disposable {
      * @param tab the tab
      */
     public void forceCloseTab(DocumentTab tab) {
+        if(tab.content instanceof Disposable) {
+            ((Disposable) tab.content).dispose();
+        }
         tabs.remove(tab);
         tabHistory.remove(tab);
         singletonTabInstances.inverse().remove(tab);
