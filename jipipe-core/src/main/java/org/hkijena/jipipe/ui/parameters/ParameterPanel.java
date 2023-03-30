@@ -279,7 +279,6 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
         Set<JIPipeParameterAccess> hiddenAccesses = new HashSet<>();
 
         if(traversed == null) {
-            dispose();
             return;
         }
 
