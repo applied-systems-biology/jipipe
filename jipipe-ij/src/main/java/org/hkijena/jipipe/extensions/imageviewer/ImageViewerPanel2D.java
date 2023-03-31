@@ -932,13 +932,13 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         }
         this.currentSlice = null;
         this.statisticsMap.clear();
+        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
+            plugin.onImageChanged();
+        }
         refreshSliders();
         refreshSlice();
         refreshFormPanel();
         refreshMenus();
-        for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
-            plugin.onImageChanged();
-        }
         revalidate();
         repaint();
         uploadSliceToCanvas();

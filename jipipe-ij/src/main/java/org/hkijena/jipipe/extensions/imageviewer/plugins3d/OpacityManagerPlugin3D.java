@@ -22,6 +22,15 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
     @Override
     public void onImageChanged() {
         alphaLutEditors.clear();
+        if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
+
+        }
+        else {
+            while (alphaLutEditors.size() < getCurrentImagePlus().getNChannels()) {
+                ImageViewerOpacityLUTEditor editor = new ImageViewer3DOpacityLUTEditor(getViewerPanel(), alphaLutEditors.size());
+                alphaLutEditors.add(editor);
+            }
+        }
     }
 
     @Override
@@ -37,10 +46,6 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
             ImageViewerOpacityLUTEditor alphaEditor = alphaLutEditors.get(0);
             formPanel.addToForm(alphaEditor, new JLabel("Image"));
         } else {
-            while (alphaLutEditors.size() < getCurrentImagePlus().getNChannels()) {
-                ImageViewerOpacityLUTEditor editor = new ImageViewer3DOpacityLUTEditor(getViewerPanel(), alphaLutEditors.size());
-                alphaLutEditors.add(editor);
-            }
             for (int channel = 0; channel < getCurrentImagePlus().getNChannels(); channel++) {
                 ImageViewerOpacityLUTEditor alphaEditor = alphaLutEditors.get(channel);
                 formPanel.addWideToForm(alphaEditor);

@@ -25,6 +25,16 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
     @Override
     public void onImageChanged() {
         lutEditors.clear();
+        if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
+
+        }
+        else {
+            while (lutEditors.size() < getCurrentImagePlus().getNChannels()) {
+                ImageViewerLUTEditor editor = new ImageViewer3DLUTEditor(getViewerPanel(), lutEditors.size());
+                editor.loadLUTFromImage();
+                lutEditors.add(editor);
+            }
+        }
     }
 
     @Override
@@ -38,11 +48,6 @@ public class LUTManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
             headerPanel.add(toRGBButton);
             toRGBButton.addActionListener(e -> splitChannels());
         } else {
-            while (lutEditors.size() < getCurrentImagePlus().getNChannels()) {
-                ImageViewerLUTEditor editor = new ImageViewer3DLUTEditor(getViewerPanel(), lutEditors.size());
-                editor.loadLUTFromImage();
-                lutEditors.add(editor);
-            }
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("LUT", UIUtils.getIconFromResources("actions/color-gradient.png"));
             if (getCurrentImagePlus().getNChannels() == 3) {
                 JButton toRGBButton = new JButton("Convert to RGB", UIUtils.getIconFromResources("actions/colors-rgb.png"));
