@@ -1,36 +1,45 @@
 package org.hkijena.jipipe.ui.cache;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
+import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 
 /**
  * Interface that allows users to control refresh to cache and update thew current item within directly within the viewed data
  */
-public class JIPipeCachedDataDisplayCacheControl {
+public class JIPipeCachedDataDisplayCacheControl implements Disposable {
 
     private final JIPipeProjectWorkbench workbench;
     private final JToolBar toolBar;
     private final JIPipeGraphNode algorithm;
     private JCheckBoxMenuItem cacheAwareToggle;
+
+    private JCheckBoxMenuItem algorithmAwareToggle;
     private JButton updateCacheButton;
     private JIPipeRunnerQueueUI runnerQueue;
+    private final Timer algorithmParameterChangeTimer = new Timer(250, e -> scheduleUpdateCache());
 
     public JIPipeCachedDataDisplayCacheControl(JIPipeProjectWorkbench workbench, JToolBar toolBar, JIPipeGraphNode algorithm) {
         this.workbench = workbench;
         this.toolBar = toolBar;
         this.algorithm = algorithm;
+        algorithmParameterChangeTimer.setRepeats(false);
         initialize();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        algorithm.getEventBus().register(this);
         updateRunnerQueueStatus();
     }
 
@@ -47,6 +56,41 @@ public class JIPipeCachedDataDisplayCacheControl {
     @Subscribe
     public void onRunnerStarted(JIPipeRunnable.StartedEvent event) {
         updateRunnerQueueStatus();
+    }
+
+    @Override
+    public void dispose() {
+        algorithmParameterChangeTimer.stop();
+        UIUtils.unregisterEventBus(JIPipeRunnerQueue.getInstance().getEventBus(), this);
+        UIUtils.unregisterEventBus(algorithm.getEventBus(), this);
+    }
+
+    @Subscribe
+    private void onAlgorithmParameterChanged(JIPipeParameterCollection.ParameterChangedEvent e) {
+        if(algorithmAwareToggle != null && algorithmAwareToggle.getState()) {
+            algorithmParameterChangeTimer.restart();
+        }
+    }
+
+    private void scheduleUpdateCache() {
+        // Cancel previous
+        for (JIPipeRunWorker worker : ImmutableList.copyOf(JIPipeRunnerQueue.getInstance().getQueue())) {
+            if(worker.getRun() instanceof QuickRun) {
+                QuickRun quickRun = (QuickRun) worker.getRun();
+                if(quickRun.getTargetNode() == algorithm) {
+                    JIPipeRunnerQueue.getInstance().cancel(worker.getRun());
+                }
+            }
+        }
+
+        if(JIPipeRunnerQueue.getInstance().getCurrentRun() instanceof QuickRun) {
+            QuickRun quickRun = (QuickRun) JIPipeRunnerQueue.getInstance().getCurrentRun();
+            if(quickRun != null && quickRun.getTargetNode() == algorithm) {
+                JIPipeRunnerQueue.getInstance().cancel(quickRun);
+            }
+        }
+        // Re-schedule
+        runUpdateCache();
     }
 
     private void updateRunnerQueueStatus() {
@@ -85,6 +129,10 @@ public class JIPipeCachedDataDisplayCacheControl {
         cacheAwareToggle.setToolTipText("Keep up-to-date with cache.");
         cacheAwareToggle.setSelected(true);
         menu.add(cacheAwareToggle);
+
+        algorithmAwareToggle = new JCheckBoxMenuItem("Update on parameter changes");
+        algorithmAwareToggle.setToolTipText("If enabled, automatically update the cache when algorithm parameters change");
+        menu.add(algorithmAwareToggle);
 
         runnerQueue = new JIPipeRunnerQueueUI(workbench);
     }

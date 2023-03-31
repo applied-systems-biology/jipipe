@@ -157,6 +157,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     @Override
     public void dispose() {
         dataSource = null;
+        if(cacheAwareToggle != null) {
+            cacheAwareToggle.dispose();
+        }
         super.dispose();
     }
 
