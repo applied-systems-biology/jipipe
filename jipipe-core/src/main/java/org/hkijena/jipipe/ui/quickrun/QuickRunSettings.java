@@ -35,6 +35,8 @@ public class QuickRunSettings implements JIPipeParameterCollection {
     private boolean saveToDisk = true;
     private boolean excludeSelected = false;
     private boolean storeIntermediateResults = false;
+
+    private boolean silent = false;
     private int numThreads = RuntimeSettings.getInstance().getDefaultQuickRunThreads();
 
     /**
@@ -130,5 +132,13 @@ public class QuickRunSettings implements JIPipeParameterCollection {
     @JIPipeParameter("store-intermediate-results")
     public void setStoreIntermediateResults(boolean storeIntermediateResults) {
         this.storeIntermediateResults = storeIntermediateResults;
+    }
+
+    public boolean isSilent() {
+        return silent;
+    }
+
+    public void setSilent(boolean silent) {
+        this.silent = silent;
     }
 }

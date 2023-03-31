@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
@@ -23,6 +24,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -51,6 +53,8 @@ import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
 import org.hkijena.jipipe.ui.project.LoadResultDirectoryIntoCacheRun;
 import org.hkijena.jipipe.ui.project.LoadResultZipIntoCacheRun;
+import org.hkijena.jipipe.ui.quickrun.QuickRun;
+import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
@@ -60,6 +64,7 @@ import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -99,6 +104,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private ReloadableValidityChecker validityCheckerPanel;
     private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
+
+    private final Map<JIPipeGraphNode, Timer> algorithmUpdateTimers = new WeakHashMap<>();
 
     /**
      * @param window           Parent window
@@ -273,6 +280,37 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         initializeMenu();
         initializeStatusBar();
         sendStatusBarText("Welcome to JIPipe");
+    }
+
+    public void runUpdateCacheLater(JIPipeGraphNode algorithm) {
+        Timer timer = algorithmUpdateTimers.getOrDefault(algorithm, null);
+        if(timer == null) {
+            timer = new Timer(250, e -> runUpdateCache(algorithm));
+            timer.setRepeats(false);
+            algorithmUpdateTimers.put(algorithm, timer);
+        }
+        timer.restart();
+    }
+
+    public void runCacheIntermediateResults(JIPipeGraphNode algorithm) {
+        QuickRunSettings settings = new QuickRunSettings();
+        settings.setLoadFromCache(true);
+        settings.setStoreIntermediateResults(true);
+        settings.setSaveToDisk(false);
+        settings.setStoreToCache(true);
+        QuickRun testBench = new QuickRun(getProject(), algorithm, settings);
+        JIPipeRunnerQueue.getInstance().enqueue(testBench);
+    }
+
+    public void runUpdateCache(JIPipeGraphNode algorithm) {
+        QuickRunSettings settings = new QuickRunSettings();
+        settings.setSilent(true);
+        settings.setLoadFromCache(true);
+        settings.setStoreIntermediateResults(false);
+        settings.setSaveToDisk(false);
+        settings.setStoreToCache(true);
+        QuickRun testBench = new QuickRun(getProject(), algorithm, settings);
+        JIPipeRunnerQueue.getInstance().enqueue(testBench);
     }
 
     /**

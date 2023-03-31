@@ -8,7 +8,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
-import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
@@ -30,13 +29,11 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
     private JCheckBoxMenuItem algorithmAwareToggle;
     private JButton updateCacheButton;
     private JIPipeRunnerQueueUI runnerQueue;
-    private final Timer algorithmParameterChangeTimer = new Timer(250, e -> scheduleUpdateCache());
 
     public JIPipeCachedDataDisplayCacheControl(JIPipeProjectWorkbench workbench, JToolBar toolBar, JIPipeGraphNode algorithm) {
         this.workbench = workbench;
         this.toolBar = toolBar;
         this.algorithm = algorithm;
-        algorithmParameterChangeTimer.setRepeats(false);
         initialize();
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
         algorithm.getEventBus().register(this);
@@ -60,7 +57,6 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
 
     @Override
     public void dispose() {
-        algorithmParameterChangeTimer.stop();
         UIUtils.unregisterEventBus(JIPipeRunnerQueue.getInstance().getEventBus(), this);
         UIUtils.unregisterEventBus(algorithm.getEventBus(), this);
     }
@@ -68,29 +64,8 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
     @Subscribe
     private void onAlgorithmParameterChanged(JIPipeParameterCollection.ParameterChangedEvent e) {
         if(algorithmAwareToggle != null && algorithmAwareToggle.getState()) {
-            algorithmParameterChangeTimer.restart();
+           workbench.runUpdateCacheLater(algorithm);
         }
-    }
-
-    private void scheduleUpdateCache() {
-        // Cancel previous
-        for (JIPipeRunWorker worker : ImmutableList.copyOf(JIPipeRunnerQueue.getInstance().getQueue())) {
-            if(worker.getRun() instanceof QuickRun) {
-                QuickRun quickRun = (QuickRun) worker.getRun();
-                if(quickRun.getTargetNode() == algorithm) {
-                    JIPipeRunnerQueue.getInstance().cancel(worker.getRun());
-                }
-            }
-        }
-
-        if(JIPipeRunnerQueue.getInstance().getCurrentRun() instanceof QuickRun) {
-            QuickRun quickRun = (QuickRun) JIPipeRunnerQueue.getInstance().getCurrentRun();
-            if(quickRun != null && quickRun.getTargetNode() == algorithm) {
-                JIPipeRunnerQueue.getInstance().cancel(quickRun);
-            }
-        }
-        // Re-schedule
-        runUpdateCache();
     }
 
     private void updateRunnerQueueStatus() {
@@ -115,12 +90,12 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
 
         JMenuItem updateCacheItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("actions/database.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are discarded.");
-        updateCacheItem.addActionListener(e -> runUpdateCache());
+        updateCacheItem.addActionListener(e -> workbench.runUpdateCache(algorithm));
         menu.add(updateCacheItem);
 
         JMenuItem cacheIntermediateResultsItem = new JMenuItem("Cache intermediate results", UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are also cached.");
-        cacheIntermediateResultsItem.addActionListener(e -> runCacheIntermediateResults());
+        cacheIntermediateResultsItem.addActionListener(e -> workbench.runCacheIntermediateResults(algorithm));
         menu.add(cacheIntermediateResultsItem);
 
         menu.addSeparator();
@@ -150,28 +125,8 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
         return cacheAwareToggle.isSelected();
     }
 
-    private void runCacheIntermediateResults() {
-        QuickRunSettings settings = new QuickRunSettings();
-        settings.setLoadFromCache(true);
-        settings.setStoreIntermediateResults(true);
-        settings.setSaveToDisk(false);
-        settings.setStoreToCache(true);
-        QuickRun testBench = new QuickRun(getProject(), algorithm, settings);
-        JIPipeRunnerQueue.getInstance().enqueue(testBench);
-    }
-
     private JIPipeProject getProject() {
         return workbench.getProject();
-    }
-
-    private void runUpdateCache() {
-        QuickRunSettings settings = new QuickRunSettings();
-        settings.setLoadFromCache(true);
-        settings.setStoreIntermediateResults(false);
-        settings.setSaveToDisk(false);
-        settings.setStoreToCache(true);
-        QuickRun testBench = new QuickRun(getProject(), algorithm, settings);
-        JIPipeRunnerQueue.getInstance().enqueue(testBench);
     }
 
     public JIPipeGraphNode getAlgorithm() {
