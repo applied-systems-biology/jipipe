@@ -64,7 +64,7 @@ public class JIPipeCachedDataDisplayCacheControl {
     }
 
     private void initialize() {
-        updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
+        updateCacheButton = new JButton("Update", UIUtils.getIconFromResources("actions/run-play.png"));
         updateCacheButton.setToolTipText("Updates the cache, so the currently viewed data is updated.");
 
         JPopupMenu menu = UIUtils.addPopupMenuToComponent(updateCacheButton);
@@ -81,7 +81,7 @@ public class JIPipeCachedDataDisplayCacheControl {
 
         menu.addSeparator();
 
-        cacheAwareToggle = new JCheckBoxMenuItem("Keep up-to-date");
+        cacheAwareToggle = new JCheckBoxMenuItem("Auto-update from cache");
         cacheAwareToggle.setToolTipText("Keep up-to-date with cache.");
         cacheAwareToggle.setSelected(true);
         menu.add(cacheAwareToggle);
