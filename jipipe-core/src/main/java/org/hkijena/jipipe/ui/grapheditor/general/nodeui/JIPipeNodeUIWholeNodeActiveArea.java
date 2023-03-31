@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.ui.grapheditor.general.nodeui;
 
 public class JIPipeNodeUIWholeNodeActiveArea extends JIPipeNodeUIActiveArea {
-    public JIPipeNodeUIWholeNodeActiveArea() {
-        super(999);
+    public JIPipeNodeUIWholeNodeActiveArea(JIPipeNodeUI nodeUI) {
+        super(nodeUI, 999);
     }
 }

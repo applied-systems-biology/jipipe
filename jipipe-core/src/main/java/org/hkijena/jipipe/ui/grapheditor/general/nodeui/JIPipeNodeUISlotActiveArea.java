@@ -10,8 +10,6 @@ import java.awt.*;
  */
 public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
 
-    private final JIPipeNodeUI nodeUI;
-
     private final JIPipeSlotType slotType;
     private final String slotName;
 
@@ -29,8 +27,7 @@ public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
     private Image icon;
 
     public JIPipeNodeUISlotActiveArea(JIPipeNodeUI nodeUI, JIPipeSlotType slotType, String slotName, JIPipeDataSlot slot) {
-        super(100);
-        this.nodeUI = nodeUI;
+        super(nodeUI, 100);
         this.slotType = slotType;
         this.slotName = slotName;
         this.slot = slot;
@@ -99,10 +96,6 @@ public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
 
     public JIPipeDataSlot getSlot() {
         return slot;
-    }
-
-    public JIPipeNodeUI getNodeUI() {
-        return nodeUI;
     }
 
     public boolean isInput() {

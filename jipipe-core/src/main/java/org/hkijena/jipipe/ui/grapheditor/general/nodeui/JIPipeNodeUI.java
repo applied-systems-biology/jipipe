@@ -273,7 +273,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     (int) Math.round(centerY - 11 * zoom),
                     (int) Math.round(22 * zoom),
                     (int) Math.round(22 * zoom));
-            JIPipeNodeUISlotButtonActiveArea slotButtonActiveArea = new JIPipeNodeUISlotButtonActiveArea(slotState);
+            JIPipeNodeUISlotButtonActiveArea slotButtonActiveArea = new JIPipeNodeUISlotButtonActiveArea(this, slotState);
             slotButtonActiveArea.setZoomedHitArea(slotButtonArea);
             activeAreas.add(slotButtonActiveArea);
         }
@@ -299,7 +299,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     (int) Math.round(centerY - 11 * zoom),
                     (int) Math.round(22 * zoom),
                     (int) Math.round(22 * zoom));
-            JIPipeNodeUISlotButtonActiveArea slotButtonActiveArea = new JIPipeNodeUISlotButtonActiveArea(slotState);
+            JIPipeNodeUISlotButtonActiveArea slotButtonActiveArea = new JIPipeNodeUISlotButtonActiveArea(this, slotState);
             slotButtonActiveArea.setZoomedHitArea(slotButtonArea);
             activeAreas.add(slotButtonActiveArea);
         }
@@ -324,7 +324,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
 
         // Whole node
-        JIPipeNodeUIWholeNodeActiveArea wholeNodeActiveArea = new JIPipeNodeUIWholeNodeActiveArea();
+        JIPipeNodeUIWholeNodeActiveArea wholeNodeActiveArea = new JIPipeNodeUIWholeNodeActiveArea(this);
         wholeNodeActiveArea.setZoomedHitArea(new Rectangle(0, 0, getWidth(), getHeight()));
         activeAreas.add(wholeNodeActiveArea);
 
@@ -347,7 +347,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + mainFontMetrics.stringWidth(nameLabel));
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
 
-            JIPipeNodeUIRunNodeActiveArea activeArea = new JIPipeNodeUIRunNodeActiveArea();
+            JIPipeNodeUIRunNodeActiveArea activeArea = new JIPipeNodeUIRunNodeActiveArea(this);
             activeArea.setZoomedHitArea(new Rectangle((int) Math.round(startX), (int) Math.round(centerY - 11 * zoom), (int) Math.round(22 * zoom), (int) Math.round(22 * zoom)));
 
             activeAreas.add(activeArea);
@@ -457,7 +457,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 sumInputSlotWidths += nativeWidth;
             }
             if (slotsInputsEditable) {
-                addInputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(JIPipeSlotType.Input);
+                addInputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(this, JIPipeSlotType.Input);
                 double nativeWidth = 22;
                 addInputSlotArea.setNativeWidth(nativeWidth);
                 addInputSlotArea.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
@@ -477,7 +477,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 sumOutputSlotWidths += nativeWidth;
             }
             if (slotsOutputsEditable) {
-                addOutputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(JIPipeSlotType.Output);
+                addOutputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(this, JIPipeSlotType.Output);
                 double nativeWidth = 22;
                 addOutputSlotArea.setNativeWidth(nativeWidth);
                 addOutputSlotArea.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
@@ -1010,6 +1010,28 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             }
         }
         return null;
+    }
+
+    public JIPipeNodeUIActiveArea pickAddSlotAtMousePosition(MouseEvent event) {
+        if(addInputSlotArea != null || addOutputSlotArea != null) {
+            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphCanvasUI(), event, this);
+            Point mousePosition = converted.getPoint();
+            if(addInputSlotArea != null && addInputSlotArea.getZoomedHitArea().contains(mousePosition)) {
+                return addInputSlotArea;
+            }
+            if(addOutputSlotArea != null && addOutputSlotArea.getZoomedHitArea().contains(mousePosition)) {
+                return addOutputSlotArea;
+            }
+        }
+        return null;
+    }
+
+    public JIPipeNodeUIAddSlotButtonActiveArea getAddInputSlotArea() {
+        return addInputSlotArea;
+    }
+
+    public JIPipeNodeUIAddSlotButtonActiveArea getAddOutputSlotArea() {
+        return addOutputSlotArea;
     }
 
     private void updateSlots() {
