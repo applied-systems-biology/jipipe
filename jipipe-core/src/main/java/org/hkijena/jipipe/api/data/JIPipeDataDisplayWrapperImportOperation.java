@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -29,8 +30,10 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
     public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         ImportDataRun run = new ImportDataRun(rowStorageFolder, slot.getAcceptedDataType(), row);
         run.onFinished(event -> {
-            JIPipeData data = run.getOutputTable().getData(0, slot.getAcceptedDataType(), progressInfo);
-            JIPipeDataTableDataSource dataSource = new JIPipeDataTableDataSource(run.getOutputTable(), 0);
+            JIPipeDataTable outputTable = run.getOutputTable();
+            run.dispose();
+            JIPipeData data = outputTable.getData(0, slot.getAcceptedDataType(), progressInfo);
+            JIPipeDataTableDataSource dataSource = new JIPipeDataTableDataSource(outputTable, 0);
             data.display(displayName, workbench, dataSource);
         });
         JIPipeRunnerQueue.getInstance().enqueue(run);
@@ -62,7 +65,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
         return displayOperation.getIcon();
     }
 
-    public static class ImportDataRun implements JIPipeRunnable {
+    public static class ImportDataRun implements JIPipeRunnable, Disposable {
 
         private final Path rowStorageFolder;
         private final Class<? extends JIPipeData> dataType;
@@ -94,16 +97,17 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
 
         @Override
         public void run() {
-            try {
-                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), dataType, progressInfo);
-                outputTable.addData(data, metadataRow.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
-            } finally {
-                outputTable = null;
-            }
+            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), dataType, progressInfo);
+            outputTable.addData(data, metadataRow.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
 
         public JIPipeDataTable getOutputTable() {
             return outputTable;
+        }
+
+        @Override
+        public void dispose() {
+            outputTable = null;
         }
     }
 }
