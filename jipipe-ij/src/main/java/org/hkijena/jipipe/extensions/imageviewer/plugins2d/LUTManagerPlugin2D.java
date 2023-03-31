@@ -27,14 +27,15 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
     @Override
     public void onImageChanged() {
         lutEditors.clear();
-        if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
+        if(getCurrentImage() != null) {
+            if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
 
-        }
-        else {
-            while (lutEditors.size() < getCurrentImagePlus().getNChannels()) {
-                ImageViewerLUTEditor editor = new ImageViewer2DLUTEditor(getViewerPanel(), lutEditors.size());
-                editor.loadLUTFromImage();
-                lutEditors.add(editor);
+            } else {
+                while (lutEditors.size() < getCurrentImagePlus().getNChannels()) {
+                    ImageViewerLUTEditor editor = new ImageViewer2DLUTEditor(getViewerPanel(), lutEditors.size());
+                    editor.loadLUTFromImage();
+                    lutEditors.add(editor);
+                }
             }
         }
     }

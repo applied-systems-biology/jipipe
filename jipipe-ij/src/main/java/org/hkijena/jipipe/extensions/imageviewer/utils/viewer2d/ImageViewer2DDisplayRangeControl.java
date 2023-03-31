@@ -361,6 +361,9 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
             g.setColor(UIManager.getColor("Label.foreground"));
 
             DecimalFormat format;
+            if(displayRangeControl.getCalibrationPlugin().getCurrentImagePlus() == null) {
+                return;
+            }
             if (displayRangeControl.calibrationPlugin.getCurrentImagePlus().getType() == ImagePlus.GRAY32) {
                 format = DECIMAL_FORMAT_FLOAT;
             } else {

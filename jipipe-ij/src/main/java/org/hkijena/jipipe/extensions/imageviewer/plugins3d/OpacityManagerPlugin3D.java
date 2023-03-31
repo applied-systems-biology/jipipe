@@ -22,13 +22,14 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
     @Override
     public void onImageChanged() {
         alphaLutEditors.clear();
-        if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
+        if(getCurrentImage() != null) {
+            if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
 
-        }
-        else {
-            while (alphaLutEditors.size() < getCurrentImagePlus().getNChannels()) {
-                ImageViewerOpacityLUTEditor editor = new ImageViewer3DOpacityLUTEditor(getViewerPanel(), alphaLutEditors.size());
-                alphaLutEditors.add(editor);
+            } else {
+                while (alphaLutEditors.size() < getCurrentImagePlus().getNChannels()) {
+                    ImageViewerOpacityLUTEditor editor = new ImageViewer3DOpacityLUTEditor(getViewerPanel(), alphaLutEditors.size());
+                    alphaLutEditors.add(editor);
+                }
             }
         }
     }
