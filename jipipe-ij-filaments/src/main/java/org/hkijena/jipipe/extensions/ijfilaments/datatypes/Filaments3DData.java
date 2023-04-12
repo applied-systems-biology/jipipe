@@ -374,7 +374,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         tableData.addStringColumn("uuid");
         tableData.addStringColumn("color");
         tableData.addNumericColumn("length");
-        tableData.addNumericColumn("plength");
+        tableData.addNumericColumn("ulength");
         Map<String, Object> rowData = new LinkedHashMap<>();
         for (FilamentEdge edge : edgeSet()) {
             rowData.clear();
@@ -396,6 +396,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         target.put(prefix + "color", ColorUtils.colorToHexString(edge.getColor()));
         target.put(prefix + "length", getEdgeLength(edge, false, Quantity.UNIT_PIXELS));
         target.put(prefix + "ulength", getEdgeLength(edge, true, unit));
+        target.put(prefix + "unit", unit);
         for (Map.Entry<String, String> entry : edge.getMetadata().entrySet()) {
             target.put(prefix + entry.getKey(), StringUtils.tryParseDoubleOrReturnString(entry.getValue()));
         }

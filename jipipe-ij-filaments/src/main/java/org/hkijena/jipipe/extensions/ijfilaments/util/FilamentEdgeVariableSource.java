@@ -18,6 +18,7 @@ public class FilamentEdgeVariableSource implements ExpressionParameterVariableSo
         VARIABLES.add(new ExpressionParameterVariable("UUID", "The unique ID of the vertex", "uuid"));
         VARIABLES.add(new ExpressionParameterVariable("Length (pixels)", "The length of the edge in pixels", "length"));
         VARIABLES.add(new ExpressionParameterVariable("Length (unit)", "The length of the edge in physical size (if available)", "ulength"));
+        VARIABLES.add(new ExpressionParameterVariable("Unit", "The unit of the length", "unit"));
 
         VARIABLES.add(new ExpressionParameterVariable("Source UUID", "The unique ID of the vertex", "source.uuid"));
         VARIABLES.add(new ExpressionParameterVariable("Source centroid X", "The X location of the centroid", "source.x"));
