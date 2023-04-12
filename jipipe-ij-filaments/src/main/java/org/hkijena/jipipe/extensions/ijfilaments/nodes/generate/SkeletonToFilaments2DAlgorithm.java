@@ -15,6 +15,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.generate;
 
 import ij.ImagePlus;
+import ij.measure.Calibration;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,6 +27,8 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.NonSpatialPoint3d;
 import org.hkijena.jipipe.extensions.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -50,6 +53,8 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlus skeleton = dataBatch.getInputData("Skeleton", ImagePlusData.class, progressInfo).getImage();
         Filaments3DData filamentsData = new Filaments3DData();
 
+        Calibration calibration = skeleton.getCalibration();
+
         ImageJUtils.forEachIndexedZCTSlice(skeleton, (ip, index) -> {
             Map<Point, FilamentVertex> vertexMap = new HashMap<>();
 
@@ -62,6 +67,19 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                         FilamentVertex vertex = new FilamentVertex();
                         vertex.setSpatialLocation(new Point3d(x, y, index.getZ()));
                         vertex.setNonSpatialLocation(new NonSpatialPoint3d(index.getC(), index.getT()));
+                        if(calibration != null) {
+                            if(!StringUtils.isNullOrEmpty(calibration.getXUnit())) {
+                                vertex.setPhysicalVoxelSizeX(new Quantity(calibration.pixelWidth, calibration.getXUnit()));
+                                vertex.setPhysicalVoxelSizeY(new Quantity(calibration.pixelWidth, calibration.getXUnit())); // X = Y condition
+                                vertex.setPhysicalVoxelSizeZ(new Quantity(1, calibration.getZUnit())); // X = Y = Z condition
+                            }
+                            if(!StringUtils.isNullOrEmpty(calibration.getYUnit())) {
+                                vertex.setPhysicalVoxelSizeY(new Quantity(calibration.pixelHeight, calibration.getYUnit()));
+                            }
+                            if(!StringUtils.isNullOrEmpty(calibration.getZUnit())) {
+                                vertex.setPhysicalVoxelSizeZ(new Quantity(calibration.pixelDepth, calibration.getZUnit()));
+                            }
+                        }
                         filamentsData.addVertex(vertex);
                         vertexMap.put(new Point(x, y), vertex);
                     }

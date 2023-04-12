@@ -39,10 +39,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureEdgesAlgor
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureVerticesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.merge.MergeFilamentsAlgorithm;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.ChangeFilamentVertexPropertiesAlgorithm;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexIntensityFromImageAlgorithm;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexMetadataFromImageAlgorithm;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.SetVertexRadiusFromImageAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.modify.*;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.FixOverlapsNonBranchingAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.RemoveDuplicateVerticesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SimplifyFilamentsAlgorithm;
@@ -151,6 +148,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexRadiusFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-set-vertex-intensity-from-image", SetVertexIntensityFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-set-vertex-metadata-from-image", SetVertexMetadataFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
+        registerNodeType("filaments-set-vertex-calibration-from-image", SetVertexPhysicalSizeFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
         registerNodeType("filaments-remove-duplicate-vertices", RemoveDuplicateVerticesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("filaments-smooth-downscale", SmoothFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("filaments-simplify", SimplifyFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));

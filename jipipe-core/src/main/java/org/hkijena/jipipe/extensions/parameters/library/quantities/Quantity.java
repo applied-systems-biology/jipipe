@@ -122,6 +122,10 @@ public class Quantity {
         }
     }
 
+    public static boolean isPixelsUnit(String unit) {
+        return "px".equals(unit) || "pixels".equals(unit) || "pixel".equals(unit);
+    }
+
     @Override
     public String toString() {
         return (value + " " + unit).trim();
@@ -172,7 +176,7 @@ public class Quantity {
     }
 
     public boolean unitIsPixels() {
-        return "px".equals(unit) || "pixels".equals(unit) || "pixel".equals(unit);
+        return isPixelsUnit(unit);
     }
 
     public Quantity convertToPixels(Quantity pixelSize) {
