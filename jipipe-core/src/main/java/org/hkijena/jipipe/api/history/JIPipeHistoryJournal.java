@@ -53,12 +53,12 @@ public interface JIPipeHistoryJournal {
     default void snapshotBeforeCutNodes(Set<JIPipeGraphNode> nodes, UUID compartment) {
         if (nodes.size() == 1) {
             snapshot("Cut node",
-                    "Node <code>" + nodes.iterator().next().getDisplayName() + "</code>",
+                    "Node '" + nodes.iterator().next().getDisplayName() + "'",
                     compartment,
                     UIUtils.getIconFromResources("actions/edit-cut.png"));
         } else {
             snapshot("Cut node",
-                    "Nodes <ul>" + nodes.stream().map(n -> "<li><code>" + n.getDisplayName() + "</li></code>").collect(Collectors.joining()) + "</ul>",
+                    "Nodes " + nodes.stream().map(n -> "'" + n.getDisplayName() + "'").collect(Collectors.joining(", ")),
                     compartment,
                     UIUtils.getIconFromResources("actions/edit-cut.png"));
         }
@@ -71,7 +71,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeCutCompartment(JIPipeProjectCompartment compartment) {
         snapshot("Cut compartment",
-                "Compartment <code>" + compartment.getName() + "</code>",
+                "Compartment '" + compartment.getName() + "'",
                 compartment.getProjectCompartmentUUID(),
                 UIUtils.getIconFromResources("actions/edit-cut.png"));
     }
@@ -84,7 +84,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeDisconnectAll(JIPipeDataSlot slot, UUID compartment) {
         snapshot("Disconnect all slots",
-                "Disconnecting all edges from <code>" + slot.getDisplayName() + "</code>",
+                "Disconnecting all edges from '" + slot.getDisplayName() + "'",
                 compartment,
                 UIUtils.getIconFromResources("actions/dialog-close.png"));
     }
@@ -98,7 +98,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeDisconnect(JIPipeDataSlot source, JIPipeDataSlot target, UUID compartment) {
         snapshot("Disconnect slots",
-                "Disconnecting <code>" + source.getDisplayName() + "</code>" + " and <code>" + target.getDisplayName() + "</code>",
+                "Disconnecting '" + source.getDisplayName() + "'" + " and '" + target.getDisplayName() + "'",
                 compartment,
                 UIUtils.getIconFromResources("actions/dialog-close.png"));
     }
@@ -112,7 +112,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeConnect(JIPipeDataSlot source, JIPipeDataSlot target, UUID compartment) {
         snapshot("Connect slots",
-                "Connecting <code>" + source.getDisplayName() + "</code>" + " and <code>" + target.getDisplayName() + "</code>",
+                "Connecting '" + source.getDisplayName() + "'" + " and '" + target.getDisplayName() + "'",
                 compartment,
                 UIUtils.getIconFromResources("actions/plug.png"));
     }
@@ -188,7 +188,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeAddNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Add " + nodes.size() + " nodes",
-                "Added following nodes into the graph: <ul>" + nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
+                "Added following nodes into the graph: " + nodes.stream().map(s -> "'" + s.getName() + "'").collect(Collectors.joining(", ")),
                 compartment,
                 UIUtils.getIconFromResources("actions/list-add.png"));
     }
@@ -201,7 +201,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforePasteNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Paste " + nodes.size() + " nodes",
-                "Added following nodes into the graph: <ul>" + nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
+                "Added following nodes into the graph: " + nodes.stream().map(s -> "'" + s.getName() + "'").collect(Collectors.joining(", ")),
                 compartment,
                 UIUtils.getIconFromResources("actions/edit-paste.png"));
     }
@@ -214,7 +214,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeAddNode(JIPipeGraphNode node, UUID compartment) {
         snapshot("Add node",
-                "Added a node <code>" + node.getName() + "</code> into the graph.",
+                "Added a node '" + node.getName() + "' into the graph.",
                 compartment,
                 UIUtils.getIconFromResources("actions/list-add.png"));
     }
@@ -226,7 +226,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeAddCompartment(String compartment) {
         snapshot("Add compartment",
-                "Added a compartment <code>" + compartment + "</code>.",
+                "Added a compartment '" + compartment + "'.",
                 null,
                 UIUtils.getIconFromResources("actions/list-add.png"));
     }
@@ -239,7 +239,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeRemoveNodes(Collection<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Remove " + nodes.size() + " nodes",
-                "Removed following nodes from the graph: <ul>" + nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>").collect(Collectors.joining()) + "</ul>",
+                "Removed following nodes from the graph: " + nodes.stream().map(s -> "'" + s.getName() + "'").collect(Collectors.joining(", ")),
                 compartment,
                 UIUtils.getIconFromResources("actions/delete.png"));
     }
@@ -252,7 +252,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeMoveNodes(Set<JIPipeGraphNode> nodes, UUID compartment) {
         snapshot("Moved " + nodes.size() + " nodes",
-                "Moved following nodes: <ul>" + nodes.stream().map(s -> "<li><code>" + s.getName() + "</code></li>") + "</ul>",
+                "Moved following nodes: " + nodes.stream().map(s -> "'" + s.getName() + "'").collect(Collectors.joining(", ")),
                 compartment,
                 UIUtils.getIconFromResources("actions/transform-move.png"));
     }
@@ -265,7 +265,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeRemoveNode(JIPipeGraphNode node, UUID compartment) {
         snapshot("Remove node",
-                "Removed a node <code>" + node.getName() + "</code> from the graph.",
+                "Removed a node '" + node.getName() + "' from the graph.",
                 compartment,
                 UIUtils.getIconFromResources("actions/delete.png"));
     }
@@ -277,7 +277,7 @@ public interface JIPipeHistoryJournal {
      */
     default void snapshotBeforeRemoveCompartment(JIPipeProjectCompartment compartment) {
         snapshot("Remove compartment",
-                "Removed compartment <code>" + compartment.getName() + "</code> from the graph.",
+                "Removed compartment '" + compartment.getName() + "' from the graph.",
                 compartment.getProjectCompartmentUUID(),
                 UIUtils.getIconFromResources("actions/delete.png"));
     }
