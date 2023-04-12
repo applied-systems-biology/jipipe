@@ -331,8 +331,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         // Node button
         if (nodeIsRunnable) {
             int realSlotHeight = viewMode.gridToRealSize(new Dimension(1, 1), zoom).height;
-            boolean hasInputs = node.getInputSlots().size() > 0 || slotsInputsEditable;
-            boolean hasOutputs = node.getOutputSlots().size() > 0 || slotsOutputsEditable;
+            boolean hasInputs = (node.getInputSlots().size() > 0 || slotsInputsEditable) && showInputs;
+            boolean hasOutputs = (node.getOutputSlots().size() > 0 || slotsOutputsEditable) && showOutputs;
 
             int centerY;
             if (hasInputs && !hasOutputs) {
