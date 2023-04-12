@@ -690,7 +690,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 minVertexRadiusPixels = Math.min(vertex.getRadius(), minVertexRadiusPixels);
                 maxVertexRadiusPixels = Math.max(vertex.getRadius(), maxVertexRadiusPixels);
                 sumVertexRadiusPixels += vertex.getRadius();
-                double radiusInUnit = vertex.getRadiusInUnit(consensusPhysicalSizeUnit);
+                double radiusInUnit = vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
                 minVertexRadiusUnit = Math.min(radiusInUnit, minVertexRadiusPixels);
                 maxVertexRadiusUnit = Math.max(radiusInUnit, maxVertexRadiusPixels);
                 sumVertexRadiusUnit += radiusInUnit;
@@ -740,10 +740,10 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 int degree = degreeOf(vertex);
                 if (degree == 0) {
                     // Count radius 2 times
-                    sumEdgeLengthCorrectedUnit += vertex.getRadiusInUnit(consensusPhysicalSizeUnit) * 2;
+                    sumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit) * 2;
                 } else if (degree == 1) {
                     // Count radius 1 time
-                    sumEdgeLengthCorrectedUnit += vertex.getRadiusInUnit(consensusPhysicalSizeUnit);
+                    sumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
                 }
             }
 
@@ -764,11 +764,11 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 if (degree == 0) {
                     // Count radius 2 times
                     simplifiedSumEdgeLengthCorrectedPixels += vertex.getRadius() * 2;
-                    simplifiedSumEdgeLengthCorrectedUnit += vertex.getRadiusInUnit(consensusPhysicalSizeUnit) * 2;
+                    simplifiedSumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit) * 2;
                 } else if (degree == 1) {
                     // Count radius 1 time
                     simplifiedSumEdgeLengthCorrectedPixels += vertex.getRadius();
-                    simplifiedSumEdgeLengthCorrectedUnit += vertex.getRadiusInUnit(consensusPhysicalSizeUnit);
+                    simplifiedSumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
                 }
             }
 

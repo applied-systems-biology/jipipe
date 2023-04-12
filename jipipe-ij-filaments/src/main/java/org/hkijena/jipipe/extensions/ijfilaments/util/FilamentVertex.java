@@ -210,7 +210,15 @@ public class FilamentVertex {
         return spatialLocation.pixelsToUnit(physicalVoxelSizeX, physicalVoxelSizeY, physicalVoxelSizeZ, unit);
     }
 
-    public double getRadiusInUnit(String unit) {
-        return 0;
+    /**
+     * Converts the radius into units and returns the maximum value
+     * @param unit the unit
+     * @return the maximum value
+     */
+    public double getMaxRadiusInUnit(String unit) {
+        double rx = physicalVoxelSizeX.convertTo(unit).getValue() * radius;
+        double ry = physicalVoxelSizeY.convertTo(unit).getValue() * radius;
+        double rz = physicalVoxelSizeZ.convertTo(unit).getValue() * radius;
+        return Math.max(rx, Math.max(ry, rz));
     }
 }
