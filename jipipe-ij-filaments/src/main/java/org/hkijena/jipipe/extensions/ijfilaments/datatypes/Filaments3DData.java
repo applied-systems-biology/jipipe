@@ -849,7 +849,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             measurements.setValueAt(maxVertexRadiusPixels, row, "maxVertexRadiusPixels");
             measurements.setValueAt(maxVertexRadiusUnit, row, "maxVertexRadiusUnit");
             measurements.setValueAt(sumVertexRadiusPixels / vertices.size(), row, "avgVertexRadiusPixels");
-            measurements.setValueAt(sumVertexRadiusPixels / vertices.size(), row, "avgVertexRadiusUnit");
+            measurements.setValueAt(sumVertexRadiusUnit / vertices.size(), row, "avgVertexRadiusUnit");
 
             measurements.setValueAt(minVertexIntensity, row, "minVertexValue");
             measurements.setValueAt(maxVertexIntensity, row, "maxVertexValue");
