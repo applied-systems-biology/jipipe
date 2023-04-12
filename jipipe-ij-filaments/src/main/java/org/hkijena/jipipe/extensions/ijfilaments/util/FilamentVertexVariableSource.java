@@ -24,6 +24,9 @@ public class FilamentVertexVariableSource implements ExpressionParameterVariable
         VARIABLES.add(new ExpressionParameterVariable("Radius", "The radius of the vertex", "radius"));
         VARIABLES.add(new ExpressionParameterVariable("Value", "The value of the vertex", "value"));
         VARIABLES.add(new ExpressionParameterVariable("Degree", "The degree (number of edges) of the vertex", "degree"));
+        VARIABLES.add(new ExpressionParameterVariable("Physical voxel size (X)", "Size of a voxel (X)", "vsx"));
+        VARIABLES.add(new ExpressionParameterVariable("Physical voxel size (Y)", "Size of a voxel (Y)", "vsy"));
+        VARIABLES.add(new ExpressionParameterVariable("Physical voxel size (Z)", "Size of a voxel (Z)", "vsz"));
     }
 
     public static void writeToVariables(Filaments3DData graph, FilamentVertex vertex, ExpressionVariables variables, String prefix) {
