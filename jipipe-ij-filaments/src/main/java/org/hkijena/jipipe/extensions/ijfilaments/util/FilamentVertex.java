@@ -45,6 +45,9 @@ public class FilamentVertex {
         this.value = other.value;
         this.metadata = new HashMap<>(other.metadata);
         this.color = other.color;
+        this.physicalVoxelSizeX = new Quantity(other.physicalVoxelSizeX);
+        this.physicalVoxelSizeY = new Quantity(other.physicalVoxelSizeY);
+        this.physicalVoxelSizeZ = new Quantity(other.physicalVoxelSizeZ);
     }
 
     @JsonGetter("spatial-location")
