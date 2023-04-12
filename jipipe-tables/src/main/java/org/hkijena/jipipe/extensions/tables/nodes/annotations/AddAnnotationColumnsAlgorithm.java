@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -30,7 +31,7 @@ import java.util.Map;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Add annotations as columns", description = "Adds column annotations to the table as new columns.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For tables")
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
