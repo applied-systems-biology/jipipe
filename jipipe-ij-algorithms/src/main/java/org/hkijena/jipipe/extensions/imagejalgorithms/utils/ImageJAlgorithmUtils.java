@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
-import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
@@ -18,8 +17,6 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -28,10 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
-import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-
-import java.util.Set;
 
 public class ImageJAlgorithmUtils {
 
@@ -387,29 +381,4 @@ public class ImageJAlgorithmUtils {
         throw new UnsupportedOperationException();
     }
 
-    public static void setLutFromColorMap(ImagePlus image, ColorMap colorMap, Set<Integer> channels) {
-        LUT lut = colorMap.toLUT();
-        setLut(image, lut, channels);
-    }
-
-    public static void setLut(ImagePlus image, LUT lut, Set<Integer> channels) {
-        // Standard LUT
-        ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
-        for (int c = 0; c < image.getNChannels(); c++) {
-            if (channels == null || channels.isEmpty() || channels.contains(c)) {
-                if(image.isComposite()) {
-                    CompositeImage compositeImage = (CompositeImage) image;
-                    compositeImage.setChannelLut(lut, c + 1);
-                }
-                for (int z = 0; z < image.getNSlices(); z++) {
-                    for (int t = 0; t < image.getNFrames(); t++) {
-                        image.setPosition(c + 1, z + 1, t + 1);
-                        image.getProcessor().setLut(lut);
-                    }
-                }
-            }
-        }
-
-        image.setPosition(original.getC(), original.getZ(), original.getT());
-    }
 }

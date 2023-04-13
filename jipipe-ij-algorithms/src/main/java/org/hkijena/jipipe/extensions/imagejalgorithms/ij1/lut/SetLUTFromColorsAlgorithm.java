@@ -23,10 +23,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
 
 import java.awt.*;
@@ -86,7 +85,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             variables.putAnnotations(dataBatch.getMergedTextAnnotations());
             channels.addAll(restrictToChannels.getContent().getIntegers(0, data.getNChannels() - 1, variables));
         }
-        ImageJAlgorithmUtils.setLut(image, lut, channels);
+        ImageJUtils.setLut(image, lut, channels);
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 

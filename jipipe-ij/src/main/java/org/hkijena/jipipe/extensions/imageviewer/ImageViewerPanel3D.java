@@ -1097,10 +1097,13 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         public void run() {
             ImagePlus imagePlus = imageData.getImage();
             if (imagePlus.getType() != ImagePlus.COLOR_RGB && imagePlus.getType() != ImagePlus.GRAY8) {
+                LUT[] channelLUT = ImageJUtils.getChannelLUT(imagePlus);
                 getProgressInfo().log("Converting image to 8-bit");
                 imagePlus = ImageJUtils.convertToGreyscale8UIfNeeded(imagePlus);
                 ImagePlusData newImageData = new ImagePlusData(imagePlus);
                 newImageData.copyMetadata(imageData);
+                ImageJUtils.setChannelLUT(newImageData.getImage(), channelLUT);
+
                 imageData = newImageData;
                 imageWasConvertedTo8Bit = true;
                 return;
