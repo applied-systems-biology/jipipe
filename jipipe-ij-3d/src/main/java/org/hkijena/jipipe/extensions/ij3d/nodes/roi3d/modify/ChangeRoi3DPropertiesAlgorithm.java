@@ -37,7 +37,6 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Change 3D ROI properties", description = "Sets the properties of all 3D ROI")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
 public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter roiName = new OptionalStringParameter("", false);
@@ -68,7 +67,6 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROI3DListData outputROI = new ROI3DListData(dataBatch.getInputData("Input", ROI3DListData.class, progressInfo));
-        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         for (int row = 0; row < outputROI.size(); row++) {
             ROI3D roi = outputROI.get(row);
