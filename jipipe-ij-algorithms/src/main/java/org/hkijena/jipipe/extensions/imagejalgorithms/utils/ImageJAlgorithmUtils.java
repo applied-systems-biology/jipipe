@@ -393,28 +393,23 @@ public class ImageJAlgorithmUtils {
     }
 
     public static void setLut(ImagePlus image, LUT lut, Set<Integer> channels) {
-        if(image.isComposite()) {
-            CompositeImage compositeImage = (CompositeImage) image;
-            for (int c = 0; c < image.getNChannels(); c++) {
-                if (channels == null || channels.isEmpty() || channels.contains(c)) {
+        // Standard LUT
+        ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
+        for (int c = 0; c < image.getNChannels(); c++) {
+            if (channels == null || channels.isEmpty() || channels.contains(c)) {
+                if(image.isComposite()) {
+                    CompositeImage compositeImage = (CompositeImage) image;
                     compositeImage.setChannelLut(lut, c + 1);
                 }
-            }
-        }
-        else {
-            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
-            for (int c = 0; c < image.getNChannels(); c++) {
-                if (channels == null || channels.isEmpty() || channels.contains(c)) {
-                    for (int z = 0; z < image.getNSlices(); z++) {
-                        for (int t = 0; t < image.getNFrames(); t++) {
-                            image.setPosition(c + 1, z + 1, t + 1);
-                            image.getProcessor().setLut(lut);
-                        }
+                for (int z = 0; z < image.getNSlices(); z++) {
+                    for (int t = 0; t < image.getNFrames(); t++) {
+                        image.setPosition(c + 1, z + 1, t + 1);
+                        image.getProcessor().setLut(lut);
                     }
                 }
             }
-
-            image.setPosition(original.getC(), original.getZ(), original.getT());
         }
+
+        image.setPosition(original.getC(), original.getZ(), original.getT());
     }
 }
