@@ -24,7 +24,9 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageHandler;
+import org.hkijena.jipipe.api.JIPipeCommonData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -63,6 +65,8 @@ import java.util.zip.ZipOutputStream;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.zip format. " +
         "The *.zip contains multiple 3D ImageJ Suite ROI. Please note that if multiple *.zip files are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
+@JIPipeHeavyData
+@JIPipeCommonData
 public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     public ROI3DListData() {
 
