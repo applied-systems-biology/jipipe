@@ -351,7 +351,7 @@ public class ROIManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     private void saveDefaults() {
         if (JOptionPane.showConfirmDialog(getViewerPanel(),
-                "Dou you want to save the ROI display settings as default?",
+                "Do you want to save the ROI display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ImageViewerUIROI2DDisplaySettings settings = ImageViewerUIROI2DDisplaySettings.getInstance();

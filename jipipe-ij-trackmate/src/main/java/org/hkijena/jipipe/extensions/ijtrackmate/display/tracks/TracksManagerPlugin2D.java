@@ -276,7 +276,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
 
     private void saveDefaults() {
         if (JOptionPane.showConfirmDialog(getViewerPanel(),
-                "Dou you want to save the spot display settings as default?",
+                "Do you want to save the spot display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ImageViewerUITracksDisplaySettings settings = ImageViewerUITracksDisplaySettings.getInstance();
