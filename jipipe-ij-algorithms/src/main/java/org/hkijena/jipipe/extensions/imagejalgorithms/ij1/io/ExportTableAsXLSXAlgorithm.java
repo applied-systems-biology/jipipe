@@ -191,19 +191,20 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
         return orderExpression;
     }
 
-    @JIPipeDocumentation(name = "Sheet name function", description = "Expression that determines the name of the sheet. Please note that there are certain restrictions on the naming of sheets that are automatically enforced by JIPipe (see https://poi.apache.org/apidocs/dev/org/apache/poi/ss/usermodel/Workbook.html#createSheet--).")
     @JIPipeParameter("order-expression")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(name = "Annotations", description = "Map of annotation names to values", key = "annotations")
     public void setOrderExpression(DefaultExpressionParameter orderExpression) {
         this.orderExpression = orderExpression;
     }
 
-    @JIPipeParameter("order-expression")
+    @JIPipeDocumentation(name = "Sheet name function", description = "Expression that determines the name of the sheet. Please note that there are certain restrictions on the naming of sheets that are automatically enforced by JIPipe (see https://poi.apache.org/apidocs/dev/org/apache/poi/ss/usermodel/Workbook.html#createSheet--).")
+    @JIPipeParameter("sheet-name-expression")
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(name = "Annotations", description = "Map of annotation names to values", key = "annotations")
     public DefaultExpressionParameter getSheetNameExpression() {
         return sheetNameExpression;
     }
 
+    @JIPipeParameter("sheet-name-expression")
     public void setSheetNameExpression(DefaultExpressionParameter sheetNameExpression) {
         this.sheetNameExpression = sheetNameExpression;
     }
