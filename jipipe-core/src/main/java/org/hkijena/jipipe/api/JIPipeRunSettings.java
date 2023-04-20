@@ -25,6 +25,7 @@ import org.hkijena.jipipe.utils.PathType;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Settings for an {@link JIPipeProjectRun}
@@ -38,8 +39,8 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private boolean silent = false;
     private boolean ignoreDeactivatedInputs = false;
-    private Set<JIPipeGraphNode> disableStoreToCacheNodes = new HashSet<>();
-    private Set<JIPipeGraphNode> disableSaveToDiskNodes = new HashSet<>();
+    private Set<UUID> disableStoreToCacheNodes = new HashSet<>();
+    private Set<UUID> disableSaveToDiskNodes = new HashSet<>();
 
     @JIPipeParameter(value = "output-path", uiOrder = -999)
     @JIPipeDocumentation(name = "Output folder")
@@ -140,11 +141,11 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
      *
      * @return the set of nodes
      */
-    public Set<JIPipeGraphNode> getDisableStoreToCacheNodes() {
+    public Set<UUID> getDisableStoreToCacheNodes() {
         return disableStoreToCacheNodes;
     }
 
-    public void setDisableStoreToCacheNodes(Set<JIPipeGraphNode> disableStoreToCacheNodes) {
+    public void setDisableStoreToCacheNodes(Set<UUID> disableStoreToCacheNodes) {
         this.disableStoreToCacheNodes = disableStoreToCacheNodes;
     }
 
@@ -153,11 +154,11 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
      *
      * @return the set of nodes
      */
-    public Set<JIPipeGraphNode> getDisableSaveToDiskNodes() {
+    public Set<UUID> getDisableSaveToDiskNodes() {
         return disableSaveToDiskNodes;
     }
 
-    public void setDisableSaveToDiskNodes(Set<JIPipeGraphNode> disableSaveToDiskNodes) {
+    public void setDisableSaveToDiskNodes(Set<UUID> disableSaveToDiskNodes) {
         this.disableSaveToDiskNodes = disableSaveToDiskNodes;
     }
 }

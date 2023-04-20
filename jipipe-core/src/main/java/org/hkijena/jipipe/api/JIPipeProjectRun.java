@@ -428,12 +428,12 @@ public class JIPipeProjectRun implements JIPipeRunnable {
             progressInfo.resolve("GC").log("Clearing input slot " + slot.getDisplayName());
             slot.destroyData();
         } else if (slot.isOutput()) {
-            if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode())) {
+            if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode().getUUIDInParentGraph())) {
                 JIPipeGraphNode runAlgorithm = slot.getNode();
                 progressInfo.resolve("GC").log("Caching output slot " + slot.getDisplayName());
                 project.getCache().store(runAlgorithm, runAlgorithm.getUUIDInParentGraph(), slot, slot.getName(), progressInfo.resolve("GC"));
             }
-            if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(slot.getNode())) {
+            if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(slot.getNode().getUUIDInParentGraph())) {
                 JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", slot.getDisplayName(), JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName()));
                 progressInfo.resolve("GC").log("Flushing output slot " + slot.getDisplayName());
                 slot.flush(saveProgress);

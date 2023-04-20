@@ -20,10 +20,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * Allows to test one algorithm with multiple parameters
@@ -70,13 +67,13 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
         // Disable storing intermediate results
         if (!settings.isStoreIntermediateResults()) {
-            HashSet<JIPipeGraphNode> disabled = new HashSet<>(run.getGraph().getGraphNodes());
-            disabled.remove(targetNodeCopy);
+            HashSet<UUID> disabled = new HashSet<>(run.getGraph().getGraphNodeUUIDs());
+            disabled.remove(targetNodeCopy.getUUIDInParentGraph());
             if (!settings.isStoreIntermediateResults() && settings.isExcludeSelected()) {
                 for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
                     for (JIPipeDataSlot sourceSlot : getRun().getGraph().getInputIncomingSourceSlots(inputSlot)) {
                         JIPipeGraphNode node = sourceSlot.getNode();
-                        disabled.remove(node);
+                        disabled.remove(node.getUUIDInParentGraph());
                     }
                 }
             }
