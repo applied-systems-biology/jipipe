@@ -80,12 +80,12 @@ public class JIPipeCLI {
                     throw new RuntimeException(e);
                 }
             }
-            else if(arg.equals("--save-to-disk")) {
-                if(value.equals("on")) {
+            else if(arg.equals("--output-results")) {
+                if(value.equals("all")) {
                     saveToDisk = true;
                     saveToDiskOnlyCompartments = false;
                 }
-                else if(value.equals("off")) {
+                else if(value.equals("none")) {
                     saveToDisk = false;
                     saveToDiskOnlyCompartments = false;
                 }
@@ -220,7 +220,7 @@ public class JIPipeCLI {
         System.out.println("--num-threads <N=1,2,...>");
         System.out.println("--overwrite-parameters <JSON file>");
         System.out.println("--P<Node ID>/<Parameter ID> <Parameter Value (JSON)>");
-        System.out.println("--save-to-disk <on/off/only-compartment-outputs> (default: on)");
+        System.out.println("--output-results <all/none/only-compartment-outputs> (default: all)");
         System.out.println("To run this tool, execute following command:");
         System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI");
     }
