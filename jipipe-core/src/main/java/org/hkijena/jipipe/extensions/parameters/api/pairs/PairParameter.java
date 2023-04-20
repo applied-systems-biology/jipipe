@@ -26,6 +26,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Parameter equivalent of a map entry.
@@ -72,6 +73,19 @@ public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entr
             report.resolve("Key").report((JIPipeValidatable) key);
         if (value instanceof JIPipeValidatable)
             report.resolve("Value").report((JIPipeValidatable) value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PairParameter<?, ?> that = (PairParameter<?, ?>) o;
+        return Objects.equals(keyClass, that.keyClass) && Objects.equals(valueClass, that.valueClass) && Objects.equals(key, that.key) && Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(keyClass, valueClass, key, value);
     }
 
     @Override

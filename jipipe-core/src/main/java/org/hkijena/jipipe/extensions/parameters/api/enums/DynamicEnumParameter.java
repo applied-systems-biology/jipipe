@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Parameter that acts as dynamic enum.
@@ -117,5 +118,18 @@ public abstract class DynamicEnumParameter<T> {
      */
     public boolean isEditable() {
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DynamicEnumParameter<?> that = (DynamicEnumParameter<?>) o;
+        return Objects.equals(value, that.value) && Objects.equals(allowedValues, that.allowedValues);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, allowedValues);
     }
 }

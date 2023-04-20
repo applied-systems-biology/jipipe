@@ -85,6 +85,14 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
             clearAll.addActionListener(e -> JIPipeRunnerQueue.getInstance().enqueue(new JIPipeCacheClearAllRun(getProject().getCache())));
             menu.add(clearAll);
         }
+
+        menu.addSeparator();
+
+        JCheckBoxMenuItem cacheIgnoreNodeStates = new JCheckBoxMenuItem("Ignore parameter changes");
+        cacheIgnoreNodeStates.setToolTipText("If enabled, the caching system will not delete cached items if node parameters have changed.\nUse this button if caches keep being accidentally cleared.");
+        cacheIgnoreNodeStates.setState(getProjectWorkbench().getProject().getCache().isIgnoreNodeFunctionalEquals());
+        cacheIgnoreNodeStates.addActionListener(e -> getProjectWorkbench().getProject().getCache().setIgnoreNodeFunctionalEquals(cacheIgnoreNodeStates.getState()));
+        menu.add(cacheIgnoreNodeStates);
     }
 
     /**

@@ -26,6 +26,7 @@ import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * A parameter that allows to model a function with an input, an output, and parameters.
@@ -136,6 +137,19 @@ public abstract class FunctionParameter<I, P, O> implements JIPipeValidatable {
     @Override
     public String toString() {
         return getInput() + " -> " + getParameter() + " -> " + getOutput();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FunctionParameter<?, ?, ?> that = (FunctionParameter<?, ?, ?>) o;
+        return Objects.equals(input, that.input) && Objects.equals(parameter, that.parameter) && Objects.equals(output, that.output);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(input, parameter, output);
     }
 
     /**

@@ -105,7 +105,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     EDM edm = new EDM();
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
                     byte deletedLabel_ = (byte) deletedLabel;
-                    double thickness = edtProcessor.getStats().max;
+                    double thickness = edtProcessor.getStats().max * 2;
                     variables.set("thickness", thickness);
                     if (filter.test(variables)) {
                         // Remap
@@ -170,7 +170,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     EDM edm = new EDM();
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
                     short deletedLabel_ = (short) deletedLabel;
-                    double thickness = edtProcessor.getStats().max;
+                    double thickness = edtProcessor.getStats().max * 2;
                     variables.set("thickness", thickness);
                     if (filter.test(variables)) {
                         // Remap
@@ -234,7 +234,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     // Apply edt and calculate the maximum
                     EDM edm = new EDM();
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
-                    double thickness = edtProcessor.getStats().max;
+                    double thickness = edtProcessor.getStats().max * 2;
                     variables.set("thickness", thickness);
                     if (filter.test(variables)) {
                         // Remap
