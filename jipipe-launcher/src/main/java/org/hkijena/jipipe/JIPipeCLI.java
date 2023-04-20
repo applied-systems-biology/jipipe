@@ -220,7 +220,7 @@ public class JIPipeCLI {
         System.out.println("--num-threads <N=1,2,...>");
         System.out.println("--overwrite-parameters <JSON file>");
         System.out.println("--P<Node ID>/<Parameter ID> <Parameter Value (JSON)>");
-        System.out.println("--save-results-to-disk <on/off/only-compartment-outputs> (default: on)");
+        System.out.println("--save-to-disk <on/off/only-compartment-outputs> (default: on)");
         System.out.println("To run this tool, execute following command:");
         System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI");
     }
