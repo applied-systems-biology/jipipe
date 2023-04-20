@@ -93,6 +93,11 @@ public class JIPipeCLI {
                     saveToDisk = true;
                     saveToDiskOnlyCompartments = true;
                 }
+                else {
+                    System.err.println("Unknown disk saving setting: " + value);
+                    showHelp();
+                    return;
+                }
             }
             else if (arg.startsWith("--P")) {
                 parameterOverrides.put(arg.substring(3), value);
