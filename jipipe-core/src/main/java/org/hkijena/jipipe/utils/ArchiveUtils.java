@@ -34,8 +34,19 @@ public class ArchiveUtils {
 
     private static final int BUFFER_SIZE = 8192;
 
-    public static void zipFile(Path fileToZip, ZipOutputStream zipOut, JIPipeProgressInfo progressInfo) throws IOException {
-        zipFile(fileToZip, fileToZip.getFileName().toString(), zipOut, progressInfo);
+    public static void zipFileOrDirectory(Path fileToZip, Path zipFile, JIPipeProgressInfo progressInfo) throws IOException {
+        try(ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile.toFile()))) {
+            zipFile(fileToZip, fileToZip.getFileName().toString(), zipOut, progressInfo);
+        }
+    }
+
+    public static void zipDirectory(Path rootPath, String rootPathName, Path zipFile, JIPipeProgressInfo progressInfo) throws IOException {
+        if(!Files.isDirectory(rootPath)) {
+            throw new IOException("Path is not a directory");
+        }
+        try(ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile.toFile()))) {
+            zipFile(rootPath, rootPathName, zipOut, progressInfo);
+        }
     }
 
     private static void zipFile(Path fileToZip, String fileName, ZipOutputStream zipOut, JIPipeProgressInfo progressInfo) throws IOException {
