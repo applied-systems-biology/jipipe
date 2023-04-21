@@ -23,13 +23,50 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 public class ArchiveUtils {
 
     private static final int BUFFER_SIZE = 8192;
+
+    public static void zipFile(Path fileToZip, ZipOutputStream zipOut, JIPipeProgressInfo progressInfo) throws IOException {
+        zipFile(fileToZip, fileToZip.getFileName().toString(), zipOut, progressInfo);
+    }
+
+    private static void zipFile(Path fileToZip, String fileName, ZipOutputStream zipOut, JIPipeProgressInfo progressInfo) throws IOException {
+        if (Files.isHidden(fileToZip)) {
+            return;
+        }
+        if (Files.isDirectory(fileToZip)) {
+            if (fileName.endsWith("/")) {
+                zipOut.putNextEntry(new ZipEntry(fileName));
+                zipOut.closeEntry();
+            } else {
+                zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+                zipOut.closeEntry();
+            }
+            List<Path> children = Files.list(fileToZip).collect(Collectors.toList());
+            for (Path childFile : children) {
+                zipFile(childFile, fileName + "/" + childFile.getFileName(), zipOut, progressInfo);
+            }
+            return;
+        }
+        progressInfo.log("ZIP " + fileToZip + " -> " + fileName);
+        try(FileInputStream fis = new FileInputStream(fileToZip.toFile())) {
+            ZipEntry zipEntry = new ZipEntry(fileName);
+            zipOut.putNextEntry(zipEntry);
+            byte[] bytes = new byte[BUFFER_SIZE];
+            int length;
+            while ((length = fis.read(bytes)) >= 0) {
+                zipOut.write(bytes, 0, length);
+            }
+        }
+    }
 
     /**
      * Unzips a file
