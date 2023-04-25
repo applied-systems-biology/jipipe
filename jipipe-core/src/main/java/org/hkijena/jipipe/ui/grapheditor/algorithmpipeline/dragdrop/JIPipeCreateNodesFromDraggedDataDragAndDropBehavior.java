@@ -51,7 +51,7 @@ public class JIPipeCreateNodesFromDraggedDataDragAndDropBehavior implements JIPi
 
     @Override
     public void dragOver(DropTargetDragEvent dtde) {
-        Point mousePosition = canvas.getMousePosition();
+        Point mousePosition = canvas.getLastMousePosition();
         if (mousePosition == null)
             return;
         Point gridLocation = canvas.getViewMode().realLocationToGrid(mousePosition, canvas.getZoom());
