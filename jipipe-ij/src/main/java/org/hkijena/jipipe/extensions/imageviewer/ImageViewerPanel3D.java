@@ -1129,6 +1129,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
                     }
                 }, getProgressInfo().resolve("c=" + c));
                 ImagePlus forChannel = ImageJUtils.mergeMappedSlices(processorMap);
+                forChannel.copyScale(imagePlus);
 
                 if (forChannel.getType() == ImagePlus.GRAY8) {
                     ImageStatistics statistics = new StackStatistics(forChannel);
