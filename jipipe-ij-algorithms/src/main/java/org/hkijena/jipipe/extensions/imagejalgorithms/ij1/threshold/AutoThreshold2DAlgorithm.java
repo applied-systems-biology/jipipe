@@ -96,7 +96,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
-            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
+            ImagePlusData inputData = dataBatch.getInputData("Input", ImagePlusGreyscale8UData.class, progressInfo);
             ImagePlus img = inputData.getDuplicateImage();
             ROIListData roiInput = null;
             ImagePlus maskInput = null;
