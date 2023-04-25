@@ -26,7 +26,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParame
 @JIPipeDocumentation(name = "Keep/Delete labels by overlap", description = "Deletes or keeps labels by a mask image. If the mask is white (value larger than zero) " +
         "on overlapping a pixel, the associated label is kept or deleted (depending on the setting)")
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels\nFilter", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
 @JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +

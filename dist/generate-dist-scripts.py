@@ -19,7 +19,7 @@ with open("zip/build.sh", "w") as f:
     wl("PROJECT_DIR=../..")
     wl()
     wl('pushd $PROJECT_DIR || exit')
-    wl('JIPIPE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed "s/-SNAPSHOT//g")')
+    wl('JIPIPE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Po "\\d\\.\\d+\\.\\d+")')
     wl('popd || exit')
     wl()
 

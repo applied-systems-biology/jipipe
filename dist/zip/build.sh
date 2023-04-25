@@ -4,7 +4,7 @@ JIPIPE_VERSION="Development"
 PROJECT_DIR=../..
 
 pushd $PROJECT_DIR || exit
-JIPIPE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed "s/-SNAPSHOT//g")
+JIPIPE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | grep -Po "\d\.\d+\.\d+")
 popd || exit
 
 if [ ! -e "./dependencies/mslinks-1.0.5.jar" ]; then
