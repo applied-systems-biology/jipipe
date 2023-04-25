@@ -854,7 +854,7 @@ public class ImageJUtils {
      * @param src    the source
      * @param target the target
      */
-    public static void copyBetweenImages(ImagePlus src, ImagePlus target, JIPipeProgressInfo progressInfo) {
+    public static void copyPixelsBetweenImages(ImagePlus src, ImagePlus target, JIPipeProgressInfo progressInfo) {
         if (!ImageJUtils.imagesHaveSameSize(src, target) || src.getBitDepth() != target.getBitDepth()) {
             throw new IllegalArgumentException("Source and target must have same size and bit depth!");
         }

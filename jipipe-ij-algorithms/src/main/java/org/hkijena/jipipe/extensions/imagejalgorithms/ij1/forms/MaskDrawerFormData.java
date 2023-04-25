@@ -85,7 +85,7 @@ public class MaskDrawerFormData extends FormData {
             return;
         }
 
-        ImageJUtils.copyBetweenImages(sourceMask, targetMask, new JIPipeProgressInfo());
+        ImageJUtils.copyPixelsBetweenImages(sourceMask, targetMask, new JIPipeProgressInfo());
         maskDrawerPlugin.recalculateMaskPreview();
     }
 

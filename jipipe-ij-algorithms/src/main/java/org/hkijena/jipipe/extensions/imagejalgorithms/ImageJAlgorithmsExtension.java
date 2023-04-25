@@ -1102,6 +1102,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-math-local-imagecalculator2d-expression", LocalImageCalculator2DExpression.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-replace-nan-by-median2d", RemoveNaNFilter2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-imagecalculator2d", ImageCalculator2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
+        registerNodeType("ij1-math-compare-images-2d", ImageComparer2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-imagecalculator2d-expression", ImageCalculator2DExpression.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-math-hessian2d", Hessian2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-divide-by-maximum", DivideByMaximumAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
@@ -1142,6 +1143,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerEnumParameterType("ij1-math-imagecalculator2d:operation", ImageCalculator2DAlgorithm.Operation.class,
                 "Operation", "Available operations");
         registerEnumParameterType("ij1-math-imagecalculator2d:operand", ImageCalculator2DAlgorithm.Operand.class,
+                "Operand", "Available operands");
+
+        registerEnumParameterType("ij1-math-compare-images-2d:operation", ImageComparer2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-math-compare-images-2d:operand", ImageComparer2DAlgorithm.Operand.class,
                 "Operand", "Available operands");
     }
 
