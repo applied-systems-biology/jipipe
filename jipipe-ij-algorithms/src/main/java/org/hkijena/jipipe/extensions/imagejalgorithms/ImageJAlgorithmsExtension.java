@@ -986,6 +986,9 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-threshold-expression2d-8u", CustomAutoThreshold2D8UAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-expression2d-16u", CustomAutoThreshold2D16UAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-expression2d-32f", CustomAutoThreshold2D32FAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-8u-v2", CustomAutoThreshold2D8Uv2Algorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-16u-v2", CustomAutoThreshold2D16Uv2Algorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("ij1-threshold-expression2d-32f-v2", CustomAutoThreshold2D32Fv2Algorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-expression2d-color", ColorThresholdExpression2D.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d", LocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d-bernsen", BernsenLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
