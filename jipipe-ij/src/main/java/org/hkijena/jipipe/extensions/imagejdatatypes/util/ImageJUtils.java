@@ -1072,7 +1072,9 @@ public class ImageJUtils {
             stack.addSlice(processor);
         }
 
-        return new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+        ImagePlus result = new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+        result.copyScale(img);
+        return result;
     }
 
 

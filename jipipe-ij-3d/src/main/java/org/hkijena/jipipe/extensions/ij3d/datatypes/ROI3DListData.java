@@ -408,7 +408,22 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             nFrames = Math.max(nFrames, roi3D.getFrame());
         }
 
-        return IJ.createHyperStack(title, width, height, nChannels, nSlices, nFrames, bitDepth);
+        Set<Double> resXY = stream().map(roi3D -> roi3D.getObject3D().getResXY()).collect(Collectors.toSet());
+        Set<Double> resZ = stream().map(roi3D -> roi3D.getObject3D().getResZ()).collect(Collectors.toSet());
+        Set<String> unit = stream().map(roi3D -> roi3D.getObject3D().getUnits()).collect(Collectors.toSet());
+
+        ImagePlus result = IJ.createHyperStack(title, width, height, nChannels, nSlices, nFrames, bitDepth);
+
+        if(resXY.size() == 1 && resZ.size() == 1 && unit.size() == 1) {
+            double finalResXY = resXY.iterator().next();
+            String finalUnit = unit.iterator().next();
+            result.getCalibration().pixelWidth = finalResXY;
+            result.getCalibration().pixelHeight = finalResXY;
+            result.getCalibration().pixelDepth = resZ.iterator().next();
+            result.getCalibration().setUnit(finalUnit);
+        }
+
+        return result;
     }
 
     public ImagePlus toMask(ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {
