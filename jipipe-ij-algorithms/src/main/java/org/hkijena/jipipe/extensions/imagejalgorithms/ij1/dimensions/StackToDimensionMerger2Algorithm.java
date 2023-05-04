@@ -19,45 +19,54 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Merge hyperstack C/Z/T (single input)", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
+@JIPipeDocumentation(name = "Merge hyperstack C/Z/T", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
         "Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. " +
-        "The type of the output image is determined by consensus bit depth. " +
-        "This node has similar functionality to the 'Combine stacks' node.")
+        "The type of the output image is determined by the consensus bit depth. " +
+        "This node has similar functionality to the 'Combine stacks' node. " +
+        "If no order (ascending) is given for each input, the order of input images is determined by the order in the slot list.")
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
-public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
+public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension createdDimension = HyperstackDimension.Channel;
+
+    private final InputSlotMapParameterCollection orderAssignment;
 
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
-    public StackToDimensionMergerAlgorithm(JIPipeNodeInfo info) {
-        super(info);
+    public StackToDimensionMerger2Algorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
+                .restrictInputTo(ImagePlusData.class)
+                .addOutputSlot("Output", "The output", ImagePlusData.class).sealOutput().build());
+        orderAssignment = new InputSlotMapParameterCollection(Integer.class, this, slotInfo -> 0, false);
+        orderAssignment.updateSlots();
+        registerSubParameter(orderAssignment);
     }
 
     /**
@@ -65,8 +74,11 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the other
      */
-    public StackToDimensionMergerAlgorithm(StackToDimensionMergerAlgorithm other) {
+    public StackToDimensionMerger2Algorithm(StackToDimensionMerger2Algorithm other) {
         super(other);
+        orderAssignment = new InputSlotMapParameterCollection(MergeChannelsAlgorithm.ChannelColor.class, this, slotInfo -> 0, false);
+        other.orderAssignment.copyTo(orderAssignment);
+        registerSubParameter(orderAssignment);
         this.createdDimension = other.createdDimension;
     }
 
@@ -87,13 +99,32 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
         this.createdDimension = createdDimension;
     }
 
-    @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    @JIPipeDocumentation(name = "Input order", description = "The following settings allow you to customize the order of the input images. The inputs are ordered ascending.")
+    @JIPipeParameter("order")
+    public InputSlotMapParameterCollection getOrderAssignment() {
+        return orderAssignment;
+    }
 
+    private List<ImagePlus> getOrderedInputImages(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> inputImages = new ArrayList<>();
-        for (ImagePlusData data : dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {
-            inputImages.add(data.getImage());
+        Map<JIPipeDataSlot, Integer> orderMap = new HashMap<>();
+        for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
+            orderMap.put(inputSlot, orderAssignment.get(inputSlot.getName()).get(Integer.class));
         }
+        orderMap.values().stream().distinct().sorted(Comparator.naturalOrder()).forEach(orderIndex -> {
+            for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
+                if(orderMap.get(inputSlot).equals(orderIndex)) {
+                    inputImages.add(dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage());
+                }
+            }
+        });
+        return inputImages;
+    }
+
+    @Override
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+
+        List<ImagePlus> inputImages = getOrderedInputImages(dataBatch, progressInfo);
         inputImages = ImageJUtils.convertToConsensusBitDepthIfNeeded(inputImages);
 
         if (inputImages.isEmpty())
