@@ -34,7 +34,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -60,7 +59,6 @@ import java.util.List;
 public class ImagePlusData implements JIPipeData {
 
     private ImagePlus image;
-    private ImageSource imageSource;
     private ColorSpace colorSpace = new RGBColorSpace();
     private List<JIPipeData> overlays = new ArrayList<>();
 
@@ -79,25 +77,6 @@ public class ImagePlusData implements JIPipeData {
         this.image = image;
     }
 
-    /**
-     * Initializes this  with an image source, meaning that the image data is not loaded until necessary
-     *
-     * @param imageSource the image source
-     */
-    public ImagePlusData(ImageSource imageSource) {
-        this.imageSource = imageSource;
-    }
-
-    /**
-     * Initializes this  with an image source, meaning that the image data is not loaded until necessary
-     *
-     * @param imageSource the image source
-     * @param colorSpace  the color space. please not that it is ignored if the image is greyscale
-     */
-    public ImagePlusData(ImageSource imageSource, ColorSpace colorSpace) {
-        this.imageSource = imageSource;
-        this.colorSpace = colorSpace;
-    }
 
     /**
      * @param image      the wrapped image
@@ -182,10 +161,7 @@ public class ImagePlusData implements JIPipeData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage())
-            return new ImagePlusData(data.getImage(), data.getColorSpace());
-        else
-            return new ImagePlusData(data.getImageSource(), data.getColorSpace());
+        return new ImagePlusData(data.getImage(), data.getColorSpace());
     }
 
     /**
@@ -313,10 +289,6 @@ public class ImagePlusData implements JIPipeData {
      * @return the image
      */
     public ImagePlus getImage() {
-        if (image == null) {
-            image = imageSource.get();
-            imageSource = null;
-        }
         return image;
     }
 
@@ -335,23 +307,19 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if (image != null) {
-            if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(image.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
-                Path outputPath = storage.getFileSystemPath().resolve(name + ".ome.tif");
-                OMEImageData.simpleOMEExport(image, outputPath);
-            } else {
-                Path outputPath = storage.getFileSystemPath().resolve(name + ".tif");
-                IJ.saveAsTiff(image, outputPath.toString());
-            }
-            if (image.getOverlay() != null) {
-                ROIListData rois = new ROIListData();
-                for (Roi roi : image.getOverlay()) {
-                    rois.add(roi);
-                }
-                rois.exportData(storage, name, forceName, progressInfo.resolve("Save ROI"));
-            }
+        if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(image.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
+            Path outputPath = storage.getFileSystemPath().resolve(name + ".ome.tif");
+            OMEImageData.simpleOMEExport(image, outputPath);
         } else {
-            imageSource.saveTo(storage.getFileSystemPath(), name, forceName, progressInfo);
+            Path outputPath = storage.getFileSystemPath().resolve(name + ".tif");
+            IJ.saveAsTiff(image, outputPath.toString());
+        }
+        if (image.getOverlay() != null) {
+            ROIListData rois = new ROIListData();
+            for (Roi roi : image.getOverlay()) {
+                rois.add(roi);
+            }
+            rois.exportData(storage, name, forceName, progressInfo.resolve("Save ROI"));
         }
         if (overlays != null && !overlays.isEmpty()) {
             JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
@@ -364,14 +332,9 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        if (image != null) {
-            ImagePlus imp = ImageJUtils.duplicate(image);
-            imp.setTitle(getImage().getTitle());
-            return JIPipe.createData(getClass(), imp, colorSpace);
-        } else {
-            return JIPipe.createData(getClass(), imageSource, colorSpace);
-        }
-
+        ImagePlus imp = ImageJUtils.duplicate(image);
+        imp.setTitle(getImage().getTitle());
+        return JIPipe.createData(getClass(), imp, colorSpace);
     }
 
     /**
@@ -402,86 +365,71 @@ public class ImagePlusData implements JIPipeData {
 
     @Override
     public Component preview(int width, int height) {
-        if (image != null) {
-            double factorX = 1.0 * width / image.getWidth();
-            double factorY = 1.0 * height / image.getHeight();
-            double factor = Math.min(factorX, factorY);
-            boolean smooth = factor < 0;
-            int imageWidth = (int) Math.max(1, image.getWidth() * factor);
-            int imageHeight = (int) Math.max(1, image.getHeight() * factor);
-            ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
-            if (rgbImage.getStackSize() != 1) {
-                // Reduce processing time
-                rgbImage = new ImagePlus("Preview", rgbImage.getProcessor().duplicate()); // The duplicate is important (calibration!)
-            }
-            if (rgbImage == image) {
-                rgbImage = ImageJUtils.duplicate(rgbImage);
-            }
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.min(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) Math.max(1, image.getWidth() * factor);
+        int imageHeight = (int) Math.max(1, image.getHeight() * factor);
+        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+        if (rgbImage.getStackSize() != 1) {
+            // Reduce processing time
+            rgbImage = new ImagePlus("Preview", rgbImage.getProcessor().duplicate()); // The duplicate is important (calibration!)
+        }
+        if (rgbImage == image) {
+            rgbImage = ImageJUtils.duplicate(rgbImage);
+        }
 //            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
 //                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
 //            }
-            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
-                // Copy LUT
-                rgbImage.setLut(image.getProcessor().getLut());
+        if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
+            // Copy LUT
+            rgbImage.setLut(image.getProcessor().getLut());
 
-                // Render to RGB
-                rgbImage = ImageJUtils.renderToRGBWithLUTIfNeeded(rgbImage, new JIPipeProgressInfo());
-            } else {
-                // Convert to RGB if necessary (HSB, LAB, ...)
-                getColorSpace().convertToRGB(rgbImage, new JIPipeProgressInfo());
-            }
-
-            // ROI rendering
-            ROIListData rois = new ROIListData();
-            if (image.getRoi() != null)
-                rois.add(image.getRoi());
-            if (image.getOverlay() != null) {
-                rois.addAll(Arrays.asList(image.getOverlay().toArray()));
-            }
-            if (!rois.isEmpty()) {
-                if (rgbImage == image || rgbImage.getProcessor() == image.getProcessor()) {
-                    rgbImage = ImageJUtils.duplicate(rgbImage);
-                }
-                rois.draw(rgbImage.getProcessor(),
-                        new ImageSliceIndex(0, 0, 0),
-                        false,
-                        false,
-                        false,
-                        true,
-                        false,
-                        false,
-                        1,
-                        Color.RED,
-                        Color.YELLOW,
-                        Collections.emptyList());
-            }
-
-            ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
-            BufferedImage bufferedImage = resized.getBufferedImage();
-            return new JLabel(new ImageIcon(bufferedImage));
+            // Render to RGB
+            rgbImage = ImageJUtils.renderToRGBWithLUTIfNeeded(rgbImage, new JIPipeProgressInfo());
         } else {
-            return new JLabel(imageSource.getLabel(), imageSource.getIcon(), JLabel.LEFT);
+            // Convert to RGB if necessary (HSB, LAB, ...)
+            getColorSpace().convertToRGB(rgbImage, new JIPipeProgressInfo());
         }
+
+        // ROI rendering
+        ROIListData rois = new ROIListData();
+        if (image.getRoi() != null)
+            rois.add(image.getRoi());
+        if (image.getOverlay() != null) {
+            rois.addAll(Arrays.asList(image.getOverlay().toArray()));
+        }
+        if (!rois.isEmpty()) {
+            if (rgbImage == image || rgbImage.getProcessor() == image.getProcessor()) {
+                rgbImage = ImageJUtils.duplicate(rgbImage);
+            }
+            rois.draw(rgbImage.getProcessor(),
+                    new ImageSliceIndex(0, 0, 0),
+                    false,
+                    false,
+                    false,
+                    true,
+                    false,
+                    false,
+                    1,
+                    Color.RED,
+                    Color.YELLOW,
+                    Collections.emptyList());
+        }
+
+        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+        BufferedImage bufferedImage = resized.getBufferedImage();
+        return new JLabel(new ImageIcon(bufferedImage));
     }
 
     @Override
     public String toString() {
-        if (image != null)
-            return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + image + ")";
-        else
-            return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + imageSource.getLabel() + ")";
+        return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + image + ")";
     }
 
     public ColorSpace getColorSpace() {
         return colorSpace;
-    }
-
-    public ImageSource getImageSource() {
-        return imageSource;
-    }
-
-    public boolean hasLoadedImage() {
-        return image != null;
     }
 
     public <T extends JIPipeData> List<T> extractOverlaysOfType(Class<T> klass) {

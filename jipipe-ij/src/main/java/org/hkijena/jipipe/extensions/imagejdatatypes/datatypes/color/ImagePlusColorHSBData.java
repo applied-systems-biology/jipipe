@@ -25,10 +25,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
 
@@ -66,10 +64,6 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
                 24));
     }
 
-    public ImagePlusColorHSBData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorHSBIfNeeded));
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlusColorHSBData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -81,23 +75,19 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            ImagePlus image = data.getImage();
-            if (image.getType() != ImagePlus.COLOR_RGB) {
-                // This will go through the standard method (greyscale -> RGB -> HSB)
+        ImagePlus image = data.getImage();
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            // This will go through the standard method (greyscale -> RGB -> HSB)
+            return new ImagePlusColorHSBData(image);
+        } else {
+            if (data.getColorSpace() instanceof HSBColorSpace) {
+                // No conversion needed
                 return new ImagePlusColorHSBData(image);
             } else {
-                if (data.getColorSpace() instanceof HSBColorSpace) {
-                    // No conversion needed
-                    return new ImagePlusColorHSBData(image);
-                } else {
-                    ImagePlus copy = data.getDuplicateImage();
-                    HSBColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
-                    return new ImagePlusColorHSBData(copy);
-                }
+                ImagePlus copy = data.getDuplicateImage();
+                HSBColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
+                return new ImagePlusColorHSBData(copy);
             }
-        } else {
-            return new ImagePlusColorHSBData(data.getImageSource());
         }
     }
 

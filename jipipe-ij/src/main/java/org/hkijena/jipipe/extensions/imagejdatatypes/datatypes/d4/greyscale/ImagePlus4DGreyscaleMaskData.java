@@ -25,10 +25,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 /**
  * Mask 4D image
@@ -41,10 +39,6 @@ public class ImagePlus4DGreyscaleMaskData extends ImagePlus4DGreyscale8UData {
 
     public ImagePlus4DGreyscaleMaskData(ImagePlus image) {
         super(ImageJUtils.convertToGreyscale8UIfNeeded(image));
-    }
-
-    public ImagePlus4DGreyscaleMaskData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded));
     }
 
     /**
@@ -66,10 +60,6 @@ public class ImagePlus4DGreyscaleMaskData extends ImagePlus4DGreyscale8UData {
         super(ImageJUtils.convertToGreyscale8UIfNeeded(image), colorSpace);
     }
 
-    public ImagePlus4DGreyscaleMaskData(ImageSource source, ColorSpace colorSpace) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded), colorSpace);
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus4DGreyscaleMaskData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -81,10 +71,6 @@ public class ImagePlus4DGreyscaleMaskData extends ImagePlus4DGreyscale8UData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlus4DGreyscaleMaskData(data.getImage());
-        } else {
-            return new ImagePlus4DGreyscaleMaskData(data.getImageSource());
-        }
+        return new ImagePlus4DGreyscaleMaskData(data.getImage());
     }
 }

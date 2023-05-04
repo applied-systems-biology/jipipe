@@ -26,9 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSp
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 /**
  * Greyscale 3D image
@@ -42,17 +40,8 @@ public class ImagePlus3DGreyscaleData extends ImagePlus3DData implements JIPipeD
     public ImagePlus3DGreyscaleData(ImagePlus image) {
         super(ImageJUtils.convertToGreyscaleIfNeeded(image));
     }
-
-    public ImagePlus3DGreyscaleData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscaleIfNeeded));
-    }
-
     public ImagePlus3DGreyscaleData(ImagePlus image, ColorSpace colorSpace) {
         super(ImageJUtils.convertToGreyscaleIfNeeded(image), colorSpace);
-    }
-
-    public ImagePlus3DGreyscaleData(ImageSource source, ColorSpace colorSpace) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscaleIfNeeded), colorSpace);
     }
 
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -66,11 +55,7 @@ public class ImagePlus3DGreyscaleData extends ImagePlus3DData implements JIPipeD
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlus3DGreyscaleData(data.getImage());
-        } else {
-            return new ImagePlus3DGreyscaleData(data.getImageSource());
-        }
+        return new ImagePlus3DGreyscaleData(data.getImage());
     }
 
     @Override

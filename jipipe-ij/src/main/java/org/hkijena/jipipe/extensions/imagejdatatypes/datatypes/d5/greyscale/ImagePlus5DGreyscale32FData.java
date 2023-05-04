@@ -25,10 +25,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 /**
  * 32-bit floating point greyscale image
@@ -41,10 +39,6 @@ public class ImagePlus5DGreyscale32FData extends ImagePlus5DGreyscaleData {
 
     public ImagePlus5DGreyscale32FData(ImagePlus image) {
         super(ImageJUtils.convertToGrayscale32FIfNeeded(image));
-    }
-
-    public ImagePlus5DGreyscale32FData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGrayscale32FIfNeeded));
     }
 
     /**
@@ -66,10 +60,6 @@ public class ImagePlus5DGreyscale32FData extends ImagePlus5DGreyscaleData {
         super(ImageJUtils.convertToGrayscale32FIfNeeded(image), colorSpace);
     }
 
-    public ImagePlus5DGreyscale32FData(ImageSource source, ColorSpace colorSpace) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGrayscale32FIfNeeded), colorSpace);
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus5DGreyscale32FData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -81,10 +71,6 @@ public class ImagePlus5DGreyscale32FData extends ImagePlus5DGreyscaleData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlus5DGreyscale32FData(data.getImage());
-        } else {
-            return new ImagePlus5DGreyscale32FData(data.getImageSource());
-        }
+        return new ImagePlus5DGreyscale32FData(data.getImage());
     }
 }

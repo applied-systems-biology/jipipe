@@ -26,10 +26,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 /**
  * RGB color 5D image
@@ -66,10 +64,6 @@ public class ImagePlus5DColorRGBData extends ImagePlus5DColorData {
                 24));
     }
 
-    public ImagePlus5DColorRGBData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus5DColorRGBData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -81,11 +75,7 @@ public class ImagePlus5DColorRGBData extends ImagePlus5DColorData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlus5DColorRGBData(ImagePlusColorRGBData.convertFrom(data).getImage());
-        } else {
-            return new ImagePlus5DColorRGBData(data.getImageSource());
-        }
+        return new ImagePlus5DColorRGBData(ImagePlusColorRGBData.convertFrom(data).getImage());
     }
 
     @Override

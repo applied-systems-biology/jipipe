@@ -42,6 +42,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod
 import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUIActiveArea;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUIAddSlotButtonActiveArea;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -634,7 +635,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     Auto snap to input/output if there is only one
                      */
                     if (currentConnectionDragSource_.getSlot().isInput()) {
-                        if (nodeUI.getNode().getOutputSlots().size() == 1) {
+                        if (nodeUI.getNode().getOutputSlots().size() == 1 && !nodeUI.isSlotsOutputsEditable()) {
                             if (!nodeUI.getOutputSlotMap().values().isEmpty()) {
                                 // Auto snap to output
                                 JIPipeNodeUISlotActiveArea slotUI = nodeUI.getOutputSlotMap().values().iterator().next();
@@ -643,7 +644,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                             }
                         }
                     } else {
-                        if (nodeUI.getNode().getInputSlots().size() == 1) {
+                        if (nodeUI.getNode().getInputSlots().size() == 1 && !nodeUI.isSlotsInputsEditable()) {
                             // Auto snap to input
                             if (!nodeUI.getInputSlotMap().values().isEmpty()) {
                                 JIPipeNodeUISlotActiveArea slotUI = nodeUI.getInputSlotMap().values().iterator().next();
@@ -657,11 +658,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     Sticky snap: Stay in last snapped position if we were in it before
                      */
                     if (currentConnectionDragTarget != null && currentConnectionDragTarget.getNodeUI() == nodeUI) {
-                        JIPipeNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(mouseEvent);
-                        if (slotState != null && slotState.getSlot().isInput() != currentConnectionDragSource_.getSlot().isInput()) {
-                            setCurrentConnectionDragTarget(slotState);
+                        JIPipeNodeUIActiveArea addSlotState = nodeUI.pickAddSlotAtMousePosition(mouseEvent);
+                        if(addSlotState == null) {
+                            JIPipeNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(mouseEvent);
+                            if (slotState != null && slotState.getSlot().isInput() != currentConnectionDragSource_.getSlot().isInput()) {
+                                setCurrentConnectionDragTarget(slotState);
+                            }
+                            snapped = true;
                         }
-                        snapped = true;
                     }
 
                     /*
@@ -682,7 +686,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                      */
                     if(!snapped) {
                         JIPipeNodeUIActiveArea slotState = nodeUI.pickAddSlotAtMousePosition(mouseEvent);
-                        if(slotState != null && slotState == nodeUI.getAddInputSlotArea()) {
+                        if(currentConnectionDragSource_.isOutput() && slotState != null && slotState == nodeUI.getAddInputSlotArea()) {
+                            setCurrentConnectionDragTarget(slotState);
+                            snapped = true;
+                        }
+                        else if(currentConnectionDragSource_.isInput() && slotState != null && slotState == nodeUI.getAddOutputSlotArea()) {
                             setCurrentConnectionDragTarget(slotState);
                             snapped = true;
                         }
@@ -1114,8 +1122,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         } else {
             if (currentConnectionDragSource instanceof JIPipeNodeUISlotActiveArea && currentConnectionDragTarget instanceof JIPipeNodeUISlotActiveArea) {
                 connectOrDisconnectSlots(((JIPipeNodeUISlotActiveArea) currentConnectionDragSource).getSlot(), ((JIPipeNodeUISlotActiveArea) currentConnectionDragTarget).getSlot());
-            } else {
-                // TODO
+            } else if(currentConnectionDragSource instanceof JIPipeNodeUISlotActiveArea && currentConnectionDragTarget instanceof JIPipeNodeUIAddSlotButtonActiveArea) {
+                System.out.println("SLOT -> ?");
             }
             stopAllDragging();
             if (selectionFirst != null && selectionSecond != null) {

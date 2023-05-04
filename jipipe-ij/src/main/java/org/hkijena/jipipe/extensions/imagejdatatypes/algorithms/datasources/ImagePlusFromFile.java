@@ -52,7 +52,6 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
     private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
     private boolean removeLut = false;
-    private boolean deferLoading = false;
     private boolean removeOverlay = false;
 
     /**
@@ -74,7 +73,6 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
         this.removeLut = other.removeLut;
         this.removeOverlay = other.removeOverlay;
-        this.deferLoading = other.deferLoading;
     }
 
     /**
@@ -136,45 +134,23 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.removeLut = removeLut;
     }
 
-    @JIPipeDocumentation(name = "Defer image import", description = "If enabled, the generated output data is provided with the input image path, but the image is not loaded " +
-            "until it is used. You must ensure that the image path is not deleted. If enabled, the title annotation will be the image file name.")
-    @JIPipeParameter("defer-loading")
-    public boolean isDeferLoading() {
-        return deferLoading;
-    }
-
-    @JIPipeParameter("defer-loading")
-    public void setDeferLoading(boolean deferLoading) {
-        this.deferLoading = deferLoading;
-    }
-
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
-        if (deferLoading) {
-            ImagePlusData outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(),
-                    new ImagePlusFromFileImageSource(fileData.toPath(), removeLut, removeOverlay));
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            if (titleAnnotation.isEnabled()) {
-                annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
-            }
-            dataBatch.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        } else {
-            ImagePlusData outputData;
-            ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
-            if (removeLut) {
-                ImageJUtils.removeLUT(image, null);
-            }
-            if (removeOverlay) {
-                ImageJUtils.removeOverlay(image);
-            }
-            outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            if (titleAnnotation.isEnabled()) {
-                annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), outputData.getImage().getTitle()));
-            }
-            dataBatch.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+        ImagePlusData outputData;
+        ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
+        if (removeLut) {
+            ImageJUtils.removeLUT(image, null);
         }
+        if (removeOverlay) {
+            ImageJUtils.removeOverlay(image);
+        }
+        outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(), image);
+        List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+        if (titleAnnotation.isEnabled()) {
+            annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), outputData.getImage().getTitle()));
+        }
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")

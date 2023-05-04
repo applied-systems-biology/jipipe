@@ -25,9 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
 
@@ -53,14 +51,6 @@ public class ImagePlus2DColorData extends ImagePlus2DData {
         super(ImageJUtils.convertToColorRGBIfNeeded(image), colorSpace);
     }
 
-    public ImagePlus2DColorData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
-    }
-
-    public ImagePlus2DColorData(ImageSource source, ColorSpace colorSpace) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded), colorSpace);
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus2DColorData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -72,16 +62,12 @@ public class ImagePlus2DColorData extends ImagePlus2DData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            ImagePlus image = data.getImage();
-            if (image.getType() != ImagePlus.COLOR_RGB) {
-                // This will go through the standard method (greyscale -> RGB -> HSB)
-                return new ImagePlus2DColorData(image);
-            } else {
-                return new ImagePlus2DColorData(image, data.getColorSpace());
-            }
+        ImagePlus image = data.getImage();
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            // This will go through the standard method (greyscale -> RGB -> HSB)
+            return new ImagePlus2DColorData(image);
         } else {
-            return new ImagePlus2DColorData(data.getImageSource(), data.getColorSpace());
+            return new ImagePlus2DColorData(image, data.getColorSpace());
         }
     }
 

@@ -22,10 +22,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.AsserterWrapperImageSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 /**
  * 5D image
@@ -49,13 +46,6 @@ public class ImagePlus5DData extends ImagePlusData {
         ImageJUtils.assert5DImage(getImage());
     }
 
-    public ImagePlus5DData(ImageSource source) {
-        super(new AsserterWrapperImageSource(new ConverterWrapperImageSource(source, ImageJUtils::convert3ChannelToRGBIfNeeded), ImageJUtils::assert5DImage));
-    }
-
-    public ImagePlus5DData(ImageSource source, ColorSpace colorSpace) {
-        super(new AsserterWrapperImageSource(new ConverterWrapperImageSource(source, ImageJUtils::convert3ChannelToRGBIfNeeded), ImageJUtils::assert5DImage), colorSpace);
-    }
 
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus5DData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
@@ -68,10 +58,6 @@ public class ImagePlus5DData extends ImagePlusData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlus5DData(data.getImage(), data.getColorSpace());
-        } else {
-            return new ImagePlus5DData(data.getImageSource(), data.getColorSpace());
-        }
+        return new ImagePlus5DData(data.getImage(), data.getColorSpace());
     }
 }

@@ -26,9 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColorImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
 
@@ -54,14 +52,6 @@ public class ImagePlus3DColorData extends ImagePlus3DData implements ColorImageD
         super(ImageJUtils.convertToColorRGBIfNeeded(image), colorSpace);
     }
 
-    public ImagePlus3DColorData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
-    }
-
-    public ImagePlus3DColorData(ImageSource source, ColorSpace colorSpace) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded), colorSpace);
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus3DColorData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -73,16 +63,12 @@ public class ImagePlus3DColorData extends ImagePlus3DData implements ColorImageD
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            ImagePlus image = data.getImage();
-            if (image.getType() != ImagePlus.COLOR_RGB) {
-                // This will go through the standard method (greyscale -> RGB -> HSB)
-                return new ImagePlus3DColorData(image);
-            } else {
-                return new ImagePlus3DColorData(image, data.getColorSpace());
-            }
+        ImagePlus image = data.getImage();
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            // This will go through the standard method (greyscale -> RGB -> HSB)
+            return new ImagePlus3DColorData(image);
         } else {
-            return new ImagePlus3DColorData(data.getImageSource(), data.getColorSpace());
+            return new ImagePlus3DColorData(image, data.getColorSpace());
         }
     }
 

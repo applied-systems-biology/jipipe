@@ -25,10 +25,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 /**
  * 16-bit greyscale 2D image
@@ -41,10 +39,6 @@ public class ImagePlus2DGreyscale16UData extends ImagePlus2DGreyscaleData {
 
     public ImagePlus2DGreyscale16UData(ImagePlus image) {
         super(ImageJUtils.convertToGrayscale16UIfNeeded(image));
-    }
-
-    public ImagePlus2DGreyscale16UData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGrayscale16UIfNeeded));
     }
 
     /**
@@ -66,10 +60,6 @@ public class ImagePlus2DGreyscale16UData extends ImagePlus2DGreyscaleData {
         super(ImageJUtils.convertToGrayscale16UIfNeeded(image), colorSpace);
     }
 
-    public ImagePlus2DGreyscale16UData(ImageSource source, ColorSpace colorSpace) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGrayscale16UIfNeeded), colorSpace);
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus2DGreyscale16UData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -81,10 +71,6 @@ public class ImagePlus2DGreyscale16UData extends ImagePlus2DGreyscaleData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlus2DGreyscale16UData(data.getImage());
-        } else {
-            return new ImagePlus2DGreyscale16UData(data.getImageSource());
-        }
+        return new ImagePlus2DGreyscale16UData(data.getImage());
     }
 }

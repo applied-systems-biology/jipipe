@@ -25,10 +25,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
 
@@ -49,10 +47,6 @@ public class ImagePlusColorLABData extends ImagePlusColorData {
 
     public ImagePlusColorLABData(ImagePlus image, ColorSpace ignored) {
         super(ImageJUtils.convertToColorLABIfNeeded(image));
-    }
-
-    public ImagePlusColorLABData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorLABIfNeeded));
     }
 
     /**
@@ -81,23 +75,19 @@ public class ImagePlusColorLABData extends ImagePlusColorData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            ImagePlus image = data.getImage();
-            if (image.getType() != ImagePlus.COLOR_RGB) {
-                // Standard method: Greyscale -> RGB
+        ImagePlus image = data.getImage();
+        if (image.getType() != ImagePlus.COLOR_RGB) {
+            // Standard method: Greyscale -> RGB
+            return new ImagePlusColorLABData(data.getImage());
+        } else {
+            if (data.getColorSpace() instanceof LABColorSpace) {
+                // No conversion needed
                 return new ImagePlusColorLABData(data.getImage());
             } else {
-                if (data.getColorSpace() instanceof LABColorSpace) {
-                    // No conversion needed
-                    return new ImagePlusColorLABData(data.getImage());
-                } else {
-                    ImagePlus copy = data.getDuplicateImage();
-                    LABColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
-                    return new ImagePlusColorLABData(copy);
-                }
+                ImagePlus copy = data.getDuplicateImage();
+                LABColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
+                return new ImagePlusColorLABData(copy);
             }
-        } else {
-            return new ImagePlusColorLABData(data.getImageSource());
         }
     }
 

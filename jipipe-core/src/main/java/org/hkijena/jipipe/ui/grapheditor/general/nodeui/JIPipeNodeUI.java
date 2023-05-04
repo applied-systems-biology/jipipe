@@ -1026,6 +1026,14 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         return null;
     }
 
+    public boolean isSlotsInputsEditable() {
+        return slotsInputsEditable;
+    }
+
+    public boolean isSlotsOutputsEditable() {
+        return slotsOutputsEditable;
+    }
+
     public JIPipeNodeUIAddSlotButtonActiveArea getAddInputSlotArea() {
         return addInputSlotArea;
     }

@@ -25,10 +25,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 /**
  * 8-bit mask without dimension.
@@ -60,16 +58,8 @@ public class ImagePlusGreyscaleMaskData extends ImagePlusGreyscale8UData {
                 8));
     }
 
-    public ImagePlusGreyscaleMaskData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded));
-    }
-
     public ImagePlusGreyscaleMaskData(ImagePlus image, ColorSpace colorSpace) {
         super(ImageJUtils.convertToGreyscale8UIfNeeded(image), colorSpace);
-    }
-
-    public ImagePlusGreyscaleMaskData(ImageSource source, ColorSpace colorSpace) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded), colorSpace);
     }
 
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -83,10 +73,6 @@ public class ImagePlusGreyscaleMaskData extends ImagePlusGreyscale8UData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlusGreyscaleMaskData(data.getImage());
-        } else {
-            return new ImagePlusGreyscaleMaskData(data.getImageSource());
-        }
+        return new ImagePlusGreyscaleMaskData(data.getImage());
     }
 }

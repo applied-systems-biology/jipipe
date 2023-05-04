@@ -26,10 +26,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
 
@@ -68,10 +66,6 @@ public class ImagePlus2DColorLABData extends ImagePlus2DColorData {
                 24));
     }
 
-    public ImagePlus2DColorLABData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorLABIfNeeded));
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus2DColorLABData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -83,11 +77,7 @@ public class ImagePlus2DColorLABData extends ImagePlus2DColorData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlus2DColorLABData(ImagePlusColorLABData.convertFrom(data).getImage());
-        } else {
-            return new ImagePlus2DColorLABData(data.getImageSource());
-        }
+        return new ImagePlus2DColorLABData(ImagePlusColorLABData.convertFrom(data).getImage());
     }
 
     @Override

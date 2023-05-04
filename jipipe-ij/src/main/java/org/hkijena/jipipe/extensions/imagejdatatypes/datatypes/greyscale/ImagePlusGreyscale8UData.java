@@ -25,10 +25,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 /**
  * 8-bit greyscale image without dimension.
@@ -43,10 +41,6 @@ public class ImagePlusGreyscale8UData extends ImagePlusGreyscaleData {
 
     public ImagePlusGreyscale8UData(ImagePlus image) {
         super(ImageJUtils.convertToGreyscale8UIfNeeded(image));
-    }
-
-    public ImagePlusGreyscale8UData(ImageSource source) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded));
     }
 
     /**
@@ -68,10 +62,6 @@ public class ImagePlusGreyscale8UData extends ImagePlusGreyscaleData {
         super(ImageJUtils.convertToGreyscale8UIfNeeded(image), colorSpace);
     }
 
-    public ImagePlusGreyscale8UData(ImageSource source, ColorSpace colorSpace) {
-        super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded), colorSpace);
-    }
-
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlusGreyscale8UData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
@@ -83,10 +73,6 @@ public class ImagePlusGreyscale8UData extends ImagePlusGreyscaleData {
      * @return the converted data
      */
     public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage()) {
-            return new ImagePlusGreyscale8UData(data.getImage());
-        } else {
-            return new ImagePlusGreyscale8UData(data.getImageSource());
-        }
+        return new ImagePlusGreyscale8UData(data.getImage());
     }
 }
