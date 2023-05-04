@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
@@ -32,6 +29,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -62,6 +60,8 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private JScrollPane listScrollPane;
     private JXTextField descriptionEditor;
 
+    private List<JIPipeDataSlot> addedSlots = new ArrayList<>();
+
     /**
      * @param algorithm      the target algorithm
      * @param slotType       the slot type to be created
@@ -82,6 +82,14 @@ public class AddAlgorithmSlotPanel extends JPanel {
             nameEditor.requestFocusInWindow();
             nameEditor.selectAll();
         });
+    }
+
+    public JList<JIPipeDataInfo> getDatatypeList() {
+        return datatypeList;
+    }
+
+    public List<JIPipeDataSlot> getAddedSlots() {
+        return addedSlots;
     }
 
     /**
@@ -240,6 +248,12 @@ public class AddAlgorithmSlotPanel extends JPanel {
         }
 
         slotConfiguration.addSlot(slotName, slotDefinition, true);
+        if(slotType == JIPipeSlotType.Input) {
+            addedSlots.add(algorithm.getInputSlot(slotName));
+        }
+        else {
+            addedSlots.add(algorithm.getOutputSlot(slotName));
+        }
         lastSelectedType = selectedInfo;
 
         if (dialog != null)
@@ -304,6 +318,15 @@ public class AddAlgorithmSlotPanel extends JPanel {
         } else {
             throw new UnsupportedOperationException();
         }
+    }
+
+    public Set<JIPipeDataInfo> getAvailableTypes() {
+        return availableTypes;
+    }
+
+    public void setAvailableTypes(Set<JIPipeDataInfo> availableTypes) {
+        this.availableTypes = availableTypes;
+        reloadTypeList();
     }
 
     private List<JIPipeDataInfo> getFilteredAndSortedInfos() {

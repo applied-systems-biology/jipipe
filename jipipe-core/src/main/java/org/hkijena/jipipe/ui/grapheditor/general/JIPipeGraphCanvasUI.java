@@ -20,7 +20,7 @@ import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -31,6 +31,7 @@ import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
+import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
@@ -1123,7 +1124,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if (currentConnectionDragSource instanceof JIPipeNodeUISlotActiveArea && currentConnectionDragTarget instanceof JIPipeNodeUISlotActiveArea) {
                 connectOrDisconnectSlots(((JIPipeNodeUISlotActiveArea) currentConnectionDragSource).getSlot(), ((JIPipeNodeUISlotActiveArea) currentConnectionDragTarget).getSlot());
             } else if(currentConnectionDragSource instanceof JIPipeNodeUISlotActiveArea && currentConnectionDragTarget instanceof JIPipeNodeUIAddSlotButtonActiveArea) {
-                System.out.println("SLOT -> ?");
+                connectCreateNewSlot(((JIPipeNodeUISlotActiveArea) currentConnectionDragSource).getSlot(), currentConnectionDragTarget.getNodeUI());
             }
             stopAllDragging();
             if (selectionFirst != null && selectionSecond != null) {
@@ -1162,6 +1163,77 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 selectionSecond = null;
             }
         }
+    }
+
+    private void connectCreateNewSlot(JIPipeDataSlot sourceSlot, JIPipeNodeUI nodeUI) {
+        JIPipeGraphNode node = nodeUI.getNode();
+        JIPipeSlotType addedSlotType = sourceSlot.getSlotType() == JIPipeSlotType.Input ? JIPipeSlotType.Output : JIPipeSlotType.Input;
+        JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) node.getSlotConfiguration();
+        Set<JIPipeDataInfo> availableTypes;
+        if (addedSlotType == JIPipeSlotType.Input) {
+            availableTypes = slotConfiguration.getAllowedInputSlotTypes()
+                    .stream().map(JIPipeDataInfo::getInstance).collect(Collectors.toSet());
+        } else if (addedSlotType == JIPipeSlotType.Output) {
+            availableTypes = slotConfiguration.getAllowedOutputSlotTypes()
+                    .stream().map(JIPipeDataInfo::getInstance).collect(Collectors.toSet());
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
+        Class<? extends JIPipeData> sourceSlotType = sourceSlot.getAcceptedDataType();
+        if (addedSlotType == JIPipeSlotType.Input) {
+            availableTypes.removeIf(info ->  !JIPipe.getDataTypes().isConvertible(sourceSlotType, info.getDataClass()));
+        }
+        else {
+            availableTypes.removeIf(info ->  !JIPipe.getDataTypes().isConvertible(info.getDataClass(), sourceSlotType));
+        }
+
+        if(availableTypes.isEmpty()) {
+            JOptionPane.showMessageDialog(getWorkbench().getWindow(),
+                    "There is no possibility to create a compatible slot for the data.", "Incompatible node", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        JIPipeDataInfo selectedInfo;
+        if(availableTypes.contains(JIPipeDataInfo.getInstance(sourceSlot.getAcceptedDataType()))) {
+            selectedInfo = JIPipeDataInfo.getInstance(sourceSlot.getAcceptedDataType());
+        }
+        else {
+            if (addedSlotType == JIPipeSlotType.Input) {
+                selectedInfo = availableTypes.stream().min(Comparator.comparing(info -> JIPipe.getDataTypes().getConversionDistance(sourceSlotType, info.getDataClass()))).get();
+            }
+            else {
+                selectedInfo = availableTypes.stream().min(Comparator.comparing(info -> JIPipe.getDataTypes().getConversionDistance(info.getDataClass(), sourceSlotType))).get();
+            }
+        }
+
+
+        JDialog dialog = new JDialog();
+        AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(nodeUI.getNode(), addedSlotType, historyJournal);
+        panel.setAvailableTypes(availableTypes);
+        panel.getDatatypeList().setSelectedValue(selectedInfo, true);
+        panel.setDialog(dialog);
+        dialog.setContentPane(panel);
+        dialog.setTitle("Add slot");
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(640, 480));
+        dialog.setLocationRelativeTo(nodeUI);
+        UIUtils.addEscapeListener(dialog);
+        SwingUtilities.invokeLater(() -> {
+            panel.getDatatypeList().ensureIndexIsVisible(panel.getDatatypeList().getSelectedIndex());
+        });
+        dialog.setVisible(true);
+
+        if(!panel.getAddedSlots().isEmpty()) {
+            if (addedSlotType == JIPipeSlotType.Input) {
+                connectSlot(sourceSlot, panel.getAddedSlots().get(0));
+            }
+            else{
+                connectSlot(panel.getAddedSlots().get(0), sourceSlot);
+            }
+        }
+
     }
 
     private void connectOrDisconnectSlots(JIPipeDataSlot firstSlot, JIPipeDataSlot secondSlot) {

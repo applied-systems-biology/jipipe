@@ -1971,7 +1971,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private void openAddSlotDialog(JIPipeSlotType slotType) {
         if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench())) {
-            JOptionPane.showMessageDialog(graphCanvasUI.getWorkbench().getWindow(), "");
+            JOptionPane.showMessageDialog(graphCanvasUI.getWorkbench().getWindow(), "Slots cannot be modified!", "Add slot", JOptionPane.ERROR_MESSAGE);
             return;
         }
         AddAlgorithmSlotPanel.showDialog(this, graphCanvasUI.getHistoryJournal(), node, slotType);
