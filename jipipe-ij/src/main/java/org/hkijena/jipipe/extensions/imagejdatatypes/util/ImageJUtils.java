@@ -39,6 +39,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -853,7 +854,7 @@ public class ImageJUtils {
      * @param src    the source
      * @param target the target
      */
-    public static void copyBetweenImages(ImagePlus src, ImagePlus target, JIPipeProgressInfo progressInfo) {
+    public static void copyPixelsBetweenImages(ImagePlus src, ImagePlus target, JIPipeProgressInfo progressInfo) {
         if (!ImageJUtils.imagesHaveSameSize(src, target) || src.getBitDepth() != target.getBitDepth()) {
             throw new IllegalArgumentException("Source and target must have same size and bit depth!");
         }
@@ -1071,7 +1072,9 @@ public class ImageJUtils {
             stack.addSlice(processor);
         }
 
-        return new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+        ImagePlus result = new ImagePlus(img.getTitle() + " " + "c=" + c + ", t=" + t, stack);
+        result.copyScale(img);
+        return result;
     }
 
 
@@ -2158,6 +2161,66 @@ public class ImageJUtils {
         } else {
             return null;
         }
+    }
+
+    public static LUT[] getChannelLUT(ImagePlus image) {
+        LUT[] luts = new LUT[image.getNChannels()];
+        for (int c = 0; c < image.getNChannels(); c++) {
+            if(image.isComposite()) {
+                CompositeImage compositeImage = (CompositeImage) image;
+                LUT lut = compositeImage.getChannelLut(c + 1);
+                if(lut == null) {
+                    luts[c] = LUT.createLutFromColor(Color.WHITE);
+                }
+                else {
+                    luts[c] = lut;
+                }
+            }
+            else {
+                image.setPosition(c + 1, 1,1);
+                LUT lut = image.getProcessor().getLut();
+                if(lut == null) {
+                    luts[c] = LUT.createLutFromColor(Color.WHITE);
+                }
+                else {
+                    luts[c] = lut;
+                }
+            }
+        }
+        image.setPosition(1,1,1);
+        return luts;
+    }
+
+    public static void setChannelLUT(ImagePlus image, LUT[] luts) {
+        for (int c = 0; c < image.getNChannels(); c++) {
+            setLut(image, luts[c], Collections.singleton(c));
+        }
+    }
+
+    public static void setLutFromColorMap(ImagePlus image, ColorMap colorMap, Set<Integer> channels) {
+        LUT lut = colorMap.toLUT();
+        setLut(image, lut, channels);
+    }
+
+    public static void setLut(ImagePlus image, LUT lut, Set<Integer> channels) {
+        // Standard LUT
+        ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
+        for (int c = 0; c < image.getNChannels(); c++) {
+            if (channels == null || channels.isEmpty() || channels.contains(c)) {
+                if(image.isComposite()) {
+                    CompositeImage compositeImage = (CompositeImage) image;
+                    compositeImage.setChannelLut(lut, c + 1);
+                }
+                for (int z = 0; z < image.getNSlices(); z++) {
+                    for (int t = 0; t < image.getNFrames(); t++) {
+                        image.setPosition(c + 1, z + 1, t + 1);
+                        image.getProcessor().setLut(lut);
+                    }
+                }
+            }
+        }
+
+        image.setPosition(original.getC(), original.getZ(), original.getT());
     }
 }
 

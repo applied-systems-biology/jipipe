@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.scijava.vecmath.Vector3d;
 
 import java.util.Objects;
@@ -89,5 +90,14 @@ public class Point3d {
         Vector3d vector3d = toVector3d();
         vector3d.normalize();
         return vector3d;
+    }
+
+    public Vector3d pixelsToUnit(Quantity vsx, Quantity vsy, Quantity vsz, String unit) {
+        vsx = vsx.convertTo(unit);
+        vsy = vsy.convertTo(unit);
+        vsz = vsz.convertTo(unit);
+        return new Vector3d(vsx.getValue() * x,
+                vsy.getValue() * y,
+                vsz.getValue() * z);
     }
 }

@@ -10,6 +10,7 @@ import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @JsonDeserialize(using = HTMLText.Deserializer.class)
 @JsonSerialize(using = HTMLText.Serializer.class)
@@ -50,6 +51,19 @@ public class HTMLText {
             builder.append(WordUtils.wrap(s, columns, "<br/>", true)).append("<br/>");
         }
         return new HTMLText(builder.toString());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HTMLText htmlText = (HTMLText) o;
+        return Objects.equals(html, htmlText.html);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(html);
     }
 
     /**

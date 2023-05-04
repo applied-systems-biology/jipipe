@@ -12,6 +12,7 @@ import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Objects;
 
 @JsonSerialize(using = ImageParameter.Serializer.class)
 @JsonDeserialize(using = ImageParameter.Deserializer.class)
@@ -42,6 +43,19 @@ public class ImageParameter {
 
     public void setImage(BufferedImage image) {
         this.image = image;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ImageParameter that = (ImageParameter) o;
+        return Objects.equals(image, that.image);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(image);
     }
 
     public static class Serializer extends JsonSerializer<ImageParameter> {

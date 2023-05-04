@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -216,7 +215,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             drawHistogramLine(overlay, histogram, img, autoThreshold.getAutoThresholdSlope(),
                     autoThreshold.getAutoThresholdIntercept());
             wrapped.setOverlay(overlay);
-            ImageJAlgorithmUtils.setLutFromColorMap(wrapped, ColorMap.fire, null);
+            ImageJUtils.setLutFromColorMap(wrapped, ColorMap.fire, null);
         }
     }
 

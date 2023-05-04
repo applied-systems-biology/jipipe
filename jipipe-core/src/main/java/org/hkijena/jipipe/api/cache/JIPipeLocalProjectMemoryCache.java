@@ -39,6 +39,8 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     private int currentSize = 0;
 
+    private boolean ignoreNodeFunctionalEquals = false;
+
     public JIPipeLocalProjectMemoryCache(JIPipeProject project) {
         this.project = project;
     }
@@ -141,6 +143,9 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
      */
     private boolean removeInvalidNodeStates(JIPipeProgressInfo progressInfo) {
         boolean updated = false;
+        if(ignoreNodeFunctionalEquals) {
+            progressInfo.log("Node functional states (functionallyEquals) will be ignored for the removal of invalid node states");
+        }
         for (UUID uuid : ImmutableList.copyOf(currentNodeStates.keySet())) {
             JIPipeGraphNode currentNode = project.getGraph().getNodeByUUID(uuid);
             JIPipeGraphNode cachedNode = currentNodeStates.get(uuid);
@@ -173,13 +178,23 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
                 }
             }
 
-            if (currentNode == null || !currentNode.functionallyEquals(cachedNode)) {
-                updated = true;
-                removeAndInvalidateNodeCache(uuid, progressInfo);
-                progressInfo.log("Removed invalid node state for " + uuid);
+            if(!ignoreNodeFunctionalEquals) {
+                if (currentNode == null || !currentNode.functionallyEquals(cachedNode)) {
+                    updated = true;
+                    removeAndInvalidateNodeCache(uuid, progressInfo);
+                    progressInfo.log("Removed invalid node state for " + uuid);
+                }
             }
         }
         return updated;
+    }
+
+    public boolean isIgnoreNodeFunctionalEquals() {
+        return ignoreNodeFunctionalEquals;
+    }
+
+    public void setIgnoreNodeFunctionalEquals(boolean ignoreNodeFunctionalEquals) {
+        this.ignoreNodeFunctionalEquals = ignoreNodeFunctionalEquals;
     }
 
     /**

@@ -73,6 +73,15 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             progressInfo.log("Detecting 3D particles ...");
             Objects3DPopulation population = new Objects3DPopulation(imageHandler);
 
+            // Set calibration
+            if(imp.getCalibration() != null) {
+                for (Object3D object3D : population.getObjectsList()) {
+                    object3D.setResXY(imp.getCalibration().pixelWidth);
+                    object3D.setResZ(imp.getCalibration().pixelDepth);
+                    object3D.setUnits(imp.getCalibration().getUnit());
+                }
+            }
+
             // Filter phase
             progressInfo.log("Detected " + roiList.size() + " objects");
             List<Object3D> toRemove = new ArrayList<>();

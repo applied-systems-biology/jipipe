@@ -85,7 +85,7 @@ public class JIPipeHistorySnapshotListCellRenderer extends JPanel implements Lis
         setFont(list.getFont());
 
         if (snapshot != null) {
-            descriptionLabel.setText("<html>" + snapshot.getDescription() + "</html>");
+            descriptionLabel.setText(snapshot.getDescription());
             nameLabel.setText(snapshot.getName());
             dateLabel.setText(StringUtils.formatDateTime(snapshot.getCreationTime()));
             snapshotIcon.setIcon(snapshot.getIcon());

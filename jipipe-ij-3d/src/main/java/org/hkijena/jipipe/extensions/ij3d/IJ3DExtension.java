@@ -48,10 +48,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.metadata.ExtractROI3DMetadataAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.metadata.RemoveROI3DMetadataAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.metadata.SetROI3DMetadataFromTableAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ChangeRoi3DPropertiesFromExpressionsAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ColorRoi3DByNameAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ColorRoi3DByStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.ROI3DCalculatorAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.modify.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.OutlineRoi3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.process.RemoveBorderRoi3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
@@ -156,6 +153,7 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-remove-border", RemoveBorderRoi3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3DPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("ij3d-roi-change-properties", ChangeRoi3DPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("ij3d-roi-calculator", ROI3DCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij3d-roi-color-by-name", ColorRoi3DByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
         registerNodeType("ij3d-roi-color-by-statistics", ColorRoi3DByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));

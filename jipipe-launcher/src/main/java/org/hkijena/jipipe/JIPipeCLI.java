@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -33,141 +34,171 @@ public class JIPipeCLI {
             return;
         }
 
-        List<String> argsList = Arrays.asList(args);
+        List<String> argsList = new ArrayList<>(Arrays.asList(args));
         int firstArgIndex = 0;
 
-        if (argsList.contains("org.hkijena.jipipe.JIPipeCLI")) {
-            // Started with ImageJ
-            while (firstArgIndex < args.length && args[firstArgIndex].startsWith("-")) {
-                firstArgIndex += 2;
+        if (argsList.contains("help")) {
+            showHelp();
+            return;
+        }
+        if (argsList.contains("run")) {
+            int runIndex = argsList.lastIndexOf("run");
+            while (runIndex > 0) {
+                argsList.remove(0);
+                --runIndex;
             }
+        } else {
+            showHelp();
+            return;
         }
 
-        if (firstArgIndex >= args.length) {
-            showHelp();
-            return;
-        }
-        if (args[firstArgIndex].contains("help")) {
-            showHelp();
-            return;
-        }
-        if (Objects.equals(args[firstArgIndex], "run")) {
-            Path projectFile = null;
-            Path outputFolder = null;
-            int numThreads = 1;
-            Map<String, String> parameterOverrides = new HashMap<>();
-            for (int i = firstArgIndex + 1; i < args.length; i += 2) {
-                String arg = args[i];
-                String value = args[i + 1];
-                if (arg.equals("--project")) {
-                    projectFile = Paths.get(value);
-                } else if (arg.equals("--output-folder")) {
-                    outputFolder = Paths.get(value);
-                } else if (arg.equals("--num-threads")) {
-                    numThreads = Integer.parseInt(value);
-                } else if (arg.equals("--overwrite-parameters")) {
-                    try {
-                        JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(new File(value));
-                        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.fields())) {
-                            parameterOverrides.put(entry.getKey(), JsonUtils.toJsonString(entry.getValue()));
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+        // remove run
+        argsList.remove(0);
+
+        Path projectFile = null;
+        Path outputFolder = null;
+        int numThreads = 1;
+        boolean saveToDisk = true;
+        boolean saveToDiskOnlyCompartments = false;
+        Map<String, String> parameterOverrides = new HashMap<>();
+        for (int i = 0; i < argsList.size(); i += 2) {
+            String arg = argsList.get(i);
+            String value = argsList.get(i + 1);
+            if (arg.equals("--project")) {
+                projectFile = Paths.get(value);
+            } else if (arg.equals("--output-folder")) {
+                outputFolder = Paths.get(value);
+            } else if (arg.equals("--num-threads")) {
+                numThreads = Integer.parseInt(value);
+            } else if (arg.equals("--overwrite-parameters")) {
+                try {
+                    JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(new File(value));
+                    for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.fields())) {
+                        parameterOverrides.put(entry.getKey(), JsonUtils.toJsonString(entry.getValue()));
                     }
-                } else if (arg.startsWith("--P")) {
-                    parameterOverrides.put(arg.substring(3), value);
-                } else {
-                    System.err.println("Unknown argument: " + arg);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if(arg.equals("--output-results")) {
+                if(value.equals("all")) {
+                    saveToDisk = true;
+                    saveToDiskOnlyCompartments = false;
+                }
+                else if(value.equals("none")) {
+                    saveToDisk = false;
+                    saveToDiskOnlyCompartments = false;
+                }
+                else if(value.equals("only-compartment-outputs")) {
+                    saveToDisk = true;
+                    saveToDiskOnlyCompartments = true;
+                }
+                else {
+                    System.err.println("Unknown disk saving setting: " + value);
                     showHelp();
                     return;
                 }
             }
-
-            if (projectFile == null || !Files.exists(projectFile)) {
-                System.err.println("Project file does not exist!");
+            else if (arg.startsWith("--P")) {
+                parameterOverrides.put(arg.substring(3), value);
+            } else {
+                System.err.println("Unknown argument: " + arg);
                 showHelp();
                 return;
             }
-            if (outputFolder == null) {
-                System.err.println("Please provide an output folder!");
-                showHelp();
-                return;
-            }
-            if (numThreads < 1) {
-                System.err.println("Invalid number of threads!");
-                showHelp();
-                return;
-            }
-            final ImageJ ij = new ImageJ();
-            JIPipe jiPipe = JIPipe.createInstance(ij.context());
-            ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
-            JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-            jiPipe.initialize(extensionSettings, issues);
-
-            JIPipeIssueReport projectIssues = new JIPipeIssueReport();
-            JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
-            JIPipeProject project;
-            try {
-                project = JIPipeProject.loadProject(projectFile, projectIssues, notifications);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            // Overwrite parameters
-            for (Map.Entry<String, String> entry : parameterOverrides.entrySet()) {
-                String[] components = entry.getKey().split("/");
-                String nodeId = components[0];
-                String parameterId = String.join("/", Arrays.copyOfRange(components, 1, components.length));
-                System.out.println("Setting parameter nodeId='" + nodeId + "' parameterId='" + parameterId + "' to " + entry.getValue());
-
-                JIPipeGraphNode node = project.getGraph().findNode(nodeId);
-                if (node == null) {
-                    throw new RuntimeException("Could not find node nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
-                }
-
-                JIPipeParameterTree tree = new JIPipeParameterTree(node);
-                JIPipeParameterAccess access = tree.getParameters().getOrDefault(parameterId, null);
-
-                if (access == null) {
-                    throw new RuntimeException("Could not find parameter parameterId='" + parameterId + "' in nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
-                }
-
-                Object value;
-                try {
-                    value = JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue());
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException("Could not read parameter value '" + entry.getValue() + "' into data type " + access.getFieldClass() + "!");
-                }
-
-                access.set(value);
-            }
-
-            project.reportValidity(projectIssues);
-            projectIssues.print();
-
-            if (!notifications.isEmpty()) {
-                System.err.println("The following notifications were generated:");
-                for (JIPipeNotification notification : notifications.getNotifications()) {
-                    System.err.println("- " + notification.getHeading() + " [" + notification.getId() + "]");
-                    System.err.println("  " + notification.getDescription());
-                    if (!notification.getActions().isEmpty()) {
-                        System.err.println("  -->> GUI actions detected. Please run the JIPipe GUI to execute them");
-                    }
-                }
-            }
-
-            JIPipeRunSettings settings = new JIPipeRunSettings();
-            settings.setNumThreads(numThreads);
-            settings.setOutputPath(outputFolder);
-            settings.setSaveToDisk(true);
-            settings.setStoreToCache(false);
-
-            JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
-            run.getProgressInfo().setLogToStdOut(true);
-            run.run();
-        } else {
-            showHelp();
         }
+
+        if (projectFile == null || !Files.exists(projectFile)) {
+            System.err.println("Project file does not exist!");
+            showHelp();
+            return;
+        }
+        if (outputFolder == null) {
+            System.err.println("Please provide an output folder!");
+            showHelp();
+            return;
+        }
+        if (numThreads < 1) {
+            System.err.println("Invalid number of threads!");
+            showHelp();
+            return;
+        }
+        final ImageJ ij = new ImageJ();
+        JIPipe jiPipe = JIPipe.createInstance(ij.context());
+        ExtensionSettings extensionSettings = ExtensionSettings.getInstanceFromRaw();
+        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        jiPipe.initialize(extensionSettings, issues);
+
+        JIPipeIssueReport projectIssues = new JIPipeIssueReport();
+        JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+        JIPipeProject project;
+        try {
+            project = JIPipeProject.loadProject(projectFile, projectIssues, notifications);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Overwrite parameters
+        for (Map.Entry<String, String> entry : parameterOverrides.entrySet()) {
+            String[] components = entry.getKey().split("/");
+            String nodeId = components[0];
+            String parameterId = String.join("/", Arrays.copyOfRange(components, 1, components.length));
+            System.out.println("Setting parameter nodeId='" + nodeId + "' parameterId='" + parameterId + "' to " + entry.getValue());
+
+            JIPipeGraphNode node = project.getGraph().findNode(nodeId);
+            if (node == null) {
+                throw new RuntimeException("Could not find node nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
+            }
+
+            JIPipeParameterTree tree = new JIPipeParameterTree(node);
+            JIPipeParameterAccess access = tree.getParameters().getOrDefault(parameterId, null);
+
+            if (access == null) {
+                throw new RuntimeException("Could not find parameter parameterId='" + parameterId + "' in nodeId='" + nodeId + "'. Check if the UUID or alias ID are provided in the pipeline.");
+            }
+
+            Object value;
+            try {
+                value = JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue());
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Could not read parameter value '" + entry.getValue() + "' into data type " + access.getFieldClass() + "!");
+            }
+
+            access.set(value);
+        }
+
+        project.reportValidity(projectIssues);
+        projectIssues.print();
+
+        if (!notifications.isEmpty()) {
+            System.err.println("The following notifications were generated:");
+            for (JIPipeNotification notification : notifications.getNotifications()) {
+                System.err.println("- " + notification.getHeading() + " [" + notification.getId() + "]");
+                System.err.println("  " + notification.getDescription());
+                if (!notification.getActions().isEmpty()) {
+                    System.err.println("  -->> GUI actions detected. Please run the JIPipe GUI to execute them");
+                }
+            }
+        }
+
+        JIPipeRunSettings settings = new JIPipeRunSettings();
+        settings.setNumThreads(numThreads);
+        settings.setOutputPath(outputFolder);
+        settings.setSaveToDisk(saveToDisk);
+        settings.setStoreToCache(false);
+        if(saveToDisk && saveToDiskOnlyCompartments) {
+            for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
+                if(!(graphNode instanceof JIPipeCompartmentOutput)) {
+                    settings.getDisableSaveToDiskNodes().add(graphNode.getUUIDInParentGraph());
+                }
+            }
+        }
+
+        JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
+        run.getProgressInfo().setLogToStdOut(true);
+        run.run();
+
+        System.exit(0);
     }
 
     private static void showHelp() {
@@ -189,6 +220,7 @@ public class JIPipeCLI {
         System.out.println("--num-threads <N=1,2,...>");
         System.out.println("--overwrite-parameters <JSON file>");
         System.out.println("--P<Node ID>/<Parameter ID> <Parameter Value (JSON)>");
+        System.out.println("--output-results <all/none/only-compartment-outputs> (default: all)");
         System.out.println("To run this tool, execute following command:");
         System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI");
     }

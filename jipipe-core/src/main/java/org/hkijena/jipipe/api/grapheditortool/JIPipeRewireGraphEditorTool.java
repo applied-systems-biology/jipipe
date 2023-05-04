@@ -85,7 +85,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     private void paintCurrentlyDraggedRewire(Graphics2D g) {
         if (currentRewireDragSource != null) {
 
-            Point mousePosition = graphEditorUI.getCanvasUI().getMousePosition();
+            Point mousePosition = graphEditorUI.getCanvasUI().getLastMousePosition();
 
             if (mousePosition == null) {
                 return;

@@ -27,6 +27,7 @@ import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A 2D matrix of floats
@@ -104,6 +105,19 @@ public abstract class Matrix2D<T> implements TableModel {
     @Override
     public void removeTableModelListener(TableModelListener l) {
         listeners.remove(l);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Matrix2D<?> matrix2D = (Matrix2D<?>) o;
+        return Objects.equals(rows, matrix2D.rows) && Objects.equals(entryClass, matrix2D.entryClass);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(rows, entryClass);
     }
 
     /**

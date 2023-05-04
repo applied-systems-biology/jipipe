@@ -23,6 +23,7 @@ import com.google.common.base.Charsets;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.Objects;
 
 /**
  * A parameter that stores a password
@@ -50,6 +51,19 @@ public class PasswordParameter {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PasswordParameter that = (PasswordParameter) o;
+        return Objects.equals(password, that.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(password);
     }
 
     public static class Serializer extends JsonSerializer<PasswordParameter> {

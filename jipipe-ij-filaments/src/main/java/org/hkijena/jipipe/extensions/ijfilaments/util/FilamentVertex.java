@@ -2,7 +2,9 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.scijava.vecmath.Vector3d;
 
 import java.awt.*;
 import java.util.HashMap;
@@ -17,6 +19,12 @@ public class FilamentVertex {
     private Point3d spatialLocation = new Point3d();
 
     private NonSpatialPoint3d nonSpatialLocation = new NonSpatialPoint3d();
+
+    private Quantity physicalVoxelSizeX = new Quantity(1, "pixel");
+
+    private Quantity physicalVoxelSizeY = new Quantity(1, "pixel");
+
+    private Quantity physicalVoxelSizeZ = new Quantity(1, "pixel");
 
     private double radius = 1;
 
@@ -37,6 +45,9 @@ public class FilamentVertex {
         this.value = other.value;
         this.metadata = new HashMap<>(other.metadata);
         this.color = other.color;
+        this.physicalVoxelSizeX = new Quantity(other.physicalVoxelSizeX);
+        this.physicalVoxelSizeY = new Quantity(other.physicalVoxelSizeY);
+        this.physicalVoxelSizeZ = new Quantity(other.physicalVoxelSizeZ);
     }
 
     @JsonGetter("spatial-location")
@@ -57,6 +68,36 @@ public class FilamentVertex {
     @JsonSetter("non-spatial-location")
     public void setNonSpatialLocation(NonSpatialPoint3d nonSpatialLocation) {
         this.nonSpatialLocation = nonSpatialLocation;
+    }
+
+    @JsonGetter("physical-voxel-size-x")
+    public Quantity getPhysicalVoxelSizeX() {
+        return physicalVoxelSizeX;
+    }
+
+    @JsonSetter("physical-voxel-size-x")
+    public void setPhysicalVoxelSizeX(Quantity physicalVoxelSizeX) {
+        this.physicalVoxelSizeX = physicalVoxelSizeX;
+    }
+
+    @JsonGetter("physical-voxel-size-y")
+    public Quantity getPhysicalVoxelSizeY() {
+        return physicalVoxelSizeY;
+    }
+
+    @JsonSetter("physical-voxel-size-y")
+    public void setPhysicalVoxelSizeY(Quantity physicalVoxelSizeY) {
+        this.physicalVoxelSizeY = physicalVoxelSizeY;
+    }
+
+    @JsonGetter("physical-voxel-size-z")
+    public Quantity getPhysicalVoxelSizeZ() {
+        return physicalVoxelSizeZ;
+    }
+
+    @JsonSetter("physical-voxel-size-z")
+    public void setPhysicalVoxelSizeZ(Quantity physicalVoxelSizeZ) {
+        this.physicalVoxelSizeZ = physicalVoxelSizeZ;
     }
 
     @JsonGetter("value")
@@ -148,5 +189,36 @@ public class FilamentVertex {
 
     public double getZMax(boolean useThickness) {
         return useThickness ? getSpatialLocation().getZ() + radius : getSpatialLocation().getZ();
+    }
+
+    /**
+     * Finds the common unit within the vertex.
+     * Returns 'pixels' if units are inconsistent
+     * @return the consensus unit
+     */
+    public String getConsensusPhysicalSizeUnit() {
+        if(Objects.equals(physicalVoxelSizeX.getUnit(), physicalVoxelSizeY.getUnit())
+                && Objects.equals(physicalVoxelSizeY.getUnit(), physicalVoxelSizeZ.getUnit())) {
+            return physicalVoxelSizeX.getUnit();
+        }
+        else {
+            return Quantity.UNIT_PIXELS;
+        }
+    }
+
+    public Vector3d getSpatialLocationInUnit(String unit) {
+        return spatialLocation.pixelsToUnit(physicalVoxelSizeX, physicalVoxelSizeY, physicalVoxelSizeZ, unit);
+    }
+
+    /**
+     * Converts the radius into units and returns the maximum value
+     * @param unit the unit
+     * @return the maximum value
+     */
+    public double getMaxRadiusInUnit(String unit) {
+        double rx = physicalVoxelSizeX.convertTo(unit).getValue() * radius;
+        double ry = physicalVoxelSizeY.convertTo(unit).getValue() * radius;
+        double rz = physicalVoxelSizeZ.convertTo(unit).getValue() * radius;
+        return Math.max(rx, Math.max(ry, rz));
     }
 }

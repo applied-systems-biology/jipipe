@@ -143,6 +143,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private boolean autoHideEdges;
 
     private boolean autoHideDrawLabels;
+    private Point lastMousePosition;
 
     /**
      * Creates a new UI
@@ -172,6 +173,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         graph.getEventBus().register(this);
         initializeHotkeys();
         updateAssets();
+    }
+
+    public Point getLastMousePosition() {
+        return lastMousePosition;
     }
 
     @Override
@@ -429,7 +434,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public void onActionRequested(NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof OpenContextMenuAction) {
             if (event.getUi() != null) {
-                openContextMenu(getMousePosition());
+                openContextMenu(getLastMousePosition());
             }
         }
         getEventBus().post(event);
@@ -602,6 +607,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
+
+        // Update last mouse position
+        lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
         // Let the tool handle the event
         if (currentTool != null) {
@@ -880,6 +888,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
+        // Update last mouse position
+        lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
+
         // Let the tool handle the event
         if (currentTool != null) {
             currentTool.mouseMoved(mouseEvent);
@@ -914,6 +925,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
+
+        // Update last mouse position
+        lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
         // Let the tool handle the event
         if (currentTool != null) {
@@ -994,6 +1008,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
+
+        // Update last mouse position
+        lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
         // Let the tool handle the event
         if (currentTool != null) {
@@ -1080,6 +1097,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
+
+        // Update last mouse position
+        lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
         // Let the tool handle the event
         if (currentTool != null) {
@@ -1234,6 +1254,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseEntered(MouseEvent mouseEvent) {
+
+        // Update last mouse position
+        lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
+
         // Let the tool handle the event
         if (currentTool != null) {
             currentTool.mouseEntered(mouseEvent);
@@ -1245,6 +1269,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseExited(MouseEvent mouseEvent) {
+
+        // Update last mouse position
+        lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
+
         // Let the tool handle the event
         if (currentTool != null) {
             currentTool.mouseExited(mouseEvent);
@@ -1627,7 +1655,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 g.setColor(Color.DARK_GRAY);
             }
             if (targetPoint == null) {
-                Point mousePosition = getMousePosition();
+                Point mousePosition = getLastMousePosition();
                 if (mousePosition != null) {
                     targetPoint = new PointRange(mousePosition.x, mousePosition.y);
                 }

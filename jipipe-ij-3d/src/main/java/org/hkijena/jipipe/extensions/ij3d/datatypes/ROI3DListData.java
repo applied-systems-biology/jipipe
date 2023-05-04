@@ -24,7 +24,9 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import mcib3d.geom.*;
 import mcib3d.image3d.ImageHandler;
+import org.hkijena.jipipe.api.JIPipeCommonData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -63,6 +65,8 @@ import java.util.zip.ZipOutputStream;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.zip format. " +
         "The *.zip contains multiple 3D ImageJ Suite ROI. Please note that if multiple *.zip files are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
+@JIPipeHeavyData
+@JIPipeCommonData
 public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
     public ROI3DListData() {
 
@@ -404,7 +408,22 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             nFrames = Math.max(nFrames, roi3D.getFrame());
         }
 
-        return IJ.createHyperStack(title, width, height, nChannels, nSlices, nFrames, bitDepth);
+        Set<Double> resXY = stream().map(roi3D -> roi3D.getObject3D().getResXY()).collect(Collectors.toSet());
+        Set<Double> resZ = stream().map(roi3D -> roi3D.getObject3D().getResZ()).collect(Collectors.toSet());
+        Set<String> unit = stream().map(roi3D -> roi3D.getObject3D().getUnits()).collect(Collectors.toSet());
+
+        ImagePlus result = IJ.createHyperStack(title, width, height, nChannels, nSlices, nFrames, bitDepth);
+
+        if(resXY.size() == 1 && resZ.size() == 1 && unit.size() == 1) {
+            double finalResXY = resXY.iterator().next();
+            String finalUnit = unit.iterator().next();
+            result.getCalibration().pixelWidth = finalResXY;
+            result.getCalibration().pixelHeight = finalResXY;
+            result.getCalibration().pixelDepth = resZ.iterator().next();
+            result.getCalibration().setUnit(finalUnit);
+        }
+
+        return result;
     }
 
     public ImagePlus toMask(ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {

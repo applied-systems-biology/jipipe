@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * A parameter that is optional
@@ -90,6 +91,19 @@ public abstract class OptionalParameter<T> {
 
     public void setContent(T content) {
         this.content = content;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OptionalParameter<?> that = (OptionalParameter<?>) o;
+        return enabled == that.enabled && Objects.equals(contentClass, that.contentClass) && Objects.equals(content, that.content);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(contentClass, enabled, content);
     }
 
     /**

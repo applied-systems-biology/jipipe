@@ -145,7 +145,8 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     // Apply edt and calculate the maximum
                     EDM edm = new EDM();
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
-                    if (edtProcessor.getStats().max >= minThickness) {
+                    double thickness = edtProcessor.getStats().max * 2;
+                    if (thickness >= minThickness) {
                         // Increment the label and reset temp
                         tempProcessor.setColor(0);
                         tempProcessor.fill();
@@ -227,7 +228,8 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     // Apply edt and calculate the maximum
                     EDM edm = new EDM();
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
-                    if (edtProcessor.getStats().max >= minThickness) {
+                    double thickness = edtProcessor.getStats().max * 2;
+                    if (thickness >= minThickness) {
                         // Increment the label and reset temp
                         tempProcessor.setColor(0);
                         tempProcessor.fill();
@@ -313,7 +315,8 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                         stackProgress.log("EDT could not be calculated for label ");
                         continue;
                     }
-                    if (edtProcessor.getStats().max >= minThickness) {
+                    double thickness = edtProcessor.getStats().max * 2;
+                    if (thickness >= minThickness) {
                         // Increment the label and reset temp
                         tempProcessor.setColor(0);
                         tempProcessor.fill();

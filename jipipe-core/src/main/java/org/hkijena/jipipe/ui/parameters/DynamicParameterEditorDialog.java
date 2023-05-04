@@ -158,6 +158,9 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
         if (supportsAddingFieldClass(Double.class)) {
             quickAccessParameterTypes.add(Double.class);
         }
+        if(supportsAddingFieldClass(String.class)) {
+            quickAccessParameterTypes.add(String.class);
+        }
 
         if (quickAccessParameterTypes.isEmpty()) {
             JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/add.png"));

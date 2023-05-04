@@ -136,49 +136,55 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
 
     public void updateFromCurrentSlice(boolean clearCustom) {
         ImageJCalibrationMode selectedCalibration = getCalibrationPlugin().getSelectedCalibration();
-        if (clearCustom || selectedCalibration != ImageJCalibrationMode.Custom) {
-            isUpdating = true;
-            ImagePlus currentImage = getCalibrationPlugin().getCurrentImagePlus();
-            ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
-            if (currentImage != null && currentSlice != null) {
-                if (lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
-                    double min;
-                    double max;
-                    if (currentImage.getBitDepth() == 32) {
-                        // We need to find the min and max
-                        if (currentImage.getStackSize() == 1) {
-                            ImageStatistics statistics = currentImage.getProcessor().getStats();
+        ImagePlus currentImage = getCalibrationPlugin().getCurrentImagePlus();
+
+        // Selectable value update
+        if(currentImage != null) {
+            if (lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
+                double min;
+                double max;
+                if (currentImage.getBitDepth() == 32) {
+                    // We need to find the min and max
+                    if (currentImage.getStackSize() == 1) {
+                        ImageStatistics statistics = currentImage.getProcessor().getStats();
+                        if (statistics == null)
+                            return;
+                        min = statistics.min;
+                        max = statistics.max;
+                    } else {
+                        // Initial value
+                        {
+                            ImageProcessor processor = currentImage.getStack().getProcessor(1);
+                            ImageStatistics statistics = processor.getStats();
                             if (statistics == null)
                                 return;
                             min = statistics.min;
                             max = statistics.max;
-                        } else {
-                            // Initial value
-                            {
-                                ImageProcessor processor = currentImage.getStack().getProcessor(1);
-                                ImageStatistics statistics = processor.getStats();
-                                if (statistics == null)
-                                    return;
-                                min = statistics.min;
-                                max = statistics.max;
-                            }
-                            for (int i = 2; i <= currentImage.getStackSize(); i++) {
-                                ImageProcessor processor = currentImage.getStack().getProcessor(i);
-                                ImageStatistics statistics = processor.getStats();
-                                if (statistics == null)
-                                    continue;
-                                min = Math.min(statistics.min, min);
-                                max = Math.max(statistics.max, max);
-                            }
                         }
-                    } else {
-                        min = currentSlice.minValue();
-                        max = currentSlice.maxValue();
+                        for (int i = 2; i <= currentImage.getStackSize(); i++) {
+                            ImageProcessor processor = currentImage.getStack().getProcessor(i);
+                            ImageStatistics statistics = processor.getStats();
+                            if (statistics == null)
+                                continue;
+                            min = Math.min(statistics.min, min);
+                            max = Math.max(statistics.max, max);
+                        }
                     }
-                    minSelectableValue = min;
-                    maxSelectableValue = max;
-                    lastSelectableValueCalculationBasis = new WeakReference<>(currentImage);
+                } else {
+                    min = currentImage.getProcessor().minValue();
+                    max = currentImage.getProcessor().maxValue();
                 }
+                minSelectableValue = min;
+                maxSelectableValue = max;
+                lastSelectableValueCalculationBasis = new WeakReference<>(currentImage);
+            }
+        }
+
+        // Calibratrion update
+        if (clearCustom || selectedCalibration != ImageJCalibrationMode.Custom) {
+            isUpdating = true;
+            ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
+            if (currentImage != null && currentSlice != null) {
                 if (selectedCalibration != ImageJCalibrationMode.Custom) {
                     double[] calibration = ImageJUtils.calculateCalibration(currentSlice,
                             selectedCalibration,

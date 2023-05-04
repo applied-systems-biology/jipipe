@@ -17,10 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import javax.swing.*;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Parameter that acts as dynamic enum where a set of items can be selected
@@ -109,5 +106,18 @@ public abstract class DynamicSetParameter<T> {
      */
     public Icon renderIcon(T value) {
         return null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DynamicSetParameter<?> that = (DynamicSetParameter<?>) o;
+        return Objects.equals(values, that.values) && Objects.equals(allowedValues, that.allowedValues);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(values, allowedValues);
     }
 }

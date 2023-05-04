@@ -388,7 +388,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
 
     private void saveDefaults() {
         if (JOptionPane.showConfirmDialog(getViewerPanel(),
-                "Dou you want to save the ROI display settings as default?",
+                "Do you want to save the ROI display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ImageViewerUIROI3DDisplaySettings settings = ImageViewerUIROI3DDisplaySettings.getInstance();
@@ -746,11 +746,15 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
                         new boolean[]{true, true, true});
             } else {
                 List<CustomMesh> meshList = new ArrayList<>();
-                for (ROI3D roi3D : rois) {
+                getProgressInfo().setProgress(0, rois.size());
+                for (int i = 0; i < rois.size(); i++) {
+                    getProgressInfo().resolveAndLog("ROI to 3D mesh", i, rois.size());
+                    ROI3D roi3D = rois.get(i);
                     CustomTriangleMesh mesh = new CustomTriangleMesh(roi3D.getObject3D().getObject3DSurface().getSurfaceTrianglesPixels(true),
                             new Color3f(roi3D.getFillColor().getRed() / 255.0f, roi3D.getFillColor().getGreen() / 255.0f, roi3D.getFillColor().getBlue() / 255.0f),
                             0f);
                     meshList.add(mesh);
+                    getProgressInfo().incrementProgress();
                 }
                 CustomMultiMesh customMultiMesh = new CustomMultiMesh(meshList);
                 renderedContent = ContentCreator.createContent(customMultiMesh, "ROI3D-" + UUID.randomUUID());

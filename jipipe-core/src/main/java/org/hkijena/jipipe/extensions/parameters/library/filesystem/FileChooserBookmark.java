@@ -10,6 +10,7 @@ import org.hkijena.jipipe.utils.PathType;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 public class FileChooserBookmark extends AbstractJIPipeParameterCollection {
     private String name;
@@ -61,5 +62,18 @@ public class FileChooserBookmark extends AbstractJIPipeParameterCollection {
         if (path == null)
             return false;
         return Files.isDirectory(path);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FileChooserBookmark that = (FileChooserBookmark) o;
+        return Objects.equals(name, that.name) && Objects.equals(path, that.path);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, path);
     }
 }

@@ -43,7 +43,7 @@ public class CalibrationPlugin3D extends GeneralImageViewerPanelPlugin3D {
                 ImageProcessor processor = getCurrentImagePlus().getProcessor();
                 double min = processor.getMin();
                 double max = processor.getMax();
-                if (min != 0 || max != 0) {
+                if ((min != 0  || max != 0) && (!Double.isNaN(min) && !Double.isNaN(max)) && (!Double.isInfinite(min) && !Double.isInfinite(max))) {
                     boolean found = false;
                     for (ImageJCalibrationMode mode : ImageJCalibrationMode.values()) {
                         if (mode.getMin() == min && mode.getMax() == max) {
