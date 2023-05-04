@@ -37,6 +37,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeImageViewerCac
     protected void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
         super.initializePlugins(plugins, contextObjects);
         plugins.add(SpotsManagerPlugin2D.class);
+        plugins.add(TracksManagerPlugin2D.class);
     }
 
     @Override
