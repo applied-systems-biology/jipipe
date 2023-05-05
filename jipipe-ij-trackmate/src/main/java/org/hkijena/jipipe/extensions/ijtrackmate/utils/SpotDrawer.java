@@ -100,10 +100,12 @@ public class SpotDrawer implements JIPipeParameterCollection {
 
         // Draw
         graphics2D.translate(renderArea.x, renderArea.y);
-        int oldSliceIndex = imagePlus.getCurrentSlice();
-        imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
+        int oldC = imagePlus.getC();
+        int oldZ = imagePlus.getZ();
+        int oldT = imagePlus.getT();
+        imagePlus.setPosition(sliceIndex.getC() + 1, sliceIndex.getZ() + 1, sliceIndex.getT() + 1);
         spotOverlay.drawOverlay(graphics2D);
-        imagePlus.setSlice(oldSliceIndex);
+        imagePlus.setPosition(oldC, oldZ, oldT);
 
         // Draw label
         if (labelSettings.isDrawLabels()) {

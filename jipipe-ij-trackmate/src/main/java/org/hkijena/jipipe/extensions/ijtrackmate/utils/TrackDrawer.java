@@ -111,16 +111,18 @@ public class TrackDrawer implements JIPipeParameterCollection {
         DisplaySettings displaySettings = createDisplaySettings(trackCollectionData);
 
         // Create overlay
-        TrackOverlay spotOverlay = new TrackOverlay(trackCollectionData.getModel(), trackCollectionData.getImage(), displaySettings);
-        ImageJUtils.setRoiCanvas(spotOverlay, imagePlus, dummyCanvas);
-        spotOverlay.setHighlight(selected);
+        TrackOverlay trackOverlay = new TrackOverlay(trackCollectionData.getModel(), trackCollectionData.getImage(), displaySettings);
+        ImageJUtils.setRoiCanvas(trackOverlay, imagePlus, dummyCanvas);
+        trackOverlay.setHighlight(selected);
 
         // Draw
         graphics2D.translate(renderArea.x, renderArea.y);
-        int oldSliceIndex = imagePlus.getCurrentSlice();
-        imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
-        spotOverlay.drawOverlay(graphics2D);
-        imagePlus.setSlice(oldSliceIndex);
+        int oldC = imagePlus.getC();
+        int oldZ = imagePlus.getZ();
+        int oldT = imagePlus.getT();
+        imagePlus.setPosition(sliceIndex.getC() + 1, sliceIndex.getZ() + 1, sliceIndex.getT() + 1);
+        trackOverlay.drawOverlay(graphics2D);
+        imagePlus.setPosition(oldC, oldZ, oldT);
 
         // Draw label
 //        if(labelSettings.isDrawLabels()) {
