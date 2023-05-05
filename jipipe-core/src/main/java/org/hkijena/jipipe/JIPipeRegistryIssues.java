@@ -38,6 +38,11 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
+        for (Map.Entry<String, JIPipeIssueReport> entry : preActivationIssues.entrySet()) {
+            if(!entry.getValue().isValid()) {
+                report.resolve("Extension checks").resolve(entry.getKey()).mergeWith(entry.getValue());
+            }
+        }
         for (JIPipeImageJUpdateSiteDependency site : missingImageJSites) {
             report.resolve("ImageJ dependencies").resolve("Sites").resolve(site.getName()).reportIsInvalid("Missing ImageJ site: " + site.getName(),
                     String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getUrl()),

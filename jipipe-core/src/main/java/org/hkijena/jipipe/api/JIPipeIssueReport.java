@@ -109,6 +109,12 @@ public class JIPipeIssueReport {
         return result;
     }
 
+    public void mergeWith(JIPipeIssueReport other) {
+        for (Map.Entry<String, Issue> entry : other.issues.entries()) {
+            issues.put(getPath() + "/" + entry.getKey(), entry.getValue());
+        }
+    }
+
     /**
      * Reports an issue
      *

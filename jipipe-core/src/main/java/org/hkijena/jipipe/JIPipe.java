@@ -602,6 +602,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 issues.getPreActivationIssues().put(extension.getDependencyId(), preActivationIssues);
                 if(!extension.canActivate(preActivationIssues, progressInfo.resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
                     if(!extensionSettings.isIgnorePreActivationChecks()) {
+                        preActivationIssues.resolve("Registry").reportIsInvalid("Extension refuses to activate!",
+                                "The extension's pre-activation check failed. It will not be activated.",
+                                "Please refer to the other items if available.",
+                                extension);
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
                         javaExtensions.add(null);
                         continue;
