@@ -17,6 +17,7 @@ import fiji.plugin.trackmate.Spot;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -72,6 +73,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus sourceImage = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         TrackCollectionData data = dataBatch.getInputData("Tracks", TrackCollectionData.class, progressInfo);
+        Calibration calibration = data.getImage().getCalibration();
 
         final Rectangle imageArea = new Rectangle(0, 0, sourceImage.getWidth(), sourceImage.getHeight());
 
@@ -102,10 +104,10 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 
             // Find the extents
             for (Spot spot : spots) {
-                double radius = Optional.ofNullable(spot.getFeature(Spot.RADIUS)).orElse(1d);
-                int x = (int) spot.getDoublePosition(0);
-                int y = (int) spot.getDoublePosition(1);
-                int z = (int) spot.getFloatPosition(2);
+                double radius = Optional.ofNullable(spot.getFeature(Spot.RADIUS)).orElse(1d) / calibration.pixelWidth;
+                int x = (int) (spot.getDoublePosition(0) / calibration.pixelWidth);
+                int y = (int) (spot.getDoublePosition(1) / calibration.pixelHeight);
+                int z = (int) (spot.getFloatPosition(2) / calibration.pixelDepth);
                 spotWidth = (int) Math.max(spotWidth, 2 * radius);
                 spotHeight = (int) Math.max(spotHeight, 2 * radius);
                 int t = Optional.ofNullable(spot.getFeature(Spot.POSITION_T)).orElse(0d).intValue();
@@ -151,9 +153,9 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
                     sourceImage.getBitDepth());
 
             for (Spot spot : spots) {
-                int x = (int) spot.getDoublePosition(0) - spotWidth / 2;
-                int y = (int) spot.getDoublePosition(1) - spotHeight / 2;
-                int z = (int) spot.getFloatPosition(2);
+                int x = (int) (spot.getDoublePosition(0) / calibration.pixelWidth - spotWidth / 2);
+                int y = (int) (spot.getDoublePosition(1) / calibration.pixelHeight - spotHeight / 2);
+                int z = (int) (spot.getFloatPosition(2) / calibration.pixelDepth);
                 int t = Optional.ofNullable(spot.getFeature(Spot.POSITION_T)).orElse(0d).intValue();
 
                 int targetX = x - minX;

@@ -625,6 +625,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerEnumParameterType("ij1-calibration-draw-scale-bar:location", ScaleBarGenerator.ScaleBarPosition.class, "Scale bar location", "Location of the scale bar");
 
         registerNodeType("ij1-calibration-set-physical-dimensions", SetPhysicalDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-copy-physical-dimensions", CopyPhysicalDimensionsBetweenImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
         registerNodeType("ij1-calibration-set-physical-dimensions-from-expressions", SetPhysicalDimensionsByExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
         registerNodeType("ij1-calibration-set-physical-dimensions-from-annotations", SetPhysicalDimensionsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
         registerNodeType("ij1-calibration-draw-scale-bar", DrawScaleBarAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));

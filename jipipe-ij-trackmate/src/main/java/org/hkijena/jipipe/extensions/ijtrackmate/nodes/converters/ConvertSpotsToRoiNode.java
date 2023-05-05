@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters;
 
 import fiji.plugin.trackmate.Spot;
+import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -57,12 +58,13 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     public ROIListData spotsToROIList(SpotsCollectionData spotsCollectionData, ExpressionVariables variables) {
         ROIListData result = new ROIListData();
         int index = 0;
+        ImagePlus image = spotsCollectionData.getImage();
         for (Spot spot : spotsCollectionData.getSpots().iterable(true)) {
-            double x = spot.getDoublePosition(0);
-            double y = spot.getDoublePosition(1);
+            double x = spot.getDoublePosition(0) / image.getCalibration().pixelWidth;
+            double y = spot.getDoublePosition(1) / image.getCalibration().pixelHeight;
             int z = (int) spot.getFloatPosition(2);
             int t = Optional.ofNullable(spot.getFeature(Spot.POSITION_T)).orElse(-1d).intValue();
-            double radius = Optional.ofNullable(spot.getFeature(Spot.RADIUS)).orElse(1d);
+            double radius = Optional.ofNullable(spot.getFeature(Spot.RADIUS)).orElse(1d) / image.getCalibration().pixelWidth;
 
             double x1 = x - radius;
             double x2 = x + radius;

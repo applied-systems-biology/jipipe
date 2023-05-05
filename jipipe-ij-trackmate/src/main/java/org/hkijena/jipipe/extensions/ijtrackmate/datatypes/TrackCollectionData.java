@@ -96,11 +96,11 @@ public class TrackCollectionData extends SpotsCollectionData {
     public ROIListData trackToROIList(int trackId) {
         ROIListData result = new ROIListData();
         for (Spot spot : getTrackModel().trackSpots(trackId)) {
-            double x = spot.getDoublePosition(0);
-            double y = spot.getDoublePosition(1);
+            double x = spot.getDoublePosition(0) / getImage().getCalibration().pixelWidth;
+            double y = spot.getDoublePosition(1) / getImage().getCalibration().pixelWidth;
             int z = (int) spot.getFloatPosition(2);
             int t = Optional.ofNullable(spot.getFeature(Spot.POSITION_T)).orElse(-1d).intValue();
-            double radius = Optional.ofNullable(spot.getFeature(Spot.RADIUS)).orElse(1d);
+            double radius = Optional.ofNullable(spot.getFeature(Spot.RADIUS)).orElse(1d) / getImage().getCalibration().pixelWidth;
 
             double x1 = x - radius;
             double x2 = x + radius;

@@ -109,7 +109,7 @@ public class SpotDrawer implements JIPipeParameterCollection {
         if (labelSettings.isDrawLabels()) {
             Font labelFont = new Font(Font.DIALOG, Font.PLAIN, labelSettings.getLabelSize());
             for (Spot spot : spotsCollectionData.getSpots().iterable(true)) {
-                int z = (int) spot.getDoublePosition(2);
+                int z = (int) (spot.getDoublePosition(2) / imagePlus.getCalibration().pixelDepth);
                 int frame = spot.getFeature(Spot.FRAME).intValue();
                 if (z == sliceIndex.getZ() && frame == sliceIndex.getT()) {
                     String label;

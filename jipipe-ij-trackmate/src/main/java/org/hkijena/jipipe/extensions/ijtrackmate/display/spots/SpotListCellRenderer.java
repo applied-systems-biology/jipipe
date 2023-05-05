@@ -19,6 +19,7 @@ import fiji.plugin.trackmate.features.FeatureUtils;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.FeatureColorGenerator;
 import fiji.plugin.trackmate.visualization.UniformSpotColorGenerator;
+import ij.measure.Calibration;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
@@ -104,8 +105,13 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
 
         iconLabel.setText("" + index);
         final DecimalFormat format = TrackMateUtils.FEATURE_DECIMAL_FORMAT;
-        infoLabel.setText("x: " + format.format(value.getDoublePosition(0)) + ", y: " + format.format(value.getDoublePosition(1)) + ", z: " + format.format(value.getDoublePosition(2)) +
-                ", t: " + format.format(value.getFeature(Spot.FRAME)) + ", r: " + format.format(value.getFeature(Spot.RADIUS)) + ", q: " + format.format(value.getFeature(Spot.QUALITY)));
+        Calibration calibration = spotsManagerPlugin.getSpotsCollection().getImage().getCalibration();
+        infoLabel.setText("x: " + format.format(value.getDoublePosition(0)) + " " + calibration.getXUnit() +
+                ", y: " + format.format(value.getDoublePosition(1)) + " " + calibration.getYUnit() +
+                ", z: " + format.format(value.getDoublePosition(2)) + " " + calibration.getZUnit() +
+                ", t: " + format.format(value.getFeature(Spot.FRAME)) +
+                ", r: " + format.format(value.getFeature(Spot.RADIUS)) + " " + calibration.getXUnit() +
+                ", q: " + format.format(value.getFeature(Spot.QUALITY)));
 
         if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));
