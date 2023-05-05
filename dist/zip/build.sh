@@ -139,46 +139,6 @@ if [ ! -e "./dependencies/commons-exec-1.3.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/commons-exec-1.3.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar
 fi
-if [ ! -e "./dependencies/omero/omero-gateway-5.6.7.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/omero-gateway-5.6.7.jar https://maven.scijava.org/service/local/repositories/ome-releases/content/org/openmicroscopy/omero-gateway/5.6.7/omero-gateway-5.6.7.jar
-fi
-if [ ! -e "./dependencies/omero/omero-blitz-5.5.8.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/omero-blitz-5.5.8.jar https://maven.scijava.org/service/local/repositories/ome-releases/content/org/openmicroscopy/omero-blitz/5.5.8/omero-blitz-5.5.8.jar
-fi
-if [ ! -e "./dependencies/omero/omero-server-5.5.6.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/omero-server-5.5.6.jar https://maven.scijava.org/service/local/repositories/ome-releases/content/org/openmicroscopy/omero-server/5.5.6/omero-server-5.5.6.jar
-fi
-if [ ! -e "./dependencies/omero/omero-renderer-5.5.5.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/omero-renderer-5.5.5.jar https://maven.scijava.org/service/local/repositories/ome-releases/content/org/openmicroscopy/omero-renderer/5.5.5/omero-renderer-5.5.5.jar
-fi
-if [ ! -e "./dependencies/omero/omero-romio-5.6.0.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/omero-romio-5.6.0.jar https://maven.scijava.org/service/local/repositories/ome-releases/content/org/openmicroscopy/omero-romio/5.6.0/omero-romio-5.6.0.jar
-fi
-if [ ! -e "./dependencies/omero/omero-common-5.5.5.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/omero-common-5.5.5.jar https://maven.scijava.org/service/local/repositories/ome-releases/content/org/openmicroscopy/omero-common/5.5.5/omero-common-5.5.5.jar
-fi
-if [ ! -e "./dependencies/omero/omero-model-5.6.0.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/omero-model-5.6.0.jar https://maven.scijava.org/service/local/repositories/ome-releases/content/org/openmicroscopy/omero-model/5.6.0/omero-model-5.6.0.jar
-fi
-if [ ! -e "./dependencies/omero/icegrid-3.6.5.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/icegrid-3.6.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/zeroc/icegrid/3.6.5/icegrid-3.6.5.jar
-fi
-if [ ! -e "./dependencies/omero/glacier2-3.6.5.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/glacier2-3.6.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/zeroc/glacier2/3.6.5/glacier2-3.6.5.jar
-fi
-if [ ! -e "./dependencies/omero/ice-3.6.5.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/ice-3.6.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/zeroc/ice/3.6.5/ice-3.6.5.jar
-fi
 if [ ! -e "./dependencies/jna-platform-4.5.2.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/jna-platform-4.5.2.jar https://maven.scijava.org/service/local/repositories/central/content/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar
@@ -214,10 +174,6 @@ fi
 if [ ! -e "./dependencies/log4j-api-2.17.1.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/log4j-api-2.17.1.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/logging/log4j/log4j-api/2.17.1/log4j-api-2.17.1.jar
-fi
-if [ ! -e "./dependencies/LICENSE_OMERO.txt" ]; then
-	mkdir -p "./dependencies"
-	wget -O ./dependencies/LICENSE_OMERO.txt https://github.com/ome/omero-insight/blob/master/LICENSE.txt
 fi
 if [ ! -e "./dependencies/LICENSE_Javaluator.html" ]; then
 	mkdir -p "./dependencies"
