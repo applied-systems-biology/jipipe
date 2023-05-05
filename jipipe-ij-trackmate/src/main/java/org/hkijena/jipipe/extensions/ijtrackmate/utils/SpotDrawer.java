@@ -120,8 +120,8 @@ public class SpotDrawer implements JIPipeParameterCollection {
                     }
                     RoiDrawer.drawLabelOnGraphics(label,
                             graphics2D,
-                            spot.getDoublePosition(0),
-                            spot.getDoublePosition(1),
+                            spot.getDoublePosition(0) / imagePlus.getCalibration().pixelWidth,
+                            spot.getDoublePosition(1) / imagePlus.getCalibration().pixelHeight,
                             magnification,
                             labelSettings.getLabelForeground(),
                             labelSettings.getLabelBackground().getContent(),
