@@ -95,7 +95,8 @@ public class JIPipeGUICommand implements Command {
                 JIPipeIssueReport report = new JIPipeIssueReport();
                 issues.reportValidity(report);
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(null, report, "Issues detected", "The following issues were detected on resolving ImageJ dependencies:", true);
+                    UIUtils.openValidityReportDialog(null, report, "JIPipe extension registy", "Issues were detected during the initialization of certain extensions. " +
+                            "Please review the following items. Close the window to ignore the messages and load JIPipe.", true);
                 }
             }
         }

@@ -34,6 +34,16 @@ public class ReflectionUtils {
 
     }
 
+    public static boolean classExists(String name) {
+        try {
+            Class.forName(name, false, ReflectionUtils.class.getClassLoader());
+            return true;
+        }
+        catch (ClassNotFoundException e) {
+            return false;
+        }
+    }
+
     public static Attributes getManifestAttributes() {
         try {
             String clz = ReflectionUtils.class.getSimpleName() + ".class";

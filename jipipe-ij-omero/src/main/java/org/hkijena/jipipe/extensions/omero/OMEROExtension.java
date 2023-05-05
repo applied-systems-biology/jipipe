@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
@@ -36,15 +37,20 @@ import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Provides data types dor handling strings
@@ -75,6 +81,39 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public Set<JIPipeDependency> getDependencies() {
         return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
+    }
+
+    @Override
+    public boolean canActivate(JIPipeIssueReport report, JIPipeProgressInfo progressInfo) {
+
+        String[] classes = new String[] {
+                "ome.xml.meta.OMEXMLMetadata",
+                "omero.gateway.SecurityContext",
+                "omero.gateway.LoginCredentials",
+                "omero.gateway.model.ImageData",
+                "omero.gateway.model.TableData",
+                "omero.gateway.model.DatasetData",
+                "omero.model.Pixels",
+                "omero.model.NamedValue",
+                "omero.gateway.facility.BrowseFacility",
+                "omero.gateway.facility.DataManagerFacility",
+                "omero.gateway.facility.MetadataFacility"
+        };
+        boolean result = true;
+        for (String aClass : classes) {
+            boolean exists = ReflectionUtils.classExists(aClass);
+            progressInfo.resolve("Checking classes").log(aClass + ": " + (exists ? "success" : "FAILURE"));
+            result &= exists;
+        }
+
+        if(!result) {
+            report.resolve("Check OMERO installation").reportIsInvalid("No working OMERO detected!",
+                    "The JIPipe OMERO extension requires a working OMERO installation. Preliminary checks determined that there is none.",
+                    "Please install OMERO from the official OMERO website or install the appropriate OMERO plugins via the ImageJ updater.",
+                    "At least one of the following classes were not found: " + String.join(", ", classes));
+        }
+
+        return result;
     }
 
     @Override

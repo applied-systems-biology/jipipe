@@ -602,7 +602,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 issues.getPreActivationIssues().put(extension.getDependencyId(), preActivationIssues);
                 if(!extension.canActivate(preActivationIssues, progressInfo.resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
                     if(!extensionSettings.isIgnorePreActivationChecks()) {
-                        preActivationIssues.resolve("Registry").reportIsInvalid("Extension refuses to activate!",
+                        preActivationIssues.resolve("Registry").reportIsInvalid("Extension '" + extension.getMetadata().getName() + "' refuses to activate!",
                                 "The extension's pre-activation check failed. It will not be activated.",
                                 "Please refer to the other items if available.",
                                 extension);
@@ -623,7 +623,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 }
                 javaExtensions.add(extension);
                 eventBus.post(new ExtensionDiscoveredEvent(this, extension));
-            } catch (NoClassDefFoundError | InstantiableException e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
                 issues.getErroneousPlugins().add(info);
             }
