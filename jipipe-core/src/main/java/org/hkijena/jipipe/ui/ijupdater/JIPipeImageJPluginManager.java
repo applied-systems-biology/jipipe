@@ -18,6 +18,7 @@ import net.imagej.ui.swing.updater.ImageJUpdater;
 import net.imagej.updater.Conflicts;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -252,7 +253,10 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
             managerUI.setMainPanelContent(null);
         } else if (event.getRun() == applyRun) {
             JButton exitButton = new JButton("Close ImageJ");
-            exitButton.addActionListener(e -> System.exit(0));
+            exitButton.addActionListener(e -> {
+                JIPipe.getSettings().save();
+                System.exit(0);
+            });
             messagePanel.addMessage(MessagePanel.MessageType.Info, "Changes were successfully applied. Please restart ImageJ.", true, true, exitButton);
             showCurrentFilesCollection();
             managerUI.setMainPanelContent(null);

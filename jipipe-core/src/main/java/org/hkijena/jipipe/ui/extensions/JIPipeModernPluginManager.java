@@ -97,12 +97,16 @@ public class JIPipeModernPluginManager {
         }
         if (isUpdateSitesApplied()) {
             JButton exitButton = new JButton("Close ImageJ");
-            exitButton.addActionListener(e -> System.exit(0));
+            exitButton.addActionListener(e -> {
+                JIPipe.getSettings().save();
+                System.exit(0);
+            });
             restartMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", true, true, exitButton);
         } else if (!getExtensionRegistry().getScheduledDeactivateExtensions().isEmpty() || !getExtensionRegistry().getScheduledActivateExtensions().isEmpty()) {
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> {
                 if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(messagePanel), "Do you really want to close ImageJ? You will lose all unsaved changes.", "Close ImageJ", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    JIPipe.getSettings().save();
                     System.exit(0);
                 }
             });

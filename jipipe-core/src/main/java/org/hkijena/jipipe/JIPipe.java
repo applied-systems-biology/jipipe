@@ -206,6 +206,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     public static void restartGUI() {
+
+        // Save all settings first
+        getSettings().save();
+
         try {
             IS_RESTARTING = true;
             // Kill all JIPipe windows
