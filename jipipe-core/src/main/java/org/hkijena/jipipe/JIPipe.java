@@ -597,6 +597,21 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     continue;
                 }
 
+                // Extension self-check
+                JIPipeIssueReport preActivationIssues = new JIPipeIssueReport();
+                issues.getPreActivationIssues().put(extension.getDependencyId(), preActivationIssues);
+                if(!extension.canActivate(preActivationIssues, progressInfo.resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
+                    if(!extensionSettings.isIgnorePreActivationChecks()) {
+                        progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
+                        javaExtensions.add(null);
+                        continue;
+                    }
+                    else {
+                        progressInfo.log("Extension with ID " + extension.getDependencyId() + " indicated that its pre-activation checks failed. WILL BE LOADED ANYWAYS DUE TO APPLICATION SETTINGS!");
+                    }
+
+                }
+
                 getContext().inject(extension);
                 extension.setRegistry(this);
                 if (extension instanceof AbstractService) {
@@ -621,7 +636,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 extension = (JIPipeJavaExtension) javaExtensions.get(i);
 
                 if (extension == null) {
-                    registerFeaturesProgress.log("Skipping (deactivated in extension manager)");
+                    registerFeaturesProgress.log("Skipping (deactivated in extension manager or is refusing to activate)");
                     continue;
                 }
 

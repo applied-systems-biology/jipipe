@@ -14,10 +14,26 @@
 
 package org.hkijena.jipipe;
 
+import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+
 /**
  * Interface shared between all JIPipe extensions
  */
 public interface JIPipeExtension extends JIPipeDependency {
+
+    /**
+     * Returns true if the extension can be activated.
+     * This is a hard check that is applied during the JIPipe registration
+     * Avoid to use this method if possible (e.g. by depending on an ImageJ update site), as the extension will not be loaded at all
+     * @param report the report associated with this extension
+     * @param progressInfo allows to write information into the startup log
+     * @return if the extension can be activated
+     */
+    default boolean canActivate(JIPipeIssueReport report, JIPipeProgressInfo progressInfo) {
+        return true;
+    }
+
     /**
      * Returns true if the extension is activated.
      * Utilizes the extension ID (default)

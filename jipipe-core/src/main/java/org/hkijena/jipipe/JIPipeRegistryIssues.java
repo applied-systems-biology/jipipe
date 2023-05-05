@@ -20,7 +20,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.scijava.plugin.PluginInfo;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -30,9 +32,9 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
     private Set<JIPipeImageJUpdateSiteDependency> missingImageJSites = new HashSet<>();
     private Set<PluginInfo<JIPipeJavaExtension>> erroneousPlugins = new HashSet<>();
     private Set<Class<? extends JIPipeData>> erroneousDataTypes = new HashSet<>();
-
     private Set<JIPipeParameterTypeInfo> erroneousParameterTypes = new HashSet<>();
     private Set<JIPipeNodeInfo> erroneousNodes = new HashSet<>();
+    private Map<String, JIPipeIssueReport> preActivationIssues = new HashMap<>();
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
@@ -69,6 +71,14 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
                             "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
                             parameterType.getFieldClass().getCanonicalName());
         }
+    }
+
+    public Map<String, JIPipeIssueReport> getPreActivationIssues() {
+        return preActivationIssues;
+    }
+
+    public void setPreActivationIssues(Map<String, JIPipeIssueReport> preActivationIssues) {
+        this.preActivationIssues = preActivationIssues;
     }
 
     public Set<JIPipeImageJUpdateSiteDependency> getMissingImageJSites() {

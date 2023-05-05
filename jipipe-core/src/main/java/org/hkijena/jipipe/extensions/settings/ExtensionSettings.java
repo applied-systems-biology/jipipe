@@ -35,6 +35,8 @@ public class ExtensionSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private boolean validateImageJDependencies = true;
     private boolean validateNodeTypes = true;
+
+    private boolean ignorePreActivationChecks = false;
     private boolean silent = false;
 
     /**
@@ -107,5 +109,15 @@ public class ExtensionSettings implements JIPipeParameterCollection {
     @JIPipeParameter("silent")
     public void setSilent(boolean silent) {
         this.silent = silent;
+    }
+
+    @JIPipeDocumentation(name = "Ignore pre-activation checks", description = "If enabled, extensions will be loaded even if pre-activation checks indicated issues")
+    @JIPipeParameter("ignore-pre-activation-checks")
+    public boolean isIgnorePreActivationChecks() {
+        return ignorePreActivationChecks;
+    }
+    @JIPipeParameter("ignore-pre-activation-checks")
+    public void setIgnorePreActivationChecks(boolean ignorePreActivationChecks) {
+        this.ignorePreActivationChecks = ignorePreActivationChecks;
     }
 }
