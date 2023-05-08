@@ -11,7 +11,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
  * Describes how data should be imported into ImageJ
  */
 public class ImageJImportParameters extends AbstractJIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
     private String name;
     private boolean duplicate;
 

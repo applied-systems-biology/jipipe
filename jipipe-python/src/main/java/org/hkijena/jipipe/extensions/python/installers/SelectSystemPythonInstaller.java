@@ -112,7 +112,6 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
     }
 
     public static class Configuration extends AbstractJIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
         private Path pythonExecutable = Paths.get("");
         private String name = "System";
 

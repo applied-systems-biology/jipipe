@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalBooleanParameter;
@@ -32,9 +33,7 @@ import java.util.Objects;
 /**
  * Helper to allow easy serialization of {@link ImageJDataExporter} references
  */
-public class ImageJDataExportOperationRef implements JIPipeValidatable, JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class ImageJDataExportOperationRef extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
     private String id;
     private OptionalBooleanParameter activate = new OptionalBooleanParameter();
     private OptionalBooleanParameter noWindows = new OptionalBooleanParameter();
@@ -139,11 +138,6 @@ public class ImageJDataExportOperationRef implements JIPipeValidatable, JIPipePa
     @JsonSetter("name")
     public void setName(OptionalStringParameter name) {
         this.name = name;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public ImageJDataExporter getInstance() {

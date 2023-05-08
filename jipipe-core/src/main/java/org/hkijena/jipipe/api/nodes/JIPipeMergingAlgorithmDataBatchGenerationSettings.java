@@ -17,6 +17,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -28,8 +29,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
-public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeMergingAlgorithmDataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private boolean skipIncompleteDataSets = false;
     private StringQueryExpression customColumns = new StringQueryExpression();
@@ -90,11 +90,6 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings implements JIPipe
     @JIPipeParameter("custom-annotation-matching")
     public void setCustomAnnotationMatching(DefaultExpressionParameter customAnnotationMatching) {
         this.customAnnotationMatching = customAnnotationMatching;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +

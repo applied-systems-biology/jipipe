@@ -31,10 +31,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -59,12 +56,11 @@ import java.util.stream.Collectors;
  * Use {@link JIPipeAlgorithm} as base class to indicate a non-optional workload.
  */
 @JsonSerialize(using = JIPipeGraphNode.Serializer.class)
-public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection, JIPipeFunctionallyComparable {
+public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection implements JIPipeValidatable, JIPipeFunctionallyComparable {
     private final List<JIPipeInputDataSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputDataSlot> outputSlots = new ArrayList<>();
     private final BiMap<String, JIPipeInputDataSlot> inputSlotMap = HashBiMap.create();
     private final BiMap<String, JIPipeOutputDataSlot> outputSlotMap = HashBiMap.create();
-    private final EventBus eventBus = new EventBus();
     private JIPipeNodeInfo info;
     private JIPipeSlotConfiguration slotConfiguration;
     private Map<String, Map<String, Point>> locations = new HashMap<>();
@@ -196,7 +192,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         changed |= updateSlotOrder(slotConfiguration.getOutputSlotOrder(), outputSlotMap, outputSlots);
 
         if (changed) {
-            eventBus.post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+            getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
         }
     }
 
@@ -276,10 +272,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public abstract void run(JIPipeProgressInfo progressInfo);
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     /**
      * Returns the algorithm name
      *
@@ -308,7 +300,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name", "jipipe:node:bookmarked")) {
             return false;
         }
-        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+        return super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
@@ -870,7 +862,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public void setBaseDirectory(Path baseDirectory) {
         this.baseDirectory = baseDirectory;
-        eventBus.post(new BaseDirectoryChangedEvent(baseDirectory));
+        getEventBus().post(new BaseDirectoryChangedEvent(baseDirectory));
     }
 
     /**
@@ -925,7 +917,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * Triggers an event that indicates that the slots have changed
      */
     public void triggerSlotsChangedEvent() {
-        eventBus.post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
     }
 
     /**

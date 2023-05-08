@@ -132,7 +132,6 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
     }
 
     public static class Configuration extends AbstractJIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
         private Path virtualEnvDirectory = Paths.get("");
         private String name = "Virtual env";
 

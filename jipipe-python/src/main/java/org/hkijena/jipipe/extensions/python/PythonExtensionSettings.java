@@ -20,16 +20,15 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 import java.util.List;
 
-public class PythonExtensionSettings implements ExternalEnvironmentSettings {
+public class PythonExtensionSettings extends AbstractJIPipeParameterCollection implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:python";
-
-    private final EventBus eventBus = new EventBus();
     private PythonEnvironment pythonEnvironment = new PythonEnvironment();
     private JIPipePythonAdapterLibraryEnvironment pythonAdapterLibraryEnvironment = new JIPipePythonAdapterLibraryEnvironment();
     private PythonEnvironment.List presets = new PythonEnvironment.List();
@@ -107,11 +106,6 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
     @JIPipeParameter("python-adapter-presets")
     public void setPythonAdapterPresets(JIPipePythonAdapterLibraryEnvironment.List pythonAdapterPresets) {
         this.pythonAdapterPresets = pythonAdapterPresets;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "JIPipe Python adapter", description = "This environment allows you to setup how the JIPipe Python adapter library is supplied. " +

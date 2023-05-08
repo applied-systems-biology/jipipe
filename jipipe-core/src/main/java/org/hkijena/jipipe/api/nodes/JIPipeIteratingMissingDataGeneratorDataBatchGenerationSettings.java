@@ -17,6 +17,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -31,8 +32,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 /**
  * Groups data batch generation settings
  */
-public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
@@ -55,11 +55,6 @@ public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings impl
         this.customAnnotationMatching = new DefaultExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
         this.forceFlowGraphSolver = other.forceFlowGraphSolver;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")

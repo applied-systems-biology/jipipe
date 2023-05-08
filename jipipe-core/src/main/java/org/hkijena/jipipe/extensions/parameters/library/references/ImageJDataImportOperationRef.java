@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalBooleanParameter;
@@ -32,9 +33,7 @@ import java.util.Objects;
 /**
  * Helper to allow easy serialization of {@link ImageJDataImporter} references
  */
-public class ImageJDataImportOperationRef implements JIPipeValidatable, JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class ImageJDataImportOperationRef extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
     private String id;
     private OptionalStringParameter name = new OptionalStringParameter();
     private OptionalBooleanParameter duplicate = new OptionalBooleanParameter();
@@ -94,11 +93,6 @@ public class ImageJDataImportOperationRef implements JIPipeValidatable, JIPipePa
     @JsonSetter("duplicate")
     public void setDuplicate(OptionalBooleanParameter duplicate) {
         this.duplicate = duplicate;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override

@@ -27,10 +27,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -43,9 +40,7 @@ import java.util.*;
 /**
  * Info of a {@link GraphWrapperAlgorithm}
  */
-public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements JIPipeNodeInfo, JIPipeValidatable {
     private String id;
     private String name;
     private HTMLText description = new HTMLText();
@@ -370,12 +365,6 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         // Only check if the graph creates a valid group output
         getGraph().reportValidity(report.resolve("Wrapped graph"), getGroupOutput(), Sets.newHashSet(getGroupInput()));
     }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
 
     @Override
     @JsonGetter("menu-path")
