@@ -104,7 +104,6 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
 
             savedBackupHashes.add(sha1);
             window.getProjectUI().sendStatusBarText("Saved backup to " + targetFile);
-            getEventBus().post(new ParameterChangedEvent(this, "last-saves"));
         } catch (IOException e) {
             window.getProjectUI().sendStatusBarText("Failed to save backup: " + e.getMessage());
             e.printStackTrace();
