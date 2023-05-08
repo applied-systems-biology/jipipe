@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.r.installers;
 
-import com.google.common.eventbus.EventBus;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
@@ -9,9 +8,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.r.REnvironment;
@@ -199,9 +198,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         this.configuration = configuration;
     }
 
-    public static class Configuration implements JIPipeParameterCollection {
-
-        private final EventBus eventBus = new EventBus();
+    public static class Configuration extends AbstractJIPipeParameterCollection {
         private String RDownloadURL = getLatestDownload();
         private Path installationPath;
         private OptionalPathParameter customInstallerPath = new OptionalPathParameter();
@@ -209,11 +206,6 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
 
         public Configuration() {
             installationPath = Paths.get("jipipe").resolve("r");
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         @JIPipeDocumentation(name = "Download URL", description = "This URL is used to download R. If you change it, please ensure that URL " +

@@ -13,14 +13,13 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 
-import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -31,8 +30,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CanvasEqualizer implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
     private DefaultExpressionParameter xAxis = new DefaultExpressionParameter("");
     private DefaultExpressionParameter yAxis = new DefaultExpressionParameter("");
     private Color backgroundColor = Color.BLACK;
@@ -46,11 +44,6 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
         this.yAxis = new DefaultExpressionParameter(other.yAxis);
         this.backgroundColor = other.backgroundColor;
         this.anchor = other.anchor;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public List<ImagePlus> equalize(List<ImagePlus> input, ExpressionVariables variables) {

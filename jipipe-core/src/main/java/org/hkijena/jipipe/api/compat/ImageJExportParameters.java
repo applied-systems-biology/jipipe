@@ -2,16 +2,14 @@ package org.hkijena.jipipe.api.compat;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 /**
  * Describes how data should be exported into ImageJ
  */
-public class ImageJExportParameters implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class ImageJExportParameters extends AbstractJIPipeParameterCollection {
     private boolean activate;
     private boolean noWindows;
     private boolean append;
@@ -34,11 +32,6 @@ public class ImageJExportParameters implements JIPipeParameterCollection {
         this.append = other.append;
         this.name = other.name;
         this.duplicate = other.duplicate;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Activate", description = "If enabled, the associated window(s) are put into the foreground")

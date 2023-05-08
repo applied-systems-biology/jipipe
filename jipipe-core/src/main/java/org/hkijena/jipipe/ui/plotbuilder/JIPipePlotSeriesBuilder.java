@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.plotbuilder;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -35,10 +34,9 @@ import java.util.Map;
 /**
  * Constructs a series from a set of columns
  */
-public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPipeValidatable {
+public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
     private PlotEditor plotBuilderUI;
     private JIPipeDataInfo plotType;
-    private EventBus eventBus = new EventBus();
     private JIPipeDynamicParameterCollection columnAssignments = new JIPipeDynamicParameterCollection(false);
     private String name = "Series";
     private boolean enabled = true;
@@ -107,11 +105,6 @@ public class JIPipePlotSeriesBuilder implements JIPipeParameterCollection, JIPip
         if (event.getKey().equals("available-data")) {
             updateSeriesList();
         }
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

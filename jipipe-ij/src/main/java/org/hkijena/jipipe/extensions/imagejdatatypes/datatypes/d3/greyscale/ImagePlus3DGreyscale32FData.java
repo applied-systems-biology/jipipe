@@ -59,6 +59,7 @@ public class ImagePlus3DGreyscale32FData extends ImagePlus3DGreyscaleData {
     public ImagePlus3DGreyscale32FData(ImagePlus image, ColorSpace colorSpace) {
         super(ImageJUtils.convertToGrayscale32FIfNeeded(image), colorSpace);
     }
+
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus3DGreyscale32FData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }

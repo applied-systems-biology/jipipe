@@ -386,10 +386,11 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
     /**
      * Measures an edge
-     * @param edge the edge
+     *
+     * @param edge   the edge
      * @param target the map where results will be stored
      * @param prefix the prefix for the map keys
-     * @param unit the unit for physical sizes
+     * @param unit   the unit for physical sizes
      */
     public void measureEdge(FilamentEdge edge, Map<String, Object> target, String prefix, String unit) {
         target.put(prefix + "uuid", edge.getUuid());
@@ -407,18 +408,17 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     /**
      * Gets the length of an edge in the specified unit
      *
-     * @param edge the edge
+     * @param edge             the edge
      * @param usePhysicalSizes if the length should be returned in pixels or in the physical size
-     * @param unit the unit (any supported by {@link org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity})
+     * @param unit             the unit (any supported by {@link org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity})
      * @return the length of the edge
      */
     public double getEdgeLength(FilamentEdge edge, boolean usePhysicalSizes, String unit) {
         FilamentVertex edgeSource = getEdgeSource(edge);
         FilamentVertex edgeTarget = getEdgeTarget(edge);
-        if(!usePhysicalSizes || Quantity.isPixelsUnit(unit)) {
+        if (!usePhysicalSizes || Quantity.isPixelsUnit(unit)) {
             return edgeSource.getSpatialLocation().distanceTo(edgeTarget.getSpatialLocation());
-        }
-        else {
+        } else {
             Vector3d sourceLocation = edgeSource.getSpatialLocationInUnit(unit);
             Vector3d targetLocation = edgeTarget.getSpatialLocationInUnit(unit);
             targetLocation.sub(sourceLocation);
@@ -429,19 +429,19 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     /**
      * Finds the common unit within the whole vertex set.
      * Returns 'pixels' if units are inconsistent or other error conditions happen
+     *
      * @return the consensus unit
      */
     public String getConsensusPhysicalSizeUnit() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             return Quantity.UNIT_PIXELS;
         }
         String unit = null;
         for (FilamentVertex vertex : vertexSet()) {
             String vertexUnit = vertex.getConsensusPhysicalSizeUnit();
-            if(unit == null) {
+            if (unit == null) {
                 unit = vertexUnit;
-            }
-            else if(!Objects.equals(unit, vertexUnit)) {
+            } else if (!Objects.equals(unit, vertexUnit)) {
                 return Quantity.UNIT_PIXELS;
             }
         }
@@ -854,7 +854,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             measurements.setValueAt(minVertexIntensity, row, "minVertexValue");
             measurements.setValueAt(maxVertexIntensity, row, "maxVertexValue");
             measurements.setValueAt(sumVertexIntensity / vertices.size(), row, "avgVertexValue");
-            
+
             measurements.setValueAt(consensusPhysicalSizeUnit, row, "physicalSizeUnit");
         }
         return measurements;

@@ -1,17 +1,14 @@
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-public class NotificationUISettings implements JIPipeParameterCollection {
+public class NotificationUISettings extends AbstractJIPipeParameterCollection {
     public static String ID = "notification-ui";
-    private final EventBus eventBus = new EventBus();
-
     private boolean showRunNotifications = true;
     private boolean showRunOnlyIfInactive = false;
     private OptionalIntegerParameter showAfterMinRuntime = new OptionalIntegerParameter(true, 7);
@@ -91,8 +88,4 @@ public class NotificationUISettings implements JIPipeParameterCollection {
         this.enableNotifications = enableNotifications;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 }

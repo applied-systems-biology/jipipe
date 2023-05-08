@@ -414,7 +414,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
 
         ImagePlus result = IJ.createHyperStack(title, width, height, nChannels, nSlices, nFrames, bitDepth);
 
-        if(resXY.size() == 1 && resZ.size() == 1 && unit.size() == 1) {
+        if (resXY.size() == 1 && resZ.size() == 1 && unit.size() == 1) {
             double finalResXY = resXY.iterator().next();
             String finalUnit = unit.iterator().next();
             result.getCalibration().pixelWidth = finalResXY;

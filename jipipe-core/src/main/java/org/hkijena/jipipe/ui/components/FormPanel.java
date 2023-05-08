@@ -82,13 +82,11 @@ public class FormPanel extends JXPanel {
 
     private final EventBus eventBus = new EventBus();
     private final FormPanelContentPanel contentPanel = new FormPanelContentPanel();
-
-    private JPanel staticContentPanel;
     private final MarkdownReader parameterHelp;
     private final JLabel parameterHelpDrillDown = new JLabel();
     private final boolean withDocumentation;
-
     private final boolean documentationHasUI;
+    private JPanel staticContentPanel;
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
@@ -175,6 +173,7 @@ public class FormPanel extends JXPanel {
 
     /**
      * The panel that surrounds the scroll pane or content panel
+     *
      * @return the static content panel
      */
     public JPanel getStaticContentPanel() {

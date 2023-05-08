@@ -216,7 +216,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
     @Override
     public void dispose() {
         clear();
-        if(displayedParameters != null) {
+        if (displayedParameters != null) {
             UIUtils.unregisterEventBus(this.displayedParameters.getEventBus(), this);
         }
         traversed = null;
@@ -278,7 +278,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
         Set<JIPipeParameterCollection> hiddenCollections = new HashSet<>();
         Set<JIPipeParameterAccess> hiddenAccesses = new HashSet<>();
 
-        if(traversed == null) {
+        if (traversed == null) {
             return;
         }
 

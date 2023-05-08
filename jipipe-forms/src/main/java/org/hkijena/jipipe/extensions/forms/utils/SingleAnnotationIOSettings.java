@@ -1,17 +1,15 @@
 package org.hkijena.jipipe.extensions.forms.utils;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
 /**
  * Settings group for single annotation I/O
  */
-public class SingleAnnotationIOSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class SingleAnnotationIOSettings extends AbstractJIPipeParameterCollection {
     private OptionalAnnotationNameParameter outputAnnotation = new OptionalAnnotationNameParameter("Text", true);
     private OptionalAnnotationNameParameter inputAnnotation = new OptionalAnnotationNameParameter("", false);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
@@ -59,8 +57,4 @@ public class SingleAnnotationIOSettings implements JIPipeParameterCollection {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 }

@@ -104,6 +104,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private final Color mainTextColor;
     private final Color secondaryTextColor;
     private final List<JIPipeNodeUIActiveArea> activeAreas = new ArrayList<>();
+    private final boolean showInputs;
+    private final boolean showOutputs;
     private JIPipeNodeUIAddSlotButtonActiveArea addInputSlotArea;
     private JIPipeNodeUIAddSlotButtonActiveArea addOutputSlotArea;
     private boolean mouseIsEntered = false;
@@ -112,14 +114,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private Font zoomedSecondaryFont;
     private boolean nodeIsRunnable;
     private JIPipeNodeUIActiveArea currentActiveArea;
-
     private BufferedImage nodeBuffer;
-
     private boolean nodeBufferInvalid = true;
-
-    private final boolean showInputs;
-
-    private final boolean showOutputs;
 
     /**
      * Creates a new UI
@@ -142,25 +138,21 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
 
-        if(node instanceof JIPipeCompartmentOutput) {
-            if(Objects.equals(node.getCompartmentUUIDInParentGraph(), graphCanvasUI.getCompartment())) {
+        if (node instanceof JIPipeCompartmentOutput) {
+            if (Objects.equals(node.getCompartmentUUIDInParentGraph(), graphCanvasUI.getCompartment())) {
                 showInputs = true;
                 showOutputs = false;
-            }
-            else {
+            } else {
                 showInputs = false;
                 showOutputs = true;
             }
-        }
-        else if(node instanceof GraphWrapperAlgorithmInput) {
+        } else if (node instanceof GraphWrapperAlgorithmInput) {
             showInputs = false;
             showOutputs = true;
-        }
-        else if(node instanceof GraphWrapperAlgorithmOutput) {
+        } else if (node instanceof GraphWrapperAlgorithmOutput) {
             showInputs = true;
             showOutputs = false;
-        }
-        else {
+        } else {
             showInputs = true;
             showOutputs = true;
         }
@@ -448,7 +440,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         double sumInputSlotWidths = 0;
         double sumOutputSlotWidths = 0;
 
-        if(showInputs) {
+        if (showInputs) {
             for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
                 JIPipeNodeUISlotActiveArea slotState = inputSlotMap.get(inputSlot.getName());
                 double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
@@ -466,7 +458,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 addInputSlotArea = null;
             }
         }
-        if(showOutputs) {
+        if (showOutputs) {
             for (JIPipeDataSlot outputSlots : node.getOutputSlots()) {
                 JIPipeNodeUISlotActiveArea slotState = outputSlotMap.get(outputSlots.getName());
                 if (slotState == null)
@@ -1013,13 +1005,13 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     }
 
     public JIPipeNodeUIActiveArea pickAddSlotAtMousePosition(MouseEvent event) {
-        if(addInputSlotArea != null || addOutputSlotArea != null) {
+        if (addInputSlotArea != null || addOutputSlotArea != null) {
             MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphCanvasUI(), event, this);
             Point mousePosition = converted.getPoint();
-            if(addInputSlotArea != null && addInputSlotArea.getZoomedHitArea().contains(mousePosition)) {
+            if (addInputSlotArea != null && addInputSlotArea.getZoomedHitArea().contains(mousePosition)) {
                 return addInputSlotArea;
             }
-            if(addOutputSlotArea != null && addOutputSlotArea.getZoomedHitArea().contains(mousePosition)) {
+            if (addOutputSlotArea != null && addOutputSlotArea.getZoomedHitArea().contains(mousePosition)) {
                 return addOutputSlotArea;
             }
         }
@@ -1048,7 +1040,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         inputSlotMap.clear();
         outputSlotMap.clear();
 
-        if(showInputs) {
+        if (showInputs) {
             for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
                 inputSlot.getInfo().getEventBus().register(this);
 
@@ -1080,7 +1072,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             cachedData = graph.getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
         }
 
-        if(showOutputs) {
+        if (showOutputs) {
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                 outputSlot.getInfo().getEventBus().register(this);
 

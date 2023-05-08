@@ -13,29 +13,21 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMETIFFCompression;
 
-public class ImageJDataTypesSettings implements JIPipeParameterCollection {
+public class ImageJDataTypesSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:ij-datatypes";
-
-    private final EventBus eventBus = new EventBus();
     private boolean useBioFormats = true;
     private boolean saveRGBWithImageJ = true;
     private OMETIFFCompression bioFormatsCompression = OMETIFFCompression.Uncompressed;
 
     public static ImageJDataTypesSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ImageJDataTypesSettings.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Use Bio-Formats for saving & loading", description = "If enabled, Bio-Formats is used to save and load results. Otherwise the native ImageJ functions are used that " +

@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.ijfilaments.nodes.modify;
 
 import ij.ImagePlus;
 import ij.measure.Calibration;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -11,7 +10,6 @@ import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -39,15 +37,15 @@ public class SetVertexPhysicalSizeFromImageAlgorithm extends JIPipeIteratingAlgo
             vertex.setPhysicalVoxelSizeX(new Quantity(1, Quantity.UNIT_PIXELS));
             vertex.setPhysicalVoxelSizeY(new Quantity(1, Quantity.UNIT_PIXELS));
             vertex.setPhysicalVoxelSizeZ(new Quantity(1, Quantity.UNIT_PIXELS));
-            if(calibration != null) {
-                if(!StringUtils.isNullOrEmpty(calibration.getXUnit())) {
+            if (calibration != null) {
+                if (!StringUtils.isNullOrEmpty(calibration.getXUnit())) {
                     vertex.setPhysicalVoxelSizeX(new Quantity(calibration.pixelWidth, calibration.getXUnit()));
                     vertex.setPhysicalVoxelSizeY(new Quantity(calibration.pixelWidth, calibration.getXUnit())); // X = Y condition
                 }
-                if(!StringUtils.isNullOrEmpty(calibration.getYUnit())) {
+                if (!StringUtils.isNullOrEmpty(calibration.getYUnit())) {
                     vertex.setPhysicalVoxelSizeY(new Quantity(calibration.pixelHeight, calibration.getYUnit()));
                 }
-                if(!StringUtils.isNullOrEmpty(calibration.getZUnit())) {
+                if (!StringUtils.isNullOrEmpty(calibration.getZUnit())) {
                     vertex.setPhysicalVoxelSizeZ(new Quantity(calibration.pixelDepth, calibration.getZUnit()));
                 }
             }

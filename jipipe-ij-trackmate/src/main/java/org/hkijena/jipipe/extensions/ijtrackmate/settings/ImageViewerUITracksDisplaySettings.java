@@ -14,17 +14,14 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 
-public class ImageViewerUITracksDisplaySettings implements JIPipeParameterCollection {
+public class ImageViewerUITracksDisplaySettings extends AbstractJIPipeParameterCollection {
     public static String ID = "trackmate-image-viewer-ui-tracks-display";
-    private final EventBus eventBus = new EventBus();
-
     private TrackDrawer trackDrawer = new TrackDrawer();
     private boolean showTracks = true;
 
@@ -54,10 +51,5 @@ public class ImageViewerUITracksDisplaySettings implements JIPipeParameterCollec
     @JIPipeParameter("show-tracks")
     public void setShowTracks(boolean showTracks) {
         this.showTracks = showTracks;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

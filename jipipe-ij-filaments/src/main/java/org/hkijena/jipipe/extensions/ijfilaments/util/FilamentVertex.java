@@ -194,14 +194,14 @@ public class FilamentVertex {
     /**
      * Finds the common unit within the vertex.
      * Returns 'pixels' if units are inconsistent
+     *
      * @return the consensus unit
      */
     public String getConsensusPhysicalSizeUnit() {
-        if(Objects.equals(physicalVoxelSizeX.getUnit(), physicalVoxelSizeY.getUnit())
+        if (Objects.equals(physicalVoxelSizeX.getUnit(), physicalVoxelSizeY.getUnit())
                 && Objects.equals(physicalVoxelSizeY.getUnit(), physicalVoxelSizeZ.getUnit())) {
             return physicalVoxelSizeX.getUnit();
-        }
-        else {
+        } else {
             return Quantity.UNIT_PIXELS;
         }
     }
@@ -212,6 +212,7 @@ public class FilamentVertex {
 
     /**
      * Converts the radius into units and returns the maximum value
+     *
      * @param unit the unit
      * @return the maximum value
      */

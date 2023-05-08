@@ -1,14 +1,11 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 @Deprecated
-public class CellposeSegmentationPerformanceSettings_Old implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class CellposeSegmentationPerformanceSettings_Old extends AbstractJIPipeParameterCollection {
     private int batchSize = 8;
     private boolean tile = true;
     private double tileOverlap = 0.1;
@@ -22,11 +19,6 @@ public class CellposeSegmentationPerformanceSettings_Old implements JIPipeParame
         this.tile = other.tile;
         this.tileOverlap = other.tileOverlap;
         this.resample = other.resample;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Batch size", description = "Number of 224x224 patches to run simultaneously on the GPU " +

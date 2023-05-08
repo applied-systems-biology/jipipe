@@ -1,14 +1,11 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 @Deprecated
-public class CellposeSegmentationThresholdSettings_Old implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class CellposeSegmentationThresholdSettings_Old extends AbstractJIPipeParameterCollection {
     private double flowThreshold = 0.4;
     private double cellProbabilityThreshold = 0;
     private int minSize = 15;
@@ -22,11 +19,6 @@ public class CellposeSegmentationThresholdSettings_Old implements JIPipeParamete
         this.cellProbabilityThreshold = other.cellProbabilityThreshold;
         this.minSize = other.minSize;
         this.stitchThreshold = other.stitchThreshold;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Flow threshold (2D)", description = "Flow error threshold (all cells with errors below threshold are kept) (not used for 3D)")

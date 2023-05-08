@@ -1,16 +1,14 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 
 @Deprecated
-public class CellposeSegmentationModelSettings_Old implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class CellposeSegmentationModelSettings_Old extends AbstractJIPipeParameterCollection {
     private CellposeModel model = CellposeModel.Cytoplasm;
     private double meanDiameter = 30;
 
@@ -42,7 +40,7 @@ public class CellposeSegmentationModelSettings_Old implements JIPipeParameterCol
         if (access.getSource() == this && "mean-diameter".equals(access.getKey())) {
             return model == CellposeModel.Custom;
         }
-        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+        return super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Mean diameter", description = "Mean diameter of the model. Only necessary if you are using a " +
@@ -71,11 +69,6 @@ public class CellposeSegmentationModelSettings_Old implements JIPipeParameterCol
     @JIPipeParameter("enable-gpu")
     public void setEnableGPU(boolean enableGPU) {
         this.enableGPU = enableGPU;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }
 

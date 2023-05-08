@@ -457,7 +457,7 @@ public class ImagePlusData implements JIPipeData {
     }
 
     public void ensureComposite() {
-        if(!getImage().isComposite()) {
+        if (!getImage().isComposite()) {
             image = new CompositeImage(image, CompositeImage.COMPOSITE);
         }
     }

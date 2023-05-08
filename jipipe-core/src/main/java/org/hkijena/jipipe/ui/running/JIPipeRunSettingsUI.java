@@ -93,7 +93,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         MessagePanel messagePanel = new MessagePanel();
 
         JButton runButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
-        runButton.setFont(new Font(Font.DIALOG, Font.PLAIN,16));
+        runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> {
             report.clearAll();
             getProjectWorkbench().getProject().reportValidity(report);

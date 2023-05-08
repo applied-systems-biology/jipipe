@@ -13,11 +13,10 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmarkList;
 import org.hkijena.jipipe.ui.components.AdvancedFileChooser;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -38,10 +37,9 @@ import java.util.stream.Collectors;
 /**
  * Settings concerning file dialogs
  */
-public class FileChooserSettings implements JIPipeParameterCollection {
+public class FileChooserSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "file-chooser";
-    private final EventBus eventBus = new EventBus();
     private FileChooserType fileChooserType = FileChooserType.Advanced;
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
@@ -602,11 +600,6 @@ public class FileChooserSettings implements JIPipeParameterCollection {
 
     public static FileChooserSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, FileChooserSettings.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Bookmarks", description = "Bookmarks used by the advanced file dialog")

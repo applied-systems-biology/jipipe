@@ -1,13 +1,11 @@
 package org.hkijena.jipipe.extensions.pipelinerender;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-public class RenderPipelineRunSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class RenderPipelineRunSettings extends AbstractJIPipeParameterCollection {
     private boolean renderLabel = true;
     private boolean renderShadow = true;
     private int labelFontSize = 40;
@@ -21,11 +19,6 @@ public class RenderPipelineRunSettings implements JIPipeParameterCollection {
         this.renderShadow = other.renderShadow;
         this.labelFontSize = other.labelFontSize;
         this.maxEdgeWidth = new OptionalIntegerParameter(other.maxEdgeWidth);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Draw shadow", description = "If enabled, draw a shadow around each compartment")

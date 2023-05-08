@@ -61,14 +61,12 @@ import java.util.Set;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto threshold (custom, min+max, 16-bit)")
 public class CustomAutoThreshold2D16Uv2Algorithm extends JIPipeIteratingAlgorithm {
 
+    private final ThresholdParameters minThresholdParameters;
+    private final ThresholdParameters maxThresholdParameters;
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private AutoThreshold2DAlgorithm.SliceThresholdMode thresholdMode = AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice;
     private boolean accessPixels = true;
-
-    private final ThresholdParameters minThresholdParameters;
-
-    private final ThresholdParameters maxThresholdParameters;
 
     /**
      * @param info the info

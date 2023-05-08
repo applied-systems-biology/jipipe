@@ -13,17 +13,14 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class TableViewerUISettings implements JIPipeParameterCollection {
+public class TableViewerUISettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "table-viewer-ui";
-
-    private final EventBus eventBus = new EventBus();
     private boolean showSideBar = true;
 
     public static TableViewerUISettings getInstance() {
@@ -39,10 +36,5 @@ public class TableViewerUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-side-bar")
     public void setShowSideBar(boolean showSideBar) {
         this.showSideBar = showSideBar;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

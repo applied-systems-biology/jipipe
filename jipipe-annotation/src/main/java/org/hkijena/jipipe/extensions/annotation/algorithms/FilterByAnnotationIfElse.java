@@ -16,10 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -27,8 +24,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.utils.ResourceUtils;
-
-import java.util.List;
 
 /**
  * Algorithm that splits the input data by a specified annotation
@@ -72,8 +67,7 @@ public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
         JIPipeData data = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         if (filter.test(dataBatch.getMergedTextAnnotations().values(), data.toString(), variables)) {
             dataBatch.addOutputData("Matched", data, progressInfo);
-        }
-        else {
+        } else {
             dataBatch.addOutputData("Unmatched", data, progressInfo);
         }
     }

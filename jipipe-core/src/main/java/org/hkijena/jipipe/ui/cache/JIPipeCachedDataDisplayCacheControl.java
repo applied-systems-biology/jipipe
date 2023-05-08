@@ -1,14 +1,11 @@
 package org.hkijena.jipipe.ui.cache;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.quickrun.QuickRun;
-import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -63,8 +60,8 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
 
     @Subscribe
     private void onAlgorithmParameterChanged(JIPipeParameterCollection.ParameterChangedEvent e) {
-        if(algorithmAwareToggle != null && algorithmAwareToggle.getState()) {
-           workbench.runUpdateCacheLater(algorithm);
+        if (algorithmAwareToggle != null && algorithmAwareToggle.getState()) {
+            workbench.runUpdateCacheLater(algorithm);
         }
     }
 

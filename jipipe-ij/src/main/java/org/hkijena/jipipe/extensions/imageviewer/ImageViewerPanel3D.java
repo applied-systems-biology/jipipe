@@ -95,10 +95,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private int currentImageContentsResamplingFactor;
     private ImageStatistics imageStatistics;
     private boolean isUpdatingSliders = false;
-    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private FormPanel bottomPanel;
+    private FormPanel bottomPanel;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;
-
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         if (JIPipe.getInstance() != null) {
@@ -1167,6 +1165,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
             return resamplingFactor;
         }
     }
+
+
 
 
 }

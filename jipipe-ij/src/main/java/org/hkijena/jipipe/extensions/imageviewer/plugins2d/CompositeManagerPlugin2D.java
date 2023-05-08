@@ -15,7 +15,7 @@ public class CompositeManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
 
     @Override
     public void initializeSettingsPanel(FormPanel formPanel) {
-        if(getCurrentImage() != null && getCurrentImage().getNChannels() > 1) {
+        if (getCurrentImage() != null && getCurrentImage().getNChannels() > 1) {
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Composite display", UIUtils.getIconFromResources("actions/channelmixer.png"));
             JToggleButton compositeToggle = new JToggleButton("Enabled", UIUtils.getIconFromResources("actions/eye.png"));
             compositeToggle.setSelected(getViewerPanel2D().isComposite());

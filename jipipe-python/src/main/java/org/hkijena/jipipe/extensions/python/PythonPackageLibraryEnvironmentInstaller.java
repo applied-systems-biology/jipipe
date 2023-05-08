@@ -13,14 +13,13 @@
 
 package org.hkijena.jipipe.extensions.python;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -149,20 +148,13 @@ public abstract class PythonPackageLibraryEnvironmentInstaller<T extends PythonP
         this.configuration = configuration;
     }
 
-    public static class Configuration implements JIPipeParameterCollection {
-
-        private final EventBus eventBus = new EventBus();
+    public static class Configuration extends AbstractJIPipeParameterCollection {
         private String name;
         private Path installationPath;
 
         public Configuration() {
             name = "Default";
             installationPath = Paths.get("lib");
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         @JIPipeDocumentation(name = "Installation path", description = "The folder where the library folder is installed. Please note that existing folders will be deleted.")

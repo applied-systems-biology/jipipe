@@ -2,11 +2,10 @@ package org.hkijena.jipipe;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -15,9 +14,8 @@ import org.hkijena.jipipe.utils.ResourceUtils;
  * A dependency that points to an ImageJ update site.
  * The ID contains the update site name and the URL is the site URL that might be used if the site does not exist in the repository.
  */
-public class JIPipeImageJUpdateSiteDependency implements JIPipeParameterCollection {
+public class JIPipeImageJUpdateSiteDependency extends AbstractJIPipeParameterCollection {
 
-    private final EventBus eventBus = new EventBus();
     private String name;
     private String url;
     private String description;
@@ -107,11 +105,6 @@ public class JIPipeImageJUpdateSiteDependency implements JIPipeParameterCollecti
     @JsonSetter("maintainer")
     public void setMaintainer(String maintainer) {
         this.maintainer = maintainer;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

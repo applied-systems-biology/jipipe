@@ -4,13 +4,13 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 /**
  * Describes how data should be imported into ImageJ
  */
-public class ImageJImportParameters implements JIPipeParameterCollection {
+public class ImageJImportParameters extends AbstractJIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private String name;
     private boolean duplicate;
@@ -25,11 +25,6 @@ public class ImageJImportParameters implements JIPipeParameterCollection {
     public ImageJImportParameters(ImageJImportParameters other) {
         this.name = other.name;
         this.duplicate = other.duplicate;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Name", description = "The name associated to the imported data")

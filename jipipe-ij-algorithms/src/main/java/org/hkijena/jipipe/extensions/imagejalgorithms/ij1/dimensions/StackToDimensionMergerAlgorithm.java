@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -119,7 +118,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
             for (int c = 0; c < inputImage.getNChannels(); c++) {
                 for (int z = 0; z < inputImage.getNSlices(); z++) {
                     for (int t = 0; t < inputImage.getNFrames(); t++) {
-                        indexMappings.put(new ImageSliceIndex(c + dc, z +dz, t + dt),ImageJUtils.getSliceZero(inputImage, c,z,t));
+                        indexMappings.put(new ImageSliceIndex(c + dc, z + dz, t + dt), ImageJUtils.getSliceZero(inputImage, c, z, t));
                     }
                 }
             }

@@ -15,10 +15,9 @@ package org.hkijena.jipipe.extensions.parameters.library.roi;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
@@ -31,14 +30,13 @@ import java.util.Set;
  * Parameter that allows users to define a rectangle ROI.
  * Users can define a rectangle the classical way (x, y, width, height), but also other ways.
  */
-public class Margin implements JIPipeParameterCollection {
+public class Margin extends AbstractJIPipeParameterCollection {
     public static final int PARAM_LEFT = 1;
     public static final int PARAM_TOP = 2;
     public static final int PARAM_RIGHT = 4;
     public static final int PARAM_BOTTOM = 8;
     public static final int PARAM_WIDTH = 16;
     public static final int PARAM_HEIGHT = 32;
-    private EventBus eventBus = new EventBus();
     private NumericFunctionExpression left = new NumericFunctionExpression();
     private NumericFunctionExpression top = new NumericFunctionExpression();
     private NumericFunctionExpression right = new NumericFunctionExpression();
@@ -321,11 +319,6 @@ public class Margin implements JIPipeParameterCollection {
 //        }
 
         return new Rectangle(ox + availableArea.x, oy + availableArea.y, ow, oh);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

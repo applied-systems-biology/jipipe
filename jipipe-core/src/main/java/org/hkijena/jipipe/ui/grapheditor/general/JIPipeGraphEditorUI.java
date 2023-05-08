@@ -121,13 +121,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         });
     }
 
-    @Override
-    public void dispose() {
-        UIUtils.unregisterEventBus(JIPipe.getNodes().getEventBus(), this);
-        UIUtils.unregisterEventBus(algorithmGraph.getEventBus(), this);
-        canvasUI.dispose();
-    }
-
     /**
      * @param workbenchUI    the workbench
      * @param algorithmGraph the algorithm graph
@@ -240,6 +233,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             toolBar.add(Box.createHorizontalStrut(4), 0);
             toolBar.add(button, 0);
         }
+    }
+
+    @Override
+    public void dispose() {
+        UIUtils.unregisterEventBus(JIPipe.getNodes().getEventBus(), this);
+        UIUtils.unregisterEventBus(algorithmGraph.getEventBus(), this);
+        canvasUI.dispose();
     }
 
     public int getFlags() {

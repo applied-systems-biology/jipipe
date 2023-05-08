@@ -143,7 +143,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
      */
     private boolean removeInvalidNodeStates(JIPipeProgressInfo progressInfo) {
         boolean updated = false;
-        if(ignoreNodeFunctionalEquals) {
+        if (ignoreNodeFunctionalEquals) {
             progressInfo.log("Node functional states (functionallyEquals) will be ignored for the removal of invalid node states");
         }
         for (UUID uuid : ImmutableList.copyOf(currentNodeStates.keySet())) {
@@ -178,7 +178,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
                 }
             }
 
-            if(!ignoreNodeFunctionalEquals) {
+            if (!ignoreNodeFunctionalEquals) {
                 if (currentNode == null || !currentNode.functionallyEquals(cachedNode)) {
                     updated = true;
                     removeAndInvalidateNodeCache(uuid, progressInfo);

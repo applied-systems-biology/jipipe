@@ -54,7 +54,7 @@ public class CalibrationPlugin2D extends GeneralImageViewerPanelPlugin2D {
                 ImageProcessor processor = getCurrentImagePlus().getProcessor();
                 double min = processor.getMin();
                 double max = processor.getMax();
-                if ((min != 0  || max != 0) && (!Double.isNaN(min) && !Double.isNaN(max)) && (!Double.isInfinite(min) && !Double.isInfinite(max))) {
+                if ((min != 0 || max != 0) && (!Double.isNaN(min) && !Double.isNaN(max)) && (!Double.isInfinite(min) && !Double.isInfinite(max))) {
                     boolean found = false;
                     for (ImageJCalibrationMode mode : ImageJCalibrationMode.values()) {
                         if (mode.getMin() == min && mode.getMax() == max) {

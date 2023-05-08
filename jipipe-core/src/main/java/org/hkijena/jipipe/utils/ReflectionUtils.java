@@ -38,8 +38,7 @@ public class ReflectionUtils {
         try {
             Class.forName(name, false, ReflectionUtils.class.getClassLoader());
             return true;
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             return false;
         }
     }

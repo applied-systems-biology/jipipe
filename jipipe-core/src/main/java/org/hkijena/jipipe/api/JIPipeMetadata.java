@@ -15,10 +15,9 @@ package org.hkijena.jipipe.api;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang.WordUtils;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -34,8 +33,7 @@ import java.util.Set;
 /**
  * JSON-serializable project metadata
  */
-public class JIPipeMetadata implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeMetadata extends AbstractJIPipeParameterCollection {
     private String name = "New project";
     private HTMLText description = new HTMLText("A JIPipe project");
 
@@ -288,11 +286,6 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     public void setCitation(String citation) {
         this.citation = citation;
 
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Dependency citations", description = "A list of external work to cite")

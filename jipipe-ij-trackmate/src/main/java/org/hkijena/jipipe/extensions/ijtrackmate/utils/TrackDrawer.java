@@ -14,15 +14,14 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.utils;
 
-import com.google.common.eventbus.EventBus;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.hyperstack.TrackOverlay;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import org.apache.commons.lang3.Range;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
@@ -33,9 +32,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import java.awt.*;
 import java.util.Collection;
 
-public class TrackDrawer implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class TrackDrawer extends AbstractJIPipeParameterCollection {
     private int strokeWidth = 1;
 
     private Color strokeColor = Color.YELLOW;
@@ -68,11 +65,6 @@ public class TrackDrawer implements JIPipeParameterCollection {
         this.trackDisplayMode = other.trackDisplayMode;
         this.fadeTrackRange = other.fadeTrackRange;
         this.strokeColorTrackFeature = new TrackFeature(other.strokeColorTrackFeature);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public DisplaySettings createDisplaySettings(TrackCollectionData trackCollectionData) {

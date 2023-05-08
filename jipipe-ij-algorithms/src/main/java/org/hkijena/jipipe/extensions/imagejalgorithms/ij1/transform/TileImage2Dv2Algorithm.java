@@ -17,7 +17,9 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
@@ -45,6 +47,7 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customVariables;
     private DefaultExpressionParameter tileSizeX = new DefaultExpressionParameter("512");
     private DefaultExpressionParameter tileSizeY = new DefaultExpressionParameter("512");
     private DefaultExpressionParameter overlapX = new DefaultExpressionParameter("0");
@@ -53,24 +56,14 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalAnnotationNameParameter tileYAnnotation = new OptionalAnnotationNameParameter("Tile Y", true);
     private OptionalAnnotationNameParameter numTilesX = new OptionalAnnotationNameParameter("Num Tiles X", true);
     private OptionalAnnotationNameParameter numTilesY = new OptionalAnnotationNameParameter("Num Tiles Y", true);
-
     private BorderMode borderMode = BorderMode.Constant;
-
     private OptionalAnnotationNameParameter tileRealXAnnotation = new OptionalAnnotationNameParameter("Original X", true);
-
     private OptionalAnnotationNameParameter tileRealYAnnotation = new OptionalAnnotationNameParameter("Original Y", true);
-
     private OptionalAnnotationNameParameter imageWidthAnnotation = new OptionalAnnotationNameParameter("Original width", true);
-
     private OptionalAnnotationNameParameter imageHeightAnnotation = new OptionalAnnotationNameParameter("Original height", true);
-
     private OptionalAnnotationNameParameter tileInsetXAnnotation = new OptionalAnnotationNameParameter("Inset X", true);
-
     private OptionalAnnotationNameParameter tileInsetYAnnotation = new OptionalAnnotationNameParameter("Inset Y", true);
-
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
-
-    private final CustomExpressionVariablesParameter customVariables;
 
     public TileImage2Dv2Algorithm(JIPipeNodeInfo info) {
         super(info);

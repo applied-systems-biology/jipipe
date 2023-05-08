@@ -58,7 +58,7 @@ public class Roi3DFromLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             Objects3DPopulation population = new Objects3DPopulation(imageHandler);
 
             // Set calibration
-            if(labels.getCalibration() != null) {
+            if (labels.getCalibration() != null) {
                 for (Object3D object3D : population.getObjectsList()) {
                     object3D.setResXY(labels.getCalibration().pixelWidth);
                     object3D.setResZ(labels.getCalibration().pixelDepth);

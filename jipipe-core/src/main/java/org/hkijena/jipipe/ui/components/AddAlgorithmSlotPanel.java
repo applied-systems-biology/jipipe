@@ -84,14 +84,6 @@ public class AddAlgorithmSlotPanel extends JPanel {
         });
     }
 
-    public JList<JIPipeDataInfo> getDatatypeList() {
-        return datatypeList;
-    }
-
-    public List<JIPipeDataSlot> getAddedSlots() {
-        return addedSlots;
-    }
-
     /**
      * Shows a dialog for adding slots
      *
@@ -112,6 +104,14 @@ public class AddAlgorithmSlotPanel extends JPanel {
         dialog.setLocationRelativeTo(parent);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
+    }
+
+    public JList<JIPipeDataInfo> getDatatypeList() {
+        return datatypeList;
+    }
+
+    public List<JIPipeDataSlot> getAddedSlots() {
+        return addedSlots;
     }
 
     private void setInitialName() {
@@ -248,10 +248,9 @@ public class AddAlgorithmSlotPanel extends JPanel {
         }
 
         slotConfiguration.addSlot(slotName, slotDefinition, true);
-        if(slotType == JIPipeSlotType.Input) {
+        if (slotType == JIPipeSlotType.Input) {
             addedSlots.add(algorithm.getInputSlot(slotName));
-        }
-        else {
+        } else {
             addedSlots.add(algorithm.getOutputSlot(slotName));
         }
         lastSelectedType = selectedInfo;

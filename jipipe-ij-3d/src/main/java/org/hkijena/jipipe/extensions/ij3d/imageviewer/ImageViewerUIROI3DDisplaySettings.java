@@ -14,15 +14,13 @@
 
 package org.hkijena.jipipe.extensions.ij3d.imageviewer;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class ImageViewerUIROI3DDisplaySettings implements JIPipeParameterCollection {
+public class ImageViewerUIROI3DDisplaySettings extends AbstractJIPipeParameterCollection {
     public static String ID = "image-viewer-ui-roi-3d-display";
-    private final EventBus eventBus = new EventBus();
     private boolean showROI = true;
 
     private boolean renderROIAsVolume = false;
@@ -54,10 +52,5 @@ public class ImageViewerUIROI3DDisplaySettings implements JIPipeParameterCollect
     @JIPipeParameter("render-roi-as-volume")
     public void setRenderROIAsVolume(boolean renderROIAsVolume) {
         this.renderROIAsVolume = renderROIAsVolume;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

@@ -7,9 +7,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -298,7 +298,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
         this.configuration = configuration;
     }
 
-    public static class Configuration implements JIPipeParameterCollection {
+    public static class Configuration extends AbstractJIPipeParameterCollection {
 
         private final EventBus eventBus = new EventBus();
         private String pythonDownloadURL = getLatestDownload();
@@ -308,11 +308,6 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
 
         public Configuration() {
             installationPath = Paths.get("jipipe").resolve("python");
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         @JIPipeDocumentation(name = "Download URL", description = "This URL is used to download Python. If you change it, please ensure that URL " +

@@ -13,11 +13,10 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -30,10 +29,8 @@ import java.nio.file.Path;
 /**
  * Settings related to how algorithms are executed
  */
-public class RuntimeSettings implements JIPipeParameterCollection {
+public class RuntimeSettings extends AbstractJIPipeParameterCollection {
     public static final String ID = "runtime";
-
-    private final EventBus eventBus = new EventBus();
     private boolean allowSkipAlgorithmsWithoutInput = true;
     private boolean allowCache = true;
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
@@ -105,11 +102,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
         }
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     @JIPipeDocumentation(name = "Automatically skip algorithms without input", description = "If enabled, algorithms and their dependents without " +
             "input are silently ignored. If disabled, a project is not considered valid if such conditions happen.")
     @JIPipeParameter("allow-skip-algorithms-without-input")
@@ -120,7 +112,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     @JIPipeParameter("allow-skip-algorithms-without-input")
     public void setAllowSkipAlgorithmsWithoutInput(boolean allowSkipAlgorithmsWithoutInput) {
         this.allowSkipAlgorithmsWithoutInput = allowSkipAlgorithmsWithoutInput;
-        eventBus.post(new ParameterChangedEvent(this, "allow-skip-algorithms-without-input"));
     }
 
     @JIPipeDocumentation(name = "Enable data caching", description = "If enabled, JIPipe can cache generated to prevent repeating previous steps. " +
@@ -133,7 +124,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     @JIPipeParameter("allow-cache")
     public void setAllowCache(boolean allowCache) {
         this.allowCache = allowCache;
-        eventBus.post(new ParameterChangedEvent(this, "allow-cache"));
     }
 
     @JIPipeDocumentation(name = "Override temporary directory", description = "For various tasks - like the Quick Run feature - data " +
@@ -148,7 +138,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
     @JIPipeParameter("temp-directory")
     public void setTempDirectory(OptionalPathParameter tempDirectory) {
         this.tempDirectory = tempDirectory;
-        eventBus.post(new ParameterChangedEvent(this, "temp-directory"));
     }
 
     @JIPipeDocumentation(name = "Default thread count", description = "Default number of threads for running whole pipelines.")
@@ -168,7 +157,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
         if (defaultRunThreads <= 0)
             return false;
         this.defaultRunThreads = defaultRunThreads;
-        eventBus.post(new ParameterChangedEvent(this, "default-run-threads"));
         return true;
     }
 
@@ -189,7 +177,6 @@ public class RuntimeSettings implements JIPipeParameterCollection {
         if (defaultTestBenchThreads <= 0)
             return false;
         this.defaultQuickRunThreads = defaultTestBenchThreads;
-        eventBus.post(new ParameterChangedEvent(this, "default-test-bench-threads"));
         return true;
     }
 

@@ -14,12 +14,11 @@
 package org.hkijena.jipipe.extensions.settings;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -29,10 +28,8 @@ import java.util.Map;
 /**
  * Settings related to how algorithms are executed
  */
-public class ExtensionSettings implements JIPipeParameterCollection {
+public class ExtensionSettings extends AbstractJIPipeParameterCollection {
     public static final String ID = "extensions";
-
-    private final EventBus eventBus = new EventBus();
     private boolean validateImageJDependencies = true;
     private boolean validateNodeTypes = true;
 
@@ -73,11 +70,6 @@ public class ExtensionSettings implements JIPipeParameterCollection {
         return result;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     @JIPipeDocumentation(name = "Validate ImageJ dependencies", description = "If enabled, JIPipe will check if ImageJ dependencies are installed.")
     @JIPipeParameter("validate-imagej-dependencies")
     public boolean isValidateImageJDependencies() {
@@ -116,6 +108,7 @@ public class ExtensionSettings implements JIPipeParameterCollection {
     public boolean isIgnorePreActivationChecks() {
         return ignorePreActivationChecks;
     }
+
     @JIPipeParameter("ignore-pre-activation-checks")
     public void setIgnorePreActivationChecks(boolean ignorePreActivationChecks) {
         this.ignorePreActivationChecks = ignorePreActivationChecks;

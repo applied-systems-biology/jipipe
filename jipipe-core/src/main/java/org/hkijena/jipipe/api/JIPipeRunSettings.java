@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.api;
 
-import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -30,8 +28,7 @@ import java.util.UUID;
 /**
  * Settings for an {@link JIPipeProjectRun}
  */
-public class JIPipeRunSettings implements JIPipeParameterCollection {
-    private EventBus eventBus = new EventBus();
+public class JIPipeRunSettings extends AbstractJIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = false;
@@ -93,11 +90,6 @@ public class JIPipeRunSettings implements JIPipeParameterCollection {
     @JIPipeParameter("num-threads")
     public void setNumThreads(int numThreads) {
         this.numThreads = numThreads;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public boolean isSaveToDisk() {

@@ -13,11 +13,10 @@
 
 package org.hkijena.jipipe.api.grouping.parameters;
 
-import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeNamedParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
 import java.util.HashMap;
@@ -26,9 +25,7 @@ import java.util.Map;
 /**
  * Contains {@link GraphNodeParameterReferenceAccess}
  */
-public class GraphNodeParameterReferenceAccessGroup implements JIPipeParameterCollection, JIPipeCustomParameterCollection, JIPipeNamedParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class GraphNodeParameterReferenceAccessGroup extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection, JIPipeNamedParameterCollection {
     private final GraphNodeParameterReferenceGroup group;
     private Map<String, JIPipeParameterAccess> parameters = new HashMap<>();
 
@@ -44,11 +41,6 @@ public class GraphNodeParameterReferenceAccessGroup implements JIPipeParameterCo
     @Override
     public Map<String, JIPipeParameterAccess> getParameters() {
         return parameters;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override

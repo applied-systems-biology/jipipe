@@ -17,11 +17,10 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.theme.CustomTabbedPaneUI;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -475,7 +474,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
      * @param tab the tab
      */
     public void forceCloseTab(DocumentTab tab) {
-        if(tab.content instanceof Disposable) {
+        if (tab.content instanceof Disposable) {
             ((Disposable) tab.content).dispose();
         }
         tabs.remove(tab);
@@ -795,10 +794,10 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
         public void setDocumentTab(DocumentTab documentTab) {
             if (this.documentTab != null) {
-                this.documentTab.eventBus.unregister(this);
+                this.documentTab.getEventBus().unregister(this);
             }
             this.documentTab = documentTab;
-            documentTab.eventBus.register(this);
+            documentTab.getEventBus().register(this);
             updateContents();
         }
 
@@ -811,9 +810,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
     /**
      * Encapsulates a tab
      */
-    public static class DocumentTab implements JIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
-
+    public static class DocumentTab extends AbstractJIPipeParameterCollection {
         private final DocumentTabPane documentTabPane;
         private final Icon icon;
         private final DocumentTabComponent tabComponent;
@@ -840,7 +837,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
         @JIPipeParameter("title")
         public void setTitle(String title) {
             this.title = title;
-            eventBus.post(new TabRenamedEvent(documentTabPane, this));
+            getEventBus().post(new TabRenamedEvent(documentTabPane, this));
         }
 
         public DocumentTabPane getDocumentTabPane() {
@@ -861,11 +858,6 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
         public CloseMode getCloseMode() {
             return closeMode;
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         public JPopupMenu getPopupMenu() {

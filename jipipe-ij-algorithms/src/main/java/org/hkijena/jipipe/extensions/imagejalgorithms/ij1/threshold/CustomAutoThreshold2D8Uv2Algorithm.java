@@ -60,14 +60,12 @@ import java.util.Set;
 public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm {
 
 
+    private final ThresholdParameters minThresholdParameters;
+    private final ThresholdParameters maxThresholdParameters;
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private AutoThreshold2DAlgorithm.SliceThresholdMode thresholdMode = AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice;
     private boolean accessPixels = true;
-
-    private final ThresholdParameters minThresholdParameters;
-
-    private final ThresholdParameters maxThresholdParameters;
 
     /**
      * @param info the info

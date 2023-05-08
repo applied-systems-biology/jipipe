@@ -1,14 +1,11 @@
 package org.hkijena.jipipe.extensions.omnipose.parameters;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-public class OmniposeSegmentationThresholdSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class OmniposeSegmentationThresholdSettings extends AbstractJIPipeParameterCollection {
     private double flowThreshold = 0.4;
     private double maskThreshold = 0;
 
@@ -25,11 +22,6 @@ public class OmniposeSegmentationThresholdSettings implements JIPipeParameterCol
         this.stitchThreshold = other.stitchThreshold;
         this.excludeOnEdges = other.excludeOnEdges;
         this.diamThreshold = other.diamThreshold;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Exclude masks on edges", description = "Discard masks which touch edges of image")

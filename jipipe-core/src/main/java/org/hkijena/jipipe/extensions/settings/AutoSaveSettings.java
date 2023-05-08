@@ -13,14 +13,13 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -43,9 +42,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class AutoSaveSettings implements JIPipeParameterCollection {
+public class AutoSaveSettings extends AbstractJIPipeParameterCollection {
     public static final String ID = "auto-save";
-    private final EventBus eventBus = new EventBus();
     private final Timer autoSaveTimer;
     private boolean enableAutoSave = true;
     private int autoSaveDelay = 3;
@@ -133,11 +131,6 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
         for (JIPipeProjectWindow window : JIPipeProjectWindow.getOpenWindows()) {
             autoSave(window);
         }
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Enable", description = "If enabled, JIPipe will automatically save all projects into a separate folder for crash recovery.")

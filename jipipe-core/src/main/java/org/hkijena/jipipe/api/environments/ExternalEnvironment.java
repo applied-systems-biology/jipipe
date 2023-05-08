@@ -2,11 +2,10 @@ package org.hkijena.jipipe.api.environments;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
@@ -14,9 +13,7 @@ import javax.swing.*;
 /**
  * Defines an external environment
  */
-public abstract class ExternalEnvironment implements JIPipeParameterCollection, JIPipeValidatable {
-
-    private final EventBus eventBus = new EventBus();
+public abstract class ExternalEnvironment extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
     private String name;
 
     public ExternalEnvironment() {
@@ -40,11 +37,6 @@ public abstract class ExternalEnvironment implements JIPipeParameterCollection, 
      * @return the info string
      */
     public abstract String getInfo();
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 
     @JIPipeDocumentation(name = "Name", description = "This environment's name")
     @JIPipeParameter("name")

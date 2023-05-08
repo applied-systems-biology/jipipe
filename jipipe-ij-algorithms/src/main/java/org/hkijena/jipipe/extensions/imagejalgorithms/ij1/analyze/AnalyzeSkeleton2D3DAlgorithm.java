@@ -14,7 +14,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze;
 
-import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -27,8 +26,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
@@ -383,9 +382,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    public static class OutputParameters implements JIPipeParameterCollection {
-
-        private final EventBus eventBus = new EventBus();
+    public static class OutputParameters extends AbstractJIPipeParameterCollection {
         private AnalyzeSkeleton2D3DAlgorithm parent;
         private boolean outputSkeletonTable = false;
         private boolean outputBranchTable = false;
@@ -472,11 +469,6 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         public void setOutputLargestShortestPaths(boolean outputLargestShortestPaths) {
             this.outputLargestShortestPaths = outputLargestShortestPaths;
             parent.toggleSlot(LSP_IMAGE_OUTPUT_SLOT, outputLargestShortestPaths);
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
     }
 }

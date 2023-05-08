@@ -13,22 +13,19 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
  */
-public class GeneralUISettings implements JIPipeParameterCollection {
+public class GeneralUISettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "general-ui";
-
-    private EventBus eventBus = new EventBus();
     private boolean showIntroduction = true;
     private boolean showProjectInfo = true;
     private boolean showParameterSearchBar = true;
@@ -43,11 +40,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
 
     public static GeneralUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GeneralUISettings.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Show introduction on startup",

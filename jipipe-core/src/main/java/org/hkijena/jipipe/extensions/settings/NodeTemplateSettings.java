@@ -1,18 +1,15 @@
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
-public class NodeTemplateSettings implements JIPipeParameterCollection {
+public class NodeTemplateSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "node-templates";
-
-    private final EventBus eventBus = new EventBus();
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
 
     private StringList nodeTemplateDownloadRepositories = new StringList();
@@ -27,11 +24,6 @@ public class NodeTemplateSettings implements JIPipeParameterCollection {
 
     public static void triggerRefreshedEvent() {
         getInstance().getEventBus().post(new NodeTemplatesRefreshedEvent());
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Node templates", description = "List of globally available node templates.")

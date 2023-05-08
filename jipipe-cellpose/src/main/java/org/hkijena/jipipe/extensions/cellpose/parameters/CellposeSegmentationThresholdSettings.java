@@ -1,14 +1,11 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-public class CellposeSegmentationThresholdSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class CellposeSegmentationThresholdSettings extends AbstractJIPipeParameterCollection {
     private double flowThreshold = 0.4;
     private double cellProbabilityThreshold = 0;
     private OptionalDoubleParameter stitchThreshold = new OptionalDoubleParameter(0, false);
@@ -22,11 +19,6 @@ public class CellposeSegmentationThresholdSettings implements JIPipeParameterCol
         this.cellProbabilityThreshold = other.cellProbabilityThreshold;
         this.stitchThreshold = other.stitchThreshold;
         this.excludeOnEdges = other.excludeOnEdges;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Exclude masks on edges", description = "Discard masks which touch edges of image")

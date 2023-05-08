@@ -194,7 +194,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     }
 
     private void saveTabState(DocumentTabPane tabbedPane) {
-        if(!disposed) {
+        if (!disposed) {
             String id = tabbedPane.getCurrentlySelectedSingletonTabId();
             if (id != null) {
                 SAVED_TAB = id;

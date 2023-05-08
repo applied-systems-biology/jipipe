@@ -1,22 +1,19 @@
 package org.hkijena.jipipe.extensions.omnipose;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 
-public class OmniposeSettings implements JIPipeParameterCollection {
+public class OmniposeSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:omnipose";
-
-    private final EventBus eventBus = new EventBus();
 
     private OptionalPythonEnvironment overridePythonEnvironment = new OptionalPythonEnvironment();
 
@@ -61,11 +58,6 @@ public class OmniposeSettings implements JIPipeParameterCollection {
                             "Then go to Project > Application settings > Extensions > Omnipose and choose the correct environment. " +
                             "Alternatively, the settings page will provide you with means to install Omnipose automatically.");
         }
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Omnipose Python environment", description = "If enabled, a separate Python environment is used for Omnipose. " +

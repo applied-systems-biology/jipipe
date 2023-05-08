@@ -604,8 +604,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 // Extension self-check
                 JIPipeIssueReport preActivationIssues = new JIPipeIssueReport();
                 issues.getPreActivationIssues().put(extension.getDependencyId(), preActivationIssues);
-                if(!extension.canActivate(preActivationIssues, progressInfo.resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
-                    if(!extensionSettings.isIgnorePreActivationChecks()) {
+                if (!extension.canActivate(preActivationIssues, progressInfo.resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
+                    if (!extensionSettings.isIgnorePreActivationChecks()) {
                         preActivationIssues.resolve("Registry").reportIsInvalid("Extension '" + extension.getMetadata().getName() + "' refuses to activate!",
                                 "The extension's pre-activation check failed. It will not be activated.",
                                 "Please refer to the other items if available.",
@@ -613,8 +613,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
                         javaExtensions.add(null);
                         continue;
-                    }
-                    else {
+                    } else {
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " indicated that its pre-activation checks failed. WILL BE LOADED ANYWAYS DUE TO APPLICATION SETTINGS!");
                     }
 
@@ -897,6 +896,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 try {
                     algorithm.duplicate();
                 } catch (Exception e1) {
+                    e1.printStackTrace();
                     throw new UserFriendlyRuntimeException(e1,
                             "A plugin is invalid!",
                             "JIPipe plugin checker",
@@ -908,6 +908,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 try {
                     JsonUtils.toJsonString(algorithm);
                 } catch (Exception e1) {
+                    e1.printStackTrace();
                     throw new UserFriendlyRuntimeException(e1,
                             "A plugin is invalid!",
                             "JIPipe plugin checker",
@@ -921,6 +922,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                         throw new RuntimeException("Node " + algorithm.getInfo().getId() + " is not functionally equal to itself!");
                     }
                 } catch (Exception e1) {
+                    e1.printStackTrace();
                     throw new UserFriendlyRuntimeException(e1,
                             "A plugin is invalid!",
                             "JIPipe plugin checker",
@@ -930,11 +932,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
                 logService.debug("OK: Algorithm '" + info.getId() + "'");
             } catch (NoClassDefFoundError | Exception e) {
+                e.printStackTrace();
                 // Unregister node
                 logService.warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated, duplicated, serialized, or cached.");
                 nodeRegistry.unregister(info.getId());
                 issues.getErroneousNodes().add(info);
-                e.printStackTrace();
             }
         }
     }

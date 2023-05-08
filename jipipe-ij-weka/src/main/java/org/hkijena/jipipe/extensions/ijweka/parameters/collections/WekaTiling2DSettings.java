@@ -14,15 +14,12 @@
 
 package org.hkijena.jipipe.extensions.ijweka.parameters.collections;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.BorderMode;
 
-public class WekaTiling2DSettings implements JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
     private boolean applyTiling = true;
 
     private boolean useWekaNativeTiling = false;
@@ -133,8 +130,4 @@ public class WekaTiling2DSettings implements JIPipeParameterCollection {
         return false;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 }

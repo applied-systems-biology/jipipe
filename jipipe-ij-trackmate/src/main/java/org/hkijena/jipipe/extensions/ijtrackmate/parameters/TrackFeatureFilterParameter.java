@@ -16,17 +16,14 @@ package org.hkijena.jipipe.extensions.ijtrackmate.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import fiji.plugin.trackmate.features.FeatureFilter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 
-public class TrackFeatureFilterParameter implements JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class TrackFeatureFilterParameter extends AbstractJIPipeParameterCollection {
     private TrackFeature feature;
     private double value;
 
@@ -89,11 +86,6 @@ public class TrackFeatureFilterParameter implements JIPipeParameterCollection {
 
     public FeatureFilter toFeatureFilter() {
         return new FeatureFilter(feature.getValue(), value, above);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public static class List extends ListParameter<TrackFeatureFilterParameter> {

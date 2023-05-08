@@ -1,14 +1,13 @@
 package org.hkijena.jipipe.extensions.clij2;
 
-import com.google.common.eventbus.EventBus;
 import net.haesleinhuepf.clij.CLIJ;
 import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij.macro.CLIJHandler;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.scijava.Context;
 import org.scijava.log.LogService;
@@ -18,11 +17,9 @@ import java.util.ArrayList;
 /**
  * Settings for CLIJ
  */
-public class CLIJSettings implements JIPipeParameterCollection {
+public class CLIJSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:clij2-integration";
-
-    private final EventBus eventBus = new EventBus();
     private int device = 0;
     private boolean initialized = false;
     private boolean autoCalibrateAfterPulling = true;
@@ -87,11 +84,6 @@ public class CLIJSettings implements JIPipeParameterCollection {
         getInstance().initialized = true;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     @JIPipeDocumentation(name = "Graphics card device", description = "Relevant if you have multiple graphics cards available. " +
             "The first device is zero. " +
             "This determines which graphics card should be used. Changing this setting might require a ImageJ restart to take effect.")
@@ -124,18 +116,12 @@ public class CLIJSettings implements JIPipeParameterCollection {
         return contrastEnhancerSettings;
     }
 
-    public static class ContrastEnhancerSettings implements JIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
+    public static class ContrastEnhancerSettings extends AbstractJIPipeParameterCollection {
         private ImageJCalibrationMode calibrationMode = ImageJCalibrationMode.AutomaticImageJ;
         private double customMin = 0;
         private double customMax = 1;
         private boolean duplicateImage = true;
         private boolean applyToAllPlanes = true;
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
-        }
 
         @JIPipeDocumentation(name = "Calibration method", description = "The method to apply for calibration.")
         @JIPipeParameter("calibration-mode")

@@ -19,15 +19,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -44,10 +40,9 @@ import java.util.Map;
  * Registry for settings.
  * Settings are organized in "sheets" (parameter collections)
  */
-public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipeCustomParameterCollection {
+public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection {
 
     private final JIPipe jiPipe;
-    private final EventBus eventBus = new EventBus();
     private final BiMap<String, Sheet> registeredSheets = HashBiMap.create();
     private boolean isLoading = false;
 
@@ -148,11 +143,6 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
 
     public BiMap<String, Sheet> getRegisteredSheets() {
         return ImmutableBiMap.copyOf(registeredSheets);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override

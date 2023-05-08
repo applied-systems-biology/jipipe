@@ -13,12 +13,11 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -31,11 +30,9 @@ import java.util.ArrayList;
 /**
  * Remembers the last projects
  */
-public class ProjectsSettings implements JIPipeParameterCollection {
+public class ProjectsSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "projects";
-
-    private final EventBus eventBus = new EventBus();
     private PathList recentProjects = new PathList();
     private PathList recentJsonExtensionProjects = new PathList();
     private ProjectTemplateEnum projectTemplate = new ProjectTemplateEnum();
@@ -50,11 +47,6 @@ public class ProjectsSettings implements JIPipeParameterCollection {
 
     public static ProjectsSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ProjectsSettings.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Recent projects", description = "List of recent projects")
@@ -90,11 +82,11 @@ public class ProjectsSettings implements JIPipeParameterCollection {
         int index = recentProjects.indexOf(fileName);
         if (index == -1) {
             recentProjects.add(0, fileName);
-            eventBus.post(new ParameterChangedEvent(this, "recent-projects"));
+            getEventBus().post(new ParameterChangedEvent(this, "recent-projects"));
         } else if (index != 0) {
             recentProjects.remove(index);
             recentProjects.add(0, fileName);
-            eventBus.post(new ParameterChangedEvent(this, "recent-projects"));
+            getEventBus().post(new ParameterChangedEvent(this, "recent-projects"));
         }
     }
 
@@ -107,11 +99,11 @@ public class ProjectsSettings implements JIPipeParameterCollection {
         int index = recentJsonExtensionProjects.indexOf(fileName);
         if (index == -1) {
             recentJsonExtensionProjects.add(0, fileName);
-            eventBus.post(new ParameterChangedEvent(this, "recent-json-extension-projects"));
+            getEventBus().post(new ParameterChangedEvent(this, "recent-json-extension-projects"));
         } else if (index != 0) {
             recentJsonExtensionProjects.remove(index);
             recentJsonExtensionProjects.add(0, fileName);
-            eventBus.post(new ParameterChangedEvent(this, "recent-json-extension-projects"));
+            getEventBus().post(new ParameterChangedEvent(this, "recent-json-extension-projects"));
         }
     }
 

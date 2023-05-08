@@ -14,7 +14,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
@@ -23,8 +22,8 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiLabel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
@@ -42,9 +41,7 @@ import java.util.Set;
 /**
  * Advanced ROI drawing algorithm with better flexibility compared to the methods of {@link ROIListData}
  */
-public class RoiDrawer implements JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class RoiDrawer extends AbstractJIPipeParameterCollection {
     private ROIElementDrawingMode drawOutlineMode = ROIElementDrawingMode.Always;
     private ROIElementDrawingMode drawFilledOutlineMode = ROIElementDrawingMode.IfAvailable;
     private RoiLabel drawnLabel = RoiLabel.None;
@@ -114,11 +111,6 @@ public class RoiDrawer implements JIPipeParameterCollection {
         this.ignoreC = other.ignoreC;
         this.ignoreZ = other.ignoreZ;
         this.ignoreT = other.ignoreT;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")

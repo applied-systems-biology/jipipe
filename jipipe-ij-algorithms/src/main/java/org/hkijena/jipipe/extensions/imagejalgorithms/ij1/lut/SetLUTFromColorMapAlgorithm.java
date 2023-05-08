@@ -59,7 +59,7 @@ public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             data = (ImagePlusData) data.duplicate(progressInfo);
         data.ensureComposite();
         Set<Integer> channels = new HashSet<>();
-        if(restrictToChannels.isEnabled()) {
+        if (restrictToChannels.isEnabled()) {
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(dataBatch.getMergedTextAnnotations());
             channels.addAll(restrictToChannels.getContent().getIntegers(0, data.getNChannels() - 1, variables));

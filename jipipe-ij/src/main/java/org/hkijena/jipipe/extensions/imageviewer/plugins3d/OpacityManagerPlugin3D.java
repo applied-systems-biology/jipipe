@@ -22,7 +22,7 @@ public class OpacityManagerPlugin3D extends GeneralImageViewerPanelPlugin3D {
     @Override
     public void onImageChanged() {
         alphaLutEditors.clear();
-        if(getCurrentImage() != null) {
+        if (getCurrentImage() != null) {
             if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
 
             } else {

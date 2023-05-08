@@ -104,19 +104,6 @@ public class Quantity {
         this.unit = other.unit;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Quantity quantity = (Quantity) o;
-        return Double.compare(quantity.value, value) == 0 && Objects.equals(unit, quantity.unit);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(value, unit);
-    }
-
     /**
      * Parses a quantity from a string
      *
@@ -137,6 +124,19 @@ public class Quantity {
 
     public static boolean isPixelsUnit(String unit) {
         return "px".equals(unit) || "pixels".equals(unit) || "pixel".equals(unit);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Quantity quantity = (Quantity) o;
+        return Double.compare(quantity.value, value) == 0 && Objects.equals(unit, quantity.unit);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, unit);
     }
 
     @Override

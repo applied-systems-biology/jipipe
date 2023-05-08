@@ -71,16 +71,16 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                         FilamentVertex vertex = new FilamentVertex();
                         vertex.setSpatialLocation(new Point3d(x, y, index.getZ()));
                         vertex.setNonSpatialLocation(new NonSpatialPoint3d(index.getC(), index.getT()));
-                        if(calibration != null) {
-                            if(!StringUtils.isNullOrEmpty(calibration.getXUnit())) {
+                        if (calibration != null) {
+                            if (!StringUtils.isNullOrEmpty(calibration.getXUnit())) {
                                 vertex.setPhysicalVoxelSizeX(new Quantity(calibration.pixelWidth, calibration.getXUnit()));
                                 vertex.setPhysicalVoxelSizeY(new Quantity(calibration.pixelWidth, calibration.getXUnit())); // X = Y condition
                                 vertex.setPhysicalVoxelSizeZ(new Quantity(0, calibration.getZUnit())); // X = Y = Z condition
                             }
-                            if(!StringUtils.isNullOrEmpty(calibration.getYUnit())) {
+                            if (!StringUtils.isNullOrEmpty(calibration.getYUnit())) {
                                 vertex.setPhysicalVoxelSizeY(new Quantity(calibration.pixelHeight, calibration.getYUnit()));
                             }
-                            if(!force2D && !StringUtils.isNullOrEmpty(calibration.getZUnit())) {
+                            if (!force2D && !StringUtils.isNullOrEmpty(calibration.getZUnit())) {
                                 vertex.setPhysicalVoxelSizeZ(new Quantity(calibration.pixelDepth, calibration.getZUnit()));
                             }
                         }

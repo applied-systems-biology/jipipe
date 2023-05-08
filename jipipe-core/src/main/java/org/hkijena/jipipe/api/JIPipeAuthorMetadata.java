@@ -15,10 +15,9 @@ package org.hkijena.jipipe.api;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import com.google.common.html.HtmlEscapers;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -37,10 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Models an author with affiliations
  */
-public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
-
+public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
     private String title;
     private String firstName;
     private String lastName;
@@ -170,7 +166,6 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
     @JsonSetter("first-name")
     public void setFirstName(String firstName) {
         this.firstName = firstName;
-        eventBus.post(new ParameterChangedEvent(this, "first-name"));
     }
 
     @JIPipeParameter(value = "last-name", uiOrder = 1)
@@ -184,7 +179,6 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
     @JsonSetter("last-name")
     public void setLastName(String lastName) {
         this.lastName = lastName;
-        eventBus.post(new ParameterChangedEvent(this, "last-name"));
     }
 
     @JIPipeParameter(value = "affiliations-list", uiOrder = 3)
@@ -201,7 +195,6 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
     @JsonSetter("affiliations-list")
     public void setAffiliations(StringList affiliations) {
         this.affiliations = affiliations;
-        eventBus.post(new ParameterChangedEvent(this, "affiliations"));
     }
 
     @JIPipeParameter(value = "contact", uiOrder = 4)
@@ -274,11 +267,6 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
     @Override
     public String toString() {
         return (StringUtils.nullToEmpty(title) + " " + StringUtils.nullToEmpty(firstName) + " " + StringUtils.nullToEmpty(lastName) + (isFirstAuthor() ? "*" : "") + (isCorrespondingAuthor() ? "#" : "")).trim();
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public static class List extends ListParameter<JIPipeAuthorMetadata> {

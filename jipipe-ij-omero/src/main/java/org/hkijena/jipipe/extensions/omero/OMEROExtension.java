@@ -40,17 +40,13 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Provides data types dor handling strings
@@ -86,7 +82,7 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public boolean canActivate(JIPipeIssueReport report, JIPipeProgressInfo progressInfo) {
 
-        String[] classes = new String[] {
+        String[] classes = new String[]{
                 "ome.xml.meta.OMEXMLMetadata",
                 "omero.gateway.SecurityContext",
                 "omero.gateway.LoginCredentials",
@@ -106,7 +102,7 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
             result &= exists;
         }
 
-        if(!result) {
+        if (!result) {
             report.resolve("Check OMERO installation").reportIsInvalid("No working OMERO detected!",
                     "The JIPipe OMERO extension requires a working OMERO installation. Preliminary checks determined that there is none.",
                     "Please install OMERO from the official OMERO website or install the appropriate OMERO plugins via the ImageJ updater.",

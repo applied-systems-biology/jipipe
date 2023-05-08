@@ -79,27 +79,22 @@ public class JIPipeCLI {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            }
-            else if(arg.equals("--output-results")) {
-                if(value.equals("all")) {
+            } else if (arg.equals("--output-results")) {
+                if (value.equals("all")) {
                     saveToDisk = true;
                     saveToDiskOnlyCompartments = false;
-                }
-                else if(value.equals("none")) {
+                } else if (value.equals("none")) {
                     saveToDisk = false;
                     saveToDiskOnlyCompartments = false;
-                }
-                else if(value.equals("only-compartment-outputs")) {
+                } else if (value.equals("only-compartment-outputs")) {
                     saveToDisk = true;
                     saveToDiskOnlyCompartments = true;
-                }
-                else {
+                } else {
                     System.err.println("Unknown disk saving setting: " + value);
                     showHelp();
                     return;
                 }
-            }
-            else if (arg.startsWith("--P")) {
+            } else if (arg.startsWith("--P")) {
                 parameterOverrides.put(arg.substring(3), value);
             } else {
                 System.err.println("Unknown argument: " + arg);
@@ -186,9 +181,9 @@ public class JIPipeCLI {
         settings.setOutputPath(outputFolder);
         settings.setSaveToDisk(saveToDisk);
         settings.setStoreToCache(false);
-        if(saveToDisk && saveToDiskOnlyCompartments) {
+        if (saveToDisk && saveToDiskOnlyCompartments) {
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
-                if(!(graphNode instanceof JIPipeCompartmentOutput)) {
+                if (!(graphNode instanceof JIPipeCompartmentOutput)) {
                     settings.getDisableSaveToDiskNodes().add(graphNode.getUUIDInParentGraph());
                 }
             }

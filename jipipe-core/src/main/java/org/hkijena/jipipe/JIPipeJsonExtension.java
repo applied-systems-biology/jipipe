@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
@@ -32,8 +31,8 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -52,8 +51,7 @@ import java.util.stream.Collectors;
  * A JSON-serializable extension
  */
 @JsonDeserialize(as = JIPipeJsonExtension.class, using = JIPipeJsonExtension.Deserializer.class)
-public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeExtension, JIPipeValidatable {
-    private EventBus eventBus = new EventBus();
+public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection implements JIPipeExtension, JIPipeValidatable {
     private String id;
     private String version = "1.0.0";
     private JIPipeMetadata metadata = new JIPipeMetadata();
@@ -120,11 +118,6 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeExt
     @JsonSetter("metadata")
     public void setMetadata(JIPipeMetadata metadata) {
         this.metadata = metadata;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override
@@ -266,7 +259,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeExt
         if (nodeInfos == null)
             deserializeNodeInfos();
         nodeInfos.add(nodeInfo);
-        eventBus.post(new JIPipe.ExtensionContentAddedEvent(this, nodeInfo));
+        getEventBus().post(new JIPipe.ExtensionContentAddedEvent(this, nodeInfo));
     }
 
     /**
@@ -351,7 +344,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeExt
         if (nodeInfos == null)
             deserializeNodeInfos();
         if (nodeInfos.remove(info)) {
-            eventBus.post(new JIPipe.ExtensionContentRemovedEvent(this, info));
+            getEventBus().post(new JIPipe.ExtensionContentRemovedEvent(this, info));
         }
     }
 

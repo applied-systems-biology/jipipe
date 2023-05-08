@@ -1808,7 +1808,7 @@ public class ImageJUtils {
     public static void removeLUT(ImagePlus image, Set<Integer> channels) {
         ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
         for (int c = 0; c < image.getNChannels(); c++) {
-            if(channels == null || channels.isEmpty() || channels.contains(c)) {
+            if (channels == null || channels.isEmpty() || channels.contains(c)) {
                 for (int z = 0; z < image.getNSlices(); z++) {
                     for (int t = 0; t < image.getNFrames(); t++) {
                         image.setPosition(c + 1, z + 1, t + 1);
@@ -2166,28 +2166,25 @@ public class ImageJUtils {
     public static LUT[] getChannelLUT(ImagePlus image) {
         LUT[] luts = new LUT[image.getNChannels()];
         for (int c = 0; c < image.getNChannels(); c++) {
-            if(image.isComposite()) {
+            if (image.isComposite()) {
                 CompositeImage compositeImage = (CompositeImage) image;
                 LUT lut = compositeImage.getChannelLut(c + 1);
-                if(lut == null) {
+                if (lut == null) {
                     luts[c] = LUT.createLutFromColor(Color.WHITE);
-                }
-                else {
+                } else {
                     luts[c] = lut;
                 }
-            }
-            else {
-                image.setPosition(c + 1, 1,1);
+            } else {
+                image.setPosition(c + 1, 1, 1);
                 LUT lut = image.getProcessor().getLut();
-                if(lut == null) {
+                if (lut == null) {
                     luts[c] = LUT.createLutFromColor(Color.WHITE);
-                }
-                else {
+                } else {
                     luts[c] = lut;
                 }
             }
         }
-        image.setPosition(1,1,1);
+        image.setPosition(1, 1, 1);
         return luts;
     }
 
@@ -2207,7 +2204,7 @@ public class ImageJUtils {
         ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
         for (int c = 0; c < image.getNChannels(); c++) {
             if (channels == null || channels.isEmpty() || channels.contains(c)) {
-                if(image.isComposite()) {
+                if (image.isComposite()) {
                     CompositeImage compositeImage = (CompositeImage) image;
                     compositeImage.setChannelLut(lut, c + 1);
                 }

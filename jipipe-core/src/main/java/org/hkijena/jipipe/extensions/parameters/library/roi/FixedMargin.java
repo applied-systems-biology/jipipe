@@ -15,10 +15,9 @@ package org.hkijena.jipipe.extensions.parameters.library.roi;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
@@ -30,14 +29,13 @@ import java.util.Set;
 /**
  * Related to {@link Margin}, but with fixed-size objects
  */
-public class FixedMargin implements JIPipeParameterCollection {
+public class FixedMargin extends AbstractJIPipeParameterCollection {
     public static final int PARAM_LEFT = 1;
     public static final int PARAM_TOP = 2;
     public static final int PARAM_RIGHT = 4;
     public static final int PARAM_BOTTOM = 8;
     public static final int PARAM_WIDTH = 16;
     public static final int PARAM_HEIGHT = 32;
-    private EventBus eventBus = new EventBus();
     private NumericFunctionExpression left = new NumericFunctionExpression();
     private NumericFunctionExpression top = new NumericFunctionExpression();
     private NumericFunctionExpression right = new NumericFunctionExpression();
@@ -289,11 +287,6 @@ public class FixedMargin implements JIPipeParameterCollection {
             break;
         }
         return result;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

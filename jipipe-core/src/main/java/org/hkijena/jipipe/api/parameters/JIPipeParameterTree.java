@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
  * An {@link JIPipeParameterCollection} that contains all the parameters of one or multiple
  * {@link JIPipeParameterCollection} instances in a traversed form.
  */
-public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCustomParameterCollection {
+public class JIPipeParameterTree extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection {
 
     /**
      * No flags
@@ -56,8 +55,6 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
      * Whether to ignore all custom parameters
      */
     public static final int IGNORE_CUSTOM = 4;
-
-    private final EventBus eventBus = new EventBus();
     private final BiMap<JIPipeParameterCollection, Node> nodeMap = HashBiMap.create();
     private final BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
     private final PriorityQueue<JIPipeParameterAccess> parametersByPriority = new PriorityQueue<>(JIPipeParameterAccess::comparePriority);
@@ -323,7 +320,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         if (event.getVisitors().contains(this))
             return;
         event.getVisitors().add(this);
-        eventBus.post(event);
+        getEventBus().post(event);
     }
 
     /**
@@ -337,7 +334,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         if (event.getVisitors().contains(this))
             return;
         event.getVisitors().add(this);
-        eventBus.post(event);
+        getEventBus().post(event);
     }
 
     /**
@@ -351,12 +348,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         if (event.getVisitors().contains(this))
             return;
         event.getVisitors().add(this);
-        eventBus.post(event);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
+        getEventBus().post(event);
     }
 
     public boolean isIgnoreReflectionParameters() {

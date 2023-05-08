@@ -14,17 +14,14 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 
-public class ImageViewerUIROI2DDisplaySettings implements JIPipeParameterCollection {
+public class ImageViewerUIROI2DDisplaySettings extends AbstractJIPipeParameterCollection {
     public static String ID = "image-viewer-ui-roi-display";
-    private final EventBus eventBus = new EventBus();
-
     private RoiDrawer roiDrawer = new RoiDrawer();
     private boolean showROI = true;
     private boolean renderROIAsOverlay = true;
@@ -66,10 +63,5 @@ public class ImageViewerUIROI2DDisplaySettings implements JIPipeParameterCollect
     @JIPipeParameter("render-roi-as-overlay")
     public void setRenderROIAsOverlay(boolean renderROIAsOverlay) {
         this.renderROIAsOverlay = renderROIAsOverlay;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

@@ -14,17 +14,14 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 
-public class ImageViewerUISpotsDisplaySettings implements JIPipeParameterCollection {
+public class ImageViewerUISpotsDisplaySettings extends AbstractJIPipeParameterCollection {
     public static String ID = "trackmate-image-viewer-ui-spots-display";
-    private final EventBus eventBus = new EventBus();
-
     private SpotDrawer spotDrawer = new SpotDrawer();
     private boolean showSpots = true;
 
@@ -54,10 +51,5 @@ public class ImageViewerUISpotsDisplaySettings implements JIPipeParameterCollect
     @JIPipeParameter("show-spots")
     public void setShowSpots(boolean showSpots) {
         this.showSpots = showSpots;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

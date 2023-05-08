@@ -134,27 +134,27 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
                     boolean matches;
                     switch (operation) {
                         case Equals:
-                            matches = leftIp.getf(x,y) == rightIp.getf(x,y);
+                            matches = leftIp.getf(x, y) == rightIp.getf(x, y);
                             break;
                         case LessThan:
-                            matches = leftIp.getf(x,y) < rightIp.getf(x,y);
+                            matches = leftIp.getf(x, y) < rightIp.getf(x, y);
                             break;
                         case GreaterThan:
-                            matches = leftIp.getf(x,y) > rightIp.getf(x,y);
+                            matches = leftIp.getf(x, y) > rightIp.getf(x, y);
                             break;
                         case LessThanOrEquals:
-                            matches = leftIp.getf(x,y) <= rightIp.getf(x,y);
+                            matches = leftIp.getf(x, y) <= rightIp.getf(x, y);
                             break;
                         case GreaterThanOrEquals:
-                            matches = leftIp.getf(x,y) >= rightIp.getf(x,y);
+                            matches = leftIp.getf(x, y) >= rightIp.getf(x, y);
                             break;
                         default:
                             throw new UnsupportedOperationException();
                     }
-                    if(invert)
+                    if (invert)
                         matches = !matches;
-                    if(matches) {
-                        resultIp.set(x,y,255);
+                    if (matches) {
+                        resultIp.set(x, y, 255);
                     }
                 }
             }

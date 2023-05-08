@@ -13,30 +13,22 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
  */
-public class HistoryJournalSettings implements JIPipeParameterCollection {
+public class HistoryJournalSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "history-journal";
-
-    private final EventBus eventBus = new EventBus();
     private int maxEntries = 50;
 
     public static HistoryJournalSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, HistoryJournalSettings.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Maximum number of entries", description = "Determines how many operations are logged in the " +

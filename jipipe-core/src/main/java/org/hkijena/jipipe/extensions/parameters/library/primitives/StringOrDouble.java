@@ -15,18 +15,15 @@ package org.hkijena.jipipe.extensions.parameters.library.primitives;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
 /**
  * Can either filter a string or a double
  */
-public class StringOrDouble implements JIPipeParameterCollection {
-
-    private EventBus eventBus = new EventBus();
+public class StringOrDouble extends AbstractJIPipeParameterCollection {
     private Mode mode = Mode.Double;
     private String stringValue = "";
     private double doubleValue = 0;
@@ -88,11 +85,6 @@ public class StringOrDouble implements JIPipeParameterCollection {
     public void setDoubleValue(double doubleValue) {
         this.doubleValue = doubleValue;
 
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

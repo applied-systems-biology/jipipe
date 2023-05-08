@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.filter;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.hash.TIntIntHashMap;
@@ -20,8 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -453,9 +452,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.overlapFilterMeasurements = overlapFilterMeasurements;
     }
 
-    public static class LabelFilterSettings implements JIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
-
+    public static class LabelFilterSettings extends AbstractJIPipeParameterCollection {
         private boolean enabled = true;
         private boolean invert = false;
         private boolean outputOverlaps = false;
@@ -475,11 +472,6 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
             this.enforceOverlap = other.enforceOverlap;
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         @JIPipeDocumentation(name = "Overlap filter: enforce overlap", description = "If enabled, a pair of labels is not considered for custom filtering if it does not overlap. Disable this setting if you want to implement special behavior.")

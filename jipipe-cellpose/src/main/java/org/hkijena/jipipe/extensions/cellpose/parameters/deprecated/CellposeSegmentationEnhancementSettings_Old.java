@@ -1,15 +1,12 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
 @Deprecated
-public class CellposeSegmentationEnhancementSettings_Old implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class CellposeSegmentationEnhancementSettings_Old extends AbstractJIPipeParameterCollection {
     private boolean normalize = true;
     private boolean netAverage = true;
     private boolean augment = false;
@@ -26,12 +23,6 @@ public class CellposeSegmentationEnhancementSettings_Old implements JIPipeParame
         this.interpolate = other.interpolate;
         this.anisotropy = new OptionalDoubleParameter(other.anisotropy);
     }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
 
     @JIPipeDocumentation(name = "Normalize", description = "Normalize data so 0.0=1st percentile and 1.0=99th percentile of image intensities in each channel")
     @JIPipeParameter("normalize")

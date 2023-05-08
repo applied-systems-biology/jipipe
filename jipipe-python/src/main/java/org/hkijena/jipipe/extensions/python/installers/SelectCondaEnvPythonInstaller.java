@@ -4,9 +4,9 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -122,17 +122,12 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         }
     }
 
-    public static class Configuration implements JIPipeParameterCollection {
+    public static class Configuration extends AbstractJIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private Path condaExecutable = Paths.get("");
         private String environmentName = "base";
         private OptionalPathParameter overrideEnvironment = new OptionalPathParameter();
         private String name = "Conda";
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
-        }
 
         @JIPipeDocumentation(name = "Conda executable", description = "The conda executable. Located in the Miniconda/Anaconda folder. On Windows it is inside the Scripts directory.")
         @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly, key = FileChooserSettings.LastDirectoryKey.External)

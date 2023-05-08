@@ -2,11 +2,10 @@ package org.hkijena.jipipe.api;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -21,9 +20,8 @@ import java.util.*;
  * Contains the JSON data of a node that can be created by a user for sharing
  * An intermediate between copying a node and a proper plugin.
  */
-public class JIPipeNodeTemplate implements JIPipeParameterCollection {
+public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     public static final String SOURCE_USER = "User";
-    private final EventBus eventBus = new EventBus();
     private String name = "Unnamed template";
     private HTMLText description = new HTMLText();
     private StringList menuPath = new StringList();
@@ -207,11 +205,6 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
             }
         }
         return graph;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override

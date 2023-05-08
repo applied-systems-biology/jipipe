@@ -13,17 +13,15 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 
 /**
  * Groups parameter slot settings
  */
-public class JIPipeParameterSlotAlgorithmSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeParameterSlotAlgorithmSettings extends AbstractJIPipeParameterCollection {
     private boolean hasParameterSlot = false;
     private boolean attachParameterAnnotations = true;
     private boolean attachOnlyNonDefaultParameterAnnotations = true;
@@ -97,10 +95,5 @@ public class JIPipeParameterSlotAlgorithmSettings implements JIPipeParameterColl
     @JIPipeParameter("parameter-annotations-prefix")
     public void setParameterAnnotationsPrefix(String parameterAnnotationsPrefix) {
         this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

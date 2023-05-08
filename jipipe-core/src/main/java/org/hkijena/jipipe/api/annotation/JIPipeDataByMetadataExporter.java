@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.annotation;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,9 +21,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -41,8 +40,7 @@ import java.util.Set;
 /**
  * Class that exports data based on metadata
  */
-public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollection {
     private DefaultExpressionParameter fileNameGenerator = new StringQueryExpression("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
     private boolean forceName = true;
 
@@ -91,11 +89,6 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     @JIPipeParameter("make-filesystem-compatible")
     public void setMakeFilesystemCompatible(boolean makeFilesystemCompatible) {
         this.makeFilesystemCompatible = makeFilesystemCompatible;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

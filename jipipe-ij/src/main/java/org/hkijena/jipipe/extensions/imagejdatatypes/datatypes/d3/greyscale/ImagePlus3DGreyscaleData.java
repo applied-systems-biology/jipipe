@@ -40,6 +40,7 @@ public class ImagePlus3DGreyscaleData extends ImagePlus3DData implements JIPipeD
     public ImagePlus3DGreyscaleData(ImagePlus image) {
         super(ImageJUtils.convertToGreyscaleIfNeeded(image));
     }
+
     public ImagePlus3DGreyscaleData(ImagePlus image, ColorSpace colorSpace) {
         super(ImageJUtils.convertToGreyscaleIfNeeded(image), colorSpace);
     }

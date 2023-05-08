@@ -14,21 +14,18 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import com.google.common.eventbus.EventBus;
 import ij.gui.Roi;
 import ij.plugin.RoiScaler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.awt.*;
 
 /**
  * Parameters to edit ROI and transform {@link Roi} via the settings (no-destructive)
  */
-public class ROIEditor implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class ROIEditor extends AbstractJIPipeParameterCollection {
     private String roiName;
     private double positionX;
     private double positionY;
@@ -56,11 +53,6 @@ public class ROIEditor implements JIPipeParameterCollection {
         this.fillColor = roi.getFillColor() == null ? Color.RED : roi.getFillColor();
         this.lineColor = roi.getStrokeColor() == null ? Color.YELLOW : roi.getStrokeColor();
         this.lineWidth = roi.getStrokeWidth();
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Location (X)", description = "The X location")

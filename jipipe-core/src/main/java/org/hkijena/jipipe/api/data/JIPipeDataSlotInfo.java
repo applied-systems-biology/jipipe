@@ -19,12 +19,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -37,8 +36,7 @@ import java.util.Objects;
  */
 @JsonSerialize(using = JIPipeDataSlotInfo.Serializer.class)
 @JsonDeserialize(using = JIPipeDataSlotInfo.Deserializer.class)
-public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
     private JIPipeDataSlotRole role = JIPipeDataSlotRole.Data;
     private Class<? extends JIPipeData> dataClass;
     private JIPipeSlotType slotType;
@@ -250,7 +248,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     @JIPipeParameter("custom-name")
     public void setCustomName(String customName) {
         this.customName = customName;
-        eventBus.post(new ParameterChangedEvent(this, "custom-name"));
     }
 
     @JIPipeParameter("description")
@@ -325,11 +322,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      */
     public void copyMetadata(JIPipeDataSlotInfo other) {
         setCustomName(other.getCustomName());
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public JIPipeDataSlotRole getRole() {

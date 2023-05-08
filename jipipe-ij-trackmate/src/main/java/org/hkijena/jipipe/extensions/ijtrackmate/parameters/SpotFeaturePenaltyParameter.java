@@ -16,15 +16,12 @@ package org.hkijena.jipipe.extensions.ijtrackmate.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
-public class SpotFeaturePenaltyParameter implements JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class SpotFeaturePenaltyParameter extends AbstractJIPipeParameterCollection {
     private SpotFeature feature;
     private double penalty;
 
@@ -65,11 +62,6 @@ public class SpotFeaturePenaltyParameter implements JIPipeParameterCollection {
     @JsonSetter("penalty")
     public void setPenalty(double penalty) {
         this.penalty = penalty;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public static class List extends ListParameter<SpotFeaturePenaltyParameter> {

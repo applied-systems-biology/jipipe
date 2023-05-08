@@ -13,17 +13,15 @@
 
 package org.hkijena.jipipe.extensions.omero;
 
-import com.google.common.eventbus.EventBus;
 import omero.gateway.LoginCredentials;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
-public class OMEROCredentials implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class OMEROCredentials extends AbstractJIPipeParameterCollection {
     private String host = "localhost";
 
     private int port = 4064;
@@ -38,11 +36,6 @@ public class OMEROCredentials implements JIPipeParameterCollection {
         this.userName = other.userName;
         this.port = other.port;
         this.password = new PasswordParameter(other.password);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Host", description = "The server host. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")

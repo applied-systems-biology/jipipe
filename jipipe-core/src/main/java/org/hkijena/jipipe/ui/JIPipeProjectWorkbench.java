@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
@@ -28,7 +27,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.*;
+import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
+import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
@@ -63,8 +65,8 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
 
-import javax.swing.*;
 import javax.swing.Timer;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
@@ -99,13 +101,12 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private final MemoryOptionsControl memoryOptionsControl;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
     private final NotificationButton notificationButton = new NotificationButton(this);
+    private final Map<JIPipeGraphNode, Timer> algorithmUpdateTimers = new WeakHashMap<>();
     public DocumentTabPane documentTabPane;
     private JLabel statusText;
     private ReloadableValidityChecker validityCheckerPanel;
     private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
-
-    private final Map<JIPipeGraphNode, Timer> algorithmUpdateTimers = new WeakHashMap<>();
 
     /**
      * @param window           Parent window
@@ -284,7 +285,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     public void runUpdateCacheLater(JIPipeGraphNode algorithm) {
         Timer timer = algorithmUpdateTimers.getOrDefault(algorithm, null);
-        if(timer == null) {
+        if (timer == null) {
             timer = new Timer(250, e -> runUpdateCache(algorithm));
             timer.setRepeats(false);
             algorithmUpdateTimers.put(algorithm, timer);

@@ -13,10 +13,9 @@
 
 package org.hkijena.jipipe.ui.quickrun;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -27,8 +26,7 @@ import java.nio.file.Path;
 /**
  * Settings for {@link QuickRun}
  */
-public class QuickRunSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class QuickRunSettings extends AbstractJIPipeParameterCollection {
     private Path outputPath;
     private boolean loadFromCache = true;
     private boolean storeToCache = true;
@@ -44,11 +42,6 @@ public class QuickRunSettings implements JIPipeParameterCollection {
      */
     public QuickRunSettings() {
         outputPath = RuntimeSettings.generateTempDirectory("QuickRun");
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Output path", description = "The path where the results are stored. " +

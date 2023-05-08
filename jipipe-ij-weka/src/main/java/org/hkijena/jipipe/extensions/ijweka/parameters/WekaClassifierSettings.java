@@ -1,12 +1,10 @@
 package org.hkijena.jipipe.extensions.ijweka.parameters;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class WekaClassifierSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class WekaClassifierSettings extends AbstractJIPipeParameterCollection {
     private WekaClassifierParameter classifier = new WekaClassifierParameter();
     private boolean balanceClasses = false;
 
@@ -16,11 +14,6 @@ public class WekaClassifierSettings implements JIPipeParameterCollection {
     public WekaClassifierSettings(WekaClassifierSettings other) {
         this.classifier = new WekaClassifierParameter(other.classifier);
         this.balanceClasses = other.balanceClasses;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Classifier", description = "The selected classifier")

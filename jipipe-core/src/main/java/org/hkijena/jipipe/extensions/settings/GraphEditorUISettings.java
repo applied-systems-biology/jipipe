@@ -13,23 +13,20 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.layout.GraphAutoLayout;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}
  */
-public class GraphEditorUISettings implements JIPipeParameterCollection {
+public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "graph-editor-ui";
-
-    private final EventBus eventBus = new EventBus();
     private final SearchSettings searchSettings = new SearchSettings();
     private final AlgorithmFinderSettings algorithmFinderSettings = new AlgorithmFinderSettings();
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
@@ -173,11 +170,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         this.drawArrowHeads = drawArrowHeads;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     @JIPipeDocumentation(name = "Switch panning direction",
             description = "Changes the direction how panning (middle mouse button) affects the view.")
     @JIPipeParameter("switch-panning-direction")
@@ -304,15 +296,9 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         this.autoLayoutMovesOtherNodes = autoLayoutMovesOtherNodes;
     }
 
-    public static class AlgorithmFinderSettings implements JIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
+    public static class AlgorithmFinderSettings extends AbstractJIPipeParameterCollection {
         private boolean searchFindNewNodes = true;
         private boolean searchFindExistingNodes = true;
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
-        }
 
         @JIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
         @JIPipeParameter("search-find-new-nodes")
@@ -337,17 +323,10 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         }
     }
 
-    public static class SearchSettings implements JIPipeParameterCollection {
-
-        private final EventBus eventBus = new EventBus();
+    public static class SearchSettings extends AbstractJIPipeParameterCollection {
         private boolean enableSearch = true;
         private boolean searchFindNewNodes = true;
         private boolean searchFindExistingNodes = true;
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
-        }
 
         @JIPipeDocumentation(name = "Enable search", description = "If enabled, a search box is shown in the menu bar. Only applies to newly opened editors.")
         @JIPipeParameter("enable-search")

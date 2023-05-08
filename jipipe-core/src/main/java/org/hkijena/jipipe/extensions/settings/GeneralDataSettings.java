@@ -1,16 +1,14 @@
 package org.hkijena.jipipe.extensions.settings;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.IntegerAndIntegerPairParameter;
 
-public class GeneralDataSettings implements JIPipeParameterCollection {
+public class GeneralDataSettings extends AbstractJIPipeParameterCollection {
     public static String ID = "general-data";
-    private final EventBus eventBus = new EventBus();
 
     private boolean autoSaveLastImporter = true;
     private boolean autoSaveLastDisplay = true;
@@ -30,11 +28,6 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
 
     public static GeneralDataSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Remember last results data importer for type",

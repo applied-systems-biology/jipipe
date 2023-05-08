@@ -5,9 +5,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -131,15 +131,10 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         }
     }
 
-    public static class Configuration implements JIPipeParameterCollection {
+    public static class Configuration extends AbstractJIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private Path virtualEnvDirectory = Paths.get("");
         private String name = "Virtual env";
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
-        }
 
         @JIPipeDocumentation(name = "Virtual environment directory", description = "The directory of the virtual environment. It usually contains a file pyvenv.cfg.")
         @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly, key = FileChooserSettings.LastDirectoryKey.External)

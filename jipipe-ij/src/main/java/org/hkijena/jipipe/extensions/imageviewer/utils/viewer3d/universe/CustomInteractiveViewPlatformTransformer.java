@@ -379,7 +379,7 @@ public class CustomInteractiveViewPlatformTransformer {
      * Calculates where the specified point in the vworld space is placed on the
      * canvas and stores the result in the specified Point2d.
      *
-     * @param in the input
+     * @param in  the input
      * @param out the output
      */
     public void pointInCanvas(final Point3d in, final Point2d out) {

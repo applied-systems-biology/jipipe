@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
@@ -31,8 +30,8 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -208,8 +207,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
         return channelColorAssignment;
     }
 
-    public static class Channel implements JIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
+    public static class Channel extends AbstractJIPipeParameterCollection {
         private Color color = Color.RED;
         private double opacity = 0.5;
         private boolean blackToAlpha = true;
@@ -229,11 +227,6 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
         public Channel(Channel other) {
             this.color = other.color;
             this.opacity = other.opacity;
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         @JIPipeDocumentation(name = "Correct for black background")

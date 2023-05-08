@@ -14,7 +14,6 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.utils;
 
-import com.google.common.eventbus.EventBus;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.hyperstack.SpotOverlay;
@@ -22,8 +21,8 @@ import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import org.apache.commons.lang3.Range;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -34,9 +33,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParame
 import java.awt.*;
 import java.util.Collection;
 
-public class SpotDrawer implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class SpotDrawer extends AbstractJIPipeParameterCollection {
     private int strokeWidth = 1;
 
     private Color strokeColor = Color.RED;
@@ -63,11 +60,6 @@ public class SpotDrawer implements JIPipeParameterCollection {
         this.strokeColorFeature = new SpotFeature(other.strokeColorFeature);
         this.labelSettings = new LabelSettings(other.labelSettings);
         this.fillSpots = other.fillSpots;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public DisplaySettings createDisplaySettings(SpotsCollectionData spotsCollectionData) {

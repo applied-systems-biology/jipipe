@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.settings;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
@@ -27,21 +26,14 @@ import java.util.Map;
 /**
  * Additional metadata that provides parameter references for {@link org.hkijena.jipipe.ui.JIPipeProjectInfoUI}
  */
-public class JIPipeProjectInfoParameters implements JIPipeParameterCollection, JIPipeCustomParameterCollection {
+public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection {
 
     public static final String METADATA_KEY = "org.hkijena.jipipe:pipeline-parameters";
-
-    private final EventBus eventBus = new EventBus();
     private JIPipeProject project;
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
     public JIPipeProjectInfoParameters() {
         this.exportedParameters.getEventBus().register(this);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeParameter(value = "exported-parameters", hidden = true)

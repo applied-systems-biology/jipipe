@@ -27,7 +27,7 @@ public class LUTManagerPlugin2D extends GeneralImageViewerPanelPlugin2D {
     @Override
     public void onImageChanged() {
         lutEditors.clear();
-        if(getCurrentImage() != null) {
+        if (getCurrentImage() != null) {
             if (getCurrentImagePlus().getType() == ImagePlus.COLOR_256 || getCurrentImagePlus().getType() == ImagePlus.COLOR_RGB) {
 
             } else {

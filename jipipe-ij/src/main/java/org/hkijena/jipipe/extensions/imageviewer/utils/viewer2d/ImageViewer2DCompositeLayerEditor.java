@@ -12,7 +12,7 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
     private final ImageViewerPanel2D imageViewerPanel;
     private final int targetChannel;
 
-    private final JSlider opacitySlider = new JSlider(0,100, 100);
+    private final JSlider opacitySlider = new JSlider(0, 100, 100);
 
     private final JComboBox<ImageBlendMode> blendModeSelection = new JComboBox<>(ImageBlendMode.values());
 
@@ -46,8 +46,8 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
         priorityDownButton.addActionListener(e -> moveLayerPriorityDown());
         priorityControlsPanel.add(priorityDownButton, BorderLayout.SOUTH);
 
-        priorityControlsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,0,0,4),
-                BorderFactory.createMatteBorder(0,0,0,1,UIManager.getColor("Button.borderColor"))));
+        priorityControlsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4),
+                BorderFactory.createMatteBorder(0, 0, 0, 1, UIManager.getColor("Button.borderColor"))));
 
         add(priorityControlsPanel, BorderLayout.WEST);
 
@@ -60,19 +60,19 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
 
         // Set values from blending
         ImageViewerPanel2D.CompositeLayer layer = imageViewerPanel.getCompositeBlendLayers().getOrDefault(targetChannel, null);
-        if(layer != null) {
+        if (layer != null) {
             opacitySlider.setValue((int) (layer.getOpacity() * 100));
             blendModeSelection.setSelectedItem(layer.getBlendMode());
         }
 
         // Register events
         opacitySlider.addChangeListener(e -> changeLayerOpacity());
-        blendModeSelection.addActionListener( e->changeLayerBlendMode());
+        blendModeSelection.addActionListener(e -> changeLayerBlendMode());
     }
 
     private void changeLayerBlendMode() {
         ImageViewerPanel2D.CompositeLayer layer = imageViewerPanel.getCompositeBlendLayers().getOrDefault(targetChannel, null);
-        if(layer != null) {
+        if (layer != null) {
             layer.setBlendMode((ImageBlendMode) blendModeSelection.getSelectedItem());
             imageViewerPanel.uploadSliceToCanvas();
         }
@@ -80,7 +80,7 @@ public class ImageViewer2DCompositeLayerEditor extends JPanel {
 
     private void changeLayerOpacity() {
         ImageViewerPanel2D.CompositeLayer layer = imageViewerPanel.getCompositeBlendLayers().getOrDefault(targetChannel, null);
-        if(layer != null) {
+        if (layer != null) {
             layer.setOpacity(opacitySlider.getValue() / 100.0);
             imageViewerPanel.uploadSliceToCanvas();
         }

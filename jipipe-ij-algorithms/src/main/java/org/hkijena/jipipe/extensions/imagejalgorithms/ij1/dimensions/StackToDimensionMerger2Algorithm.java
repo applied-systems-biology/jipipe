@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions;
 
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -29,7 +28,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.MergeChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
@@ -51,9 +49,8 @@ import java.util.*;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
 
-    private HyperstackDimension createdDimension = HyperstackDimension.Channel;
-
     private final InputSlotMapParameterCollection orderAssignment;
+    private HyperstackDimension createdDimension = HyperstackDimension.Channel;
 
     /**
      * Instantiates a new node type.
@@ -113,7 +110,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
         }
         orderMap.values().stream().distinct().sorted(Comparator.naturalOrder()).forEach(orderIndex -> {
             for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
-                if(orderMap.get(inputSlot).equals(orderIndex)) {
+                if (orderMap.get(inputSlot).equals(orderIndex)) {
                     inputImages.add(dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage());
                 }
             }
@@ -150,7 +147,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
             for (int c = 0; c < inputImage.getNChannels(); c++) {
                 for (int z = 0; z < inputImage.getNSlices(); z++) {
                     for (int t = 0; t < inputImage.getNFrames(); t++) {
-                        indexMappings.put(new ImageSliceIndex(c + dc, z +dz, t + dt),ImageJUtils.getSliceZero(inputImage, c,z,t));
+                        indexMappings.put(new ImageSliceIndex(c + dc, z + dz, t + dt), ImageJUtils.getSliceZero(inputImage, c, z, t));
                     }
                 }
             }

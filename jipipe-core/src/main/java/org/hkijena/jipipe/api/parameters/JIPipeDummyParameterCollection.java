@@ -13,29 +13,20 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import com.google.common.eventbus.EventBus;
-
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
- * An {@link JIPipeParameterCollection} that stores exactly one value (an object)
+ * A {@link JIPipeParameterCollection} that stores exactly one value (an object)
  * This is used in conjunction with {@link JIPipeManualParameterAccess}
  */
-public class JIPipeDummyParameterCollection implements JIPipeParameterCollection, Consumer<Object>, Supplier<Object> {
-
-    private final EventBus eventBus = new EventBus();
+public class JIPipeDummyParameterCollection extends AbstractJIPipeParameterCollection implements Consumer<Object>, Supplier<Object> {
     private Object value;
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 
     @Override
     public void accept(Object o) {
         this.value = o;
-        eventBus.post(new ParameterChangedEvent(this, "value"));
+        getEventBus().post(new ParameterChangedEvent(this, "value"));
     }
 
     @Override

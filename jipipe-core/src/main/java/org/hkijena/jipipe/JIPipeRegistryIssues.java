@@ -39,7 +39,7 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         for (Map.Entry<String, JIPipeIssueReport> entry : preActivationIssues.entrySet()) {
-            if(!entry.getValue().isValid()) {
+            if (!entry.getValue().isValid()) {
                 report.resolve("Extension checks").resolve(entry.getKey()).mergeWith(entry.getValue());
             }
         }

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -12,8 +11,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -318,9 +317,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.overlapFilterMeasurements = overlapFilterMeasurements;
     }
 
-    public static class ROIFilterSettings implements JIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
-
+    public static class ROIFilterSettings extends AbstractJIPipeParameterCollection {
         private boolean enabled = true;
         private boolean invert = false;
         private boolean outputOverlaps = false;
@@ -344,11 +341,6 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.fastMode = other.fastMode;
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
             this.enforceOverlap = other.enforceOverlap;
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         @JIPipeDocumentation(name = "Overlap filter: enforce overlap", description = "If enabled, a pair of ROI is not considered for custom filtering if it does not overlap. Disable this setting if you want to implement special behavior.")

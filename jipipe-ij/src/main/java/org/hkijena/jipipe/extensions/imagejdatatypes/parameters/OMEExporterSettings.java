@@ -13,14 +13,12 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.parameters;
 
-import com.google.common.eventbus.EventBus;
 import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class OMEExporterSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class OMEExporterSettings extends AbstractJIPipeParameterCollection {
     private boolean splitZ = false;
     private boolean splitC = false;
     private boolean splitT = false;
@@ -43,11 +41,6 @@ public class OMEExporterSettings implements JIPipeParameterCollection {
         this.noLUT = other.noLUT;
         this.compression = other.compression;
         this.dimensionOrder = other.dimensionOrder;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Split Z into files", description = "If enabled, each Z is written into its own file")

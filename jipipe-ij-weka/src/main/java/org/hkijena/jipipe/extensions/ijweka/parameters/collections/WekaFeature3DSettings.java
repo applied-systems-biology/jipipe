@@ -14,18 +14,15 @@
 
 package org.hkijena.jipipe.extensions.ijweka.parameters.collections;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeatureSet3D;
 
 /**
  * Settings related to features
  */
-public class WekaFeature3DSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class WekaFeature3DSettings extends AbstractJIPipeParameterCollection {
     private WekaFeatureSet3D trainingFeatures = new WekaFeatureSet3D();
     /**
      * use neighborhood flag
@@ -130,8 +127,4 @@ public class WekaFeature3DSettings implements JIPipeParameterCollection {
         this.trainingFeatures = trainingFeatures;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 }

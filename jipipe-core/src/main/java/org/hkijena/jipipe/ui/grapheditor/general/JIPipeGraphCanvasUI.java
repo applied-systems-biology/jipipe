@@ -660,7 +660,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                      */
                     if (currentConnectionDragTarget != null && currentConnectionDragTarget.getNodeUI() == nodeUI) {
                         JIPipeNodeUIActiveArea addSlotState = nodeUI.pickAddSlotAtMousePosition(mouseEvent);
-                        if(addSlotState == null) {
+                        if (addSlotState == null) {
                             JIPipeNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(mouseEvent);
                             if (slotState != null && slotState.getSlot().isInput() != currentConnectionDragSource_.getSlot().isInput()) {
                                 setCurrentConnectionDragTarget(slotState);
@@ -685,22 +685,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     /*
                     Snap to "create input"
                      */
-                    if(!snapped) {
+                    if (!snapped) {
                         JIPipeNodeUIActiveArea slotState = nodeUI.pickAddSlotAtMousePosition(mouseEvent);
-                        if(currentConnectionDragSource_.isOutput() && slotState != null && slotState == nodeUI.getAddInputSlotArea()) {
+                        if (currentConnectionDragSource_.isOutput() && slotState != null && slotState == nodeUI.getAddInputSlotArea()) {
                             setCurrentConnectionDragTarget(slotState);
                             snapped = true;
-                        }
-                        else if(currentConnectionDragSource_.isInput() && slotState != null && slotState == nodeUI.getAddOutputSlotArea()) {
+                        } else if (currentConnectionDragSource_.isInput() && slotState != null && slotState == nodeUI.getAddOutputSlotArea()) {
                             setCurrentConnectionDragTarget(slotState);
                             snapped = true;
-                        }
-                        else {
+                        } else {
                             setCurrentConnectionDragTarget(null);
                         }
                     }
-                }
-                else {
+                } else {
                     // TODO?
                 }
 
@@ -1123,7 +1120,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         } else {
             if (currentConnectionDragSource instanceof JIPipeNodeUISlotActiveArea && currentConnectionDragTarget instanceof JIPipeNodeUISlotActiveArea) {
                 connectOrDisconnectSlots(((JIPipeNodeUISlotActiveArea) currentConnectionDragSource).getSlot(), ((JIPipeNodeUISlotActiveArea) currentConnectionDragTarget).getSlot());
-            } else if(currentConnectionDragSource instanceof JIPipeNodeUISlotActiveArea && currentConnectionDragTarget instanceof JIPipeNodeUIAddSlotButtonActiveArea) {
+            } else if (currentConnectionDragSource instanceof JIPipeNodeUISlotActiveArea && currentConnectionDragTarget instanceof JIPipeNodeUIAddSlotButtonActiveArea) {
                 connectCreateNewSlot(((JIPipeNodeUISlotActiveArea) currentConnectionDragSource).getSlot(), currentConnectionDragTarget.getNodeUI());
             }
             stopAllDragging();
@@ -1182,27 +1179,24 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         Class<? extends JIPipeData> sourceSlotType = sourceSlot.getAcceptedDataType();
         if (addedSlotType == JIPipeSlotType.Input) {
-            availableTypes.removeIf(info ->  !JIPipe.getDataTypes().isConvertible(sourceSlotType, info.getDataClass()));
-        }
-        else {
-            availableTypes.removeIf(info ->  !JIPipe.getDataTypes().isConvertible(info.getDataClass(), sourceSlotType));
+            availableTypes.removeIf(info -> !JIPipe.getDataTypes().isConvertible(sourceSlotType, info.getDataClass()));
+        } else {
+            availableTypes.removeIf(info -> !JIPipe.getDataTypes().isConvertible(info.getDataClass(), sourceSlotType));
         }
 
-        if(availableTypes.isEmpty()) {
+        if (availableTypes.isEmpty()) {
             JOptionPane.showMessageDialog(getWorkbench().getWindow(),
                     "There is no possibility to create a compatible slot for the data.", "Incompatible node", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         JIPipeDataInfo selectedInfo;
-        if(availableTypes.contains(JIPipeDataInfo.getInstance(sourceSlot.getAcceptedDataType()))) {
+        if (availableTypes.contains(JIPipeDataInfo.getInstance(sourceSlot.getAcceptedDataType()))) {
             selectedInfo = JIPipeDataInfo.getInstance(sourceSlot.getAcceptedDataType());
-        }
-        else {
+        } else {
             if (addedSlotType == JIPipeSlotType.Input) {
                 selectedInfo = availableTypes.stream().min(Comparator.comparing(info -> JIPipe.getDataTypes().getConversionDistance(sourceSlotType, info.getDataClass()))).get();
-            }
-            else {
+            } else {
                 selectedInfo = availableTypes.stream().min(Comparator.comparing(info -> JIPipe.getDataTypes().getConversionDistance(info.getDataClass(), sourceSlotType))).get();
             }
         }
@@ -1225,11 +1219,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         });
         dialog.setVisible(true);
 
-        if(!panel.getAddedSlots().isEmpty()) {
+        if (!panel.getAddedSlots().isEmpty()) {
             if (addedSlotType == JIPipeSlotType.Input) {
                 connectSlot(sourceSlot, panel.getAddedSlots().get(0));
-            }
-            else{
+            } else {
                 connectSlot(panel.getAddedSlots().get(0), sourceSlot);
             }
         }

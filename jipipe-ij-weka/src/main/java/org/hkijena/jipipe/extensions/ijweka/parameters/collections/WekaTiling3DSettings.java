@@ -14,14 +14,11 @@
 
 package org.hkijena.jipipe.extensions.ijweka.parameters.collections;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class WekaTiling3DSettings implements JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class WekaTiling3DSettings extends AbstractJIPipeParameterCollection {
     private boolean applyTiling = true;
 
     private int tileSizeX = 64;
@@ -83,10 +80,5 @@ public class WekaTiling3DSettings implements JIPipeParameterCollection {
     @JIPipeParameter("tile-size-z")
     public void setTileSizeZ(int tileSizeZ) {
         this.tileSizeZ = tileSizeZ;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

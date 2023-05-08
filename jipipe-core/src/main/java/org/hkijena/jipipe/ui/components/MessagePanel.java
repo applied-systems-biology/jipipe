@@ -108,12 +108,12 @@ public class MessagePanel extends FormPanel {
                 if (actionButton != null) {
                     buttonPanel.add(Box.createHorizontalStrut(8));
                     buttonPanel.add(actionButton);
-                    if(autoClose) {
+                    if (autoClose) {
                         actionButton.addActionListener(e -> closeMessage());
                     }
                 }
             }
-            if(withCloseButton) {
+            if (withCloseButton) {
                 JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
                 UIUtils.makeFlat25x25(closeButton);
                 closeButton.addActionListener(e -> {

@@ -4,9 +4,9 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -111,15 +111,10 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         }
     }
 
-    public static class Configuration implements JIPipeParameterCollection {
+    public static class Configuration extends AbstractJIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private Path pythonExecutable = Paths.get("");
         private String name = "System";
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
-        }
 
         @JIPipeDocumentation(name = "Python executable", description = "The executable of the system Python. " +
                 "On Windows this is usually %appdata%\\..\\Local\\Programs\\Python\\PythonXX\\python.exe (XX is the Python version). " +

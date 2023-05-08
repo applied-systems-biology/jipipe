@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins3d;
 
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
-import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;

@@ -139,7 +139,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
         ImagePlus currentImage = getCalibrationPlugin().getCurrentImagePlus();
 
         // Selectable value update
-        if(currentImage != null) {
+        if (currentImage != null) {
             if (lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
                 double min;
                 double max;
@@ -367,7 +367,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
             g.setColor(UIManager.getColor("Label.foreground"));
 
             DecimalFormat format;
-            if(displayRangeControl.getCalibrationPlugin().getCurrentImagePlus() == null) {
+            if (displayRangeControl.getCalibrationPlugin().getCurrentImagePlus() == null) {
                 return;
             }
             if (displayRangeControl.calibrationPlugin.getCurrentImagePlus().getType() == ImagePlus.GRAY32) {

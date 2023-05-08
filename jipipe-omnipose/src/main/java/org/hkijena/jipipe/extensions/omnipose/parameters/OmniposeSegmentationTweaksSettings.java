@@ -1,14 +1,11 @@
 package org.hkijena.jipipe.extensions.omnipose.parameters;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-public class OmniposeSegmentationTweaksSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class OmniposeSegmentationTweaksSettings extends AbstractJIPipeParameterCollection {
     private boolean netAverage = true;
     private boolean interpolate = true;
     private OptionalDoubleParameter anisotropy = new OptionalDoubleParameter(1.0, false);
@@ -28,11 +25,6 @@ public class OmniposeSegmentationTweaksSettings implements JIPipeParameterCollec
         this.disableResample = other.disableResample;
         this.cluster = other.cluster;
         this.fastMode = other.fastMode;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Fast mode", description = "disable dynamics on full image (makes algorithm faster for images with large diameters)")

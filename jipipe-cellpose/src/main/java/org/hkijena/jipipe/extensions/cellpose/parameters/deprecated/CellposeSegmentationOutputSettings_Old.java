@@ -1,17 +1,14 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.cellpose.algorithms.deprecated.CellposeAlgorithm_Old;
 
 /**
  * @deprecated Used by the old {@link CellposeAlgorithm_Old}
  */
-public class CellposeSegmentationOutputSettings_Old implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
-
+public class CellposeSegmentationOutputSettings_Old extends AbstractJIPipeParameterCollection {
     private boolean outputLabels = false;
     private boolean outputFlows = false;
     private boolean outputProbabilities = false;
@@ -82,10 +79,5 @@ public class CellposeSegmentationOutputSettings_Old implements JIPipeParameterCo
     @JIPipeParameter("output-roi")
     public void setOutputROI(boolean outputROI) {
         this.outputROI = outputROI;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

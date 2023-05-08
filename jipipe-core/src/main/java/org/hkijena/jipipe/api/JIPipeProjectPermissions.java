@@ -2,12 +2,10 @@ package org.hkijena.jipipe.api;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class JIPipeProjectPermissions implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeProjectPermissions extends AbstractJIPipeParameterCollection {
     private boolean preventAddingDeletingNodes = false;
     private boolean preventModifyingSlots = false;
 
@@ -36,10 +34,5 @@ public class JIPipeProjectPermissions implements JIPipeParameterCollection {
     @JsonSetter("prevent-modifying-slots")
     public void setPreventModifyingSlots(boolean preventModifyingSlots) {
         this.preventModifyingSlots = preventModifyingSlots;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

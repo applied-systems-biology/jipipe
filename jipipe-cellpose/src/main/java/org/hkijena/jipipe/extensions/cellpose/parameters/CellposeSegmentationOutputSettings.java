@@ -1,12 +1,10 @@
 package org.hkijena.jipipe.extensions.cellpose.parameters;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class CellposeSegmentationOutputSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class CellposeSegmentationOutputSettings extends AbstractJIPipeParameterCollection {
 
     private boolean outputLabels = true;
     private boolean outputFlowsXY = false;
@@ -95,8 +93,4 @@ public class CellposeSegmentationOutputSettings implements JIPipeParameterCollec
         this.outputFlowsD = outputFlowsD;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 }

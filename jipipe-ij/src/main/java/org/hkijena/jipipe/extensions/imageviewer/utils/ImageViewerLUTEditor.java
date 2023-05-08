@@ -134,11 +134,11 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
         JPanel leftLabel = new JPanel(new BorderLayout());
 
         JLabel channelLabel = new JLabel("C" + (targetChannel + 1));
-        channelLabel.setBorder(BorderFactory.createEmptyBorder(0,2,0,4));
+        channelLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 4));
         channelLabel.setHorizontalAlignment(SwingConstants.CENTER);
         leftLabel.add(channelLabel, BorderLayout.CENTER);
-        leftLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0,0,0,4),
-                BorderFactory.createMatteBorder(0,0,0,1,UIManager.getColor("Button.borderColor"))));
+        leftLabel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4),
+                BorderFactory.createMatteBorder(0, 0, 0, 1, UIManager.getColor("Button.borderColor"))));
 
         add(leftLabel, BorderLayout.WEST);
 

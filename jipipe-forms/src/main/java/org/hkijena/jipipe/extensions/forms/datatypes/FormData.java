@@ -15,6 +15,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
@@ -185,8 +186,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
         }
     }
 
-    public static class TabSettings implements JIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
+    public static class TabSettings extends AbstractJIPipeParameterCollection {
         private String tab = "General";
         private OptionalAnnotationNameParameter tabAnnotation = new OptionalAnnotationNameParameter("Tab", true);
 
@@ -196,11 +196,6 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
         public TabSettings(TabSettings other) {
             this.tab = other.tab;
             this.tabAnnotation = new OptionalAnnotationNameParameter(other.tabAnnotation);
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         @JIPipeDocumentation(name = "Tab", description = "The tab where this form data will appear in.")

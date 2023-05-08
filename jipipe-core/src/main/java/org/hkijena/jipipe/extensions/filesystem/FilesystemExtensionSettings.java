@@ -1,21 +1,17 @@
 package org.hkijena.jipipe.extensions.filesystem;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 /**
  * Settings for Filesystem.
  * Stored in the core library for drag and drop reasons
  */
-public class FilesystemExtensionSettings implements JIPipeParameterCollection {
+public class FilesystemExtensionSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:filesystem";
-
-    private final EventBus eventBus = new EventBus();
-
     private boolean relativizePaths = true;
     private boolean autoLabelOutputWithFileName = true;
 
@@ -27,11 +23,6 @@ public class FilesystemExtensionSettings implements JIPipeParameterCollection {
             return JIPipe.getSettings().getSettings(ID, FilesystemExtensionSettings.class);
         else
             return null;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeParameter("relativize-paths")
