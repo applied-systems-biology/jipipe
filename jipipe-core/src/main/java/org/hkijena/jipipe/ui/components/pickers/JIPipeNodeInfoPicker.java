@@ -16,6 +16,8 @@ package org.hkijena.jipipe.ui.components.pickers;
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.components.MultiSelectionModel;
 import org.hkijena.jipipe.ui.components.SingleSelectionModel;
@@ -36,7 +38,10 @@ import java.util.stream.Collectors;
  * Panel that allows to pick {@link JIPipeNodeInfo}
  */
 public class JIPipeNodeInfoPicker extends JPanel {
-    private final EventBus eventBus = new EventBus();
+
+    private final NodeInfoDeselectedEventEmitter nodeInfoDeselectedEventEmitter = new NodeInfoDeselectedEventEmitter();
+    private final NodeInfoSelectedEventEmitter nodeInfoSelectedEventEmitter = new NodeInfoSelectedEventEmitter();
+    private final SelectedInfosChangedEventEmitter selectedInfosChangedEventEmitter = new SelectedInfosChangedEventEmitter();
     private final Set<JIPipeNodeInfo> hiddenItems = new HashSet<>();
     private final List<JIPipeNodeInfo> availableInfos;
     boolean reloading = false;
@@ -139,6 +144,18 @@ public class JIPipeNodeInfoPicker extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
+    public NodeInfoDeselectedEventEmitter getNodeInfoDeselectedEventEmitter() {
+        return nodeInfoDeselectedEventEmitter;
+    }
+
+    public NodeInfoSelectedEventEmitter getNodeInfoSelectedEventEmitter() {
+        return nodeInfoSelectedEventEmitter;
+    }
+
+    public SelectedInfosChangedEventEmitter getSelectedInfosChangedEventEmitter() {
+        return selectedInfosChangedEventEmitter;
+    }
+
     private void updateSelection() {
         if (reloading)
             return;
@@ -151,19 +168,19 @@ public class JIPipeNodeInfoPicker extends JPanel {
             if (uiSelected != modelSelected) {
                 if (modelSelected) {
                     selectedInfos.remove(nodeInfo);
-                    eventBus.post(new AlgorithmDeselectedEvent(this, nodeInfo));
+                    nodeInfoDeselectedEventEmitter.emit(new NodeInfoDeselectedEvent(this, nodeInfo));
                     changed = true;
                 }
                 if (uiSelected) {
                     selectedInfos.add(nodeInfo);
-                    eventBus.post(new NodeSelectedEvent(this, nodeInfo));
+                    nodeInfoSelectedEventEmitter.emit(new NodeInfoSelectedEvent(this, nodeInfo));
                     changed = true;
                 }
             }
         }
 
         if (changed) {
-            eventBus.post(new SelectedInfosChangedEvent(this));
+            selectedInfosChangedEventEmitter.emit(new SelectedInfosChangedEvent(this));
         }
     }
 
@@ -217,10 +234,6 @@ public class JIPipeNodeInfoPicker extends JPanel {
         return searchStrings;
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     public Mode getMode() {
         return mode;
     }
@@ -236,7 +249,7 @@ public class JIPipeNodeInfoPicker extends JPanel {
 
     public void setSelectedInfos(Set<JIPipeNodeInfo> nodeInfos) {
         this.selectedInfos = new HashSet<>(nodeInfos);
-        eventBus.post(new SelectedInfosChangedEvent(this));
+        selectedInfosChangedEventEmitter.emit(new SelectedInfosChangedEvent(this));
         refreshNodeInfoList();
     }
 
@@ -247,24 +260,6 @@ public class JIPipeNodeInfoPicker extends JPanel {
         NonInteractive,
         Single,
         Multiple
-    }
-
-    /**
-     * Generated when a node is selected
-     */
-    public static class SelectedInfosChangedEvent {
-        private JIPipeNodeInfoPicker picker;
-
-        /**
-         * @param picker event source
-         */
-        public SelectedInfosChangedEvent(JIPipeNodeInfoPicker picker) {
-            this.picker = picker;
-        }
-
-        public JIPipeNodeInfoPicker getPicker() {
-            return picker;
-        }
     }
 
     /**
@@ -300,7 +295,38 @@ public class JIPipeNodeInfoPicker extends JPanel {
     /**
      * Generated when a node is selected
      */
-    public static class NodeSelectedEvent {
+    public static class SelectedInfosChangedEvent extends AbstractJIPipeEvent {
+        private JIPipeNodeInfoPicker picker;
+
+        /**
+         * @param picker event source
+         */
+        public SelectedInfosChangedEvent(JIPipeNodeInfoPicker picker) {
+            super(picker);
+            this.picker = picker;
+        }
+
+        public JIPipeNodeInfoPicker getPicker() {
+            return picker;
+        }
+    }
+
+    public interface SelectedInfosChangedEventListener {
+        void onNodeInfoPickerSelectedInfosChanged(SelectedInfosChangedEvent event);
+    }
+
+    public static class SelectedInfosChangedEventEmitter extends JIPipeEventEmitter<SelectedInfosChangedEvent, SelectedInfosChangedEventListener> {
+
+        @Override
+        protected void call(SelectedInfosChangedEventListener selectedInfosChangedEventListener, SelectedInfosChangedEvent event) {
+            selectedInfosChangedEventListener.onNodeInfoPickerSelectedInfosChanged(event);
+        }
+    }
+
+    /**
+     * Generated when a node is selected
+     */
+    public static class NodeInfoSelectedEvent extends AbstractJIPipeEvent {
         private JIPipeNodeInfoPicker picker;
         private JIPipeNodeInfo info;
 
@@ -308,7 +334,8 @@ public class JIPipeNodeInfoPicker extends JPanel {
          * @param picker event source
          * @param info   picked node
          */
-        public NodeSelectedEvent(JIPipeNodeInfoPicker picker, JIPipeNodeInfo info) {
+        public NodeInfoSelectedEvent(JIPipeNodeInfoPicker picker, JIPipeNodeInfo info) {
+            super(picker);
             this.picker = picker;
             this.info = info;
         }
@@ -322,10 +349,22 @@ public class JIPipeNodeInfoPicker extends JPanel {
         }
     }
 
+    public interface NodeInfoSelectedEventListener {
+        void onNodeInfoPickerNodeInfoSelectedEvent(NodeInfoSelectedEvent event);
+    }
+
+    public static class NodeInfoSelectedEventEmitter extends JIPipeEventEmitter<NodeInfoSelectedEvent, NodeInfoSelectedEventListener> {
+
+        @Override
+        protected void call(NodeInfoSelectedEventListener nodeInfoSelectedEventListener, NodeInfoSelectedEvent event) {
+            nodeInfoSelectedEventListener.onNodeInfoPickerNodeInfoSelectedEvent(event);
+        }
+    }
+
     /**
      * Generated when a node is deselected
      */
-    public static class AlgorithmDeselectedEvent {
+    public static class NodeInfoDeselectedEvent extends AbstractJIPipeEvent {
         private JIPipeNodeInfoPicker picker;
         private JIPipeNodeInfo info;
 
@@ -333,7 +372,8 @@ public class JIPipeNodeInfoPicker extends JPanel {
          * @param picker event source
          * @param info   deselected node
          */
-        public AlgorithmDeselectedEvent(JIPipeNodeInfoPicker picker, JIPipeNodeInfo info) {
+        public NodeInfoDeselectedEvent(JIPipeNodeInfoPicker picker, JIPipeNodeInfo info) {
+            super(picker);
             this.picker = picker;
             this.info = info;
         }
@@ -347,4 +387,15 @@ public class JIPipeNodeInfoPicker extends JPanel {
         }
     }
 
+    public interface NodeInfoDeselectedEventListener {
+        void onNodeInfoPickerNodeInfoDeselectedEvent(NodeInfoDeselectedEvent event);
+    }
+
+    public static class NodeInfoDeselectedEventEmitter extends JIPipeEventEmitter<NodeInfoDeselectedEvent, NodeInfoDeselectedEventListener> {
+
+        @Override
+        protected void call(NodeInfoDeselectedEventListener nodeInfoDeselectedEventListener, NodeInfoDeselectedEvent event) {
+            nodeInfoDeselectedEventListener.onNodeInfoPickerNodeInfoDeselectedEvent(event);
+        }
+    }
 }

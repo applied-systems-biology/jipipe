@@ -63,6 +63,11 @@ public class JIPipeExtensionRegistry {
     private Settings settings = new Settings();
     private DefaultDirectedGraph<JIPipeDependency, DefaultEdge> dependencyGraph;
 
+    private final ScheduledDeactivateExtensionEventEmitter scheduledDeactivateExtensionEventEmitter = new ScheduledDeactivateExtensionEventEmitter();
+
+    private final ScheduledActivateExtensionEventEmitter scheduledActivateExtensionEventEmitter = new ScheduledActivateExtensionEventEmitter();
+
+
     public JIPipeExtensionRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
     }
@@ -112,6 +117,14 @@ public class JIPipeExtensionRegistry {
         if (!Files.isRegularFile(getPropertyFile())) {
             save();
         }
+    }
+
+    public ScheduledDeactivateExtensionEventEmitter getScheduledDeactivateExtensionEventEmitter() {
+        return scheduledDeactivateExtensionEventEmitter;
+    }
+
+    public ScheduledActivateExtensionEventEmitter getScheduledActivateExtensionEventEmitter() {
+        return scheduledActivateExtensionEventEmitter;
     }
 
     /**
@@ -244,7 +257,7 @@ public class JIPipeExtensionRegistry {
         }
         save();
         for (String s : ids) {
-            eventBus.post(new ScheduledActivateExtensionEvent(s));
+            scheduledActivateExtensionEventEmitter.emit(new ScheduledActivateExtensionEvent(this, s));
         }
     }
 
@@ -261,7 +274,7 @@ public class JIPipeExtensionRegistry {
         }
         save();
         for (String s : ids) {
-            eventBus.post(new ScheduledDeactivateExtensionEvent(id));
+            scheduledDeactivateExtensionEventEmitter.emit(new ScheduledDeactivateExtensionEvent(this, id));
         }
     }
 
@@ -438,6 +451,18 @@ public class JIPipeExtensionRegistry {
 
         public String getExtensionId() {
             return extensionId;
+        }
+    }
+
+    public interface ScheduledDeactivateExtensionEventListener {
+        void onScheduledDeactivateExtension(ScheduledDeactivateExtensionEvent event);
+    }
+
+    public static class ScheduledDeactivateExtensionEventEmitter extends JIPipeEventEmitter<ScheduledDeactivateExtensionEvent, ScheduledDeactivateExtensionEventListener> {
+
+        @Override
+        protected void call(ScheduledDeactivateExtensionEventListener scheduledDeactivateExtensionEventListener, ScheduledDeactivateExtensionEvent event) {
+            scheduledDeactivateExtensionEventListener.onScheduledDeactivateExtension(event);
         }
     }
 

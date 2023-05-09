@@ -25,6 +25,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -41,12 +43,12 @@ import java.util.function.Supplier;
 @JsonSerialize(using = ParameterTable.Serializer.class)
 @JsonDeserialize(using = ParameterTable.Deserializer.class)
 public class ParameterTable implements TableModel {
-
-    private final EventBus eventBus = new EventBus();
     private List<ParameterColumn> columns = new ArrayList<>();
     private List<List<Object>> rows = new ArrayList<>();
     private List<TableModelListener> listeners = new ArrayList<>();
     private Supplier<List<Object>> rowGenerator;
+
+    private final ModelChangedEventEmitter modelChangedEventEmitter = new ModelChangedEventEmitter();
 
     /**
      * Creates a new table
@@ -74,6 +76,10 @@ public class ParameterTable implements TableModel {
             }
             this.rows.add(thisRow);
         }
+    }
+
+    public ModelChangedEventEmitter getModelChangedEventEmitter() {
+        return modelChangedEventEmitter;
     }
 
     /**
@@ -151,7 +157,7 @@ public class ParameterTable implements TableModel {
 //        for (TableModelListener listener : listeners) {
 //            listener.tableChanged(new TableModelEvent(this));
 //        }
-        eventBus.post(new TableModelEvent(this));
+        modelChangedEventEmitter.emit(new ModelChangedEvent(this, new TableModelEvent(this)));
     }
 
     /**
@@ -228,10 +234,6 @@ public class ParameterTable implements TableModel {
             row.remove(col);
         }
         postTableModelChangedEvent();
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public boolean containsColumn(String column) {
@@ -399,6 +401,37 @@ public class ParameterTable implements TableModel {
             }
 
             return table;
+        }
+    }
+
+    public static class ModelChangedEvent extends AbstractJIPipeEvent {
+        private final ParameterTable parameterTable;
+        private final TableModelEvent tableModelEvent;
+
+        public ModelChangedEvent(ParameterTable parameterTable, TableModelEvent tableModelEvent) {
+            super(parameterTable);
+            this.parameterTable = parameterTable;
+            this.tableModelEvent = tableModelEvent;
+        }
+
+        public ParameterTable getParameterTable() {
+            return parameterTable;
+        }
+
+        public TableModelEvent getTableModelEvent() {
+            return tableModelEvent;
+        }
+    }
+
+    public interface ModelChangedEventListener {
+        void onParameterTableModelChangedEvent(ModelChangedEvent event);
+    }
+
+    public static class ModelChangedEventEmitter extends JIPipeEventEmitter<ModelChangedEvent, ModelChangedEventListener> {
+
+        @Override
+        protected void call(ModelChangedEventListener modelChangedEventListener, ModelChangedEvent event) {
+            modelChangedEventListener.onParameterTableModelChangedEvent(event);
         }
     }
 }

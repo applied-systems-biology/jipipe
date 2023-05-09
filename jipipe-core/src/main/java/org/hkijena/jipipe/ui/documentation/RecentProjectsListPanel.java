@@ -2,6 +2,9 @@ package org.hkijena.jipipe.ui.documentation;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
@@ -16,15 +19,15 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 
-public class RecentProjectsListPanel extends JIPipeProjectWorkbenchPanel {
+public class RecentProjectsListPanel extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
+    private final ProjectOpenedEventEmitter projectOpenedEventEmitter = new ProjectOpenedEventEmitter();
     private final SearchTextField recentProjectsSearch = new SearchTextField();
     private final JList<Path> recentProjectsList = new JList<>();
-    private final EventBus eventBus = new EventBus();
 
     public RecentProjectsListPanel(JIPipeProjectWorkbench workbench) {
         super(workbench);
         initialize();
-        ProjectsSettings.getInstance().getEventBus().register(this);
+        ProjectsSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
         refreshRecentProjects();
     }
 
@@ -38,14 +41,14 @@ public class RecentProjectsListPanel extends JIPipeProjectWorkbenchPanel {
                 if (e.getClickCount() == 2) {
                     Path value = recentProjectsList.getSelectedValue();
                     if (value != null) {
-                        eventBus.post(new ProjectOpenedEvent(value));
+                        projectOpenedEventEmitter.emit(new ProjectOpenedEvent(value));
                         ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
                     }
                 } else {
                     if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
                         Path value = recentProjectsList.getSelectedValue();
                         if (value != null) {
-                            eventBus.post(new ProjectOpenedEvent(value));
+                            projectOpenedEventEmitter.emit(new ProjectOpenedEvent(value));
                             ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
                         }
                     }
@@ -73,27 +76,39 @@ public class RecentProjectsListPanel extends JIPipeProjectWorkbenchPanel {
         recentProjectsList.setModel(model);
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    @Subscribe
-    public void onRecentProjectsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-projects".equals(event.getKey())) {
             refreshRecentProjects();
         }
     }
 
-    public static class ProjectOpenedEvent {
+    public ProjectOpenedEventEmitter getProjectOpenedEventEmitter() {
+        return projectOpenedEventEmitter;
+    }
+
+    public static class ProjectOpenedEvent extends AbstractJIPipeEvent {
         private final Path projectPath;
 
         public ProjectOpenedEvent(Path projectPath) {
-
+            super(null);
             this.projectPath = projectPath;
         }
 
         public Path getProjectPath() {
             return projectPath;
+        }
+    }
+
+    public interface ProjectOpenedEventListener {
+        void onRecentProjectListProjectOpened(ProjectOpenedEvent event);
+    }
+
+    public static class ProjectOpenedEventEmitter extends JIPipeEventEmitter<ProjectOpenedEvent, ProjectOpenedEventListener> {
+
+        @Override
+        protected void call(ProjectOpenedEventListener projectOpenedEventListener, ProjectOpenedEvent event) {
+            projectOpenedEventListener.onRecentProjectListProjectOpened(event);
         }
     }
 }

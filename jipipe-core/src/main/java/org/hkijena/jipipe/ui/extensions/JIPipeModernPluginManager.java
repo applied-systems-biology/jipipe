@@ -26,6 +26,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.ijupdater.ConflictDialog;
@@ -43,8 +45,8 @@ import java.util.*;
 
 public class JIPipeModernPluginManager {
 
-    private final EventBus eventBus = new EventBus();
-
+    private final UpdateSitesReadyEventEmitter updateSitesReadyEventEmitter = new UpdateSitesReadyEventEmitter();
+    private final UpdateSitesFailedEventEmitter updateSitesFailedEventEmitter = new UpdateSitesFailedEventEmitter();
     private final Component parent;
 
     private final MessagePanel messagePanel;
@@ -63,6 +65,14 @@ public class JIPipeModernPluginManager {
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
 
         updateMessagePanel();
+    }
+
+    public UpdateSitesReadyEventEmitter getUpdateSitesReadyEventEmitter() {
+        return updateSitesReadyEventEmitter;
+    }
+
+    public UpdateSitesFailedEventEmitter getUpdateSitesFailedEventEmitter() {
+        return updateSitesFailedEventEmitter;
     }
 
     private JIPipeExtensionRegistry getExtensionRegistry() {
@@ -160,7 +170,7 @@ public class JIPipeModernPluginManager {
 
     private void onFailure() {
         removeUpdateSiteMessage();
-        eventBus.post(new UpdateSitesFailedEvent(this));
+        updateSitesFailedEventEmitter.emit(new UpdateSitesFailedEvent(this));
     }
 
     private void onSuccess() {
@@ -168,7 +178,7 @@ public class JIPipeModernPluginManager {
         removeUpdateSiteMessage();
         createUpdateSitesWrappers();
         resolveConflicts();
-        eventBus.post(new UpdateSitesReadyEvent(this));
+        updateSitesReadyEventEmitter.emit(new UpdateSitesReadyEvent(this));
     }
 
     private void removeUpdateSiteMessage() {
@@ -176,10 +186,6 @@ public class JIPipeModernPluginManager {
             messagePanel.removeMessage(updateSiteMessage);
             updateSiteMessage = null;
         }
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public MessagePanel getMessagePanel() {
@@ -374,10 +380,11 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    public static class UpdateSitesReadyEvent {
+    public static class UpdateSitesReadyEvent extends AbstractJIPipeEvent {
         private final JIPipeModernPluginManager pluginManager;
 
         public UpdateSitesReadyEvent(JIPipeModernPluginManager pluginManager) {
+            super(pluginManager);
             this.pluginManager = pluginManager;
         }
 
@@ -386,15 +393,39 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    public static class UpdateSitesFailedEvent {
+    public interface UpdateSitesReadyEventListener {
+        void onPluginManagerUpdateSitesReady(UpdateSitesReadyEvent event);
+    }
+
+    public static class UpdateSitesReadyEventEmitter extends JIPipeEventEmitter<UpdateSitesReadyEvent, UpdateSitesReadyEventListener> {
+        @Override
+        protected void call(UpdateSitesReadyEventListener updateSitesReadyEventListener, UpdateSitesReadyEvent event) {
+            updateSitesReadyEventListener.onPluginManagerUpdateSitesReady(event);
+        }
+    }
+
+    public static class UpdateSitesFailedEvent extends AbstractJIPipeEvent {
         private final JIPipeModernPluginManager pluginManager;
 
         public UpdateSitesFailedEvent(JIPipeModernPluginManager pluginManager) {
+            super(pluginManager);
             this.pluginManager = pluginManager;
         }
 
         public JIPipeModernPluginManager getPluginManager() {
             return pluginManager;
+        }
+    }
+
+    public interface UpdateSitesFailedEventListener {
+        void onPluginManagerUpdateSitesFailed(UpdateSitesFailedEvent event);
+    }
+
+    public static class UpdateSitesFailedEventEmitter extends JIPipeEventEmitter<UpdateSitesFailedEvent, UpdateSitesFailedEventListener> {
+
+        @Override
+        protected void call(UpdateSitesFailedEventListener updateSitesFailedEventListener, UpdateSitesFailedEvent event) {
+            updateSitesFailedEventListener.onPluginManagerUpdateSitesFailed(event);
         }
     }
 }

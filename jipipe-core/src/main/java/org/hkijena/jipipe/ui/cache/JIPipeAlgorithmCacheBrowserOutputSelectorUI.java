@@ -17,6 +17,8 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.components.layouts.ModifiedFlowLayout;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -31,13 +33,13 @@ import java.util.Map;
 public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
 
     public static final String SELECT_ALL_OUTPUTS = "";
-
-    private final EventBus eventBus = new EventBus();
     private final JIPipeGraphNode graphNode;
 
     private final Map<String, JToggleButton> buttonMap = new HashMap<>();
     private final List<String> outputOrder = new ArrayList<>();
     private String selectedOutput;
+
+    private final OutputSelectedEventEmitter outputSelectedEventEmitter = new OutputSelectedEventEmitter();
 
     public JIPipeAlgorithmCacheBrowserOutputSelectorUI(JIPipeGraphNode graphNode) {
         this.graphNode = graphNode;
@@ -78,10 +80,6 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
         add(wrapperPanel, BorderLayout.CENTER);
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     /**
      * Selects an output
      *
@@ -95,7 +93,11 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
         for (Map.Entry<String, JToggleButton> entry : buttonMap.entrySet()) {
             entry.getValue().setSelected(entry.getKey().equals(name));
         }
-        eventBus.post(new OutputSelectedEvent(this, name));
+        outputSelectedEventEmitter.emit(new OutputSelectedEvent(this, name));
+    }
+
+    public OutputSelectedEventEmitter getOutputSelectedEventEmitter() {
+        return outputSelectedEventEmitter;
     }
 
     public String getSelectedOutput() {
@@ -119,11 +121,12 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
         selectOutput(outputOrder.get((i + 1) % outputOrder.size()));
     }
 
-    public static class OutputSelectedEvent {
+    public static class OutputSelectedEvent extends AbstractJIPipeEvent {
         private final JIPipeAlgorithmCacheBrowserOutputSelectorUI selectorUI;
         private final String name;
 
         public OutputSelectedEvent(JIPipeAlgorithmCacheBrowserOutputSelectorUI selectorUI, String name) {
+            super(selectorUI);
             this.selectorUI = selectorUI;
             this.name = name;
         }
@@ -134,6 +137,18 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
 
         public String getName() {
             return name;
+        }
+    }
+
+    public interface OutputSelectedEventListener {
+        void onAlgorithmCacheOutputSelectedEvent(OutputSelectedEvent event);
+    }
+
+    public static  class OutputSelectedEventEmitter extends JIPipeEventEmitter<OutputSelectedEvent, OutputSelectedEventListener> {
+
+        @Override
+        protected void call(OutputSelectedEventListener outputSelectedEventListener, OutputSelectedEvent event) {
+            outputSelectedEventListener.onAlgorithmCacheOutputSelectedEvent(event);
         }
     }
 }

@@ -23,7 +23,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         subscribers.add(new OwningStore<>(listener));
     }
 
-    public synchronized void subscribe(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
+    public synchronized void subscribeLambda(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
         actionSubscribers.add(listener);
     }
 

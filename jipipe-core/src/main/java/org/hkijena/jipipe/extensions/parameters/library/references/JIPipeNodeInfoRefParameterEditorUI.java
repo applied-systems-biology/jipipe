@@ -107,7 +107,7 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSelected(JIPipeNodeInfoPicker.NodeSelectedEvent event) {
+    public void onAlgorithmSelected(JIPipeNodeInfoPicker.NodeInfoSelectedEvent event) {
         if (pickerDialog.isVisible()) {
             pickerDialog.setVisible(false);
             JIPipeNodeInfoRef infoRef = getParameter(JIPipeNodeInfoRef.class);

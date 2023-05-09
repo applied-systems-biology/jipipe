@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.ui.components.search;
 
-import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
@@ -37,8 +38,7 @@ import java.util.function.Function;
  * @param <T>
  */
 public class SearchBox<T> extends JPanel {
-
-    private final EventBus eventBus = new EventBus();
+    private final SelectedEventEmitter<T> selectedEventEmitter = new SelectedEventEmitter<>();
     private Function<T, String> dataToString = Objects::toString;
     private RankingFunction<T> rankingFunction;
     private FilteringModel<T> filteringModel;
@@ -58,6 +58,10 @@ public class SearchBox<T> extends JPanel {
 
     public JComboBox<T> getComboBox() {
         return comboBox;
+    }
+
+    public SelectedEventEmitter<T> getSelectedEventEmitter() {
+        return selectedEventEmitter;
     }
 
     private void initialize() {
@@ -129,7 +133,7 @@ public class SearchBox<T> extends JPanel {
     }
 
     private void postItemSelectedEvent() {
-        getEventBus().post(new SelectedEvent<>(this, getSelectedItem()));
+        selectedEventEmitter.emit(new SelectedEvent<>(this, getSelectedItem()));
     }
 
     @Override
@@ -172,10 +176,6 @@ public class SearchBox<T> extends JPanel {
 
     public void setSelectedItem(T item) {
         comboBox.setSelectedItem(item);
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public Function<T, String> getDataToString() {
@@ -321,21 +321,34 @@ public class SearchBox<T> extends JPanel {
         }
     }
 
-    public static class SelectedEvent<T> {
-        private final SearchBox<T> source;
+    public static class SelectedEvent<T> extends AbstractJIPipeEvent {
+        private final SearchBox<T> searchBox;
         private final T value;
 
-        public SelectedEvent(SearchBox<T> source, T value) {
-            this.source = source;
+        public SelectedEvent(SearchBox<T> searchBox, T value) {
+            super(searchBox);
+            this.searchBox = searchBox;
             this.value = value;
         }
 
-        public SearchBox<T> getSource() {
-            return source;
+        public SearchBox<T> getSearchBox() {
+            return searchBox;
         }
 
         public T getValue() {
             return value;
+        }
+    }
+
+    public interface SelectedEventListener<T> {
+        void onSearchBoxSelectedEvent(SelectedEvent<T> event);
+    }
+
+    public static class SelectedEventEmitter<T> extends JIPipeEventEmitter<SelectedEvent<T>, SelectedEventListener<T>> {
+
+        @Override
+        protected void call(SelectedEventListener<T> tSelectedEventListener, SelectedEvent<T> event) {
+            tSelectedEventListener.onSearchBoxSelectedEvent(event);
         }
     }
 }

@@ -32,15 +32,13 @@ import java.util.UUID;
  * UI for one slot in the algorithm finder
  */
 public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
-
+    private final AlgorithmFinderSuccessEventEmitter algorithmFinderSuccessEventEmitter = new AlgorithmFinderSuccessEventEmitter();
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot outputSlot;
     private final JIPipeGraph graph;
     private final UUID compartment;
     private final JIPipeDataSlot inputSlot;
     private final boolean isExistingInstance;
-    private final EventBus eventBus = new EventBus();
-
     private JButton assignButton;
     private JPopupMenu assignButtonMenu;
 
@@ -116,6 +114,10 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
         }
     }
 
+    public AlgorithmFinderSuccessEventEmitter getAlgorithmFinderSuccessEventEmitter() {
+        return algorithmFinderSuccessEventEmitter;
+    }
+
     private void deleteSlot() {
         if (!JIPipeProjectWorkbench.canModifySlots(canvasUI.getWorkbench()))
             return;
@@ -135,7 +137,7 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
         canvasUI.getScheduledSelection().add(inputSlot.getNode());
         graph.insertNode(inputSlot.getNode(), compartment);
         graph.connect(outputSlot, inputSlot);
-        eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
+        algorithmFinderSuccessEventEmitter.emit(new AlgorithmFinderSuccessEvent(this, outputSlot, inputSlot));
     }
 
     private void connectToExistingInstance() {
@@ -144,19 +146,10 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
                 canvasUI.getHistoryJournal().snapshotBeforeConnect(outputSlot, inputSlot, compartment);
             }
             graph.connect(outputSlot, inputSlot);
-            eventBus.post(new AlgorithmFinderSuccessEvent(outputSlot, inputSlot));
+            algorithmFinderSuccessEventEmitter.emit(new AlgorithmFinderSuccessEvent(this, outputSlot, inputSlot));
         } else {
             UIUtils.showConnectionErrorMessage(this, outputSlot, inputSlot);
         }
-    }
-
-    /**
-     * Returns the event bus.
-     *
-     * @return Event bus instance.
-     */
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

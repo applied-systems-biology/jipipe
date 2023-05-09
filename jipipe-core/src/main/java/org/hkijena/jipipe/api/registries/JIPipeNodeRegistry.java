@@ -18,6 +18,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeValidatable;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 /**
  * Manages known algorithms and their annotations
  */
-public class JIPipeNodeRegistry implements JIPipeValidatable {
+public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.DatatypeRegisteredEventListener {
     private final Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
     private final Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
 
@@ -49,7 +50,6 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     private final Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
 
     private final List<JIPipeNodeTemplate> scheduledRegisterExamples = new ArrayList<>();
-    private final EventBus eventBus = new EventBus();
     private final URL defaultIconURL;
     private final JIPipe jiPipe;
     private boolean stateChanged;
@@ -119,7 +119,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         registeredNodeInfos.put(info.getId(), info);
         registeredNodeClasses.put(info.getInstanceClass(), info);
         registeredNodeInfoSources.put(info.getId(), source);
-        eventBus.post(new JIPipe.NodeInfoRegisteredEvent(registry, info));
+        jiPipe.getNodeInfoRegisteredEventEmitter().emit(new JIPipe.NodeInfoRegisteredEvent(jiPipe, info));
         getJIPipe().getProgressInfo().log("Registered node type '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
@@ -222,20 +222,11 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     }
 
     /**
-     * Returns the event bus that posts registration events
-     *
-     * @return Event bus instance
-     */
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    /**
      * Install registration events.
      * This method is only used internally.
      */
     public void installEvents() {
-        JIPipe.getInstance().getDatatypeRegistry().getEventBus().register(this);
+        JIPipe.getInstance().getDatatypeRegisteredEventEmitter().subscribe(this);
     }
 
     /**
@@ -244,8 +235,8 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onDatatypeRegistered(JIPipe.DatatypeRegisteredEvent event) {
+    @Override
+    public void onJIPipeDatatypeRegistered(JIPipeService.DatatypeRegisteredEvent event) {
         runRegistrationTasks();
     }
 
@@ -398,4 +389,6 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         }
         scheduledRegisterExamples.clear();
     }
+
+
 }

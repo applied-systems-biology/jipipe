@@ -35,12 +35,13 @@ import java.awt.*;
 /**
  * UI for finding algorithms
  */
-public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
+public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel implements AlgorithmFinderSuccessEventListener, JIPipeGraphNode.NodeSlotsChangedEventListener {
+
+    private final AlgorithmFinderSuccessEventEmitter algorithmFinderSuccessEventEmitter = new AlgorithmFinderSuccessEventEmitter();
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot inputSlot;
     private final JIPipeGraphNode algorithm;
     private final boolean isExistingInstance;
-    private final EventBus eventBus = new EventBus();
     private JPanel slotPanel;
 
     /**
@@ -78,7 +79,11 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
     private void initialize() {
         initializeUI();
         reloadSlotUI();
-        this.algorithm.getEventBus().register(this);
+        this.algorithm.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
+    }
+
+    public AlgorithmFinderSuccessEventEmitter getAlgorithmFinderSuccessEventEmitter() {
+        return algorithmFinderSuccessEventEmitter;
     }
 
     private void initializeUI() {
@@ -214,7 +219,7 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
 
         for (JIPipeDataSlot slot : algorithm.getOutputSlots()) {
             JIPipeAlgorithmSourceFinderSlotUI ui = new JIPipeAlgorithmSourceFinderSlotUI(canvasUI, inputSlot, slot, isExistingInstance);
-            ui.getEventBus().register(this);
+            ui.getAlgorithmFinderSuccessEventEmitter().subscribe(this);
             slotPanel.add(ui);
         }
 
@@ -244,35 +249,21 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
     }
 
     /**
-     * Should trigger when the target algorithm slots are changed
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onAlgorithmSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
-        if (!isDisplayable())
-            return;
-        reloadSlotUI();
-    }
-
-    /**
      * Should trigger when a successful connection was made. Passes the event to the parent.
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onAlgorithmFinderSuccess(AlgorithmFinderSuccessEvent event) {
         if (!isDisplayable())
             return;
-        eventBus.post(event);
+        algorithmFinderSuccessEventEmitter.emit(event);
     }
 
-    /**
-     * Returns the event bus
-     *
-     * @return Event Bus instance
-     */
-    public EventBus getEventBus() {
-        return eventBus;
+    @Override
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
+        if (!isDisplayable())
+            return;
+        reloadSlotUI();
     }
 }

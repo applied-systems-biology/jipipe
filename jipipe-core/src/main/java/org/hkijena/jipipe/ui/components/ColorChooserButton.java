@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.components.icons.ColorIcon;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -25,11 +27,12 @@ import java.awt.event.ActionListener;
 import java.util.Objects;
 
 public class ColorChooserButton extends JButton implements ActionListener {
-    private final EventBus eventBus = new EventBus();
     private ColorIcon icon = new SolidColorIcon(16, 16);
     private Color selectedColor = Color.RED;
     private String selectColorPrompt = "Select color";
     private boolean updateWithHexCode = false;
+
+    private final ColorChosenEventEmitter colorChosenEventEmitter = new ColorChosenEventEmitter();
 
     public ColorChooserButton() {
         super();
@@ -41,6 +44,10 @@ public class ColorChooserButton extends JButton implements ActionListener {
         super(text);
         setIcon(icon);
         addActionListener(this);
+    }
+
+    public ColorChosenEventEmitter getColorChosenEventEmitter() {
+        return colorChosenEventEmitter;
     }
 
     @Override
@@ -72,12 +79,8 @@ public class ColorChooserButton extends JButton implements ActionListener {
             if (updateWithHexCode) {
                 setText(ColorUtils.colorToHexString(selectedColor));
             }
-            eventBus.post(new ColorChosenEvent(this, selectedColor));
+            colorChosenEventEmitter.emit(new ColorChosenEvent(this, selectedColor));
         }
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public String getSelectColorPrompt() {
@@ -96,11 +99,12 @@ public class ColorChooserButton extends JButton implements ActionListener {
         this.updateWithHexCode = updateWithHexCode;
     }
 
-    public static class ColorChosenEvent {
+    public static class ColorChosenEvent extends AbstractJIPipeEvent {
         private final ColorChooserButton button;
         private final Color color;
 
         public ColorChosenEvent(ColorChooserButton button, Color color) {
+            super(button);
             this.button = button;
             this.color = color;
         }
@@ -111,6 +115,18 @@ public class ColorChooserButton extends JButton implements ActionListener {
 
         public Color getColor() {
             return color;
+        }
+    }
+
+    public interface ColorChosenEventListener {
+        void onColorButtonColorChosen(ColorChosenEvent event);
+    }
+
+    public static class ColorChosenEventEmitter extends JIPipeEventEmitter<ColorChosenEvent, ColorChosenEventListener> {
+
+        @Override
+        protected void call(ColorChosenEventListener colorChosenEventListener, ColorChosenEvent event) {
+            colorChosenEventListener.onColorButtonColorChosen(event);
         }
     }
 }

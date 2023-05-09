@@ -38,8 +38,6 @@ import java.io.IOException;
 @JsonSerialize(using = PlotDataSeries.Serializer.class)
 @JsonDeserialize(using = PlotDataSeries.Deserializer.class)
 public class PlotDataSeries extends ResultsTableData implements JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
     private String name;
 
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();

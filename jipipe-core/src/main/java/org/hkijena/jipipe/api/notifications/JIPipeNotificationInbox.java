@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.api.notifications;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
@@ -95,7 +93,7 @@ public class JIPipeNotificationInbox {
     public void connectDismissTo(JIPipeNotificationInbox inbox) {
         if (inbox == this)
             return;
-        inbox.dismissedEventEmitter.subscribe((emitter, event) -> inbox.dismiss(event.notification.getId()));
+        inbox.dismissedEventEmitter.subscribeLambda((emitter, event) -> inbox.dismiss(event.notification.getId()));
     }
 
     public static class PushedEvent extends AbstractJIPipeEvent {

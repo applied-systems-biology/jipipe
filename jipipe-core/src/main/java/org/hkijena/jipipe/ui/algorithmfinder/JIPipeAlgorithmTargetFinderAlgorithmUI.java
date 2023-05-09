@@ -35,12 +35,12 @@ import java.awt.*;
 /**
  * UI for finding algorithms
  */
-public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
+public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel implements JIPipeGraphNode.NodeSlotsChangedEventListener, AlgorithmFinderSuccessEventListener {
+    private final AlgorithmFinderSuccessEventEmitter algorithmFinderSuccessEventEmitter = new AlgorithmFinderSuccessEventEmitter();
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot outputSlot;
     private final JIPipeGraphNode algorithm;
     private final boolean isExistingInstance;
-    private final EventBus eventBus = new EventBus();
     private JPanel slotPanel;
 
     /**
@@ -78,7 +78,7 @@ public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
     private void initialize() {
         initializeUI();
         reloadSlotUI();
-        this.algorithm.getEventBus().register(this);
+        this.algorithm.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
     }
 
     private void initializeUI() {
@@ -214,7 +214,7 @@ public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
 
         for (JIPipeDataSlot slot : algorithm.getInputSlots()) {
             JIPipeAlgorithmTargetFinderSlotUI ui = new JIPipeAlgorithmTargetFinderSlotUI(canvasUI, outputSlot, slot, isExistingInstance);
-            ui.getEventBus().register(this);
+            ui.getAlgorithmFinderSuccessEventEmitter().subscribe(this);
             slotPanel.add(ui);
         }
 
@@ -243,16 +243,8 @@ public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
         return button;
     }
 
-    /**
-     * Should trigger when the target algorithm slots are changed
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onAlgorithmSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
-        if (!isDisplayable())
-            return;
-        reloadSlotUI();
+    public AlgorithmFinderSuccessEventEmitter getAlgorithmFinderSuccessEventEmitter() {
+        return algorithmFinderSuccessEventEmitter;
     }
 
     /**
@@ -260,19 +252,17 @@ public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onAlgorithmFinderSuccess(AlgorithmFinderSuccessEvent event) {
         if (!isDisplayable())
             return;
-        eventBus.post(event);
+        algorithmFinderSuccessEventEmitter.emit(event);
     }
 
-    /**
-     * Returns the event bus
-     *
-     * @return Event Bus instance
-     */
-    public EventBus getEventBus() {
-        return eventBus;
+    @Override
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
+        if (!isDisplayable())
+            return;
+        reloadSlotUI();
     }
 }

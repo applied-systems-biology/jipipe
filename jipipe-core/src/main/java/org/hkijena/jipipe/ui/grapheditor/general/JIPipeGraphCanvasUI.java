@@ -104,7 +104,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final JIPipeGraph graph;
     private final BiMap<JIPipeGraphNode, JIPipeNodeUI> nodeUIs = HashBiMap.create();
     private final Set<JIPipeNodeUI> selection = new LinkedHashSet<>();
-    private final EventBus eventBus = new EventBus();
     private final GraphEditorUISettings settings;
     private final JIPipeHistoryJournal historyJournal;
     private final UUID compartment;
@@ -1438,14 +1437,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     @Subscribe
     public void onOpenAlgorithmSettings(AlgorithmSelectedEvent event) {
         eventBus.post(event);
-    }
-
-    /**
-     * @return The event bus instance
-     */
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

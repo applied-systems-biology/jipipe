@@ -984,12 +984,9 @@ public class UIUtils {
         dialog.setVisible(true);
 
         if (autoClose) {
-            notifications.getEventBus().register(new Object() {
-                @Subscribe
-                public void onUpdated(JIPipeNotificationInbox.UpdatedEvent event) {
-                    if (notifications.isEmpty()) {
-                        dialog.setVisible(false);
-                    }
+            notifications.getUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+                if (notifications.isEmpty()) {
+                    dialog.setVisible(false);
                 }
             });
         }
