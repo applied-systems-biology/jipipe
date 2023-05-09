@@ -327,7 +327,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("line-width")
     public void setLineWidth(double lineWidth) {
         this.lineWidth = lineWidth;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "High contrast", description = "Highest grayscale value of the line. It estimates the mandatory parameter 'Upper threshold'")
@@ -339,7 +339,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("high-contrast")
     public void setContrastHigh(double contrastHigh) {
         this.contrastHigh = contrastHigh;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Low contrast", description = "Lowest grayscale value of the line. It estimates the mandatory parameter 'Lower threshold'")
@@ -351,7 +351,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("low-contrast")
     public void setContrastLow(double contrastLow) {
         this.contrastLow = contrastLow;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Estimate sigma", description = "If enabled, 'Sigma' will be estimated by the 'Line width' parameter. The formula is SIGMA = LINE_WIDTH / (2 * SQRT(3)) + 0.5")
@@ -363,7 +363,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("estimate-sigma")
     public void setEstimateSigma(boolean estimateSigma) {
         this.estimateSigma = estimateSigma;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Estimate low threshold", description = "If enabled, the lower threshold will be estimated by the contrast parameters. " +
@@ -376,7 +376,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("estimate-low-threshold")
     public void setEstimateLowThreshold(boolean estimateLowThreshold) {
         this.estimateLowThreshold = estimateLowThreshold;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Estimate high threshold", description = "If enabled, the lower and higher threshold will be estimated by the contrast parameters. " +
@@ -389,7 +389,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("estimate-high-threshold")
     public void setEstimateHighThreshold(boolean estimateHighThreshold) {
         this.estimateHighThreshold = estimateHighThreshold;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @Override

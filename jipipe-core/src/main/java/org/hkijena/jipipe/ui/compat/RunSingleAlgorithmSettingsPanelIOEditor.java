@@ -63,7 +63,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
     }
 
     @Subscribe
-    public void onSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+    public void onSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         reloadPropertyPanel();
     }
 

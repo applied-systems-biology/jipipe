@@ -374,7 +374,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
 
     @Subscribe
-    public void onNodeSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         if (event.getNode() == node) {
             updateView(false, true, true);
         }

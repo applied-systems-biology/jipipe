@@ -19,7 +19,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -250,7 +249,7 @@ public class JIPipeAlgorithmTargetFinderAlgorithmUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+    public void onAlgorithmSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         if (!isDisplayable())
             return;
         reloadSlotUI();

@@ -59,14 +59,14 @@ public interface JIPipeParameterCollection {
     /**
      * Triggers a {@link ParameterStructureChangedEvent} on this collection
      */
-    default void triggerParameterStructureChange() {
+    default void emitParameterStructureChangedEvent() {
         getParameterStructureChangedEventEmitter().emit(new ParameterStructureChangedEvent(this));
     }
 
     /**
      * Triggers a {@link ParameterUIChangedEvent} on this collection
      */
-    default void triggerParameterUIChange() {
+    default void emitParameterUIChangedEvent() {
         getParameterUIChangedEventEmitter().emit(new ParameterUIChangedEvent(this));
     }
 
@@ -75,7 +75,7 @@ public interface JIPipeParameterCollection {
      *
      * @param key the parameter key
      */
-    default void triggerParameterChange(String key) {
+    default void emitParameterChangedEvent(String key) {
         getParameterChangedEventEmitter().emit(new ParameterChangedEvent(this, key));
     }
 

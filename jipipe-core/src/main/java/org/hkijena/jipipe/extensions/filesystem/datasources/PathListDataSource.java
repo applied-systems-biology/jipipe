@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -107,7 +106,7 @@ public class PathListDataSource extends JIPipeAlgorithm {
             String name = paths.size() == 1 ? paths.get(0).getFileName().toString() : "";
             if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
-                getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+                getEventBus().post(new NodeSlotsChangedEvent(this));
             }
         }
     }

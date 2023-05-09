@@ -77,8 +77,6 @@ import java.util.stream.Collectors;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
 @JIPipeCommonData
 public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
-
-    private final EventBus eventBus = new EventBus();
     private final List<PlotDataSeries> series = new ArrayList<>();
     private String title;
     private int exportWidth = 1024;
@@ -263,11 +261,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         return JIPipe.createData(getClass(), this);
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     public abstract JFreeChart getChart();
 
     /**
@@ -287,7 +280,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("title")
     public void setTitle(String title) {
         this.title = title;
-        eventBus.post(new ParameterChangedEvent(this, "title"));
     }
 
     @JIPipeDocumentation(name = "Export width", description = "Width of the output image generated via an export")
@@ -299,7 +291,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("export-width")
     public void setExportWidth(int exportWidth) {
         this.exportWidth = exportWidth;
-        eventBus.post(new ParameterChangedEvent(this, "export-width"));
     }
 
     @JIPipeDocumentation(name = "Export height", description = "Height of the output image generated via an export")
@@ -311,7 +302,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("export-height")
     public void setExportHeight(int exportHeight) {
         this.exportHeight = exportHeight;
-        eventBus.post(new ParameterChangedEvent(this, "export-height"));
     }
 
     @JIPipeDocumentation(name = "Background color", description = "Background color of the plot area.")
@@ -392,7 +382,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("use-custom-color-map")
     public void setUseCustomColorMap(boolean useCustomColorMap) {
         this.useCustomColorMap = useCustomColorMap;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Custom color map", description = "Add colors into this list to define a custom color map")

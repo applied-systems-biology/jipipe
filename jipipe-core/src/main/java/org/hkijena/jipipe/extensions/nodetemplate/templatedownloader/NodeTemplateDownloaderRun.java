@@ -113,11 +113,11 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
                 }
                 if (workbench instanceof JIPipeProjectWorkbench && toProject) {
                     ((JIPipeProjectWorkbench) workbench).getProject().getMetadata().getNodeTemplates().addAll(templates);
-                    ((JIPipeProjectWorkbench) workbench).getProject().getMetadata().triggerParameterChange("node-templates");
+                    ((JIPipeProjectWorkbench) workbench).getProject().getMetadata().emitParameterChangedEvent("node-templates");
                 } else {
                     // Store globally
                     NodeTemplateSettings.getInstance().getNodeTemplates().addAll(templates);
-                    NodeTemplateSettings.getInstance().triggerParameterChange("node-templates");
+                    NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
                     JIPipe.getSettings().save();
                 }
                 NodeTemplateSettings.triggerRefreshedEvent();

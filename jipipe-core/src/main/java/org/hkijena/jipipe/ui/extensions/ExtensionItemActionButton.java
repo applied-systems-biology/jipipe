@@ -72,12 +72,12 @@ public class ExtensionItemActionButton extends JButton {
     }
 
     @Subscribe
-    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtension event) {
+    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
         updateDisplay();
     }
 
     @Subscribe
-    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtension event) {
+    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
         updateDisplay();
     }
 

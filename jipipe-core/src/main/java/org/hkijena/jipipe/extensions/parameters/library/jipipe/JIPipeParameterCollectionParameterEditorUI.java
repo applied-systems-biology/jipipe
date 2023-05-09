@@ -58,13 +58,13 @@ public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterE
             return;
         try {
             JIPipeParameterCollection parameter = getParameter(JIPipeParameterCollection.class);
-            parameter.getEventBus().register(new Object() {
-                @Subscribe
-                public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                    // Workaround: causes UX issues
-                    //setParameter(parameter, false);
-                }
-            });
+//            parameter.getEventBus().register(new Object() {
+//                @Subscribe
+//                public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+//                    // Workaround: causes UX issues
+//                    //setParameter(parameter, false);
+//                }
+//            });
             parameterPanel.setDisplayedParameters(parameter);
         } finally {
             isReloading = false;

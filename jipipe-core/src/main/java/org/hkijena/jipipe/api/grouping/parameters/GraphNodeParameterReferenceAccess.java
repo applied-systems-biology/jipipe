@@ -27,7 +27,7 @@ import java.util.Objects;
 /**
  * A parameter access that references to another one, but hides the source
  */
-public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess {
+public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final GraphNodeParameterReference reference;
     private final JIPipeParameterTree tree;
@@ -50,7 +50,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
         this.persistence = persistent ? JIPipeParameterPersistence.Collection : JIPipeParameterPersistence.None;
         this.target = reference.resolve(tree);
         this.alternativeSource = alternativeSource;
-        this.target.getSource().getEventBus().register(this);
+        this.target.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     @Override
@@ -133,10 +133,10 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
         return persistence;
     }
 
-    @Subscribe
-    public void onSourceParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (Objects.equals(target.getKey(), event.getKey())) {
-            alternativeSource.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(alternativeSource, getKey()));
+            alternativeSource.getParameterChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterChangedEvent(alternativeSource, getKey()));
         }
     }
 }

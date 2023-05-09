@@ -47,6 +47,6 @@ public class ConvertImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setGeneratedImageType(JIPipeDataInfoRef generatedImageType) {
         this.generatedImageType = generatedImageType;
         getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
-        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+        getEventBus().post(new NodeSlotsChangedEvent(this));
     }
 }

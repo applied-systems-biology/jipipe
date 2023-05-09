@@ -9,7 +9,12 @@ import java.util.UUID;
 
 public class JIPipeDummyGraphHistoryJournal implements JIPipeHistoryJournal {
 
-    private final EventBus eventBus = new EventBus();
+    private final HistoryChangedEventEmitter historyChangedEventEmitter = new HistoryChangedEventEmitter();
+
+    @Override
+    public HistoryChangedEventEmitter getHistoryChangedEventEmitter() {
+        return historyChangedEventEmitter;
+    }
 
     @Override
     public void snapshot(String name, String description, UUID compartment, Icon icon) {
@@ -44,10 +49,5 @@ public class JIPipeDummyGraphHistoryJournal implements JIPipeHistoryJournal {
     @Override
     public void clear() {
 
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

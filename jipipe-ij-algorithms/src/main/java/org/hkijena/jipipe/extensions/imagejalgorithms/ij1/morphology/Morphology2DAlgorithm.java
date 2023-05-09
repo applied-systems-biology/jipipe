@@ -200,7 +200,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setAddBorder(boolean addBorder) {
         if (this.addBorder != addBorder) {
             this.addBorder = addBorder;
-            triggerParameterUIChange();
+            emitParameterUIChangedEvent();
         }
     }
 

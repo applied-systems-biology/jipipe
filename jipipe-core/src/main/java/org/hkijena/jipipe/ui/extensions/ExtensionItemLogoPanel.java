@@ -50,12 +50,12 @@ public class ExtensionItemLogoPanel extends JPanel {
     }
 
     @Subscribe
-    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtension event) {
+    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
         repaint();
     }
 
     @Subscribe
-    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtension event) {
+    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
         repaint();
     }
 

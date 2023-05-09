@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -38,9 +39,7 @@ import java.nio.file.Path;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 @JsonSerialize(using = JIPipeSerializedParameterCollectionData.Serializer.class)
 @JsonDeserialize(using = JIPipeSerializedParameterCollectionData.Deserializer.class)
-public abstract class JIPipeSerializedParameterCollectionData implements JIPipeData, JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public abstract class JIPipeSerializedParameterCollectionData extends AbstractJIPipeParameterCollection implements JIPipeData {
 
     public JIPipeSerializedParameterCollectionData() {
 
@@ -53,11 +52,6 @@ public abstract class JIPipeSerializedParameterCollectionData implements JIPipeD
     public static JIPipeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".json");
         return JsonUtils.readFromFile(targetFile, JIPipeSerializedParameterCollectionData.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override

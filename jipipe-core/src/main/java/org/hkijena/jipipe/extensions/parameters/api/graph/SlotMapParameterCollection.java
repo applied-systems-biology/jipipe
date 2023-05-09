@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.parameters.api.graph;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 
@@ -78,7 +77,7 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
      * @param event generated event
      */
     @Subscribe
-    public void onSlotsUpdated(JIPipeGraph.NodeSlotsChangedEvent event) {
+    public void onSlotsUpdated(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         updateSlots();
     }
 

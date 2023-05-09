@@ -22,10 +22,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.*;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.utils.json.JsonDeserializable;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -40,13 +41,17 @@ import java.util.function.Function;
  */
 @JsonDeserialize(using = JIPipeDynamicParameterCollection.Deserializer.class)
 public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCollection, JIPipeValidatable, JsonDeserializable {
-
-    private final EventBus eventBus = new EventBus();
     private final BiMap<String, JIPipeMutableParameterAccess> dynamicParameters = HashBiMap.create();
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private Function<UserParameterDefinition, JIPipeMutableParameterAccess> instanceGenerator;
     private boolean allowUserModification = false;
     private boolean delayEvents = false;
+
+    private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
+    private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
+    private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
+
+    private final BeforeAddParameterEventEmitter beforeAddParameterEventEmitter = new BeforeAddParameterEventEmitter();
 
     public JIPipeDynamicParameterCollection() {
 
@@ -107,6 +112,25 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         this.allowedTypes.addAll(Arrays.asList(allowedTypes));
     }
 
+    public BeforeAddParameterEventEmitter getBeforeAddParameterEventEmitter() {
+        return beforeAddParameterEventEmitter;
+    }
+
+    @Override
+    public ParameterChangedEventEmitter getParameterChangedEventEmitter() {
+        return parameterChangedEventEmitter;
+    }
+
+    @Override
+    public ParameterStructureChangedEventEmitter getParameterStructureChangedEventEmitter() {
+        return parameterStructureChangedEventEmitter;
+    }
+
+    @Override
+    public ParameterUIChangedEventEmitter getParameterUIChangedEventEmitter() {
+        return parameterUIChangedEventEmitter;
+    }
+
     @Override
     public Map<String, JIPipeParameterAccess> getParameters() {
         return Collections.unmodifiableMap(dynamicParameters);
@@ -137,13 +161,13 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
             parameterAccess.set(JIPipe.getParameterTypes().getInfoByFieldClass(parameterAccess.getFieldClass()).newInstance());
         }
         parameterAccess.setSource(this);
-        ParameterAddingEvent event = new ParameterAddingEvent(this, parameterAccess);
-        eventBus.post(event);
-        if (event.isCancel())
+        BeforeAddParameterEvent event = new BeforeAddParameterEvent(this, parameterAccess);
+        beforeAddParameterEventEmitter.emit(event);
+        if (event.isCancelled())
             return null;
         dynamicParameters.put(parameterAccess.getKey(), parameterAccess);
         if (!delayEvents)
-            getEventBus().post(new ParameterStructureChangedEvent(this));
+            emitParameterStructureChangedEvent();
         return parameterAccess;
     }
 
@@ -176,7 +200,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     public void clear() {
         dynamicParameters.clear();
         if (!delayEvents)
-            getEventBus().post(new ParameterStructureChangedEvent(this));
+            emitParameterStructureChangedEvent();
     }
 
     /**
@@ -187,7 +211,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     public void removeParameter(String key) {
         dynamicParameters.remove(key);
         if (!delayEvents)
-            getEventBus().post(new ParameterStructureChangedEvent(this));
+            emitParameterStructureChangedEvent();
     }
 
     /**
@@ -278,11 +302,6 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         this.allowUserModification = allowUserModification;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     /**
      * Returns true if there is a parameter with given key
      *
@@ -321,7 +340,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         if (!delayEvents)
             throw new UnsupportedOperationException("No modification block!");
         delayEvents = false;
-        eventBus.post(new ParameterStructureChangedEvent(this));
+        parameterStructureChangedEventEmitter.emit(new ParameterStructureChangedEvent(this));
     }
 
     /**
@@ -410,12 +429,13 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         }
     }
 
-    public static class ParameterAddingEvent {
+    public static class BeforeAddParameterEvent extends AbstractJIPipeEvent {
         private final JIPipeDynamicParameterCollection parameterCollection;
         private final JIPipeMutableParameterAccess access;
-        private boolean cancel;
+        private boolean cancelled;
 
-        public ParameterAddingEvent(JIPipeDynamicParameterCollection parameterCollection, JIPipeMutableParameterAccess access) {
+        public BeforeAddParameterEvent(JIPipeDynamicParameterCollection parameterCollection, JIPipeMutableParameterAccess access) {
+            super(parameterCollection);
             this.parameterCollection = parameterCollection;
             this.access = access;
         }
@@ -428,12 +448,24 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
             return access;
         }
 
-        public boolean isCancel() {
-            return cancel;
+        public boolean isCancelled() {
+            return cancelled;
         }
 
-        public void setCancel(boolean cancel) {
-            this.cancel = cancel;
+        public void setCancelled(boolean cancelled) {
+            this.cancelled = cancelled;
+        }
+    }
+
+    public interface BeforeAddParameterEventListener {
+        void onDynamicParameterCollectionBeforeAddParameter(BeforeAddParameterEvent event);
+    }
+
+    public static class BeforeAddParameterEventEmitter extends JIPipeEventEmitter<BeforeAddParameterEvent, BeforeAddParameterEventListener> {
+
+        @Override
+        protected void call(BeforeAddParameterEventListener beforeAddParameterEventListener, BeforeAddParameterEvent event) {
+            beforeAddParameterEventListener.onDynamicParameterCollectionBeforeAddParameter(event);
         }
     }
 

@@ -37,7 +37,6 @@ import java.util.*;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-data-table.schema.json")
 public class JIPipeDataTable implements JIPipeData, TableModel {
-    private final EventBus eventBus = new EventBus();
     private final List<TableModelListener> listeners = new ArrayList<>();
     // The main data table
     private final ArrayList<JIPipeDataItemStore> data = new ArrayList<>();
@@ -284,13 +283,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void clear() {
         clearData();
-    }
-
-    /**
-     * @return The event bus
-     */
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

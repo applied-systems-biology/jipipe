@@ -6,6 +6,7 @@ import org.hkijena.jipipe.utils.data.WeakStore;
 import org.scijava.Disposable;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
 /**
  * An event emitter
@@ -16,8 +17,14 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
 
     private final Set<Store<Listener>> subscribers = new LinkedHashSet<>();
 
+    private final Set<BiConsumer<JIPipeEventEmitter<Event, Listener>, Event>> actionSubscribers = new LinkedHashSet<>();
+
     public synchronized void subscribe(Listener listener) {
         subscribers.add(new OwningStore<>(listener));
+    }
+
+    public synchronized void subscribe(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
+        actionSubscribers.add(listener);
     }
 
     public synchronized void subscribeWeak(Listener listener) {
@@ -41,6 +48,9 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
             else {
                 needsGC = true;
             }
+        }
+        for (BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> subscriber : actionSubscribers) {
+            subscriber.accept(this, event);
         }
         if(needsGC) {
             gc();

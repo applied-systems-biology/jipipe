@@ -342,7 +342,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+    public void onSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         if (!isDisplayable()) {
             clearCaches();
             return;

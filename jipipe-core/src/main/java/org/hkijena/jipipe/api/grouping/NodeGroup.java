@@ -64,7 +64,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public NodeGroup(JIPipeNodeInfo info) {
         super(info, new JIPipeGraph());
         initializeContents();
-        this.exportedParameters.getEventBus().register(this);
+        registerSubParameter(exportedParameters);
     }
 
     /**
@@ -75,8 +75,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public NodeGroup(NodeGroup other) {
         super(other);
         this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
-        this.exportedParameters.getEventBus().register(this);
         this.showLimitedParameters = other.showLimitedParameters;
+        registerSubParameter(exportedParameters);
         initializeContents();
     }
 
@@ -120,7 +120,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
             this.autoCreateSlots();
         }
 
-        this.exportedParameters.getEventBus().register(this);
+        registerSubParameter(exportedParameters);
 
         if (!clearLocations && fixLocations) {
             // Assign locations of input and output accordingly
@@ -236,7 +236,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public void setExportedParameters(GraphNodeParameterReferenceGroupCollection exportedParameters) {
         this.exportedParameters = exportedParameters;
         this.exportedParameters.setGraph(getWrappedGraph());
-        this.exportedParameters.getEventBus().register(this);
+        registerSubParameter(exportedParameters);
     }
 
     @Override
@@ -258,7 +258,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     @JIPipeParameter("show-limited-parameters")
     public void setShowLimitedParameters(boolean showLimitedParameters) {
         this.showLimitedParameters = showLimitedParameters;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @Override
@@ -305,7 +305,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     @Subscribe
     public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
-        getEventBus().post(new ParameterStructureChangedEvent(this));
+        emitParameterStructureChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Data batch generation", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +

@@ -275,7 +275,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         getEventBus().post(new ParameterChangedEvent(this, "series"));
         getEventBus().post(new ParameterChangedEvent(this, "available-data"));
         currentPlot.getEventBus().register(this);
-        triggerParameterStructureChange();
+        emitParameterStructureChangedEvent();
         rebuildPlot();
     }
 

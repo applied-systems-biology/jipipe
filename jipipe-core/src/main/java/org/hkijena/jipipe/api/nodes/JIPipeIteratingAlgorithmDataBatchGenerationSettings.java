@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -80,7 +79,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings extends Abstrac
     @JIPipeParameter("annotation-matching-method")
     public void setAnnotationMatchingMethod(JIPipeTextAnnotationMatchingMethod annotationMatchingMethod) {
         this.annotationMatchingMethod = annotationMatchingMethod;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Custom annotation matching method", description = "Expression used to compare two annotation sets.")
@@ -109,7 +108,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings extends Abstrac
         boolean needsTriggerStructureChange = columnMatching == JIPipeColumMatching.Custom || this.columnMatching == JIPipeColumMatching.Custom;
         this.columnMatching = columnMatching;
         if (needsTriggerStructureChange)
-            triggerParameterUIChange();
+            emitParameterUIChangedEvent();
     }
 
     @Override

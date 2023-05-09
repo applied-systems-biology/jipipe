@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventEmitter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -33,6 +34,8 @@ public class GraphNodeParameterReferenceGroup extends AbstractJIPipeParameterCol
     private List<GraphNodeParameterReference> content = new ArrayList<>();
     private String name;
     private HTMLText description = new HTMLText();
+
+    private final ParameterReferencesChangedEventEmitter parameterReferencesChangedEventEmitter = new ParameterReferencesChangedEventEmitter();
 
     /**
      * Creates a new instance
@@ -90,8 +93,12 @@ public class GraphNodeParameterReferenceGroup extends AbstractJIPipeParameterCol
         triggerChangedEvent();
     }
 
+    public ParameterReferencesChangedEventEmitter getParameterReferencesChangedEventEmitter() {
+        return parameterReferencesChangedEventEmitter;
+    }
+
     public void triggerChangedEvent() {
-        getEventBus().post(new ParameterReferencesChangedEvent());
+        getParameterReferencesChangedEventEmitter().emit(new ParameterReferencesChangedEvent(this));
     }
 
     /**

@@ -42,6 +42,10 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
     private final EventBus eventBus = new EventBus();
     private String name;
 
+    private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
+    private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
+    private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
+
     /**
      * Creates a new instance with a null table
      */
@@ -112,8 +116,18 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
     }
 
     @Override
-    public EventBus getEventBus() {
-        return eventBus;
+    public ParameterChangedEventEmitter getParameterChangedEventEmitter() {
+        return parameterChangedEventEmitter;
+    }
+
+    @Override
+    public ParameterStructureChangedEventEmitter getParameterStructureChangedEventEmitter() {
+        return parameterStructureChangedEventEmitter;
+    }
+
+    @Override
+    public ParameterUIChangedEventEmitter getParameterUIChangedEventEmitter() {
+        return parameterUIChangedEventEmitter;
     }
 
     @Override

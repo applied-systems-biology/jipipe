@@ -155,7 +155,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("file-format")
     public void setFileFormat(ExportImageAlgorithm.FileFormat fileFormat) {
         this.fileFormat = fileFormat;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Animation FPS", description = "Only used if the format is AVI. The number of frames shown per second.")

@@ -131,7 +131,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
             }
             for (JIPipeGraphNode node : selection) {
                 node.setBookmarked(false);
-                node.triggerParameterChange("jipipe:node:bookmarked");
+                node.emitParameterChangedEvent("jipipe:node:bookmarked");
             }
             reloadTimer.stop();
             reloadList();

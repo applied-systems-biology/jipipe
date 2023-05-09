@@ -464,7 +464,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
          * @param event The event
          */
         @Subscribe
-        public void onIOSlotsChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
+        public void onIOSlotsChanged(JIPipeSlotConfiguration.SlotConfigurationChangedEvent event) {
             updateGroupSlots();
         }
     }

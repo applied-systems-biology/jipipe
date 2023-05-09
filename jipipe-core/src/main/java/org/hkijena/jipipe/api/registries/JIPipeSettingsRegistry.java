@@ -40,7 +40,7 @@ import java.util.Map;
  * Registry for settings.
  * Settings are organized in "sheets" (parameter collections)
  */
-public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection {
+public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipe jiPipe;
     private final BiMap<String, Sheet> registeredSheets = HashBiMap.create();
@@ -119,7 +119,7 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
             categoryIcon = UIUtils.getIconFromResources("actions/wrench.png");
         }
         Sheet sheet = new Sheet(name, description, icon, category, categoryIcon, parameterCollection);
-        parameterCollection.getEventBus().register(this);
+        parameterCollection.getParameterChangedEventEmitter().subscribe(this);
         registeredSheets.put(id, sheet);
         getJIPipe().getProgressInfo().log("Registered settings sheet id=" + id + " in category '" + category + "' object=" + parameterCollection);
     }
@@ -208,20 +208,6 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
     }
 
     /**
-     * Triggered when a setting was changed
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onSettingChanged(ParameterChangedEvent event) {
-        if (!isLoading) {
-            if (JIPipe.getInstance() != null && JIPipe.getInstance().isInitializing())
-                return;
-            save();
-        }
-    }
-
-    /**
      * Reloads the settings from the default file if it exists
      */
     public void reload() {
@@ -230,6 +216,15 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
 
     public JIPipe getJIPipe() {
         return jiPipe;
+    }
+
+    @Override
+    public void onParameterChanged(ParameterChangedEvent event) {
+        if (!isLoading) {
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().isInitializing())
+                return;
+            save();
+        }
     }
 
     /**

@@ -14,7 +14,6 @@ import java.util.*;
 public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     private final JIPipeProject project;
-    private final EventBus eventBus = new EventBus();
 
     /**
      * The cached data
@@ -41,13 +40,29 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     private boolean ignoreNodeFunctionalEquals = false;
 
+    private final StoredEventEmitter storedEventEmitter = new StoredEventEmitter();
+
+    private final ClearedEventEmitter clearedEventEmitter = new ClearedEventEmitter();
+
+    private final ModifiedEventEmitter modifiedEventEmitter = new ModifiedEventEmitter();
+
     public JIPipeLocalProjectMemoryCache(JIPipeProject project) {
         this.project = project;
     }
 
     @Override
-    public EventBus getEventBus() {
-        return eventBus;
+    public StoredEventEmitter getStoredEventEmitter() {
+        return storedEventEmitter;
+    }
+
+    @Override
+    public ClearedEventEmitter getClearedEventEmitter() {
+        return clearedEventEmitter;
+    }
+
+    @Override
+    public ModifiedEventEmitter getModifiedEventEmitter() {
+        return modifiedEventEmitter;
     }
 
     @Override
@@ -75,8 +90,8 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         progressInfo.log("Stored " + data.getRowCount() + " into " + nodeUUID + "/" + outputName);
 
         updateSize();
-        getEventBus().post(new StoredEvent(this, nodeUUID, data, outputName));
-        getEventBus().post(new ModifiedEvent(this));
+        storedEventEmitter.emit(new StoredEvent(this, nodeUUID, data, outputName));
+        modifiedEventEmitter.emit(new ModifiedEvent(this));
     }
 
     private Set<UUID> getDirectParentNodeUUIDs(JIPipeGraphNode graphNode) {
@@ -260,8 +275,8 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         updated |= pruneGraph(progressInfo);
         if (updated) {
             updateSize();
-            getEventBus().post(new ClearedEvent(this, null));
-            getEventBus().post(new ModifiedEvent(this));
+            clearedEventEmitter.emit(new ClearedEvent(this, null));
+            modifiedEventEmitter.emit(new ModifiedEvent(this));
         }
     }
 
@@ -274,8 +289,8 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
         updateSize();
-        getEventBus().post(new ClearedEvent(this, null));
-        getEventBus().post(new ModifiedEvent(this));
+        clearedEventEmitter.emit(new ClearedEvent(this, null));
+        modifiedEventEmitter.emit(new ModifiedEvent(this));
     }
 
     @Override
@@ -288,8 +303,8 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         }
 
         updateSize();
-        getEventBus().post(new ClearedEvent(this, nodeUUID));
-        getEventBus().post(new ModifiedEvent(this));
+        clearedEventEmitter.emit(new ClearedEvent(this, nodeUUID));
+        modifiedEventEmitter.emit(new ModifiedEvent(this));
     }
 
     @Override

@@ -87,7 +87,7 @@ public class HistoryJournalUI extends JPanel {
     }
 
     @Subscribe
-    public void onHistoryJournalChanged(JIPipeHistoryJournal.ChangedEvent event) {
+    public void onHistoryJournalChanged(JIPipeHistoryJournal.HistoryChangedEvent event) {
         reloadList();
     }
 

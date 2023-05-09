@@ -256,7 +256,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
 
         // Trigger change in parent parameter holder
         if (parameterHolder != null)
-            parameterHolder.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(parameterHolder, key));
+            parameterHolder.getParameterChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterChangedEvent(parameterHolder, key));
         return true;
     }
 

@@ -170,7 +170,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
     public void setGeneratedImageType(JIPipeDataInfoRef generatedImageType) {
         this.generatedImageType = generatedImageType;
         getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
-        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+        getEventBus().post(new NodeSlotsChangedEvent(this));
     }
 
     @JIPipeDocumentation(name = "Output dimension", description = "Determines in which dimension the stack grows. You can choose between Z (default), channel, and time.")

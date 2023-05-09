@@ -149,12 +149,12 @@ public class JIPipeModernPluginManager {
     }
 
     @Subscribe
-    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtension event) {
+    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
         updateMessagePanel();
     }
 
     @Subscribe
-    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtension event) {
+    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
         updateMessagePanel();
     }
 
