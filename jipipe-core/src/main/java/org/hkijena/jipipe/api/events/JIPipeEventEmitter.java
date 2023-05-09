@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.events;
 
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -10,30 +9,34 @@ import java.util.*;
 
 /**
  * An event emitter
- * @param <T> the event type
+ * @param <Event> the event type
+ * @param <Listener> the listener interface
  */
-public class JIPipeEventEmitter<T extends JIPipeEvent> implements Disposable {
+public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> implements Disposable {
 
-    private final Set<Store<JIPipeEventListener<T>>> subscribers = new LinkedHashSet<>();
+    private final Set<Store<Listener>> subscribers = new LinkedHashSet<>();
 
-    public synchronized void register(JIPipeEventListener<T> listener) {
+    public synchronized void subscribe(Listener listener) {
         subscribers.add(new OwningStore<>(listener));
     }
 
-    public synchronized void registerWeak(JIPipeEventListener<T> listener) {
+    public synchronized void subscribeWeak(Listener listener) {
         subscribers.add(new WeakStore<>(listener));
     }
 
-    public synchronized void unsubscribe(JIPipeEventListener<T> listener) {
+    public synchronized void unsubscribe(Listener listener) {
         subscribers.removeIf(l -> l.get() == listener);
     }
 
-    public synchronized void publish() {
+    public synchronized void emit(Event event) {
+        if(event.getEmitter() == null) {
+            event.setEmitter(this);
+        }
         boolean needsGC = false;
-        for (Store<JIPipeEventListener<T>> subscriber : subscribers) {
-            JIPipeEventListener<T> listener = subscriber.get();
+        for (Store<Listener> subscriber : subscribers) {
+            Listener listener = subscriber.get();
             if(listener != null) {
-
+                call(listener, event);
             }
             else {
                 needsGC = true;
@@ -43,6 +46,8 @@ public class JIPipeEventEmitter<T extends JIPipeEvent> implements Disposable {
             gc();
         }
     }
+
+    protected abstract void call(Listener listener, Event event);
 
     public synchronized void gc() {
         subscribers.removeIf(l -> !l.isPresent());

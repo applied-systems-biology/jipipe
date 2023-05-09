@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -34,7 +33,8 @@ import java.util.stream.Collectors;
  * An {@link JIPipeParameterCollection} that contains all the parameters of one or multiple
  * {@link JIPipeParameterCollection} instances in a traversed form.
  */
-public class JIPipeParameterTree extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection {
+public class JIPipeParameterTree extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection, JIPipeParameterCollection.ParameterChangedEventListener,
+        JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeParameterCollection.ParameterUIChangedEventListener {
 
     /**
      * No flags
@@ -183,7 +183,12 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             addReflectionParameters(source, target);
         }
         addContextActions(source, target);
-        source.getEventBus().register(this);
+
+        // Register events
+        source.getParameterChangedEventEmitter().subscribeWeak(this);
+        source.getParameterStructureChangedEventEmitter().subscribeWeak(this);
+        source.getParameterUIChangedEventEmitter().subscribeWeak(this);
+
     }
 
     private void addContextActions(JIPipeParameterCollection source, Node target) {
@@ -307,48 +312,6 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
     @Override
     public Map<String, JIPipeParameterAccess> getParameters() {
         return parameters;
-    }
-
-    /**
-     * Triggered when a source informs that the parameter structure was changed.
-     * Passes the event to listeners.
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
-        if (event.getVisitors().contains(this))
-            return;
-        event.getVisitors().add(this);
-        getEventBus().post(event);
-    }
-
-    /**
-     * Triggered when a source informs that the parameter UI should be updated
-     * Passes the event to listeners.
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onParameterUIChanged(ParameterUIChangedEvent event) {
-        if (event.getVisitors().contains(this))
-            return;
-        event.getVisitors().add(this);
-        getEventBus().post(event);
-    }
-
-    /**
-     * Triggered when a parameter value was changed.
-     * Passes the event to listeners.
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onParameterChangedEvent(ParameterChangedEvent event) {
-        if (event.getVisitors().contains(this))
-            return;
-        event.getVisitors().add(this);
-        getEventBus().post(event);
     }
 
     public boolean isIgnoreReflectionParameters() {
@@ -530,6 +493,30 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
                 node.getParameters().inverse().remove(access);
             }
         }
+    }
+
+    @Override
+    public void onParameterChanged(ParameterChangedEvent event) {
+        if (event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
+        getParameterChangedEventEmitter().emit(event);
+    }
+
+    @Override
+    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
+        if (event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
+        getParameterStructureChangedEventEmitter().emit(event);
+    }
+
+    @Override
+    public void onParameterUIChanged(ParameterUIChangedEvent event) {
+        if (event.getVisitors().contains(this))
+            return;
+        event.getVisitors().add(this);
+        getParameterUIChangedEventEmitter().emit(event);
     }
 
     /**

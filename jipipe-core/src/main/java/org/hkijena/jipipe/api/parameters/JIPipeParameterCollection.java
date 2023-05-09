@@ -13,14 +13,13 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  * Interfaced for a parameterized object
@@ -61,14 +60,14 @@ public interface JIPipeParameterCollection {
      * Triggers a {@link ParameterStructureChangedEvent} on this collection
      */
     default void triggerParameterStructureChange() {
-        getEventBus().post(new ParameterStructureChangedEvent(this));
+        getParameterStructureChangedEventEmitter().emit(new ParameterStructureChangedEvent(this));
     }
 
     /**
      * Triggers a {@link ParameterUIChangedEvent} on this collection
      */
     default void triggerParameterUIChange() {
-        getEventBus().post(new ParameterUIChangedEvent(this));
+        getParameterUIChangedEventEmitter().emit(new ParameterUIChangedEvent(this));
     }
 
     /**
@@ -77,40 +76,7 @@ public interface JIPipeParameterCollection {
      * @param key the parameter key
      */
     default void triggerParameterChange(String key) {
-        getEventBus().post(new ParameterChangedEvent(this, key));
-    }
-
-    /**
-     * Adds a listener to the change of a parameter of the specified key.
-     * Wrapper around creating an anonymous object
-     *
-     * @param key      the parameter key
-     * @param consumer the listener
-     */
-    default void addParameterChangeListener(String key, Consumer<ParameterChangedEvent> consumer) {
-        getEventBus().register(new Object() {
-            @Subscribe
-            public void onParameterChanged(ParameterChangedEvent event) {
-                if (Objects.equals(key, event.getKey())) {
-                    consumer.accept(event);
-                }
-            }
-        });
-    }
-
-    /**
-     * Adds a listener to the change of any parameter.
-     * Wrapper around creating an anonymous object
-     *
-     * @param consumer the listener
-     */
-    default void addParameterChangeListener(Consumer<ParameterChangedEvent> consumer) {
-        getEventBus().register(new Object() {
-            @Subscribe
-            public void onParameterChanged(ParameterChangedEvent event) {
-                consumer.accept(event);
-            }
-        });
+        getParameterChangedEventEmitter().emit(new ParameterChangedEvent(this, key));
     }
 
     /**
@@ -160,11 +126,22 @@ public interface JIPipeParameterCollection {
     }
 
     /**
-     * Gets the event bus that posts events about the parameters
-     *
-     * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
+     * Emitter for changes in the parameter
+     * @return the emitter
      */
-    EventBus getEventBus();
+    ParameterChangedEventEmitter getParameterChangedEventEmitter();
+
+    /**
+     * Emitter for changes in the structure of parameters
+     * @return the emitter
+     */
+    ParameterStructureChangedEventEmitter getParameterStructureChangedEventEmitter();
+
+    /**
+     * Emitter for changes in the parameter user interface
+     * @return the emitter
+     */
+    ParameterUIChangedEventEmitter getParameterUIChangedEventEmitter();
 
     /**
      * Allows to install additional operations into the context menu of each parameter (triangle menu next to the help)
@@ -194,8 +171,7 @@ public interface JIPipeParameterCollection {
     /**
      * Triggered when a parameter holder's parameters are changed
      */
-    class ParameterChangedEvent {
-        private final Object source;
+    class ParameterChangedEvent extends AbstractJIPipeEvent {
         private final String key;
         private final Set<Object> visitors = new HashSet<>();
 
@@ -204,12 +180,8 @@ public interface JIPipeParameterCollection {
          * @param key    parameter key
          */
         public ParameterChangedEvent(Object source, String key) {
-            this.source = source;
+            super(source);
             this.key = key;
-        }
-
-        public Object getSource() {
-            return source;
         }
 
         public String getKey() {
@@ -222,23 +194,35 @@ public interface JIPipeParameterCollection {
     }
 
     /**
+     * Emitter for {@link ParameterChangedEvent}
+     */
+    class ParameterChangedEventEmitter extends JIPipeEventEmitter<ParameterChangedEvent, ParameterChangedEventListener> {
+        @Override
+        protected void call(ParameterChangedEventListener listener, ParameterChangedEvent event) {
+            listener.onParameterChanged(event);
+        }
+    }
+
+    /**
+     * Listener for {@link ParameterChangedEvent}
+     */
+    interface ParameterChangedEventListener {
+        void onParameterChanged(ParameterChangedEvent event);
+    }
+
+    /**
      * Triggered by an {@link JIPipeParameterCollection} if the list of available parameters is changed.
      * Please be very careful with this event, as it can trigger infinite loops while loading data from parameters.
      * If possible, use {@link ParameterUIChangedEvent}, if you only want the UI to update.
      */
-    class ParameterStructureChangedEvent {
-        private final JIPipeParameterCollection source;
+    class ParameterStructureChangedEvent extends AbstractJIPipeEvent {
         private final Set<Object> visitors = new HashSet<>();
 
         /**
          * @param source event source
          */
         public ParameterStructureChangedEvent(JIPipeParameterCollection source) {
-            this.source = source;
-        }
-
-        public JIPipeParameterCollection getSource() {
-            return source;
+            super(source);
         }
 
         public Set<Object> getVisitors() {
@@ -247,25 +231,56 @@ public interface JIPipeParameterCollection {
     }
 
     /**
+     * Listener for {@link ParameterStructureChangedEvent}
+     */
+    interface ParameterStructureChangedEventListener {
+        void onParameterStructureChanged(ParameterStructureChangedEvent event);
+    }
+
+    /**
+     * Emitter for {@link ParameterStructureChangedEvent}
+     */
+    class ParameterStructureChangedEventEmitter extends JIPipeEventEmitter<ParameterStructureChangedEvent, ParameterStructureChangedEventListener> {
+
+        @Override
+        protected void call(ParameterStructureChangedEventListener listener, ParameterStructureChangedEvent event) {
+            listener.onParameterStructureChanged(event);
+        }
+    }
+
+    /**
      * Triggered by an {@link JIPipeParameterCollection} if the parameter UI should be updated
      */
-    class ParameterUIChangedEvent {
-        private final JIPipeParameterCollection source;
+    class ParameterUIChangedEvent extends AbstractJIPipeEvent {
         private final Set<Object> visitors = new HashSet<>();
 
         /**
          * @param source event source
          */
         public ParameterUIChangedEvent(JIPipeParameterCollection source) {
-            this.source = source;
-        }
-
-        public JIPipeParameterCollection getSource() {
-            return source;
+            super(source);
         }
 
         public Set<Object> getVisitors() {
             return visitors;
+        }
+    }
+
+    /**
+     * Listener for {@link ParameterUIChangedEvent}
+     */
+    interface ParameterUIChangedEventListener {
+        void onParameterUIChanged(ParameterUIChangedEvent event);
+    }
+
+    /**
+     * Emitter for {@link ParameterUIChangedEvent}
+     */
+    class ParameterUIChangedEventEmitter extends JIPipeEventEmitter<ParameterUIChangedEvent, ParameterUIChangedEventListener> {
+
+        @Override
+        protected void call(ParameterUIChangedEventListener listener, ParameterUIChangedEvent event) {
+            listener.onParameterUIChanged(event);
         }
     }
 }

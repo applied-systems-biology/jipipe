@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.parameters;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
@@ -21,7 +20,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.Objects;
 
-public class ParameterExplorerWindow extends JFrame {
+public class ParameterExplorerWindow extends JFrame implements JIPipeParameterCollection.ParameterChangedEventListener {
     private final JIPipeWorkbench workbench;
     private final JIPipeParameterCollection parameterCollection;
     private final JIPipeParameterTree parameterTree;
@@ -47,14 +46,7 @@ public class ParameterExplorerWindow extends JFrame {
         initialize();
 
         // JSON updater
-        parameterCollection.getEventBus().register(new Object() {
-            @Subscribe
-            public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if (currentValue != null && Objects.equals(event.getKey(), currentValue.getKey())) {
-                    updateCurrentValueJson();
-                }
-            }
-        });
+        parameterCollection.getParameterChangedEventEmitter().subscribeWeak(this);
 
         // Select the first entry
         JTree treeComponent = parameterTreeUI.getTreeComponent();
@@ -279,14 +271,7 @@ public class ParameterExplorerWindow extends JFrame {
         testerValue.set(typeInfo.newInstance());
 
         // JSON updater
-        testerValue.getSource().getEventBus().register(new Object() {
-            @Subscribe
-            public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if (testerValue != null) {
-                    updateTesterValueJson();
-                }
-            }
-        });
+        testerValue.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
 
         // Set editors
         currentValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, parameterAccess), BorderLayout.CENTER);
@@ -304,5 +289,18 @@ public class ParameterExplorerWindow extends JFrame {
 
         formPanel.revalidate();
         formPanel.repaint();
+    }
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if(event.getEmitter() == parameterCollection.getParameterChangedEventEmitter()) {
+            if (currentValue != null && Objects.equals(event.getKey(), currentValue.getKey())) {
+                updateCurrentValueJson();
+            }
+        }
+        else if(event.getEmitter() == testerValue.getSource().getParameterChangedEventEmitter()) {
+            if (testerValue != null) {
+                updateTesterValueJson();
+            }
+        }
     }
 }
