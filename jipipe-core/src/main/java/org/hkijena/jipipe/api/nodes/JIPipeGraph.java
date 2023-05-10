@@ -646,7 +646,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (slot.getNode() == node && !node.getInputSlots().contains(slot) &&
                         !node.getOutputSlots().contains(slot)) {
                     toRemove.add(slot);
-                    slot.getEventBus().unregister(this);
+//                    slot.getEventBus().unregister(this);
                     modified = true;
                 }
             }
@@ -660,14 +660,14 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
                 if (!graph.vertexSet().contains(inputSlot)) {
                     graph.addVertex(inputSlot);
-                    inputSlot.getEventBus().register(this);
+//                    inputSlot.getEventBus().register(this);
                     modified = true;
                 }
             }
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                 if (!graph.vertexSet().contains(outputSlot)) {
                     graph.addVertex(outputSlot);
-                    outputSlot.getEventBus().register(this);
+//                    outputSlot.getEventBus().register(this);
                     modified = true;
                 }
             }

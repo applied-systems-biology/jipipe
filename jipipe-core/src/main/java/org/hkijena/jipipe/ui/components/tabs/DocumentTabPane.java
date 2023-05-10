@@ -19,6 +19,8 @@ import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -739,7 +741,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
         }
     }
 
-    public static class DocumentTabComponent extends JPanel {
+    public static class DocumentTabComponent extends JPanel implements TabRenamedEventListener {
         private final Border tabPanelBorder;
         private final Icon icon;
         private DocumentTab documentTab;
@@ -794,15 +796,15 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
         public void setDocumentTab(DocumentTab documentTab) {
             if (this.documentTab != null) {
-                this.documentTab.getEventBus().unregister(this);
+                this.documentTab.getTabRenamedEventEmitter().unsubscribe(this);
             }
             this.documentTab = documentTab;
-            documentTab.getEventBus().register(this);
+            documentTab.getTabRenamedEventEmitter().subscribe(this);
             updateContents();
         }
 
         @Override
-        public void onRenamed(TabRenamedEvent event) {
+        public void onDocumentTabRenamed(TabRenamedEvent event) {
             updateContents();
         }
     }
@@ -819,6 +821,8 @@ public class DocumentTabPane extends JPanel implements Disposable {
         private final JPopupMenu popupMenu;
         private String title;
 
+        private final TabRenamedEventEmitter tabRenamedEventEmitter = new TabRenamedEventEmitter();
+
         private DocumentTab(DocumentTabPane documentTabPane, String title, Icon icon, DocumentTabComponent tabComponent, Component content, CloseMode closeMode, JPopupMenu popupMenu) {
             this.documentTabPane = documentTabPane;
             this.title = title;
@@ -829,6 +833,10 @@ public class DocumentTabPane extends JPanel implements Disposable {
             this.popupMenu = popupMenu;
         }
 
+        public TabRenamedEventEmitter getTabRenamedEventEmitter() {
+            return tabRenamedEventEmitter;
+        }
+
         @JIPipeParameter("title")
         public String getTitle() {
             return title;
@@ -837,7 +845,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
         @JIPipeParameter("title")
         public void setTitle(String title) {
             this.title = title;
-            getEventBus().post(new TabRenamedEvent(documentTabPane, this));
+            tabRenamedEventEmitter.emit(new TabRenamedEvent(documentTabPane, this));
         }
 
         public DocumentTabPane getDocumentTabPane() {
@@ -865,11 +873,12 @@ public class DocumentTabPane extends JPanel implements Disposable {
         }
     }
 
-    public static class TabRenamedEvent {
+    public static class TabRenamedEvent extends AbstractJIPipeEvent {
         private final DocumentTabPane documentTabPane;
         private final DocumentTab tab;
 
         public TabRenamedEvent(DocumentTabPane documentTabPane, DocumentTab tab) {
+            super(documentTabPane);
             this.documentTabPane = documentTabPane;
             this.tab = tab;
         }
@@ -880,6 +889,18 @@ public class DocumentTabPane extends JPanel implements Disposable {
 
         public DocumentTab getTab() {
             return tab;
+        }
+    }
+
+    public interface TabRenamedEventListener {
+        void onDocumentTabRenamed(TabRenamedEvent event);
+    }
+
+    public static class TabRenamedEventEmitter extends JIPipeEventEmitter<TabRenamedEvent, TabRenamedEventListener> {
+
+        @Override
+        protected void call(TabRenamedEventListener tabRenamedEventListener, TabRenamedEvent event) {
+            tabRenamedEventListener.onDocumentTabRenamed(event);
         }
     }
 }

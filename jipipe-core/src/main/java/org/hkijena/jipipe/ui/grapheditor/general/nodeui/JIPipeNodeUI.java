@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.ui.grapheditor.general.nodeui;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -24,6 +22,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
 import org.hkijena.jipipe.api.nodes.*;
@@ -31,13 +30,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
@@ -53,7 +53,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -118,6 +117,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private JIPipeNodeUIActiveArea currentActiveArea;
     private BufferedImage nodeBuffer;
     private boolean nodeBufferInvalid = true;
+
+    private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
 
     /**
      * Creates a new UI
@@ -196,6 +197,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         // Initialization
         initialize();
         updateView(true, true, true);
+    }
+
+    public NodeUIActionRequestedEventEmitter getNodeUIActionRequestedEventEmitter() {
+        return nodeUIActionRequestedEventEmitter;
     }
 
     private void initialize() {
@@ -2033,5 +2038,77 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         Default,
         Unconnected,
         Cached
+    }
+
+    public interface NodeUIActionRequestedEventListener {
+        void onNodeUIActionRequested(NodeUIActionRequestedEvent event);
+    }
+
+    public interface DefaultNodeUIActionRequestedEventListener {
+        void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event);
+    }
+
+    /**
+     * An action that is requested by an {@link JIPipeNodeUI} and passed down to a {@link JIPipeGraphEditorUI}
+     */
+    public static class NodeUIActionRequestedEvent extends AbstractJIPipeEvent {
+        private final JIPipeNodeUI ui;
+        private final JIPipeNodeUIAction action;
+
+        /**
+         * Initializes a new instance
+         *
+         * @param ui     the requesting UI
+         * @param action the action parameter
+         */
+        public NodeUIActionRequestedEvent(JIPipeNodeUI ui, JIPipeNodeUIAction action) {
+            super(ui);
+            this.ui = ui;
+            this.action = action;
+        }
+
+        public JIPipeNodeUI getUi() {
+            return ui;
+        }
+
+        public JIPipeNodeUIAction getAction() {
+            return action;
+        }
+    }
+
+    public static class NodeUIActionRequestedEventEmitter extends JIPipeEventEmitter<NodeUIActionRequestedEvent, NodeUIActionRequestedEventListener> {
+
+        @Override
+        protected void call(NodeUIActionRequestedEventListener nodeUIActionRequestedEventListener, NodeUIActionRequestedEvent event) {
+            nodeUIActionRequestedEventListener.onNodeUIActionRequested(event);
+        }
+    }
+
+    /**
+     * Triggered when an {@link JIPipeNodeUI} requests a default action (double click)
+     */
+    public static class DefaultNodeUIActionRequestedEvent extends AbstractJIPipeEvent {
+
+        private final JIPipeNodeUI ui;
+
+        /**
+         * @param ui event source
+         */
+        public DefaultNodeUIActionRequestedEvent(JIPipeNodeUI ui) {
+            super(ui);
+            this.ui = ui;
+        }
+
+        public JIPipeNodeUI getUi() {
+            return ui;
+        }
+    }
+
+    public static class DefaultNodeUIActionRequestedEventEmitter extends JIPipeEventEmitter<DefaultNodeUIActionRequestedEvent, DefaultNodeUIActionRequestedEventListener> {
+
+        @Override
+        protected void call(DefaultNodeUIActionRequestedEventListener defaultNodeUIActionRequestedEventListener, DefaultNodeUIActionRequestedEvent event) {
+            defaultNodeUIActionRequestedEventListener.onDefaultNodeUIActionRequested(event);
+        }
     }
 }

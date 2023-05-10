@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkbenchAccess {
+public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkbenchAccess, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeWorkbench workbench;
     private final JIPipeDynamicParameterCollection dynamicParameterCollection;
@@ -50,7 +50,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
             parameterEntry.setKey(entry.getKey());
             parameterEntry.setDescription(new HTMLText(entry.getValue().getDescription()));
             parameterEntry.setType(new JIPipeParameterTypeInfoRef(entry.getValue().getFieldClass()));
-            parameterEntry.getEventBus().register(this);
+            parameterEntry.getParameterChangedEventEmitter().subscribeWeak(this);
             parameterEntryList.add(parameterEntry);
         }
         updateJList();
@@ -193,14 +193,14 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
         ParameterEntry entry = new ParameterEntry(dynamicParameterCollection.getAllowedTypes());
         entry.setType(new JIPipeParameterTypeInfoRef(fieldClass));
         entry.setKey(key);
-        entry.getEventBus().register(this);
+        entry.getParameterChangedEventEmitter().subscribeWeak(this);
         parameterEntryList.add(entry);
         updateJList();
         parameterEntryJList.setSelectedValue(entry, true);
     }
 
     @Override
-    public void onParameterEntryUpdated(JIPipeParameterCollection.ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() instanceof ParameterEntry) {
             parameterEntryJList.repaint();
         }

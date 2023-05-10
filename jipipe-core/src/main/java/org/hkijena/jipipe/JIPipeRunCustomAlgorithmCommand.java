@@ -135,11 +135,8 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
             }
         }
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        progressInfo.getEventBus().register(new Object() {
-            @Override
-            public void onProgress(JIPipeProgressInfo.StatusUpdatedEvent event) {
-                IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
-            }
+        progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+            IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
         });
         IJ.showStatus(windowTitle + " ...");
         IJ.showProgress(1, 3);

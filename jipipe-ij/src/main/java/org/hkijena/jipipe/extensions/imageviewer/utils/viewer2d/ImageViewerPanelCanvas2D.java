@@ -50,6 +50,13 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     private final ToolChangedEventEmitter toolChangedEventEmitter = new ToolChangedEventEmitter();
     private final PixelHoverEventEmitter pixelHoverEventEmitter = new PixelHoverEventEmitter();
 
+    private final MouseClickedEventEmitter mouseClickedEventEmitter = new MouseClickedEventEmitter();
+    private final MouseDraggedEventEmitter mouseDraggedEventEmitter = new MouseDraggedEventEmitter();
+    private final MouseEnteredEventEmitter mouseEnteredEventEmitter = new MouseEnteredEventEmitter();
+    private final MouseExitedEventEmitter mouseExitedEventEmitter = new MouseExitedEventEmitter();
+    private final MouseMovedEventEmitter mouseMovedEventEmitter = new MouseMovedEventEmitter();
+    private final MousePressedEventEmitter mousePressedEventEmitter = new MousePressedEventEmitter();
+    private final MouseReleasedEventEmitter mouseReleasedEventEmitter = new MouseReleasedEventEmitter();
     public ImageViewerPanelCanvas2D(ImageViewerPanel2D imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
         setLayout(null);
@@ -97,6 +104,34 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     public PixelHoverEventEmitter getPixelHoverEventEmitter() {
         return pixelHoverEventEmitter;
+    }
+
+    public MouseClickedEventEmitter getMouseClickedEventEmitter() {
+        return mouseClickedEventEmitter;
+    }
+
+    public MouseDraggedEventEmitter getMouseDraggedEventEmitter() {
+        return mouseDraggedEventEmitter;
+    }
+
+    public MouseEnteredEventEmitter getMouseEnteredEventEmitter() {
+        return mouseEnteredEventEmitter;
+    }
+
+    public MouseExitedEventEmitter getMouseExitedEventEmitter() {
+        return mouseExitedEventEmitter;
+    }
+
+    public MouseMovedEventEmitter getMouseMovedEventEmitter() {
+        return mouseMovedEventEmitter;
+    }
+
+    public MousePressedEventEmitter getMousePressedEventEmitter() {
+        return mousePressedEventEmitter;
+    }
+
+    public MouseReleasedEventEmitter getMouseReleasedEventEmitter() {
+        return mouseReleasedEventEmitter;
     }
 
     @Override
@@ -212,7 +247,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        eventBus.post(new MouseClickedEvent(e.getComponent(),
+        mouseClickedEventEmitter.emit(new MouseClickedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -239,7 +274,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
             currentDragOffset = new Point(e.getPoint().x - contentX, e.getPoint().y - contentY);
             setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
-        eventBus.post(new MousePressedEvent(e.getComponent(),
+        mousePressedEventEmitter.emit(new MousePressedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -254,7 +289,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     public void mouseReleased(MouseEvent e) {
         currentDragOffset = null;
         setCursor(getStandardCursor());
-        eventBus.post(new MouseReleasedEvent(e.getComponent(),
+        mouseReleasedEventEmitter.emit(new MouseReleasedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -267,7 +302,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        eventBus.post(new MouseEnteredEvent(e.getComponent(),
+        mouseEnteredEventEmitter.emit(new MouseEnteredEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -280,7 +315,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     @Override
     public void mouseExited(MouseEvent e) {
-        eventBus.post(new MouseExitedEvent(e.getComponent(),
+        mouseExitedEventEmitter.emit(new MouseExitedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -302,9 +337,9 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
             fixNegativeOffsets();
             repaint(50);
         } else {
-            eventBus.post(new PixelHoverEvent(canvas2D, getMouseModelPixelCoordinate(e, false), e));
+            pixelHoverEventEmitter.emit(new PixelHoverEvent(this, getMouseModelPixelCoordinate(e, false), e));
         }
-        eventBus.post(new MouseDraggedEvent(e.getComponent(),
+        mouseDraggedEventEmitter.emit(new MouseDraggedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -347,7 +382,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     @Override
     public void mouseMoved(MouseEvent e) {
         pixelHoverEventEmitter.emit(new PixelHoverEvent(this, getMouseModelPixelCoordinate(e, false), e));
-        eventBus.post(new MouseMovedEvent(e.getComponent(),
+        mouseMovedEventEmitter.emit(new MouseMovedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),

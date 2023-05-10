@@ -51,7 +51,7 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
         if (selection.size() == 1) {
             // Classic mode (via UI)
             JIPipeNodeUI ui = selection.iterator().next();
-            ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(true, false)));
+            ui.getEventBus().post(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(true, false)));
         } else {
             // Batch mode (enqueue)
             for (JIPipeNodeUI nodeUI : selection) {

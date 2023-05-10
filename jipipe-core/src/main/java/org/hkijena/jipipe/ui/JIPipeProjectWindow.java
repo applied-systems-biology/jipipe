@@ -255,21 +255,19 @@ public class JIPipeProjectWindow extends JFrame {
         if (loadZipTarget != null) {
             ExtractTemplateZipFileRun run = new ExtractTemplateZipFileRun(template, loadZipTarget);
             Path finalLoadZipTarget = loadZipTarget;
-            JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-                @Override
-                public void onRunFinished(JIPipeRunnable.FinishedEvent event) {
-                    if (event.getRun() == run) {
-                        SwingUtilities.invokeLater(() -> {
-                            Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
-                            if (projectFile == null) {
-                                JOptionPane.showMessageDialog(JIPipeProjectWindow.this,
-                                        "No project file in " + finalLoadZipTarget,
-                                        "Load template",
-                                        JOptionPane.ERROR_MESSAGE);
-                            }
-                            openProject(projectFile);
-                        });
-                    }
+
+            JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
+                if (event.getRun() == run) {
+                    SwingUtilities.invokeLater(() -> {
+                        Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
+                        if (projectFile == null) {
+                            JOptionPane.showMessageDialog(JIPipeProjectWindow.this,
+                                    "No project file in " + finalLoadZipTarget,
+                                    "Load template",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                        openProject(projectFile);
+                    });
                 }
             });
             JIPipeRunExecuterUI.runInDialog(this, run);

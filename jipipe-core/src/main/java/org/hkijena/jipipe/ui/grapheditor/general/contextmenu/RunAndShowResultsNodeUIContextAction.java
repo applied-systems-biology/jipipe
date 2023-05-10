@@ -45,7 +45,7 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         JIPipeNodeUI ui = selection.iterator().next();
-        ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(false)));
+        ui.getEventBus().post(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(false)));
     }
 
     @Override

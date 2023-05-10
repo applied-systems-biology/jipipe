@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExampleListCellRenderer;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -74,7 +74,7 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
     }
 
     @Override
-    public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
+    public void onNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
         reloadList();
     }
 }

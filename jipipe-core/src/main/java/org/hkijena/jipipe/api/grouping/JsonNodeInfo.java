@@ -40,7 +40,7 @@ import java.util.*;
 /**
  * Info of a {@link GraphWrapperAlgorithm}
  */
-public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements JIPipeNodeInfo, JIPipeValidatable {
+public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements JIPipeNodeInfo, JIPipeValidatable, JIPipeGraph.GraphChangedEventListener {
     private String id;
     private String name;
     private HTMLText description = new HTMLText();
@@ -64,7 +64,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
         category.setValue((new MiscellaneousNodeTypeCategory()).getId());
         exportedParameters = new GraphNodeParameterReferenceGroupCollection();
         exportedParameters.setGraph(getGraph());
-        graph.getEventBus().register(this);
+        graph.getGraphChangedEventEmitter().subscribe(this);
     }
 
     /**
@@ -76,7 +76,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
         graph = new JIPipeGraph(group.getWrappedGraph());
         exportedParameters = new GraphNodeParameterReferenceGroupCollection(group.getExportedParameters());
         exportedParameters.setGraph(getGraph());
-        graph.getEventBus().register(this);
+        graph.getGraphChangedEventEmitter().subscribe(this);
         category.setValue((new MiscellaneousNodeTypeCategory()).getId());
         setName(group.getName());
         setDescription(group.getCustomDescription());
@@ -210,14 +210,14 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     public void setGraph(JIPipeGraph graph) {
         if (graph != this.graph) {
             if (this.graph != null) {
-                this.graph.getEventBus().unregister(this);
+                this.graph.getGraphChangedEventEmitter().unsubscribe(this);
             }
             this.graph = graph;
             if (exportedParameters != null) {
                 exportedParameters.setGraph(graph);
             }
             updateSlots();
-            this.graph.getEventBus().register(this);
+            this.graph.getGraphChangedEventEmitter().unsubscribe(this);
         }
     }
 
@@ -243,16 +243,6 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         updateSlots();
-    }
-
-    /**
-     * Triggered when the parameter structure of an algorithm is changed
-     * Updates the list of available parameters
-     *
-     * @param event generated event
-     */
-    @Override
-    public void onGraphParameterStructureChanged(ParameterStructureChangedEvent event) {
     }
 
     private void updateSlots() {

@@ -62,6 +62,9 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     private Set<JsonNodeInfo> nodeInfos = new HashSet<>();
     private JsonNode serializedJson;
 
+    private final JIPipeService.ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new JIPipeService.ExtensionContentAddedEventEmitter();
+    private final JIPipeService.ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new JIPipeService.ExtensionContentRemovedEventEmitter();
+
     /**
      * Creates a new instance
      */
@@ -83,6 +86,14 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
                     "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
                     "Try to update JIPipe. If this does not work, contact the plugin's author.");
         }
+    }
+
+    public JIPipeService.ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
+        return extensionContentAddedEventEmitter;
+    }
+
+    public JIPipeService.ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
+        return extensionContentRemovedEventEmitter;
     }
 
     /**
@@ -259,7 +270,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         if (nodeInfos == null)
             deserializeNodeInfos();
         nodeInfos.add(nodeInfo);
-        getEventBus().post(new JIPipe.ExtensionContentAddedEvent(this, nodeInfo));
+        extensionContentAddedEventEmitter.emit(new JIPipe.ExtensionContentAddedEvent(this, nodeInfo));
     }
 
     /**
@@ -344,7 +355,7 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         if (nodeInfos == null)
             deserializeNodeInfos();
         if (nodeInfos.remove(info)) {
-            getEventBus().post(new JIPipe.ExtensionContentRemovedEvent(this, info));
+            extensionContentRemovedEventEmitter.emit(new JIPipe.ExtensionContentRemovedEvent(this, info));
         }
     }
 

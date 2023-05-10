@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.grapheditor.general;
 
 import com.google.common.collect.*;
-import com.google.common.eventbus.Subscribe;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.lang3.SystemUtils;
@@ -37,7 +36,6 @@ import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage;
-import org.hkijena.jipipe.ui.grapheditor.general.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.general.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod;
@@ -68,7 +66,8 @@ import java.util.stream.Collectors;
 /**
  * UI that displays an {@link JIPipeGraph}
  */
-public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbenchAccess, MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort, Disposable {
+public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbenchAccess, MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort, Disposable,
+        JIPipeGraph.GraphChangedEventListener, JIPipeGraph.NodeConnectedEventListener, JIPipeNodeUI.NodeUIActionRequestedEventListener {
 
     public static final DropShadowRenderer DROP_SHADOW_BORDER = new DropShadowRenderer(Color.BLACK,
             5,
@@ -151,9 +150,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final GraphCanvasUpdatedEventEmitter graphCanvasUpdatedEventEmitter = new GraphCanvasUpdatedEventEmitter();
     private final NodeSelectionChangedEventEmitter nodeSelectionChangedEventEmitter = new NodeSelectionChangedEventEmitter();
     private final NodeUISelectedEventEmitter nodeUISelectedEventEmitter = new NodeUISelectedEventEmitter();
-    private final DefaultAlgorithmUIActionRequestedEventEmitter defaultAlgorithmUIActionRequestedEventEmitter = new DefaultAlgorithmUIActionRequestedEventEmitter();
-
-    private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
+    private final JIPipeNodeUI.DefaultNodeUIActionRequestedEventEmitter defaultNodeUIActionRequestedEventEmitter = new JIPipeNodeUI.DefaultNodeUIActionRequestedEventEmitter();
+    private final JIPipeNodeUI.NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new JIPipeNodeUI.NodeUIActionRequestedEventEmitter();
 
     /**
      * Creates a new UI
@@ -180,7 +178,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
         initialize();
         addNewNodes(false);
-        graph.getEventBus().register(this);
+
+        graph.getGraphChangedEventEmitter().subscribeWeak(this);
+        graph.getNodeConnectedEventEmitter().subscribeWeak(this);
+
         initializeHotkeys();
         updateAssets();
     }
@@ -197,20 +198,21 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return nodeUISelectedEventEmitter;
     }
 
-    public DefaultAlgorithmUIActionRequestedEventEmitter getDefaultAlgorithmUIActionRequestedEventEmitter() {
-        return defaultAlgorithmUIActionRequestedEventEmitter;
+    public JIPipeNodeUI.DefaultNodeUIActionRequestedEventEmitter getDefaultAlgorithmUIActionRequestedEventEmitter() {
+        return defaultNodeUIActionRequestedEventEmitter;
     }
 
-    public NodeUIActionRequestedEventEmitter getNodeUIActionRequestedEventEmitter() {
+    public JIPipeNodeUI.NodeUIActionRequestedEventEmitter getNodeUIActionRequestedEventEmitter() {
         return nodeUIActionRequestedEventEmitter;
     }
 
     @Override
     public void dispose() {
-        graph.getEventBus().unregister(this);
+        graph.getGraphChangedEventEmitter().unsubscribe(this);
+        graph.getNodeConnectedEventEmitter().unsubscribe(this);
         for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
             try {
-                nodeUI.getEventBus().unregister(this);
+                unregisterNodeUIEvents(nodeUI);
             } catch (Throwable e) {
             }
         }
@@ -335,7 +337,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         for (JIPipeNodeUI ui : ImmutableList.copyOf(nodeUIs.values())) {
             remove(ui);
             try {
-                ui.getEventBus().unregister(this);
+                unregisterNodeUIEvents(ui);
             } catch (Throwable e) {
             }
         }
@@ -384,7 +386,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 continue;
 
             ui = new JIPipeNodeUI(getWorkbench(), this, algorithm);
-            ui.getEventBus().register(this);
+            registerNodeUIEvents(ui);
             add(ui, new Integer(currentNodeLayer++)); // Layered pane
             nodeUIs.put(algorithm, ui);
             if (!ui.moveToStoredGridLocation(force)) {
@@ -413,6 +415,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
             scheduledSelection.clear();
         }
+    }
+
+    private void registerNodeUIEvents(JIPipeNodeUI ui) {
+        ui.getNodeUIActionRequestedEventEmitter().subscribe(this);
+    }
+
+    private void unregisterNodeUIEvents(JIPipeNodeUI ui) {
+        ui.getNodeUIActionRequestedEventEmitter().unsubscribe(this);
     }
 
     /**
@@ -450,22 +460,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
         repaint();
         graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
-    }
-
-    /**
-     * Triggers when an {@link JIPipeNodeUI} requests an action.
-     * Passes the action to its own event bus
-     *
-     * @param event event
-     */
-    @Override
-    public void onActionRequested(NodeUIActionRequestedEvent event) {
-        if (event.getAction() instanceof OpenContextMenuAction) {
-            if (event.getUi() != null) {
-                openContextMenu(getLastMousePosition());
-            }
-        }
-        nodeUIActionRequestedEventEmitter.emit(event);
     }
 
     /**
@@ -979,7 +973,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
             if (ui != null)
-                defaultAlgorithmUIActionRequestedEventEmitter.emit(new DefaultAlgorithmUIActionRequestedEvent(ui));
+                defaultNodeUIActionRequestedEventEmitter.emit(new JIPipeNodeUI.DefaultNodeUIActionRequestedEvent(ui));
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
             setGraphEditCursor(new Point(mouseEvent.getX(), mouseEvent.getY()));
             requestFocusInWindow();
@@ -1399,71 +1393,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             minDimensions = new Dimension(width, height);
         }
         return new Dimension(width, height);
-    }
-
-    /**
-     * Should be triggered when the algorithm graph is changed.
-     * Triggers a node update.
-     *
-     * @param event The generated event
-     */
-    @Override
-    public void onAlgorithmGraphChanged(JIPipeGraph.GraphChangedEvent event) {
-        // Update the location of existing nodes
-        for (JIPipeNodeUI ui : nodeUIs.values()) {
-            ui.moveToStoredGridLocation(true);
-        }
-        removeOldNodes();
-        addNewNodes(true);
-        requestFocusInWindow();
-    }
-
-    /**
-     * Should be triggered when a connection is made
-     *
-     * @param event The generated event
-     */
-    @Override
-    public void onAlgorithmConnected(JIPipeGraph.NodeConnectedEvent event) {
-        JIPipeNodeUI sourceNode = nodeUIs.getOrDefault(event.getSource().getNode(), null);
-        JIPipeNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
-
-        // Check if we actually need to auto-place
-        if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + viewMode.getGridHeight()) {
-            return;
-        }
-
-        boolean layoutHelperEnabled = settings != null && settings.isLayoutAfterConnect();
-        if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
-
-            // Disabled for comment nodes
-            if (sourceNode.getNode() instanceof JIPipeCommentNode || targetNode.getNode() instanceof JIPipeCommentNode) {
-                return;
-            }
-
-            Point cursorBackup = graphEditCursor;
-            try {
-                setGraphEditCursor(new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight()));
-                autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
-                autoExpandLeftTop();
-            } finally {
-                setGraphEditCursor(cursorBackup);
-            }
-        }
-
-        requestFocusInWindow();
-        graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
-    }
-
-
-    /**
-     * Should be triggered when an {@link JIPipeNodeUI} requests that the algorithm settings should be opened
-     *
-     * @param event The generated event
-     */
-    @Override
-    public void onOpenAlgorithmSettings(NodeUISelectedEvent event) {
-        nodeUISelectedEventEmitter.emit(event);
     }
 
     /**
@@ -2727,6 +2656,59 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return historyJournal;
     }
 
+    @Override
+    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+        // Update the location of existing nodes
+        for (JIPipeNodeUI ui : nodeUIs.values()) {
+            ui.moveToStoredGridLocation(true);
+        }
+        removeOldNodes();
+        addNewNodes(true);
+        requestFocusInWindow();
+    }
+
+    @Override
+    public void onNodeConnected(JIPipeGraph.NodeConnectedEvent event) {
+        JIPipeNodeUI sourceNode = nodeUIs.getOrDefault(event.getSource().getNode(), null);
+        JIPipeNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
+
+        // Check if we actually need to auto-place
+        if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + viewMode.getGridHeight()) {
+            return;
+        }
+
+        boolean layoutHelperEnabled = settings != null && settings.isLayoutAfterConnect();
+        if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
+
+            // Disabled for comment nodes
+            if (sourceNode.getNode() instanceof JIPipeCommentNode || targetNode.getNode() instanceof JIPipeCommentNode) {
+                return;
+            }
+
+            Point cursorBackup = graphEditCursor;
+            try {
+                setGraphEditCursor(new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight()));
+                autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
+                autoExpandLeftTop();
+            } finally {
+                setGraphEditCursor(cursorBackup);
+            }
+        }
+
+        requestFocusInWindow();
+        graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+    }
+
+    @Override
+    public void onNodeUIActionRequested(JIPipeNodeUI.NodeUIActionRequestedEvent event) {
+        if (event.getAction() instanceof OpenContextMenuAction) {
+            if (event.getUi() != null) {
+                openContextMenu(getLastMousePosition());
+            }
+        }
+        nodeUIActionRequestedEventEmitter.emit(event);
+    }
+
     public static class DisplayedSlotEdge implements Comparable<DisplayedSlotEdge> {
         private final JIPipeDataSlot source;
         private final JIPipeDataSlot target;
@@ -2924,78 +2906,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         @Override
         protected void call(NodeSelectionChangedEventListener nodeSelectionChangedEventListener, NodeSelectionChangedEvent event) {
             nodeSelectionChangedEventListener.onGraphCanvasNodeSelectionChanged(event);
-        }
-    }
-
-    /**
-     * An action that is requested by an {@link JIPipeNodeUI} and passed down to a {@link JIPipeGraphEditorUI}
-     */
-    public static class NodeUIActionRequestedEvent extends AbstractJIPipeEvent {
-        private final JIPipeNodeUI ui;
-        private final JIPipeNodeUIAction action;
-
-        /**
-         * Initializes a new instance
-         *
-         * @param ui     the requesting UI
-         * @param action the action parameter
-         */
-        public NodeUIActionRequestedEvent(JIPipeNodeUI ui, JIPipeNodeUIAction action) {
-            super(ui);
-            this.ui = ui;
-            this.action = action;
-        }
-
-        public JIPipeNodeUI getUi() {
-            return ui;
-        }
-
-        public JIPipeNodeUIAction getAction() {
-            return action;
-        }
-    }
-
-    public interface NodeUIActionRequestedEventListener {
-        void onNodeUIActionRequested(NodeUIActionRequestedEvent event);
-    }
-
-    public static class NodeUIActionRequestedEventEmitter extends JIPipeEventEmitter<NodeUIActionRequestedEvent, NodeUIActionRequestedEventListener> {
-
-        @Override
-        protected void call(NodeUIActionRequestedEventListener nodeUIActionRequestedEventListener, NodeUIActionRequestedEvent event) {
-            nodeUIActionRequestedEventListener.onNodeUIActionRequested(event);
-        }
-    }
-
-    /**
-     * Triggered when an {@link JIPipeNodeUI} requests a default action (double click)
-     */
-    public static class DefaultAlgorithmUIActionRequestedEvent extends AbstractJIPipeEvent {
-
-        private final JIPipeNodeUI ui;
-
-        /**
-         * @param ui event source
-         */
-        public DefaultAlgorithmUIActionRequestedEvent(JIPipeNodeUI ui) {
-            super(ui);
-            this.ui = ui;
-        }
-
-        public JIPipeNodeUI getUi() {
-            return ui;
-        }
-    }
-
-    public interface DefaultAlgorithmUIActionRequestedEventListener {
-        void onDefaultAlgorithmUIActionRequested(DefaultAlgorithmUIActionRequestedEvent event);
-    }
-
-    public static class DefaultAlgorithmUIActionRequestedEventEmitter extends JIPipeEventEmitter<DefaultAlgorithmUIActionRequestedEvent, DefaultAlgorithmUIActionRequestedEventListener> {
-
-        @Override
-        protected void call(DefaultAlgorithmUIActionRequestedEventListener defaultAlgorithmUIActionRequestedEventListener, DefaultAlgorithmUIActionRequestedEvent event) {
-            defaultAlgorithmUIActionRequestedEventListener.onDefaultAlgorithmUIActionRequested(event);
         }
     }
 

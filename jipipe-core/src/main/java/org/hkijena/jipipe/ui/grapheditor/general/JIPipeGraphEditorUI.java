@@ -29,7 +29,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.VerticalToolBar;
-import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.search.SearchBox;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
@@ -61,7 +60,9 @@ import java.util.stream.Collectors;
  * A panel around {@link JIPipeGraphCanvasUI} that comes with scrolling/panning, properties panel,
  * and a menu bar
  */
-public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable, JIPipeGraph.GraphChangedEventListener, JIPipeService.NodeInfoRegisteredEventListener, SearchBox.SelectedEventListener<Object>, JIPipeGraphCanvasUI.NodeSelectionChangedEventListener, JIPipeGraphCanvasUI.NodeUISelectedEventListener {
+public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable, JIPipeGraph.GraphChangedEventListener,
+        JIPipeService.NodeInfoRegisteredEventListener, SearchBox.SelectedEventListener<Object>,
+        JIPipeGraphCanvasUI.NodeSelectionChangedEventListener, JIPipeGraphCanvasUI.NodeUISelectedEventListener, JIPipeNodeUI.DefaultNodeUIActionRequestedEventListener, JIPipeNodeUI.NodeUIActionRequestedEventListener {
 
     public static final int FLAGS_NONE = 0;
     public static final int FLAGS_SPLIT_PANE_VERTICAL = 1;
@@ -306,6 +307,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         canvasUI.fullRedraw();
         canvasUI.getNodeUISelectedEventEmitter().subscribe(this);
         canvasUI.getNodeSelectionChangedEventEmitter().subscribe(this);
+        canvasUI.getDefaultAlgorithmUIActionRequestedEventEmitter().subscribe(this);
+        canvasUI.getNodeUIActionRequestedEventEmitter().subscribe(this);
         canvasUI.addMouseListener(this);
         canvasUI.addMouseMotionListener(this);
         scrollPane = new JScrollPane(canvasUI);
@@ -1017,6 +1020,16 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         } else {
             clearSelection();
         }
+    }
+
+    @Override
+    public void onDefaultNodeUIActionRequested(JIPipeNodeUI.DefaultNodeUIActionRequestedEvent event) {
+
+    }
+
+    @Override
+    public void onNodeUIActionRequested(JIPipeNodeUI.NodeUIActionRequestedEvent event) {
+
     }
 
     /**

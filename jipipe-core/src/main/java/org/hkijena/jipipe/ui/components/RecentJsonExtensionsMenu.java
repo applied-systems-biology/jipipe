@@ -24,7 +24,7 @@ import java.nio.file.Path;
 /**
  * Menu that displays recently opened {@link org.hkijena.jipipe.JIPipeJsonExtension}
  */
-public class RecentJsonExtensionsMenu extends JMenu {
+public class RecentJsonExtensionsMenu extends JMenu implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private JIPipeJsonExtensionWindow workbenchWindow;
 
@@ -38,7 +38,7 @@ public class RecentJsonExtensionsMenu extends JMenu {
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;
         reload();
-        ProjectsSettings.getInstance().getEventBus().register(this);
+        ProjectsSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void reload() {
@@ -66,7 +66,7 @@ public class RecentJsonExtensionsMenu extends JMenu {
      * @param event generated event
      */
     @Override
-    public void onApplicationSettingsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-json-extension-projects".equals(event.getKey())) {
             reload();
         }

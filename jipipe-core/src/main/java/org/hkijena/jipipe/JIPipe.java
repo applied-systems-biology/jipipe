@@ -44,6 +44,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.*;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventEmitter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.*;
@@ -138,6 +139,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
 
+    private final NodeTemplatesRefreshedEventEmitter nodeTemplatesRefreshedEventEmitter = new NodeTemplatesRefreshedEventEmitter();
+
     public JIPipe() {
         nodeRegistry = new JIPipeNodeRegistry(this);
         datatypeRegistry = new JIPipeDatatypeRegistry(this);
@@ -208,6 +211,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     public static JIPipeDatatypeRegistry getDataTypes() {
         return instance.datatypeRegistry;
+    }
+
+    public NodeTemplatesRefreshedEventEmitter getNodeTemplatesRefreshedEventEmitter() {
+        return nodeTemplatesRefreshedEventEmitter;
     }
 
     @Override

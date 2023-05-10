@@ -44,11 +44,8 @@ public class DefaultExpressionParameter extends AbstractExpressionParameter {
             EVALUATOR = new DefaultExpressionEvaluator();
             // Prevent evaluator stuck without registered functions
             if (JIPipe.getInstance() != null) {
-                JIPipe.getInstance().getEventBus().register(new Object() {
-                    @Override
-                    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
-                        EVALUATOR = new DefaultExpressionEvaluator();
-                    }
+                JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeLambda((emitter, event) -> {
+                    EVALUATOR = new DefaultExpressionEvaluator();
                 });
             }
         }

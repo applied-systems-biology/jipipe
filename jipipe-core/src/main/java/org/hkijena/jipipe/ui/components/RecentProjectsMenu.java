@@ -26,7 +26,7 @@ import java.nio.file.Path;
 /**
  * Menu that displays recently opened {@link org.hkijena.jipipe.api.JIPipeProject}
  */
-public class RecentProjectsMenu extends JMenu {
+public class RecentProjectsMenu extends JMenu implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeProjectWindow workbenchWindow;
 
@@ -40,7 +40,7 @@ public class RecentProjectsMenu extends JMenu {
         this.setIcon(icon);
         this.workbenchWindow = workbenchWindow;
         reload();
-        ProjectsSettings.getInstance().getEventBus().register(this);
+        ProjectsSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void reload() {
@@ -65,11 +65,8 @@ public class RecentProjectsMenu extends JMenu {
         JDialog dialog = new JDialog(workbenchWindow);
         dialog.setTitle("Open project");
         RecentProjectsListPanel panel = new RecentProjectsListPanel(workbenchWindow.getProjectUI());
-        panel.getEventBus().register(new Object() {
-            @Override
-            public void onProjectOpened(RecentProjectsListPanel.ProjectOpenedEvent event) {
-                dialog.setVisible(false);
-            }
+        panel.getProjectOpenedEventEmitter().subscribeLambda((emitter, lambda) -> {
+            dialog.setVisible(false);
         });
         dialog.setContentPane(panel);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -91,7 +88,7 @@ public class RecentProjectsMenu extends JMenu {
      * @param event generated event
      */
     @Override
-    public void onApplicationSettingsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-projects".equals(event.getKey())) {
             reload();
         }

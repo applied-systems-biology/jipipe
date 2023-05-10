@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
@@ -50,7 +51,7 @@ import java.util.Map;
  */
 @JIPipeDocumentation(name = "Group", description = "A sub-graph that contains its own pipeline.")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection {
+public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 
     private NodeGroupContents contents;
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
@@ -64,6 +65,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public NodeGroup(JIPipeNodeInfo info) {
         super(info, new JIPipeGraph());
         initializeContents();
+        exportedParameters.getParameterReferencesChangedEventEmitter().subscribe(this);
         registerSubParameter(exportedParameters);
     }
 
@@ -75,6 +77,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public NodeGroup(NodeGroup other) {
         super(other);
         this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
+        exportedParameters.getParameterReferencesChangedEventEmitter().subscribe(this);
         this.showLimitedParameters = other.showLimitedParameters;
         registerSubParameter(exportedParameters);
         initializeContents();
@@ -236,6 +239,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public void setExportedParameters(GraphNodeParameterReferenceGroupCollection exportedParameters) {
         this.exportedParameters = exportedParameters;
         this.exportedParameters.setGraph(getWrappedGraph());
+        exportedParameters.getParameterReferencesChangedEventEmitter().subscribe(this);
         registerSubParameter(exportedParameters);
     }
 

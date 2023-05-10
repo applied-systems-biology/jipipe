@@ -40,7 +40,6 @@ import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.dragdrop.JIPipeCreate
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.*;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
@@ -413,8 +412,10 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         }
     }
 
+
+
     @Override
-    public void onDefaultActionRequested(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
+    public void onDefaultNodeUIActionRequested(JIPipeNodeUI.DefaultNodeUIActionRequestedEvent event) {
         if (event.getUi().getNode() instanceof NodeGroup) {
             if (event.getUi().getNode() instanceof NodeGroup) {
                 if (getWorkbench() instanceof JIPipeProjectWorkbench) {
@@ -438,7 +439,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
      * @param event the event
      */
     @Override
-    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
+    public void onNodeUIActionRequested(JIPipeNodeUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof RunAndShowResultsAction) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());

@@ -32,7 +32,7 @@ import java.util.*;
 /**
  * UI that monitors the queue
  */
-public class NotificationButton extends JButton {
+public class NotificationButton extends JButton implements JIPipeNotificationInbox.UpdatedEventListener {
 
     private final JIPipeWorkbench workbench;
     private final Timer timer;
@@ -50,8 +50,8 @@ public class NotificationButton extends JButton {
         initialize();
         updateStatus();
 
-        JIPipeNotificationInbox.getInstance().getEventBus().register(this);
-        getWorkbench().getNotificationInbox().getEventBus().register(this);
+        JIPipeNotificationInbox.getInstance().getUpdatedEventEmitter().subscribeWeak(this);
+        getWorkbench().getNotificationInbox().getUpdatedEventEmitter().subscribeWeak(this);
         addActionListener(e -> workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_NOTIFICATIONS));
     }
 
@@ -116,7 +116,7 @@ public class NotificationButton extends JButton {
     }
 
     @Override
-    public void onNotificationsChanged(JIPipeNotificationInbox.UpdatedEvent event) {
+    public void onNotificationInboxUpdated(JIPipeNotificationInbox.UpdatedEvent event) {
         updateStatus();
     }
 }

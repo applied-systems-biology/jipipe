@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.extensions.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
@@ -115,7 +114,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     }
 
     @Override
-    public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
+    public void onNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
         reloadTemplateList();
     }
 

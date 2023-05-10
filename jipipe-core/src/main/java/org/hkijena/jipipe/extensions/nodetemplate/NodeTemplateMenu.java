@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.nodetemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -73,7 +72,7 @@ public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess {
     }
 
     @Override
-    public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
+    public void onNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
         reloadTemplateList();
     }
 }
