@@ -1,12 +1,11 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
-import com.google.common.eventbus.Subscribe;
 import ij.process.FloodFiller;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
-import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
+import org.hkijena.jipipe.utils.ui.events.MouseClickedEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,7 +43,7 @@ public class FloodFillMaskDrawer2DTool extends MaskDrawer2DTool {
         return false;
     }
 
-    @Subscribe
+    @Override
     public void onMouseClick(MouseClickedEvent event) {
         if (!toolIsActive())
             return;

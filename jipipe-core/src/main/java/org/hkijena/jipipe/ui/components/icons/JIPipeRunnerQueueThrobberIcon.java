@@ -34,19 +34,19 @@ public class JIPipeRunnerQueueThrobberIcon extends NewThrobberIcon {
         }
     }
 
-    @Subscribe
+    @Override
     public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();
         }
     }
 
-    @Subscribe
+    @Override
     public void onWorkerStart(JIPipeRunnable.StartedEvent event) {
         start();
     }
 
-    @Subscribe
+    @Override
     public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();

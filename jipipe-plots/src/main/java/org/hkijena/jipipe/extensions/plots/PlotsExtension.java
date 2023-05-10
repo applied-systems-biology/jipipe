@@ -208,7 +208,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIPlotDataSeriesColumnEnumParameterEditorUI.class);
     }
 
-    @Subscribe
+    @Override
     public void onPlotTypeRegistered(JIPipe.DatatypeRegisteredEvent event) {
         Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(event.getId());
         tryRegisterPlotCreatorNode(event.getId());

@@ -83,7 +83,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
         }
     }
 
-    @Subscribe
+    @Override
     public void onTableStructureChangedEvent(TableModelEvent event) {
         TableModel model = table.getModel();
         table.setModel(new DefaultTableModel());

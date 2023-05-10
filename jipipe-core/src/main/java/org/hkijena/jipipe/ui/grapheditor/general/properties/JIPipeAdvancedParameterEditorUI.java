@@ -186,7 +186,7 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         return node;
     }
 
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() instanceof JIPipeParameterSlotAlgorithmSettings) {
             enableMultiParametersToggle.setSelected(((JIPipeParameterSlotAlgorithmSettings) event.getSource()).isHasParameterSlot());

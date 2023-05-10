@@ -137,7 +137,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onDataInfoSelected(JIPipeDataTypePicker.SelectedDataTypesChangedEvent event) {
         if (pickerDialog.isVisible()) {
             pickerDialog.setVisible(false);

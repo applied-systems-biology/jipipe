@@ -114,12 +114,12 @@ public class GenericNotificationInboxUI extends JIPipeWorkbenchPanel {
         add(documentTabPane, BorderLayout.CENTER);
     }
 
-    @Subscribe
+    @Override
     public void onNotificationPushed(JIPipeNotificationInbox.PushedEvent event) {
         updateNotifications();
     }
 
-    @Subscribe
+    @Override
     public void onNotificationDismissed(JIPipeNotificationInbox.DismissedEvent event) {
         dismissedNotifications.add(event.getNotification());
         updateNotifications();

@@ -1861,15 +1861,6 @@ public class UIUtils {
         return button;
     }
 
-    public static void unregisterEventBus(EventBus eventBus, Object obj) {
-        if (obj != null) {
-            try {
-                eventBus.unregister(obj);
-            } catch (Throwable e) {
-            }
-        }
-    }
-
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
         private final Component target;

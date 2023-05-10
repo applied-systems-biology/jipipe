@@ -39,7 +39,7 @@ public class JIPipePluginValidityCheckerPanel extends ReloadableValidityChecker 
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         recheckValidity();
     }

@@ -31,7 +31,7 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D {
         formPanel.addWideToForm(pixelInfoLabel, null);
     }
 
-    @Subscribe
+    @Override
     public void onPixelHover(ImageViewerPanelCanvas2D.PixelHoverEvent event) {
         updatePixelInfo(event.getPixelCoordinate());
     }

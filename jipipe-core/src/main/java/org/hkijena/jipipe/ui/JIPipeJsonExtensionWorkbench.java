@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -75,7 +74,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
      *
      * @param event the event
      */
-    @Subscribe
+    @Override
     public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
@@ -288,7 +287,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onContentRemovedEvent(JIPipe.ExtensionContentRemovedEvent event) {
         removeUnnecessaryAlgorithmGraphEditors();
     }
@@ -298,7 +297,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         for (DocumentTabPane.DocumentTab tab : getDocumentTabPane().getTabs()) {
             if (tab.getContent() instanceof JIPipeJsonExtensionGraphUI) {
                 JIPipeJsonExtensionGraphUI graphUI = (JIPipeJsonExtensionGraphUI) tab.getContent();
-                boolean notFound = project.getNodeInfos().stream().noneMatch(d -> d.getGraph() == graphUI.getAlgorithmGraph());
+                boolean notFound = project.getNodeInfos().stream().noneMatch(d -> d.getGraph() == graphUI.getGraph());
                 if (notFound) {
                     toRemove.add(tab);
                 }

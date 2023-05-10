@@ -113,7 +113,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         // Currently not possible (creates copies of the ROI)
     }
 
-    @Subscribe
+    @Override
     public void onViewerTaskFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ROI2DTo3DConverterRun) {
             ROI3DListData roi3DListData = new ROI3DListData();

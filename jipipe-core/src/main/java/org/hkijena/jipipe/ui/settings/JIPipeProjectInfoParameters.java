@@ -64,7 +64,7 @@ public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollecti
         return standardParameters.getParameters();
     }
 
-    @Subscribe
+    @Override
     public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
         getEventBus().post(new ParameterStructureChangedEvent(this));
     }

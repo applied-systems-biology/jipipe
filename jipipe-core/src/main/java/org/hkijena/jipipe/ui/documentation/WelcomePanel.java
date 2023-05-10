@@ -63,7 +63,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         JIPipe.getInstance().getEventBus().register(this);
     }
 
-    @Subscribe
+    @Override
     public void onTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
         refreshTemplateProjects();
     }

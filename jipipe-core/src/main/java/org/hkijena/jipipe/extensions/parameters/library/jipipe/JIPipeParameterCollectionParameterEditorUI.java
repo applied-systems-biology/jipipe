@@ -59,7 +59,7 @@ public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterE
         try {
             JIPipeParameterCollection parameter = getParameter(JIPipeParameterCollection.class);
 //            parameter.getEventBus().register(new Object() {
-//                @Subscribe
+//                @Override
 //                public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
 //                    // Workaround: causes UX issues
 //                    //setParameter(parameter, false);

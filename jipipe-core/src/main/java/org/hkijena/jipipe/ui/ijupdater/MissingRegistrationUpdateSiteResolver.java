@@ -126,7 +126,7 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         JIPipeRunExecuterUI.runInDialog(this, run);
     }
 
-    @Subscribe
+    @Override
     public void onUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
         if (!issues.getMissingImageJSites().isEmpty()) {
             formPanel.removeLastRow(); //Vertical glue
@@ -209,7 +209,7 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         return notificationInbox;
     }
 
-    @Subscribe
+    @Override
     public void onUpdateSiteActivated(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun && this.clickedInstallAll) {
             if (JOptionPane.showOptionDialog(this, "Please close and restart ImageJ to complete the installation of updates. " +
@@ -219,7 +219,7 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         }
     }
 
-    @Subscribe
+    @Override
     public void onUpdateSiteInstallationInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun) {
             clickedInstallAll = false;

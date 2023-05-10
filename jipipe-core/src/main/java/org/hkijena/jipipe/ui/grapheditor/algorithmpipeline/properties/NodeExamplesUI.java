@@ -73,7 +73,7 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
         exampleJList.setModel(model);
     }
 
-    @Subscribe
+    @Override
     public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
         reloadList();
     }

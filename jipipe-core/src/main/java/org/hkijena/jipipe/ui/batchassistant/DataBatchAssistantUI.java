@@ -319,7 +319,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable()) {
             clearCaches();
@@ -341,7 +341,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         if (!isDisplayable()) {
             clearCaches();
@@ -355,14 +355,14 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
         if (event.getTarget().getNode() == algorithm) {
             updateStatus();
         }
     }
 
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() == batchSettings && autoRefresh) {
             refreshBatchPreview();
@@ -381,7 +381,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             progressInfo.getEventBus().register(this);
         }
 
-        @Subscribe
+        @Override
         public void onProgressInfoStatusUpdate(JIPipeProgressInfo.StatusUpdatedEvent event) {
             SwingUtilities.invokeLater(() -> {
                 assistantUI.batchPreviewNumberLabel.setText("Please wait ... " + event.getMessage());

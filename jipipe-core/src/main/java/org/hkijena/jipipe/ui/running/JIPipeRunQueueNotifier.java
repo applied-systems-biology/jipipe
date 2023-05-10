@@ -36,7 +36,7 @@ public class JIPipeRunQueueNotifier {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
@@ -66,7 +66,7 @@ public class JIPipeRunQueueNotifier {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))

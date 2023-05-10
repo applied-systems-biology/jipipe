@@ -700,7 +700,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         }
     }
 
-    @Subscribe
+    @Override
     public void onViewerRunnerQueueFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof UniverseInitializerRun) {
             UniverseInitializerRun run = (UniverseInitializerRun) event.getRun();

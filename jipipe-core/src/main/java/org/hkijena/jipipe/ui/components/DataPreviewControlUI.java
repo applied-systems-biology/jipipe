@@ -110,7 +110,7 @@ public class DataPreviewControlUI extends JPanel {
         }
     }
 
-    @Subscribe
+    @Override
     public void onSettingChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("preview-size".equals(event.getKey())) {
             refreshZoomStatus();

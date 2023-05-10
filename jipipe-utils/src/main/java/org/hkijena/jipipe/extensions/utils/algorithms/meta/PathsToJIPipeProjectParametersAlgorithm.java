@@ -168,7 +168,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
             }
         };
 
-        @Subscribe
+        @Override
         public void onParameterAdding(JIPipeDynamicParameterCollection.BeforeAddParameterEvent event) {
             event.getAccess().getAnnotationMap().put(StringParameterSettings.class, SETTINGS);
         }

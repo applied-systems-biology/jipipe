@@ -66,7 +66,7 @@ public class RecentProjectsMenu extends JMenu {
         dialog.setTitle("Open project");
         RecentProjectsListPanel panel = new RecentProjectsListPanel(workbenchWindow.getProjectUI());
         panel.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onProjectOpened(RecentProjectsListPanel.ProjectOpenedEvent event) {
                 dialog.setVisible(false);
             }
@@ -90,7 +90,7 @@ public class RecentProjectsMenu extends JMenu {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onApplicationSettingsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-projects".equals(event.getKey())) {
             reload();

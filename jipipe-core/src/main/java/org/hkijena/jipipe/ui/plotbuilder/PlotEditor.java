@@ -62,9 +62,7 @@ import java.util.*;
 /**
  * User interface for displaying and creating plots
  */
-public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable {
-
-    private final EventBus eventBus = new EventBus();
+public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
     private PlotData currentPlot;
     private JSplitPane splitPane;
@@ -73,6 +71,9 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     private boolean isRebuilding = false;
     private PlotReader plotReader;
     private DocumentTabPane sideBar = new DocumentTabPane(false);
+    private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
+    private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
+    private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
 
     /**
      * @param workbench the workbench
@@ -82,7 +83,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         initialize();
         rebuildPlot();
         installDefaultDataSources();
-        this.eventBus.register(this);
+        parameterChangedEventEmitter.subscribe(this);
     }
 
     /**
@@ -177,12 +178,22 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
                 availableData.put(dataSource.getLabel(), dataSource);
             }
         }
-        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+        parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "available-data"));
     }
 
     @Override
-    public EventBus getEventBus() {
-        return eventBus;
+    public ParameterChangedEventEmitter getParameterChangedEventEmitter() {
+        return parameterChangedEventEmitter;
+    }
+
+    @Override
+    public ParameterStructureChangedEventEmitter getParameterStructureChangedEventEmitter() {
+        return parameterStructureChangedEventEmitter;
+    }
+
+    @Override
+    public ParameterUIChangedEventEmitter getParameterUIChangedEventEmitter() {
+        return parameterUIChangedEventEmitter;
     }
 
     @Override
@@ -221,7 +232,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
             if (plotType.getInfo() != null) {
                 currentPlot = (PlotData) JIPipe.createData(plotType.getInfo().getDataClass());
                 changedPlot = true;
-                currentPlot.getEventBus().register(this);
+                currentPlot.getParameterChangedEventEmitter().subscribe(this);
             }
         } else if (plotType.getInfo() == null) {
             currentPlot = null;
@@ -230,7 +241,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         if (changedPlot) {
             seriesBuilders.clear();
 
-            getEventBus().post(new ParameterStructureChangedEvent(this));
+            parameterStructureChangedEventEmitter.emit(new ParameterStructureChangedEvent(this));
             if (currentPlot != null) {
                 PlotMetadata metadata = currentPlot.getClass().getAnnotation(PlotMetadata.class);
                 for (int i = 0; i < metadata.minSeriesCount(); i++) {
@@ -267,14 +278,14 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
             seriesBuilders.add(builder);
 
             // Register events
-            builder.getColumnAssignments().getEventBus().register(this);
-            builder.getEventBus().register(this);
+            builder.getColumnAssignments().getParameterChangedEventEmitter().subscribe(this);
+            builder.getParameterChangedEventEmitter().subscribe(this);
         }
 
 
-        getEventBus().post(new ParameterChangedEvent(this, "series"));
-        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
-        currentPlot.getEventBus().register(this);
+        parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "series"));
+        parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "available-data"));
+        currentPlot.getParameterChangedEventEmitter().subscribe(this);
         emitParameterStructureChangedEvent();
         rebuildPlot();
     }
@@ -284,7 +295,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         if (event.getSource() == currentPlot && "series".equals(event.getKey()))
             return;
@@ -369,7 +380,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
             columnMapping.put(table.getColumnHeading(col), name);
         }
 
-        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+        parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "available-data"));
 
         return columnMapping;
     }
@@ -406,7 +417,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
             columnMapping.put(model.getColumnName(col), name);
         }
 
-        getEventBus().post(new ParameterChangedEvent(this, "available-data"));
+        parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "available-data"));
 
         return columnMapping;
     }
@@ -434,7 +445,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         if (index >= 0 && index < this.seriesBuilders.size() - 1) {
             this.seriesBuilders.set(index, this.seriesBuilders.get(index + 1));
             this.seriesBuilders.set(index + 1, seriesBuilder);
-            eventBus.post(new ParameterChangedEvent(this, "series"));
+            parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "series"));
         }
     }
 
@@ -448,7 +459,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         if (index > 0) {
             this.seriesBuilders.set(index, this.seriesBuilders.get(index - 1));
             this.seriesBuilders.set(index - 1, seriesBuilder);
-            eventBus.post(new ParameterChangedEvent(this, "series"));
+            parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "series"));
         }
     }
 
@@ -458,11 +469,11 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     public void addSeries() {
         JIPipePlotSeriesBuilder seriesBuilder = new JIPipePlotSeriesBuilder(this, plotType.getInfo());
         seriesBuilders.add(seriesBuilder);
-        eventBus.post(new ParameterChangedEvent(this, "series"));
+        parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "series"));
 
         // Register events
-        seriesBuilder.getColumnAssignments().getEventBus().register(this);
-        seriesBuilder.getEventBus().register(this);
+        seriesBuilder.getColumnAssignments().getParameterChangedEventEmitter().subscribe(this);
+        seriesBuilder.getParameterChangedEventEmitter().subscribe(this);
     }
 
     /**
@@ -472,7 +483,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
      */
     public void removeSeries(JIPipePlotSeriesBuilder seriesBuilder) {
         this.seriesBuilders.remove(seriesBuilder);
-        eventBus.post(new ParameterChangedEvent(this, "series"));
+        parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "series"));
     }
 
 
@@ -487,6 +498,6 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
                 availableData.inverse().remove(dataSource);
             }
         }
-        eventBus.post(new ParameterChangedEvent(this, "available-data"));
+        parameterChangedEventEmitter.emit(new ParameterChangedEvent(this, "available-data"));
     }
 }

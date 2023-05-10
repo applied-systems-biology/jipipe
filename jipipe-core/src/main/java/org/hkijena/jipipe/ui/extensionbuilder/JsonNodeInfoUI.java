@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
@@ -85,7 +84,7 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
         metadataHeader.setDescription("Please provide following metadata:");
         parameterEditor.addWideToForm(infoParameterEditor, null);
         infoParameterEditor.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onHoverHelp(FormPanel.HoverHelpEvent event) {
                 parameterEditor.getParameterHelp().setDocument(event.getDocument());
             }
@@ -97,7 +96,7 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
         for (DocumentTabPane.DocumentTab tab : getExtensionWorkbenchUI().getDocumentTabPane().getTabs()) {
             if (tab.getContent() instanceof JIPipeJsonExtensionGraphUI) {
                 JIPipeJsonExtensionGraphUI ui = (JIPipeJsonExtensionGraphUI) tab.getContent();
-                if (ui.getAlgorithmGraph() == info.getGraph()) {
+                if (ui.getGraph() == info.getGraph()) {
                     getExtensionWorkbenchUI().getDocumentTabPane().switchToContent(ui);
                     return;
                 }

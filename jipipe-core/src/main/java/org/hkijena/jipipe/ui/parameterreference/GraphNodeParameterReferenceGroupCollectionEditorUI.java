@@ -322,7 +322,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
         rightPanel.repaint();
     }
 
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() instanceof GraphNodeParameterReference || event.getSource() instanceof GraphNodeParameterReferenceGroup) {
             groupJTree.revalidate();
@@ -335,7 +335,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
      *
      * @param event the event
      */
-    @Subscribe
+    @Override
     public void onParameterReferenceChanged(ParameterReferencesChangedEvent event) {
         if (withRefresh) {
             refreshContent(true, null);
@@ -347,7 +347,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
      *
      * @param event the event
      */
-    @Subscribe
+    @Override
     public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
         if (withRefresh) {
             refreshContent(true, null);
@@ -359,7 +359,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
      *
      * @param event the event
      */
-    @Subscribe
+    @Override
     public void onGraphStructureChanged(JIPipeGraph.GraphChangedEvent event) {
         if (withRefresh) {
             refreshContent(true, null);

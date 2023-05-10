@@ -199,7 +199,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
         parameterEntryJList.setSelectedValue(entry, true);
     }
 
-    @Subscribe
+    @Override
     public void onParameterEntryUpdated(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() instanceof ParameterEntry) {
             parameterEntryJList.repaint();

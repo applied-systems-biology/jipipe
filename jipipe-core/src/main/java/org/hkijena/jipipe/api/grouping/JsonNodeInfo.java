@@ -240,7 +240,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         updateSlots();
     }
@@ -251,7 +251,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onGraphParameterStructureChanged(ParameterStructureChangedEvent event) {
     }
 

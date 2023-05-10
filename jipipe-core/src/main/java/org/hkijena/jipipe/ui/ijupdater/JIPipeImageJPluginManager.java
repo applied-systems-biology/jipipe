@@ -195,7 +195,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         return !JIPipeRunnerQueue.getInstance().isEmpty();
     }
 
-    @Subscribe
+    @Override
     public void onOperationInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.", true, true);
@@ -209,7 +209,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         }
     }
 
-    @Subscribe
+    @Override
     public void onOperationFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             getWorkbench().sendStatusBarText("Refreshed ImageJ plugin information from online resources");

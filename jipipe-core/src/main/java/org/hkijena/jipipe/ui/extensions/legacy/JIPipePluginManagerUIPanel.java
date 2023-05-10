@@ -118,7 +118,7 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         reload();
     }

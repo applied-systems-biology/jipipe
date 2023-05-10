@@ -103,7 +103,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @Subscribe
+    @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         if (event.getSource() == labels1Settings || event.getSource() == labels2Settings) {
             if ("enabled".equals(event.getKey())) {

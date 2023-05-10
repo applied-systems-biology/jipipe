@@ -87,14 +87,14 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
     }
 
-    @Subscribe
+    @Override
     public void onLogCleared(JIPipeLogs.LogClearedEvent event) {
         logReader.setText("");
         currentlyDisplayedLog = null;
         updateEntryList();
     }
 
-    @Subscribe
+    @Override
     public void onLogEntryAdded(JIPipeLogs.LogEntryAddedEvent event) {
         updateEntryList();
         if (currentlyDisplayedLog != null) {

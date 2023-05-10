@@ -128,7 +128,7 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
         }
     }
 
-    @Subscribe
+    @Override
     public void onExtensionDiscovered(JIPipe.ExtensionDiscoveredEvent event) {
         if (event.getExtension() instanceof JIPipeJavaExtension) {
             SwingUtilities.invokeLater(() -> {

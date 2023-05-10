@@ -76,7 +76,7 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onSlotsUpdated(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         updateSlots();
     }

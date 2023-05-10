@@ -29,7 +29,7 @@ import java.util.Objects;
 /**
  * A UI for a parameter type
  */
-public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual, Disposable {
+public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual, Disposable, JIPipeParameterCollection.ParameterChangedEventListener {
     public static final int CONTROL_STYLE_PANEL = 1;
     public static final int CONTROL_STYLE_LIST = 2;
     public static final int CONTROL_STYLE_CHECKBOX = 4;
@@ -49,7 +49,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
         super(workbench);
         this.context = workbench.getContext();
         this.parameterAccess = parameterAccess;
-        parameterAccess.getSource().getEventBus().register(this);
+        parameterAccess.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     /**
@@ -153,14 +153,14 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (parameterAccess == null) {
             return;
         }
         if (!isDisplayable()) {
             try {
-                parameterAccess.getSource().getEventBus().unregister(this);
+                parameterAccess.getSource().getParameterChangedEventEmitter().unsubscribe(this);
             } catch (Exception e) {
             }
         }
@@ -178,7 +178,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
     public void dispose() {
         if (parameterAccess != null) {
             try {
-                parameterAccess.getSource().getEventBus().unregister(this);
+                parameterAccess.getSource().getParameterChangedEventEmitter().unsubscribe(this);
             } catch (IllegalArgumentException e) {
             }
         }

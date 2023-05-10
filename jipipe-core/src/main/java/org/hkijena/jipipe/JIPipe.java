@@ -607,11 +607,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
         initializing = true;
 
         progressInfo.setProgress(0, 5);
-        progressInfo.getEventBus().register(new Object() {
-            @Subscribe
-            public void onProgressStatusUpdated(JIPipeProgressInfo.StatusUpdatedEvent event) {
-                logService.info(event.getMessage());
-            }
+        progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+            logService.info(event.getMessage());
         });
 
         IJ.showStatus("Initializing JIPipe ...");

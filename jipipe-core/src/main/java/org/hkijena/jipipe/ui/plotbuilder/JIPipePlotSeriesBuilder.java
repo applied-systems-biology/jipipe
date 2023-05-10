@@ -100,7 +100,7 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParametersChanged(ParameterChangedEvent event) {
         if (event.getKey().equals("available-data")) {
             updateSeriesList();

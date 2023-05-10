@@ -46,7 +46,6 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
                 }
                 ui.moveToClosestGridPoint(canvasUI.getGraphEditorCursor(), false, true);
                 canvasUI.repaint();
-                canvasUI.getEventBus().post(new JIPipeNodeUI.AlgorithmEvent(ui));
             }
         }
     }

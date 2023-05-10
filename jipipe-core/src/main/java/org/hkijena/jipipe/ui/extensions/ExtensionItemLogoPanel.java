@@ -49,17 +49,17 @@ public class ExtensionItemLogoPanel extends JPanel {
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
-    @Subscribe
+    @Override
     public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
         repaint();
     }
 
-    @Subscribe
+    @Override
     public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
         repaint();
     }
 
-    @Subscribe
+    @Override
     public void onUpdateSiteActivated(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             repaint();

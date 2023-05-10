@@ -37,17 +37,17 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
         updateRunnerQueueStatus();
     }
 
-    @Subscribe
+    @Override
     public void onRunnerFinished(JIPipeRunnable.FinishedEvent event) {
         updateRunnerQueueStatus();
     }
 
-    @Subscribe
+    @Override
     public void onRunnerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         updateRunnerQueueStatus();
     }
 
-    @Subscribe
+    @Override
     public void onRunnerStarted(JIPipeRunnable.StartedEvent event) {
         updateRunnerQueueStatus();
     }
@@ -58,7 +58,7 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
         UIUtils.unregisterEventBus(algorithm.getEventBus(), this);
     }
 
-    @Subscribe
+    @Override
     private void onAlgorithmParameterChanged(JIPipeParameterCollection.ParameterChangedEvent e) {
         if (algorithmAwareToggle != null && algorithmAwareToggle.getState()) {
             workbench.runUpdateCacheLater(algorithm);

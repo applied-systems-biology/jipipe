@@ -158,12 +158,12 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    @Subscribe
+    @Override
     public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
         updateMessagePanel();
     }
 
-    @Subscribe
+    @Override
     public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
         updateMessagePanel();
     }
@@ -218,7 +218,7 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    @Subscribe
+    @Override
     public void onOperationInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.", true, true);
@@ -226,7 +226,7 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    @Subscribe
+    @Override
     public void onOperationFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             this.updateSites = refreshRepositoryRun.getFilesCollection();

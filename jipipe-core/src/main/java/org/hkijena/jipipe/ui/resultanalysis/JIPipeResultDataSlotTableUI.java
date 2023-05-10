@@ -83,7 +83,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         initialize();
         reloadTable();
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
                 if (isDisplayable() && "preview-size".equals(event.getKey())) {
                     reloadTable();

@@ -138,7 +138,7 @@ public class MissingProjectDependenciesDialog extends JDialog {
         initializeButtonPanel();
     }
 
-    @Subscribe
+    @Override
     public void onUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
         if (!missingUpdateSites.isEmpty()) {
             formPanel.removeLastRow(); //Vertical glue

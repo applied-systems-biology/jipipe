@@ -66,7 +66,7 @@ import java.util.*;
  */
 @JsonSerialize(using = JIPipeProject.Serializer.class)
 @JsonDeserialize(using = JIPipeProject.Deserializer.class)
-public class JIPipeProject implements JIPipeValidatable {
+public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChangedEventListener {
 
     /**
      * The current version of the project format.
@@ -100,7 +100,8 @@ public class JIPipeProject implements JIPipeValidatable {
         this.graph.attach(JIPipeGraphType.Project);
         this.compartmentGraph.attach(JIPipeProject.class, this);
         this.compartmentGraph.attach(JIPipeGraphType.ProjectCompartments);
-        compartmentGraph.getEventBus().register(this);
+
+        compartmentGraph.getGraphChangedEventEmitter().subscribe(this);
     }
 
     /**
@@ -398,8 +399,8 @@ public class JIPipeProject implements JIPipeValidatable {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onCompartmentGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+    @Override
+    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         if (isCleaningUp)
             return;
         if (isLoading)

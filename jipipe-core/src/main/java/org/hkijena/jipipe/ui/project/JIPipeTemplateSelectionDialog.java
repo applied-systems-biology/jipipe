@@ -115,7 +115,7 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         JIPipeRunExecuterUI.runInDialog(this, new ProjectTemplateDownloaderRun(workbench));
     }
 
-    @Subscribe
+    @Override
     public void onTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
         refreshTemplateProjects();
     }

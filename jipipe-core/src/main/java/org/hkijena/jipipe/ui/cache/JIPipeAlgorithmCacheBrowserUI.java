@@ -322,7 +322,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable())
             return;
@@ -331,14 +331,14 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    @Subscribe
+    @Override
     public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable())
             return;
         refreshTable();
     }
 
-    @Subscribe
+    @Override
     public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (!isDisplayable())
             return;

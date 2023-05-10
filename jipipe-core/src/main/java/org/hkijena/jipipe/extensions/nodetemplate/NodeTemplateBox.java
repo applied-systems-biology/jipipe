@@ -114,7 +114,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         return toolBar;
     }
 
-    @Subscribe
+    @Override
     public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
         reloadTemplateList();
     }

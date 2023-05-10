@@ -71,17 +71,17 @@ public class ExtensionItemActionButton extends JButton {
         }
     }
 
-    @Subscribe
+    @Override
     public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
         updateDisplay();
     }
 
-    @Subscribe
+    @Override
     public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
         updateDisplay();
     }
 
-    @Subscribe
+    @Override
     public void onUpdateSiteActivated(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             if (extension instanceof UpdateSiteExtension) {

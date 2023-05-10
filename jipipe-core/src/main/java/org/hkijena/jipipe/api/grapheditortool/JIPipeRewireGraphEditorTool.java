@@ -54,7 +54,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
     @Override
     public boolean supports(JIPipeGraphEditorUI graphEditorUI) {
-        return graphEditorUI.getAlgorithmGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.ProjectCompartments;
+        return graphEditorUI.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.ProjectCompartments;
     }
 
     @Override

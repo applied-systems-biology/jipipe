@@ -127,7 +127,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         highlightColorButton.setUpdateWithHexCode(true);
         highlightColorButton.setSelectedColor(highlightColor);
         highlightColorButton.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onColorChosen(ColorChooserButton.ColorChosenEvent event) {
                 setHighlightColor(event.getColor());
             }
@@ -138,7 +138,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         maskColorButton.setUpdateWithHexCode(true);
         maskColorButton.setSelectedColor(maskColor);
         maskColorButton.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onColorChosen(ColorChooserButton.ColorChosenEvent event) {
                 setMaskColor(event.getColor());
             }
@@ -715,7 +715,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         toolSettingsPanel.repaint();
     }
 
-    @Subscribe
+    @Override
     public void onToolChanged(ImageViewerPanelCanvas2D.ToolChangedEvent event) {
         ImageViewerPanelCanvas2DTool newTool = event.getNewTool();
         MaskDrawer2DTool localTool;

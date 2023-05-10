@@ -72,7 +72,7 @@ public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess {
         return workbench;
     }
 
-    @Subscribe
+    @Override
     public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
         reloadTemplateList();
     }

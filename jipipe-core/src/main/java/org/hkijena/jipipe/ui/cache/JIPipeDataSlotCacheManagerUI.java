@@ -127,7 +127,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable())
             return;

@@ -82,7 +82,7 @@ public interface ImageViewerPanelCanvas2DTool {
                 canvas.setTool(null);
         });
         canvas.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onToolChanged(ImageViewerPanelCanvas2D.ToolChangedEvent event) {
                 toggleButton.setSelected(toolIsActive(canvas));
             }

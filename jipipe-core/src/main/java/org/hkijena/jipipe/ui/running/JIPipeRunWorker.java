@@ -28,14 +28,14 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * A worker
  */
-public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
-
-    private final EventBus eventBus = new EventBus();
+public class JIPipeRunWorker extends SwingWorker<Throwable, Object> implements JIPipeProgressInfo.StatusUpdatedEventListener {
     private final JIPipeRunnable run;
     private final AtomicLong startTime = new AtomicLong();
     private final AtomicLong endTime = new AtomicLong();
-
     private final boolean silent;
+    private final JIPipeRunnable.InterruptedEventEmitter interruptedEventEmitter = new JIPipeRunnable.InterruptedEventEmitter();
+    private final JIPipeRunnable.FinishedEventEmitter finishedEventEmitter = new JIPipeRunnable.FinishedEventEmitter();
+    private final JIPipeRunnable.ProgressEventEmitter progressEventEmitter = new JIPipeRunnable.ProgressEventEmitter();
 
     /**
      * @param run    The executed run
@@ -44,14 +44,8 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
     public JIPipeRunWorker(JIPipeRunnable run, boolean silent) {
         this.run = run;
         this.silent = silent;
-        this.run.getProgressInfo().getEventBus().register(this);
+        this.run.getProgressInfo().getStatusUpdatedEventEmitter().subscribe(this);
     }
-
-    @Subscribe
-    public void onStatus(JIPipeProgressInfo.StatusUpdatedEvent status) {
-        publish(status);
-    }
-
     @Override
     protected Throwable doInBackground() {
         startTime.set(System.currentTimeMillis());
@@ -76,7 +70,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
         super.process(chunks);
         for (Object chunk : chunks) {
             if (chunk instanceof JIPipeProgressInfo.StatusUpdatedEvent) {
-                eventBus.post(new JIPipeRunnable.ProgressEvent(this, (JIPipeProgressInfo.StatusUpdatedEvent) chunk));
+                progressEventEmitter.emit(new JIPipeRunnable.ProgressEvent(this, (JIPipeProgressInfo.StatusUpdatedEvent) chunk));
             }
         }
     }
@@ -98,12 +92,24 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
         }
     }
 
+    public JIPipeRunnable.InterruptedEventEmitter getInterruptedEventEmitter() {
+        return interruptedEventEmitter;
+    }
+
+    public JIPipeRunnable.ProgressEventEmitter getProgressEventEmitter() {
+        return progressEventEmitter;
+    }
+
     public long getRuntimeMillis() {
         return endTime.get() - startTime.get();
     }
 
     private void postFinishedEvent() {
-        eventBus.post(new JIPipeRunnable.FinishedEvent(this));
+        finishedEventEmitter.emit(new JIPipeRunnable.FinishedEvent(this));
+    }
+
+    public JIPipeRunnable.FinishedEventEmitter getFinishedEventEmitter() {
+        return finishedEventEmitter;
     }
 
     private void postInterruptedEvent(Throwable e) {
@@ -114,14 +120,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
             run.getProgressInfo().log(ExceptionUtils.getStackTrace(e));
         }
 
-        eventBus.post(new JIPipeRunnable.InterruptedEvent(this, e));
-    }
-
-    /**
-     * @return The event bus
-     */
-    public EventBus getEventBus() {
-        return eventBus;
+        interruptedEventEmitter.emit(new JIPipeRunnable.InterruptedEvent(this, e));
     }
 
     /**
@@ -131,5 +130,8 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> {
         return run;
     }
 
-
+    @Override
+    public void onProgressStatusUpdated(JIPipeProgressInfo.StatusUpdatedEvent event) {
+        publish(event);
+    }
 }

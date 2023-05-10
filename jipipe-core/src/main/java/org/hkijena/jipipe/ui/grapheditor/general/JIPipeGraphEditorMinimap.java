@@ -191,7 +191,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
 
     }
 
-    @Subscribe
+    @Override
     public void onGraphCanvasUpdated(JIPipeGraphCanvasUI.GraphCanvasUpdatedEvent event) {
         if (isDisplayable()) {
             refreshGraphImage();

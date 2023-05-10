@@ -74,13 +74,13 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         pluginManager.initializeUpdateSites();
     }
 
-    @Subscribe
+    @Override
     public void onImageJFailed(JIPipeModernPluginManager.UpdateSitesFailedEvent event) {
         updateSitesButton.setToolTipText("Could not connect to the ImageJ update service");
         updateSitesButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png"));
     }
 
-    @Subscribe
+    @Override
     public void onImageJReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
         updateSitesButton.setIcon(UIUtils.getIconFromResources("actions/web-browser.png"));
     }

@@ -37,7 +37,7 @@ public class JIPipeLauncher {
             JIPipeJsonExtensionWindow.WINDOWS_EVENTS.register(this);
         }
 
-        @Subscribe
+        @Override
         public void onWindowClosed(WindowClosedEvent event) {
             int windowsOpen = 0;
             windowsOpen += JIPipeProjectWindow.getOpenWindows().size();

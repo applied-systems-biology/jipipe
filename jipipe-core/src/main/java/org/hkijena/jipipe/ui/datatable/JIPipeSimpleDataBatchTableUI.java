@@ -95,7 +95,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
         toolBar.add(previewControlUI);
 
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
                 if (isDisplayable() && "preview-size".equals(event.getKey())) {
                     reloadTable();

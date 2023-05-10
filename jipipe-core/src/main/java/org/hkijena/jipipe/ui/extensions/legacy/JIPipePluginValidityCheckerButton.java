@@ -58,7 +58,7 @@ public class JIPipePluginValidityCheckerButton extends JButton {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         recheckValidity();
     }

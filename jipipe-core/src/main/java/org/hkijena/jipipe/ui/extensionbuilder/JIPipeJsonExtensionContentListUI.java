@@ -113,7 +113,7 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("name".equals(event.getKey())) {
             list.repaint();
@@ -125,7 +125,7 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onContentAddedEvent(JIPipe.ExtensionContentAddedEvent event) {
         reload();
     }
@@ -135,7 +135,7 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onContentRemovedEvent(JIPipe.ExtensionContentRemovedEvent event) {
         reload();
     }

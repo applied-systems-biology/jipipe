@@ -299,7 +299,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onRunFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == run)
             openResults();
@@ -310,7 +310,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onRunInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == run)
             openError(event.getException());

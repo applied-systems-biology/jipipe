@@ -47,7 +47,7 @@ public class ParameterUtils {
         AtomicBoolean changedStructure = new AtomicBoolean();
         changedStructure.set(true);
         target.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onParametersChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
                 changedStructure.set(true);
             }

@@ -84,7 +84,7 @@ public class JIPipeRunQueuePanelUI extends JPanel {
         }
     }
 
-    @Subscribe
+    @Override
     public void onWorkerStarted(JIPipeRunnable.StartedEvent event) {
         cancelButton.setEnabled(true);
         progressBar.setIndeterminate(true);
@@ -96,7 +96,7 @@ public class JIPipeRunQueuePanelUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         cancelButton.setEnabled(false);
         progressBar.setString("Finished");
@@ -107,7 +107,7 @@ public class JIPipeRunQueuePanelUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerInterrupted(JIPipeRunnable.FinishedEvent event) {
         cancelButton.setEnabled(false);
         progressBar.setString("Finished");
@@ -118,7 +118,7 @@ public class JIPipeRunQueuePanelUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
         progressBar.setIndeterminate(false);
         progressBar.setMaximum(event.getStatus().getMaxProgress());

@@ -88,7 +88,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @Subscribe
+    @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         if (event.getSource() == roi1Settings || event.getSource() == roi2Settings) {
             if ("enabled".equals(event.getKey())) {

@@ -66,7 +66,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
         queue.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
                 if (event.getRun() == run)
                     dialog.setVisible(false);
@@ -145,7 +145,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
@@ -158,7 +158,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
@@ -166,7 +166,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         }
     }
 
-    @Subscribe
+    @Override
     public void onWorkerStart(JIPipeRunnable.StartedEvent event) {
         if (event.getRun() == run) {
             cancelButton.setEnabled(true);
@@ -178,7 +178,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
         if (event.getRun() == run) {
             progressBar.setIndeterminate(false);

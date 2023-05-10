@@ -303,7 +303,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         return result;
     }
 
-    @Subscribe
+    @Override
     public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
         emitParameterStructureChangedEvent();
     }

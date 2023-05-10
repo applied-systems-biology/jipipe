@@ -166,7 +166,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
         table.setModel(transposed);
     }
 
-    @Subscribe
+    @Override
     public void onMaskChanged(MaskDrawerPlugin2D.MaskChangedEvent event) {
         if (autoMeasureToggle.isSelected()) {
             measureCurrentMask();

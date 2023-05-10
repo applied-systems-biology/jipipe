@@ -240,7 +240,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         gc.markAllAsCompleted();
     }
 
-    @Subscribe
+    @Override
     public void onSlotCompleted(JIPipeGraphGCHelper.SlotCompletedEvent event) {
         JIPipeDataSlot slot = event.getSlot();
         if (slot.isEmpty()) {

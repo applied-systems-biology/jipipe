@@ -801,7 +801,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
             updateContents();
         }
 
-        @Subscribe
+        @Override
         public void onRenamed(TabRenamedEvent event) {
             updateContents();
         }

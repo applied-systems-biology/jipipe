@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.grapheditor.compartments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -223,7 +222,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         if (getCanvasUI().getHistoryJournal() != null) {
             getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, null);
         }
-        getAlgorithmGraph().insertNode(node);
+        getGraph().insertNode(node);
     }
 
     private void importCompartment() {
@@ -278,7 +277,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onOpenCompartment(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getNode() instanceof JIPipeProjectCompartment) {
             getProjectWorkbench().getOrOpenPipelineEditorTab((JIPipeProjectCompartment) event.getUi().getNode(), true);
@@ -290,7 +289,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
      *
      * @param event the event
      */
-    @Subscribe
+    @Override
     public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof RunAndShowResultsAction) {
             disableUpdateOnSelection = true;

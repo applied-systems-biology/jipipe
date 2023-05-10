@@ -203,7 +203,7 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         updateRegistrationTasks();
     }

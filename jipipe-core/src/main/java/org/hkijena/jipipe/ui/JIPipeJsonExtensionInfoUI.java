@@ -109,7 +109,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         });
     }
 
-    @Subscribe
+    @Override
     public void onRecentProjectsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-json-extension-projects".equals(event.getKey())) {
             refreshRecentProjects();

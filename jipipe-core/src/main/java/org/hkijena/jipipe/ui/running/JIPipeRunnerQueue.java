@@ -32,14 +32,17 @@ import java.util.stream.Collectors;
 public class JIPipeRunnerQueue {
 
     private static JIPipeRunnerQueue instance;
-
     private final String name;
     private final Queue<JIPipeRunWorker> queue = new ArrayDeque<>();
     private final Map<JIPipeRunnable, JIPipeRunWorker> assignedWorkers = new HashMap<>();
-    private final EventBus eventBus = new EventBus();
     private JIPipeRunWorker currentlyRunningWorker = null;
-
     private boolean silent;
+
+    private final JIPipeRunnable.EnqueuedEventEmitter enqueuedEventEmitter = new JIPipeRunnable.EnqueuedEventEmitter();
+    private final JIPipeRunnable.FinishedEventEmitter finishedEventEmitter = new JIPipeRunnable.FinishedEventEmitter();
+    private final JIPipeRunnable.InterruptedEventEmitter interruptedEventEmitter = new JIPipeRunnable.InterruptedEventEmitter();
+    private final JIPipeRunnable.ProgressEventEmitter progressEventEmitter = new JIPipeRunnable.ProgressEventEmitter();
+    private final JIPipeRunnable.StartedEventEmitter startedEventEmitter = new JIPipeRunnable.StartedEventEmitter();
 
     public JIPipeRunnerQueue(String name) {
         this.name = name;
@@ -69,6 +72,26 @@ public class JIPipeRunnerQueue {
         }
 
         return false;
+    }
+
+    public JIPipeRunnable.EnqueuedEventEmitter getEnqueuedEventEmitter() {
+        return enqueuedEventEmitter;
+    }
+
+    public JIPipeRunnable.FinishedEventEmitter getFinishedEventEmitter() {
+        return finishedEventEmitter;
+    }
+
+    public JIPipeRunnable.InterruptedEventEmitter getInterruptedEventEmitter() {
+        return interruptedEventEmitter;
+    }
+
+    public JIPipeRunnable.ProgressEventEmitter getProgressEventEmitter() {
+        return progressEventEmitter;
+    }
+
+    public JIPipeRunnable.StartedEventEmitter getStartedEventEmitter() {
+        return startedEventEmitter;
     }
 
     public Queue<JIPipeRunWorker> getQueue() {
@@ -110,7 +133,7 @@ public class JIPipeRunnerQueue {
         worker.getEventBus().register(this);
         assignedWorkers.put(run, worker);
         queue.add(worker);
-        eventBus.post(new JIPipeRunnable.EnqueuedEvent(run, worker));
+        enqueuedEventEmitter.emit(new JIPipeRunnable.EnqueuedEvent(run, worker));
         tryDequeue();
         return worker;
     }
@@ -131,7 +154,7 @@ public class JIPipeRunnerQueue {
     public void tryDequeue() {
         if (currentlyRunningWorker == null && !queue.isEmpty()) {
             currentlyRunningWorker = queue.remove();
-            eventBus.post(new JIPipeRunnable.StartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
+            startedEventEmitter.emit(new JIPipeRunnable.StartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
             currentlyRunningWorker.execute();
         }
     }
@@ -151,7 +174,7 @@ public class JIPipeRunnerQueue {
                 worker.cancel(true);
             } else {
                 queue.remove(worker);
-                eventBus.post(new JIPipeRunnable.InterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
+                interruptedEventEmitter.emit(new JIPipeRunnable.InterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
 
                 worker.getEventBus().unregister(this);
             }
@@ -163,7 +186,7 @@ public class JIPipeRunnerQueue {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
@@ -180,7 +203,7 @@ public class JIPipeRunnerQueue {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
@@ -197,16 +220,9 @@ public class JIPipeRunnerQueue {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
         eventBus.post(event);
-    }
-
-    /**
-     * @return The event bus
-     */
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

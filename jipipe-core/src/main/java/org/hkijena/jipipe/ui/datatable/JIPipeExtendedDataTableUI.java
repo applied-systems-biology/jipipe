@@ -103,7 +103,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         }
         updateStatus();
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
                 if (isDisplayable() && "preview-size".equals(event.getKey())) {
                     reloadTable();
@@ -423,7 +423,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         updateStatus();
     }

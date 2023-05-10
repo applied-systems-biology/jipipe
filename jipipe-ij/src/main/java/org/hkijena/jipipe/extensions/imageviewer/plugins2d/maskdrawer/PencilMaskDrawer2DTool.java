@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.Blitter;
@@ -11,7 +10,7 @@ import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanel
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.*;
+import org.hkijena.jipipe.utils.ui.events.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -146,7 +145,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
     public void onToolDeactivate(ImageViewerPanelCanvas2D canvas) {
     }
 
-    @Subscribe
+    @Override
     public void onMouseMove(MouseMovedEvent event) {
         if (!toolIsActive())
             return;
@@ -156,7 +155,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
         getViewerPanel2D().getCanvas().repaint(50);
     }
 
-    @Subscribe
+    @Override
     public void onMouseClick(MouseClickedEvent event) {
         if (!toolIsActive())
             return;
@@ -167,7 +166,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
         }
     }
 
-    @Subscribe
+    @Override
     public void onMouseDrag(MouseDraggedEvent event) {
         if (!toolIsActive())
             return;
@@ -178,7 +177,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
         }
     }
 
-    @Subscribe
+    @Override
     public void onMousePressed(MousePressedEvent event) {
         if (!toolIsActive())
             return;
@@ -188,14 +187,14 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
         }
     }
 
-    @Subscribe
+    @Override
     public void onMouseReleased(MouseReleasedEvent event) {
         if (!toolIsActive())
             return;
         releasePencil();
     }
 
-    @Subscribe
+    @Override
     public void onMouseExited(MouseExitedEvent event) {
         if (!toolIsActive())
             return;

@@ -65,7 +65,7 @@ public class RecentJsonExtensionsMenu extends JMenu {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onApplicationSettingsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-json-extension-projects".equals(event.getKey())) {
             reload();

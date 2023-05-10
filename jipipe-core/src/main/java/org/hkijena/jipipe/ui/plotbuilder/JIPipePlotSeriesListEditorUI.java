@@ -63,7 +63,7 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getKey().equals("series")) {
             reloadEntries();

@@ -44,7 +44,7 @@ public class ZoomFlatIconButton extends JButton {
         setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize));
     }
 
-    @Subscribe
+    @Override
     public void onZoomChanged(ZoomViewPort.ZoomChangedEvent event) {
         updateSize();
     }

@@ -23,7 +23,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.*;
@@ -1979,14 +1978,14 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     public interface GraphChangedEventListener {
-        void onGraphChangedEvent(GraphChangedEvent event);
+        void onGraphChanged(GraphChangedEvent event);
     }
 
     public static class GraphChangedEventEmitter extends JIPipeEventEmitter<GraphChangedEvent, GraphChangedEventListener> {
 
         @Override
         protected void call(GraphChangedEventListener graphChangedEventListener, GraphChangedEvent event) {
-            graphChangedEventListener.onGraphChangedEvent(event);
+            graphChangedEventListener.onGraphChanged(event);
         }
     }
 

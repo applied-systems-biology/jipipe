@@ -291,7 +291,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onAlgorithmSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         if (isDisplayable()) {
             reloadList();
@@ -303,7 +303,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onSlotNameChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("custom-name".equals(event.getKey())) {
             reloadList();

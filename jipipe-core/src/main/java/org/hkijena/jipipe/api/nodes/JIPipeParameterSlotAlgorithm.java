@@ -60,7 +60,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
     private void registerParameterSettings() {
         this.parameterSlotAlgorithmSettings.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onParametersChanged(ParameterChangedEvent event) {
                 if ("has-parameter-slot".equals(event.getKey())) {
                     updateParameterSlot();

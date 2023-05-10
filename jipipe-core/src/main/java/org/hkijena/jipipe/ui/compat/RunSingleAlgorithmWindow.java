@@ -352,7 +352,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
 //     *
 //     * @param event Generated event
 //     */
-//    @Subscribe
+//    @Override
 //    public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
 //        reloadAlgorithmProperties();
 //    }

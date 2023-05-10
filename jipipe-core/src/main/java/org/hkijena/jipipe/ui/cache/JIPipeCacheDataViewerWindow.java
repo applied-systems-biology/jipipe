@@ -408,7 +408,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         }
     }
 
-    @Subscribe
+    @Override
     public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isVisible())
             return;

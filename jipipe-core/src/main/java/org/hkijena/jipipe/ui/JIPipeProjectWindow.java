@@ -256,7 +256,7 @@ public class JIPipeProjectWindow extends JFrame {
             ExtractTemplateZipFileRun run = new ExtractTemplateZipFileRun(template, loadZipTarget);
             Path finalLoadZipTarget = loadZipTarget;
             JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-                @Subscribe
+                @Override
                 public void onRunFinished(JIPipeRunnable.FinishedEvent event) {
                     if (event.getRun() == run) {
                         SwingUtilities.invokeLater(() -> {

@@ -32,7 +32,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
     }
 
     public synchronized void unsubscribe(Listener listener) {
-        subscribers.removeIf(l -> l.get() == listener);
+        subscribers.removeIf(l -> l.get() == listener || l.get() == null);
     }
 
     public synchronized void emit(Event event) {

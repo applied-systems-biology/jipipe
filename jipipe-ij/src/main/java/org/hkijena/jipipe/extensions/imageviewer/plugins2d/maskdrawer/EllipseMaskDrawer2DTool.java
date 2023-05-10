@@ -1,15 +1,14 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
-import com.google.common.eventbus.Subscribe;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
-import org.hkijena.jipipe.utils.ui.MouseExitedEvent;
-import org.hkijena.jipipe.utils.ui.MouseMovedEvent;
+import org.hkijena.jipipe.utils.ui.events.MouseClickedEvent;
+import org.hkijena.jipipe.utils.ui.events.MouseExitedEvent;
+import org.hkijena.jipipe.utils.ui.events.MouseMovedEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -178,7 +177,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool {
         }
     }
 
-    @Subscribe
+    @Override
     public void onMouseClick(MouseClickedEvent event) {
         if (!toolIsActive())
             return;
@@ -240,7 +239,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool {
         }
     }
 
-    @Subscribe
+    @Override
     public void onMouseMove(MouseMovedEvent event) {
         if (!toolIsActive())
             return;
@@ -248,7 +247,7 @@ public class EllipseMaskDrawer2DTool extends MaskDrawer2DTool {
         updateInfo();
     }
 
-    @Subscribe
+    @Override
     public void onMouseExited(MouseExitedEvent event) {
         if (!toolIsActive())
             return;

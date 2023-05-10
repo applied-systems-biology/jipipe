@@ -188,7 +188,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getKey().equals("available-data")) {
             reloadList();

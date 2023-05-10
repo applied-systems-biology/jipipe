@@ -112,7 +112,7 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         updateStatus();
     }

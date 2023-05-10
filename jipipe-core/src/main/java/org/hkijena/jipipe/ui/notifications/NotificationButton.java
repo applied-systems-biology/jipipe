@@ -115,7 +115,7 @@ public class NotificationButton extends JButton {
         return workbench;
     }
 
-    @Subscribe
+    @Override
     public void onNotificationsChanged(JIPipeNotificationInbox.UpdatedEvent event) {
         updateStatus();
     }

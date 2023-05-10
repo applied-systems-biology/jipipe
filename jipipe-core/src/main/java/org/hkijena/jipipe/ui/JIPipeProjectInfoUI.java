@@ -173,7 +173,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
     }
 
-    @Subscribe
+    @Override
     public void onRecentProjectsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("description".equals(event.getKey())) {
             refreshDescription();

@@ -146,7 +146,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
         }
     }
 
-    @Subscribe
+    @Override
     public void onFinished(FinishedEvent event) {
         if (event.getRun() == this) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
@@ -159,7 +159,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
         }
     }
 
-    @Subscribe
+    @Override
     public void onInterrupted(InterruptedEvent event) {
         if (event.getRun() == this) {
             JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not export slot data to " + outputPath + ". Please take a look at the log (Tools > Logs) to find out more.", "Export slot data", JOptionPane.ERROR_MESSAGE);

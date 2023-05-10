@@ -86,7 +86,7 @@ public class HistoryJournalUI extends JPanel {
         snapshotJList.setSelectedValue(currentSnapshot, true);
     }
 
-    @Subscribe
+    @Override
     public void onHistoryJournalChanged(JIPipeHistoryJournal.HistoryChangedEvent event) {
         reloadList();
     }

@@ -135,7 +135,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         }
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onProgress(JIPipeProgressInfo.StatusUpdatedEvent event) {
                 IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
             }

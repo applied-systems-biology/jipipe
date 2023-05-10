@@ -206,7 +206,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
     /**
      * Workaround for bug #458 due to modal windows
      */
-    @Subscribe
+    @Override
     public void onInstallationFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable()) {
             JIPipeRunnerQueue.getInstance().getEventBus().unregister(this);

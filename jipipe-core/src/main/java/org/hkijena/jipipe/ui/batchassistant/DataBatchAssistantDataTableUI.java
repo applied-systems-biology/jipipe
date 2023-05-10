@@ -84,7 +84,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
         initialize();
         reloadTable();
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
                 if (isDisplayable() && "preview-size".equals(event.getKey())) {
                     reloadTable();

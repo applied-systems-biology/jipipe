@@ -357,7 +357,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == currentQuickRun) {
             tryShowSelectionPanel();
@@ -388,7 +388,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == currentQuickRun) {
             openError(event.getException());

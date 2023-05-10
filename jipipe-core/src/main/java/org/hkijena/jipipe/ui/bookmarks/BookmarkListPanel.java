@@ -197,13 +197,13 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
         }
     }
 
-    @Subscribe
+    @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         registerNodeEvents();
         reloadTimer.restart();
     }
 
-    @Subscribe
+    @Override
     public void onNodeParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("jipipe:node:bookmarked".equals(event.getKey())) {
             reloadTimer.restart();

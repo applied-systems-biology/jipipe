@@ -27,7 +27,7 @@ public class ZoomLabel extends JLabel {
         setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
     }
 
-    @Subscribe
+    @Override
     public void onZoomChanged(ZoomViewPort.ZoomChangedEvent event) {
         updateFont();
     }

@@ -365,7 +365,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         UIUtils.makeFlat25x25(foregroundColorButton);
         foregroundColorButton.setToolTipText("Set color");
         foregroundColorButton.getEventBus().register(new Object() {
-            @Subscribe
+            @Override
             public void onColorSelected(ColorChooserButton.ColorChosenEvent event) {
                 if (!isUpdating) {
                     new StyledEditorKit.ForegroundAction("set-foreground", event.getColor()).actionPerformed(
