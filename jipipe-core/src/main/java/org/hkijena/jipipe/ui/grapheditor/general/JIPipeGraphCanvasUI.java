@@ -200,6 +200,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public void setAutoHideEdges(boolean autoHideEdges) {
         this.autoHideEdges = autoHideEdges;
         settings.setAutoHideEdgeEnabled(autoHideEdges);
+        JIPipe.getSettings().save();
         repaint(50);
     }
 
@@ -210,6 +211,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public void setAutoHideDrawLabels(boolean autoHideDrawLabels) {
         this.autoHideDrawLabels = autoHideDrawLabels;
         settings.setAutoHideDrawLabels(autoHideDrawLabels);
+        JIPipe.getSettings().save();
         repaint(50);
     }
 

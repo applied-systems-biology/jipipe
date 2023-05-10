@@ -933,6 +933,11 @@ public class ImageJUtils {
         List<Integer> distinctZ = slices.keySet().stream().map(ImageSliceIndex::getZ).sorted().distinct().collect(Collectors.toList());
         List<Integer> distinctC = slices.keySet().stream().map(ImageSliceIndex::getC).sorted().distinct().collect(Collectors.toList());
 
+        if(slices.size() != distinctZ.size() * distinctC.size() * distinctT.size()) {
+            throw new IllegalArgumentException(slices.size() + " slices cannot be distributed into an hyperstack with size ZCT "
+                    + distinctZ.size() + " x " + distinctC.size() + " x " + distinctT.size() + "!");
+        }
+
         for (int i = 0; i < distinctT.size(); i++) {
             mappingT.put(distinctT.get(i), i);
         }
@@ -1057,6 +1062,12 @@ public class ImageJUtils {
             ImageSliceIndex targetIndex = new ImageSliceIndex(c, z, t);
             ImagePlus converted = ImageJUtils.convertToBitDepthIfNeeded(new ImagePlus("", entry.getValue()), consensusBitDepth);
             outputImageStack.setProcessor(converted.getProcessor(), targetIndex.zeroSliceIndexToOneStackIndex(cRemapping.size(), zRemapping.size(), tRemapping.size()));
+        }
+
+        for (int i = 0; i < outputImageStack.size(); i++) {
+            if(outputImageStack.getProcessor(i + 1) == null) {
+                throw new NullPointerException("Not all slices set! Missing index: " + i);
+            }
         }
 
         ImagePlus outputImage = new ImagePlus("Merged", outputImageStack);
@@ -2219,5 +2230,29 @@ public class ImageJUtils {
 
         image.setPosition(original.getC(), original.getZ(), original.getT());
     }
+
+    public static Map<ImageSliceIndex, ImageProcessor> splitIntoSlices(ImagePlus image) {
+        Map<ImageSliceIndex, ImageProcessor> result = new HashMap<>();
+        for (int c = 0; c < image.getNChannels(); c++) {
+            for (int z = 0; z < image.getNSlices(); z++) {
+                for (int t = 0; t < image.getNFrames(); t++) {
+                    result.put(new ImageSliceIndex(c,z,t), getSliceZero(image, c,z,t));
+                }
+            }
+        }
+        return result;
+    }
+
+    public static Map<ImageSliceIndex, ImageProcessor> deduplicateSliceMappingByOverwriting(Map<ImageProcessor, ImageSliceIndex> sliceMappings, boolean silentlyOverwriteDuplicates) {
+        Map<ImageSliceIndex, ImageProcessor> result = new HashMap<>();
+        for (Map.Entry<ImageProcessor, ImageSliceIndex> entry : sliceMappings.entrySet()) {
+            if(!silentlyOverwriteDuplicates && result.containsKey(entry.getValue())) {
+                throw new UnsupportedOperationException("Duplicate image index: " + entry.getValue());
+            }
+            result.put(entry.getValue(), entry.getKey());
+        }
+        return result;
+    }
+
 }
 

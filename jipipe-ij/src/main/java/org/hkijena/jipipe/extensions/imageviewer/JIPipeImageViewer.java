@@ -196,7 +196,10 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
             switchModeMenu.add(UIUtils.createMenuItem("Switch to 3D", "Display the image in 3D", UIUtils.getIconFromResources("data-types/imgplus-3d.png"), this::switchTo3D));
             switchModeMenu.addSeparator();
             JCheckBoxMenuItem autoSwitchToggle = new JCheckBoxMenuItem("Select automatically", settings.isAutoSwitch2D3DViewer());
-            autoSwitchToggle.addActionListener(e -> settings.setAutoSwitch2D3DViewer(autoSwitchToggle.isSelected()));
+            autoSwitchToggle.addActionListener(e -> {
+                settings.setAutoSwitch2D3DViewer(autoSwitchToggle.isSelected());
+                JIPipe.getSettings().save();
+            });
             switchModeMenu.add(autoSwitchToggle);
         });
 
