@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
 public interface ZoomViewPort {
-    EventBus getEventBus();
+
+    ZoomChangedEventEmitter getZoomChangedEventEmitter();
 
     double getZoom();
 

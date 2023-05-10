@@ -21,6 +21,8 @@ import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -146,6 +148,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private boolean autoHideDrawLabels;
     private Point lastMousePosition;
 
+    private final ZoomChangedEventEmitter zoomChangedEventEmitter = new ZoomChangedEventEmitter();
+
     /**
      * Creates a new UI
      *
@@ -190,6 +194,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
         }
         removeAllNodes();
+    }
+
+    @Override
+    public ZoomChangedEventEmitter getZoomChangedEventEmitter() {
+        return zoomChangedEventEmitter;
     }
 
     public boolean isAutoHideEdges() {
@@ -2618,7 +2627,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         // Zoom nodes
         this.zoom = zoom;
-        eventBus.post(new ZoomChangedEvent(this));
+        zoomChangedEventEmitter.emit(new ZoomChangedEvent(this));
         for (JIPipeNodeUI ui : nodeUIs.values()) {
             ui.moveToStoredGridLocation(true);
             ui.setZoom(zoom);
@@ -2914,16 +2923,25 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     /**
      * Triggered when a graph canvas was updated
      */
-    public static class GraphCanvasUpdatedEvent {
+    public static class GraphCanvasUpdatedEvent extends AbstractJIPipeEvent {
         private final JIPipeGraphCanvasUI graphCanvasUI;
 
         public GraphCanvasUpdatedEvent(JIPipeGraphCanvasUI graphCanvasUI) {
+            super(graphCanvasUI);
             this.graphCanvasUI = graphCanvasUI;
         }
 
         public JIPipeGraphCanvasUI getGraphCanvasUI() {
             return graphCanvasUI;
         }
+    }
+
+    public interface GraphCanvasUpdatedEventListener {
+        void onGraphCanvasUpdated(GraphCanvasUpdatedEvent event);
+    }
+
+    public static class GraphCanvasUpdatedEventEmitter extends JIPipeEventEmitter<GraphCanvasUpdatedEvent, GraphCanvasUpdatedEventListener> {
+
     }
 
     public static class DisconnectHighlight {
