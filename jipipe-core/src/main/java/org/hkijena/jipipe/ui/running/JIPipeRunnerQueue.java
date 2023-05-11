@@ -206,6 +206,7 @@ public class JIPipeRunnerQueue implements JIPipeRunnable.FinishedEventListener, 
             tryDequeue();
 
             unregisterWorkerEvents(event.getWorker());
+            event.getRun().onFinished(event);
         }
         finishedEventEmitter.emit(event);
     }
@@ -223,6 +224,7 @@ public class JIPipeRunnerQueue implements JIPipeRunnable.FinishedEventListener, 
             tryDequeue();
 
             unregisterWorkerEvents(event.getWorker());
+            event.getRun().onInterrupted(event);
         }
         interruptedEventEmitter.emit(event);
     }

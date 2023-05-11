@@ -1,9 +1,11 @@
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExampleListCellRenderer;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEvent;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventListener;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -14,7 +16,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
+public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
 
     private final JIPipeAlgorithm algorithm;
     private final JList<JIPipeNodeExample> exampleJList = new JList<>();
@@ -24,7 +26,7 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
         this.algorithm = algorithm;
         initialize();
         reloadList();
-        NodeTemplateSettings.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -74,7 +76,7 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
     }
 
     @Override
-    public void onNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
+    public void onJIPipeNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
         reloadList();
     }
 }

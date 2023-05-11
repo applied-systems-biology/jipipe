@@ -19,12 +19,19 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
 
     private final Set<BiConsumer<JIPipeEventEmitter<Event, Listener>, Event>> actionSubscribers = new LinkedHashSet<>();
 
+    private final Set<BiConsumer<JIPipeEventEmitter<Event, Listener>, Event>> actionSubscribersOnce = new LinkedHashSet<>();
+
     public synchronized void subscribe(Listener listener) {
         subscribers.add(new OwningStore<>(listener));
     }
 
     public synchronized void subscribeLambda(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
         actionSubscribers.add(listener);
+    }
+
+    public synchronized void subscribeLambdaOnce(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
+        actionSubscribers.add(listener);
+        actionSubscribersOnce.add(listener);
     }
 
     public synchronized void subscribeWeak(Listener listener) {
@@ -49,8 +56,18 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
                 needsGC = true;
             }
         }
+        List<BiConsumer<JIPipeEventEmitter<Event, Listener>, Event>> toDelete = null;
+        if(!actionSubscribersOnce.isEmpty()) {
+            toDelete = new ArrayList<>();
+        }
         for (BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> subscriber : actionSubscribers) {
             subscriber.accept(this, event);
+            if(actionSubscribersOnce.contains(subscriber)) {
+                toDelete.add(subscriber);
+            }
+        }
+        if(toDelete != null) {
+           actionSubscribers.removeAll(toDelete);
         }
         if(needsGC) {
             gc();

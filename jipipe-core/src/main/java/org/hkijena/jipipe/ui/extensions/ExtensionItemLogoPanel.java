@@ -30,7 +30,7 @@ import java.awt.image.BufferedImage;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-public class ExtensionItemLogoPanel extends JPanel {
+public class ExtensionItemLogoPanel extends JPanel implements JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener {
 
     private static final Map<BufferedImage, BufferedImage> THUMBNAIL_CACHE = new IdentityHashMap<>();
 
@@ -45,25 +45,9 @@ public class ExtensionItemLogoPanel extends JPanel {
         this.extension = extension;
         setOpaque(false);
         initializeThumbnail();
-        JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
-    }
-
-    @Override
-    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
-        repaint();
-    }
-
-    @Override
-    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
-        repaint();
-    }
-
-    @Override
-    public void onUpdateSiteActivated(JIPipeRunnable.FinishedEvent event) {
-        if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
-            repaint();
-        }
+        JIPipe.getInstance().getExtensionRegistry().getScheduledActivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getExtensionRegistry().getScheduledDeactivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
     }
 
     private void initializeThumbnail() {
@@ -104,5 +88,22 @@ public class ExtensionItemLogoPanel extends JPanel {
         }
         g.drawImage(displayMode ? thumbnail : thumbnailDeactivated, x, y, targetWidth, targetHeight, null);
         super.paint(g);
+    }
+
+    @Override
+    public void onScheduledActivateExtension(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
+        repaint(50);
+    }
+
+    @Override
+    public void onScheduledDeactivateExtension(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
+        repaint(50);
+    }
+
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
+            repaint(50);
+        }
     }
 }

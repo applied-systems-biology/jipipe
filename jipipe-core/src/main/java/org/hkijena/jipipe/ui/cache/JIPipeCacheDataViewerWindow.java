@@ -41,7 +41,7 @@ import java.util.function.Function;
 /**
  * Base class for a Window that displays cached data.
  */
-public abstract class JIPipeCacheDataViewerWindow extends JFrame {
+public abstract class JIPipeCacheDataViewerWindow extends JFrame implements JIPipeCache.ModifiedEventListener {
 
     private final AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(this);
     private final JIPipeWorkbench workbench;
@@ -84,8 +84,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
         alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenDataWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
 
-        if (algorithm != null)
-            project.getCache().getEventBus().register(this);
+        if (algorithm != null) {
+            project.getCache().getModifiedEventEmitter().subscribeWeak(this);
+        }
 
         pack();
         setSize(1024, 768);
@@ -409,7 +410,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     @Override
-    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         if (!isVisible())
             return;
         if (!isDisplayable())

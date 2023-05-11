@@ -8,7 +8,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class HistoryJournalUI extends JPanel {
+public class HistoryJournalUI extends JPanel implements JIPipeHistoryJournal.HistoryChangedEventListener {
     private final JIPipeHistoryJournal historyJournal;
     private JList<JIPipeHistoryJournalSnapshot> snapshotJList;
 
@@ -16,7 +16,7 @@ public class HistoryJournalUI extends JPanel {
         this.historyJournal = historyJournal;
         initialize();
         reloadList();
-        historyJournal.getEventBus().register(this);
+        historyJournal.getHistoryChangedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -86,12 +86,12 @@ public class HistoryJournalUI extends JPanel {
         snapshotJList.setSelectedValue(currentSnapshot, true);
     }
 
-    @Override
-    public void onHistoryJournalChanged(JIPipeHistoryJournal.HistoryChangedEvent event) {
-        reloadList();
-    }
-
     public JIPipeHistoryJournal getHistoryJournal() {
         return historyJournal;
+    }
+
+    @Override
+    public void onHistoryChangedEvent(JIPipeHistoryJournal.HistoryChangedEvent event) {
+        reloadList();
     }
 }

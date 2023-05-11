@@ -58,7 +58,6 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
         this.slots = slots;
         this.splitBySlot = splitBySlot;
         this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     /**

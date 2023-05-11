@@ -30,7 +30,7 @@ import java.awt.*;
 /**
  * UI for {@link ParameterTable}
  */
-public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
+public class ParameterTableEditorUI extends JIPipeParameterEditorUI implements ParameterTable.ModelChangedEventListener {
 
     private JXTable table;
 
@@ -84,13 +84,6 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
     }
 
     @Override
-    public void onTableStructureChangedEvent(TableModelEvent event) {
-        TableModel model = table.getModel();
-        table.setModel(new DefaultTableModel());
-        table.setModel(model);
-    }
-
-    @Override
     public boolean isUILabelEnabled() {
         return true;
     }
@@ -98,7 +91,7 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         if (table.getModel() instanceof ParameterTable) {
-            ((ParameterTable) table.getModel()).getEventBus().unregister(this);
+            ((ParameterTable) table.getModel()).getModelChangedEventEmitter().unsubscribe(this);
         }
 
         ParameterTable parameterTable = getParameter(ParameterTable.class);
@@ -106,7 +99,14 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI {
             table.setModel(new DefaultTableModel());
         } else {
             table.setModel(parameterTable);
-            parameterTable.getEventBus().register(this);
+            parameterTable.getModelChangedEventEmitter().subscribeWeak(this);
         }
+    }
+
+    @Override
+    public void onParameterTableModelChangedEvent(ParameterTable.ModelChangedEvent event) {
+        TableModel model = table.getModel();
+        table.setModel(new DefaultTableModel());
+        table.setModel(model);
     }
 }

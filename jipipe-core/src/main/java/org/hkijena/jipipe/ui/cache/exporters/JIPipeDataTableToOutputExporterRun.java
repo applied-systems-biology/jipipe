@@ -58,7 +58,6 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
         this.dataTables = new ArrayList<>(dataTables);
         this.splitBySlot = splitBySlot;
         this.clearDirectory = clearDirectory;
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     @Override

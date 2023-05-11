@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -33,7 +34,8 @@ import java.util.stream.Collectors;
 /**
  * Lists the content of an {@link org.hkijena.jipipe.JIPipeJsonExtension}
  */
-public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkbenchPanel {
+public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkbenchPanel implements JIPipeService.ExtensionContentAddedEventListener,
+        JIPipeService.ExtensionContentRemovedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     private JList<Object> list;
     private JSplitPane splitPane;
     private Object currentlySelectedValue;
@@ -47,7 +49,8 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
         super(workbenchUI);
         initialize();
         reload();
-        getProject().getEventBus().register(this);
+        getProject().getExtensionContentAddedEventEmitter().subscribeWeak(this);
+        getProject().getExtensionContentRemovedEventEmitter().subscribeWeak(this);
     }
 
     private void reload() {
@@ -105,7 +108,7 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
         info.setName("");
         info.setGraph(new JIPipeGraph());
         getProject().addAlgorithm(info);
-        info.getEventBus().register(this);
+        info.getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     /**
@@ -121,22 +124,12 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
     }
 
     /**
-     * Triggered when content was added
-     *
-     * @param event Generated event
-     */
-    @Override
-    public void onContentAddedEvent(JIPipe.ExtensionContentAddedEvent event) {
-        reload();
-    }
-
-    /**
      * Triggered when content was removed
      *
      * @param event Generated event
      */
     @Override
-    public void onContentRemovedEvent(JIPipe.ExtensionContentRemovedEvent event) {
+    public void onJIPipeExtensionContentRemoved(JIPipe.ExtensionContentRemovedEvent event) {
         reload();
     }
 
@@ -161,6 +154,11 @@ public class JIPipeJsonExtensionContentListUI extends JIPipeJsonExtensionWorkben
                 splitPane.setRightComponent(new JPanel());
             }
         }
+    }
+
+    @Override
+    public void onJIPipeExtensionContentAdded(JIPipeService.ExtensionContentAddedEvent event) {
+        reload();
     }
 }
 

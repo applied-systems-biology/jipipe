@@ -41,7 +41,7 @@ import java.util.Set;
 /**
  * JIPipe's own implementation of the ImageJ updater {@link net.imagej.ui.swing.updater.ImageJUpdater}
  */
-public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
+public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private MessagePanel messagePanel;
     private UpdateSiteListUI updateSiteListUI;
@@ -63,7 +63,8 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     public JIPipeImageJPluginManager(JIPipeWorkbench workbench, boolean refresh) {
         super(workbench);
         initialize();
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
         if (refresh)
             refreshUpdater();
     }
@@ -196,7 +197,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     @Override
-    public void onOperationInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.", true, true);
             getWorkbench().sendStatusBarText("Could not refresh ImageJ plugin information from online resources");
@@ -210,7 +211,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     @Override
-    public void onOperationFinished(JIPipeRunnable.FinishedEvent event) {
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             getWorkbench().sendStatusBarText("Refreshed ImageJ plugin information from online resources");
             if (refreshRepositoryRun.getFilesCollection() != null) {

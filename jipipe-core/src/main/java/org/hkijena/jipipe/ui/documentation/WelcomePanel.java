@@ -46,7 +46,7 @@ import java.util.jar.Attributes;
 /**
  * UI that shows some introduction
  */
-public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
+public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeProjectTemplateRegistry.TemplatesUpdatedEventListener {
 
     private final SearchTextField templateSearch = new SearchTextField();
     private final JList<JIPipeProjectTemplate> templateList = new JList<>();
@@ -60,12 +60,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         initialize();
         refreshTemplateProjects();
-        JIPipe.getInstance().getEventBus().register(this);
-    }
-
-    @Override
-    public void onTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
-        refreshTemplateProjects();
+        JIPipe.getInstance().getProjectTemplateRegistry().getTemplatesUpdatedEventEmitter().subscribeWeak(this);
     }
 
     private void refreshTemplateProjects() {
@@ -354,4 +349,8 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton);
     }
 
+    @Override
+    public void onJIPipeTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
+        refreshTemplateProjects();
+    }
 }

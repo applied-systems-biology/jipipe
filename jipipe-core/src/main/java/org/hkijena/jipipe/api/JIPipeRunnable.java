@@ -48,6 +48,22 @@ public interface JIPipeRunnable extends Runnable {
     String getTaskLabel();
 
     /**
+     * Called when this runnable finishes
+     * @param event the event
+     */
+    default void onFinished(FinishedEvent event) {
+
+    }
+
+    /**
+     * Called when this runnable is interrupted
+     * @param event the event
+     */
+    default void onInterrupted(InterruptedEvent event) {
+
+    }
+
+    /**
      * Generated when an {@link JIPipeRunWorker} was started
      */
     class StartedEvent extends AbstractJIPipeEvent {

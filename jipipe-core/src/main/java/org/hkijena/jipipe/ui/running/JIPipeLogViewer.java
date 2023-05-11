@@ -29,7 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
+public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel implements JIPipeLogs.LogClearedEventListener, JIPipeLogs.LogEntryAddedEventListener {
     private final JList<JIPipeLogs.LogEntry> logEntryJList = new JList<>();
     private final JTextPane logReader = new JTextPane();
     private JIPipeLogs.LogEntry currentlyDisplayedLog;
@@ -37,7 +37,8 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     public JIPipeLogViewer(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
-        JIPipeLogs.getInstance().getEventBus().register(this);
+        JIPipeLogs.getInstance().getLogClearedEventEmitter().subscribeWeak(this);
+        JIPipeLogs.getInstance().getLogEntryAddedEventEmitter().subscribeWeak(this);
         updateEntryList();
     }
 

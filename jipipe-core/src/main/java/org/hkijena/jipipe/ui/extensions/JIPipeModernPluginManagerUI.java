@@ -41,7 +41,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
+public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel implements JIPipeModernPluginManager.UpdateSitesReadyEventListener, JIPipeModernPluginManager.UpdateSitesFailedEventListener {
 
     private final MessagePanel messagePanel = new MessagePanel();
     private final JIPipeModernPluginManager pluginManager;
@@ -59,7 +59,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         this.pluginManager = new JIPipeModernPluginManager(this, messagePanel);
 
         initialize();
-        JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
+//        JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
         if (getExtensionRegistry().getNewExtensions().isEmpty()) {
             showItems(getExtensionRegistry().getKnownExtensionsList(), "All extensions");
         } else {
@@ -68,21 +68,22 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
             getExtensionRegistry().dismissNewExtensions();
         }
 
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+//        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
 
-        pluginManager.getEventBus().register(this);
+        pluginManager.getUpdateSitesReadyEventEmitter().subscribeWeak(this);
+        pluginManager.getUpdateSitesFailedEventEmitter().subscribeWeak(this);
         pluginManager.initializeUpdateSites();
     }
 
     @Override
-    public void onImageJFailed(JIPipeModernPluginManager.UpdateSitesFailedEvent event) {
-        updateSitesButton.setToolTipText("Could not connect to the ImageJ update service");
-        updateSitesButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png"));
+    public void onPluginManagerUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
+        updateSitesButton.setIcon(UIUtils.getIconFromResources("actions/web-browser.png"));
     }
 
     @Override
-    public void onImageJReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
-        updateSitesButton.setIcon(UIUtils.getIconFromResources("actions/web-browser.png"));
+    public void onPluginManagerUpdateSitesFailed(JIPipeModernPluginManager.UpdateSitesFailedEvent event) {
+        updateSitesButton.setToolTipText("Could not connect to the ImageJ update service");
+        updateSitesButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png"));
     }
 
     private void initialize() {
@@ -249,4 +250,6 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
         splitPane.setRightComponent(detailsPanel);
     }
+
+
 }

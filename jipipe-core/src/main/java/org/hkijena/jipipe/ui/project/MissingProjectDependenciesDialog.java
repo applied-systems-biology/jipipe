@@ -36,7 +36,7 @@ import java.util.Set;
 /**
  * Shown when unsatisfied dependencies are found
  */
-public class MissingProjectDependenciesDialog extends JDialog {
+public class MissingProjectDependenciesDialog extends JDialog implements JIPipeModernPluginManager.UpdateSitesReadyEventListener {
     private final Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites;
     private final JIPipeModernPluginManager pluginManager;
     private final Path fileName;
@@ -60,7 +60,7 @@ public class MissingProjectDependenciesDialog extends JDialog {
         pluginManager = new JIPipeModernPluginManager(this, messagePanel);
         initialize();
 
-        pluginManager.getEventBus().register(this);
+        pluginManager.getUpdateSitesReadyEventEmitter().subscribeWeak(this);
         pluginManager.initializeUpdateSites();
     }
 
@@ -139,7 +139,7 @@ public class MissingProjectDependenciesDialog extends JDialog {
     }
 
     @Override
-    public void onUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
+    public void onPluginManagerUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
         if (!missingUpdateSites.isEmpty()) {
             formPanel.removeLastRow(); //Vertical glue
             formPanel.removeLastRow(); // "Please wait..."

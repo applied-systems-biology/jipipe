@@ -43,7 +43,6 @@ public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implem
         super(workbench);
         this.outputZipFile = outputZipFile;
         this.dataTable = dataTable;
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     @Override

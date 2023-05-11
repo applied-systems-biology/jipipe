@@ -24,7 +24,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class ExtensionItemActionButton extends JButton {
+public class ExtensionItemActionButton extends JButton implements JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener {
 
     private final JIPipeModernPluginManager pluginManager;
     private final JIPipeExtension extension;
@@ -34,8 +34,9 @@ public class ExtensionItemActionButton extends JButton {
         this.extension = extension;
         addActionListener(e -> executeAction());
         updateDisplay();
-        getExtensionRegistry().getEventBus().register(this);
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        getExtensionRegistry().getScheduledActivateExtensionEventEmitter().subscribeWeak(this);
+        getExtensionRegistry().getScheduledDeactivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
     }
 
     private JIPipeExtensionRegistry getExtensionRegistry() {
@@ -72,17 +73,17 @@ public class ExtensionItemActionButton extends JButton {
     }
 
     @Override
-    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
+    public void onScheduledActivateExtension(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
         updateDisplay();
     }
 
     @Override
-    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
+    public void onScheduledDeactivateExtension(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
         updateDisplay();
     }
 
     @Override
-    public void onUpdateSiteActivated(JIPipeRunnable.FinishedEvent event) {
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             if (extension instanceof UpdateSiteExtension) {
                 // Try to update it

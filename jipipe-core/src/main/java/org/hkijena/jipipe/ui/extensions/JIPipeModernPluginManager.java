@@ -43,7 +43,7 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.*;
 
-public class JIPipeModernPluginManager {
+public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private final UpdateSitesReadyEventEmitter updateSitesReadyEventEmitter = new UpdateSitesReadyEventEmitter();
     private final UpdateSitesFailedEventEmitter updateSitesFailedEventEmitter = new UpdateSitesFailedEventEmitter();
@@ -61,8 +61,10 @@ public class JIPipeModernPluginManager {
     public JIPipeModernPluginManager(Component parent, MessagePanel messagePanel) {
         this.parent = parent;
         this.messagePanel = messagePanel;
-        JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getExtensionRegistry().getScheduledActivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getExtensionRegistry().getScheduledDeactivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
 
         updateMessagePanel();
     }
@@ -158,16 +160,6 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    @Override
-    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
-        updateMessagePanel();
-    }
-
-    @Override
-    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
-        updateMessagePanel();
-    }
-
     private void onFailure() {
         removeUpdateSiteMessage();
         updateSitesFailedEventEmitter.emit(new UpdateSitesFailedEvent(this));
@@ -215,25 +207,6 @@ public class JIPipeModernPluginManager {
                 UpdateSiteExtension extension = new UpdateSiteExtension(updateSite);
                 updateSiteWrapperExtensions.add(extension);
             }
-        }
-    }
-
-    @Override
-    public void onOperationInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        if (event.getRun() == refreshRepositoryRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.", true, true);
-            onFailure();
-        }
-    }
-
-    @Override
-    public void onOperationFinished(JIPipeRunnable.FinishedEvent event) {
-        if (event.getRun() == refreshRepositoryRun) {
-            this.updateSites = refreshRepositoryRun.getFilesCollection();
-            onSuccess();
-        } else if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
-            updateSitesApplied = true;
-            updateMessagePanel();
         }
     }
 
@@ -377,6 +350,35 @@ public class JIPipeModernPluginManager {
                 + extension.getUpdateSite(getUpdateSites()).getName() + "'? Please note that you need an active internet connection.", "Activate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(this, Collections.singletonList(extension.getUpdateSite(getUpdateSites())));
             JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(parent), run);
+        }
+    }
+
+    @Override
+    public void onScheduledActivateExtension(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
+        updateMessagePanel();
+    }
+
+    @Override
+    public void onScheduledDeactivateExtension(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
+        updateMessagePanel();
+    }
+
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        if (event.getRun() == refreshRepositoryRun) {
+            this.updateSites = refreshRepositoryRun.getFilesCollection();
+            onSuccess();
+        } else if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
+            updateSitesApplied = true;
+            updateMessagePanel();
+        }
+    }
+
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        if (event.getRun() == refreshRepositoryRun) {
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.", true, true);
+            onFailure();
         }
     }
 

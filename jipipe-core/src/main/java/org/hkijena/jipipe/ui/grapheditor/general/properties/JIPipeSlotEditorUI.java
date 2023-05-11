@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general.properties;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -40,21 +39,21 @@ import java.util.Set;
 /**
  * An extended slot editor that is more powerful than the "in-place" slot editor
  */
-public class JIPipeSlotEditorUI extends JPanel {
+public class JIPipeSlotEditorUI extends JPanel implements JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     private final JIPipeGraphEditorUI editorUI;
-    private final JIPipeGraphNode algorithm;
+    private final JIPipeGraphNode node;
     private JTree slotTree;
 
     /**
      * @param editorUI  the editor that shows the slot editor
-     * @param algorithm The algorithm
+     * @param node The algorithm
      */
-    public JIPipeSlotEditorUI(JIPipeGraphEditorUI editorUI, JIPipeGraphNode algorithm) {
+    public JIPipeSlotEditorUI(JIPipeGraphEditorUI editorUI, JIPipeGraphNode node) {
         this.editorUI = editorUI;
-        this.algorithm = algorithm;
+        this.node = node;
         initialize();
         reloadList();
-        algorithm.getEventBus().register(this);
+        node.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -82,7 +81,7 @@ public class JIPipeSlotEditorUI extends JPanel {
             addInputButton.addActionListener(e -> {
                 if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
                     return;
-                AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getHistoryJournal(), algorithm, JIPipeSlotType.Input);
+                AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getHistoryJournal(), node, JIPipeSlotType.Input);
             });
             toolBar.add(addInputButton);
         }
@@ -92,7 +91,7 @@ public class JIPipeSlotEditorUI extends JPanel {
             addOutputButton.addActionListener(e -> {
                 if (!JIPipeProjectWorkbench.canModifySlots(editorUI.getWorkbench()))
                     return;
-                AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getHistoryJournal(), algorithm, JIPipeSlotType.Output);
+                AddAlgorithmSlotPanel.showDialog(this, editorUI.getCanvasUI().getHistoryJournal(), node, JIPipeSlotType.Output);
             });
             toolBar.add(addOutputButton);
         }
@@ -104,7 +103,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         relabelButton.addActionListener(e -> relabelSlot());
         toolBar.add(relabelButton);
 
-        if (algorithm.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
+        if (node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
 
             if (canModifyInputSlots() || canModifyOutputSlots()) {
                 JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
@@ -169,7 +168,7 @@ public class JIPipeSlotEditorUI extends JPanel {
             if (editorUI.getHistoryJournal() != null) {
                 editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
-            ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
+            ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
             editorUI.getCanvasUI().repaint(50);
         }
     }
@@ -180,7 +179,7 @@ public class JIPipeSlotEditorUI extends JPanel {
             if (editorUI.getHistoryJournal() != null) {
                 editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
-            ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
+            ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
             editorUI.getCanvasUI().repaint(50);
         }
     }
@@ -197,17 +196,17 @@ public class JIPipeSlotEditorUI extends JPanel {
     }
 
     private boolean canModifyOutputSlots() {
-        if (algorithm.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
-            return !((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).isOutputSlotsSealed() &&
-                    ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).allowsOutputSlots();
+        if (node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
+            return !((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).isOutputSlotsSealed() &&
+                    ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).allowsOutputSlots();
         }
         return false;
     }
 
     private boolean canModifyInputSlots() {
-        if (algorithm.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
-            return !((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).isInputSlotsSealed() &&
-                    ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).allowsInputSlots();
+        if (node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
+            return !((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).isInputSlotsSealed() &&
+                    ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).allowsInputSlots();
         }
         return false;
     }
@@ -224,7 +223,7 @@ public class JIPipeSlotEditorUI extends JPanel {
                 }
             }
         }
-        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
+        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) node.getSlotConfiguration();
         for (JIPipeDataSlot slot : toRemove) {
             if (!slot.getInfo().isUserModifiable()) {
                 JOptionPane.showMessageDialog(this,
@@ -248,7 +247,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      */
     public void reloadList() {
 
-        if (algorithm.getParentGraph() == null || !algorithm.getParentGraph().containsNode(algorithm)) {
+        if (node.getParentGraph() == null || !node.getParentGraph().containsNode(node)) {
             return;
         }
 
@@ -262,16 +261,16 @@ public class JIPipeSlotEditorUI extends JPanel {
 
         DefaultMutableTreeNode toSelect = null;
 
-        for (JIPipeDataSlot slot : algorithm.getInputSlots()) {
+        for (JIPipeDataSlot slot : node.getInputSlots()) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
-            slot.getInfo().getEventBus().register(this);
+            slot.getInfo().getParameterChangedEventEmitter().subscribeWeak(this);
             if (slot == selectedSlot)
                 toSelect = node;
             inputNode.add(node);
         }
-        for (JIPipeDataSlot slot : algorithm.getOutputSlots()) {
+        for (JIPipeDataSlot slot : node.getOutputSlots()) {
             DefaultMutableTreeNode node = new DefaultMutableTreeNode(slot);
-            slot.getInfo().getEventBus().register(this);
+            slot.getInfo().getParameterChangedEventEmitter().subscribeWeak(this);
             if (slot == selectedSlot)
                 toSelect = node;
             outputNode.add(node);
@@ -292,7 +291,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      * @param event Generated event
      */
     @Override
-    public void onAlgorithmSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         if (isDisplayable()) {
             reloadList();
         }
@@ -304,7 +303,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      * @param event Generated event
      */
     @Override
-    public void onSlotNameChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("custom-name".equals(event.getKey())) {
             reloadList();
         }

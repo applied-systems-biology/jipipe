@@ -60,7 +60,6 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
         this.dataTables = new ArrayList<>(dataTables);
         this.settings = new Settings();
         settings.splitBySlotName = splitBySlot;
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     /**

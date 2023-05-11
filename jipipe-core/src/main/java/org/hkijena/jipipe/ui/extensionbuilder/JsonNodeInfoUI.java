@@ -83,11 +83,8 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
         FormPanel.GroupHeaderPanel metadataHeader = parameterEditor.addGroupHeader("Algorithm metadata", UIUtils.getIconFromResources("actions/help-info.png"));
         metadataHeader.setDescription("Please provide following metadata:");
         parameterEditor.addWideToForm(infoParameterEditor, null);
-        infoParameterEditor.getEventBus().register(new Object() {
-            @Override
-            public void onHoverHelp(FormPanel.HoverHelpEvent event) {
-                parameterEditor.getParameterHelp().setDocument(event.getDocument());
-            }
+        infoParameterEditor.getHoverHelpEventEmitter().subscribeLambda((emitter, event) -> {
+            parameterEditor.getParameterHelp().setDocument(event.getDocument());
         });
         parameterEditor.addVerticalGlue();
     }

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.cache;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -16,52 +15,57 @@ import javax.swing.*;
 /**
  * Interface that allows users to control refresh to cache and update thew current item within directly within the viewed data
  */
-public class JIPipeCachedDataDisplayCacheControl implements Disposable {
+public class JIPipeCachedDataDisplayCacheControl implements Disposable,
+        JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.StartedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeProjectWorkbench workbench;
     private final JToolBar toolBar;
-    private final JIPipeGraphNode algorithm;
+    private final JIPipeGraphNode node;
     private JCheckBoxMenuItem cacheAwareToggle;
 
     private JCheckBoxMenuItem algorithmAwareToggle;
     private JButton updateCacheButton;
     private JIPipeRunnerQueueUI runnerQueue;
 
-    public JIPipeCachedDataDisplayCacheControl(JIPipeProjectWorkbench workbench, JToolBar toolBar, JIPipeGraphNode algorithm) {
+    public JIPipeCachedDataDisplayCacheControl(JIPipeProjectWorkbench workbench, JToolBar toolBar, JIPipeGraphNode node) {
         this.workbench = workbench;
         this.toolBar = toolBar;
-        this.algorithm = algorithm;
+        this.node = node;
         initialize();
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
-        algorithm.getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getStartedEventEmitter().subscribeWeak(this);
+        node.getParameterChangedEventEmitter().subscribeWeak(this);
         updateRunnerQueueStatus();
     }
 
     @Override
-    public void onRunnerFinished(JIPipeRunnable.FinishedEvent event) {
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         updateRunnerQueueStatus();
     }
 
     @Override
-    public void onRunnerInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         updateRunnerQueueStatus();
     }
 
     @Override
-    public void onRunnerStarted(JIPipeRunnable.StartedEvent event) {
+    public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
         updateRunnerQueueStatus();
     }
 
     @Override
     public void dispose() {
-        UIUtils.unregisterEventBus(JIPipeRunnerQueue.getInstance().getEventBus(), this);
-        UIUtils.unregisterEventBus(algorithm.getEventBus(), this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().unsubscribe(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().unsubscribe(this);
+        JIPipeRunnerQueue.getInstance().getStartedEventEmitter().unsubscribe(this);
+        node.getParameterChangedEventEmitter().unsubscribe(this);
     }
 
     @Override
-    private void onAlgorithmParameterChanged(JIPipeParameterCollection.ParameterChangedEvent e) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent e) {
         if (algorithmAwareToggle != null && algorithmAwareToggle.getState()) {
-            workbench.runUpdateCacheLater(algorithm);
+            workbench.runUpdateCacheLater(node);
         }
     }
 
@@ -87,12 +91,12 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
 
         JMenuItem updateCacheItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("actions/database.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are discarded.");
-        updateCacheItem.addActionListener(e -> workbench.runUpdateCache(algorithm));
+        updateCacheItem.addActionListener(e -> workbench.runUpdateCache(node));
         menu.add(updateCacheItem);
 
         JMenuItem cacheIntermediateResultsItem = new JMenuItem("Cache intermediate results", UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are also cached.");
-        cacheIntermediateResultsItem.addActionListener(e -> workbench.runCacheIntermediateResults(algorithm));
+        cacheIntermediateResultsItem.addActionListener(e -> workbench.runCacheIntermediateResults(node));
         menu.add(cacheIntermediateResultsItem);
 
         menu.addSeparator();
@@ -126,8 +130,8 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable {
         return workbench.getProject();
     }
 
-    public JIPipeGraphNode getAlgorithm() {
-        return algorithm;
+    public JIPipeGraphNode getNode() {
+        return node;
     }
 
     public void uninstall() {

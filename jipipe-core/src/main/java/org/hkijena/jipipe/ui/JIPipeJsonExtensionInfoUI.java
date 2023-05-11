@@ -39,7 +39,7 @@ import java.util.jar.Attributes;
 /**
  * UI that shows some introduction
  */
-public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
+public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JList<Path> recentProjectsList = new JList<>();
 
@@ -52,7 +52,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         super(workbenchUI);
         initialize();
         refreshRecentProjects();
-        ProjectsSettings.getInstance().getEventBus().register(this);
+        ProjectsSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void refreshRecentProjects() {
@@ -110,7 +110,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
     }
 
     @Override
-    public void onRecentProjectsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("recent-json-extension-projects".equals(event.getKey())) {
             refreshRecentProjects();
         }

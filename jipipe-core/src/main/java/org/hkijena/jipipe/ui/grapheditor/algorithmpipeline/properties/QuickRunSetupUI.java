@@ -48,7 +48,7 @@ import java.util.function.Consumer;
 /**
  * UI for generating {@link QuickRun}
  */
-public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
+public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener {
 
     private final JIPipeGraphNode algorithm;
     boolean showNextResults;
@@ -77,7 +77,8 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
 
         tryShowSelectionPanel();
 
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
     }
 
     private void initializeSelectionPanel() {
@@ -358,7 +359,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Override
-    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == currentQuickRun) {
             tryShowSelectionPanel();
 
@@ -389,7 +390,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Override
-    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == currentQuickRun) {
             openError(event.getException());
         }

@@ -12,7 +12,7 @@
  *
  */
 
-package org.hkijena.jipipe.ui.extensions.legacy;
+package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;

@@ -37,7 +37,7 @@ import java.util.HashMap;
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
  */
-public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JTextPane descriptionReader;
     private final ParameterPanel parameterPanel;
@@ -74,7 +74,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
                         ParameterPanel.DOCUMENTATION_BELOW);
         initialize();
         refreshAll();
-        getProject().getMetadata().getEventBus().register(this);
+        getProject().getMetadata().getParameterChangedEventEmitter().subscribeWeak(this);
 
     }
 
@@ -174,7 +174,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     @Override
-    public void onRecentProjectsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("description".equals(event.getKey())) {
             refreshDescription();
         } else if ("name".equals(event.getKey()) || "authors".equals(event.getKey())) {

@@ -60,7 +60,7 @@ import java.util.Set;
 /**
  * Displays the result of multiple {@link JIPipeDataSlot}
  */
-public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final List<JIPipeDataSlot> slots;
     private final JIPipeProjectRun run;
@@ -85,14 +85,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
 
         initialize();
         reloadTable();
-        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Override
-            public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if (isDisplayable() && "preview-size".equals(event.getKey())) {
-                    reloadTable();
-                }
-            }
-        });
+        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -314,4 +307,10 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         SwingUtilities.invokeLater(dataAnnotationPreviewRenderer::updateRenderedPreviews);
     }
 
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if (isDisplayable() && "preview-size".equals(event.getKey())) {
+            reloadTable();
+        }
+    }
 }

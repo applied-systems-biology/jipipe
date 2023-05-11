@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.ui.components.RecentJsonExtensionsMenu;
@@ -41,7 +42,7 @@ import java.util.Set;
 /**
  * UI around a {@link JIPipeJsonExtension}
  */
-public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbench {
+public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbench, JIPipeService.ExtensionRegisteredEventListener, JIPipeService.ExtensionContentRemovedEventListener {
     private final JIPipeJsonExtensionWindow window;
     private final Context context;
     private final JIPipeJsonExtension project;
@@ -64,8 +65,8 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         this.project = project;
         initialize(showIntroduction);
 
-        this.project.getEventBus().register(this);
-        JIPipe.getInstance().getEventBus().register(this);
+        this.project.getExtensionContentRemovedEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeWeak(this);
         SplashScreen.getInstance().hideSplash();
     }
 
@@ -75,7 +76,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
      * @param event the event
      */
     @Override
-    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
+    public void onJIPipeExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
@@ -282,16 +283,6 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         return documentTabPane;
     }
 
-    /**
-     * Triggered when content was removed
-     *
-     * @param event Generated event
-     */
-    @Override
-    public void onContentRemovedEvent(JIPipe.ExtensionContentRemovedEvent event) {
-        removeUnnecessaryAlgorithmGraphEditors();
-    }
-
     private void removeUnnecessaryAlgorithmGraphEditors() {
         Set<DocumentTabPane.DocumentTab> toRemove = new HashSet<>();
         for (DocumentTabPane.DocumentTab tab : getDocumentTabPane().getTabs()) {
@@ -321,5 +312,10 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
     @Override
     public JIPipeNotificationInbox getNotificationInbox() {
         return notificationInbox;
+    }
+
+    @Override
+    public void onJIPipeExtensionContentRemoved(JIPipeService.ExtensionContentRemovedEvent event) {
+        removeUnnecessaryAlgorithmGraphEditors();
     }
 }
