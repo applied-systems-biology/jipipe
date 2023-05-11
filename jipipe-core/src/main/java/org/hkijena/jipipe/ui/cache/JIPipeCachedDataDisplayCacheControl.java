@@ -64,6 +64,9 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable,
 
     @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent e) {
+        if(!updateCacheButton.isDisplayable()) {
+            return;
+        }
         if (algorithmAwareToggle != null && algorithmAwareToggle.getState()) {
             workbench.runUpdateCacheLater(node);
         }

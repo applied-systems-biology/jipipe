@@ -1,14 +1,11 @@
 package org.hkijena.jipipe.api.events;
 
-import org.hkijena.jipipe.utils.data.OwningStore;
-import org.hkijena.jipipe.utils.data.Store;
-import org.hkijena.jipipe.utils.data.WeakStore;
 import org.scijava.Disposable;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.lang.ref.WeakReference;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 
 /**
@@ -19,59 +16,82 @@ import java.util.function.BiConsumer;
  */
 public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> implements Disposable {
 
-    private final Set<Store<Listener>> subscribers = new LinkedHashSet<>();
+    private boolean disposed = false;
 
-    private final Set<BiConsumer<JIPipeEventEmitter<Event, Listener>, Event>> actionSubscribers = new LinkedHashSet<>();
+    private final List<Subscriber<Event, Listener>> subscribers = new ArrayList<>();
 
-    private final Set<BiConsumer<JIPipeEventEmitter<Event, Listener>, Event>> actionSubscribersOnce = new LinkedHashSet<>();
+    private final Map<Listener, Subscriber<Event, Listener>> listenerSubscriberMap = new IdentityHashMap<>();
 
-    public synchronized void subscribe(Listener listener) {
-        subscribers.add(new OwningStore<>(listener));
+    private final AtomicInteger emittingDepth = new AtomicInteger(0);
+
+    private final AtomicBoolean copyOnWriteActive = new AtomicBoolean();
+
+    public void addSubscriber(Subscriber<Event, Listener> subscriber) {
+        if (disposed) {
+            throw new UnsupportedOperationException("Event emitter is disposed!");
+        }
+        synchronized (subscribers) {
+            subscribers.add(subscriber);
+        }
     }
 
-    public synchronized void subscribeLambda(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
-        actionSubscribers.add(listener);
+    public void removeSubscriber(Subscriber<Event, Listener> subscriber) {
+        if (disposed) {
+            throw new UnsupportedOperationException("Event emitter is disposed!");
+        }
+        synchronized (subscribers) {
+            subscribers.remove(subscriber);
+        }
     }
 
-    public synchronized void subscribeLambdaOnce(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
-        actionSubscribers.add(listener);
-        actionSubscribersOnce.add(listener);
+    public void subscribe(Listener listener) {
+        Subscriber<Event, Listener> subscriber = new StrongObjectSubscriber<>(listener);
+        addSubscriber(subscriber);
     }
 
-    public synchronized void subscribeWeak(Listener listener) {
-        subscribers.add(new WeakStore<>(listener));
+    public void subscribeLambda(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
+        Subscriber<Event, Listener> subscriber = new LambdaSubscriber<>(listener, false);
+        addSubscriber(subscriber);
     }
 
-    public synchronized void unsubscribe(Listener listener) {
-        subscribers.removeIf(l -> l.get() == listener || l.get() == null);
+    public void subscribeLambdaOnce(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> listener) {
+        Subscriber<Event, Listener> subscriber = new LambdaSubscriber<>(listener, true);
+        addSubscriber(subscriber);
+    }
+
+    public void subscribeWeak(Listener listener) {
+        Subscriber<Event, Listener> subscriber = new WeakObjectSubscriber<>(listener);
+        addSubscriber(subscriber);
+    }
+
+    public void unsubscribe(Listener listener) {
+        Subscriber<Event, Listener> subscriber = listenerSubscriberMap.getOrDefault(listener, null);
+        if (subscriber != null) {
+            removeSubscriber(subscriber);
+        }
     }
 
     public synchronized void emit(Event event) {
+        if (disposed) {
+            throw new UnsupportedOperationException("Event emitter is disposed!");
+        }
         if (event.getEmitter() == null) {
             event.setEmitter(this);
         }
         boolean needsGC = false;
-        for (Store<Listener> subscriber : subscribers) {
-            Listener listener = subscriber.get();
-            if (listener != null) {
-                call(listener, event);
-            } else {
-                needsGC = true;
+        synchronized (subscribers) {
+            synchronized (subscribers) {
+                for (int i = 0; i < subscribers.size(); i++) {
+                    if (i < subscribers.size()) {
+                        Subscriber<Event, Listener> subscriber = subscribers.get(i);
+                        if (subscriber.isPresent()) {
+                            subscriber.call(this, event);
+                        } else {
+                            needsGC = true;
+                        }
+                    }
+                }
             }
-        }
-        List<BiConsumer<JIPipeEventEmitter<Event, Listener>, Event>> toDelete = null;
-        if (!actionSubscribersOnce.isEmpty()) {
-            toDelete = new ArrayList<>();
-        }
-        for (BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> subscriber : actionSubscribers) {
-            subscriber.accept(this, event);
-            if (actionSubscribersOnce.contains(subscriber)) {
-                toDelete.add(subscriber);
-            }
-        }
-        if (toDelete != null) {
-            actionSubscribersOnce.removeAll(toDelete);
-            actionSubscribers.removeAll(toDelete);
         }
         if (needsGC) {
             gc();
@@ -80,12 +100,83 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
 
     protected abstract void call(Listener listener, Event event);
 
-    public synchronized void gc() {
-        subscribers.removeIf(l -> !l.isPresent());
+    public void gc() {
+        synchronized (subscribers) {
+            subscribers.removeIf(l -> !l.isPresent());
+        }
     }
 
     @Override
     public void dispose() {
+        disposed = true;
         subscribers.clear();
+        listenerSubscriberMap.clear();
+    }
+
+    public interface Subscriber<Event extends JIPipeEvent, Listener> {
+        void call(JIPipeEventEmitter<Event, Listener> emitter, Event event);
+
+        boolean isPresent();
+    }
+
+    public static class StrongObjectSubscriber<Event extends JIPipeEvent, Listener> implements Subscriber<Event, Listener> {
+        private final Listener listener;
+
+        public StrongObjectSubscriber(Listener listener) {
+            this.listener = Objects.requireNonNull(listener);
+        }
+
+        @Override
+        public void call(JIPipeEventEmitter<Event, Listener> emitter, Event event) {
+            emitter.call(listener, event);
+        }
+
+        @Override
+        public boolean isPresent() {
+            return true;
+        }
+    }
+
+    public static class WeakObjectSubscriber<Event extends JIPipeEvent, Listener> implements Subscriber<Event, Listener> {
+        private final WeakReference<Listener> listener;
+
+        public WeakObjectSubscriber(Listener listener) {
+            this.listener = new WeakReference<>(Objects.requireNonNull(listener));
+        }
+
+        @Override
+        public void call(JIPipeEventEmitter<Event, Listener> emitter, Event event) {
+            Listener listener_ = listener.get();
+            if (listener_ != null) {
+                emitter.call(listener_, event);
+            }
+        }
+
+        @Override
+        public boolean isPresent() {
+            return listener.get() != null;
+        }
+    }
+
+    public static class LambdaSubscriber<Event extends JIPipeEvent, Listener> implements Subscriber<Event, Listener> {
+        private final BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> function;
+        private final boolean once;
+
+        private boolean triggered;
+
+        public LambdaSubscriber(BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> function, boolean once) {
+            this.function = function;
+            this.once = once;
+        }
+
+        @Override
+        public void call(JIPipeEventEmitter<Event, Listener> emitter, Event event) {
+            function.accept(emitter, event);
+        }
+
+        @Override
+        public boolean isPresent() {
+            return !once || !triggered;
+        }
     }
 }
