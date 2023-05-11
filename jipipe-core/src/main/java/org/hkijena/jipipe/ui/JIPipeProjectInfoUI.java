@@ -191,9 +191,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
 
-        FormPanel nameAndAuthorPanel = new FormPanel(null, FormPanel.NONE);
-        nameAndAuthorPanel.setOpaque(false);
-        nameAndAuthorPanel.getContentPanel().setOpaque(false);
+        FormPanel nameAndAuthorPanel = new FormPanel(null, FormPanel.TRANSPARENT_BACKGROUND);
         nameAndAuthorPanel.setLayout(new BoxLayout(nameAndAuthorPanel, BoxLayout.Y_AXIS));
 
         projectName = UIUtils.makeReadonlyBorderlessTextField("Unnamed project");
@@ -211,9 +209,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         nameAndAuthorPanel.addVerticalGlue();
         headerPanel.add(nameAndAuthorPanel, BorderLayout.WEST);
 
-        FormPanel technicalInfo = new FormPanel(null, FormPanel.NONE);
-        technicalInfo.setOpaque(false);
-        technicalInfo.getContentPanel().setOpaque(false);
+        FormPanel technicalInfo = new FormPanel(null, FormPanel.TRANSPARENT_BACKGROUND);
 
         licenseInfo = UIUtils.makeReadonlyBorderlessTextField("No license");
         technicalInfo.addToForm(licenseInfo, new JLabel("Licensed under"), null);

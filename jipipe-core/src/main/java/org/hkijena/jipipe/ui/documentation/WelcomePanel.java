@@ -254,10 +254,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
 
     private void initializeHeroTechnicalInfoPanel(JPanel bottomPanel) {
 
-        FormPanel technicalInfo = new FormPanel(null, FormPanel.NONE);
-        technicalInfo.setOpaque(false);
-        technicalInfo.getContentPanel().setOpaque(false);
-
+        FormPanel technicalInfo = new FormPanel(null, FormPanel.TRANSPARENT_BACKGROUND);
         technicalInfo.addVerticalGlue();
 
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);

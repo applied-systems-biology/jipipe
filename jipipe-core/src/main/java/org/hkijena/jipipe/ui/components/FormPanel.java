@@ -61,6 +61,11 @@ public class FormPanel extends JXPanel {
     public static final int DOCUMENTATION_NO_UI = 16;
 
     /**
+     * Flag that makes the backgrounds of the components transparent (non-opaque) if possible
+     */
+    public static final int TRANSPARENT_BACKGROUND = 32;
+
+    /**
      * Flag that makes the content be wrapped in a {@link JScrollPane}
      */
     public static final int WITH_SCROLLING = 2;
@@ -130,10 +135,14 @@ public class FormPanel extends JXPanel {
 
         helpPanel.add(helpToolbar, BorderLayout.SOUTH);
 
+        boolean opaque = (flags & TRANSPARENT_BACKGROUND) != TRANSPARENT_BACKGROUND;
         setScrollableWidthHint(ScrollableSizeHint.FIT);
         setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
         contentPanel.setScrollableWidthHint(ScrollableSizeHint.FIT);
         contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
+        contentPanel.setOpaque(opaque);
+        setOpaque(opaque);
+
 
         // Determine the component that will be displayed in the help pane
         Component helpComponent;
@@ -146,10 +155,13 @@ public class FormPanel extends JXPanel {
         }
 
         staticContentPanel = new JPanel(new BorderLayout());
+        staticContentPanel.setOpaque(opaque);
+
         final Component content = staticContentPanel;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
             scrollPane = new JScrollPane(contentPanel);
             scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+            scrollPane.setOpaque(opaque);
             staticContentPanel.add(scrollPane, BorderLayout.CENTER);
         } else {
             staticContentPanel.add(contentPanel, BorderLayout.CENTER);
