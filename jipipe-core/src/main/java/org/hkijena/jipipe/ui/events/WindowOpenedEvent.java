@@ -13,15 +13,18 @@
 
 package org.hkijena.jipipe.ui.events;
 
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+
 import java.awt.*;
 
 /**
  * Triggered when a window was opened
  */
-public class WindowOpenedEvent {
+public class WindowOpenedEvent extends AbstractJIPipeEvent {
     private final Window window;
 
     public WindowOpenedEvent(Window window) {
+        super(window);
         this.window = window;
     }
 

@@ -23,7 +23,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
+public class PencilMaskDrawer2DTool extends MaskDrawer2DTool implements MouseClickedEventListener, MouseExitedEventListener, MouseMovedEventListener,
+        MouseDraggedEventListener, MousePressedEventListener, MouseReleasedEventListener {
 
     public static int DEFAULT_SETTING_PENCIL_SIZE_X = 12;
     public static int DEFAULT_SETTING_PENCIL_SIZE_Y = 12;
@@ -44,7 +45,13 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
                 "Pencil",
                 "Allows to draw free-hand",
                 UIUtils.getIconFromResources("actions/draw-brush.png"));
-        getViewerPanel2D().getCanvas().getEventBus().register(this);
+        ImageViewerPanelCanvas2D canvas = getViewerPanel2D().getCanvas();
+        canvas.getMouseClickedEventEmitter().subscribe(this);
+        canvas.getMouseExitedEventEmitter().subscribe(this);
+        canvas.getMouseMovedEventEmitter().subscribe(this);
+        canvas.getMouseDraggedEventEmitter().subscribe(this);
+        canvas.getMousePressedEventEmitter().subscribe(this);
+        canvas.getMouseReleasedEventEmitter().subscribe(this);
         initialize();
     }
 
@@ -146,7 +153,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
     }
 
     @Override
-    public void onMouseMove(MouseMovedEvent event) {
+    public void onComponentMouseMoved(MouseMovedEvent event) {
         if (!toolIsActive())
             return;
         if (isDrawing) {
@@ -156,7 +163,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
     }
 
     @Override
-    public void onMouseClick(MouseClickedEvent event) {
+    public void onComponentMouseClicked(MouseClickedEvent event) {
         if (!toolIsActive())
             return;
         if (SwingUtilities.isLeftMouseButton(event)) {
@@ -167,7 +174,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
     }
 
     @Override
-    public void onMouseDrag(MouseDraggedEvent event) {
+    public void onComponentMouseDragged(MouseDraggedEvent event) {
         if (!toolIsActive())
             return;
         if ((event.getModifiersEx() & MouseEvent.BUTTON1_DOWN_MASK) == MouseEvent.BUTTON1_DOWN_MASK) {
@@ -178,7 +185,7 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
     }
 
     @Override
-    public void onMousePressed(MousePressedEvent event) {
+    public void onComponentMousePressed(MousePressedEvent event) {
         if (!toolIsActive())
             return;
         if (SwingUtilities.isLeftMouseButton(event)) {
@@ -188,14 +195,14 @@ public class PencilMaskDrawer2DTool extends MaskDrawer2DTool {
     }
 
     @Override
-    public void onMouseReleased(MouseReleasedEvent event) {
+    public void onComponentMouseReleased(MouseReleasedEvent event) {
         if (!toolIsActive())
             return;
         releasePencil();
     }
 
     @Override
-    public void onMouseExited(MouseExitedEvent event) {
+    public void onComponentMouseExited(MouseExitedEvent event) {
         if (!toolIsActive())
             return;
         releasePencil();

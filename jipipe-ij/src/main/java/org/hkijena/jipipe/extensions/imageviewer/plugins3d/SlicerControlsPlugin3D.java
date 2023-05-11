@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
@@ -27,7 +28,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
+public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final FormPanel orthoSliceEditor = new FormPanel(FormPanel.NONE);
 
@@ -49,9 +50,7 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
     }
 
     private void initializeMultiOrthoSliceEditor() {
-        multiOrthoSlicerSettings.addParameterChangeListener(event -> {
-            updateMultiOrthoSlice();
-        });
+        multiOrthoSlicerSettings.getParameterChangedEventEmitter().subscribe(this);
     }
 
     private void initializeOrthoSliceEditor() {
@@ -222,6 +221,11 @@ public class SlicerControlsPlugin3D extends JIPipeImageViewerPlugin3D {
                 isUpdatingSliders = false;
             }
         }
+    }
+
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        updateMultiOrthoSlice();
     }
 
     public static class OrthoSliderPanel extends JPanel {

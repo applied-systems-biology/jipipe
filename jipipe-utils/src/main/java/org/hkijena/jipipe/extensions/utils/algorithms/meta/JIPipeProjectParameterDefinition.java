@@ -73,7 +73,7 @@ public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgor
                         continue;
                     getParameterTable().setValueAt(entry.getValue().get(Object.class), 0, getParameterTable().getColumnIndex(entry.getKey()));
                 }
-                getEventBus().post(new ParameterChangedEvent(this, "parameter-table"));
+                emitParameterChangedEvent("parameter-table");
             } catch (IOException e) {
                 IJ.handleException(e);
             }

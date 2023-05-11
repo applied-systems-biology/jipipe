@@ -933,7 +933,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
     /**
      * Triggers an event that indicates that the slots have changed
      */
-    public void triggerSlotsChangedEvent() {
+    public void emitSlotsChangedEvent() {
         getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
     }
 

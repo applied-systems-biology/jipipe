@@ -27,10 +27,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.plots.CachedPlotViewerWindow;
@@ -76,7 +73,7 @@ import java.util.stream.Collectors;
         "Additional metadata in the root object and series metadata depend on the exact plot type.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
 @JIPipeCommonData
-public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
+public abstract class PlotData extends AbstractJIPipeParameterCollection implements JIPipeData, JIPipeValidatable {
     private final List<PlotDataSeries> series = new ArrayList<>();
     private String title;
     private int exportWidth = 1024;
@@ -417,7 +414,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         if (useCustomColorMap && "color-map".equals(access.getKey()) && access.getSource() == this) {
             return false;
         }
-        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+        return super.isParameterUIVisible(tree, access);
     }
 
     /**

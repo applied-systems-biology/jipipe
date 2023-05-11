@@ -13,15 +13,18 @@
 
 package org.hkijena.jipipe.ui.events;
 
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+
 import java.awt.*;
 
 /**
  * Triggered when a JIPipe window was closed
  */
-public class WindowClosedEvent {
+public class WindowClosedEvent extends AbstractJIPipeEvent {
     private final Window window;
 
     public WindowClosedEvent(Window window) {
+        super(window);
         this.window = window;
     }
 

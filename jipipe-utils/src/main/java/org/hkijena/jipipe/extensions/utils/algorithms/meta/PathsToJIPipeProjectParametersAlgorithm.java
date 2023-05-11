@@ -57,14 +57,14 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
                 .sealOutput()
                 .build());
         this.parameterKeyAssignments = new InputSlotMapParameterCollection(String.class, this, (slotInfo) -> "", false);
-        parameterKeyAssignments.getEventBus().register(new ParameterWatcher());
+        parameterKeyAssignments.getBeforeAddParameterEventEmitter().subscribe(new ParameterWatcher());
         registerSubParameter(parameterKeyAssignments);
     }
 
     public PathsToJIPipeProjectParametersAlgorithm(PathsToJIPipeProjectParametersAlgorithm other) {
         super(other);
         this.parameterKeyAssignments = new InputSlotMapParameterCollection(String.class, this, (slotInfo) -> "", false);
-        parameterKeyAssignments.getEventBus().register(new ParameterWatcher());
+        parameterKeyAssignments.getBeforeAddParameterEventEmitter().subscribe(new ParameterWatcher());
         other.parameterKeyAssignments.copyTo(parameterKeyAssignments);
         registerSubParameter(parameterKeyAssignments);
     }
@@ -133,7 +133,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
         }
     }
 
-    private static class ParameterWatcher {
+    private static class ParameterWatcher implements JIPipeDynamicParameterCollection.BeforeAddParameterEventListener {
 
         private static final StringParameterSettings SETTINGS = new StringParameterSettings() {
 
@@ -169,7 +169,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
         };
 
         @Override
-        public void onParameterAdding(JIPipeDynamicParameterCollection.BeforeAddParameterEvent event) {
+        public void onDynamicParameterCollectionBeforeAddParameter(JIPipeDynamicParameterCollection.BeforeAddParameterEvent event) {
             event.getAccess().getAnnotationMap().put(StringParameterSettings.class, SETTINGS);
         }
     }

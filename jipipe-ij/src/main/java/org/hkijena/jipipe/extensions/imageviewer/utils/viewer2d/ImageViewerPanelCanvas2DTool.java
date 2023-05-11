@@ -81,11 +81,8 @@ public interface ImageViewerPanelCanvas2DTool {
             else
                 canvas.setTool(null);
         });
-        canvas.getEventBus().register(new Object() {
-            @Override
-            public void onToolChanged(ImageViewerPanelCanvas2D.ToolChangedEvent event) {
-                toggleButton.setSelected(toolIsActive(canvas));
-            }
+        canvas.getToolChangedEventEmitter().subscribeLambda((emitter, event) -> {
+            toggleButton.setSelected(toolIsActive(canvas));
         });
     }
 }

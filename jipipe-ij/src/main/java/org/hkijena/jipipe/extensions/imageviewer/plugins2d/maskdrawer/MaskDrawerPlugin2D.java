@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -13,6 +12,8 @@ import ij.process.ByteProcessor;
 import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -52,7 +53,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
+public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements ImageViewerPanelCanvas2D.ToolChangedEventListener {
 
     public static final Stroke STROKE_GUIDE_LINE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     private final JPanel colorSelectionPanel = new JPanel();
@@ -75,6 +76,8 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
     private SmallButtonAction exportToRoiManagerAction;
     private boolean drawCurrentMaskSlicePreview;
 
+    private final MaskChangedEventEmitter maskChangedEventEmitter = new MaskChangedEventEmitter();
+
     public MaskDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
 //        viewerPanel.setRotationEnabled(false);
@@ -89,7 +92,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         installTool(new EllipseMaskDrawer2DTool(this));
         installTool(new PolygonMaskDrawer2DTool(this));
 
-        getViewerPanel2D().getCanvas().getEventBus().register(this);
+        getViewerPanel2D().getCanvas().getToolChangedEventEmitter().subscribe(this);
         getViewerPanel2D().getCanvas().setTool(mouseTool);
         rebuildToolSettings();
     }
@@ -126,23 +129,13 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         highlightColorButton = new ColorChooserButton("Change highlight color");
         highlightColorButton.setUpdateWithHexCode(true);
         highlightColorButton.setSelectedColor(highlightColor);
-        highlightColorButton.getEventBus().register(new Object() {
-            @Override
-            public void onColorChosen(ColorChooserButton.ColorChosenEvent event) {
-                setHighlightColor(event.getColor());
-            }
-        });
+        highlightColorButton.getColorChosenEventEmitter().subscribeLambda((emitter, event) -> setHighlightColor(event.getColor()));
 
         // Create mask color selection
         maskColorButton = new ColorChooserButton("Change mask color");
         maskColorButton.setUpdateWithHexCode(true);
         maskColorButton.setSelectedColor(maskColor);
-        maskColorButton.getEventBus().register(new Object() {
-            @Override
-            public void onColorChosen(ColorChooserButton.ColorChosenEvent event) {
-                setMaskColor(event.getColor());
-            }
-        });
+        maskColorButton.getColorChosenEventEmitter().subscribeLambda((emitter, event) -> setMaskColor(event.getColor()));
 
         // Create Color selection
         colorSelectionPanel.setLayout(new BoxLayout(colorSelectionPanel, BoxLayout.X_AXIS));
@@ -244,12 +237,16 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         clearCurrentMask();
     }
 
+    public MaskChangedEventEmitter getMaskChangedEventEmitter() {
+        return maskChangedEventEmitter;
+    }
+
     private void applyInvert() {
         try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ByteProcessor processor = (ByteProcessor) getCurrentMaskSlice();
             processor.invert();
             recalculateMaskPreview();
-            postMaskChangedEvent();
+            emitMaskChangedEvent();
         }
     }
 
@@ -260,7 +257,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
             processor.dilate(); // Erode
             processor.erode(); // Dilate
             recalculateMaskPreview();
-            postMaskChangedEvent();
+            emitMaskChangedEvent();
         }
     }
 
@@ -271,7 +268,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
             processor.erode(); // Dilate
             processor.dilate(); // Erode
             recalculateMaskPreview();
-            postMaskChangedEvent();
+            emitMaskChangedEvent();
         }
     }
 
@@ -280,7 +277,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
             ByteProcessor processor = (ByteProcessor) getCurrentMaskSlice();
             processor.erode(); // Dilate and erode are switched for some reason
             recalculateMaskPreview();
-            postMaskChangedEvent();
+            emitMaskChangedEvent();
         }
     }
 
@@ -289,7 +286,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
             ByteProcessor processor = (ByteProcessor) getCurrentMaskSlice();
             processor.erode(); // Dilate and erode are switched for some reason
             recalculateMaskPreview();
-            postMaskChangedEvent();
+            emitMaskChangedEvent();
         }
     }
 
@@ -298,7 +295,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
             EDM edm = new EDM();
             edm.toWatershed(getCurrentMaskSlice());
             recalculateMaskPreview();
-            postMaskChangedEvent();
+            emitMaskChangedEvent();
         }
     }
 
@@ -325,13 +322,13 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
                 processor.setRoi((Roi) null);
                 processor.copyBits(image.getProcessor(), 0, 0, Blitter.COPY);
                 recalculateMaskPreview();
-                postMaskChangedEvent();
+                emitMaskChangedEvent();
             }
         }
     }
 
-    private void postMaskChangedEvent() {
-        getViewerPanel2D().getCanvas().getEventBus().post(new MaskChangedEvent(this));
+    private void emitMaskChangedEvent() {
+        maskChangedEventEmitter.emit(new MaskChangedEvent(this));
     }
 
     private void exportMask() {
@@ -625,7 +622,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
             getCurrentMaskSlice().setColor(0);
             getCurrentMaskSlice().fillRect(0, 0, getCurrentMaskSlice().getWidth(), getCurrentMaskSlice().getHeight());
             recalculateMaskPreview();
-            postMaskChangedEvent();
+            emitMaskChangedEvent();
         }
     }
 
@@ -715,23 +712,6 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         toolSettingsPanel.repaint();
     }
 
-    @Override
-    public void onToolChanged(ImageViewerPanelCanvas2D.ToolChangedEvent event) {
-        ImageViewerPanelCanvas2DTool newTool = event.getNewTool();
-        MaskDrawer2DTool localTool;
-        if (newTool instanceof MaskDrawer2DTool) {
-            if (registeredTools.contains(newTool)) {
-                localTool = (MaskDrawer2DTool) newTool;
-            } else {
-                localTool = mouseTool;
-            }
-        } else {
-            localTool = mouseTool;
-        }
-        this.currentTool = localTool;
-        rebuildToolSettings();
-    }
-
     public Color getMaskColor() {
         return maskColor;
     }
@@ -749,6 +729,23 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         this.maskGenerator = maskGenerator;
     }
 
+    @Override
+    public void onImageViewerCanvasToolChanged(ImageViewerPanelCanvas2D.ToolChangedEvent event) {
+        ImageViewerPanelCanvas2DTool newTool = event.getNewTool();
+        MaskDrawer2DTool localTool;
+        if (newTool instanceof MaskDrawer2DTool) {
+            if (registeredTools.contains(newTool)) {
+                localTool = (MaskDrawer2DTool) newTool;
+            } else {
+                localTool = mouseTool;
+            }
+        } else {
+            localTool = mouseTool;
+        }
+        this.currentTool = localTool;
+        rebuildToolSettings();
+    }
+
     public enum MaskColor {
         Foreground(255),
         Background(0);
@@ -764,15 +761,28 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D {
         }
     }
 
-    public static class MaskChangedEvent {
+    public static class MaskChangedEvent extends AbstractJIPipeEvent {
         private final MaskDrawerPlugin2D plugin;
 
         public MaskChangedEvent(MaskDrawerPlugin2D plugin) {
+            super(plugin);
             this.plugin = plugin;
         }
 
         public MaskDrawerPlugin2D getPlugin() {
             return plugin;
+        }
+    }
+
+    public interface MaskChangedEventListener {
+        void onMaskDrawerPluginMaskChanged(MaskChangedEvent event);
+    }
+
+    public static class MaskChangedEventEmitter extends JIPipeEventEmitter<MaskChangedEvent, MaskChangedEventListener> {
+
+        @Override
+        protected void call(MaskChangedEventListener maskChangedEventListener, MaskChangedEvent event) {
+            maskChangedEventListener.onMaskDrawerPluginMaskChanged(event);
         }
     }
 }

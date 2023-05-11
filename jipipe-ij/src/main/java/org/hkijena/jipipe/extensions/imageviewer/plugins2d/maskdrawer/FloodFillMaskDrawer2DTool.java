@@ -6,6 +6,7 @@ import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanel
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.hkijena.jipipe.utils.ui.events.MouseClickedEvent;
+import org.hkijena.jipipe.utils.ui.events.MouseClickedEventListener;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,13 +15,14 @@ import java.awt.*;
  * The standard mouse selection.
  * Allows left-click canvas dragging
  */
-public class FloodFillMaskDrawer2DTool extends MaskDrawer2DTool {
+public class FloodFillMaskDrawer2DTool extends MaskDrawer2DTool implements MouseClickedEventListener {
     public FloodFillMaskDrawer2DTool(MaskDrawerPlugin2D plugin) {
         super(plugin,
                 "Flood fill",
                 "Fills the selected area with the selected color",
                 UIUtils.getIconFromResources("actions/color-fill.png"));
-        getViewerPanel2D().getCanvas().getEventBus().register(this);
+        ImageViewerPanelCanvas2D canvas = getViewerPanel2D().getCanvas();
+        canvas.getMouseClickedEventEmitter().subscribe(this);
     }
 
     @Override
@@ -44,7 +46,7 @@ public class FloodFillMaskDrawer2DTool extends MaskDrawer2DTool {
     }
 
     @Override
-    public void onMouseClick(MouseClickedEvent event) {
+    public void onComponentMouseClicked(MouseClickedEvent event) {
         if (!toolIsActive())
             return;
         if (SwingUtilities.isLeftMouseButton(event)) {

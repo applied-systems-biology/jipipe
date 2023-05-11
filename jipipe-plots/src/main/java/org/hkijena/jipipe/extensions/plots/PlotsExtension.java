@@ -15,10 +15,7 @@ package org.hkijena.jipipe.extensions.plots;
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DataTableImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -53,7 +50,7 @@ import java.util.Set;
  * Provides a standard selection of plots
  */
 @Plugin(type = JIPipeJavaExtension.class)
-public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
+public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension implements JIPipeService.DatatypeRegisteredEventListener {
 
     /**
      * Dependency instance to be used for creating the set of dependencies
@@ -120,7 +117,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
         }
 
         // Register listener for future operations
-        jiPipe.getDatatypeRegistry().getEventBus().register(this);
+        jiPipe.getDatatypeRegisteredEventEmitter().subscribe(this);
 
 
         // Register
@@ -208,12 +205,6 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIPlotDataSeriesColumnEnumParameterEditorUI.class);
     }
 
-    @Override
-    public void onPlotTypeRegistered(JIPipe.DatatypeRegisteredEvent event) {
-        Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(event.getId());
-        tryRegisterPlotCreatorNode(event.getId());
-    }
-
     private void tryRegisterPlotCreatorNode(String datatypeId) {
         JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(datatypeId);
         if (!PlotData.class.isAssignableFrom(dataInfo.getDataClass()))
@@ -231,5 +222,11 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 configureDefaultImageJAdapters(value, DataTableImageJDataImporter.ID, "image-to-imagej-window");
             }
         }
+    }
+
+    @Override
+    public void onJIPipeDatatypeRegistered(JIPipeService.DatatypeRegisteredEvent event) {
+        Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(event.getId());
+        tryRegisterPlotCreatorNode(event.getId());
     }
 }

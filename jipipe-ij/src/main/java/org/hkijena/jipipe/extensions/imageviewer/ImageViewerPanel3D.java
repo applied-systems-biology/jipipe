@@ -63,7 +63,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener, ComponentListener {
+public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess, Disposable, UniverseListener, ComponentListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeImageViewer imageViewer;
     private final ImageViewer3DUISettings settings;
     private final JPanel rendererStatusPanel = new JPanel(new BorderLayout());
@@ -112,8 +112,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
         // Register events
         viewerRunnerQueue.setSilent(true);
-        viewerRunnerQueue.getEventBus().register(this);
-        image3DRendererSettings.addParameterChangeListener(e -> rebuildImageLater());
+        viewerRunnerQueue.getFinishedEventEmitter().subscribeWeak(this);
+        image3DRendererSettings.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> rebuildImageLater());
         addComponentListener(this);
     }
 
@@ -701,7 +701,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     }
 
     @Override
-    public void onViewerRunnerQueueFinished(JIPipeRunnable.FinishedEvent event) {
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof UniverseInitializerRun) {
             UniverseInitializerRun run = (UniverseInitializerRun) event.getRun();
             onUniverseInitialized((run).getUniverse(), (run).getStatus());

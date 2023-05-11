@@ -180,11 +180,11 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         if (plotTypeParameters == null || (plotType.getInfo() != null && !Objects.equals(plotType.getInfo().getDataClass(), plotTypeParameters.getClass()))) {
             if (plotType.getInfo() != null) {
                 plotTypeParameters = (PlotData) JIPipe.createData(plotType.getInfo().getDataClass());
-                getEventBus().post(new ParameterStructureChangedEvent(this));
+                emitParameterStructureChangedEvent();
             }
         } else if (plotType.getInfo() == null) {
             plotTypeParameters = null;
-            getEventBus().post(new ParameterStructureChangedEvent(this));
+            emitParameterStructureChangedEvent();
         }
     }
 
@@ -194,7 +194,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         } else {
             getFirstOutputSlot().setAcceptedDataType(PlotData.class);
         }
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        emitSlotsChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Plot parameters")

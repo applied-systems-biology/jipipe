@@ -196,7 +196,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 getParent().dispatchEvent(e);
             }
         });
-        canvas.getEventBus().register(this);
+//        canvas.getEventBus().register(this);
 
         // Viewer panel, status bar
         viewerPanel.add(canvasScrollPane, BorderLayout.CENTER);

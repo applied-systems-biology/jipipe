@@ -33,7 +33,7 @@ import java.util.Arrays;
 /**
  * Mask drawer focuses on measurements (different category and icon)
  */
-public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
+public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements MaskDrawerPlugin2D.MaskChangedEventListener {
 
     public static final Settings SETTINGS = new Settings();
     private final JCheckBox autoMeasureToggle = new JCheckBox("Measure on changes");
@@ -43,7 +43,7 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
     public MeasurementDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
         initialize();
-        viewerPanel.getViewerPanel2D().getCanvas().getEventBus().register(this);
+        getMaskChangedEventEmitter().subscribe(this);
         setMaskGenerator(this::generateMask);
     }
 
@@ -167,13 +167,6 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
     }
 
     @Override
-    public void onMaskChanged(MaskDrawerPlugin2D.MaskChangedEvent event) {
-        if (autoMeasureToggle.isSelected()) {
-            measureCurrentMask();
-        }
-    }
-
-    @Override
     public String getCategory() {
         return "Measure";
     }
@@ -181,6 +174,13 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D {
     @Override
     public Icon getCategoryIcon() {
         return UIUtils.getIconFromResources("actions/measure.png");
+    }
+
+    @Override
+    public void onMaskDrawerPluginMaskChanged(MaskChangedEvent event) {
+        if (autoMeasureToggle.isSelected()) {
+            measureCurrentMask();
+        }
     }
 
     public static class Settings extends AbstractJIPipeParameterCollection {

@@ -11,13 +11,13 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D {
+public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D implements ImageViewerPanelCanvas2D.PixelHoverEventListener {
 
     private final JLabel pixelInfoLabel = new JLabel(UIUtils.getIconFromResources("actions/tool-pointer.png"), JLabel.LEFT);
 
     public PixelInfoPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
-        getViewerPanel2D().getCanvas().getEventBus().register(this);
+        getViewerPanel2D().getCanvas().getPixelHoverEventEmitter().subscribe(this);
         updatePixelInfo(null);
     }
 
@@ -29,11 +29,6 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D {
     @Override
     public void initializeSettingsPanel(FormPanel formPanel) {
         formPanel.addWideToForm(pixelInfoLabel, null);
-    }
-
-    @Override
-    public void onPixelHover(ImageViewerPanelCanvas2D.PixelHoverEvent event) {
-        updatePixelInfo(event.getPixelCoordinate());
     }
 
     private void updatePixelInfo(Point coordinate) {
@@ -65,5 +60,10 @@ public class PixelInfoPlugin2D extends GeneralImageViewerPanelPlugin2D {
         } else {
             pixelInfoLabel.setText("No info available");
         }
+    }
+
+    @Override
+    public void onImageViewerCanvasPixelHover(ImageViewerPanelCanvas2D.PixelHoverEvent event) {
+        updatePixelInfo(event.getPixelCoordinate());
     }
 }

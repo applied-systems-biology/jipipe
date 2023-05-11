@@ -59,7 +59,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
                 .build());
         this.customVariables = new CustomExpressionVariablesParameter(this);
         this.targetSlots = new OutputSlotMapParameterCollection(AnnotationFilterExpression.class, this, null, true);
-        this.targetSlots.getEventBus().register(this);
+        registerSubParameter(targetSlots);
     }
 
     /**
@@ -72,7 +72,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
         this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
         this.targetSlots = new OutputSlotMapParameterCollection(AnnotationFilterExpression.class, this, null, true);
         other.targetSlots.copyTo(this.targetSlots);
-        this.targetSlots.getEventBus().register(this);
+        registerSubParameter(targetSlots);
     }
 
     @Override

@@ -182,6 +182,6 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     public void setGeneratedImageType(JIPipeDataInfoRef generatedImageType) {
         this.generatedImageType = generatedImageType;
         getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        emitSlotsChangedEvent();
     }
 }
