@@ -220,11 +220,18 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
         try {
             //  ZIP
             ZipOutputStream zip = new ZipOutputStream(stream);
+            Set<String> names = new HashSet<>();
             Map<ROI3D, String> nameMap = new IdentityHashMap<>();
             for (ROI3D roi3D : this) {
+
+                if(progressInfo.isCancelled()) {
+                    return;
+                }
+
                 Object3D object3D = roi3D.getObject3D();
-                String name = StringUtils.makeUniqueString(StringUtils.makeFilesystemCompatible(object3D.getName()), "_", nameMap.values());
+                String name = StringUtils.makeUniqueString(StringUtils.makeFilesystemCompatible(StringUtils.orElse(object3D.getName(), "unnamed")), "_", names);
                 nameMap.put(roi3D, name);
+                names.add(name);
 
                 progressInfo.log("Saving 3D object " + name);
                 zip.putNextEntry(new ZipEntry(name + ".3droi"));

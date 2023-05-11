@@ -158,7 +158,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         if (jsonify.length() > 30) {
             jsonify = jsonify.substring(0, 31);
         }
-        return StringUtils.makeUniqueString(jsonify, "-", nodeAliasIds.values());
+        return StringUtils.makeUniqueString(jsonify, "-", id -> nodeAliasIds.values().contains(id));
     }
 
     /**
