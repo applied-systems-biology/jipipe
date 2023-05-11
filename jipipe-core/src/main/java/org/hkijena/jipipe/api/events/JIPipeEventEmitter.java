@@ -26,7 +26,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
 
     private final AtomicBoolean copyOnWriteActive = new AtomicBoolean();
 
-    public void addSubscriber(Subscriber<Event, Listener> subscriber) {
+    private void addSubscriber(Subscriber<Event, Listener> subscriber) {
         if (disposed) {
             throw new UnsupportedOperationException("Event emitter is disposed!");
         }
@@ -35,7 +35,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         }
     }
 
-    public void removeSubscriber(Subscriber<Event, Listener> subscriber) {
+    private void removeSubscriber(Subscriber<Event, Listener> subscriber) {
         if (disposed) {
             throw new UnsupportedOperationException("Event emitter is disposed!");
         }
@@ -85,7 +85,15 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
                     if (i < subscribers.size()) {
                         Subscriber<Event, Listener> subscriber = subscribers.get(i);
                         if (subscriber.isPresent()) {
-                            subscriber.call(this, event);
+                            try {
+                                subscriber.call(this, event);
+                            }
+                            catch (Throwable e) {
+                                e.printStackTrace();
+                            }
+                            if(subscriber.requestGCImmediatelyAfterCall()) {
+                                needsGC = true;
+                            }
                         } else {
                             needsGC = true;
                         }
@@ -117,6 +125,8 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         void call(JIPipeEventEmitter<Event, Listener> emitter, Event event);
 
         boolean isPresent();
+
+        boolean requestGCImmediatelyAfterCall();
     }
 
     public static class StrongObjectSubscriber<Event extends JIPipeEvent, Listener> implements Subscriber<Event, Listener> {
@@ -134,6 +144,11 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         @Override
         public boolean isPresent() {
             return true;
+        }
+
+        @Override
+        public boolean requestGCImmediatelyAfterCall() {
+            return false;
         }
     }
 
@@ -156,6 +171,11 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         public boolean isPresent() {
             return listener.get() != null;
         }
+
+        @Override
+        public boolean requestGCImmediatelyAfterCall() {
+            return false;
+        }
     }
 
     public static class LambdaSubscriber<Event extends JIPipeEvent, Listener> implements Subscriber<Event, Listener> {
@@ -177,6 +197,11 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         @Override
         public boolean isPresent() {
             return !once || !triggered;
+        }
+
+        @Override
+        public boolean requestGCImmediatelyAfterCall() {
+            return once;
         }
     }
 }
