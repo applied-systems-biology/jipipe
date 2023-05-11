@@ -27,7 +27,6 @@ public class StringFormData extends ParameterFormData {
     private SingleAnnotationIOSettings annotationIOSettings = new SingleAnnotationIOSettings();
 
     public StringFormData() {
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public StringFormData(StringFormData other) {
@@ -35,7 +34,6 @@ public class StringFormData extends ParameterFormData {
         this.value = other.value;
         this.validationExpression = new StringQueryExpression(other.validationExpression);
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public static StringFormData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {

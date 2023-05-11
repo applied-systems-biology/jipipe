@@ -105,7 +105,7 @@ public class ChamferDistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     private void updateSlots() {
         getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        emitNodeSlotsChangedEvent();
     }
 
     @Override

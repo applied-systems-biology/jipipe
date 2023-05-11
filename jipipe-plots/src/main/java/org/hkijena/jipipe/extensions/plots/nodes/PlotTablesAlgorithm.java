@@ -194,7 +194,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         } else {
             getFirstOutputSlot().setAcceptedDataType(PlotData.class);
         }
-        emitSlotsChangedEvent();
+        emitNodeSlotsChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Plot parameters")

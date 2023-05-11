@@ -57,7 +57,7 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
 
     private void updateSlots() {
         getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        emitNodeSlotsChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Output type", description = "Determines which data type is generated. Please note that the generic greyscale output " +

@@ -95,7 +95,7 @@ public class ConnectedComponentsLabeling2DAlgorithm extends JIPipeSimpleIteratin
 
     private void updateSlots() {
         getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        emitNodeSlotsChangedEvent();
     }
 
     @Override

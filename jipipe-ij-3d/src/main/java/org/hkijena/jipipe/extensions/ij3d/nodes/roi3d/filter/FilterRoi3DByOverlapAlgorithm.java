@@ -48,7 +48,6 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(roi1Settings);
         registerSubParameter(roi2Settings);
         updateSlots();
-        getEventBus().register(this);
     }
 
     public FilterRoi3DByOverlapAlgorithm(FilterRoi3DByOverlapAlgorithm other) {
@@ -60,7 +59,6 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(roi1Settings);
         registerSubParameter(roi2Settings);
         updateSlots();
-        getEventBus().register(this);
     }
 
     private void updateSlots() {
@@ -90,6 +88,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
+        super.onParameterChanged(event);
         if (event.getSource() == roi1Settings || event.getSource() == roi2Settings) {
             if ("enabled".equals(event.getKey())) {
                 updateSlots();

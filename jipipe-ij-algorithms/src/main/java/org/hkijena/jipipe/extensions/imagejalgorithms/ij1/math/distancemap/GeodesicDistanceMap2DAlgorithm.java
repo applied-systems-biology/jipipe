@@ -108,7 +108,7 @@ public class GeodesicDistanceMap2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void updateSlots() {
         getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        emitNodeSlotsChangedEvent();
     }
 
     @Override

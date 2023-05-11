@@ -108,7 +108,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     public MacroWrapperAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .build());
-        this.macroParameters.getEventBus().register(this);
+        registerSubParameter(macroParameters);
 
         // Importer settings
         inputToImageJExporters = new InputSlotMapParameterCollection(ImageJDataExportOperationRef.class, this, this::getDefaultExporterRef, false);
@@ -132,7 +132,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.importDelay = other.importDelay;
         this.exportDelay = other.exportDelay;
         this.macroParameters = new JIPipeDynamicParameterCollection(other.macroParameters);
-        this.macroParameters.getEventBus().register(this);
+        registerSubParameter(macroParameters);
 
         // Importer settings
         inputToImageJExporters = new InputSlotMapParameterCollection(ImageJDataExporterRef.class, this, this::getDefaultExporterRef, false);

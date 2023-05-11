@@ -107,7 +107,7 @@ public class ChamferDistanceMap2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     private void updateSlots() {
         getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-        getEventBus().post(new NodeSlotsChangedEvent(this));
+        emitNodeSlotsChangedEvent();
     }
 
     @Override

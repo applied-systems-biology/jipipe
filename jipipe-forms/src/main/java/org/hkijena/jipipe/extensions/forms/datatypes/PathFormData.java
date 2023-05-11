@@ -37,7 +37,6 @@ public class PathFormData extends ParameterFormData {
     private StringList extensions = new StringList();
 
     public PathFormData() {
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public PathFormData(PathFormData other) {
@@ -48,7 +47,6 @@ public class PathFormData extends ParameterFormData {
         this.pathType = other.pathType;
         this.ioMode = other.ioMode;
         this.extensions = new StringList(other.extensions);
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public static PathFormData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {

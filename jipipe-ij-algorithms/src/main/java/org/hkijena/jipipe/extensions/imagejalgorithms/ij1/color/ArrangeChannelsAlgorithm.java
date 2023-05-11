@@ -211,6 +211,6 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             pair.setKey(channelIndices.get(i) - 1);
             channelReordering.add(pair);
         }
-        getEventBus().post(new ParameterChangedEvent(this, "channel-reordering"));
+        emitParameterChangedEvent("channel-reordering");
     }
 }

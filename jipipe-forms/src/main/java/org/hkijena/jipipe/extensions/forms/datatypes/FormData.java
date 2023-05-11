@@ -42,12 +42,10 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
     private TabSettings tabSettings = new TabSettings();
 
     public FormData() {
-        tabSettings.getEventBus().register(this);
     }
 
     public FormData(FormData other) {
         this.tabSettings = new TabSettings(other.tabSettings);
-        tabSettings.getEventBus().register(this);
     }
 
     /**

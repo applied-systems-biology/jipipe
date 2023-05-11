@@ -66,7 +66,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                 }
             }
             updateGraphNodeSlots();
-            emitSlotsChangedEvent();
+            emitNodeSlotsChangedEvent();
         } else {
             for (JIPipeDataSlotInfo info : getSlotConfiguration().getInputSlots().values()) {
                 if (info.getDataClass().equals(ImagePlusData.class)) {
@@ -89,7 +89,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                 }
             }
             updateGraphNodeSlots();
-            emitSlotsChangedEvent();
+            emitNodeSlotsChangedEvent();
         }
     }
 
