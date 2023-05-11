@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 /**
  * Parameter for {@link JIPipeNodeInfoRef}
  */
-public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI {
+public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI implements JIPipeNodeInfoPicker.NodeInfoSelectedEventListener {
 
     private JIPipeNodeInfoPicker picker;
     private JButton currentlyDisplayed;
@@ -91,7 +91,7 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
     private void initializePicker() {
         picker = new JIPipeNodeInfoPicker(JIPipeNodeInfoPicker.Mode.Single, JIPipe.getNodes().getRegisteredNodeInfos().values().stream()
                 .filter(d -> !d.isHidden()).collect(Collectors.toSet()));
-        picker.getEventBus().register(this);
+        picker.getNodeInfoSelectedEventEmitter().subscribe(this);
     }
 
     private void pickNodeInfo() {
@@ -101,23 +101,18 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         pickerDialog.setVisible(true);
     }
 
-    /**
-     * Triggered when a node is selected
-     *
-     * @param event Generated event
-     */
     @Override
-    public void onAlgorithmSelected(JIPipeNodeInfoPicker.NodeInfoSelectedEvent event) {
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    @Override
+    public void onNodeInfoPickerNodeInfoSelectedEvent(JIPipeNodeInfoPicker.NodeInfoSelectedEvent event) {
         if (pickerDialog.isVisible()) {
             pickerDialog.setVisible(false);
             JIPipeNodeInfoRef infoRef = getParameter(JIPipeNodeInfoRef.class);
             infoRef.setInfo(event.getInfo());
             setParameter(infoRef, true);
         }
-    }
-
-    @Override
-    public boolean isUILabelEnabled() {
-        return true;
     }
 }

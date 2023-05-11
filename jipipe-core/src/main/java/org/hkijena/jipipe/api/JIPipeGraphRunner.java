@@ -34,7 +34,7 @@ import java.util.*;
  * Use this class for nested algorithm graph runs (like {@link org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm})
  * Use {@link JIPipeProjectRun} for full project runs.
  */
-public class JIPipeGraphRunner implements JIPipeRunnable {
+public class JIPipeGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
 
     private final JIPipeGraph algorithmGraph;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -55,7 +55,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
     public void run() {
         JIPipeGraphGCHelper gc = new JIPipeGraphGCHelper(algorithmGraph);
         progressInfo.resolve("GC").log("GC status: " + gc);
-        gc.getEventBus().register(this);
+        gc.getSlotCompletedEventEmitter().subscribe(this);
 
         Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms(algorithmsWithExternalInput);
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
@@ -240,20 +240,6 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
         gc.markAllAsCompleted();
     }
 
-    @Override
-    public void onSlotCompleted(JIPipeGraphGCHelper.SlotCompletedEvent event) {
-        JIPipeDataSlot slot = event.getSlot();
-        if (slot.isEmpty()) {
-            return;
-        }
-        if (!(slot.getNode() instanceof JIPipeAlgorithm)) {
-            return;
-        }
-        if (!persistentDataNodes.contains(slot.getNode())) {
-            slot.clearData();
-        }
-    }
-
     private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo subProgress) {
         if (!executedAlgorithms.contains(node)) {
             try {
@@ -314,5 +300,19 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
 
     public void setPersistentDataNodes(Set<JIPipeGraphNode> persistentDataNodes) {
         this.persistentDataNodes = persistentDataNodes;
+    }
+
+    @Override
+    public void onGCSlotCompletedEvent(JIPipeGraphGCHelper.SlotCompletedEvent event) {
+        JIPipeDataSlot slot = event.getSlot();
+        if (slot.isEmpty()) {
+            return;
+        }
+        if (!(slot.getNode() instanceof JIPipeAlgorithm)) {
+            return;
+        }
+        if (!persistentDataNodes.contains(slot.getNode())) {
+            slot.clearData();
+        }
     }
 }

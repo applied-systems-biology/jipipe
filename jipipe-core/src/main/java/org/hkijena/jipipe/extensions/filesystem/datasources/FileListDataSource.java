@@ -105,7 +105,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
             String name = files.size() == 1 ? files.get(0).getFileName().toString() : "";
             if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
-                getEventBus().post(new NodeSlotsChangedEvent(this));
+                getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
             }
         }
     }

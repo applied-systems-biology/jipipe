@@ -43,7 +43,7 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIC
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         JIPipeNodeUI ui = selection.iterator().next();
-        ui.getEventBus().post(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(true)));
+        ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(true)));
     }
 
     @Override
@@ -62,8 +62,4 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIC
         return UIUtils.getIconFromResources("actions/rabbitvcs-update.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

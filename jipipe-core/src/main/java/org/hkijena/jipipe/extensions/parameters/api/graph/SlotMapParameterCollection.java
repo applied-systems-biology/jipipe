@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.api.graph;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -25,8 +24,8 @@ import java.util.function.Predicate;
 /**
  * Parameter that holds a value for each data slot
  */
-public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterCollection {
-    private JIPipeGraphNode algorithm;
+public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterCollection implements JIPipeGraphNode.NodeSlotsChangedEventListener {
+    private JIPipeGraphNode node;
     private Class<?> dataClass;
     private Function<JIPipeDataSlotInfo, Object> newInstanceGenerator;
 
@@ -36,18 +35,18 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
      * Creates a new instance
      *
      * @param dataClass            the data type of the parameter assigned to each slot
-     * @param algorithm            the algorithm that contains the slots
+     * @param node            the algorithm that contains the slots
      * @param newInstanceGenerator optional method that generated new instances. Can be null
      * @param initialize           If true, update the slots on creation
      */
-    public SlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm, Function<JIPipeDataSlotInfo, Object> newInstanceGenerator, boolean initialize) {
+    public SlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode node, Function<JIPipeDataSlotInfo, Object> newInstanceGenerator, boolean initialize) {
         this.dataClass = dataClass;
-        this.algorithm = algorithm;
+        this.node = node;
         this.newInstanceGenerator = newInstanceGenerator;
         this.setAllowUserModification(false);
         if (initialize)
             updateSlots();
-        this.algorithm.getEventBus().register(this);
+        this.node.getNodeSlotsChangedEventEmitter().subscribe(this);
     }
 
     public Predicate<JIPipeDataSlot> getSlotFilter() {
@@ -58,8 +57,8 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
         this.slotFilter = slotFilter;
     }
 
-    public JIPipeGraphNode getAlgorithm() {
-        return algorithm;
+    public JIPipeGraphNode getNode() {
+        return node;
     }
 
     public Class<?> getDataClass() {
@@ -77,7 +76,7 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
      * @param event generated event
      */
     @Override
-    public void onSlotsUpdated(JIPipeGraphNode.NodeSlotsChangedEvent event) {
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         updateSlots();
     }
 

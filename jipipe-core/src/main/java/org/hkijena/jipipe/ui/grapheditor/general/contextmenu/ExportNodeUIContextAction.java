@@ -79,8 +79,4 @@ public class ExportNodeUIContextAction implements NodeUIContextAction {
         return UIUtils.getIconFromResources("actions/document-export.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

@@ -53,7 +53,7 @@ public class StringOrDoubleParameterEditorUI extends JIPipeParameterEditorUI {
         removeAll();
 
         StringOrDouble parameter = getParameter(StringOrDouble.class);
-        parameter.getEventBus().register(this);
+        parameter.getParameterChangedEventEmitter().subscribeWeak(this);
         JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree(parameter);
 
         ButtonGroup buttonGroup = new ButtonGroup();

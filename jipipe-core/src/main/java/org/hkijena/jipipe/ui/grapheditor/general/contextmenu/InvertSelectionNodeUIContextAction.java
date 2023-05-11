@@ -47,11 +47,6 @@ public class InvertSelectionNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
-
-    @Override
     public boolean showInMultiSelectionPanel() {
         return false;
     }

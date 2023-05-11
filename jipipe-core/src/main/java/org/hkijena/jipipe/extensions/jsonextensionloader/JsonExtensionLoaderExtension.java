@@ -19,6 +19,7 @@ import ij.Menus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
  * Extension that loads {@link JIPipeJsonExtension}
  */
 @Plugin(type = JIPipeJavaExtension.class)
-public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaExtension {
+public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaExtension implements JIPipeService.ExtensionRegisteredEventListener {
 
     private Set<JsonExtensionRegistrationTask> registrationTasks = new HashSet<>();
 
@@ -92,7 +93,7 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     @Override
     public void setRegistry(JIPipe registry) {
         super.setRegistry(registry);
-        registry.getEventBus().register(this);
+        registry.getExtensionRegisteredEventEmitter().subscribe(this);
     }
 
     @Override
@@ -198,18 +199,13 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
         }
     }
 
-    /**
-     * Triggered when an extension is registered.
-     *
-     * @param event Generated event
-     */
-    @Override
-    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
-        updateRegistrationTasks();
-    }
-
     @Override
     public boolean isCoreExtension() {
         return true;
+    }
+
+    @Override
+    public void onJIPipeExtensionRegistered(JIPipeService.ExtensionRegisteredEvent event) {
+        updateRegistrationTasks();
     }
 }

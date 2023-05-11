@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.extensions.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
@@ -36,7 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class NodeTemplateBox extends JIPipeWorkbenchPanel {
+public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
 
     private final JIPipeProject project;
     private final Set<JIPipeNodeTemplate> projectTemplateList = new HashSet<>();
@@ -57,7 +58,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         }
         initialize();
         reloadTemplateList();
-        NodeTemplateSettings.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
 
     public static void openNewToolBoxWindow(JIPipeWorkbench workbench) {
@@ -111,11 +112,6 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     public JToolBar getToolBar() {
         return toolBar;
-    }
-
-    @Override
-    public void onNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
-        reloadTemplateList();
     }
 
     private void initialize() {
@@ -439,5 +435,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     public JIPipeProject getProject() {
         return project;
+    }
+
+    @Override
+    public void onJIPipeNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
+        reloadTemplateList();
     }
 }

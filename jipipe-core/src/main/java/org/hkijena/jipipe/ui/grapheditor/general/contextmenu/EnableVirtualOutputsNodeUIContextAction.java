@@ -65,8 +65,4 @@ public class EnableVirtualOutputsNodeUIContextAction implements NodeUIContextAct
         return UIUtils.getIconFromResources("actions/rabbitvcs-drive.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

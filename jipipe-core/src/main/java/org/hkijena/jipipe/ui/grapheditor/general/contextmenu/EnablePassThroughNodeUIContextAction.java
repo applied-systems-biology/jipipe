@@ -43,7 +43,7 @@ public class EnablePassThroughNodeUIContextAction implements NodeUIContextAction
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
                 algorithm.setPassThrough(true);
-                algorithm.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(algorithm, "jipipe:algorithm:pass-through"));
+                algorithm.emitParameterChangedEvent("jipipe:algorithm:pass-through");
             }
         }
     }
@@ -61,11 +61,6 @@ public class EnablePassThroughNodeUIContextAction implements NodeUIContextAction
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("emblems/pass-through.png");
-    }
-
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
     }
 
     @Override

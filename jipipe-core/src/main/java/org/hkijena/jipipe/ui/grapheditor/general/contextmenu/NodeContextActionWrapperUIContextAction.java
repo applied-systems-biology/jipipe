@@ -83,8 +83,4 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
         return method;
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

@@ -72,8 +72,4 @@ public class ExportCompartmentAsJsonNodeUIContextAction implements NodeUIContext
         return UIUtils.getIconFromResources("actions/document-export.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

@@ -69,8 +69,4 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
         return UIUtils.getIconFromResources("actions/object-group.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

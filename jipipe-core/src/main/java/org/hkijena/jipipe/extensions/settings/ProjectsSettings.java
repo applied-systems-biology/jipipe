@@ -82,11 +82,11 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         int index = recentProjects.indexOf(fileName);
         if (index == -1) {
             recentProjects.add(0, fileName);
-            getEventBus().post(new ParameterChangedEvent(this, "recent-projects"));
+            emitParameterChangedEvent("recent-projects");
         } else if (index != 0) {
             recentProjects.remove(index);
             recentProjects.add(0, fileName);
-            getEventBus().post(new ParameterChangedEvent(this, "recent-projects"));
+            emitParameterChangedEvent("recent-projects");
         }
     }
 
@@ -99,11 +99,11 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         int index = recentJsonExtensionProjects.indexOf(fileName);
         if (index == -1) {
             recentJsonExtensionProjects.add(0, fileName);
-            getEventBus().post(new ParameterChangedEvent(this, "recent-json-extension-projects"));
+            emitParameterChangedEvent("recent-json-extension-projects");
         } else if (index != 0) {
             recentJsonExtensionProjects.remove(index);
             recentJsonExtensionProjects.add(0, fileName);
-            getEventBus().post(new ParameterChangedEvent(this, "recent-json-extension-projects"));
+            emitParameterChangedEvent("recent-json-extension-projects");
         }
     }
 

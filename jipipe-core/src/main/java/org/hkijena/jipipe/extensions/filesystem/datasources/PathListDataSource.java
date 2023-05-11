@@ -106,7 +106,7 @@ public class PathListDataSource extends JIPipeAlgorithm {
             String name = paths.size() == 1 ? paths.get(0).getFileName().toString() : "";
             if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
-                getEventBus().post(new NodeSlotsChangedEvent(this));
+                getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
             }
         }
     }

@@ -50,7 +50,6 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        JIPipe.getNodes().getEventBus().register(this);
 
         // Register data types
         registerDatatype("parameters", ParametersData.class,

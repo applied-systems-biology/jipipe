@@ -45,7 +45,7 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         JIPipeNodeUI ui = selection.iterator().next();
-        ui.getEventBus().post(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(false)));
+        ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(false)));
     }
 
     @Override
@@ -69,8 +69,4 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
         return KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK, true);
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

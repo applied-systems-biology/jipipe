@@ -36,7 +36,7 @@ public class AddBookmarkNodeUIContextAction implements NodeUIContextAction {
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         for (JIPipeNodeUI ui : selection) {
             ui.getNode().setBookmarked(true);
-            ui.getNode().getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(ui.getNode(), "jipipe:node:bookmarked"));
+            ui.getNode().emitParameterChangedEvent("jipipe:node:bookmarked");
         }
     }
 
@@ -55,8 +55,4 @@ public class AddBookmarkNodeUIContextAction implements NodeUIContextAction {
         return UIUtils.getIconFromResources("actions/bookmark-new.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

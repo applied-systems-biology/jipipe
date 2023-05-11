@@ -5,12 +5,16 @@ import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.scijava.Disposable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.BiConsumer;
 
 /**
  * An event emitter
- * @param <Event> the event type
+ *
+ * @param <Event>    the event type
  * @param <Listener> the listener interface
  */
 public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> implements Disposable {
@@ -43,33 +47,33 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
     }
 
     public synchronized void emit(Event event) {
-        if(event.getEmitter() == null) {
+        if (event.getEmitter() == null) {
             event.setEmitter(this);
         }
         boolean needsGC = false;
         for (Store<Listener> subscriber : subscribers) {
             Listener listener = subscriber.get();
-            if(listener != null) {
+            if (listener != null) {
                 call(listener, event);
-            }
-            else {
+            } else {
                 needsGC = true;
             }
         }
         List<BiConsumer<JIPipeEventEmitter<Event, Listener>, Event>> toDelete = null;
-        if(!actionSubscribersOnce.isEmpty()) {
+        if (!actionSubscribersOnce.isEmpty()) {
             toDelete = new ArrayList<>();
         }
         for (BiConsumer<JIPipeEventEmitter<Event, Listener>, Event> subscriber : actionSubscribers) {
             subscriber.accept(this, event);
-            if(actionSubscribersOnce.contains(subscriber)) {
+            if (actionSubscribersOnce.contains(subscriber)) {
                 toDelete.add(subscriber);
             }
         }
-        if(toDelete != null) {
-           actionSubscribers.removeAll(toDelete);
+        if (toDelete != null) {
+            actionSubscribersOnce.removeAll(toDelete);
+            actionSubscribers.removeAll(toDelete);
         }
-        if(needsGC) {
+        if (needsGC) {
             gc();
         }
     }

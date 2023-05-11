@@ -72,12 +72,9 @@ public class OptionalParameterEditorUI extends JIPipeParameterEditorUI {
         add(ui, BorderLayout.CENTER);
 
         // Listen for changes inside the parameter content
-        access.getEventBus().register(new Object() {
-            @Override
-            public void onContentChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                // We trigger the change event
-                setParameter(parameter, false);
-            }
+        access.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
+            // We trigger the change event
+            setParameter(parameter, false);
         });
 
         revalidate();

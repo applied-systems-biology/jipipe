@@ -29,7 +29,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         ImportDataRun run = new ImportDataRun(rowStorageFolder, slot.getAcceptedDataType(), row);
-        run.onFinished(event -> {
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
             JIPipeDataTable outputTable = run.getOutputTable();
             run.dispose();
             JIPipeData data = outputTable.getData(0, slot.getAcceptedDataType(), progressInfo);

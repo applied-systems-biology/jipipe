@@ -51,7 +51,7 @@ public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUICon
         if (selection.size() == 1) {
             // Classic mode (via UI)
             JIPipeNodeUI ui = selection.iterator().next();
-            ui.getEventBus().post(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false, true)));
+            ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false, true)));
         } else {
             // Batch mode (enqueue)
             for (JIPipeNodeUI nodeUI : selection) {

@@ -63,18 +63,18 @@ public class InputSlotMapParameterCollection extends SlotMapParameterCollection 
 
     @Override
     public void updateSlots() {
-        if (getAlgorithm() != null) {
+        if (getNode() != null) {
             Set<String> toRemove = new HashSet<>();
             for (String slotName : getParameters().keySet()) {
-                if (!getAlgorithm().hasInputSlot(slotName)) {
+                if (!getNode().hasInputSlot(slotName)) {
                     toRemove.add(slotName);
                 }
             }
             for (String slotName : toRemove) {
                 removeParameter(slotName);
             }
-            for (int i = 0; i < getAlgorithm().getInputSlots().size(); i++) {
-                JIPipeDataSlot slot = getAlgorithm().getInputSlots().get(i);
+            for (int i = 0; i < getNode().getInputSlots().size(); i++) {
+                JIPipeDataSlot slot = getNode().getInputSlots().get(i);
                 if (!containsKey(slot.getName())) {
 
                     if (getSlotFilter() != null && !getSlotFilter().test(slot))

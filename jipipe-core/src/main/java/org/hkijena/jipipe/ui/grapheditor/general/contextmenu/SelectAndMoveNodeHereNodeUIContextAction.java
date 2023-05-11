@@ -66,11 +66,6 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
     }
 
     @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
-
-    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.CTRL_MASK, true);
     }

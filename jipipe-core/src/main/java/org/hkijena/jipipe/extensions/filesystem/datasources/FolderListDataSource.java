@@ -106,7 +106,7 @@ public class FolderListDataSource extends JIPipeAlgorithm {
             String name = folderPaths.size() == 1 ? folderPaths.get(0).getFileName().toString() : "";
             if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
-                getEventBus().post(new NodeSlotsChangedEvent(this));
+                getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
             }
         }
     }

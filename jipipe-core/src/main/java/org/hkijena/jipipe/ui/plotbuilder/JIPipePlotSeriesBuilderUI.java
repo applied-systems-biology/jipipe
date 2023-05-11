@@ -101,7 +101,7 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
 
     private void toggleEnableDisable() {
         seriesBuilder.setEnabled(!seriesBuilder.isEnabled());
-        seriesBuilder.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(seriesBuilder, "enabled"));
+        seriesBuilder.emitParameterChangedEvent("enabled");
         updateEnableDisableToggleButton();
     }
 

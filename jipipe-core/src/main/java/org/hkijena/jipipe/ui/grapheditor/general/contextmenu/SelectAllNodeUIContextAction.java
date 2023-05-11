@@ -49,11 +49,6 @@ public class SelectAllNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
-
-    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK, true);
     }

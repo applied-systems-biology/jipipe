@@ -70,11 +70,6 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
-
-    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true);
     }
