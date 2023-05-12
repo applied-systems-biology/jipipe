@@ -36,7 +36,7 @@ public class MeasureFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
-        ResultsTableData outputData = inputData.measure();
+        ResultsTableData outputData = inputData.measureComponents();
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 }

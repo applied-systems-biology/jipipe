@@ -667,197 +667,201 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return new ConnectivityInspector<>(this);
     }
 
-    public ResultsTableData measure() {
+    public ResultsTableData measureComponents() {
         ResultsTableData measurements = new ResultsTableData();
         ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = getConnectivityInspector();
         List<Set<FilamentVertex>> connectedSets = connectivityInspector.connectedSets();
         String consensusPhysicalSizeUnit = getConsensusPhysicalSizeUnit();
         for (int i = 0; i < connectedSets.size(); i++) {
             Set<FilamentVertex> vertices = connectedSets.get(i);
-            Set<FilamentEdge> edges = edgesOf(vertices);
-
-            // Vertex stats
-            double minVertexRadiusPixels = Double.POSITIVE_INFINITY;
-            double maxVertexRadiusPixels = Double.NEGATIVE_INFINITY;
-            double sumVertexRadiusPixels = 0;
-            double minVertexRadiusUnit = Double.POSITIVE_INFINITY;
-            double maxVertexRadiusUnit = Double.NEGATIVE_INFINITY;
-            double sumVertexRadiusUnit = 0;
-            double minVertexIntensity = Double.POSITIVE_INFINITY;
-            double maxVertexIntensity = Double.NEGATIVE_INFINITY;
-            double sumVertexIntensity = 0;
-            for (FilamentVertex vertex : vertices) {
-                minVertexRadiusPixels = Math.min(vertex.getRadius(), minVertexRadiusPixels);
-                maxVertexRadiusPixels = Math.max(vertex.getRadius(), maxVertexRadiusPixels);
-                sumVertexRadiusPixels += vertex.getRadius();
-                double radiusInUnit = vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
-                minVertexRadiusUnit = Math.min(radiusInUnit, minVertexRadiusPixels);
-                maxVertexRadiusUnit = Math.max(radiusInUnit, maxVertexRadiusPixels);
-                sumVertexRadiusUnit += radiusInUnit;
-                minVertexIntensity = Math.min(vertex.getValue(), minVertexIntensity);
-                maxVertexIntensity = Math.max(vertex.getValue(), maxVertexIntensity);
-                sumVertexIntensity += vertex.getValue();
-            }
-
-            // Edge stats (pixels)
-            double minEdgeLengthPixels = Double.POSITIVE_INFINITY;
-            double maxEdgeLengthPixels = Double.NEGATIVE_INFINITY;
-            double sumEdgeLengthPixels = 0;
-
-            for (FilamentEdge edge : edges) {
-                double length = getEdgeLength(edge, false, Quantity.UNIT_PIXELS);
-                minEdgeLengthPixels = Math.min(minEdgeLengthPixels, length);
-                maxEdgeLengthPixels = Math.max(maxEdgeLengthPixels, length);
-                sumEdgeLengthPixels += length;
-            }
-
-            double sumEdgeLengthCorrectedPixels = sumEdgeLengthPixels;
-            for (FilamentVertex vertex : vertices) {
-                int degree = degreeOf(vertex);
-                if (degree == 0) {
-                    // Count radius 2 times
-                    sumEdgeLengthCorrectedPixels += vertex.getRadius() * 2;
-                } else if (degree == 1) {
-                    // Count radius 1 time
-                    sumEdgeLengthCorrectedPixels += vertex.getRadius();
-                }
-            }
-
-            // Edge stats (physical)
-            double minEdgeLengthUnit = Double.POSITIVE_INFINITY;
-            double maxEdgeLengthUnit = Double.NEGATIVE_INFINITY;
-            double sumEdgeLengthUnit = 0;
-
-            for (FilamentEdge edge : edges) {
-                double length = getEdgeLength(edge, true, consensusPhysicalSizeUnit);
-                minEdgeLengthUnit = Math.min(minEdgeLengthUnit, length);
-                maxEdgeLengthUnit = Math.max(maxEdgeLengthUnit, length);
-                sumEdgeLengthUnit += length;
-            }
-
-            double sumEdgeLengthCorrectedUnit = sumEdgeLengthUnit;
-            for (FilamentVertex vertex : vertices) {
-                int degree = degreeOf(vertex);
-                if (degree == 0) {
-                    // Count radius 2 times
-                    sumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit) * 2;
-                } else if (degree == 1) {
-                    // Count radius 1 time
-                    sumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
-                }
-            }
-
-            // Make a simplified copy and calculate the simplified edge lengths
-            Filaments3DData simplified = extractShallowCopy(vertices);
-            simplified.simplify();
-            double simplifiedSumEdgeLengthPixels = 0;
-            double simplifiedSumEdgeLengthUnit = 0;
-            for (FilamentEdge edge : simplified.edgeSet()) {
-                simplifiedSumEdgeLengthPixels += simplified.getEdgeLength(edge, false, Quantity.UNIT_PIXELS);
-                simplifiedSumEdgeLengthUnit += simplified.getEdgeLength(edge, true, consensusPhysicalSizeUnit);
-            }
-
-            double simplifiedSumEdgeLengthCorrectedPixels = simplifiedSumEdgeLengthPixels;
-            double simplifiedSumEdgeLengthCorrectedUnit = simplifiedSumEdgeLengthUnit;
-            for (FilamentVertex vertex : simplified.vertexSet()) {
-                int degree = simplified.degreeOf(vertex);
-                if (degree == 0) {
-                    // Count radius 2 times
-                    simplifiedSumEdgeLengthCorrectedPixels += vertex.getRadius() * 2;
-                    simplifiedSumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit) * 2;
-                } else if (degree == 1) {
-                    // Count radius 1 time
-                    simplifiedSumEdgeLengthCorrectedPixels += vertex.getRadius();
-                    simplifiedSumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
-                }
-            }
-
-            // Min/max location
-            double minXCenter = Double.POSITIVE_INFINITY;
-            double maxXCenter = Double.NEGATIVE_INFINITY;
-            double minYCenter = Double.POSITIVE_INFINITY;
-            double maxYCenter = Double.NEGATIVE_INFINITY;
-            double minZCenter = Double.POSITIVE_INFINITY;
-            double maxZCenter = Double.NEGATIVE_INFINITY;
-            double minXRadius = Double.POSITIVE_INFINITY;
-            double maxXRadius = Double.NEGATIVE_INFINITY;
-            double minYRadius = Double.POSITIVE_INFINITY;
-            double maxYRadius = Double.NEGATIVE_INFINITY;
-            double minZRadius = Double.POSITIVE_INFINITY;
-            double maxZRadius = Double.NEGATIVE_INFINITY;
-
-            for (FilamentVertex vertex : vertices) {
-                minXCenter = Math.min(vertex.getXMin(false), minXCenter);
-                minYCenter = Math.min(vertex.getYMin(false), minYCenter);
-                minZCenter = Math.min(vertex.getZMin(false), minZCenter);
-                maxXCenter = Math.max(vertex.getXMax(false), maxXCenter);
-                maxYCenter = Math.max(vertex.getYMax(false), maxYCenter);
-                maxZCenter = Math.max(vertex.getZMax(false), maxZCenter);
-                minXRadius = Math.min(vertex.getXMin(true), minXRadius);
-                minYRadius = Math.min(vertex.getYMin(true), minYRadius);
-                minZRadius = Math.min(vertex.getZMin(true), minZRadius);
-                maxXRadius = Math.max(vertex.getXMax(true), maxXRadius);
-                maxYRadius = Math.max(vertex.getYMax(true), maxYRadius);
-                maxZRadius = Math.max(vertex.getZMax(true), maxZRadius);
-            }
-
-            int row = measurements.addRow();
-            measurements.setValueAt(row, row, "Component");
-            measurements.setValueAt(vertices.size(), row, "numVertices");
-            measurements.setValueAt(edges.size(), row, "numEdges");
-
-            measurements.setValueAt(sumEdgeLengthPixels, row, "lengthPixels");
-            measurements.setValueAt(sumEdgeLengthUnit, row, "lengthUnit");
-            measurements.setValueAt(sumEdgeLengthCorrectedPixels, row, "lengthPixelsRadiusCorrected");
-            measurements.setValueAt(sumEdgeLengthCorrectedUnit, row, "lengthUnitRadiusCorrected");
-            measurements.setValueAt(simplifiedSumEdgeLengthPixels, row, "simplifiedLengthPixels");
-            measurements.setValueAt(simplifiedSumEdgeLengthUnit, row, "simplifiedLengthUnit");
-            measurements.setValueAt(simplifiedSumEdgeLengthCorrectedPixels, row, "simplifiedLengthPixelsRadiusCorrected");
-            measurements.setValueAt(simplifiedSumEdgeLengthCorrectedUnit, row, "simplifiedLengthUnitRadiusCorrected");
-
-            measurements.setValueAt(simplifiedSumEdgeLengthPixels / sumEdgeLengthPixels, row, "confinementRatio");
-            measurements.setValueAt(simplifiedSumEdgeLengthCorrectedPixels / sumEdgeLengthCorrectedPixels, row, "confinementRatioRadiusCorrected");
-            measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 0).count(), row, "numVerticesWithDegree0");
-            measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 1).count(), row, "numVerticesWithDegree1");
-            measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 2).count(), row, "numVerticesWithDegree2");
-            measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 3).count(), row, "numVerticesWithDegree3");
-            measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 4).count(), row, "numVerticesWithDegree4");
-            measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 5).count(), row, "numVerticesWithDegree5");
-            measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) > 5).count(), row, "numVerticesWithDegreeMoreThan5");
-            measurements.setValueAt(minXCenter, row, "centerMinX");
-            measurements.setValueAt(minYCenter, row, "centerMinY");
-            measurements.setValueAt(minZCenter, row, "centerMinZ");
-            measurements.setValueAt(maxXCenter, row, "centerMaxX");
-            measurements.setValueAt(maxYCenter, row, "centerMaxY");
-            measurements.setValueAt(maxZCenter, row, "centerMaxZ");
-            measurements.setValueAt(minXRadius, row, "sphereMinX");
-            measurements.setValueAt(minYRadius, row, "sphereMinY");
-            measurements.setValueAt(minZRadius, row, "sphereMinZ");
-            measurements.setValueAt(maxXRadius, row, "sphereMaxX");
-            measurements.setValueAt(maxYRadius, row, "sphereMaxY");
-            measurements.setValueAt(maxZRadius, row, "sphereMaxZ");
-
-            measurements.setValueAt(minEdgeLengthPixels, row, "minEdgeLengthPixels");
-            measurements.setValueAt(minEdgeLengthUnit, row, "minEdgeLengthUnit");
-            measurements.setValueAt(maxEdgeLengthPixels, row, "maxEdgeLengthPixels");
-            measurements.setValueAt(maxEdgeLengthUnit, row, "maxEdgeLengthUnit");
-            measurements.setValueAt(sumEdgeLengthPixels / edges.size(), row, "avgEdgeLengthPixels");
-            measurements.setValueAt(sumEdgeLengthUnit / edges.size(), row, "avgEdgeLengthUnit");
-
-            measurements.setValueAt(minVertexRadiusPixels, row, "minVertexRadiusPixels");
-            measurements.setValueAt(minVertexRadiusUnit, row, "minVertexRadiusUnit");
-            measurements.setValueAt(maxVertexRadiusPixels, row, "maxVertexRadiusPixels");
-            measurements.setValueAt(maxVertexRadiusUnit, row, "maxVertexRadiusUnit");
-            measurements.setValueAt(sumVertexRadiusPixels / vertices.size(), row, "avgVertexRadiusPixels");
-            measurements.setValueAt(sumVertexRadiusUnit / vertices.size(), row, "avgVertexRadiusUnit");
-
-            measurements.setValueAt(minVertexIntensity, row, "minVertexValue");
-            measurements.setValueAt(maxVertexIntensity, row, "maxVertexValue");
-            measurements.setValueAt(sumVertexIntensity / vertices.size(), row, "avgVertexValue");
-
-            measurements.setValueAt(consensusPhysicalSizeUnit, row, "physicalSizeUnit");
+            measureComponent(measurements, consensusPhysicalSizeUnit, vertices);
         }
         return measurements;
+    }
+
+    public void measureComponent(ResultsTableData measurements, String consensusPhysicalSizeUnit, Set<FilamentVertex> vertices) {
+        Set<FilamentEdge> edges = edgesOf(vertices);
+
+        // Vertex stats
+        double minVertexRadiusPixels = Double.POSITIVE_INFINITY;
+        double maxVertexRadiusPixels = Double.NEGATIVE_INFINITY;
+        double sumVertexRadiusPixels = 0;
+        double minVertexRadiusUnit = Double.POSITIVE_INFINITY;
+        double maxVertexRadiusUnit = Double.NEGATIVE_INFINITY;
+        double sumVertexRadiusUnit = 0;
+        double minVertexIntensity = Double.POSITIVE_INFINITY;
+        double maxVertexIntensity = Double.NEGATIVE_INFINITY;
+        double sumVertexIntensity = 0;
+        for (FilamentVertex vertex : vertices) {
+            minVertexRadiusPixels = Math.min(vertex.getRadius(), minVertexRadiusPixels);
+            maxVertexRadiusPixels = Math.max(vertex.getRadius(), maxVertexRadiusPixels);
+            sumVertexRadiusPixels += vertex.getRadius();
+            double radiusInUnit = vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
+            minVertexRadiusUnit = Math.min(radiusInUnit, minVertexRadiusPixels);
+            maxVertexRadiusUnit = Math.max(radiusInUnit, maxVertexRadiusPixels);
+            sumVertexRadiusUnit += radiusInUnit;
+            minVertexIntensity = Math.min(vertex.getValue(), minVertexIntensity);
+            maxVertexIntensity = Math.max(vertex.getValue(), maxVertexIntensity);
+            sumVertexIntensity += vertex.getValue();
+        }
+
+        // Edge stats (pixels)
+        double minEdgeLengthPixels = Double.POSITIVE_INFINITY;
+        double maxEdgeLengthPixels = Double.NEGATIVE_INFINITY;
+        double sumEdgeLengthPixels = 0;
+
+        for (FilamentEdge edge : edges) {
+            double length = getEdgeLength(edge, false, Quantity.UNIT_PIXELS);
+            minEdgeLengthPixels = Math.min(minEdgeLengthPixels, length);
+            maxEdgeLengthPixels = Math.max(maxEdgeLengthPixels, length);
+            sumEdgeLengthPixels += length;
+        }
+
+        double sumEdgeLengthCorrectedPixels = sumEdgeLengthPixels;
+        for (FilamentVertex vertex : vertices) {
+            int degree = degreeOf(vertex);
+            if (degree == 0) {
+                // Count radius 2 times
+                sumEdgeLengthCorrectedPixels += vertex.getRadius() * 2;
+            } else if (degree == 1) {
+                // Count radius 1 time
+                sumEdgeLengthCorrectedPixels += vertex.getRadius();
+            }
+        }
+
+        // Edge stats (physical)
+        double minEdgeLengthUnit = Double.POSITIVE_INFINITY;
+        double maxEdgeLengthUnit = Double.NEGATIVE_INFINITY;
+        double sumEdgeLengthUnit = 0;
+
+        for (FilamentEdge edge : edges) {
+            double length = getEdgeLength(edge, true, consensusPhysicalSizeUnit);
+            minEdgeLengthUnit = Math.min(minEdgeLengthUnit, length);
+            maxEdgeLengthUnit = Math.max(maxEdgeLengthUnit, length);
+            sumEdgeLengthUnit += length;
+        }
+
+        double sumEdgeLengthCorrectedUnit = sumEdgeLengthUnit;
+        for (FilamentVertex vertex : vertices) {
+            int degree = degreeOf(vertex);
+            if (degree == 0) {
+                // Count radius 2 times
+                sumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit) * 2;
+            } else if (degree == 1) {
+                // Count radius 1 time
+                sumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
+            }
+        }
+
+        // Make a simplified copy and calculate the simplified edge lengths
+        Filaments3DData simplified = extractShallowCopy(vertices);
+        simplified.simplify();
+        double simplifiedSumEdgeLengthPixels = 0;
+        double simplifiedSumEdgeLengthUnit = 0;
+        for (FilamentEdge edge : simplified.edgeSet()) {
+            simplifiedSumEdgeLengthPixels += simplified.getEdgeLength(edge, false, Quantity.UNIT_PIXELS);
+            simplifiedSumEdgeLengthUnit += simplified.getEdgeLength(edge, true, consensusPhysicalSizeUnit);
+        }
+
+        double simplifiedSumEdgeLengthCorrectedPixels = simplifiedSumEdgeLengthPixels;
+        double simplifiedSumEdgeLengthCorrectedUnit = simplifiedSumEdgeLengthUnit;
+        for (FilamentVertex vertex : simplified.vertexSet()) {
+            int degree = simplified.degreeOf(vertex);
+            if (degree == 0) {
+                // Count radius 2 times
+                simplifiedSumEdgeLengthCorrectedPixels += vertex.getRadius() * 2;
+                simplifiedSumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit) * 2;
+            } else if (degree == 1) {
+                // Count radius 1 time
+                simplifiedSumEdgeLengthCorrectedPixels += vertex.getRadius();
+                simplifiedSumEdgeLengthCorrectedUnit += vertex.getMaxRadiusInUnit(consensusPhysicalSizeUnit);
+            }
+        }
+
+        // Min/max location
+        double minXCenter = Double.POSITIVE_INFINITY;
+        double maxXCenter = Double.NEGATIVE_INFINITY;
+        double minYCenter = Double.POSITIVE_INFINITY;
+        double maxYCenter = Double.NEGATIVE_INFINITY;
+        double minZCenter = Double.POSITIVE_INFINITY;
+        double maxZCenter = Double.NEGATIVE_INFINITY;
+        double minXRadius = Double.POSITIVE_INFINITY;
+        double maxXRadius = Double.NEGATIVE_INFINITY;
+        double minYRadius = Double.POSITIVE_INFINITY;
+        double maxYRadius = Double.NEGATIVE_INFINITY;
+        double minZRadius = Double.POSITIVE_INFINITY;
+        double maxZRadius = Double.NEGATIVE_INFINITY;
+
+        for (FilamentVertex vertex : vertices) {
+            minXCenter = Math.min(vertex.getXMin(false), minXCenter);
+            minYCenter = Math.min(vertex.getYMin(false), minYCenter);
+            minZCenter = Math.min(vertex.getZMin(false), minZCenter);
+            maxXCenter = Math.max(vertex.getXMax(false), maxXCenter);
+            maxYCenter = Math.max(vertex.getYMax(false), maxYCenter);
+            maxZCenter = Math.max(vertex.getZMax(false), maxZCenter);
+            minXRadius = Math.min(vertex.getXMin(true), minXRadius);
+            minYRadius = Math.min(vertex.getYMin(true), minYRadius);
+            minZRadius = Math.min(vertex.getZMin(true), minZRadius);
+            maxXRadius = Math.max(vertex.getXMax(true), maxXRadius);
+            maxYRadius = Math.max(vertex.getYMax(true), maxYRadius);
+            maxZRadius = Math.max(vertex.getZMax(true), maxZRadius);
+        }
+
+        int row = measurements.addRow();
+        measurements.setValueAt(row, row, "Component");
+        measurements.setValueAt(vertices.size(), row, "numVertices");
+        measurements.setValueAt(edges.size(), row, "numEdges");
+
+        measurements.setValueAt(sumEdgeLengthPixels, row, "lengthPixels");
+        measurements.setValueAt(sumEdgeLengthUnit, row, "lengthUnit");
+        measurements.setValueAt(sumEdgeLengthCorrectedPixels, row, "lengthPixelsRadiusCorrected");
+        measurements.setValueAt(sumEdgeLengthCorrectedUnit, row, "lengthUnitRadiusCorrected");
+        measurements.setValueAt(simplifiedSumEdgeLengthPixels, row, "simplifiedLengthPixels");
+        measurements.setValueAt(simplifiedSumEdgeLengthUnit, row, "simplifiedLengthUnit");
+        measurements.setValueAt(simplifiedSumEdgeLengthCorrectedPixels, row, "simplifiedLengthPixelsRadiusCorrected");
+        measurements.setValueAt(simplifiedSumEdgeLengthCorrectedUnit, row, "simplifiedLengthUnitRadiusCorrected");
+
+        measurements.setValueAt(simplifiedSumEdgeLengthPixels / sumEdgeLengthPixels, row, "confinementRatio");
+        measurements.setValueAt(simplifiedSumEdgeLengthCorrectedPixels / sumEdgeLengthCorrectedPixels, row, "confinementRatioRadiusCorrected");
+        measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 0).count(), row, "numVerticesWithDegree0");
+        measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 1).count(), row, "numVerticesWithDegree1");
+        measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 2).count(), row, "numVerticesWithDegree2");
+        measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 3).count(), row, "numVerticesWithDegree3");
+        measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 4).count(), row, "numVerticesWithDegree4");
+        measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 5).count(), row, "numVerticesWithDegree5");
+        measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) > 5).count(), row, "numVerticesWithDegreeMoreThan5");
+        measurements.setValueAt(minXCenter, row, "centerMinX");
+        measurements.setValueAt(minYCenter, row, "centerMinY");
+        measurements.setValueAt(minZCenter, row, "centerMinZ");
+        measurements.setValueAt(maxXCenter, row, "centerMaxX");
+        measurements.setValueAt(maxYCenter, row, "centerMaxY");
+        measurements.setValueAt(maxZCenter, row, "centerMaxZ");
+        measurements.setValueAt(minXRadius, row, "sphereMinX");
+        measurements.setValueAt(minYRadius, row, "sphereMinY");
+        measurements.setValueAt(minZRadius, row, "sphereMinZ");
+        measurements.setValueAt(maxXRadius, row, "sphereMaxX");
+        measurements.setValueAt(maxYRadius, row, "sphereMaxY");
+        measurements.setValueAt(maxZRadius, row, "sphereMaxZ");
+
+        measurements.setValueAt(minEdgeLengthPixels, row, "minEdgeLengthPixels");
+        measurements.setValueAt(minEdgeLengthUnit, row, "minEdgeLengthUnit");
+        measurements.setValueAt(maxEdgeLengthPixels, row, "maxEdgeLengthPixels");
+        measurements.setValueAt(maxEdgeLengthUnit, row, "maxEdgeLengthUnit");
+        measurements.setValueAt(sumEdgeLengthPixels / edges.size(), row, "avgEdgeLengthPixels");
+        measurements.setValueAt(sumEdgeLengthUnit / edges.size(), row, "avgEdgeLengthUnit");
+
+        measurements.setValueAt(minVertexRadiusPixels, row, "minVertexRadiusPixels");
+        measurements.setValueAt(minVertexRadiusUnit, row, "minVertexRadiusUnit");
+        measurements.setValueAt(maxVertexRadiusPixels, row, "maxVertexRadiusPixels");
+        measurements.setValueAt(maxVertexRadiusUnit, row, "maxVertexRadiusUnit");
+        measurements.setValueAt(sumVertexRadiusPixels / vertices.size(), row, "avgVertexRadiusPixels");
+        measurements.setValueAt(sumVertexRadiusUnit / vertices.size(), row, "avgVertexRadiusUnit");
+
+        measurements.setValueAt(minVertexIntensity, row, "minVertexValue");
+        measurements.setValueAt(maxVertexIntensity, row, "maxVertexValue");
+        measurements.setValueAt(sumVertexIntensity / vertices.size(), row, "avgVertexValue");
+
+        measurements.setValueAt(consensusPhysicalSizeUnit, row, "physicalSizeUnit");
     }
 
     private Set<FilamentEdge> edgesOf(Set<FilamentVertex> vertices) {

@@ -31,6 +31,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsT
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.convert.ConvertFilamentsToRoiAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentEdgesByProperties;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentVerticesByProperties;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentsByProperties;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.RemoveBorderFilaments;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.ImportFilamentsFromJsonAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToFilaments2DAlgorithm;
@@ -136,6 +137,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("filaments-filter-edges-by-properties", FilterFilamentEdgesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("filaments-filter-components-by-properties", FilterFilamentsByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("filaments-filter-filaments-at-border", RemoveBorderFilaments.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerNodeType("filaments-split-into-connected-components", SplitFilamentsIntoConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));

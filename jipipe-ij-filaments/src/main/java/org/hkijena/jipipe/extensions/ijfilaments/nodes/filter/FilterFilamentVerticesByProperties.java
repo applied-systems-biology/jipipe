@@ -50,9 +50,6 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
         Set<FilamentVertex> toDelete = new HashSet<>();
         for (FilamentVertex vertex : outputData.vertexSet()) {
             // Write variables
-            for (Map.Entry<String, String> entry : vertex.getMetadata().entrySet()) {
-                variables.set("metadata." + entry.getKey(), entry.getValue());
-            }
             FilamentVertexVariableSource.writeToVariables(outputData, vertex, variables, "");
             if (!filter.test(variables)) {
                 toDelete.add(vertex);
@@ -69,8 +66,6 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
     public DefaultExpressionParameter getFilter() {
         return filter;
