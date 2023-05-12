@@ -41,6 +41,8 @@ public class FilamentComponentVariableSource implements ExpressionParameterVaria
         VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree 4", "The number of vertices with degree (number of edges) four.", "numVerticesWithDegree4"));
         VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree 5", "The number of vertices with degree (number of edges) five.", "numVerticesWithDegree5"));
         VARIABLES.add(new ExpressionParameterVariable("Number of vertices with degree > 5", "The number of vertices with degree (number of edges) more than five.", "numVerticesWithDegreeMoreThan5"));
+        VARIABLES.add(new ExpressionParameterVariable("Max degree", "The maximum degree.", "maxDegree"));
+        VARIABLES.add(new ExpressionParameterVariable("Min degree", "The minimum degree.", "minDegree"));
         VARIABLES.add(new ExpressionParameterVariable("Min X (center, pixels)", "Minimum center X (in pixels).", "centerMinX"));
         VARIABLES.add(new ExpressionParameterVariable("Min Y (center, pixels)", "Minimum center Y (in pixels).", "centerMinY"));
         VARIABLES.add(new ExpressionParameterVariable("Min Z (center, pixels)", "Minimum center Z (in pixels).", "centerMinZ"));

@@ -830,6 +830,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 4).count(), row, "numVerticesWithDegree4");
         measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) == 5).count(), row, "numVerticesWithDegree5");
         measurements.setValueAt(vertices.stream().filter(vertex -> degreeOf(vertex) > 5).count(), row, "numVerticesWithDegreeMoreThan5");
+        measurements.setValueAt(vertices.stream().map(vertex -> degreeOf(vertex)).max(Comparator.naturalOrder()).orElse(0), row, "maxDegree");
+        measurements.setValueAt(vertices.stream().map(vertex -> degreeOf(vertex)).min(Comparator.naturalOrder()).orElse(0), row, "minDegree");
         measurements.setValueAt(minXCenter, row, "centerMinX");
         measurements.setValueAt(minYCenter, row, "centerMinY");
         measurements.setValueAt(minZCenter, row, "centerMinZ");
