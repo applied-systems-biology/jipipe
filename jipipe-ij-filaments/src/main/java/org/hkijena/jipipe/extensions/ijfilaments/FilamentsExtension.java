@@ -34,6 +34,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.FilterFilamentVert
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.filter.RemoveBorderFilaments;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.ImportFilamentsFromJsonAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToFilaments2DAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToFilaments3DAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.generate.SkeletonToSimplifiedFilamentsFijiAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureEdgesAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.measure.MeasureFilamentsAlgorithm;
@@ -129,6 +130,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("filaments-from-json", ImportFilamentsFromJsonAlgorithm.class);
         registerNodeType("filaments-skeleton-to-filaments-2d3d-simplified", SkeletonToSimplifiedFilamentsFijiAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
         registerNodeType("filaments-skeleton-to-filaments-2d", SkeletonToFilaments2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
+        registerNodeType("filaments-skeleton-to-filaments-3d", SkeletonToFilaments3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
 
         registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
 

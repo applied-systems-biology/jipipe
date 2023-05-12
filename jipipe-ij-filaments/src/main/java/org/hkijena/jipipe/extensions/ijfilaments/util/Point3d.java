@@ -100,4 +100,9 @@ public class Point3d {
                 vsy.getValue() * y,
                 vsz.getValue() * z);
     }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
 }
