@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter;
 
-import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -168,8 +167,9 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 Roi overlap = null;
                 Roi overlappingRoi = null;
                 for (Roi roi2 : second) {
+
                     overlappingRoi = roi2;
-                    overlap = calculateOverlap(temp, roi, roi2, settings.isFastMode());
+                    overlap = calculateOverlap(temp, roi, roi2, settings.isFastMode(), settings.ignoreC, settings.ignoreT);
                     if (overlap != null) {
                         if (withFiltering) {
                             putMeasurementsIntoVariable(roi, firstPrefix, roi2, secondPrefix, variableSet, overlap, referenceImage, temp, settings.measureInPhysicalUnits);
@@ -255,7 +255,19 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Roi calculateOverlap(ROIListData temp, Roi roi1, Roi roi2, boolean fastMode) {
+    private Roi calculateOverlap(ROIListData temp, Roi roi1, Roi roi2, boolean fastMode, boolean ignoreC, boolean ignoreT) {
+
+        if(!ignoreC) {
+            if(roi1.getCPosition() != roi2.getCPosition() && (roi1.getCPosition() > 0 || roi1.getCPosition() > 0)) {
+                return null;
+            }
+        }
+        if(!ignoreT) {
+            if(roi1.getTPosition() != roi2.getTPosition() && (roi1.getTPosition() > 0 || roi1.getTPosition() > 0)) {
+                return null;
+            }
+        }
+
         if (fastMode) {
             Rectangle intersection = roi1.getBounds().intersection(roi2.getBounds());
             if (intersection.isEmpty())
@@ -327,6 +339,8 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean fastMode = false;
 
         private boolean measureInPhysicalUnits = true;
+        private boolean ignoreC = true;
+        private boolean ignoreT = true;
 
         public ROIFilterSettings() {
         }
@@ -340,6 +354,30 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.fastMode = other.fastMode;
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
             this.enforceOverlap = other.enforceOverlap;
+            this.ignoreC = other.ignoreC;
+            this.ignoreT = other.ignoreT;
+        }
+
+        @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")
+        @JIPipeParameter("ignore-c")
+        public boolean isIgnoreC() {
+            return ignoreC;
+        }
+
+        @JIPipeParameter("ignore-c")
+        public void setIgnoreC(boolean ignoreC) {
+            this.ignoreC = ignoreC;
+        }
+
+        @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI located at different frames are compared")
+        @JIPipeParameter("ignore-t")
+        public boolean isIgnoreT() {
+            return ignoreT;
+        }
+
+        @JIPipeParameter("ignore-t")
+        public void setIgnoreT(boolean ignoreT) {
+            this.ignoreT = ignoreT;
         }
 
         @JIPipeDocumentation(name = "Overlap filter: enforce overlap", description = "If enabled, a pair of ROI is not considered for custom filtering if it does not overlap. Disable this setting if you want to implement special behavior.")

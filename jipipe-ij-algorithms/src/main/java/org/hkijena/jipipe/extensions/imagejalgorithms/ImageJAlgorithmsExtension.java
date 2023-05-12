@@ -93,6 +93,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawTextRoiAl
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.generate.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.CountROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.ExtractRoi2DRelationStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.AddRoiListsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
@@ -798,6 +799,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerROIAlgorithms() {
+        registerEnumParameterType("ij-roi-relation-measurement", ROI2DRelationMeasurement.class, "2D relation measurement", "Relation between two 2D objects");
+        registerEnumParameterType("ij-roi-relation-measurement-column", ROI2DRelationMeasurementColumn.class, "2D relation measurement column", "Relation between two 2D objects");
+        registerParameterType("ij-roi-relation-measurement-set", ROI2DRelationMeasurementSetParameter.class, "2D relation measurements", "A selection of measurements between two 2D objects");
+
         registerNodeType("ij1-roi-from-rectangles", DefineRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-from-rectangles-referenced", ReferencedDefineRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-append-rectangles", AppendRectangularRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
@@ -815,6 +820,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
         registerNodeType("ij1-roi-statistics", RoiStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("ij1-roi-relation-2d", ExtractRoi2DRelationStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-roi-count", CountROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-roi-filter-slice", SliceROIListAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));

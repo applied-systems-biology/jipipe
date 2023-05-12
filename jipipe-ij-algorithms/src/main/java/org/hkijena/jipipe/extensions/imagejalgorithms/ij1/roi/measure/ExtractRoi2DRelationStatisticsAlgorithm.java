@@ -1,93 +1,64 @@
-package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.measure;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure;
 
-import mcib3d.image3d.ImageHandler;
+import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurementSetParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ROI2DRelationMeasurementSetParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-@JIPipeDocumentation(name = "Extract pairwise 3D ROI statistics", description = "Extracts all pairwise statistics between the 3D ROI")
+@JIPipeDocumentation(name = "Extract pairwise 2D ROI statistics", description = "Extracts all pairwise statistics between the 2D ROI")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 1", autoCreate = true)
-@JIPipeInputSlot(value = ROI3DListData.class, slotName = "ROI 2", autoCreate = true)
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI 1", autoCreate = true)
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI 2", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
-public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private ROI3DRelationMeasurementSetParameter measurements = new ROI3DRelationMeasurementSetParameter();
+    private ROI2DRelationMeasurementSetParameter measurements = new ROI2DRelationMeasurementSetParameter();
 
     private boolean measureInPhysicalUnits = true;
     private boolean requireColocalization = true;
-
     private boolean preciseColocalization = true;
 
-    private boolean ignoreC = true;
-    private boolean ignoreT = true;
-
-    public ExtractRoi3DRelationStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public ExtractRoi2DRelationStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ExtractRoi3DRelationStatisticsAlgorithm(ExtractRoi3DRelationStatisticsAlgorithm other) {
+    public ExtractRoi2DRelationStatisticsAlgorithm(ExtractRoi2DRelationStatisticsAlgorithm other) {
         super(other);
-        this.measurements = new ROI3DRelationMeasurementSetParameter(other.measurements);
+        this.measurements = new ROI2DRelationMeasurementSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.requireColocalization = other.requireColocalization;
         this.preciseColocalization = other.preciseColocalization;
-        this.ignoreC = other.ignoreC;
-        this.ignoreT = other.ignoreT;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData roi1List = dataBatch.getInputData("ROI 1", ROI3DListData.class, progressInfo);
-        ROI3DListData roi2List = dataBatch.getInputData("ROI 2", ROI3DListData.class, progressInfo);
-        ImageHandler imageHandler = IJ3DUtils.wrapImage(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
+        ROIListData roi1List = dataBatch.getInputData("ROI 1", ROIListData.class, progressInfo);
+        ROIListData roi2List = dataBatch.getInputData("ROI 2", ROIListData.class, progressInfo);
+        ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
         ResultsTableData outputResults = new ResultsTableData();
 
-        IJ3DUtils.measureRoi3dRelation(imageHandler,
+        ImageJAlgorithmUtils.measureROIRelation(reference,
                 roi1List,
                 roi2List,
                 measurements.getNativeValue(),
                 measureInPhysicalUnits,
                 requireColocalization,
                 preciseColocalization,
-                ignoreC,
-                ignoreT,
                 "",
                 outputResults,
                 progressInfo.resolve("Measure ROI"));
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
-    }
-
-    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")
-    @JIPipeParameter("ignore-c")
-    public boolean isIgnoreC() {
-        return ignoreC;
-    }
-
-    @JIPipeParameter("ignore-c")
-    public void setIgnoreC(boolean ignoreC) {
-        this.ignoreC = ignoreC;
-    }
-
-    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI located at different frames are compared")
-    @JIPipeParameter("ignore-t")
-    public boolean isIgnoreT() {
-        return ignoreT;
-    }
-
-    @JIPipeParameter("ignore-t")
-    public void setIgnoreT(boolean ignoreT) {
-        this.ignoreT = ignoreT;
     }
 
     @JIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")
@@ -115,12 +86,12 @@ public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements that will be extracted")
     @JIPipeParameter("measurements")
-    public ROI3DRelationMeasurementSetParameter getMeasurements() {
+    public ROI2DRelationMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ROI3DRelationMeasurementSetParameter measurements) {
+    public void setMeasurements(ROI2DRelationMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 

@@ -47,6 +47,9 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
     private boolean requireColocalization = true;
     private boolean preciseColocalization = true;
 
+    private boolean ignoreC = true;
+    private boolean ignoreT = true;
+
     public SplitRoi3DIntoConnectedComponentsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         customFilterVariables = new CustomExpressionVariablesParameter(this);
@@ -61,6 +64,8 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.requireColocalization = other.requireColocalization;
         this.preciseColocalization = other.preciseColocalization;
+        this.ignoreC = other.ignoreC;
+        this.ignoreT = other.ignoreT;
     }
 
     @Override
@@ -80,6 +85,8 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
                 measureInPhysicalUnits,
                 requireColocalization,
                 preciseColocalization,
+                ignoreC,
+                ignoreT,
                 "",
                 measurements,
                 progressInfo.resolve("Measure overlap"));
@@ -131,6 +138,28 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
             }
             dataBatch.addOutputData(getFirstOutputSlot(), componentList, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
+    }
+
+    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")
+    @JIPipeParameter("ignore-c")
+    public boolean isIgnoreC() {
+        return ignoreC;
+    }
+
+    @JIPipeParameter("ignore-c")
+    public void setIgnoreC(boolean ignoreC) {
+        this.ignoreC = ignoreC;
+    }
+
+    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI located at different frames are compared")
+    @JIPipeParameter("ignore-t")
+    public boolean isIgnoreT() {
+        return ignoreT;
+    }
+
+    @JIPipeParameter("ignore-t")
+    public void setIgnoreT(boolean ignoreT) {
+        this.ignoreT = ignoreT;
     }
 
     @JIPipeDocumentation(name = "Annotate with component", description = "If enabled, an annotation with the numeric component index is generated.")

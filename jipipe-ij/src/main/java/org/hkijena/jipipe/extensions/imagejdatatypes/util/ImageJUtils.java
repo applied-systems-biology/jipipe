@@ -35,13 +35,17 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -71,6 +75,32 @@ import java.util.stream.Collectors;
  * Utility functions for ImageJ
  */
 public class ImageJUtils {
+
+    public static ResultsTableData measureROI(Roi roi, ImagePlus reference, boolean physicalUnits, Measurement... statistics) {
+        ImageStatisticsSetParameter statisticsSetParameter = new ImageStatisticsSetParameter();
+        if(statistics.length > 0) {
+            statisticsSetParameter.getValues().clear();
+            for (Measurement statistic : statistics) {
+                statisticsSetParameter.getValues().add(statistic);
+            }
+        }
+        ROIListData dummy = new ROIListData();
+        dummy.add(roi);
+        return dummy.measure(reference, statisticsSetParameter, true, physicalUnits);
+    }
+
+    public static Roi intersectROI(Roi roi1, Roi roi2) {
+        ROIListData dummy = new ROIListData();
+        dummy.add(roi1);
+        dummy.add(roi2);
+        dummy.logicalAnd();
+        if(!dummy.isEmpty()) {
+            return dummy.get(0);
+        }
+        else {
+            return null;
+        }
+    }
 
     public static Quantity getPixelSizeX(ImagePlus imp) {
         if (imp.getCalibration() != null) {

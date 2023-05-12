@@ -201,7 +201,7 @@ public class IJ3DUtils {
         }
     }
 
-    public static void measureRoi3dRelation(ImageHandler referenceImage, ROI3DListData roi1List, ROI3DListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization, boolean preciseColocalization, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
+    public static void measureRoi3dRelation(ImageHandler referenceImage, ROI3DListData roi1List, ROI3DListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization, boolean preciseColocalization, boolean ignoreC, boolean ignoreT, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
         int maxItems = roi1List.size() * roi2List.size();
         int currentItems = 0;
         int lastPercentage = 0;
@@ -217,6 +217,17 @@ public class IJ3DUtils {
                 if (lastPercentage != newPercentage) {
                     progressInfo.log(currentItems + "/" + maxItems + " (" + newPercentage + "%)");
                     lastPercentage = newPercentage;
+                }
+
+                if(!ignoreT) {
+                    if(roi1.getFrame() != roi2.getFrame()) {
+                        continue;
+                    }
+                }
+                if(!ignoreC) {
+                    if(roi1.getChannel() != roi2.getChannel()) {
+                        continue;
+                    }
                 }
 
                 if (requireColocalization) {

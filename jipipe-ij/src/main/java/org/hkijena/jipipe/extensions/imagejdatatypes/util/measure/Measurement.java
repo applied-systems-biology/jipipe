@@ -59,6 +59,10 @@ public enum Measurement {
         return builder.toString();
     }
 
+    public static boolean includes(int nativeValue, Measurement target) {
+        return (nativeValue & target.nativeValue) == target.nativeValue;
+    }
+
     public int getNativeValue() {
         return nativeValue;
     }

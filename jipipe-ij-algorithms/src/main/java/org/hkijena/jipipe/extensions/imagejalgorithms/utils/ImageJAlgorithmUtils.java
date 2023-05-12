@@ -5,7 +5,9 @@ import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
+import ij.gui.ShapeRoi;
 import ij.measure.Calibration;
+import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import ij.process.*;
 import inra.ijpb.binary.BinaryImages;
@@ -18,6 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ROI2DRelationMeasurement;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -26,6 +29,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.scijava.vecmath.Point2d;
+
+import java.util.Map;
 
 public class ImageJAlgorithmUtils {
 
@@ -379,6 +387,146 @@ public class ImageJAlgorithmUtils {
             }
         }
         throw new UnsupportedOperationException();
+    }
+
+    public static void measureROI(ImagePlus referenceImage, ROIListData roiList, ImageStatisticsSetParameter measurements, boolean physicalUnits, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
+        int lastPercentage = 0;
+        for (int i = 0; i < roiList.size(); i++) {
+            if (progressInfo.isCancelled()) {
+                return;
+            }
+            int newPercentage = (int) (1.0 * i / roiList.size() * 100);
+            if (lastPercentage != newPercentage) {
+                progressInfo.log(i + "/" + roiList.size() + " (" + newPercentage + "%)");
+                lastPercentage = newPercentage;
+            }
+            int row = target.addRow();
+            generateROIRowMeasurements(referenceImage, i, roiList.get(i), measurements, physicalUnits, target, row, columnPrefix);
+        }
+    }
+
+    public static void measureROIRelation(ImagePlus referenceImage, ROIListData roi1List, ROIListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization, 
+                                          boolean preciseColocalization, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
+        int maxItems = roi1List.size() * roi2List.size();
+        int currentItems = 0;
+        int lastPercentage = 0;
+        for (int i = 0; i < roi1List.size(); i++) {
+            Roi roi1 = roi1List.get(i);
+            for (int j = 0; j < roi2List.size(); j++) {
+                Roi roi2 = roi2List.get(j);
+                ++currentItems;
+                if (progressInfo.isCancelled()) {
+                    return;
+                }
+                int newPercentage = (int) (1.0 * currentItems / maxItems * 100);
+                if (lastPercentage != newPercentage) {
+                    progressInfo.log(currentItems + "/" + maxItems + " (" + newPercentage + "%)");
+                    lastPercentage = newPercentage;
+                }
+
+                if (requireColocalization) {
+                    if (!roi1.getBounds().intersects(roi2.getBounds())) {
+                        continue;
+                    }
+                    if (preciseColocalization) {
+                        ROIListData dummy = new ROIListData();
+                        dummy.add(roi1);
+                        dummy.add(roi2);
+                        dummy.logicalAnd();
+                        if (dummy.isEmpty()) {
+                            continue;
+                        }
+                    }
+                }
+
+                int row = target.addRow();
+                generateROIRelationRowMeasurements(referenceImage, i, j, measurements, physicalUnits, target, roi1, roi2, row, columnPrefix);
+            }
+        }
+    }
+
+    public static void generateROIRelationRowMeasurements(ImagePlus reference, int roi1Index, int roi2Index, int measurements, boolean physicalUnits, ResultsTableData target, Roi roi1, Roi roi2, int row, String columnPrefix) {
+
+        // Mandatory!
+        target.setValueAt(StringUtils.nullToEmpty(roi1.getName()), row, "Current.Name");
+        target.setValueAt(StringUtils.nullToEmpty(roi2.getName()), row, "Other.Name");
+        target.setValueAt(roi1Index, row, "Current.Index");
+        target.setValueAt(roi2Index, row, "Other.Index");
+
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Colocalization) ||
+                ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PercentageColocalization)) {
+
+            Roi intersection = ImageJUtils.intersectROI(roi1, roi2);
+            if(intersection != null) {
+                double intersectionArea = ImageJUtils.measureROI(intersection, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
+                if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Colocalization)) {
+                    target.setValueAt(intersectionArea, row, columnPrefix + "Colocalization");
+                }
+                if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PercentageColocalization)) {
+                    double roi1Area = ImageJUtils.measureROI(roi1, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
+                    double percentage = roi1Area / intersectionArea * 100;
+                    if(!Double.isFinite(percentage))
+                        percentage = 0;
+                    target.setValueAt(percentage, row, columnPrefix + "PercentageColocalization");
+                }
+            }
+            else {
+                if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Colocalization)) {
+                    target.setValueAt(0, row, columnPrefix + "Colocalization");
+                }
+                if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PercentageColocalization)) {
+                    target.setValueAt(0, row, columnPrefix + "PercentageColocalization");
+                }
+            }
+        }
+
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.OverlapsBox)) {
+            boolean value = roi1.getBounds().intersects(roi2.getBounds());
+            target.setValueAt(value ? 1 : 0, row, columnPrefix + "OverlapsBox");
+        }
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Includes)) {
+            Roi intersection = ImageJUtils.intersectROI(roi1, roi2);
+            double intersectionArea = ImageJUtils.measureROI(intersection, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
+            double roi2Area = ImageJUtils.measureROI(roi2, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
+            boolean value = intersectionArea == roi2Area;
+            target.setValueAt(value ? 1 : 0, row, columnPrefix + "Includes");
+        }
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.IncludesBox)) {
+            boolean value = roi1.getBounds().contains(roi2.getBounds());
+            target.setValueAt(value ? 1 : 0, row, columnPrefix + "IncludesBox");
+        }
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.DistanceCenter)) {
+            double[] contourCentroid1 = roi1.getContourCentroid();
+            double[] contourCentroid2 = roi2.getContourCentroid();
+            Point2d roi1Center = new Point2d(contourCentroid1[0], contourCentroid1[1]);
+            Point2d roi2Center = new Point2d(contourCentroid2[0], contourCentroid2[1]);
+            if(physicalUnits && reference != null) {
+                roi1Center.x /= reference.getCalibration().pixelWidth;
+                roi1Center.y /= reference.getCalibration().pixelHeight;
+            }
+            target.setValueAt(roi1Center.distance(roi2Center), row, columnPrefix + "DistanceCenter");
+        }
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.IntersectionStats)) {
+            Roi intersection = ImageJUtils.intersectROI(roi1, roi2);
+            if (intersection != null) {
+                generateROIRowMeasurements(reference, -1, intersection, new ImageStatisticsSetParameter(), physicalUnits, target, row, "Intersection.");
+            }
+        }
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.CurrentStats)) {
+            generateROIRowMeasurements(reference, roi1Index, roi1, new ImageStatisticsSetParameter(), physicalUnits, target, row, "Current.");
+        }
+        if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.OtherStats)) {
+            generateROIRowMeasurements(reference, roi2Index, roi2, new ImageStatisticsSetParameter(), physicalUnits, target, row, "Other.");
+        }
+    }
+
+    public static void generateROIRowMeasurements(ImagePlus referenceImage, int index, Roi roi, ImageStatisticsSetParameter measurements, boolean physicalUnits, ResultsTableData target, int targetRow, String columnPrefix) {
+        ROIListData dummy = new ROIListData();
+        dummy.add(roi);
+        ResultsTableData forROI = dummy.measure(referenceImage, measurements, true, physicalUnits);
+        for (int col = 0; col < forROI.getColumnCount(); col++) {
+            target.setValueAt(forROI.getValueAt(0, col), targetRow, columnPrefix + forROI.getColumnName(col));
+        }
     }
 
 }

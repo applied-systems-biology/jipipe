@@ -141,6 +141,8 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 settings.isMeasureInPhysicalUnits(),
                 settings.isRequireColocalization(),
                 settings.isPreciseColocalization(),
+                settings.isIgnoreC(),
+                settings.isIgnoreT(),
                 "",
                 measurements,
                 progressInfo.resolve("Measure Overlaps"));
@@ -249,6 +251,9 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         private boolean preciseColocalization = true;
 
+        private boolean ignoreC = true;
+        private boolean ignoreT = true;
+
         public ROIFilterSettings() {
         }
 
@@ -261,6 +266,30 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
             this.requireColocalization = other.requireColocalization;
             this.preciseColocalization = other.preciseColocalization;
+            this.ignoreC = other.ignoreC;
+            this.ignoreT = other.ignoreT;
+        }
+
+        @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")
+        @JIPipeParameter("ignore-c")
+        public boolean isIgnoreC() {
+            return ignoreC;
+        }
+
+        @JIPipeParameter("ignore-c")
+        public void setIgnoreC(boolean ignoreC) {
+            this.ignoreC = ignoreC;
+        }
+
+        @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI located at different frames are compared")
+        @JIPipeParameter("ignore-t")
+        public boolean isIgnoreT() {
+            return ignoreT;
+        }
+
+        @JIPipeParameter("ignore-t")
+        public void setIgnoreT(boolean ignoreT) {
+            this.ignoreT = ignoreT;
         }
 
         @JIPipeDocumentation(name = "Enabled", description = "You can use this setting to disable generating this output.")
