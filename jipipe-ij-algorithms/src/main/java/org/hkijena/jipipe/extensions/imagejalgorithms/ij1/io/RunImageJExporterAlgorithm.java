@@ -83,7 +83,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
         ImageJDataExporterUI ui = JIPipe.getImageJAdapters().createUIForExportOperation(parent, operation);
         if (JOptionPane.showConfirmDialog(parent.getWindow(), ui, "Set export parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             operation.copyTo(this.exportParameters);
-            triggerParameterUIChange();
+            emitParameterUIChangedEvent();
         }
     }
 

@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
+public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIPipeRunnable.FinishedEventListener {
     private final JList<ROI3D> roiListControl = new JList<>();
     private final LargeToggleButtonAction displayROIViewMenuItem = new LargeToggleButtonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
     private final SmallToggleButtonAction displayROIAsVolumeItem = new SmallToggleButtonAction("Render as volume", "If enabled, render ROI as volume", UIUtils.getIconFromResources("actions/antivignetting.png"));
@@ -73,7 +73,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         this.updateContentLaterTimer = new Timer(1000, e -> rebuildRoiContentNow());
         updateContentLaterTimer.setRepeats(false);
 
-        getViewerPanel3D().getViewerRunnerQueue().getEventBus().register(this);
+        getViewerPanel3D().getViewerRunnerQueue().getFinishedEventEmitter().subscribeWeak(this);
     }
 
     private void loadDefaults() {
@@ -113,8 +113,8 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D {
         // Currently not possible (creates copies of the ROI)
     }
 
-    @Subscribe
-    public void onViewerTaskFinished(JIPipeRunnable.FinishedEvent event) {
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ROI2DTo3DConverterRun) {
             ROI3DListData roi3DListData = new ROI3DListData();
             roi3DListData.addAll(((ROI2DTo3DConverterRun) event.getRun()).converted);

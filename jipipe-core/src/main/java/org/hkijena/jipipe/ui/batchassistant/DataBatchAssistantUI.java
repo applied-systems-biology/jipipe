@@ -49,7 +49,7 @@ import java.util.concurrent.ExecutionException;
  * {@link org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm} and
  * {@link org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm}
  */
-public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
+public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeGraph.NodeDisconnectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     private final JIPipeAlgorithm algorithm;
     private final Runnable runTestBench;
     private final JIPipeParameterCollection batchSettings;
@@ -79,10 +79,10 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         this.runTestBench = runTestBench;
         initialize();
         updateStatus();
-        getProject().getCache().getEventBus().register(this);
-        algorithm.getEventBus().register(this);
-        algorithm.getParentGraph().getEventBus().register(this);
-        batchSettings.getEventBus().register(this);
+        getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
+        algorithm.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
+        algorithm.getParentGraph().getNodeDisconnectedEventEmitter().subscribeWeak(this);
+        batchSettings.getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void updateCurrentCache() {
@@ -319,8 +319,8 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
-    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
+    @Override
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable()) {
             clearCaches();
             return;
@@ -341,8 +341,8 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
-    public void onSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+    @Override
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         if (!isDisplayable()) {
             clearCaches();
             return;
@@ -350,26 +350,21 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         updateStatus();
     }
 
-    /**
-     * Triggered when an algorithm input is disconnected
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
-        if (event.getTarget().getNode() == algorithm) {
-            updateStatus();
-        }
-    }
-
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() == batchSettings && autoRefresh) {
             refreshBatchPreview();
         }
     }
 
-    private static class DataBatchGeneratorWorker extends SwingWorker<List<JIPipeMergingDataBatch>, Object> {
+    @Override
+    public void onNodeDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
+        if (event.getTarget().getNode() == algorithm) {
+            updateStatus();
+        }
+    }
+
+    private static class DataBatchGeneratorWorker extends SwingWorker<List<JIPipeMergingDataBatch>, Object> implements JIPipeProgressInfo.StatusUpdatedEventListener {
 
         private final DataBatchAssistantUI assistantUI;
         private final JIPipeGraphNode algorithm;
@@ -378,14 +373,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         private DataBatchGeneratorWorker(DataBatchAssistantUI assistantUI, JIPipeGraphNode algorithm) {
             this.assistantUI = assistantUI;
             this.algorithm = algorithm;
-            progressInfo.getEventBus().register(this);
-        }
-
-        @Subscribe
-        public void onProgressInfoStatusUpdate(JIPipeProgressInfo.StatusUpdatedEvent event) {
-            SwingUtilities.invokeLater(() -> {
-                assistantUI.batchPreviewNumberLabel.setText("Please wait ... " + event.getMessage());
-            });
+            progressInfo.getStatusUpdatedEventEmitter().subscribeWeak(this);
         }
 
         @Override
@@ -406,6 +394,13 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                     assistantUI.displayBatches(Collections.emptyList(), algorithm);
                 }
             }
+        }
+
+        @Override
+        public void onProgressStatusUpdated(JIPipeProgressInfo.StatusUpdatedEvent event) {
+            SwingUtilities.invokeLater(() -> {
+                assistantUI.batchPreviewNumberLabel.setText("Please wait ... " + event.getMessage());
+            });
         }
     }
 }

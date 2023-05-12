@@ -29,17 +29,20 @@ import java.util.stream.Collectors;
 /**
  * Queue for {@link JIPipeRunnable}
  */
-public class JIPipeRunnerQueue {
+public class JIPipeRunnerQueue implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener {
 
     private static JIPipeRunnerQueue instance;
-
     private final String name;
     private final Queue<JIPipeRunWorker> queue = new ArrayDeque<>();
     private final Map<JIPipeRunnable, JIPipeRunWorker> assignedWorkers = new HashMap<>();
-    private final EventBus eventBus = new EventBus();
     private JIPipeRunWorker currentlyRunningWorker = null;
-
     private boolean silent;
+
+    private final JIPipeRunnable.EnqueuedEventEmitter enqueuedEventEmitter = new JIPipeRunnable.EnqueuedEventEmitter();
+    private final JIPipeRunnable.FinishedEventEmitter finishedEventEmitter = new JIPipeRunnable.FinishedEventEmitter();
+    private final JIPipeRunnable.InterruptedEventEmitter interruptedEventEmitter = new JIPipeRunnable.InterruptedEventEmitter();
+    private final JIPipeRunnable.ProgressEventEmitter progressEventEmitter = new JIPipeRunnable.ProgressEventEmitter();
+    private final JIPipeRunnable.StartedEventEmitter startedEventEmitter = new JIPipeRunnable.StartedEventEmitter();
 
     public JIPipeRunnerQueue(String name) {
         this.name = name;
@@ -69,6 +72,26 @@ public class JIPipeRunnerQueue {
         }
 
         return false;
+    }
+
+    public JIPipeRunnable.EnqueuedEventEmitter getEnqueuedEventEmitter() {
+        return enqueuedEventEmitter;
+    }
+
+    public JIPipeRunnable.FinishedEventEmitter getFinishedEventEmitter() {
+        return finishedEventEmitter;
+    }
+
+    public JIPipeRunnable.InterruptedEventEmitter getInterruptedEventEmitter() {
+        return interruptedEventEmitter;
+    }
+
+    public JIPipeRunnable.ProgressEventEmitter getProgressEventEmitter() {
+        return progressEventEmitter;
+    }
+
+    public JIPipeRunnable.StartedEventEmitter getStartedEventEmitter() {
+        return startedEventEmitter;
     }
 
     public Queue<JIPipeRunWorker> getQueue() {
@@ -107,12 +130,24 @@ public class JIPipeRunnerQueue {
      */
     public JIPipeRunWorker enqueue(JIPipeRunnable run) {
         JIPipeRunWorker worker = new JIPipeRunWorker(run, silent);
-        worker.getEventBus().register(this);
+        registerWorkerEvents(worker);
         assignedWorkers.put(run, worker);
         queue.add(worker);
-        eventBus.post(new JIPipeRunnable.EnqueuedEvent(run, worker));
+        enqueuedEventEmitter.emit(new JIPipeRunnable.EnqueuedEvent(run, worker));
         tryDequeue();
         return worker;
+    }
+
+    private void registerWorkerEvents(JIPipeRunWorker worker) {
+        worker.getFinishedEventEmitter().subscribe(this);
+        worker.getInterruptedEventEmitter().subscribe(this);
+        worker.getProgressEventEmitter().subscribe(this);
+    }
+
+    private void unregisterWorkerEvents(JIPipeRunWorker worker) {
+        worker.getFinishedEventEmitter().unsubscribe(this);
+        worker.getInterruptedEventEmitter().unsubscribe(this);
+        worker.getProgressEventEmitter().unsubscribe(this);
     }
 
     /**
@@ -131,7 +166,7 @@ public class JIPipeRunnerQueue {
     public void tryDequeue() {
         if (currentlyRunningWorker == null && !queue.isEmpty()) {
             currentlyRunningWorker = queue.remove();
-            eventBus.post(new JIPipeRunnable.StartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
+            startedEventEmitter.emit(new JIPipeRunnable.StartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
             currentlyRunningWorker.execute();
         }
     }
@@ -151,9 +186,9 @@ public class JIPipeRunnerQueue {
                 worker.cancel(true);
             } else {
                 queue.remove(worker);
-                eventBus.post(new JIPipeRunnable.InterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
+                interruptedEventEmitter.emit(new JIPipeRunnable.InterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
 
-                worker.getEventBus().unregister(this);
+                unregisterWorkerEvents(worker);
             }
         }
     }
@@ -163,16 +198,17 @@ public class JIPipeRunnerQueue {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
             tryDequeue();
 
-            event.getWorker().getEventBus().unregister(this);
+            unregisterWorkerEvents(event.getWorker());
+            event.getRun().onFinished(event);
         }
-        eventBus.post(event);
+        finishedEventEmitter.emit(event);
     }
 
     /**
@@ -180,16 +216,17 @@ public class JIPipeRunnerQueue {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
             tryDequeue();
 
-            event.getWorker().getEventBus().unregister(this);
+            unregisterWorkerEvents(event.getWorker());
+            event.getRun().onInterrupted(event);
         }
-        eventBus.post(event);
+        interruptedEventEmitter.emit(event);
     }
 
     /**
@@ -197,16 +234,9 @@ public class JIPipeRunnerQueue {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
-        eventBus.post(event);
-    }
-
-    /**
-     * @return The event bus
-     */
-    public EventBus getEventBus() {
-        return eventBus;
+    @Override
+    public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {
+        progressEventEmitter.emit(event);
     }
 
     /**

@@ -42,7 +42,8 @@ import java.util.stream.Collectors;
 /**
  * UI around a {@link JIPipeParameterCollection}
  */
-public class ParameterPanel extends FormPanel implements Contextual, Disposable {
+public class ParameterPanel extends FormPanel implements Contextual, Disposable,
+        JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeParameterCollection.ParameterUIChangedEventListener {
     /**
      * Flag for {@link ParameterPanel}. Makes that no group headers are created.
      * This includes dynamic parameter group headers that contain buttons for modification.
@@ -116,7 +117,8 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
 
         if (displayedParameters != null) {
             reloadForm();
-            this.displayedParameters.getEventBus().register(this);
+            this.displayedParameters.getParameterStructureChangedEventEmitter().subscribeWeak(this);
+            this.displayedParameters.getParameterUIChangedEventEmitter().subscribeWeak(this);
         }
     }
 
@@ -217,7 +219,8 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
     public void dispose() {
         clear();
         if (displayedParameters != null) {
-            UIUtils.unregisterEventBus(this.displayedParameters.getEventBus(), this);
+            displayedParameters.getParameterUIChangedEventEmitter().unsubscribe(this);
+            displayedParameters.getParameterStructureChangedEventEmitter().unsubscribe(this);
         }
         traversed = null;
         displayedParameters = null;
@@ -623,7 +626,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
         reloadForm();
     }
@@ -633,7 +636,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParameterUIChanged(JIPipeParameterCollection.ParameterUIChangedEvent event) {
         refreshForm();
     }
@@ -647,10 +650,12 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable 
 
     public void setDisplayedParameters(JIPipeParameterCollection displayedParameters) {
         if (this.displayedParameters != null) {
-            this.displayedParameters.getEventBus().unregister(this);
+            this.displayedParameters.getParameterStructureChangedEventEmitter().unsubscribe(this);
+            this.displayedParameters.getParameterUIChangedEventEmitter().unsubscribe(this);
         }
         this.displayedParameters = displayedParameters;
-        this.displayedParameters.getEventBus().register(this);
+        this.displayedParameters.getParameterStructureChangedEventEmitter().subscribeWeak(this);
+        this.displayedParameters.getParameterUIChangedEventEmitter().subscribeWeak(this);
         reloadForm();
     }
 

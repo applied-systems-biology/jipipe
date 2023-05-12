@@ -19,6 +19,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventEmitter;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -29,7 +31,9 @@ import java.util.*;
  * Contains a list of {@link GraphNodeParameterReferenceGroup} and {@link GraphNodeParameterCollectionReference}
  * Stores references to parameters within an {@link JIPipeGraph}
  */
-public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
+public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipeParameterCollection implements JIPipeValidatable, ParameterReferencesChangedEventListener {
+
+    private final ParameterReferencesChangedEventEmitter parameterReferencesChangedEventEmitter = new ParameterReferencesChangedEventEmitter();
     private JIPipeGraph graph;
     private List<GraphNodeParameterReferenceGroup> parameterReferenceGroups = new ArrayList<>();
 
@@ -50,8 +54,12 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
         for (GraphNodeParameterReferenceGroup group : other.parameterReferenceGroups) {
             GraphNodeParameterReferenceGroup copy = new GraphNodeParameterReferenceGroup(group);
             this.parameterReferenceGroups.add(copy);
-            copy.getEventBus().register(this);
+            copy.getParameterReferencesChangedEventEmitter().subscribeWeak(this);
         }
+    }
+
+    public ParameterReferencesChangedEventEmitter getParameterReferencesChangedEventEmitter() {
+        return parameterReferencesChangedEventEmitter;
     }
 
     /**
@@ -77,8 +85,8 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
         GraphNodeParameterReferenceGroup instance = new GraphNodeParameterReferenceGroup();
         instance.setName("New group");
         parameterReferenceGroups.add(instance);
-        instance.getEventBus().register(this);
-        getEventBus().post(new ParameterReferencesChangedEvent());
+//        instance.getEventBus().register(this);
+        parameterReferencesChangedEventEmitter.emit(new ParameterReferencesChangedEvent(this));
         return instance;
     }
 
@@ -90,9 +98,9 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
     public void addGroups(Collection<GraphNodeParameterReferenceGroup> groups) {
         for (GraphNodeParameterReferenceGroup group : groups) {
             parameterReferenceGroups.add(group);
-            group.getEventBus().register(this);
+//            group.getEventBus().register(this);
         }
-        getEventBus().post(new ParameterReferencesChangedEvent());
+        parameterReferencesChangedEventEmitter.emit(new ParameterReferencesChangedEvent(this));
     }
 
     @JsonGetter("parameter-reference-groups")
@@ -103,23 +111,13 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
     @JsonSetter("parameter-reference-groups")
     public void setParameterReferenceGroups(List<GraphNodeParameterReferenceGroup> parameterReferenceGroups) {
         for (GraphNodeParameterReferenceGroup group : this.parameterReferenceGroups) {
-            group.getEventBus().unregister(this);
+            group.getParameterReferencesChangedEventEmitter().unsubscribe(this);
         }
         this.parameterReferenceGroups = parameterReferenceGroups;
         for (GraphNodeParameterReferenceGroup group : this.parameterReferenceGroups) {
-            group.getEventBus().register(this);
+            group.getParameterReferencesChangedEventEmitter().subscribeWeak(this);
         }
-        getEventBus().post(new ParameterReferencesChangedEvent());
-    }
-
-    /**
-     * Triggered when some parameters were changed down the line
-     *
-     * @param event the event
-     */
-    @Subscribe
-    public void onReferencesChanged(ParameterReferencesChangedEvent event) {
-        getEventBus().post(event);
+        parameterReferencesChangedEventEmitter.emit(new ParameterReferencesChangedEvent(this));
     }
 
     /**
@@ -129,7 +127,7 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
      */
     public void removeGroup(GraphNodeParameterReferenceGroup group) {
         parameterReferenceGroups.remove(group);
-        getEventBus().post(new ParameterReferencesChangedEvent());
+        parameterReferencesChangedEventEmitter.emit(new ParameterReferencesChangedEvent(this));
     }
 
     @Override
@@ -157,5 +155,10 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
 
     public void setUiRestrictToCompartments(Set<UUID> uiRestrictToCompartments) {
         this.uiRestrictToCompartments = uiRestrictToCompartments;
+    }
+
+    @Override
+    public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
+        parameterReferencesChangedEventEmitter.emit(event);
     }
 }

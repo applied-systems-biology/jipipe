@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage;
 /**
  * Renders a overview of the graph
  */
-public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, AdjustmentListener {
+public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, AdjustmentListener, JIPipeGraphCanvasUI.GraphCanvasUpdatedEventListener {
 
     private static final Color AREA_FILL_COLOR = new Color(0x3365a4e3, true);
     private final JIPipeGraphEditorUI graphEditorUI;
@@ -49,7 +49,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
         addMouseMotionListener(this);
         graphEditorUI.getScrollPane().getHorizontalScrollBar().addAdjustmentListener(this);
         graphEditorUI.getScrollPane().getVerticalScrollBar().addAdjustmentListener(this);
-        graphEditorUI.getCanvasUI().getEventBus().register(this);
+        graphEditorUI.getCanvasUI().getGraphCanvasUpdatedEventEmitter().subscribeWeak(this);
         graphEditorUI.getCanvasUI().addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -191,7 +191,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
 
     }
 
-    @Subscribe
+    @Override
     public void onGraphCanvasUpdated(JIPipeGraphCanvasUI.GraphCanvasUpdatedEvent event) {
         if (isDisplayable()) {
             refreshGraphImage();

@@ -33,7 +33,6 @@ public class EnumFormData extends ParameterFormData {
     private StringAndStringPairParameter.List items = new StringAndStringPairParameter.List();
 
     public EnumFormData() {
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public EnumFormData(EnumFormData other) {
@@ -41,7 +40,6 @@ public class EnumFormData extends ParameterFormData {
         this.value = other.value;
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         this.items = new StringAndStringPairParameter.List(other.items);
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public static EnumFormData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {

@@ -66,7 +66,7 @@ public class FileParameterEditorUI extends JIPipeParameterEditorUI {
         });
     }
 
-//    @Subscribe
+//    @Override
 //    public void onWorkDirectoryChanged(WorkDirectoryChangedEvent event) {
 //        if (event.getWorkDirectory() != null)
 //            fileSelection.getFileChooser().setCurrentDirectory(event.getWorkDirectory().toFile());

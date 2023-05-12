@@ -21,7 +21,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 
-public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorUI {
+public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
 
     private JLabel nameLabel = new JLabel();
     private JTextField pathLabel = UIUtils.makeReadonlyBorderlessTextField("");
@@ -39,7 +39,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         super(workbench, parameterAccess);
         initialize();
         reload();
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -203,20 +203,6 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         }
     }
 
-    /**
-     * Workaround for bug #458 due to modal windows
-     */
-    @Subscribe
-    public void onInstallationFinished(JIPipeRunnable.FinishedEvent event) {
-        if (!isDisplayable()) {
-            JIPipeRunnerQueue.getInstance().getEventBus().unregister(this);
-            return;
-        }
-        if (event.getWorker().getRun() instanceof ExternalEnvironmentInstaller) {
-            reload();
-        }
-    }
-
     @Override
     public boolean isUILabelEnabled() {
         return true;
@@ -243,6 +229,17 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
             pathLabel.setForeground(Color.RED);
         } else {
             pathLabel.setForeground(UIManager.getColor("Label.foreground"));
+        }
+    }
+
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        if (!isDisplayable()) {
+            JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().unsubscribe(this);
+            return;
+        }
+        if (event.getWorker().getRun() instanceof ExternalEnvironmentInstaller) {
+            reload();
         }
     }
 }

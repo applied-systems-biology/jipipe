@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -57,7 +56,7 @@ import java.util.stream.Collectors;
 /**
  * UI around an {@link JIPipeProjectRun} result
  */
-public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeGraphNode graphNode;
     private final JIPipeGraphCanvasUI graphCanvasUI;
     private JIPipeDataSlot selectedSlot;
@@ -74,8 +73,9 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         this.graphCanvasUI = graphCanvasUI;
         initialize();
 
-        getProject().getCache().getEventBus().register(this);
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
 
         // Show all data slots
         refreshTable();
@@ -198,7 +198,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             JIPipeNodeUI ui = graphCanvasUI.getNodeUIs().getOrDefault(graphNode, null);
             if (ui != null) {
                 // Same event as triggered by any other canvas tool
-                ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(storeIntermediateResults, false)));
+                ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(storeIntermediateResults, false)));
                 return;
             }
         }
@@ -317,13 +317,8 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
     }
 
-    /**
-     * Triggered when the cache was updated
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
+    @Override
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable())
             return;
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() == null) {
@@ -331,15 +326,15 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    @Subscribe
-    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (!isDisplayable())
             return;
         refreshTable();
     }
 
-    @Subscribe
-    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable())
             return;
         refreshTable();

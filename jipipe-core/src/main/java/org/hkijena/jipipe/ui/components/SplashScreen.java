@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.components;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -32,7 +33,7 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class SplashScreen extends JWindow implements LogListener, Contextual {
+public class SplashScreen extends JWindow implements LogListener, Contextual, JIPipeService.ExtensionDiscoveredEventListener {
 
     private static final Object instanceLock = new Object();
     private static volatile SplashScreen instance;
@@ -124,12 +125,12 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
     public void setJIPipe(JIPipe registry) {
         this.jiPipe = registry;
         if (registry != null) {
-            registry.getEventBus().register(this);
+            registry.getExtensionDiscoveredEventEmitter().subscribeWeak(this);
         }
     }
 
-    @Subscribe
-    public void onExtensionDiscovered(JIPipe.ExtensionDiscoveredEvent event) {
+    @Override
+    public void onJIPipeExtensionDiscovered(JIPipe.ExtensionDiscoveredEvent event) {
         if (event.getExtension() instanceof JIPipeJavaExtension) {
             SwingUtilities.invokeLater(() -> {
                 for (ImageIcon icon : ((JIPipeJavaExtension) event.getExtension()).getSplashIcons()) {

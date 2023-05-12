@@ -27,10 +27,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -43,9 +40,7 @@ import java.util.*;
 /**
  * Info of a {@link GraphWrapperAlgorithm}
  */
-public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipeParameterCollection {
-
-    private final EventBus eventBus = new EventBus();
+public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements JIPipeNodeInfo, JIPipeValidatable, JIPipeGraph.GraphChangedEventListener {
     private String id;
     private String name;
     private HTMLText description = new HTMLText();
@@ -69,7 +64,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         category.setValue((new MiscellaneousNodeTypeCategory()).getId());
         exportedParameters = new GraphNodeParameterReferenceGroupCollection();
         exportedParameters.setGraph(getGraph());
-        graph.getEventBus().register(this);
+        graph.getGraphChangedEventEmitter().subscribe(this);
     }
 
     /**
@@ -81,7 +76,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         graph = new JIPipeGraph(group.getWrappedGraph());
         exportedParameters = new GraphNodeParameterReferenceGroupCollection(group.getExportedParameters());
         exportedParameters.setGraph(getGraph());
-        graph.getEventBus().register(this);
+        graph.getGraphChangedEventEmitter().subscribe(this);
         category.setValue((new MiscellaneousNodeTypeCategory()).getId());
         setName(group.getName());
         setDescription(group.getCustomDescription());
@@ -215,14 +210,14 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     public void setGraph(JIPipeGraph graph) {
         if (graph != this.graph) {
             if (this.graph != null) {
-                this.graph.getEventBus().unregister(this);
+                this.graph.getGraphChangedEventEmitter().unsubscribe(this);
             }
             this.graph = graph;
             if (exportedParameters != null) {
                 exportedParameters.setGraph(graph);
             }
             updateSlots();
-            this.graph.getEventBus().register(this);
+            this.graph.getGraphChangedEventEmitter().unsubscribe(this);
         }
     }
 
@@ -245,19 +240,9 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         updateSlots();
-    }
-
-    /**
-     * Triggered when the parameter structure of an algorithm is changed
-     * Updates the list of available parameters
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onGraphParameterStructureChanged(ParameterStructureChangedEvent event) {
     }
 
     private void updateSlots() {
@@ -370,12 +355,6 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         // Only check if the graph creates a valid group output
         getGraph().reportValidity(report.resolve("Wrapped graph"), getGroupOutput(), Sets.newHashSet(getGroupInput()));
     }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
 
     @Override
     @JsonGetter("menu-path")

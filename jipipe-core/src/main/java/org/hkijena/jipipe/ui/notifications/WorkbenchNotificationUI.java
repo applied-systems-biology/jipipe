@@ -99,13 +99,13 @@ public class WorkbenchNotificationUI extends JIPipeWorkbenchPanel {
         if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "Do you really want to block all future notifications of " +
                 "the type '" + notification.getHeading() + "'?", "Block notification", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             NotificationUISettings.getInstance().getBlockedNotifications().add(notification.getId());
-            NotificationUISettings.getInstance().triggerParameterChange("blocked-action-notifications");
+            NotificationUISettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
             notification.dismiss();
         }
     }
 
     private void unblock() {
         NotificationUISettings.getInstance().getBlockedNotifications().remove(notification.getId());
-        NotificationUISettings.getInstance().triggerParameterChange("blocked-action-notifications");
+        NotificationUISettings.getInstance().emitParameterChangedEvent("blocked-action-notifications");
     }
 }

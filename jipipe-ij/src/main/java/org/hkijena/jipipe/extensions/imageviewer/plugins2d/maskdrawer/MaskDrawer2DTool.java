@@ -65,7 +65,7 @@ public abstract class MaskDrawer2DTool extends JIPipeImageViewerPlugin2D impleme
      * Posts a mask changed event to the viewer' canvas event bus
      */
     public void postMaskChangedEvent() {
-        getViewerPanel2D().getCanvas().getEventBus().post(new MaskDrawerPlugin2D.MaskChangedEvent(getMaskDrawerPlugin()));
+        getMaskDrawerPlugin().getMaskChangedEventEmitter().emit(new MaskDrawerPlugin2D.MaskChangedEvent(getMaskDrawerPlugin()));
     }
 
     /**

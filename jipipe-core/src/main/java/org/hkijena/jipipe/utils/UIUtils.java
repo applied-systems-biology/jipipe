@@ -984,12 +984,9 @@ public class UIUtils {
         dialog.setVisible(true);
 
         if (autoClose) {
-            notifications.getEventBus().register(new Object() {
-                @Subscribe
-                public void onUpdated(JIPipeNotificationInbox.UpdatedEvent event) {
-                    if (notifications.isEmpty()) {
-                        dialog.setVisible(false);
-                    }
+            notifications.getUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+                if (notifications.isEmpty()) {
+                    dialog.setVisible(false);
                 }
             });
         }
@@ -1862,15 +1859,6 @@ public class UIUtils {
         UIUtils.setStandardButtonBorder(button);
         button.addActionListener(e -> function.run());
         return button;
-    }
-
-    public static void unregisterEventBus(EventBus eventBus, Object obj) {
-        if (obj != null) {
-            try {
-                eventBus.unregister(obj);
-            } catch (Throwable e) {
-            }
-        }
     }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

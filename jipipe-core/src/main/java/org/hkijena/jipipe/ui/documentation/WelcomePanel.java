@@ -46,7 +46,7 @@ import java.util.jar.Attributes;
 /**
  * UI that shows some introduction
  */
-public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
+public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeProjectTemplateRegistry.TemplatesUpdatedEventListener {
 
     private final SearchTextField templateSearch = new SearchTextField();
     private final JList<JIPipeProjectTemplate> templateList = new JList<>();
@@ -60,12 +60,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         initialize();
         refreshTemplateProjects();
-        JIPipe.getInstance().getEventBus().register(this);
-    }
-
-    @Subscribe
-    public void onTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
-        refreshTemplateProjects();
+        JIPipe.getInstance().getProjectTemplateRegistry().getTemplatesUpdatedEventEmitter().subscribeWeak(this);
     }
 
     private void refreshTemplateProjects() {
@@ -259,10 +254,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
 
     private void initializeHeroTechnicalInfoPanel(JPanel bottomPanel) {
 
-        FormPanel technicalInfo = new FormPanel(null, FormPanel.NONE);
-        technicalInfo.setOpaque(false);
-        technicalInfo.getContentPanel().setOpaque(false);
-
+        FormPanel technicalInfo = new FormPanel(null, FormPanel.TRANSPARENT_BACKGROUND);
         technicalInfo.addVerticalGlue();
 
         technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
@@ -354,4 +346,8 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton);
     }
 
+    @Override
+    public void onJIPipeTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
+        refreshTemplateProjects();
+    }
 }

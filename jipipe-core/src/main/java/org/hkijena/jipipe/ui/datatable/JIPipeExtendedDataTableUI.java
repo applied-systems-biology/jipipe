@@ -75,7 +75,7 @@ import java.util.Set;
 /**
  * UI that displays a {@link JIPipeDataTable} that is cached
  */
-public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
+public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements JIPipeCache.ModifiedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final boolean updateWithCache;
     private final SearchTextField searchTextField = new SearchTextField();
@@ -99,17 +99,10 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         initialize();
         reloadTable();
         if (updateWithCache && getWorkbench() instanceof JIPipeProjectWorkbench) {
-            ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().register(this);
+            ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
         }
         updateStatus();
-        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if (isDisplayable() && "preview-size".equals(event.getKey())) {
-                    reloadTable();
-                }
-            }
-        });
+        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
         showDataRows(new int[0]);
     }
 
@@ -423,8 +416,8 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
-    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
+    @Override
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         updateStatus();
     }
 
@@ -433,12 +426,18 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         if (dataTable != null) {
             if (updateWithCache && dataTable.getRowCount() == 0) {
                 if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                    ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
+                    ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getModifiedEventEmitter().unsubscribe(this);
                 }
             }
         }
     }
 
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if (isDisplayable() && "preview-size".equals(event.getKey())) {
+            reloadTable();
+        }
+    }
 
     /**
      * Renders the column header of {@link JIPipeExtendedDataTableModel}

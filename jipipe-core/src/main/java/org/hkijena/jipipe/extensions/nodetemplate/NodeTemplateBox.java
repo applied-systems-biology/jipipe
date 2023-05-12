@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.extensions.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
@@ -37,7 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class NodeTemplateBox extends JIPipeWorkbenchPanel {
+public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
 
     private final JIPipeProject project;
     private final Set<JIPipeNodeTemplate> projectTemplateList = new HashSet<>();
@@ -58,7 +58,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         }
         initialize();
         reloadTemplateList();
-        NodeTemplateSettings.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
 
     public static void openNewToolBoxWindow(JIPipeWorkbench workbench) {
@@ -112,11 +112,6 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     public JToolBar getToolBar() {
         return toolBar;
-    }
-
-    @Subscribe
-    public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
-        reloadTemplateList();
     }
 
     private void initialize() {
@@ -238,10 +233,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
             template.copyFrom(copy);
             template.setSource(JIPipeNodeTemplate.SOURCE_USER);
             if (project != null) {
-                project.getMetadata().triggerParameterChange("node-templates");
+                project.getMetadata().emitParameterChangedEvent("node-templates");
             }
             NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
-            templateSettings.triggerParameterChange("node-templates");
+            templateSettings.emitParameterChangedEvent("node-templates");
             NodeTemplateSettings.triggerRefreshedEvent();
         }
     }
@@ -289,7 +284,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
                             project.getMetadata().getNodeTemplates().add(template);
                         }
                     }
-                    project.getMetadata().triggerParameterChange("node-templates");
+                    project.getMetadata().emitParameterChangedEvent("node-templates");
                 } else {
                     NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
                     for (JIPipeNodeTemplate template : templates) {
@@ -297,7 +292,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
                             templateSettings.getNodeTemplates().add(template);
                         }
                     }
-                    templateSettings.triggerParameterChange("node-templates");
+                    templateSettings.emitParameterChangedEvent("node-templates");
                 }
                 NodeTemplateSettings.triggerRefreshedEvent();
             } catch (Exception e) {
@@ -332,7 +327,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
                 for (JIPipeNodeTemplate template : copied) {
                     project.getMetadata().getNodeTemplates().remove(template);
                 }
-                project.getMetadata().triggerParameterChange("node-templates");
+                project.getMetadata().emitParameterChangedEvent("node-templates");
             }
         }
         NodeTemplateSettings.triggerRefreshedEvent();
@@ -364,7 +359,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
                 for (JIPipeNodeTemplate template : copied) {
                     templateSettings.getNodeTemplates().remove(template);
                 }
-                templateSettings.triggerParameterChange("node-templates");
+                templateSettings.emitParameterChangedEvent("node-templates");
             }
         }
         NodeTemplateSettings.triggerRefreshedEvent();
@@ -391,10 +386,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
             }
         }
         if (modifiedGlobal) {
-            templateSettings.triggerParameterChange("node-templates");
+            templateSettings.emitParameterChangedEvent("node-templates");
         }
         if (modifiedProject) {
-            project.getMetadata().triggerParameterChange("node-templates");
+            project.getMetadata().emitParameterChangedEvent("node-templates");
         }
         if (modifiedProject || modifiedGlobal) {
             NodeTemplateSettings.triggerRefreshedEvent();
@@ -440,5 +435,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     public JIPipeProject getProject() {
         return project;
+    }
+
+    @Override
+    public void onJIPipeNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
+        reloadTemplateList();
     }
 }

@@ -15,6 +15,8 @@ package org.hkijena.jipipe.ui.components;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -59,6 +61,11 @@ public class FormPanel extends JXPanel {
     public static final int DOCUMENTATION_NO_UI = 16;
 
     /**
+     * Flag that makes the backgrounds of the components transparent (non-opaque) if possible
+     */
+    public static final int TRANSPARENT_BACKGROUND = 32;
+
+    /**
      * Flag that makes the content be wrapped in a {@link JScrollPane}
      */
     public static final int WITH_SCROLLING = 2;
@@ -80,7 +87,7 @@ public class FormPanel extends JXPanel {
 
     private static final int COLUMN_LABELLED_CONTENT = 1;
 
-    private final EventBus eventBus = new EventBus();
+    private final HoverHelpEventEmitter hoverHelpEventEmitter = new HoverHelpEventEmitter();
     private final FormPanelContentPanel contentPanel = new FormPanelContentPanel();
     private final MarkdownReader parameterHelp;
     private final JLabel parameterHelpDrillDown = new JLabel();
@@ -128,10 +135,14 @@ public class FormPanel extends JXPanel {
 
         helpPanel.add(helpToolbar, BorderLayout.SOUTH);
 
+        boolean opaque = (flags & TRANSPARENT_BACKGROUND) != TRANSPARENT_BACKGROUND;
         setScrollableWidthHint(ScrollableSizeHint.FIT);
         setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
         contentPanel.setScrollableWidthHint(ScrollableSizeHint.FIT);
         contentPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
+        contentPanel.setOpaque(opaque);
+        setOpaque(opaque);
+
 
         // Determine the component that will be displayed in the help pane
         Component helpComponent;
@@ -144,10 +155,13 @@ public class FormPanel extends JXPanel {
         }
 
         staticContentPanel = new JPanel(new BorderLayout());
+        staticContentPanel.setOpaque(opaque);
+
         final Component content = staticContentPanel;
         if ((flags & WITH_SCROLLING) == WITH_SCROLLING) {
             scrollPane = new JScrollPane(contentPanel);
             scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+            scrollPane.setOpaque(opaque);
             staticContentPanel.add(scrollPane, BorderLayout.CENTER);
         } else {
             staticContentPanel.add(contentPanel, BorderLayout.CENTER);
@@ -198,6 +212,10 @@ public class FormPanel extends JXPanel {
 
     public boolean isHasVerticalGlue() {
         return hasVerticalGlue;
+    }
+
+    public HoverHelpEventEmitter getHoverHelpEventEmitter() {
+        return hoverHelpEventEmitter;
     }
 
     private void switchToDefaultHelp() {
@@ -358,7 +376,7 @@ public class FormPanel extends JXPanel {
         if (redirectDocumentationTarget == null) {
             if (withDocumentation && documentationHasUI) {
                 parameterHelp.setTemporaryDocument(documentation);
-                getEventBus().post(new HoverHelpEvent(documentation));
+                hoverHelpEventEmitter.emit(new HoverHelpEvent(this, documentation));
                 updateParameterHelpDrillDown();
             } else {
                 // Just popup the documentation
@@ -487,10 +505,6 @@ public class FormPanel extends JXPanel {
 
     public MarkdownReader getParameterHelp() {
         return parameterHelp;
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**
@@ -713,7 +727,8 @@ public class FormPanel extends JXPanel {
     /**
      * Event triggered when the user triggers a hover-help
      */
-    public static class HoverHelpEvent {
+    public static class HoverHelpEvent extends AbstractJIPipeEvent {
+        private final FormPanel formPanel;
         private final MarkdownDocument document;
 
         /**
@@ -721,12 +736,30 @@ public class FormPanel extends JXPanel {
          *
          * @param document the document
          */
-        public HoverHelpEvent(MarkdownDocument document) {
+        public HoverHelpEvent(FormPanel formPanel, MarkdownDocument document) {
+            super(formPanel);
+            this.formPanel = formPanel;
             this.document = document;
+        }
+
+        public FormPanel getFormPanel() {
+            return formPanel;
         }
 
         public MarkdownDocument getDocument() {
             return document;
+        }
+    }
+
+    public interface HoverHelpEventListener {
+        void onFormPanelHoverHelp(HoverHelpEvent event);
+    }
+
+    public static class HoverHelpEventEmitter extends JIPipeEventEmitter<HoverHelpEvent, HoverHelpEventListener> {
+
+        @Override
+        protected void call(HoverHelpEventListener hoverHelpEventListener, HoverHelpEvent event) {
+            hoverHelpEventListener.onFormPanelHoverHelp(event);
         }
     }
 }

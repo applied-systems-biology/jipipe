@@ -29,9 +29,7 @@ import java.util.List;
  * A default implementation of {@link JIPipeParameterGenerator} that shows all parameters of this {@link JIPipeParameterCollection}
  * in a dialog before generating the data. The dialog input is checked by the validation function.
  */
-public abstract class DefaultJIPipeParameterGenerator implements JIPipeParameterGenerator, JIPipeParameterCollection, JIPipeValidatable {
-
-    private final EventBus eventBus = new EventBus();
+public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipeParameterCollection implements JIPipeParameterGenerator, JIPipeValidatable {
 
     @Override
     public <T> List<T> generate(JIPipeWorkbench workbench, Component parent, Class<T> klass) {
@@ -62,11 +60,6 @@ public abstract class DefaultJIPipeParameterGenerator implements JIPipeParameter
      * @return the list of generated objects
      */
     public abstract <T> List<T> generateAfterDialog(JIPipeWorkbench workbench, Component parent, Class<T> klass);
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 
     /**
      * Dialog around an {@link DefaultJIPipeParameterGenerator}

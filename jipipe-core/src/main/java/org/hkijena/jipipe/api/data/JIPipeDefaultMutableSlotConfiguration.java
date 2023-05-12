@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -36,7 +35,8 @@ import java.util.stream.Collectors;
  */
 @JsonSerialize(using = JIPipeSlotConfiguration.Serializer.class)
 public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotConfiguration {
-    private final EventBus eventBus = new EventBus();
+
+    private final SlotConfigurationChangedEventEmitter slotConfigurationChangedEventEmitter = new SlotConfigurationChangedEventEmitter();
     private Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private List<String> inputSlotOrder = new ArrayList<>();
@@ -57,6 +57,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     public JIPipeDefaultMutableSlotConfiguration() {
         allowedInputSlotTypes = new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
         allowedOutputSlotTypes = new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
+    }
+
+    @Override
+    public SlotConfigurationChangedEventEmitter getSlotConfigurationChangedEventEmitter() {
+        return slotConfigurationChangedEventEmitter;
     }
 
     /**
@@ -159,7 +164,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             outputSlotOrder.add(name);
         } else
             throw new IllegalArgumentException("Unknown slot type!");
-        getEventBus().post(new SlotsChangedEvent(this));
+        triggerSlotConfigurationChangedEvent();
 
         return definition;
     }
@@ -210,7 +215,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
             inputSlotOrder.remove(name);
             inputSlots.remove(name);
-            getEventBus().post(new SlotsChangedEvent(this));
+            triggerSlotConfigurationChangedEvent();
         }
     }
 
@@ -305,7 +310,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
             outputSlots.remove(name);
             outputSlotOrder.remove(name);
-            getEventBus().post(new SlotsChangedEvent(this));
+            triggerSlotConfigurationChangedEvent();
         }
     }
 
@@ -360,7 +365,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             this.outputSlotsSealed = other.isOutputSlotsSealed();
         }
 
-        getEventBus().post(new SlotsChangedEvent(this));
+        triggerSlotConfigurationChangedEvent();
     }
 
     @Override
@@ -470,7 +475,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             order.set(index - 1, slot);
             order.set(index, other);
 
-            getEventBus().post(new SlotsChangedEvent(this));
+            triggerSlotConfigurationChangedEvent();
         }
     }
 
@@ -499,7 +504,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             order.set(index + 1, slot);
             order.set(index, other);
 
-            getEventBus().post(new SlotsChangedEvent(this));
+            triggerSlotConfigurationChangedEvent();
         }
     }
 
@@ -527,7 +532,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                 inputSlotOrder.add(s);
             }
         }
-        getEventBus().post(new SlotsChangedEvent(this));
+        triggerSlotConfigurationChangedEvent();
     }
 
     /**
@@ -554,7 +559,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                 outputSlotOrder.add(s);
             }
         }
-        getEventBus().post(new SlotsChangedEvent(this));
+        triggerSlotConfigurationChangedEvent();
     }
 
     /**
@@ -736,7 +741,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
         inputSlots.clear();
         inputSlotOrder.clear();
-        getEventBus().post(new SlotsChangedEvent(this));
+        triggerSlotConfigurationChangedEvent();
     }
 
     /**
@@ -749,12 +754,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
             throw new UnsupportedOperationException("Cannot modify output slots!");
         outputSlots.clear();
         outputSlotOrder.clear();
-        getEventBus().post(new SlotsChangedEvent(this));
+        triggerSlotConfigurationChangedEvent();
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
+    public void triggerSlotConfigurationChangedEvent() {
+        slotConfigurationChangedEventEmitter.emit(new SlotConfigurationChangedEvent(this));
     }
 
     /**

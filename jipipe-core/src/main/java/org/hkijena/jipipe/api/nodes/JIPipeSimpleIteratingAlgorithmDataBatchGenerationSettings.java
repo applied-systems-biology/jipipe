@@ -15,12 +15,12 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
-public class JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
 
     public JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings() {
@@ -28,11 +28,6 @@ public class JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings implement
 
     public JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings(JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings other) {
         this.limit = new OptionalIntegerRange(other.limit);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")

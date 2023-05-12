@@ -299,8 +299,6 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
     }
 
     public static class Configuration extends AbstractJIPipeParameterCollection {
-
-        private final EventBus eventBus = new EventBus();
         private String pythonDownloadURL = getLatestDownload();
         private Path installationPath;
         private OptionalPathParameter preDownloadedArchivePath = new OptionalPathParameter();

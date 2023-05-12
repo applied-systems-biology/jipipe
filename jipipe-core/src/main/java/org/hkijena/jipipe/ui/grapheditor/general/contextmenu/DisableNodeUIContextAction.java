@@ -43,7 +43,7 @@ public class DisableNodeUIContextAction implements NodeUIContextAction {
             if (ui.getNode() instanceof JIPipeAlgorithm) {
                 JIPipeAlgorithm algorithm = (JIPipeAlgorithm) ui.getNode();
                 algorithm.setEnabled(false);
-                algorithm.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(algorithm, "jipipe:algorithm:enabled"));
+                algorithm.emitParameterChangedEvent("jipipe:algorithm:enabled");
             }
         }
     }
@@ -61,11 +61,6 @@ public class DisableNodeUIContextAction implements NodeUIContextAction {
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("emblems/block.png");
-    }
-
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
     }
 
     @Override

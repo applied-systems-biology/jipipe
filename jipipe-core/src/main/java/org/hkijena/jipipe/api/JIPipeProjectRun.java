@@ -45,7 +45,7 @@ import java.util.*;
 /**
  * Runnable instance of an {@link JIPipeProject}
  */
-public class JIPipeProjectRun implements JIPipeRunnable {
+public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.SlotCompletedEventListener {
     private final JIPipeProject project;
     private final JIPipeRunSettings configuration;
     JIPipeGraph copiedGraph;
@@ -225,7 +225,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         // Create GC
         JIPipeGraphGCHelper gc = new JIPipeGraphGCHelper(copiedGraph);
         progressInfo.resolve("GC").log("GC status: " + gc);
-        gc.getEventBus().register(this);
+        gc.getSlotCompletedEventEmitter().subscribe(this);
 
         List<JIPipeGraphNode> preprocessorNodes = new ArrayList<>();
         List<JIPipeGraphNode> postprocessorNodes = new ArrayList<>();
@@ -415,35 +415,6 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         gc.markAllAsCompleted();
     }
 
-    @Subscribe
-    public void onSlotCompleted(JIPipeGraphGCHelper.SlotCompletedEvent event) {
-        JIPipeDataSlot slot = event.getSlot();
-        if (slot.isEmpty()) {
-            return;
-        }
-        if (!(slot.getNode() instanceof JIPipeAlgorithm)) {
-            return;
-        }
-        if (slot.isInput()) {
-            progressInfo.resolve("GC").log("Clearing input slot " + slot.getDisplayName());
-            slot.destroyData();
-        } else if (slot.isOutput()) {
-            if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode().getUUIDInParentGraph())) {
-                JIPipeGraphNode runAlgorithm = slot.getNode();
-                progressInfo.resolve("GC").log("Caching output slot " + slot.getDisplayName());
-                project.getCache().store(runAlgorithm, runAlgorithm.getUUIDInParentGraph(), slot, slot.getName(), progressInfo.resolve("GC"));
-            }
-            if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(slot.getNode().getUUIDInParentGraph())) {
-                JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", slot.getDisplayName(), JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName()));
-                progressInfo.resolve("GC").log("Flushing output slot " + slot.getDisplayName());
-                slot.flush(saveProgress);
-            } else {
-                progressInfo.resolve("GC").log("Clearing output slot " + slot.getDisplayName());
-                slot.clearData();
-            }
-        }
-    }
-
     private void runNode(Set<JIPipeGraphNode> executedAlgorithms, JIPipeGraphNode node, JIPipeProgressInfo progressInfo) {
         progressInfo.log("");
 
@@ -548,5 +519,34 @@ public class JIPipeProjectRun implements JIPipeRunnable {
     @Override
     public String getTaskLabel() {
         return "Run";
+    }
+
+    @Override
+    public void onGCSlotCompletedEvent(JIPipeGraphGCHelper.SlotCompletedEvent event) {
+        JIPipeDataSlot slot = event.getSlot();
+        if (slot.isEmpty()) {
+            return;
+        }
+        if (!(slot.getNode() instanceof JIPipeAlgorithm)) {
+            return;
+        }
+        if (slot.isInput()) {
+            progressInfo.resolve("GC").log("Clearing input slot " + slot.getDisplayName());
+            slot.destroyData();
+        } else if (slot.isOutput()) {
+            if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode().getUUIDInParentGraph())) {
+                JIPipeGraphNode runAlgorithm = slot.getNode();
+                progressInfo.resolve("GC").log("Caching output slot " + slot.getDisplayName());
+                project.getCache().store(runAlgorithm, runAlgorithm.getUUIDInParentGraph(), slot, slot.getName(), progressInfo.resolve("GC"));
+            }
+            if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(slot.getNode().getUUIDInParentGraph())) {
+                JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", slot.getDisplayName(), JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName()));
+                progressInfo.resolve("GC").log("Flushing output slot " + slot.getDisplayName());
+                slot.flush(saveProgress);
+            } else {
+                progressInfo.resolve("GC").log("Clearing output slot " + slot.getDisplayName());
+                slot.clearData();
+            }
+        }
     }
 }

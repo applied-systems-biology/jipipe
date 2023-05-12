@@ -55,7 +55,7 @@ public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             } else {
                 this.shapeData = new EmptyImageJ2ShapeData();
             }
-            triggerParameterStructureChange();
+            emitParameterStructureChangedEvent();
         }
     }
 

@@ -44,30 +44,26 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
     public JIPipeParameterSlotAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
-        registerParameterSettings();
+        registerSubParameter(parameterSlotAlgorithmSettings);
     }
 
     public JIPipeParameterSlotAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        registerParameterSettings();
+        registerSubParameter(parameterSlotAlgorithmSettings);
     }
 
     public JIPipeParameterSlotAlgorithm(JIPipeParameterSlotAlgorithm other) {
         super(other);
         this.parameterSlotAlgorithmSettings = new JIPipeParameterSlotAlgorithmSettings(other.parameterSlotAlgorithmSettings);
-        registerParameterSettings();
+        registerSubParameter(parameterSlotAlgorithmSettings);
     }
 
-    private void registerParameterSettings() {
-        this.parameterSlotAlgorithmSettings.getEventBus().register(new Object() {
-            @Subscribe
-            public void onParametersChanged(ParameterChangedEvent event) {
-                if ("has-parameter-slot".equals(event.getKey())) {
-                    updateParameterSlot();
-                }
-            }
-        });
-        registerSubParameter(parameterSlotAlgorithmSettings);
+    @Override
+    public void onParameterChanged(ParameterChangedEvent event) {
+        super.onParameterChanged(event);
+        if(event.getSource() == parameterSlotAlgorithmSettings && "has-parameter-slot".equals(event.getKey())) {
+            updateParameterSlot();
+        }
     }
 
     /**

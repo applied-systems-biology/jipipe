@@ -3,6 +3,8 @@ package org.hkijena.jipipe.api.cache;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import java.util.Map;
@@ -12,8 +14,6 @@ import java.util.UUID;
  * A class that implements a data cache
  */
 public interface JIPipeCache {
-
-    EventBus getEventBus();
 
     void store(JIPipeGraphNode graphNode, UUID nodeUUID, JIPipeDataTable data, String outputName, JIPipeProgressInfo progressInfo);
 
@@ -46,13 +46,20 @@ public interface JIPipeCache {
 
     int size();
 
-    class StoredEvent {
+    StoredEventEmitter getStoredEventEmitter();
+
+    ClearedEventEmitter getClearedEventEmitter();
+
+    ModifiedEventEmitter getModifiedEventEmitter();
+
+    class StoredEvent extends AbstractJIPipeEvent {
         private final JIPipeCache cache;
         private final UUID nodeUUID;
         private final JIPipeDataTable data;
         private final String outputName;
 
         public StoredEvent(JIPipeCache cache, UUID nodeUUID, JIPipeDataTable data, String outputName) {
+            super(cache);
             this.cache = cache;
             this.nodeUUID = nodeUUID;
             this.data = data;
@@ -76,11 +83,24 @@ public interface JIPipeCache {
         }
     }
 
-    class ClearedEvent {
+    interface StoredEventListener {
+        void onCacheStoredEvent(StoredEvent event);
+    }
+
+    class StoredEventEmitter extends JIPipeEventEmitter<StoredEvent, StoredEventListener> {
+
+        @Override
+        protected void call(StoredEventListener storedEventListener, StoredEvent event) {
+            storedEventListener.onCacheStoredEvent(event);
+        }
+    }
+
+    class ClearedEvent extends AbstractJIPipeEvent {
         private final JIPipeCache cache;
         private final UUID nodeUUID;
 
         public ClearedEvent(JIPipeCache cache, UUID nodeUUID) {
+            super(cache);
             this.cache = cache;
             this.nodeUUID = nodeUUID;
         }
@@ -94,15 +114,39 @@ public interface JIPipeCache {
         }
     }
 
-    class ModifiedEvent {
+    interface ClearedEventListener {
+        void onCacheClearedEvent(ClearedEvent event);
+    }
+
+    class ClearedEventEmitter extends JIPipeEventEmitter<ClearedEvent, ClearedEventListener> {
+        @Override
+        protected void call(ClearedEventListener clearedEventListener, ClearedEvent event) {
+            clearedEventListener.onCacheClearedEvent(event);
+        }
+    }
+
+    class ModifiedEvent extends AbstractJIPipeEvent {
         private final JIPipeCache cache;
 
         public ModifiedEvent(JIPipeCache cache) {
+            super(cache);
             this.cache = cache;
         }
 
         public JIPipeCache getCache() {
             return cache;
+        }
+    }
+
+    interface ModifiedEventListener {
+        void onCacheModified(ModifiedEvent event);
+    }
+
+    class ModifiedEventEmitter extends JIPipeEventEmitter<ModifiedEvent, ModifiedEventListener> {
+
+        @Override
+        protected void call(ModifiedEventListener modifiedEventListener, ModifiedEvent event) {
+            modifiedEventListener.onCacheModified(event);
         }
     }
 }

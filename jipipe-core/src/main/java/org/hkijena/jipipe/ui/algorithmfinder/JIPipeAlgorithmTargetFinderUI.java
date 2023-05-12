@@ -43,14 +43,14 @@ import java.util.stream.Collectors;
 /**
  * A user interface to find a matching algorithm for the specified target slot
  */
-public class JIPipeAlgorithmTargetFinderUI extends JPanel {
+public class JIPipeAlgorithmTargetFinderUI extends JPanel implements AlgorithmFinderSuccessEventListener {
+    private final AlgorithmFinderSuccessEventEmitter algorithmFinderSuccessEventEmitter = new AlgorithmFinderSuccessEventEmitter();
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot outputSlot;
     private final JIPipeGraphNode algorithm;
     private final JIPipeGraph graph;
     private final UUID compartment;
     private final JIPipeAlgorithmTargetRanking ranking;
-    private final EventBus eventBus = new EventBus();
     private final List<Object> availableContents = new ArrayList<>();
     /**
      * Contains {@link JIPipeNodeInfo} or {@link JIPipeGraphNode} instances
@@ -134,6 +134,10 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
             updateInfiniteScroll();
         });
         add(formPanel, BorderLayout.CENTER);
+    }
+
+    public AlgorithmFinderSuccessEventEmitter getAlgorithmFinderSuccessEventEmitter() {
+        return algorithmFinderSuccessEventEmitter;
     }
 
     private void initializeToolBar() {
@@ -262,11 +266,11 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
             Object value = infiniteScrollingQueue.removeFirst();
             if (value instanceof JIPipeNodeInfo) {
                 JIPipeAlgorithmTargetFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmTargetFinderAlgorithmUI(canvasUI, outputSlot, (JIPipeNodeInfo) value);
-                algorithmUI.getEventBus().register(this);
+                algorithmUI.getAlgorithmFinderSuccessEventEmitter().subscribe(this);
                 formPanel.addWideToForm(algorithmUI, null);
             } else {
                 JIPipeAlgorithmTargetFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmTargetFinderAlgorithmUI(canvasUI, outputSlot, (JIPipeGraphNode) value);
-                algorithmUI.getEventBus().register(this);
+                algorithmUI.getAlgorithmFinderSuccessEventEmitter().subscribe(this);
                 formPanel.addWideToForm(algorithmUI, null);
             }
             formPanel.addVerticalGlue();
@@ -281,18 +285,9 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
+    @Override
     public void onAlgorithmFinderSuccess(AlgorithmFinderSuccessEvent event) {
-        eventBus.post(event);
-    }
-
-    /**
-     * Returns the event bus
-     *
-     * @return Event bus instance
-     */
-    public EventBus getEventBus() {
-        return eventBus;
+        algorithmFinderSuccessEventEmitter.emit(event);
     }
 
     /**

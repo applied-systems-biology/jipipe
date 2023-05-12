@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 /**
  * UI around an {@link JIPipeProjectRun} result
  */
-public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener {
     private JSplitPane splitPane;
     private JIPipeCacheTreePanel tree;
 
@@ -56,7 +56,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         initialize();
         showAllDataSlots();
 
-        getProject().getCache().getEventBus().register(this);
+        getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -166,8 +166,8 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
-    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
+    @Override
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         tree.refreshTree();
         showAllDataSlots();
     }

@@ -54,7 +54,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
      */
     public JIPipeProjectCompartment(JIPipeNodeInfo info) {
         super(info);
-        this.exportedParameters.getEventBus().register(this);
+        registerSubParameter(exportedParameters);
     }
 
     /**
@@ -65,8 +65,9 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     public JIPipeProjectCompartment(JIPipeProjectCompartment other) {
         super(other);
         this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
-        this.exportedParameters.getEventBus().register(this);
         this.showLimitedParameters = other.showLimitedParameters;
+
+        registerSubParameter(exportedParameters);
     }
 
     /**
@@ -171,7 +172,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
         this.exportedParameters = exportedParameters;
         updateExportedParameters();
         registerSubParameter(exportedParameters);
-        triggerParameterStructureChange();
+        emitParameterStructureChangedEvent();
     }
 
     private void updateExportedParameters() {
@@ -191,7 +192,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     @JIPipeParameter("show-limited-parameters")
     public void setShowLimitedParameters(boolean showLimitedParameters) {
         this.showLimitedParameters = showLimitedParameters;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @Override

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 
 import java.awt.*;
 
-public class JIPipeRunnerQueueThrobberIcon extends NewThrobberIcon {
+public class JIPipeRunnerQueueThrobberIcon extends NewThrobberIcon implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     public JIPipeRunnerQueueThrobberIcon(Component parent) {
         this(parent, JIPipeRunnerQueue.getInstance());
@@ -28,26 +28,27 @@ public class JIPipeRunnerQueueThrobberIcon extends NewThrobberIcon {
     public JIPipeRunnerQueueThrobberIcon(Component parent, JIPipeRunnerQueue runnerQueue) {
         super(parent);
 
-        runnerQueue.getEventBus().register(this);
+        runnerQueue.getFinishedEventEmitter().subscribeWeak(this);
+        runnerQueue.getStartedEventEmitter().subscribeWeak(this);
+        runnerQueue.getInterruptedEventEmitter().subscribeWeak(this);
         if (!JIPipeRunnerQueue.getInstance().isEmpty()) {
             start();
         }
     }
-
-    @Subscribe
-    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();
         }
     }
 
-    @Subscribe
-    public void onWorkerStart(JIPipeRunnable.StartedEvent event) {
+    @Override
+    public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
         start();
     }
 
-    @Subscribe
-    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();
         }

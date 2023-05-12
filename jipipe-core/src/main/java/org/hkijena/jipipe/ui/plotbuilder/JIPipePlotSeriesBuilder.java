@@ -34,7 +34,7 @@ import java.util.Map;
 /**
  * Constructs a series from a set of columns
  */
-public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
+public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection implements JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
     private PlotEditor plotBuilderUI;
     private JIPipeDataInfo plotType;
     private JIPipeDynamicParameterCollection columnAssignments = new JIPipeDynamicParameterCollection(false);
@@ -63,7 +63,7 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
         }
         updateSeriesList();
 
-        plotBuilderUI.getEventBus().register(this);
+        plotBuilderUI.getParameterChangedEventEmitter().subscribe(this);
     }
 
     /**
@@ -92,19 +92,7 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
             parameter.setAllowedValues(allowedItems);
         }
 
-        getEventBus().post(new ParameterStructureChangedEvent(this));
-    }
-
-    /**
-     * Triggered when the plot builder's parameters are changed
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onParametersChanged(ParameterChangedEvent event) {
-        if (event.getKey().equals("available-data")) {
-            updateSeriesList();
-        }
+        getParameterStructureChangedEventEmitter().emit(new ParameterStructureChangedEvent(this));
     }
 
     /**
@@ -224,5 +212,12 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
         PlotDataSeries dataSeries = new PlotDataSeries(table);
         dataSeries.setName(getName());
         return dataSeries;
+    }
+
+    @Override
+    public void onParameterChanged(ParameterChangedEvent event) {
+        if (event.getKey().equals("available-data")) {
+            updateSeriesList();
+        }
     }
 }

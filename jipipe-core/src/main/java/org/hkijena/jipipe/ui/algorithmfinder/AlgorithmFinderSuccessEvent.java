@@ -14,19 +14,22 @@
 package org.hkijena.jipipe.ui.algorithmfinder;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 
 /**
  * Generated when the algorithm finder successfully found a connection
  */
-public class AlgorithmFinderSuccessEvent {
+public class AlgorithmFinderSuccessEvent extends AbstractJIPipeEvent {
     private JIPipeDataSlot outputSlot;
     private JIPipeDataSlot inputSlot;
 
     /**
+     * @param source the event source
      * @param outputSlot The output slot
      * @param inputSlot  The target slot
      */
-    public AlgorithmFinderSuccessEvent(JIPipeDataSlot outputSlot, JIPipeDataSlot inputSlot) {
+    public AlgorithmFinderSuccessEvent(Object source, JIPipeDataSlot outputSlot, JIPipeDataSlot inputSlot) {
+        super(source);
         this.outputSlot = outputSlot;
         this.inputSlot = inputSlot;
     }

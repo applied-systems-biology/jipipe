@@ -150,7 +150,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
 
             // Trigger change in parent parameter holder
             if (source != null)
-                source.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(source, key));
+                source.getParameterChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterChangedEvent(source, key));
 
             if (result instanceof Boolean) {
                 return (boolean) result;

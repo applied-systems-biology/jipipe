@@ -29,7 +29,6 @@ public class MemoryOptionsControl extends JIPipeProjectWorkbenchPanel {
      */
     public MemoryOptionsControl(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
-        getProject().getGraph().getEventBus().register(this);
     }
 
     public JButton createOptionsButton() {

@@ -37,7 +37,7 @@ import java.util.HashMap;
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
  */
-public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JTextPane descriptionReader;
     private final ParameterPanel parameterPanel;
@@ -74,7 +74,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
                         ParameterPanel.DOCUMENTATION_BELOW);
         initialize();
         refreshAll();
-        getProject().getMetadata().getEventBus().register(this);
+        getProject().getMetadata().getParameterChangedEventEmitter().subscribeWeak(this);
 
     }
 
@@ -173,8 +173,8 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
     }
 
-    @Subscribe
-    public void onRecentProjectsChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("description".equals(event.getKey())) {
             refreshDescription();
         } else if ("name".equals(event.getKey()) || "authors".equals(event.getKey())) {
@@ -191,9 +191,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));
 
-        FormPanel nameAndAuthorPanel = new FormPanel(null, FormPanel.NONE);
-        nameAndAuthorPanel.setOpaque(false);
-        nameAndAuthorPanel.getContentPanel().setOpaque(false);
+        FormPanel nameAndAuthorPanel = new FormPanel(null, FormPanel.TRANSPARENT_BACKGROUND);
         nameAndAuthorPanel.setLayout(new BoxLayout(nameAndAuthorPanel, BoxLayout.Y_AXIS));
 
         projectName = UIUtils.makeReadonlyBorderlessTextField("Unnamed project");
@@ -211,9 +209,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         nameAndAuthorPanel.addVerticalGlue();
         headerPanel.add(nameAndAuthorPanel, BorderLayout.WEST);
 
-        FormPanel technicalInfo = new FormPanel(null, FormPanel.NONE);
-        technicalInfo.setOpaque(false);
-        technicalInfo.getContentPanel().setOpaque(false);
+        FormPanel technicalInfo = new FormPanel(null, FormPanel.TRANSPARENT_BACKGROUND);
 
         licenseInfo = UIUtils.makeReadonlyBorderlessTextField("No license");
         technicalInfo.addToForm(licenseInfo, new JLabel("Licensed under"), null);

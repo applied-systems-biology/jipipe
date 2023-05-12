@@ -17,12 +17,13 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -55,13 +56,17 @@ public class JIPipeExtensionRegistry {
             "org.hkijena.jipipe:cellpose", "org.hkijena.jipipe:clij2-integration", "org.hkijena.jipipe:ij-multi-template-matching", "org.hkijena.jipipe:ij-weka", "org.hkijena.jipipe:omero"};
 
     private final JIPipe jiPipe;
-    private final EventBus eventBus = new EventBus();
     private final Map<String, JIPipeExtension> knownExtensions = new HashMap<>();
     private final Set<String> scheduledActivateExtensions = new HashSet<>();
     private final Set<String> scheduledDeactivateExtensions = new HashSet<>();
     private final Set<String> newExtensions = new HashSet<>();
     private Settings settings = new Settings();
     private DefaultDirectedGraph<JIPipeDependency, DefaultEdge> dependencyGraph;
+
+    private final ScheduledDeactivateExtensionEventEmitter scheduledDeactivateExtensionEventEmitter = new ScheduledDeactivateExtensionEventEmitter();
+
+    private final ScheduledActivateExtensionEventEmitter scheduledActivateExtensionEventEmitter = new ScheduledActivateExtensionEventEmitter();
+
 
     public JIPipeExtensionRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
@@ -112,6 +117,14 @@ public class JIPipeExtensionRegistry {
         if (!Files.isRegularFile(getPropertyFile())) {
             save();
         }
+    }
+
+    public ScheduledDeactivateExtensionEventEmitter getScheduledDeactivateExtensionEventEmitter() {
+        return scheduledDeactivateExtensionEventEmitter;
+    }
+
+    public ScheduledActivateExtensionEventEmitter getScheduledActivateExtensionEventEmitter() {
+        return scheduledActivateExtensionEventEmitter;
     }
 
     /**
@@ -244,7 +257,7 @@ public class JIPipeExtensionRegistry {
         }
         save();
         for (String s : ids) {
-            eventBus.post(new ScheduledActivateExtension(s));
+            scheduledActivateExtensionEventEmitter.emit(new ScheduledActivateExtensionEvent(this, s));
         }
     }
 
@@ -261,7 +274,7 @@ public class JIPipeExtensionRegistry {
         }
         save();
         for (String s : ids) {
-            eventBus.post(new ScheduledDeactivateExtension(id));
+            scheduledDeactivateExtensionEventEmitter.emit(new ScheduledDeactivateExtensionEvent(this, id));
         }
     }
 
@@ -397,37 +410,59 @@ public class JIPipeExtensionRegistry {
         return jiPipe;
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     /**
      * Triggered by {@link JIPipeExtensionRegistry} when an extension is scheduled to be activated
      */
-    public static class ScheduledActivateExtension {
+    public static class ScheduledActivateExtensionEvent extends AbstractJIPipeEvent {
         private final String extensionId;
 
-        public ScheduledActivateExtension(String extensionId) {
+        public ScheduledActivateExtensionEvent(JIPipeExtensionRegistry registry, String extensionId) {
+            super(registry);
             this.extensionId = extensionId;
         }
 
         public String getExtensionId() {
             return extensionId;
+        }
+    }
+
+    public interface ScheduledActivateExtensionEventListener {
+        void onScheduledActivateExtension(ScheduledActivateExtensionEvent event);
+    }
+
+    public static class ScheduledActivateExtensionEventEmitter extends JIPipeEventEmitter<ScheduledActivateExtensionEvent, ScheduledActivateExtensionEventListener> {
+
+        @Override
+        protected void call(ScheduledActivateExtensionEventListener scheduledActivateExtensionEventListener, ScheduledActivateExtensionEvent event) {
+            scheduledActivateExtensionEventListener.onScheduledActivateExtension(event);
         }
     }
 
     /**
      * Triggered by {@link JIPipeExtensionRegistry} when an extension is scheduled to be deactivated
      */
-    public static class ScheduledDeactivateExtension {
+    public static class ScheduledDeactivateExtensionEvent extends AbstractJIPipeEvent {
         private final String extensionId;
 
-        public ScheduledDeactivateExtension(String extensionId) {
+        public ScheduledDeactivateExtensionEvent(JIPipeExtensionRegistry registry, String extensionId) {
+            super(registry);
             this.extensionId = extensionId;
         }
 
         public String getExtensionId() {
             return extensionId;
+        }
+    }
+
+    public interface ScheduledDeactivateExtensionEventListener {
+        void onScheduledDeactivateExtension(ScheduledDeactivateExtensionEvent event);
+    }
+
+    public static class ScheduledDeactivateExtensionEventEmitter extends JIPipeEventEmitter<ScheduledDeactivateExtensionEvent, ScheduledDeactivateExtensionEventListener> {
+
+        @Override
+        protected void call(ScheduledDeactivateExtensionEventListener scheduledDeactivateExtensionEventListener, ScheduledDeactivateExtensionEvent event) {
+            scheduledDeactivateExtensionEventListener.onScheduledDeactivateExtension(event);
         }
     }
 

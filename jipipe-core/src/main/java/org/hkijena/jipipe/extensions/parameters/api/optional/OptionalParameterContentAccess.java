@@ -26,9 +26,10 @@ import java.util.List;
  * Parameter access for the key entry in {@link PairParameter}
  */
 public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess {
-    private final EventBus eventBus = new EventBus();
     private final JIPipeParameterAccess parent;
     private final OptionalParameter<T> optionalParameter;
+
+    private final JIPipeParameterCollection.ParameterChangedEventEmitter parameterChangedEventEmitter = new JIPipeParameterCollection.ParameterChangedEventEmitter();
 
     /**
      * Creates a new instance
@@ -43,6 +44,10 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
 
     public OptionalParameter<T> getOptionalParameter() {
         return optionalParameter;
+    }
+
+    public JIPipeParameterCollection.ParameterChangedEventEmitter getParameterChangedEventEmitter() {
+        return parameterChangedEventEmitter;
     }
 
     @Override
@@ -98,7 +103,7 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
     @Override
     public <U> boolean set(U value) {
         optionalParameter.setContent((T) value);
-        eventBus.post(new JIPipeParameterCollection.ParameterChangedEvent(this, "content"));
+        parameterChangedEventEmitter.emit(new JIPipeParameterCollection.ParameterChangedEvent(this, "content"));
         return true;
     }
 
@@ -125,9 +130,5 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
 
     public JIPipeParameterAccess getParent() {
         return parent;
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

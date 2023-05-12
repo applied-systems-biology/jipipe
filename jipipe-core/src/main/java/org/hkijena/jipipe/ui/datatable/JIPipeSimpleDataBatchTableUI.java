@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Panel that displays a data batch table
  */
-public class JIPipeSimpleDataBatchTableUI extends JPanel {
+public class JIPipeSimpleDataBatchTableUI extends JPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
     private List<JIPipeMergingDataBatch> dataBatchList;
     private JXTable table;
     private JScrollPane scrollPane;
@@ -94,14 +94,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
         DataPreviewControlUI previewControlUI = new DataPreviewControlUI();
         toolBar.add(previewControlUI);
 
-        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if (isDisplayable() && "preview-size".equals(event.getKey())) {
-                    reloadTable();
-                }
-            }
-        });
+        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void reloadTable() {
@@ -133,6 +126,13 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
             table.setModel(new DefaultTableModel());
         } catch (Throwable e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if (isDisplayable() && "preview-size".equals(event.getKey())) {
+            reloadTable();
         }
     }
 }

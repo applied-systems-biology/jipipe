@@ -131,7 +131,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @JIPipeParameter("annotation-removal-mode")
     public void setAnnotationRemovalMode(AnnotationRemovalMode annotationRemovalMode) {
         this.annotationRemovalMode = annotationRemovalMode;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Combination function", description = "Function that determines how annotation names and values are combined.")

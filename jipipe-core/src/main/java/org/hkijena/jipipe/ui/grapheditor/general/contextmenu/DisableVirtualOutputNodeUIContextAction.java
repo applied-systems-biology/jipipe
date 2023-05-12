@@ -65,8 +65,4 @@ public class DisableVirtualOutputNodeUIContextAction implements NodeUIContextAct
         return UIUtils.getIconFromResources("devices/media-memory.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

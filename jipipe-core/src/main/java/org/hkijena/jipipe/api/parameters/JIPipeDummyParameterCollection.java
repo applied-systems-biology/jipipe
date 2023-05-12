@@ -26,7 +26,7 @@ public class JIPipeDummyParameterCollection extends AbstractJIPipeParameterColle
     @Override
     public void accept(Object o) {
         this.value = o;
-        getEventBus().post(new ParameterChangedEvent(this, "value"));
+        getParameterChangedEventEmitter().emit(new ParameterChangedEvent(this, "value"));
     }
 
     @Override

@@ -19,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
@@ -58,7 +59,6 @@ public class JIPipeDatatypeRegistry {
     private final Map<String, JIPipeDependency> registeredDatatypeSources = new HashMap<>();
     private final Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
     private final DijkstraShortestPath<JIPipeDataInfo, DataConverterEdge> shortestPath = new DijkstraShortestPath<>(conversionGraph);
-    private final EventBus eventBus = new EventBus();
     private final URL defaultIconURL;
     private final ImageIcon defaultIcon;
     private final JIPipe jiPipe;
@@ -248,7 +248,7 @@ public class JIPipeDatatypeRegistry {
             }
         }
 
-        eventBus.post(new JIPipe.DatatypeRegisteredEvent(id));
+        jiPipe.getDatatypeRegisteredEventEmitter().emit(new JIPipeService.DatatypeRegisteredEvent(jiPipe, id));
         getJIPipe().getProgressInfo().log("Registered data type id=" + id + " of class " + klass);
     }
 
@@ -378,15 +378,6 @@ public class JIPipeDatatypeRegistry {
      */
     public boolean isHidden(String id) {
         return hiddenDataTypeIds.contains(id);
-    }
-
-    /**
-     * Gets the event bus that post registration events
-     *
-     * @return The event bus
-     */
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**

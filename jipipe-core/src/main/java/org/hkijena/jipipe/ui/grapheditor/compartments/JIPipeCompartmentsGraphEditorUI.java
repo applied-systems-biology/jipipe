@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.grapheditor.compartments;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -39,7 +38,6 @@ import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.Grap
 import org.hkijena.jipipe.ui.grapheditor.compartments.dragdrop.JIPipeCompartmentGraphDragAndDropBehavior;
 import org.hkijena.jipipe.ui.grapheditor.compartments.properties.JIPipeMultiCompartmentSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.properties.JIPipeSingleCompartmentSelectionPanelUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
@@ -223,7 +221,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         if (getCanvasUI().getHistoryJournal() != null) {
             getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, null);
         }
-        getAlgorithmGraph().insertNode(node);
+        getGraph().insertNode(node);
     }
 
     private void importCompartment() {
@@ -278,8 +276,8 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onOpenCompartment(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
+    @Override
+    public void onDefaultNodeUIActionRequested(JIPipeNodeUI.DefaultNodeUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getNode() instanceof JIPipeProjectCompartment) {
             getProjectWorkbench().getOrOpenPipelineEditorTab((JIPipeProjectCompartment) event.getUi().getNode(), true);
         }
@@ -290,8 +288,8 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
      *
      * @param event the event
      */
-    @Subscribe
-    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
+    @Override
+    public void onNodeUIActionRequested(JIPipeNodeUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof RunAndShowResultsAction) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());

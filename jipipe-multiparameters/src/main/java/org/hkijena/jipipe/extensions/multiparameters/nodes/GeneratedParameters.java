@@ -59,7 +59,7 @@ public class GeneratedParameters extends JIPipeDynamicParameterCollection {
                 }
             }
         }
-        getEventBus().post(new ParameterStructureChangedEvent(this));
+        emitParameterStructureChangedEvent();
     }
 
     private void importParameter(JIPipeParameterTree.Node node, JIPipeParameterAccess importedParameter) {

@@ -315,7 +315,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
         }
-        triggerParameterStructureChange();
+        emitParameterStructureChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Column assignments", description = "Following parameters determine how pixels are extracted from the table.")

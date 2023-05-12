@@ -18,7 +18,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
+public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel implements JIPipeNotificationInbox.PushedEventListener, JIPipeNotificationInbox.DismissedEventListener {
 
     private final FormPanel notificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final FormPanel dismissedNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
@@ -33,8 +33,10 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
         initialize();
         updateNotifications();
 
-        JIPipeNotificationInbox.getInstance().getEventBus().register(this);
-        getWorkbench().getNotificationInbox().getEventBus().register(this);
+        JIPipeNotificationInbox.getInstance().getPushedEventEmitter().subscribeWeak(this);
+        JIPipeNotificationInbox.getInstance().getDismissedEventEmitter().subscribeWeak(this);
+        getWorkbench().getNotificationInbox().getPushedEventEmitter().subscribeWeak(this);
+        getWorkbench().getNotificationInbox().getDismissedEventEmitter().subscribeWeak(this);
     }
 
     public void updateNotifications() {
@@ -123,12 +125,12 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
     }
 
-    @Subscribe
+    @Override
     public void onNotificationPushed(JIPipeNotificationInbox.PushedEvent event) {
         updateNotifications();
     }
 
-    @Subscribe
+    @Override
     public void onNotificationDismissed(JIPipeNotificationInbox.DismissedEvent event) {
         dismissedNotifications.add(event.getNotification());
         updateNotifications();

@@ -26,7 +26,7 @@ import java.awt.*;
 /**
  * Manages the list of series in a {@link PlotEditor}
  */
-public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
+public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
     private PlotEditor plotBuilderUI;
     private FormPanel entriesPanel;
 
@@ -41,7 +41,7 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
         this.plotBuilderUI = plotBuilderUI;
         initialize();
         reloadEntries();
-        plotBuilderUI.getEventBus().register(this);
+        plotBuilderUI.getParameterChangedEventEmitter().subscribe(this);
     }
 
     private void initialize() {
@@ -63,8 +63,8 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
-    public void onParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getKey().equals("series")) {
             reloadEntries();
         }

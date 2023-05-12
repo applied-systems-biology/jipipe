@@ -7,6 +7,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -20,11 +22,12 @@ import java.util.Set;
  * Used to track garbage collection for the execution of a {@link JIPipeGraph}
  */
 public class JIPipeGraphGCHelper {
-    private final EventBus eventBus = new EventBus();
     private final JIPipeGraph graph;
     private final DefaultDirectedGraph<JIPipeDataSlot, DefaultEdge> gcGraph;
     private final Set<JIPipeDataSlot> completedSlots = new HashSet<>();
     private final BiMap<JIPipeGraphNode, JIPipeDataSlot> dummyNodes = HashBiMap.create();
+
+    private final SlotCompletedEventEmitter slotCompletedEventEmitter = new SlotCompletedEventEmitter();
 
     public JIPipeGraphGCHelper(JIPipeGraph graph) {
         this.graph = graph;
@@ -69,7 +72,7 @@ public class JIPipeGraphGCHelper {
             isolate(slot);
             completedSlots.add(slot);
             if (!dummyNodes.containsValue(slot)) {
-                eventBus.post(new SlotCompletedEvent(this, slot));
+                slotCompletedEventEmitter.emit(new SlotCompletedEvent(this, slot));
             }
         }
     }
@@ -89,7 +92,7 @@ public class JIPipeGraphGCHelper {
         if (gcGraph.degreeOf(slot) == 0 && !completedSlots.contains(slot)) {
             completedSlots.add(slot);
             if (!dummyNodes.containsValue(slot)) {
-                eventBus.post(new SlotCompletedEvent(this, slot));
+                slotCompletedEventEmitter.emit(new SlotCompletedEvent(this, slot));
             }
         }
     }
@@ -134,8 +137,8 @@ public class JIPipeGraphGCHelper {
         }
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
+    public SlotCompletedEventEmitter getSlotCompletedEventEmitter() {
+        return slotCompletedEventEmitter;
     }
 
     /**
@@ -167,21 +170,28 @@ public class JIPipeGraphGCHelper {
         return "Graph GC [" + gcGraph.vertexSet().size() + " vertices, " + gcGraph.edgeSet().size() + " edges]";
     }
 
-    public static class SlotCompletedEvent {
-        private final JIPipeGraphGCHelper source;
+    public static class SlotCompletedEvent extends AbstractJIPipeEvent {
         private final JIPipeDataSlot slot;
 
         public SlotCompletedEvent(JIPipeGraphGCHelper source, JIPipeDataSlot slot) {
-            this.source = source;
+            super(source);
             this.slot = slot;
-        }
-
-        public JIPipeGraphGCHelper getSource() {
-            return source;
         }
 
         public JIPipeDataSlot getSlot() {
             return slot;
+        }
+    }
+
+    public interface SlotCompletedEventListener {
+        void onGCSlotCompletedEvent(SlotCompletedEvent event);
+    }
+
+    public static class SlotCompletedEventEmitter extends JIPipeEventEmitter<SlotCompletedEvent, SlotCompletedEventListener> {
+
+        @Override
+        protected void call(SlotCompletedEventListener slotCompletedEventListener, SlotCompletedEvent event) {
+            slotCompletedEventListener.onGCSlotCompletedEvent(event);
         }
     }
 }

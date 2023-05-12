@@ -1,11 +1,10 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.roimanager;
 
-import com.google.common.eventbus.Subscribe;
 import ij.gui.Roi;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2DTool;
-import org.hkijena.jipipe.utils.ui.*;
+import org.hkijena.jipipe.utils.ui.events.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ROIPicker2DTool implements ImageViewerPanelCanvas2DTool {
+public class ROIPicker2DTool implements ImageViewerPanelCanvas2DTool, MouseClickedEventListener, MousePressedEventListener, MouseDraggedEventListener, MouseExitedEventListener, MouseReleasedEventListener {
 
     public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
 
@@ -25,7 +24,12 @@ public class ROIPicker2DTool implements ImageViewerPanelCanvas2DTool {
 
     public ROIPicker2DTool(ROIManagerPlugin2D roiManagerPlugin) {
         this.roiManagerPlugin = roiManagerPlugin;
-        roiManagerPlugin.getViewerPanel2D().getCanvas().getEventBus().register(this);
+        ImageViewerPanelCanvas2D canvas = roiManagerPlugin.getViewerPanel2D().getCanvas();
+        canvas.getMouseClickedEventEmitter().subscribe(this);
+        canvas.getMousePressedEventEmitter().subscribe(this);
+        canvas.getMouseDraggedEventEmitter().subscribe(this);
+        canvas.getMouseExitedEventEmitter().subscribe(this);
+        canvas.getMouseReleasedEventEmitter().subscribe(this);
     }
 
     public ImageViewerPanelCanvas2D getCanvas() {
@@ -51,8 +55,8 @@ public class ROIPicker2DTool implements ImageViewerPanelCanvas2DTool {
         return toolIsActive(roiManagerPlugin.getViewerPanel2D().getCanvas());
     }
 
-    @Subscribe
-    public void onMouseClick(MouseClickedEvent event) {
+    @Override
+    public void onComponentMouseClicked(MouseClickedEvent event) {
         if (!toolIsActive()) {
             return;
         }
@@ -122,28 +126,28 @@ public class ROIPicker2DTool implements ImageViewerPanelCanvas2DTool {
         }
     }
 
-    @Subscribe
-    public void onMouseDown(MousePressedEvent event) {
+    @Override
+    public void onComponentMousePressed(MousePressedEvent event) {
         if (toolIsActive() && SwingUtilities.isLeftMouseButton(event)) {
             selectionFirst = event.getPoint();
         }
     }
 
-    @Subscribe
-    public void onMouseUp(MouseReleasedEvent event) {
+    @Override
+    public void onComponentMouseReleased(MouseReleasedEvent event) {
         if (toolIsActive()) {
             pickRoiFromCanvas(event.isShiftDown());
         }
         cancelPicking();
     }
 
-    @Subscribe
-    public void onMouseExited(MouseExitedEvent event) {
+    @Override
+    public void onComponentMouseExited(MouseExitedEvent event) {
         cancelPicking();
     }
 
-    @Subscribe
-    public void onMouseDrag(MouseDraggedEvent event) {
+    @Override
+    public void onComponentMouseDragged(MouseDraggedEvent event) {
         if (toolIsActive() && selectionFirst != null) {
             selectionSecond = event.getPoint();
             roiManagerPlugin.getViewerPanel2D().uploadSliceToCanvas();

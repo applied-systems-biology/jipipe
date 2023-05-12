@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.parameterreference;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroup;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
@@ -46,7 +47,8 @@ import java.util.Stack;
 /**
  * Editor component for {@link GraphNodeParameterReferenceGroupCollection}
  */
-public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWorkbenchPanel {
+public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener,
+        ParameterReferencesChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeGraph.GraphChangedEventListener {
 
     private final GraphNodeParameterReferenceGroupCollection parameters;
     private final JTree groupJTree = new JTree();
@@ -66,8 +68,10 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
         this.parameters = parameters;
         this.documentation = documentation != null ? documentation : MarkdownDocument.fromPluginResource("documentation/parameter-reference-editor.md", Collections.emptyMap());
         this.withRefresh = withRefresh;
-        parameters.getEventBus().register(this);
-        parameters.getGraph().getEventBus().register(this);
+        parameters.getParameterChangedEventEmitter().subscribeWeak(this);
+        parameters.getParameterReferencesChangedEventEmitter().subscribeWeak(this);
+        parameters.getParameterStructureChangedEventEmitter().subscribeWeak(this);
+        parameters.getGraph().getGraphChangedEventEmitter().subscribeWeak(this);
         initialize();
         refreshContent(true, null);
         onTreeNodeSelected();
@@ -295,7 +299,10 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
 
     private void selectReference(GraphNodeParameterReference reference) {
         rightPanel.removeAll();
-        reference.getEventBus().register(this);
+
+        reference.getParameterChangedEventEmitter().subscribeWeak(this);
+        reference.getParameterStructureChangedEventEmitter().subscribeWeak(this);
+
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), reference, documentation, ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
         rightPanel.add(parameterPanel, BorderLayout.CENTER);
         rightPanel.revalidate();
@@ -304,7 +311,10 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
 
     private void selectGroup(GraphNodeParameterReferenceGroup group) {
         rightPanel.removeAll();
-        group.getEventBus().register(this);
+
+        group.getParameterChangedEventEmitter().subscribeWeak(this);
+        group.getParameterStructureChangedEventEmitter().subscribeWeak(this);
+
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), group, documentation, ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW);
         rightPanel.add(parameterPanel, BorderLayout.CENTER);
 
@@ -322,7 +332,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
         rightPanel.repaint();
     }
 
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() instanceof GraphNodeParameterReference || event.getSource() instanceof GraphNodeParameterReferenceGroup) {
             groupJTree.revalidate();
@@ -331,36 +341,12 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     }
 
     /**
-     * Triggered when the references were changed
-     *
-     * @param event the event
-     */
-    @Subscribe
-    public void onParameterReferenceChanged(ParameterReferencesChangedEvent event) {
-        if (withRefresh) {
-            refreshContent(true, null);
-        }
-    }
-
-    /**
      * Triggered when the parameter structure was changed
      *
      * @param event the event
      */
-    @Subscribe
+    @Override
     public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
-        if (withRefresh) {
-            refreshContent(true, null);
-        }
-    }
-
-    /**
-     * Triggered when the algorithm graph was changed
-     *
-     * @param event the event
-     */
-    @Subscribe
-    public void onGraphStructureChanged(JIPipeGraph.GraphChangedEvent event) {
         if (withRefresh) {
             refreshContent(true, null);
         }
@@ -371,5 +357,19 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
      */
     public JIPipeParameterTree getParameterTree() {
         return parameterTree;
+    }
+
+    @Override
+    public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
+        if (withRefresh) {
+            refreshContent(true, null);
+        }
+    }
+
+    @Override
+    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+        if (withRefresh) {
+            refreshContent(true, null);
+        }
     }
 }

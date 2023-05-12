@@ -63,7 +63,7 @@ import java.util.Set;
 /**
  * UI that displays a {@link JIPipeDataTable} that is cached
  */
-public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
+public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final SearchTextField searchTextField = new SearchTextField();
     private final MenuManager menuManager = new MenuManager();
@@ -83,14 +83,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
 
         initialize();
         reloadTable();
-        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if (isDisplayable() && "preview-size".equals(event.getKey())) {
-                    reloadTable();
-                }
-            }
-        });
+        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
         showDataRows(new int[0]);
     }
 
@@ -328,6 +321,13 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
             rowUI.getDataAnnotationsButton().setText("Slots ...");
             rowUI.getDataAnnotationsButton().setIcon(UIUtils.getIconFromResources("data-types/slot.png"));
             rowUIList.addToForm(rowUI, nameLabel, null);
+        }
+    }
+
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if (isDisplayable() && "preview-size".equals(event.getKey())) {
+            reloadTable();
         }
     }
 

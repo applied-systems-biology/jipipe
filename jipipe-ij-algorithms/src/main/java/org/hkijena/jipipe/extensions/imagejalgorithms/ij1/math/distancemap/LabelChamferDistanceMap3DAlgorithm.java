@@ -105,7 +105,7 @@ public class LabelChamferDistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlg
 
     private void updateSlots() {
         getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+        emitNodeSlotsChangedEvent();
     }
 
     @Override

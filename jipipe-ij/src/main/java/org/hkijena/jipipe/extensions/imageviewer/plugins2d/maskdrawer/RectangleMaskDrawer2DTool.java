@@ -1,15 +1,12 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d.maskdrawer;
 
-import com.google.common.eventbus.Subscribe;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
-import org.hkijena.jipipe.utils.ui.MouseExitedEvent;
-import org.hkijena.jipipe.utils.ui.MouseMovedEvent;
+import org.hkijena.jipipe.utils.ui.events.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,7 +16,7 @@ import java.util.Objects;
  * Rectangle drawing
  * Allows left-click canvas dragging
  */
-public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool {
+public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool implements MouseClickedEventListener, MouseExitedEventListener, MouseMovedEventListener {
 
     public static boolean DEFAULT_SETTING_START_FROM_CENTER = false;
     public static boolean DEFAULT_SETTING_SQUARE = false;
@@ -36,7 +33,10 @@ public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool {
                 "Rectangle",
                 "Draws a rectangle between two points",
                 UIUtils.getIconFromResources("actions/draw-rectangle.png"));
-        getViewerPanel2D().getCanvas().getEventBus().register(this);
+        ImageViewerPanelCanvas2D canvas = getViewerPanel2D().getCanvas();
+        canvas.getMouseClickedEventEmitter().subscribe(this);
+        canvas.getMouseExitedEventEmitter().subscribe(this);
+        canvas.getMouseMovedEventEmitter().subscribe(this);
         initialize();
         updateInfo();
     }
@@ -127,8 +127,8 @@ public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool {
         updateInfo();
     }
 
-    @Subscribe
-    public void onMouseClick(MouseClickedEvent event) {
+    @Override
+    public void onComponentMouseClicked(MouseClickedEvent event) {
         if (!toolIsActive())
             return;
         if (SwingUtilities.isLeftMouseButton(event)) {
@@ -189,16 +189,16 @@ public class RectangleMaskDrawer2DTool extends MaskDrawer2DTool {
         }
     }
 
-    @Subscribe
-    public void onMouseMove(MouseMovedEvent event) {
+    @Override
+    public void onComponentMouseMoved(MouseMovedEvent event) {
         if (!toolIsActive())
             return;
         getViewerPanel2D().getCanvas().repaint(50);
         updateInfo();
     }
 
-    @Subscribe
-    public void onMouseExited(MouseExitedEvent event) {
+    @Override
+    public void onComponentMouseExited(MouseExitedEvent event) {
         if (!toolIsActive())
             return;
         cancelDrawing();

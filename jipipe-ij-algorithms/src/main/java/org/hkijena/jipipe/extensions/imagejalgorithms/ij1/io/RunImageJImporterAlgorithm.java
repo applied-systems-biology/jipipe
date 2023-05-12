@@ -82,7 +82,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(parent, operation);
         if (JOptionPane.showConfirmDialog(parent.getWindow(), ui, "Set import parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             operation.copyTo(this.importParameters);
-            triggerParameterUIChange();
+            emitParameterUIChangedEvent();
         }
     }
 

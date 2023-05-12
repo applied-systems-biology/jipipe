@@ -13,11 +13,12 @@
 
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d;
 
-import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel2D;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin2D;
-import org.hkijena.jipipe.utils.ui.*;
+import org.hkijena.jipipe.utils.ui.events.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +33,6 @@ import java.awt.image.BufferedImageOp;
 
 public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, MouseMotionListener {
     private final ImageViewerPanel2D imageViewerPanel;
-    private final EventBus eventBus = new EventBus();
     private BufferedImage image;
 
     private Image scaledImage;
@@ -47,6 +47,16 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     private ImageViewerPanelCanvas2DTool tool;
 
+    private final ToolChangedEventEmitter toolChangedEventEmitter = new ToolChangedEventEmitter();
+    private final PixelHoverEventEmitter pixelHoverEventEmitter = new PixelHoverEventEmitter();
+
+    private final MouseClickedEventEmitter mouseClickedEventEmitter = new MouseClickedEventEmitter();
+    private final MouseDraggedEventEmitter mouseDraggedEventEmitter = new MouseDraggedEventEmitter();
+    private final MouseEnteredEventEmitter mouseEnteredEventEmitter = new MouseEnteredEventEmitter();
+    private final MouseExitedEventEmitter mouseExitedEventEmitter = new MouseExitedEventEmitter();
+    private final MouseMovedEventEmitter mouseMovedEventEmitter = new MouseMovedEventEmitter();
+    private final MousePressedEventEmitter mousePressedEventEmitter = new MousePressedEventEmitter();
+    private final MouseReleasedEventEmitter mouseReleasedEventEmitter = new MouseReleasedEventEmitter();
     public ImageViewerPanelCanvas2D(ImageViewerPanel2D imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
         setLayout(null);
@@ -88,8 +98,40 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
         repaint(50);
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
+    public ToolChangedEventEmitter getToolChangedEventEmitter() {
+        return toolChangedEventEmitter;
+    }
+
+    public PixelHoverEventEmitter getPixelHoverEventEmitter() {
+        return pixelHoverEventEmitter;
+    }
+
+    public MouseClickedEventEmitter getMouseClickedEventEmitter() {
+        return mouseClickedEventEmitter;
+    }
+
+    public MouseDraggedEventEmitter getMouseDraggedEventEmitter() {
+        return mouseDraggedEventEmitter;
+    }
+
+    public MouseEnteredEventEmitter getMouseEnteredEventEmitter() {
+        return mouseEnteredEventEmitter;
+    }
+
+    public MouseExitedEventEmitter getMouseExitedEventEmitter() {
+        return mouseExitedEventEmitter;
+    }
+
+    public MouseMovedEventEmitter getMouseMovedEventEmitter() {
+        return mouseMovedEventEmitter;
+    }
+
+    public MousePressedEventEmitter getMousePressedEventEmitter() {
+        return mousePressedEventEmitter;
+    }
+
+    public MouseReleasedEventEmitter getMouseReleasedEventEmitter() {
+        return mouseReleasedEventEmitter;
     }
 
     @Override
@@ -205,7 +247,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        eventBus.post(new MouseClickedEvent(e.getComponent(),
+        mouseClickedEventEmitter.emit(new MouseClickedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -232,7 +274,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
             currentDragOffset = new Point(e.getPoint().x - contentX, e.getPoint().y - contentY);
             setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         }
-        eventBus.post(new MousePressedEvent(e.getComponent(),
+        mousePressedEventEmitter.emit(new MousePressedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -247,7 +289,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     public void mouseReleased(MouseEvent e) {
         currentDragOffset = null;
         setCursor(getStandardCursor());
-        eventBus.post(new MouseReleasedEvent(e.getComponent(),
+        mouseReleasedEventEmitter.emit(new MouseReleasedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -260,7 +302,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        eventBus.post(new MouseEnteredEvent(e.getComponent(),
+        mouseEnteredEventEmitter.emit(new MouseEnteredEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -273,7 +315,7 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     @Override
     public void mouseExited(MouseEvent e) {
-        eventBus.post(new MouseExitedEvent(e.getComponent(),
+        mouseExitedEventEmitter.emit(new MouseExitedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -295,9 +337,9 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
             fixNegativeOffsets();
             repaint(50);
         } else {
-            eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(e, false), e));
+            pixelHoverEventEmitter.emit(new PixelHoverEvent(this, getMouseModelPixelCoordinate(e, false), e));
         }
-        eventBus.post(new MouseDraggedEvent(e.getComponent(),
+        mouseDraggedEventEmitter.emit(new MouseDraggedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -339,8 +381,8 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        eventBus.post(new PixelHoverEvent(getMouseModelPixelCoordinate(e, false), e));
-        eventBus.post(new MouseMovedEvent(e.getComponent(),
+        pixelHoverEventEmitter.emit(new PixelHoverEvent(this, getMouseModelPixelCoordinate(e, false), e));
+        mouseMovedEventEmitter.emit(new MouseMovedEvent(e.getComponent(),
                 e.getID(),
                 e.getWhen(),
                 e.getModifiers(),
@@ -564,14 +606,17 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
             tool.onToolActivate(this);
             setCursor(tool.getToolCursor());
         }
-        eventBus.post(new ToolChangedEvent(this, oldTool, tool));
+        toolChangedEventEmitter.emit(new ToolChangedEvent(this, oldTool, tool));
     }
 
-    public static class PixelHoverEvent {
+    public static class PixelHoverEvent extends AbstractJIPipeEvent {
+        private final ImageViewerPanelCanvas2D canvas2D;
         private final Point pixelCoordinate;
         private final MouseEvent mouseEvent;
 
-        public PixelHoverEvent(Point pixelCoordinate, MouseEvent mouseEvent) {
+        public PixelHoverEvent(ImageViewerPanelCanvas2D canvas2D, Point pixelCoordinate, MouseEvent mouseEvent) {
+            super(canvas2D);
+            this.canvas2D = canvas2D;
             this.pixelCoordinate = pixelCoordinate;
             this.mouseEvent = mouseEvent;
         }
@@ -585,12 +630,25 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
         }
     }
 
-    public static class ToolChangedEvent {
+    public interface PixelHoverEventListener {
+        void onImageViewerCanvasPixelHover(PixelHoverEvent event);
+    }
+
+    public static class PixelHoverEventEmitter extends JIPipeEventEmitter<PixelHoverEvent, PixelHoverEventListener> {
+
+        @Override
+        protected void call(PixelHoverEventListener pixelHoverEventListener, PixelHoverEvent event) {
+            pixelHoverEventListener.onImageViewerCanvasPixelHover(event);
+        }
+    }
+
+    public static class ToolChangedEvent extends AbstractJIPipeEvent {
         private final ImageViewerPanelCanvas2D canvas;
         private final ImageViewerPanelCanvas2DTool oldTool;
         private final ImageViewerPanelCanvas2DTool newTool;
 
         public ToolChangedEvent(ImageViewerPanelCanvas2D canvas, ImageViewerPanelCanvas2DTool oldTool, ImageViewerPanelCanvas2DTool newTool) {
+            super(canvas);
             this.canvas = canvas;
             this.oldTool = oldTool;
             this.newTool = newTool;
@@ -606,6 +664,18 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
 
         public ImageViewerPanelCanvas2D getCanvas() {
             return canvas;
+        }
+    }
+
+    public interface ToolChangedEventListener {
+        void onImageViewerCanvasToolChanged(ToolChangedEvent toolChangedEvent);
+    }
+
+    public static class ToolChangedEventEmitter extends JIPipeEventEmitter<ToolChangedEvent, ToolChangedEventListener> {
+
+        @Override
+        protected void call(ToolChangedEventListener toolChangedEventListener, ToolChangedEvent event) {
+            toolChangedEventListener.onImageViewerCanvasToolChanged(event);
         }
     }
 }

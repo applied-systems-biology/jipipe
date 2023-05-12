@@ -39,7 +39,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MissingRegistrationUpdateSiteResolver extends JDialog implements JIPipeWorkbench {
+public class MissingRegistrationUpdateSiteResolver extends JDialog implements JIPipeWorkbench, JIPipeModernPluginManager.UpdateSitesReadyEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private final Context context;
     private final JIPipeRegistryIssues issues;
@@ -62,10 +62,11 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         initialize();
 
         pluginManager = new JIPipeModernPluginManager(this, messagePanel);
-        pluginManager.getEventBus().register(this);
+        pluginManager.getUpdateSitesReadyEventEmitter().subscribe(this);
         pluginManager.initializeUpdateSites();
 
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -126,8 +127,8 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         JIPipeRunExecuterUI.runInDialog(this, run);
     }
 
-    @Subscribe
-    public void onUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
+    @Override
+    public void onPluginManagerUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
         if (!issues.getMissingImageJSites().isEmpty()) {
             formPanel.removeLastRow(); //Vertical glue
             formPanel.removeLastRow(); // "Please wait..."
@@ -209,8 +210,8 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         return notificationInbox;
     }
 
-    @Subscribe
-    public void onUpdateSiteActivated(JIPipeRunnable.FinishedEvent event) {
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun && this.clickedInstallAll) {
             if (JOptionPane.showOptionDialog(this, "Please close and restart ImageJ to complete the installation of updates. " +
                     "If you have any issues, please install the necessary dependencies via the ImageJ update manager (Help > Update)", "Dependencies installed", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Close ImageJ", "Ignore"}, "Close ImageJ") == JOptionPane.YES_OPTION) {
@@ -219,8 +220,8 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         }
     }
 
-    @Subscribe
-    public void onUpdateSiteInstallationInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun) {
             clickedInstallAll = false;
         }

@@ -29,7 +29,7 @@ import java.awt.*;
 /**
  * UI that monitors the queue
  */
-public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAccess {
+public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAccess, JIPipeRunnable.StartedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
     private final JIPipeWorkbench workbench;
     private final JIPipeRunnerQueue runnerQueue;
@@ -54,7 +54,11 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
         initialize();
         updateStatus();
 
-        runnerQueue.getEventBus().register(this);
+        runnerQueue.getStartedEventEmitter().subscribeWeak(this);
+        runnerQueue.getInterruptedEventEmitter().subscribeWeak(this);
+        runnerQueue.getProgressEventEmitter().subscribeWeak(this);
+        runnerQueue.getFinishedEventEmitter().subscribeWeak(this);
+        runnerQueue.getEnqueuedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -191,64 +195,40 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
         }
     }
 
-    /**
-     * Triggered when a worker is started
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onWorkerStarted(JIPipeRunnable.StartedEvent event) {
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
+    }
+
+    @Override
+    public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
         updateStatus();
     }
 
-    /**
-     * Triggered when a worker is enqueued
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onWorkerEnqueued(JIPipeRunnable.EnqueuedEvent event) {
-        updateStatus();
-    }
-
-    /**
-     * Triggered when a worker is finished
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
-        updateStatus();
-    }
-
-    /**
-     * Triggered when a worker is interrupted
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        updateStatus();
-    }
-
-    /**
-     * Triggered when a worker reports progress
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
+    @Override
+    public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {
         JIPipeRunnable currentRun = event.getRun();
         lastProgress = currentRun.getProgressInfo().getProgress();
         lastMaxProgress = currentRun.getProgressInfo().getMaxProgress();
     }
 
     @Override
-    public JIPipeWorkbench getWorkbench() {
-        return workbench;
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        updateStatus();
     }
 
-    public static class RunMenuItem extends JMenuItem {
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        updateStatus();
+    }
+
+    @Override
+    public void onRunnableEnqueued(JIPipeRunnable.EnqueuedEvent event) {
+        updateStatus();
+    }
+
+    public static class RunMenuItem extends JMenuItem implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener,
+            JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
         private final JIPipeRunnerQueue runnerQueue;
         private final JLabel titleLabel = new JLabel("Status");
@@ -263,7 +243,11 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
             this.worker = worker;
             initialize();
             updateStatus(null);
-            this.runnerQueue.getEventBus().register(this);
+            runnerQueue.getStartedEventEmitter().subscribeWeak(this);
+            runnerQueue.getInterruptedEventEmitter().subscribeWeak(this);
+            runnerQueue.getProgressEventEmitter().subscribeWeak(this);
+            runnerQueue.getFinishedEventEmitter().subscribeWeak(this);
+            runnerQueue.getEnqueuedEventEmitter().subscribeWeak(this);
         }
 
         private void initialize() {
@@ -340,8 +324,8 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
          *
          * @param event Generated event
          */
-        @Subscribe
-        public void onWorkerStarted(JIPipeRunnable.StartedEvent event) {
+        @Override
+        public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
             updateStatus(null);
         }
 
@@ -350,8 +334,8 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
          *
          * @param event Generated event
          */
-        @Subscribe
-        public void onWorkerEnqueued(JIPipeRunnable.EnqueuedEvent event) {
+        @Override
+        public void onRunnableEnqueued(JIPipeRunnable.EnqueuedEvent event) {
             updateStatus(null);
         }
 
@@ -360,8 +344,8 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
          *
          * @param event Generated event
          */
-        @Subscribe
-        public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
+        @Override
+        public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
             updateStatus(null);
         }
 
@@ -370,8 +354,8 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
          *
          * @param event Generated event
          */
-        @Subscribe
-        public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        @Override
+        public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
             updateStatus(null);
         }
 
@@ -380,8 +364,8 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
          *
          * @param event Generated event
          */
-        @Subscribe
-        public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
+        @Override
+        public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {
             updateStatus(event.getStatus());
         }
     }

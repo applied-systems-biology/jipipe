@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -39,13 +38,13 @@ import java.util.Map;
 /**
  * Manages a single algorithm run
  */
-public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable {
-
-    private final EventBus eventBus = new EventBus();
+public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable, JIPipeGraphNode.NodeSlotsChangedEventListener {
     private final JIPipeGraphNode algorithm;
     private final Map<String, ImageJDataImportOperation> inputSlotImporters = new HashMap<>();
     private final Map<String, ImageJDataExportOperation> outputSlotExporters = new HashMap<>();
     private int numThreads = 1;
+
+    private final JIPipeGraphNode.NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new JIPipeGraphNode.NodeSlotsChangedEventEmitter();
 
     public SingleImageJAlgorithmRunConfiguration(String nodeId, String parameters, String inputs, String outputs, int threads) {
         this.algorithm = JIPipe.createNode(nodeId);
@@ -63,7 +62,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
     public SingleImageJAlgorithmRunConfiguration(JIPipeGraphNode algorithm) {
         this.algorithm = algorithm;
         updateSlots();
-        algorithm.getEventBus().register(this);
+        algorithm.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
     }
 
     private void importInputString(String inputString) {
@@ -132,6 +131,10 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
                 }
             }
         }
+    }
+
+    public JIPipeGraphNode.NodeSlotsChangedEventEmitter getNodeSlotsChangedEventEmitter() {
+        return nodeSlotsChangedEventEmitter;
     }
 
     private void importParameterString(String parametersString) {
@@ -228,21 +231,6 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
         }
     }
 
-    /**
-     * Triggered when the algorithm's slots are changed
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
-        updateSlots();
-        eventBus.post(event);
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     public String getParametersString() {
         return JsonUtils.toJsonString(algorithm);
     }
@@ -253,5 +241,11 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
     public String getOutputsString() {
         return JsonUtils.toJsonString(outputSlotExporters);
+    }
+
+    @Override
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
+        updateSlots();
+        nodeSlotsChangedEventEmitter.emit(event);
     }
 }

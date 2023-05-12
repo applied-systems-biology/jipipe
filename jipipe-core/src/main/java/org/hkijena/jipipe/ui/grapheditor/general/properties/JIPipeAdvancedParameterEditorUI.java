@@ -26,11 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
+public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeGraphNode node;
     private final JToggleButton enableMultiParametersToggle = new JToggleButton("Enable multiple parameters", UIUtils.getIcon32FromResources("actions/button_ok.png"));
-
     private final Settings settings;
 
     public JIPipeAdvancedParameterEditorUI(JIPipeWorkbench workbench, JIPipeGraphNode node) {
@@ -40,10 +39,10 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         initialize();
         if (node instanceof JIPipeParameterSlotAlgorithm) {
             enableMultiParametersToggle.setSelected(((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot());
-            ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().getEventBus().register(this);
+            ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().getParameterChangedEventEmitter().subscribeWeak(this);
         }
         if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
-            ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().getEventBus().register(this);
+            ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().getParameterChangedEventEmitter().subscribeWeak(this);
         }
     }
 
@@ -186,7 +185,7 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         return node;
     }
 
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() instanceof JIPipeParameterSlotAlgorithmSettings) {
             enableMultiParametersToggle.setSelected(((JIPipeParameterSlotAlgorithmSettings) event.getSource()).isHasParameterSlot());
@@ -202,13 +201,13 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         public Settings(JIPipeGraphNode node) {
             if (node instanceof JIPipeParameterSlotAlgorithm) {
                 parameterSlotAlgorithmSettings = ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings();
-                parameterSlotAlgorithmSettings.getEventBus().register(this);
+//                parameterSlotAlgorithmSettings.getEventBus().register(this);
             } else {
                 parameterSlotAlgorithmSettings = null;
             }
             if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
                 adaptiveParameterSettings = ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings();
-                adaptiveParameterSettings.getEventBus().register(this);
+//                adaptiveParameterSettings.getEventBus().register(this);
             } else {
                 adaptiveParameterSettings = null;
             }

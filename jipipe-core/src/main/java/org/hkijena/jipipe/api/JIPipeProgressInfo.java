@@ -14,6 +14,9 @@
 package org.hkijena.jipipe.api;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventEmitter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Cancelable;
 
@@ -26,7 +29,6 @@ import java.util.function.BiConsumer;
  * This object is available inside a {@link JIPipeRunnable} and contains methods to report progress, logs, and request cancellation.
  */
 public class JIPipeProgressInfo implements Cancelable {
-    private EventBus eventBus = new EventBus();
     private AtomicBoolean cancelled = new AtomicBoolean();
     private AtomicInteger progress = new AtomicInteger(0);
     private AtomicInteger maxProgress = new AtomicInteger(1);
@@ -37,11 +39,14 @@ public class JIPipeProgressInfo implements Cancelable {
 
     private String cancelReason;
 
+    private StatusUpdatedEventEmitter statusUpdatedEventEmitter;
+
     public JIPipeProgressInfo() {
+        this.statusUpdatedEventEmitter = new StatusUpdatedEventEmitter();
     }
 
     public JIPipeProgressInfo(JIPipeProgressInfo other) {
-        this.eventBus = other.eventBus;
+        this.statusUpdatedEventEmitter = other.statusUpdatedEventEmitter;
         this.cancelled = other.cancelled;
         this.progress = other.progress;
         this.maxProgress = other.maxProgress;
@@ -58,6 +63,14 @@ public class JIPipeProgressInfo implements Cancelable {
 
     public synchronized void incrementProgress() {
         progress.getAndIncrement();
+    }
+
+    public StatusUpdatedEventEmitter getStatusUpdatedEventEmitter() {
+        return statusUpdatedEventEmitter;
+    }
+
+    public void setStatusUpdatedEventEmitter(StatusUpdatedEventEmitter statusUpdatedEventEmitter) {
+        this.statusUpdatedEventEmitter = statusUpdatedEventEmitter;
     }
 
     public int getProgress() {
@@ -129,7 +142,7 @@ public class JIPipeProgressInfo implements Cancelable {
         if (logToStdOut.get()) {
             System.out.println(event.render());
         }
-        eventBus.post(event);
+        statusUpdatedEventEmitter.emit(event);
     }
 
     /**
@@ -379,10 +392,6 @@ public class JIPipeProgressInfo implements Cancelable {
         setMaxProgress(total);
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     public void addMaxProgress(int maxProgress) {
         this.maxProgress.getAndAccumulate(maxProgress, Integer::sum);
     }
@@ -395,21 +404,22 @@ public class JIPipeProgressInfo implements Cancelable {
         return new JIPipePercentageProgressInfo(resolve(text));
     }
 
-    public static class StatusUpdatedEvent {
-        private final JIPipeProgressInfo source;
+    public static class StatusUpdatedEvent extends AbstractJIPipeEvent {
+        private final JIPipeProgressInfo progressInfo;
         private final int progress;
         private final int maxProgress;
         private final String message;
 
-        public StatusUpdatedEvent(JIPipeProgressInfo source, int progress, int maxProgress, String message) {
-            this.source = source;
+        public StatusUpdatedEvent(JIPipeProgressInfo progressInfo, int progress, int maxProgress, String message) {
+            super(progressInfo);
+            this.progressInfo = progressInfo;
             this.progress = progress;
             this.maxProgress = maxProgress;
             this.message = message;
         }
 
-        public JIPipeProgressInfo getSource() {
-            return source;
+        public JIPipeProgressInfo getProgressInfo() {
+            return progressInfo;
         }
 
         public int getProgress() {
@@ -425,7 +435,19 @@ public class JIPipeProgressInfo implements Cancelable {
         }
 
         public String render() {
-            return (source.detachedProgress ? "SUB " : "") + "[" + progress + "/" + maxProgress + "] " + message;
+            return (progressInfo.detachedProgress ? "SUB " : "") + "[" + progress + "/" + maxProgress + "] " + message;
+        }
+    }
+
+    public interface StatusUpdatedEventListener {
+        void onProgressStatusUpdated(StatusUpdatedEvent event);
+    }
+
+    public static class StatusUpdatedEventEmitter extends JIPipeEventEmitter<StatusUpdatedEvent, StatusUpdatedEventListener> {
+
+        @Override
+        protected void call(StatusUpdatedEventListener statusUpdatedEventListener, StatusUpdatedEvent event) {
+            statusUpdatedEventListener.onProgressStatusUpdated(event);
         }
     }
 

@@ -73,11 +73,6 @@ public class IsolateNodesUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
-
-    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK);
     }

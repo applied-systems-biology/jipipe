@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -41,7 +40,6 @@ import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.dragdrop.JIPipeCreate
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.*;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
@@ -119,7 +117,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
      * @param addedAlgorithms added algorithm types are added to this list
      */
     public static void initializeMenuForCategory(JIPipeGraphEditorUI graphEditorUI, JMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
-        JIPipeGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
+        JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
         JIPipe registryService = JIPipe.getInstance();
         Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category, true);
         if (algorithmsOfCategory.isEmpty()) {
@@ -187,7 +185,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
      * @param addedAlgorithms added algorithm types are added to this list
      */
     public static void initializeAddDataSourceMenu(JIPipeGraphEditorUI graphEditorUI, JMenu menu, Set<JIPipeNodeInfo> addedAlgorithms) {
-        JIPipeGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
+        JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
         JIPipe registryService = JIPipe.getInstance();
         Map<String, Set<Class<? extends JIPipeData>>> dataTypesByMenuPaths = JIPipe.getDataTypes().getDataTypesByMenuPaths();
         Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
@@ -379,7 +377,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
-                new BookmarkListPanel(getWorkbench(), getAlgorithmGraph(), this), DocumentTabPane.CloseMode.withoutCloseButton);
+                new BookmarkListPanel(getWorkbench(), getGraph(), this), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Journal",
                 UIUtils.getIconFromResources("actions/edit-undo-history.png"),
@@ -414,8 +412,10 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         }
     }
 
-    @Subscribe
-    public void onDefaultActionRequested(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
+
+
+    @Override
+    public void onDefaultNodeUIActionRequested(JIPipeNodeUI.DefaultNodeUIActionRequestedEvent event) {
         if (event.getUi().getNode() instanceof NodeGroup) {
             if (event.getUi().getNode() instanceof NodeGroup) {
                 if (getWorkbench() instanceof JIPipeProjectWorkbench) {
@@ -438,8 +438,8 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
      *
      * @param event the event
      */
-    @Subscribe
-    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
+    @Override
+    public void onNodeUIActionRequested(JIPipeNodeUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof RunAndShowResultsAction) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());

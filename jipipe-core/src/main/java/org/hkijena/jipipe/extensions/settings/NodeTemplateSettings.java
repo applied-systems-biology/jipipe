@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 public class NodeTemplateSettings extends AbstractJIPipeParameterCollection {
@@ -23,7 +24,7 @@ public class NodeTemplateSettings extends AbstractJIPipeParameterCollection {
     }
 
     public static void triggerRefreshedEvent() {
-        getInstance().getEventBus().post(new NodeTemplatesRefreshedEvent());
+        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().emit(new NodeTemplatesRefreshedEvent());
     }
 
     @JIPipeDocumentation(name = "Node templates", description = "List of globally available node templates.")
@@ -48,11 +49,4 @@ public class NodeTemplateSettings extends AbstractJIPipeParameterCollection {
         this.nodeTemplateDownloadRepositories = projectTemplateDownloadRepositories;
     }
 
-    /**
-     * This event should always be triggered into NodeTemplateSettings.getInstance().getEventBus()
-     * (even if non-global). Will refresh the {@link org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox} instances.
-     * Should be triggered if the user added any templates
-     */
-    public static class NodeTemplatesRefreshedEvent {
-    }
 }

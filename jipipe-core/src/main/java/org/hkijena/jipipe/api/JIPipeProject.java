@@ -35,6 +35,8 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
@@ -64,16 +66,13 @@ import java.util.*;
  */
 @JsonSerialize(using = JIPipeProject.Serializer.class)
 @JsonDeserialize(using = JIPipeProject.Deserializer.class)
-public class JIPipeProject implements JIPipeValidatable {
+public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChangedEventListener {
 
     /**
      * The current version of the project format.
      * This is here for any future addition.
      */
     public static final int CURRENT_PROJECT_FORMAT_VERSION = 1;
-
-    private final EventBus eventBus = new EventBus();
-
     private final JIPipeGraph graph = new JIPipeGraph();
     private final JIPipeGraph compartmentGraph = new JIPipeGraph();
     private final BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
@@ -84,6 +83,11 @@ public class JIPipeProject implements JIPipeValidatable {
     private Path workDirectory;
     private boolean isCleaningUp;
     private boolean isLoading;
+
+    private final CompartmentAddedEventEmitter compartmentAddedEventEmitter = new CompartmentAddedEventEmitter();
+    private final CompartmentRemovedEventEmitter compartmentRemovedEventEmitter = new CompartmentRemovedEventEmitter();
+
+    private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
 
     /**
      * A JIPipe project
@@ -96,7 +100,8 @@ public class JIPipeProject implements JIPipeValidatable {
         this.graph.attach(JIPipeGraphType.Project);
         this.compartmentGraph.attach(JIPipeProject.class, this);
         this.compartmentGraph.attach(JIPipeGraphType.ProjectCompartments);
-        compartmentGraph.getEventBus().register(this);
+
+        compartmentGraph.getGraphChangedEventEmitter().subscribe(this);
     }
 
     /**
@@ -186,13 +191,6 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
-     * @return The event bus
-     */
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    /**
      * @return The algorithm graph
      */
     public JIPipeGraph getGraph() {
@@ -241,6 +239,18 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public BiMap<UUID, JIPipeProjectCompartment> getCompartments() {
         return ImmutableBiMap.copyOf(compartments);
+    }
+
+    public CompartmentAddedEventEmitter getCompartmentAddedEventEmitter() {
+        return compartmentAddedEventEmitter;
+    }
+
+    public CompartmentRemovedEventEmitter getCompartmentRemovedEventEmitter() {
+        return compartmentRemovedEventEmitter;
+    }
+
+    public JIPipeGraphNode.BaseDirectoryChangedEventEmitter getBaseDirectoryChangedEventEmitter() {
+        return baseDirectoryChangedEventEmitter;
     }
 
     /**
@@ -379,8 +389,9 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
 
-        if (changed)
-            graph.getEventBus().post(new JIPipeGraph.GraphChangedEvent(graph));
+        if (changed) {
+            graph.getGraphChangedEventEmitter().emit(new JIPipeGraph.GraphChangedEvent(graph));
+        }
     }
 
     /**
@@ -388,8 +399,8 @@ public class JIPipeProject implements JIPipeValidatable {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onCompartmentGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+    @Override
+    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         if (isCleaningUp)
             return;
         if (isLoading)
@@ -481,7 +492,7 @@ public class JIPipeProject implements JIPipeValidatable {
         compartments.remove(compartmentId);
         updateCompartmentVisibility();
         compartmentGraph.removeNode(compartment, false);
-        eventBus.post(new CompartmentRemovedEvent(compartment, compartmentId));
+        compartmentRemovedEventEmitter.emit(new CompartmentRemovedEvent(compartment, compartmentId));
     }
 
     /**
@@ -514,7 +525,7 @@ public class JIPipeProject implements JIPipeValidatable {
             algorithm.setBaseDirectory(workDirectory);
             algorithm.setProjectDirectory(workDirectory);
         }
-        eventBus.post(new JIPipeGraphNode.BaseDirectoryChangedEvent(workDirectory));
+        baseDirectoryChangedEventEmitter.emit(new JIPipeGraphNode.BaseDirectoryChangedEvent(this, workDirectory));
     }
 
     /**
@@ -869,13 +880,14 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Triggered when a sample is added to an {@link JIPipeProject}
      */
-    public static class CompartmentAddedEvent {
+    public static class CompartmentAddedEvent extends AbstractJIPipeEvent {
         private final JIPipeProjectCompartment compartment;
 
         /**
          * @param compartment the compartment
          */
         public CompartmentAddedEvent(JIPipeProjectCompartment compartment) {
+            super(compartment);
             this.compartment = compartment;
         }
 
@@ -884,10 +896,21 @@ public class JIPipeProject implements JIPipeValidatable {
         }
     }
 
+    public interface CompartmentAddedEventListener {
+        void onProjectCompartmentAdded(CompartmentAddedEvent event);
+    }
+
+    public static class CompartmentAddedEventEmitter extends JIPipeEventEmitter<CompartmentAddedEvent, CompartmentAddedEventListener> {
+        @Override
+        protected void call(CompartmentAddedEventListener compartmentAddedEventListener, CompartmentAddedEvent event) {
+            compartmentAddedEventListener.onProjectCompartmentAdded(event);
+        }
+    }
+
     /**
      * Triggered when a sample is removed from an {@link JIPipeProject}
      */
-    public static class CompartmentRemovedEvent {
+    public static class CompartmentRemovedEvent extends AbstractJIPipeEvent {
         private final UUID compartmentUUID;
         private final JIPipeProjectCompartment compartment;
 
@@ -896,6 +919,7 @@ public class JIPipeProject implements JIPipeValidatable {
          * @param compartmentUUID the compartment id
          */
         public CompartmentRemovedEvent(JIPipeProjectCompartment compartment, UUID compartmentUUID) {
+            super(compartment);
             this.compartment = compartment;
             this.compartmentUUID = compartmentUUID;
         }
@@ -909,4 +933,15 @@ public class JIPipeProject implements JIPipeValidatable {
         }
     }
 
+    public interface CompartmentRemovedEventListener {
+        void onProjectCompartmentRemoved(CompartmentRemovedEvent event);
+    }
+
+    public static class CompartmentRemovedEventEmitter extends JIPipeEventEmitter<CompartmentRemovedEvent, CompartmentRemovedEventListener> {
+
+        @Override
+        protected void call(CompartmentRemovedEventListener compartmentRemovedEventListener, CompartmentRemovedEvent event) {
+            compartmentRemovedEventListener.onProjectCompartmentRemoved(event);
+        }
+    }
 }

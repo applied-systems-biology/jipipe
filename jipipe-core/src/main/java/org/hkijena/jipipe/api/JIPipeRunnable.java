@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.api;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 
@@ -46,77 +48,25 @@ public interface JIPipeRunnable extends Runnable {
     String getTaskLabel();
 
     /**
-     * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
-     * this run finishes
-     *
-     * @param function the method to execute when the run finishes (successfully or not successfully)
+     * Called when this runnable finishes
+     * @param event the event
      */
-    default void onFinished(Consumer<FinishedEvent> function) {
-        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onWorkerFinished(FinishedEvent event) {
-                if (event.getRun() == JIPipeRunnable.this) {
-                    function.accept(event);
-                }
-            }
-        });
+    default void onFinished(FinishedEvent event) {
+
     }
 
     /**
-     * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
-     * this run is interrupted
-     *
-     * @param function the method to execute when the run is interrupted (due to error or user cancel)
+     * Called when this runnable is interrupted
+     * @param event the event
      */
-    default void onInterrupted(Consumer<InterruptedEvent> function) {
-        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onWorkerInterrupted(InterruptedEvent event) {
-                if (event.getRun() == JIPipeRunnable.this) {
-                    function.accept(event);
-                }
-            }
-        });
-    }
+    default void onInterrupted(InterruptedEvent event) {
 
-    /**
-     * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
-     * this run is started
-     *
-     * @param function the method to execute when the run starts
-     */
-    default void onStarted(Consumer<StartedEvent> function) {
-        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onWorkerStarted(StartedEvent event) {
-                if (event.getRun() == JIPipeRunnable.this) {
-                    function.accept(event);
-                }
-            }
-        });
-    }
-
-    /**
-     * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
-     * this run is progressing
-     *
-     * @param function the method to execute when the run progresses
-     */
-    default void onProgress(Consumer<ProgressEvent> function) {
-        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onWorkerStarted(ProgressEvent event) {
-                if (event.getRun() == JIPipeRunnable.this) {
-                    function.accept(event);
-                }
-            }
-        });
     }
 
     /**
      * Generated when an {@link JIPipeRunWorker} was started
      */
-    class StartedEvent {
+    class StartedEvent extends AbstractJIPipeEvent {
 
         private JIPipeRunnable run;
         private JIPipeRunWorker worker;
@@ -126,6 +76,7 @@ public interface JIPipeRunnable extends Runnable {
          * @param worker the worker
          */
         public StartedEvent(JIPipeRunnable run, JIPipeRunWorker worker) {
+            super(worker);
             this.run = run;
             this.worker = worker;
         }
@@ -139,10 +90,22 @@ public interface JIPipeRunnable extends Runnable {
         }
     }
 
+    interface StartedEventListener {
+        void onRunnableStarted(StartedEvent event);
+    }
+
+    class StartedEventEmitter extends JIPipeEventEmitter<StartedEvent, StartedEventListener> {
+
+        @Override
+        protected void call(StartedEventListener startedEventListener, StartedEvent event) {
+            startedEventListener.onRunnableStarted(event);
+        }
+    }
+
     /**
      * Generated when an {@link JIPipeRunWorker} finished its work
      */
-    class FinishedEvent {
+    class FinishedEvent extends AbstractJIPipeEvent {
 
         private JIPipeRunWorker worker;
 
@@ -150,6 +113,7 @@ public interface JIPipeRunnable extends Runnable {
          * @param worker worker that finished
          */
         public FinishedEvent(JIPipeRunWorker worker) {
+            super(worker);
             this.worker = worker;
         }
 
@@ -162,10 +126,22 @@ public interface JIPipeRunnable extends Runnable {
         }
     }
 
+    interface FinishedEventListener {
+        void onRunnableFinished(FinishedEvent event);
+    }
+
+    class FinishedEventEmitter extends JIPipeEventEmitter<FinishedEvent, FinishedEventListener> {
+
+        @Override
+        protected void call(FinishedEventListener finishedEventListener, FinishedEvent event) {
+            finishedEventListener.onRunnableFinished(event);
+        }
+    }
+
     /**
      * Generated when an {@link JIPipeRunWorker} was enqueued
      */
-    class EnqueuedEvent {
+    class EnqueuedEvent extends AbstractJIPipeEvent {
 
         private JIPipeRunnable run;
         private JIPipeRunWorker worker;
@@ -175,6 +151,7 @@ public interface JIPipeRunnable extends Runnable {
          * @param worker the worker
          */
         public EnqueuedEvent(JIPipeRunnable run, JIPipeRunWorker worker) {
+            super(worker);
             this.run = run;
             this.worker = worker;
         }
@@ -188,10 +165,22 @@ public interface JIPipeRunnable extends Runnable {
         }
     }
 
+    interface EnqeuedEventListener {
+        void onRunnableEnqueued(EnqueuedEvent event);
+    }
+
+    class EnqueuedEventEmitter extends JIPipeEventEmitter<EnqueuedEvent, EnqeuedEventListener> {
+
+        @Override
+        protected void call(EnqeuedEventListener enqeuedEventListener, EnqueuedEvent event) {
+            enqeuedEventListener.onRunnableEnqueued(event);
+        }
+    }
+
     /**
      * Generated when work of an {@link JIPipeRunWorker} is interrupted
      */
-    class InterruptedEvent {
+    class InterruptedEvent extends AbstractJIPipeEvent {
 
         private Throwable exception;
         private JIPipeRunWorker worker;
@@ -201,6 +190,7 @@ public interface JIPipeRunnable extends Runnable {
          * @param exception the exception triggered when interrupted
          */
         public InterruptedEvent(JIPipeRunWorker worker, Throwable exception) {
+            super(worker);
             this.exception = exception;
             this.worker = worker;
         }
@@ -218,10 +208,22 @@ public interface JIPipeRunnable extends Runnable {
         }
     }
 
+    interface InterruptedEventListener {
+        void onRunnableInterrupted(InterruptedEvent event);
+    }
+
+    class InterruptedEventEmitter extends JIPipeEventEmitter<InterruptedEvent, InterruptedEventListener> {
+
+        @Override
+        protected void call(InterruptedEventListener interruptedEventListener, InterruptedEvent event) {
+            interruptedEventListener.onRunnableInterrupted(event);
+        }
+    }
+
     /**
      * Generated when an {@link JIPipeRunWorker} reports progress
      */
-    class ProgressEvent {
+    class ProgressEvent extends AbstractJIPipeEvent {
         private final JIPipeRunWorker worker;
         private final JIPipeProgressInfo.StatusUpdatedEvent status;
 
@@ -230,6 +232,7 @@ public interface JIPipeRunnable extends Runnable {
          * @param status the status
          */
         public ProgressEvent(JIPipeRunWorker worker, JIPipeProgressInfo.StatusUpdatedEvent status) {
+            super(worker);
             this.worker = worker;
             this.status = status;
         }
@@ -244,6 +247,18 @@ public interface JIPipeRunnable extends Runnable {
 
         public JIPipeProgressInfo.StatusUpdatedEvent getStatus() {
             return status;
+        }
+    }
+
+    interface ProgressEventListener {
+        void onRunnableProgress(ProgressEvent event);
+    }
+
+    class ProgressEventEmitter extends JIPipeEventEmitter<ProgressEvent, ProgressEventListener> {
+
+        @Override
+        protected void call(ProgressEventListener progressEventListener, ProgressEvent event) {
+            progressEventListener.onRunnableProgress(event);
         }
     }
 }

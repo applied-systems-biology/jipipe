@@ -22,7 +22,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Optional;
 
-public class DataPreviewControlUI extends JPanel {
+public class DataPreviewControlUI extends JPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private final JButton zoomStatusButton = new JButton();
@@ -30,7 +30,7 @@ public class DataPreviewControlUI extends JPanel {
     public DataPreviewControlUI() {
         initialize();
         refreshZoomStatus();
-        dataSettings.getEventBus().register(this);
+        dataSettings.getParameterChangedEventEmitter().subscribeWeak(this);
     }
 
     private void refreshZoomStatus() {
@@ -110,8 +110,8 @@ public class DataPreviewControlUI extends JPanel {
         }
     }
 
-    @Subscribe
-    public void onSettingChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("preview-size".equals(event.getKey())) {
             refreshZoomStatus();
         }

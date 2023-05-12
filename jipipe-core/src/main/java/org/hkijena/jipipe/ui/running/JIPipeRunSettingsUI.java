@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 /**
  * Settings UI for {@link org.hkijena.jipipe.api.JIPipeRunSettings}
  */
-public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private JIPipeProjectRun run;
 
@@ -62,7 +62,8 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
     public JIPipeRunSettingsUI(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -299,8 +300,8 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onRunFinished(JIPipeRunnable.FinishedEvent event) {
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == run)
             openResults();
     }
@@ -310,8 +311,8 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onRunInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == run)
             openError(event.getException());
     }

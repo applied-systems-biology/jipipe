@@ -18,6 +18,9 @@ import net.imagej.ImageJ;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.events.WindowClosedEvent;
+import org.hkijena.jipipe.ui.events.WindowClosedEventListener;
+import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
+import org.hkijena.jipipe.ui.events.WindowOpenedEventListener;
 
 import javax.swing.*;
 
@@ -31,13 +34,15 @@ public class JIPipeLauncher {
         SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
     }
 
-    public static class WindowWatcher {
+    public static class WindowWatcher implements WindowOpenedEventListener, WindowClosedEventListener {
         public WindowWatcher() {
-            JIPipeProjectWindow.WINDOWS_EVENTS.register(this);
-            JIPipeJsonExtensionWindow.WINDOWS_EVENTS.register(this);
+            JIPipeProjectWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
+            JIPipeProjectWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
+            JIPipeJsonExtensionWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this);
+            JIPipeJsonExtensionWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this);
         }
 
-        @Subscribe
+        @Override
         public void onWindowClosed(WindowClosedEvent event) {
             int windowsOpen = 0;
             windowsOpen += JIPipeProjectWindow.getOpenWindows().size();
@@ -47,6 +52,11 @@ public class JIPipeLauncher {
                 JIPipe.getSettings().save();
                 System.exit(0);
             }
+        }
+
+        @Override
+        public void onWindowOpened(WindowOpenedEvent event) {
+
         }
     }
 }

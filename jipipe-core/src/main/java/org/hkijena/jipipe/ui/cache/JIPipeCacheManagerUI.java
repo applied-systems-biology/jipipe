@@ -29,7 +29,7 @@ import java.awt.*;
 /**
  * UI that monitors the queue
  */
-public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbenchAccess {
+public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbenchAccess, JIPipeCache.ModifiedEventListener {
 
     private final JIPipeWorkbench workbench;
     private final JPopupMenu menu = new JPopupMenu();
@@ -44,7 +44,7 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
         initialize();
         updateStatus();
 
-        getProject().getCache().getEventBus().register(this);
+        getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -112,8 +112,8 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
      *
      * @param event generated event
      */
-    @Subscribe
-    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
+    @Override
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         updateStatus();
     }
 

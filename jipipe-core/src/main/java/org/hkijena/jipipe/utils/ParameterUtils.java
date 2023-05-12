@@ -46,12 +46,14 @@ public class ParameterUtils {
     public static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node, JIPipeIssueReport issues) {
         AtomicBoolean changedStructure = new AtomicBoolean();
         changedStructure.set(true);
-        target.getEventBus().register(new Object() {
-            @Subscribe
-            public void onParametersChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
+
+        JIPipeParameterCollection.ParameterStructureChangedEventListener listener = new JIPipeParameterCollection.ParameterStructureChangedEventListener() {
+            @Override
+            public void onParameterStructureChanged(JIPipeParameterCollection.ParameterStructureChangedEvent event) {
                 changedStructure.set(true);
             }
-        });
+        };
+        target.getParameterStructureChangedEventEmitter().subscribe(listener);
 
         JIPipeParameterTree parameterCollection = new JIPipeParameterTree(target);
         Stack<JIPipeParameterTree.Node> stack = new Stack<>();
@@ -129,6 +131,8 @@ public class ParameterUtils {
                 }
             }
         }
+
+        target.getParameterStructureChangedEventEmitter().unsubscribe(listener);
     }
 
     /**

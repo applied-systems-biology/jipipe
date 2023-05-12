@@ -14,7 +14,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.Map;
 
-public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI {
+public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI implements JIPipeGraphNode.NodeSlotsChangedEventListener {
 
     private final FormPanel inputsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final FormPanel outputsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
@@ -30,7 +30,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
         this.settingsPanel = settingsPanel;
         initialize();
         reloadPropertyPanel();
-        settingsPanel.getRun().getEventBus().register(this);
+        settingsPanel.getRun().getNodeSlotsChangedEventEmitter().subscribeWeak(this);
     }
 
     private static JIPipeGraph createGraph(JIPipeGraphNode node) {
@@ -62,8 +62,8 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
         return settingsPanel;
     }
 
-    @Subscribe
-    public void onSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+    @Override
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         reloadPropertyPanel();
     }
 

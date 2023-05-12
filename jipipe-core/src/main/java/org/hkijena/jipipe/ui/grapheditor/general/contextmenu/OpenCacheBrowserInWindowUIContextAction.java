@@ -70,8 +70,4 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
         return UIUtils.getIconFromResources("actions/window-new.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

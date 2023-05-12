@@ -55,7 +55,7 @@ public class CreateIJ2OutOfBoundsFactoryAlgorithm extends JIPipeSimpleIteratingA
             } else {
                 this.factoryData = new EmptyImageJ2OutOfBoundsFactory();
             }
-            triggerParameterStructureChange();
+            emitParameterStructureChangedEvent();
         }
     }
 

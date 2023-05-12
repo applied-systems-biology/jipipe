@@ -81,13 +81,12 @@ import java.util.stream.Collectors;
 /**
  * Displays multiple {@link JIPipeDataTable} in one table.
  */
-public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
+public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener, JIPipeCache.ModifiedEventListener {
 
     private final List<Store<JIPipeDataTable>> dataTableStores;
     private final boolean withCompartmentAndAlgorithm;
     private final JXTable table;
     private final SearchTextField searchTextField = new SearchTextField();
-
     private final Ribbon ribbon = new Ribbon(2);
     private final JIPipeExtendedMultiDataTableModel multiSlotTable;
     private FormPanel rowUIList;
@@ -115,17 +114,10 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         initialize();
         reloadTable();
         if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-            ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().register(this);
+            ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
         }
         updateStatus();
-        GeneralDataSettings.getInstance().getEventBus().register(new Object() {
-            @Subscribe
-            public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                if (isDisplayable() && "preview-size".equals(event.getKey())) {
-                    reloadTable();
-                }
-            }
-        });
+        GeneralDataSettings.getInstance().getParameterChangedEventEmitter().subscribeWeak(this);
         showDataRows(new int[0]);
     }
 
@@ -496,8 +488,8 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
-    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
+    @Override
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         updateStatus();
     }
 
@@ -520,8 +512,15 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         }
         if (!hasData) {
             if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
+                ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getModifiedEventEmitter().unsubscribe(this);
             }
+        }
+    }
+
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if (isDisplayable() && "preview-size".equals(event.getKey())) {
+            reloadTable();
         }
     }
 

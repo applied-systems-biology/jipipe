@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
-    private final EventBus eventBus = new EventBus();
+    private final HistoryChangedEventEmitter historyChangedEventEmitter = new HistoryChangedEventEmitter();
     private final JIPipeProject project;
     private final HistoryJournalSettings settings;
     private final List<Snapshot> undoStack = new ArrayList<>();
@@ -58,7 +58,7 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
         undoStack.clear();
         redoStack.clear();
         currentSnapshot = null;
-        getEventBus().post(new ChangedEvent(this));
+        historyChangedEventEmitter.emit(new HistoryChangedEvent(this));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
 
             currentSnapshot = (Snapshot) snapshot;
 
-            getEventBus().post(new ChangedEvent(this));
+            historyChangedEventEmitter.emit(new HistoryChangedEvent(this));
             return currentSnapshot.restore();
         } else if (redoStack.contains((Snapshot) snapshot)) {
             // Shift other undo operations into the undo stack
@@ -101,7 +101,7 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
             }
             currentSnapshot = (Snapshot) snapshot;
 
-            getEventBus().post(new ChangedEvent(this));
+            historyChangedEventEmitter.emit(new HistoryChangedEvent(this));
             return currentSnapshot.restore();
         }
 
@@ -157,12 +157,12 @@ public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
             }
         }
         undoStack.add(snapshot);
-        getEventBus().post(new ChangedEvent(this));
+        historyChangedEventEmitter.emit(new HistoryChangedEvent(this));
     }
 
     @Override
-    public EventBus getEventBus() {
-        return eventBus;
+    public HistoryChangedEventEmitter getHistoryChangedEventEmitter() {
+        return historyChangedEventEmitter;
     }
 
     /**

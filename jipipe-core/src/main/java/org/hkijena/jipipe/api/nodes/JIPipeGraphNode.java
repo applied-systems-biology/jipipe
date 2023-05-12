@@ -23,18 +23,16 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -59,12 +57,17 @@ import java.util.stream.Collectors;
  * Use {@link JIPipeAlgorithm} as base class to indicate a non-optional workload.
  */
 @JsonSerialize(using = JIPipeGraphNode.Serializer.class)
-public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection, JIPipeFunctionallyComparable {
+public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection implements JIPipeValidatable, JIPipeFunctionallyComparable, JIPipeParameterCollection.ParameterChangedEventListener,
+JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeSlotConfiguration.SlotConfigurationChangedEventListener {
+
+    private final NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new NodeSlotsChangedEventEmitter();
+
+    private final BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new BaseDirectoryChangedEventEmitter();
+
     private final List<JIPipeInputDataSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputDataSlot> outputSlots = new ArrayList<>();
     private final BiMap<String, JIPipeInputDataSlot> inputSlotMap = HashBiMap.create();
     private final BiMap<String, JIPipeOutputDataSlot> outputSlotMap = HashBiMap.create();
-    private final EventBus eventBus = new EventBus();
     private JIPipeNodeInfo info;
     private JIPipeSlotConfiguration slotConfiguration;
     private Map<String, Map<String, Point>> locations = new HashMap<>();
@@ -123,7 +126,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
 
         this.slotConfiguration = slotConfiguration;
-        slotConfiguration.getEventBus().register(this);
+        slotConfiguration.getSlotConfigurationChangedEventEmitter().subscribe(this);
         updateGraphNodeSlots();
     }
 
@@ -154,7 +157,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         this.baseDirectory = other.baseDirectory;
         this.projectDirectory = other.projectDirectory;
         updateGraphNodeSlots();
-        slotConfiguration.getEventBus().register(this);
+        slotConfiguration.getSlotConfigurationChangedEventEmitter().subscribe(this);
     }
 
     public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
@@ -171,6 +174,14 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         JIPipeGraphNode algorithm = info.newInstance();
         algorithm.fromJson(node, issues.resolve("Nodes").resolve(id), notifications);
         return (T) algorithm;
+    }
+
+    public NodeSlotsChangedEventEmitter getNodeSlotsChangedEventEmitter() {
+        return nodeSlotsChangedEventEmitter;
+    }
+
+    public BaseDirectoryChangedEventEmitter getBaseDirectoryChangedEventEmitter() {
+        return baseDirectoryChangedEventEmitter;
     }
 
     /**
@@ -196,7 +207,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         changed |= updateSlotOrder(slotConfiguration.getOutputSlotOrder(), outputSlotMap, outputSlots);
 
         if (changed) {
-            eventBus.post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+            nodeSlotsChangedEventEmitter.emit(new NodeSlotsChangedEvent(this));
         }
     }
 
@@ -276,10 +287,6 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public abstract void run(JIPipeProgressInfo progressInfo);
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     /**
      * Returns the algorithm name
      *
@@ -308,7 +315,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name", "jipipe:node:bookmarked")) {
             return false;
         }
-        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+        return super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
@@ -401,16 +408,16 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Triggered when a parameter is changed within the slot configuration.
-     * Triggers a {@link JIPipeGraph.NodeSlotsChangedEvent}
+     * Triggers a {@link NodeSlotsChangedEvent}
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         if (event.getSource() == slotConfiguration) {
-            getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+            getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
         } else if (event.getSource() != this) {
-            getEventBus().post(event);
+            getParameterChangedEventEmitter().emit(event);
         }
     }
 
@@ -419,12 +426,14 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @param event The event
      */
-    @Subscribe
-    public void onSlotConfigurationChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
+    @Override
+    public void onSlotConfigurationChanged(JIPipeSlotConfiguration.SlotConfigurationChangedEvent event) {
         if (event.getConfiguration() == getSlotConfiguration()) {
             updateGraphNodeSlots();
         }
     }
+
+
 
     /**
      * Returns true if this node and the other node are functionally equal (i.e. they have the same functional parameters).
@@ -870,7 +879,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public void setBaseDirectory(Path baseDirectory) {
         this.baseDirectory = baseDirectory;
-        eventBus.post(new BaseDirectoryChangedEvent(baseDirectory));
+        getBaseDirectoryChangedEventEmitter().emit(new BaseDirectoryChangedEvent(this, baseDirectory));
     }
 
     /**
@@ -924,8 +933,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Triggers an event that indicates that the slots have changed
      */
-    public void triggerSlotsChangedEvent() {
-        eventBus.post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+    public void emitNodeSlotsChangedEvent() {
+        getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
     }
 
     /**
@@ -954,7 +963,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param subParameter the sub-parameter
      */
     public void registerSubParameter(JIPipeParameterCollection subParameter) {
-        subParameter.getEventBus().register(this);
+        subParameter.getParameterChangedEventEmitter().subscribeWeak(this);
+        subParameter.getParameterStructureChangedEventEmitter().subscribeWeak(this);
+        subParameter.getParameterUIChangedEventEmitter().subscribeWeak(this);
     }
 
     /**
@@ -962,12 +973,12 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
         if (event.getVisitors().contains(this))
             return;
         event.getVisitors().add(this);
-        getEventBus().post(event);
+        getParameterStructureChangedEventEmitter().emit(event);
     }
 
     /**
@@ -975,12 +986,12 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParameterUIChanged(ParameterUIChangedEvent event) {
         if (event.getVisitors().contains(this))
             return;
         event.getVisitors().add(this);
-        getEventBus().post(event);
+        getParameterUIChangedEventEmitter().emit(event);
     }
 
     /**
@@ -1201,6 +1212,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return new Dimension(12, 12);
     }
 
+    public interface NodeSlotsChangedEventListener {
+        void onNodeSlotsChanged(NodeSlotsChangedEvent event);
+    }
+
     /**
      * Serializes an {@link JIPipeGraphNode} instance
      */
@@ -1214,18 +1229,57 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Triggered when the base directory of a project or algorithm was changed
      */
-    public static class BaseDirectoryChangedEvent {
+    public static class BaseDirectoryChangedEvent extends AbstractJIPipeEvent {
         private final Path baseDirectory;
 
         /**
          * @param baseDirectory the work directory
          */
-        public BaseDirectoryChangedEvent(Path baseDirectory) {
+        public BaseDirectoryChangedEvent(Object source, Path baseDirectory) {
+            super(source);
             this.baseDirectory = baseDirectory;
         }
 
         public Path getBaseDirectory() {
             return baseDirectory;
+        }
+    }
+
+    public interface BaseDirectoryChangedEventListener  {
+        void onBaseDirectoryChanged(BaseDirectoryChangedEvent event);
+    }
+
+    public static class BaseDirectoryChangedEventEmitter extends JIPipeEventEmitter<BaseDirectoryChangedEvent, BaseDirectoryChangedEventListener> {
+        @Override
+        protected void call(BaseDirectoryChangedEventListener baseDirectoryChangedEventListener, BaseDirectoryChangedEvent event) {
+            baseDirectoryChangedEventListener.onBaseDirectoryChanged(event);
+        }
+    }
+
+    /**
+     * Triggered when an algorithm's slots change
+     */
+    public static class NodeSlotsChangedEvent extends AbstractJIPipeEvent {
+        private final JIPipeGraphNode node;
+
+        /**
+         * @param node the algorithm
+         */
+        public NodeSlotsChangedEvent(JIPipeGraphNode node) {
+            super(node);
+            this.node = node;
+        }
+
+        public JIPipeGraphNode getNode() {
+            return node;
+        }
+    }
+
+    public static class NodeSlotsChangedEventEmitter extends JIPipeEventEmitter<NodeSlotsChangedEvent, NodeSlotsChangedEventListener> {
+
+        @Override
+        protected void call(NodeSlotsChangedEventListener nodeSlotsChangedEventListener, NodeSlotsChangedEvent event) {
+            nodeSlotsChangedEventListener.onNodeSlotsChanged(event);
         }
     }
 }

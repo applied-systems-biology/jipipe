@@ -46,7 +46,6 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
                 }
                 ui.moveToClosestGridPoint(canvasUI.getGraphEditorCursor(), false, true);
                 canvasUI.repaint();
-                canvasUI.getEventBus().post(new JIPipeNodeUI.AlgorithmEvent(ui));
             }
         }
     }
@@ -64,11 +63,6 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("actions/transform-move.png");
-    }
-
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
     }
 
     @Override

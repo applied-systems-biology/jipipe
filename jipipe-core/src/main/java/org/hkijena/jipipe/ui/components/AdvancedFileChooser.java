@@ -370,12 +370,12 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                             path.getFileName().toString());
                     if (name != null && !StringUtils.nullToEmpty(name).trim().isEmpty()) {
                         settings.getBookmarks().add(new FileChooserBookmark(name.toString(), path));
-                        settings.triggerParameterChange("bookmarks");
+                        settings.emitParameterChangedEvent("bookmarks");
                     }
                 }
             } else {
                 settings.getBookmarks().removeIf(bookmark -> Objects.equals(path, bookmark.getPath()));
-                settings.triggerParameterChange("bookmarks");
+                settings.emitParameterChangedEvent("bookmarks");
             }
             updateLinks();
         }

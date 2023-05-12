@@ -17,10 +17,10 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-public class JIPipeSingleIterationAlgorithmDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeSingleIterationAlgorithmDataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
 
@@ -30,11 +30,6 @@ public class JIPipeSingleIterationAlgorithmDataBatchGenerationSettings implement
     public JIPipeSingleIterationAlgorithmDataBatchGenerationSettings(JIPipeSingleIterationAlgorithmDataBatchGenerationSettings other) {
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +

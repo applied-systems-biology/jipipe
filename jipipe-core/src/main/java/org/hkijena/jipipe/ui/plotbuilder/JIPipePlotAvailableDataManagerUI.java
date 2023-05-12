@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Manages available data sets of a plot builder
  */
-public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
+public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private PlotEditor plotEditor;
     private JList<TableColumn> dataSourceJList;
@@ -56,7 +56,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
         initialize();
         reloadList();
 
-        plotEditor.getEventBus().register(this);
+        plotEditor.getParameterChangedEventEmitter().subscribe(this);
     }
 
     private void initialize() {
@@ -188,7 +188,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
      *
      * @param event generated event
      */
-    @Subscribe
+    @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getKey().equals("available-data")) {
             reloadList();

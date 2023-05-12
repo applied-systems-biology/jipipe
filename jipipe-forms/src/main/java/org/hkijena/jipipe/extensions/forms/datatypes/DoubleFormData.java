@@ -28,7 +28,6 @@ public class DoubleFormData extends ParameterFormData {
     private SingleAnnotationIOSettings annotationIOSettings = new SingleAnnotationIOSettings();
 
     public DoubleFormData() {
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public DoubleFormData(DoubleFormData other) {
@@ -36,7 +35,6 @@ public class DoubleFormData extends ParameterFormData {
         this.value = other.value;
         this.validationExpression = new StringQueryExpression(other.validationExpression.getExpression());
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public static DoubleFormData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {

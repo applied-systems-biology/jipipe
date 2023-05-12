@@ -30,7 +30,6 @@ public class BooleanFormData extends ParameterFormData {
     private OptionalStringParameter falseString = new OptionalStringParameter("false", true);
 
     public BooleanFormData() {
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public BooleanFormData(BooleanFormData other) {
@@ -39,7 +38,6 @@ public class BooleanFormData extends ParameterFormData {
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
         this.trueString = other.trueString;
         this.falseString = other.falseString;
-        annotationIOSettings.getEventBus().register(this);
     }
 
     public static BooleanFormData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {

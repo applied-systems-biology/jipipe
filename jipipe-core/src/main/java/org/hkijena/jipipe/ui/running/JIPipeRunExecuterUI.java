@@ -24,7 +24,7 @@ import java.awt.*;
 /**
  * UI that executes an {@link JIPipeRunnable}
  */
-public class JIPipeRunExecuterUI extends JPanel {
+public class JIPipeRunExecuterUI extends JPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener {
     private final JIPipeRunnerQueue queue;
     private JIPipeRunnable run;
     private JProgressBar progressBar;
@@ -45,7 +45,10 @@ public class JIPipeRunExecuterUI extends JPanel {
         this.run = run;
         this.queue = queue;
         initialize();
-        queue.getEventBus().register(this);
+        queue.getStartedEventEmitter().subscribeWeak(this);
+        queue.getInterruptedEventEmitter().subscribeWeak(this);
+        queue.getProgressEventEmitter().subscribeWeak(this);
+        queue.getFinishedEventEmitter().subscribeWeak(this);
     }
 
     public static void runInDialog(Component parent, JIPipeRunnable run) {
@@ -65,11 +68,9 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
-        queue.getEventBus().register(new Object() {
-            @Subscribe
-            public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
-                if (event.getRun() == run)
-                    dialog.setVisible(false);
+        queue.getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
+            if (event.getRun() == run) {
+                dialog.setVisible(false);
             }
         });
         queue.enqueue(run);
@@ -140,46 +141,31 @@ public class JIPipeRunExecuterUI extends JPanel {
         }
     }
 
-    /**
-     * Triggered when a scheduled worker is finished
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
-        if (event.getRun() == run) {
-            switchToCloseButtonIfPossible();
-            progressBar.setString("Finished");
-        }
+    public JDialog getDialog() {
+        return dialog;
     }
 
-    /**
-     * Triggered when a schedules worker is interrupted
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        if (event.getRun() == run) {
-            switchToCloseButtonIfPossible();
-            progressBar.setString("Finished");
-        }
+    public void setDialog(JDialog dialog) {
+        this.dialog = dialog;
     }
 
-    @Subscribe
-    public void onWorkerStart(JIPipeRunnable.StartedEvent event) {
+    @Override
+    public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
         if (event.getRun() == run) {
             cancelButton.setEnabled(true);
         }
     }
 
-    /**
-     * Triggered when a worker reports progress
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onWorkerProgress(JIPipeRunnable.ProgressEvent event) {
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        if (event.getRun() == run) {
+            switchToCloseButtonIfPossible();
+            progressBar.setString("Finished");
+        }
+    }
+
+    @Override
+    public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {
         if (event.getRun() == run) {
             progressBar.setIndeterminate(false);
             progressBar.setMaximum(event.getStatus().getMaxProgress());
@@ -189,11 +175,11 @@ public class JIPipeRunExecuterUI extends JPanel {
         }
     }
 
-    public JDialog getDialog() {
-        return dialog;
-    }
-
-    public void setDialog(JDialog dialog) {
-        this.dialog = dialog;
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        if (event.getRun() == run) {
+            switchToCloseButtonIfPossible();
+            progressBar.setString("Finished");
+        }
     }
 }

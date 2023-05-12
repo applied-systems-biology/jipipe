@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.history;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.extensions.settings.HistoryJournalSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -12,13 +11,12 @@ import java.util.List;
 import java.util.UUID;
 
 public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal {
-
-    private final EventBus eventBus = new EventBus();
     private final HistoryJournalSettings settings;
     private final List<Snapshot> undoStack = new ArrayList<>();
     private final List<Snapshot> redoStack = new ArrayList<>();
     private final JIPipeGraph graph;
     private Snapshot currentSnapshot;
+    private final HistoryChangedEventEmitter historyChangedEventEmitter = new HistoryChangedEventEmitter();
 
     public JIPipeDedicatedGraphHistoryJournal(JIPipeGraph graph) {
         this.graph = graph;
@@ -53,7 +51,12 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
         undoStack.clear();
         redoStack.clear();
         currentSnapshot = null;
-        getEventBus().post(new ChangedEvent(this));
+        historyChangedEventEmitter.emit(new HistoryChangedEvent(this));
+    }
+
+    @Override
+    public HistoryChangedEventEmitter getHistoryChangedEventEmitter() {
+        return historyChangedEventEmitter;
     }
 
     @Override
@@ -83,7 +86,7 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
             currentSnapshot = (Snapshot) snapshot;
 
-            getEventBus().post(new ChangedEvent(this));
+            historyChangedEventEmitter.emit(new HistoryChangedEvent(this));
             return currentSnapshot.restore();
         } else if (redoStack.contains((Snapshot) snapshot)) {
             // Shift other undo operations into the undo stack
@@ -96,7 +99,7 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
 
             currentSnapshot = (Snapshot) snapshot;
 
-            getEventBus().post(new ChangedEvent(this));
+            historyChangedEventEmitter.emit(new HistoryChangedEvent(this));
             return currentSnapshot.restore();
         }
 
@@ -152,12 +155,7 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
             }
         }
         undoStack.add(snapshot);
-        getEventBus().post(new ChangedEvent(this));
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
+        historyChangedEventEmitter.emit(new HistoryChangedEvent(this));
     }
 
     public JIPipeGraph getGraph() {

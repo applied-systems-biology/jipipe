@@ -4,6 +4,8 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -18,13 +20,6 @@ import java.util.stream.Collectors;
  * Base class for all journals that track the history of projects or graphs
  */
 public interface JIPipeHistoryJournal {
-
-    /**
-     * The event bus
-     *
-     * @return the event bus
-     */
-    EventBus getEventBus();
 
     /**
      * Creates a new snapshot in the history journal
@@ -340,6 +335,8 @@ public interface JIPipeHistoryJournal {
      */
     JIPipeHistoryJournalSnapshot getCurrentSnapshot();
 
+    HistoryChangedEventEmitter getHistoryChangedEventEmitter();
+
     /**
      * Clears the journal
      */
@@ -348,15 +345,28 @@ public interface JIPipeHistoryJournal {
     /**
      * Event when the history log was changed
      */
-    class ChangedEvent {
+    class HistoryChangedEvent extends AbstractJIPipeEvent {
         private final JIPipeHistoryJournal historyJournal;
 
-        public ChangedEvent(JIPipeHistoryJournal historyJournal) {
+        public HistoryChangedEvent(JIPipeHistoryJournal historyJournal) {
+            super(historyJournal);
             this.historyJournal = historyJournal;
         }
 
         public JIPipeHistoryJournal getHistoryJournal() {
             return historyJournal;
+        }
+    }
+
+    interface HistoryChangedEventListener {
+        void onHistoryChangedEvent(HistoryChangedEvent event);
+    }
+
+    class HistoryChangedEventEmitter extends JIPipeEventEmitter<HistoryChangedEvent, HistoryChangedEventListener> {
+
+        @Override
+        protected void call(HistoryChangedEventListener historyChangedEventListener, HistoryChangedEvent event) {
+            historyChangedEventListener.onHistoryChangedEvent(event);
         }
     }
 

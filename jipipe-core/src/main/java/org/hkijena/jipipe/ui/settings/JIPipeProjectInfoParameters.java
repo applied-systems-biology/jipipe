@@ -16,6 +16,8 @@ package org.hkijena.jipipe.ui.settings;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventEmitter;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.parameters.*;
@@ -26,14 +28,14 @@ import java.util.Map;
 /**
  * Additional metadata that provides parameter references for {@link org.hkijena.jipipe.ui.JIPipeProjectInfoUI}
  */
-public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection {
+public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 
     public static final String METADATA_KEY = "org.hkijena.jipipe:pipeline-parameters";
     private JIPipeProject project;
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
 
     public JIPipeProjectInfoParameters() {
-        this.exportedParameters.getEventBus().register(this);
+        this.exportedParameters.getParameterReferencesChangedEventEmitter().subscribe(this);
     }
 
     @JIPipeParameter(value = "exported-parameters", hidden = true)
@@ -43,8 +45,9 @@ public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollecti
 
     @JIPipeParameter("exported-parameters")
     public void setExportedParameters(GraphNodeParameterReferenceGroupCollection parameters) {
+        this.exportedParameters.getParameterReferencesChangedEventEmitter().unsubscribe(this);
         this.exportedParameters = parameters;
-        this.exportedParameters.getEventBus().register(this);
+        this.exportedParameters.getParameterReferencesChangedEventEmitter().subscribe(this);
     }
 
     @Override
@@ -64,9 +67,9 @@ public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollecti
         return standardParameters.getParameters();
     }
 
-    @Subscribe
+    @Override
     public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
-        getEventBus().post(new ParameterStructureChangedEvent(this));
+        getParameterStructureChangedEventEmitter().emit(new ParameterStructureChangedEvent(this));
     }
 
     public JIPipeProject getProject() {

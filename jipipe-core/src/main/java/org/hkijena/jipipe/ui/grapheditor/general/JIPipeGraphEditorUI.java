@@ -16,8 +16,8 @@ package org.hkijena.jipipe.ui.grapheditor.general;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
@@ -29,7 +29,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.VerticalToolBar;
-import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.search.SearchBox;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
@@ -61,7 +60,9 @@ import java.util.stream.Collectors;
  * A panel around {@link JIPipeGraphCanvasUI} that comes with scrolling/panning, properties panel,
  * and a menu bar
  */
-public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable {
+public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable, JIPipeGraph.GraphChangedEventListener,
+        JIPipeService.NodeInfoRegisteredEventListener, SearchBox.SelectedEventListener<Object>,
+        JIPipeGraphCanvasUI.NodeSelectionChangedEventListener, JIPipeGraphCanvasUI.NodeUISelectedEventListener, JIPipeNodeUI.DefaultNodeUIActionRequestedEventListener, JIPipeNodeUI.NodeUIActionRequestedEventListener {
 
     public static final int FLAGS_NONE = 0;
     public static final int FLAGS_SPLIT_PANE_VERTICAL = 1;
@@ -77,7 +78,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public static final KeyStroke KEY_STROKE_ZOOM_RESET = KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK, false);
     private final GraphEditorUISettings graphUISettings;
     private final JIPipeGraphCanvasUI canvasUI;
-    private final JIPipeGraph algorithmGraph;
+    private final JIPipeGraph graph;
     private final SearchBox<Object> navigator = new SearchBox<>();
     private final JIPipeHistoryJournal historyJournal;
     private final int flags;
@@ -95,24 +96,25 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     /**
      * @param workbenchUI    the workbench
-     * @param algorithmGraph the algorithm graph
+     * @param graph the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      * @param flags          additional flags
      */
-    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal, GraphEditorUISettings settings, int flags) {
+    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal, GraphEditorUISettings settings, int flags) {
         super(workbenchUI);
-        this.algorithmGraph = algorithmGraph;
+        this.graph = graph;
         this.historyJournal = historyJournal;
         this.flags = flags;
-        this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), this, algorithmGraph, compartment, historyJournal);
+        this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), this, graph, compartment, historyJournal);
         this.graphUISettings = settings;
 
 
         initialize();
         reloadMenuBar();
-        JIPipe.getNodes().getEventBus().register(this);
-        algorithmGraph.getEventBus().register(this);
+        JIPipe.getInstance().getNodeInfoRegisteredEventEmitter().subscribeWeak(this);
+        graph.getGraphChangedEventEmitter().subscribeWeak(this);
+
         updateNavigation();
         initializeHotkeys();
         SwingUtilities.invokeLater(() -> {
@@ -123,12 +125,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     /**
      * @param workbenchUI    the workbench
-     * @param algorithmGraph the algorithm graph
+     * @param graph the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
-    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal) {
-        this(workbenchUI, algorithmGraph, compartment, historyJournal, GraphEditorUISettings.getInstance(), JIPipeGraphEditorUI.FLAGS_NONE);
+    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
+        this(workbenchUI, graph, compartment, historyJournal, GraphEditorUISettings.getInstance(), JIPipeGraphEditorUI.FLAGS_NONE);
     }
 
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
@@ -237,8 +239,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     @Override
     public void dispose() {
-        UIUtils.unregisterEventBus(JIPipe.getNodes().getEventBus(), this);
-        UIUtils.unregisterEventBus(algorithmGraph.getEventBus(), this);
+        JIPipe.getInstance().getNodeInfoRegisteredEventEmitter().unsubscribe(this);
+        graph.getGraphChangedEventEmitter().unsubscribe(this);
         canvasUI.dispose();
     }
 
@@ -303,7 +305,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         splitPane = new AutoResizeSplitPane(splitPaneSplit, splitPaneRatio);
 
         canvasUI.fullRedraw();
-        canvasUI.getEventBus().register(this);
+        canvasUI.getNodeUISelectedEventEmitter().subscribe(this);
+        canvasUI.getNodeSelectionChangedEventEmitter().subscribe(this);
+        canvasUI.getDefaultAlgorithmUIActionRequestedEventEmitter().subscribe(this);
+        canvasUI.getNodeUIActionRequestedEventEmitter().subscribe(this);
         canvasUI.addMouseListener(this);
         canvasUI.addMouseMotionListener(this);
         scrollPane = new JScrollPane(canvasUI);
@@ -335,7 +340,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             }
         });
         navigator.setRenderer(new NavigationRenderer());
-        navigator.getEventBus().register(this);
+        navigator.getSelectedEventEmitter().subscribe(this);
         navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
 
         initializeEditingToolbar();
@@ -413,47 +418,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     public JIPipeToggleableGraphEditorTool getCurrentTool() {
         return currentTool;
-    }
-
-    /**
-     * Triggered when the user selected something in the navigator
-     *
-     * @param event the event
-     */
-    @Subscribe
-    public void onNavigatorNavigate(SearchBox.SelectedEvent<Object> event) {
-        if (event.getValue() instanceof JIPipeNodeUI) {
-            selectOnly((JIPipeNodeUI) event.getValue());
-            navigator.setSelectedItem(null);
-        } else if (event.getValue() instanceof JIPipeNodeInfo) {
-            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
-                return;
-            JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
-            JIPipeGraphNode node = info.newInstance();
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
-            }
-            canvasUI.getScheduledSelection().clear();
-            canvasUI.getScheduledSelection().add(node);
-            algorithmGraph.insertNode(node, getCompartment());
-            navigator.setSelectedItem(null);
-        } else if (event.getValue() instanceof JIPipeNodeExample) {
-            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
-                return;
-            JIPipeNodeExample example = (JIPipeNodeExample) event.getValue();
-            JIPipeNodeInfo info = example.getNodeInfo();
-            JIPipeGraphNode node = info.newInstance();
-            if (node instanceof JIPipeAlgorithm) {
-                ((JIPipeAlgorithm) node).loadExample(example);
-            }
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
-            }
-            canvasUI.getScheduledSelection().clear();
-            canvasUI.getScheduledSelection().add(node);
-            algorithmGraph.insertNode(node, getCompartment());
-            navigator.setSelectedItem(null);
-        }
     }
 
     public Set<JIPipeNodeUI> getSelection() {
@@ -546,11 +510,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         JButton zoomButton = new JButton((int) (canvasUI.getZoom() * 100) + "%");
         zoomButton.setToolTipText("<html>Change zoom<br>Reset zoom: <i>Ctrl-NumPad 0</i></html>");
-        canvasUI.getEventBus().register(new Object() {
-            @Subscribe
-            public void onZoomChanged(ZoomViewPort.ZoomChangedEvent event) {
-                zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
-            }
+        canvasUI.getZoomChangedEventEmitter().subscribeLambda((emitter, event) -> {
+            zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
         });
         zoomButton.setBorder(null);
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToComponent(zoomButton);
@@ -727,8 +688,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     /**
      * @return The edited graph
      */
-    public JIPipeGraph getAlgorithmGraph() {
-        return algorithmGraph;
+    public JIPipeGraph getGraph() {
+        return graph;
     }
 
     private void createScreenshotSVG() {
@@ -760,56 +721,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     protected void updateSelection() {
     }
 
-    @Subscribe
-    public void onSelectionChanged(JIPipeGraphCanvasUI.AlgorithmSelectionChangedEvent event) {
-        updateSelection();
-    }
-
-    /**
-     * Should be triggered when new algorithms are registered.
-     * Reloads the menu
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onAlgorithmRegistryChanged(JIPipe.NodeInfoRegisteredEvent event) {
-        reloadMenuBar();
-        getWorkbench().sendStatusBarText("Plugins were updated");
-    }
-
-    /**
-     * Should be triggered when an algorithm was selected
-     *
-     * @param event The generated event
-     */
-    @Subscribe
-    public void onAlgorithmSelected(JIPipeGraphCanvasUI.AlgorithmSelectedEvent event) {
-        if (event.getUi() != null) {
-            if (event.isAddToSelection()) {
-                if (canvasUI.getSelection().contains(event.getUi())) {
-                    removeFromSelection(event.getUi());
-                } else {
-                    addToSelection(event.getUi());
-                }
-            } else {
-                selectOnly(event.getUi());
-            }
-        } else {
-            clearSelection();
-        }
-    }
-
-    /**
-     * Triggered when something interesting happens in the graph and the UI should scroll to it
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onAlgorithmEvent(JIPipeNodeUI.AlgorithmEvent event) {
-//        if (event.getUi() != null) {
-//            scrollToAlgorithm(event.getUi());
-//        }
-    }
 
     /**
      * Scrolls to the specified algorithm UI
@@ -892,15 +803,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         canvasUI.addToSelection(ui);
     }
 
-    /**
-     * Should be triggered when the algorithm graph is changed
-     *
-     * @param event The generated event
-     */
-    @Subscribe
-    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
-        updateNavigation();
-    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -1049,6 +951,85 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     public JIPipeHistoryJournal getHistoryJournal() {
         return historyJournal;
+    }
+
+    @Override
+    public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+        updateNavigation();
+    }
+
+    @Override
+    public void onJIPipeNodeInfoRegistered(JIPipeService.NodeInfoRegisteredEvent event) {
+        reloadMenuBar();
+        getWorkbench().sendStatusBarText("Plugins were updated");
+    }
+
+    @Override
+    public void onSearchBoxSelectedEvent(SearchBox.SelectedEvent<Object> event) {
+        if (event.getValue() instanceof JIPipeNodeUI) {
+            selectOnly((JIPipeNodeUI) event.getValue());
+            navigator.setSelectedItem(null);
+        } else if (event.getValue() instanceof JIPipeNodeInfo) {
+            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
+                return;
+            JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
+            JIPipeGraphNode node = info.newInstance();
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
+            }
+            canvasUI.getScheduledSelection().clear();
+            canvasUI.getScheduledSelection().add(node);
+            graph.insertNode(node, getCompartment());
+            navigator.setSelectedItem(null);
+        } else if (event.getValue() instanceof JIPipeNodeExample) {
+            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
+                return;
+            JIPipeNodeExample example = (JIPipeNodeExample) event.getValue();
+            JIPipeNodeInfo info = example.getNodeInfo();
+            JIPipeGraphNode node = info.newInstance();
+            if (node instanceof JIPipeAlgorithm) {
+                ((JIPipeAlgorithm) node).loadExample(example);
+            }
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
+            }
+            canvasUI.getScheduledSelection().clear();
+            canvasUI.getScheduledSelection().add(node);
+            graph.insertNode(node, getCompartment());
+            navigator.setSelectedItem(null);
+        }
+    }
+
+    @Override
+    public void onGraphCanvasNodeSelectionChanged(JIPipeGraphCanvasUI.NodeSelectionChangedEvent event) {
+        updateSelection();
+    }
+
+    @Override
+    public void onNodeUISelected(JIPipeGraphCanvasUI.NodeUISelectedEvent event) {
+        if (event.getNodeUI() != null) {
+            if (event.isAddToSelection()) {
+                if (canvasUI.getSelection().contains(event.getNodeUI())) {
+                    removeFromSelection(event.getNodeUI());
+                } else {
+                    addToSelection(event.getNodeUI());
+                }
+            } else {
+                selectOnly(event.getNodeUI());
+            }
+        } else {
+            clearSelection();
+        }
+    }
+
+    @Override
+    public void onDefaultNodeUIActionRequested(JIPipeNodeUI.DefaultNodeUIActionRequestedEvent event) {
+
+    }
+
+    @Override
+    public void onNodeUIActionRequested(JIPipeNodeUI.NodeUIActionRequestedEvent event) {
+
     }
 
     /**

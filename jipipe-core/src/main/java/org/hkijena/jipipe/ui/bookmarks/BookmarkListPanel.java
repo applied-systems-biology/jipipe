@@ -27,7 +27,7 @@ import java.util.List;
 
 import static org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI.RUN_NODE_CONTEXT_MENU_ENTRIES;
 
-public class BookmarkListPanel extends JIPipeWorkbenchPanel {
+public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGraph.GraphChangedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeGraph graph;
     private final JIPipeGraphEditorUI graphEditorUI;
@@ -50,9 +50,9 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
 
         initialize();
         reloadList();
-        graph.getEventBus().register(this);
+        graph.getGraphChangedEventEmitter().subscribeWeak(this);
         if (graph.getProject() != null) {
-            graph.getProject().getCompartmentGraph().getEventBus().register(this);
+            graph.getProject().getCompartmentGraph().getGraphChangedEventEmitter().subscribeWeak(this);
         }
         registerNodeEvents();
     }
@@ -131,7 +131,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
             }
             for (JIPipeGraphNode node : selection) {
                 node.setBookmarked(false);
-                node.triggerParameterChange("jipipe:node:bookmarked");
+                node.emitParameterChangedEvent("jipipe:node:bookmarked");
             }
             reloadTimer.stop();
             reloadList();
@@ -188,23 +188,23 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
 
     private void registerNodeEvents() {
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
-            node.getEventBus().register(this);
+            node.getParameterChangedEventEmitter().subscribeWeak(this);
         }
         if (graph.getProject() != null) {
             for (JIPipeGraphNode node : graph.getProject().getCompartmentGraph().getGraphNodes()) {
-                node.getEventBus().register(this);
+                node.getParameterChangedEventEmitter().subscribeWeak(this);
             }
         }
     }
 
-    @Subscribe
+    @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
         registerNodeEvents();
         reloadTimer.restart();
     }
 
-    @Subscribe
-    public void onNodeParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("jipipe:node:bookmarked".equals(event.getKey())) {
             reloadTimer.restart();
         } else if ("jipipe:node:description".equals(event.getKey())) {

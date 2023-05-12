@@ -19,15 +19,14 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.util.List;
 
-public class ProcessesExtensionSettings implements ExternalEnvironmentSettings {
+public class ProcessesExtensionSettings extends AbstractJIPipeParameterCollection implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:processes";
-
-    private final EventBus eventBus = new EventBus();
 
     private ProcessEnvironment.List presets = new ProcessEnvironment.List();
 
@@ -36,11 +35,6 @@ public class ProcessesExtensionSettings implements ExternalEnvironmentSettings {
 
     public static ProcessesExtensionSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ProcessesExtensionSettings.class);
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Presets", description = "List of presets stored for process environments.")

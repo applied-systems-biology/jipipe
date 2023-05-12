@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.api.notifications;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
 import java.util.Collections;
 import java.util.Set;
@@ -26,9 +26,10 @@ import java.util.TreeSet;
  */
 public class JIPipeNotificationInbox {
     private static final JIPipeNotificationInbox INSTANCE = new JIPipeNotificationInbox();
-
-    private final EventBus eventBus = new EventBus();
     private final Set<JIPipeNotification> notifications = new TreeSet<>();
+    private final DismissedEventEmitter dismissedEventEmitter = new DismissedEventEmitter();
+    private final PushedEventEmitter pushedEventEmitter = new PushedEventEmitter();
+    private final UpdatedEventEmitter updatedEventEmitter = new UpdatedEventEmitter();
 
     public JIPipeNotificationInbox() {
 
@@ -42,34 +43,42 @@ public class JIPipeNotificationInbox {
         return Collections.unmodifiableSet(notifications);
     }
 
+    public DismissedEventEmitter getDismissedEventEmitter() {
+        return dismissedEventEmitter;
+    }
+
+    public PushedEventEmitter getPushedEventEmitter() {
+        return pushedEventEmitter;
+    }
+
+    public UpdatedEventEmitter getUpdatedEventEmitter() {
+        return updatedEventEmitter;
+    }
+
     public void dismissAll() {
         ImmutableList<JIPipeNotification> copy = ImmutableList.copyOf(notifications);
         notifications.clear();
         for (JIPipeNotification notification : copy) {
-            eventBus.post(new DismissedEvent(this, notification));
+            dismissedEventEmitter.emit(new DismissedEvent(this, notification));
         }
-        eventBus.post(new UpdatedEvent(this));
+        updatedEventEmitter.emit(new UpdatedEvent(this));
     }
 
     public void push(JIPipeNotification notification) {
         notification.setInbox(this);
         notifications.add(notification);
-        eventBus.post(new PushedEvent(this, notification));
-        eventBus.post(new UpdatedEvent(this));
+        pushedEventEmitter.emit(new PushedEvent(this, notification));
+        updatedEventEmitter.emit(new UpdatedEvent(this));
     }
 
     public void dismiss(JIPipeNotification notification) {
         notifications.remove(notification);
-        eventBus.post(new DismissedEvent(this, notification));
-        eventBus.post(new UpdatedEvent(this));
+        dismissedEventEmitter.emit(new DismissedEvent(this, notification));
+        updatedEventEmitter.emit(new UpdatedEvent(this));
     }
 
     public void dismiss(String id) {
         ImmutableList.copyOf(notifications).stream().filter(notification -> notification.getId().equals(id)).forEach(this::dismiss);
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public boolean isEmpty() {
@@ -84,19 +93,15 @@ public class JIPipeNotificationInbox {
     public void connectDismissTo(JIPipeNotificationInbox inbox) {
         if (inbox == this)
             return;
-        eventBus.register(new Object() {
-            @Subscribe
-            public void onDismissed(DismissedEvent event) {
-                inbox.dismiss(event.notification.getId());
-            }
-        });
+        inbox.dismissedEventEmitter.subscribeLambda((emitter, event) -> inbox.dismiss(event.notification.getId()));
     }
 
-    public static class PushedEvent {
+    public static class PushedEvent extends AbstractJIPipeEvent {
         private final JIPipeNotificationInbox inbox;
         private final JIPipeNotification notification;
 
         public PushedEvent(JIPipeNotificationInbox inbox, JIPipeNotification notification) {
+            super(inbox);
             this.inbox = inbox;
             this.notification = notification;
         }
@@ -110,11 +115,24 @@ public class JIPipeNotificationInbox {
         }
     }
 
-    public static class DismissedEvent {
+    public interface PushedEventListener {
+        void onNotificationPushed(PushedEvent event);
+    }
+
+    public static class PushedEventEmitter extends JIPipeEventEmitter<PushedEvent, PushedEventListener> {
+
+        @Override
+        protected void call(PushedEventListener pushedEventListener, PushedEvent event) {
+            pushedEventListener.onNotificationPushed(event);
+        }
+    }
+
+    public static class DismissedEvent extends AbstractJIPipeEvent {
         private final JIPipeNotificationInbox inbox;
         private final JIPipeNotification notification;
 
         public DismissedEvent(JIPipeNotificationInbox inbox, JIPipeNotification notification) {
+            super(inbox);
             this.inbox = inbox;
             this.notification = notification;
         }
@@ -125,21 +143,46 @@ public class JIPipeNotificationInbox {
 
         public JIPipeNotification getNotification() {
             return notification;
+        }
+    }
+
+    public interface DismissedEventListener {
+        void onNotificationDismissed(DismissedEvent event);
+    }
+
+    public static class DismissedEventEmitter extends JIPipeEventEmitter<DismissedEvent, DismissedEventListener> {
+
+        @Override
+        protected void call(DismissedEventListener dismissedEventListener, DismissedEvent event) {
+            dismissedEventListener.onNotificationDismissed(event);
         }
     }
 
     /**
      * Event triggered when an inbox is updated
      */
-    public static class UpdatedEvent {
+    public static class UpdatedEvent extends AbstractJIPipeEvent {
         private final JIPipeNotificationInbox inbox;
 
         public UpdatedEvent(JIPipeNotificationInbox inbox) {
+            super(inbox);
             this.inbox = inbox;
         }
 
         public JIPipeNotificationInbox getInbox() {
             return inbox;
+        }
+    }
+
+    public interface UpdatedEventListener {
+        void onNotificationInboxUpdated(UpdatedEvent event);
+    }
+
+    public static class UpdatedEventEmitter extends JIPipeEventEmitter<UpdatedEvent, UpdatedEventListener> {
+
+        @Override
+        protected void call(UpdatedEventListener updatedEventListener, UpdatedEvent event) {
+            updatedEventListener.onNotificationInboxUpdated(event);
         }
     }
 }

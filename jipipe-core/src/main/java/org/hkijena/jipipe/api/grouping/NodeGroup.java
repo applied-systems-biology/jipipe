@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
@@ -50,7 +51,7 @@ import java.util.Map;
  */
 @JIPipeDocumentation(name = "Group", description = "A sub-graph that contains its own pipeline.")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection {
+public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 
     private NodeGroupContents contents;
     private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
@@ -64,7 +65,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public NodeGroup(JIPipeNodeInfo info) {
         super(info, new JIPipeGraph());
         initializeContents();
-        this.exportedParameters.getEventBus().register(this);
+        exportedParameters.getParameterReferencesChangedEventEmitter().subscribe(this);
+        registerSubParameter(exportedParameters);
     }
 
     /**
@@ -75,8 +77,9 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public NodeGroup(NodeGroup other) {
         super(other);
         this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
-        this.exportedParameters.getEventBus().register(this);
+        exportedParameters.getParameterReferencesChangedEventEmitter().subscribe(this);
         this.showLimitedParameters = other.showLimitedParameters;
+        registerSubParameter(exportedParameters);
         initializeContents();
     }
 
@@ -120,7 +123,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
             this.autoCreateSlots();
         }
 
-        this.exportedParameters.getEventBus().register(this);
+        registerSubParameter(exportedParameters);
 
         if (!clearLocations && fixLocations) {
             // Assign locations of input and output accordingly
@@ -236,7 +239,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     public void setExportedParameters(GraphNodeParameterReferenceGroupCollection exportedParameters) {
         this.exportedParameters = exportedParameters;
         this.exportedParameters.setGraph(getWrappedGraph());
-        this.exportedParameters.getEventBus().register(this);
+        exportedParameters.getParameterReferencesChangedEventEmitter().subscribe(this);
+        registerSubParameter(exportedParameters);
     }
 
     @Override
@@ -258,7 +262,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     @JIPipeParameter("show-limited-parameters")
     public void setShowLimitedParameters(boolean showLimitedParameters) {
         this.showLimitedParameters = showLimitedParameters;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @Override
@@ -303,9 +307,9 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         return result;
     }
 
-    @Subscribe
+    @Override
     public void onParameterReferencesChanged(ParameterReferencesChangedEvent event) {
-        getEventBus().post(new ParameterStructureChangedEvent(this));
+        emitParameterStructureChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Data batch generation", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +

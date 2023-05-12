@@ -7,7 +7,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 
 import javax.swing.*;
@@ -99,7 +98,7 @@ public class JIPipeExternalEnvironmentRegistry {
         List<ExternalEnvironment> presets = new ArrayList<>(settings.getPresetsListInterface(environmentClass));
         presets.add(preset);
         settings.setPresetsListInterface(presets, environmentClass);
-        settings.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(settings, "presets"));
+        settings.emitParameterChangedEvent("presets");
     }
 
     /**

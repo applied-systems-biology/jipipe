@@ -79,12 +79,12 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
             if (result == JOptionPane.YES_OPTION) {
                 // Store globally
                 NodeTemplateSettings.getInstance().getNodeTemplates().add(template);
-                NodeTemplateSettings.getInstance().triggerParameterChange("node-templates");
+                NodeTemplateSettings.getInstance().emitParameterChangedEvent("node-templates");
                 JIPipe.getSettings().save();
             } else {
                 // Store locally
                 canvasUI.getGraph().getProject().getMetadata().getNodeTemplates().add(template);
-                canvasUI.getGraph().getProject().getMetadata().triggerParameterChange("node-templates");
+                canvasUI.getGraph().getProject().getMetadata().emitParameterChangedEvent("node-templates");
             }
             NodeTemplateSettings.triggerRefreshedEvent();
         }

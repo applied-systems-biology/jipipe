@@ -74,8 +74,4 @@ public class ClearCacheNodeUIContextAction implements NodeUIContextAction {
         return UIUtils.getIconFromResources("actions/clear-brush.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

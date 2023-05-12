@@ -63,8 +63,4 @@ public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAct
         return UIUtils.getIconFromResources("actions/extract-archive.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

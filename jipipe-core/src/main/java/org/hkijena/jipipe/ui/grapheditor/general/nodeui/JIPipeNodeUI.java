@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.ui.grapheditor.general.nodeui;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -23,6 +21,8 @@ import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
 import org.hkijena.jipipe.api.nodes.*;
@@ -30,13 +30,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
@@ -52,13 +53,14 @@ import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
  * UI around an {@link JIPipeGraphNode} instance
  */
-public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener {
+public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener,
+        JIPipeCache.ModifiedEventListener, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeGraph.NodeConnectedEventListener,
+        JIPipeGraph.NodeDisconnectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     public static final Color COLOR_DISABLED_1 = new Color(227, 86, 86);
     public static final Color COLOR_DISABLED_2 = new Color(0xc36262);
 
@@ -83,7 +85,6 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private final JIPipeGraphCanvasUI graphCanvasUI;
     private final JIPipeGraphNode node;
-    private final EventBus eventBus = new EventBus();
     private final Color nodeFillColor;
     private final Color nodeBorderColor;
     private final Color highlightedNodeBorderColor;
@@ -117,6 +118,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private BufferedImage nodeBuffer;
     private boolean nodeBufferInvalid = true;
 
+    private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
+
     /**
      * Creates a new UI
      *
@@ -129,10 +132,16 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         this.graphCanvasUI = graphCanvasUI;
         this.node = node;
         this.zoom = graphCanvasUI.getZoom();
-        this.node.getEventBus().register(this);
-        this.graphCanvasUI.getGraph().getEventBus().register(this);
+
+        this.node.getParameterChangedEventEmitter().subscribeWeak(this);
+        this.node.getNodeSlotsChangedEventEmitter().subscribeWeak(this);
+
+        JIPipeGraph graph = this.graphCanvasUI.getGraph();
+        graph.getNodeConnectedEventEmitter().subscribeWeak(this);
+        graph.getNodeDisconnectedEventEmitter().subscribeWeak(this);
+
         if (workbench instanceof JIPipeProjectWorkbench) {
-            ((JIPipeProjectWorkbench) workbench).getProject().getCache().getEventBus().register(this);
+            ((JIPipeProjectWorkbench) workbench).getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
         }
 
         // Node information
@@ -188,6 +197,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         // Initialization
         initialize();
         updateView(true, true, true);
+    }
+
+    public NodeUIActionRequestedEventEmitter getNodeUIActionRequestedEventEmitter() {
+        return nodeUIActionRequestedEventEmitter;
     }
 
     private void initialize() {
@@ -373,30 +386,25 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     }
 
 
-    @Subscribe
-    public void onNodeSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+    @Override
+    public void onNodeSlotsChanged(JIPipeGraphNode.NodeSlotsChangedEvent event) {
         if (event.getNode() == node) {
             updateView(false, true, true);
         }
     }
 
-    @Subscribe
+    @Override
     public void onNodeConnected(JIPipeGraph.NodeConnectedEvent event) {
         if (event.getSource().getNode() == node || event.getTarget().getNode() == node) {
             updateView(false, true, true);
         }
     }
 
-    @Subscribe
+    @Override
     public void onNodeDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
         if (event.getSource().getNode() == node || event.getTarget().getNode() == node) {
             updateView(false, true, true);
         }
-    }
-
-    @Subscribe
-    public void onSlotNameChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        updateView(false, true, true);
     }
 
     /**
@@ -404,8 +412,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
      *
      * @param event The generated event
      */
-    @Subscribe
-    public void onNodeParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() == node && "jipipe:node:name".equals(event.getKey())) {
             updateView(false, false, true);
         } else if (event.getSource() == node && "jipipe:algorithm:enabled".equals(event.getKey())) {
@@ -414,6 +422,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             invalidateAndRepaint(true, false);
         } else if (event.getSource() == node && "jipipe:node:bookmarked".equals(event.getKey())) {
             invalidateAndRepaint(false, true);
+        }
+        else if(event.getSource() instanceof JIPipeDataSlotInfo) {
+            updateView(false, true, true);
         }
     }
 
@@ -579,13 +590,6 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         } else {
             return false;
         }
-    }
-
-    /**
-     * @return The event bus
-     */
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     /**
@@ -1042,7 +1046,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         if (showInputs) {
             for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
-                inputSlot.getInfo().getEventBus().register(this);
+                inputSlot.getInfo().getParameterChangedEventEmitter().subscribeWeak(this);
 
                 JIPipeNodeUISlotActiveArea slotState = new JIPipeNodeUISlotActiveArea(this, JIPipeSlotType.Input, inputSlot.getName(), inputSlot);
                 slotState.setIcon(JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()).getImage());
@@ -1074,7 +1078,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         if (showOutputs) {
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                outputSlot.getInfo().getEventBus().register(this);
+                outputSlot.getInfo().getParameterChangedEventEmitter().subscribeWeak(this);
 
                 JIPipeNodeUISlotActiveArea slotState = new JIPipeNodeUISlotActiveArea(this, JIPipeSlotType.Output, outputSlot.getName(), outputSlot);
                 slotState.setIcon(JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()).getImage());
@@ -1910,13 +1914,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(this);
 
-        algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {
-            @Override
-            @Subscribe
-            public void accept(AlgorithmFinderSuccessEvent event) {
-                dialog.dispose();
-            }
-        });
+        algorithmFinderUI.getAlgorithmFinderSuccessEventEmitter().subscribeLambda((emitter, event) -> dialog.dispose());
+
         boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
         if (layoutHelperEnabled) {
             Point cursorLocation = new Point();
@@ -1941,13 +1940,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(this);
 
-        algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {
-            @Override
-            @Subscribe
-            public void accept(AlgorithmFinderSuccessEvent event) {
-                dialog.dispose();
-            }
-        });
+        algorithmFinderUI.getAlgorithmFinderSuccessEventEmitter().subscribeLambda((emitter, event) -> dialog.dispose());
+
         boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
         if (layoutHelperEnabled) {
             Point cursorLocation = new Point();
@@ -2003,7 +1997,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         updateCurrentActiveArea(e);
     }
 
-    @Subscribe
+    @Override
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         updateView(false, true, false);
     }
@@ -2046,23 +2040,75 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         Cached
     }
 
+    public interface NodeUIActionRequestedEventListener {
+        void onNodeUIActionRequested(NodeUIActionRequestedEvent event);
+    }
+
+    public interface DefaultNodeUIActionRequestedEventListener {
+        void onDefaultNodeUIActionRequested(DefaultNodeUIActionRequestedEvent event);
+    }
+
     /**
-     * An event around {@link JIPipeNodeUI}
+     * An action that is requested by an {@link JIPipeNodeUI} and passed down to a {@link JIPipeGraphEditorUI}
      */
-    public static class AlgorithmEvent {
+    public static class NodeUIActionRequestedEvent extends AbstractJIPipeEvent {
+        private final JIPipeNodeUI ui;
+        private final JIPipeNodeUIAction action;
+
+        /**
+         * Initializes a new instance
+         *
+         * @param ui     the requesting UI
+         * @param action the action parameter
+         */
+        public NodeUIActionRequestedEvent(JIPipeNodeUI ui, JIPipeNodeUIAction action) {
+            super(ui);
+            this.ui = ui;
+            this.action = action;
+        }
+
+        public JIPipeNodeUI getUi() {
+            return ui;
+        }
+
+        public JIPipeNodeUIAction getAction() {
+            return action;
+        }
+    }
+
+    public static class NodeUIActionRequestedEventEmitter extends JIPipeEventEmitter<NodeUIActionRequestedEvent, NodeUIActionRequestedEventListener> {
+
+        @Override
+        protected void call(NodeUIActionRequestedEventListener nodeUIActionRequestedEventListener, NodeUIActionRequestedEvent event) {
+            nodeUIActionRequestedEventListener.onNodeUIActionRequested(event);
+        }
+    }
+
+    /**
+     * Triggered when an {@link JIPipeNodeUI} requests a default action (double click)
+     */
+    public static class DefaultNodeUIActionRequestedEvent extends AbstractJIPipeEvent {
+
         private final JIPipeNodeUI ui;
 
         /**
-         * Creates a new event
-         *
-         * @param ui the algorithm
+         * @param ui event source
          */
-        public AlgorithmEvent(JIPipeNodeUI ui) {
+        public DefaultNodeUIActionRequestedEvent(JIPipeNodeUI ui) {
+            super(ui);
             this.ui = ui;
         }
 
         public JIPipeNodeUI getUi() {
             return ui;
+        }
+    }
+
+    public static class DefaultNodeUIActionRequestedEventEmitter extends JIPipeEventEmitter<DefaultNodeUIActionRequestedEvent, DefaultNodeUIActionRequestedEventListener> {
+
+        @Override
+        protected void call(DefaultNodeUIActionRequestedEventListener defaultNodeUIActionRequestedEventListener, DefaultNodeUIActionRequestedEvent event) {
+            defaultNodeUIActionRequestedEventListener.onDefaultNodeUIActionRequested(event);
         }
     }
 }

@@ -32,7 +32,6 @@ import java.util.Set;
  * {@link JIPipeDependency} is deserialize to this type.
  */
 public class JIPipeMutableDependency implements JIPipeDependency {
-    private final EventBus eventBus = new EventBus();
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private String dependencyId;
     private String dependencyVersion = "1.0.0";

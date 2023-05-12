@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -31,8 +31,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 /**
  * Groups data batch generation settings
  */
-public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeIteratingAlgorithmDataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private boolean skipIncompleteDataSets = false;
     private StringQueryExpression customColumns = new StringQueryExpression();
@@ -59,11 +58,6 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
         this.forceFlowGraphSolver = other.forceFlowGraphSolver;
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
     @JIPipeParameter("force-flow-graph-solver")
     public boolean isForceFlowGraphSolver() {
@@ -85,7 +79,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
     @JIPipeParameter("annotation-matching-method")
     public void setAnnotationMatchingMethod(JIPipeTextAnnotationMatchingMethod annotationMatchingMethod) {
         this.annotationMatchingMethod = annotationMatchingMethod;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Custom annotation matching method", description = "Expression used to compare two annotation sets.")
@@ -114,7 +108,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings implements JIPi
         boolean needsTriggerStructureChange = columnMatching == JIPipeColumMatching.Custom || this.columnMatching == JIPipeColumMatching.Custom;
         this.columnMatching = columnMatching;
         if (needsTriggerStructureChange)
-            triggerParameterUIChange();
+            emitParameterUIChangedEvent();
     }
 
     @Override

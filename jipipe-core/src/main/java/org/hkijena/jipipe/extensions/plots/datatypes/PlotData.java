@@ -27,10 +27,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.plots.CachedPlotViewerWindow;
@@ -76,9 +73,7 @@ import java.util.stream.Collectors;
         "Additional metadata in the root object and series metadata depend on the exact plot type.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
 @JIPipeCommonData
-public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
-
-    private final EventBus eventBus = new EventBus();
+public abstract class PlotData extends AbstractJIPipeParameterCollection implements JIPipeData, JIPipeValidatable {
     private final List<PlotDataSeries> series = new ArrayList<>();
     private String title;
     private int exportWidth = 1024;
@@ -263,11 +258,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         return JIPipe.createData(getClass(), this);
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     public abstract JFreeChart getChart();
 
     /**
@@ -287,7 +277,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("title")
     public void setTitle(String title) {
         this.title = title;
-        eventBus.post(new ParameterChangedEvent(this, "title"));
     }
 
     @JIPipeDocumentation(name = "Export width", description = "Width of the output image generated via an export")
@@ -299,7 +288,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("export-width")
     public void setExportWidth(int exportWidth) {
         this.exportWidth = exportWidth;
-        eventBus.post(new ParameterChangedEvent(this, "export-width"));
     }
 
     @JIPipeDocumentation(name = "Export height", description = "Height of the output image generated via an export")
@@ -311,7 +299,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("export-height")
     public void setExportHeight(int exportHeight) {
         this.exportHeight = exportHeight;
-        eventBus.post(new ParameterChangedEvent(this, "export-height"));
     }
 
     @JIPipeDocumentation(name = "Background color", description = "Background color of the plot area.")
@@ -392,7 +379,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     @JIPipeParameter("use-custom-color-map")
     public void setUseCustomColorMap(boolean useCustomColorMap) {
         this.useCustomColorMap = useCustomColorMap;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Custom color map", description = "Add colors into this list to define a custom color map")
@@ -427,7 +414,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         if (useCustomColorMap && "color-map".equals(access.getKey()) && access.getSource() == this) {
             return false;
         }
-        return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
+        return super.isParameterUIVisible(tree, access);
     }
 
     /**

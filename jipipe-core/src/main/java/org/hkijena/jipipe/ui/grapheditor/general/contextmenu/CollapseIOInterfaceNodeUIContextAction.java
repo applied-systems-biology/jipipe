@@ -51,8 +51,4 @@ public class CollapseIOInterfaceNodeUIContextAction implements NodeUIContextActi
         return UIUtils.getIconFromResources("actions/delete.png");
     }
 
-    @Override
-    public boolean disableOnNonMatch() {
-        return false;
-    }
 }

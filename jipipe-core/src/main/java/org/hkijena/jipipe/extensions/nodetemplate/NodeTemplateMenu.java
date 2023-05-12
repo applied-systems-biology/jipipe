@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.extensions.nodetemplate;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
@@ -17,7 +17,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.*;
 
-public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess {
+public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess, NodeTemplatesRefreshedEventListener {
     private final JIPipeWorkbench workbench;
     private final JIPipeGraphEditorUI graphEditorUI;
     private final JIPipeProject project;
@@ -33,7 +33,7 @@ public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess {
         setText("Templates");
         setIcon(UIUtils.getIconFromResources("actions/starred.png"));
         reloadTemplateList();
-        NodeTemplateSettings.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
     }
 
     private void reloadTemplateList() {
@@ -72,8 +72,8 @@ public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess {
         return workbench;
     }
 
-    @Subscribe
-    public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
+    @Override
+    public void onJIPipeNodeTemplatesRefreshed(NodeTemplatesRefreshedEvent event) {
         reloadTemplateList();
     }
 }

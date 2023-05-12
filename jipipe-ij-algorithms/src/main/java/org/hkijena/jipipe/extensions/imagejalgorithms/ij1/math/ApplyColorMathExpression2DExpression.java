@@ -55,7 +55,7 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
 
     private void updateSlots() {
         getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
-        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+        emitNodeSlotsChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Output type", description = "Determines which data type is generated. Please note that channels are " +

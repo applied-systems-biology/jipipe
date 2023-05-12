@@ -19,7 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import java.io.IOException;
@@ -52,9 +53,10 @@ public interface JIPipeSlotConfiguration {
     List<String> getOutputSlotOrder();
 
     /**
-     * @return the event bus
+     * Emits events when the slots change
+     * @return the emitter
      */
-    EventBus getEventBus();
+    SlotConfigurationChangedEventEmitter getSlotConfigurationChangedEventEmitter();
 
     /**
      * @return the input slots
@@ -122,7 +124,7 @@ public interface JIPipeSlotConfiguration {
     /**
      * Triggered when a {@link JIPipeSlotConfiguration} was changed
      */
-    class SlotsChangedEvent {
+    class SlotConfigurationChangedEvent extends AbstractJIPipeEvent {
         private final JIPipeSlotConfiguration configuration;
 
         /**
@@ -130,12 +132,25 @@ public interface JIPipeSlotConfiguration {
          *
          * @param configuration the configuration
          */
-        public SlotsChangedEvent(JIPipeSlotConfiguration configuration) {
+        public SlotConfigurationChangedEvent(JIPipeSlotConfiguration configuration) {
+            super(configuration);
             this.configuration = configuration;
         }
 
         public JIPipeSlotConfiguration getConfiguration() {
             return configuration;
+        }
+    }
+
+    interface SlotConfigurationChangedEventListener {
+        void onSlotConfigurationChanged(SlotConfigurationChangedEvent event);
+    }
+
+    class SlotConfigurationChangedEventEmitter extends JIPipeEventEmitter<SlotConfigurationChangedEvent, SlotConfigurationChangedEventListener> {
+
+        @Override
+        protected void call(SlotConfigurationChangedEventListener slotsChangedEventListener, SlotConfigurationChangedEvent event) {
+            slotsChangedEventListener.onSlotConfigurationChanged(event);
         }
     }
 }

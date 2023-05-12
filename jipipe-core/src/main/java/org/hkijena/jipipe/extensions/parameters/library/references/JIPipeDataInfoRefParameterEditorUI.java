@@ -36,7 +36,7 @@ import java.util.Set;
 /**
  * Parameter for {@link JIPipeDataInfoRef}
  */
-public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI {
+public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI implements JIPipeDataTypePicker.SelectedDataTypesChangedEventListener {
 
     private JIPipeDataTypePicker picker;
     private JButton currentlyDisplayed;
@@ -122,7 +122,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         }
 
         picker = new JIPipeDataTypePicker(JIPipeDataTypePicker.Mode.Single, availableInfos);
-        picker.getEventBus().register(this);
+        picker.getSelectedDataTypesChangedEventEmitter().subscribe(this);
     }
 
     private void pickDataInfo() {
@@ -132,22 +132,17 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         pickerDialog.setVisible(true);
     }
 
-    /**
-     * Triggered when a node is selected
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onDataInfoSelected(JIPipeDataTypePicker.SelectedDataTypesChangedEvent event) {
+    @Override
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    @Override
+    public void onDataTypePickerSelectedDataTypesChanged(JIPipeDataTypePicker.SelectedDataTypesChangedEvent event) {
         if (pickerDialog.isVisible()) {
             pickerDialog.setVisible(false);
             JIPipeDataInfoRef infoRef = new JIPipeDataInfoRef(picker.getSelectedDataTypes().isEmpty() ? null : picker.getSelectedDataTypes().iterator().next());
             setParameter(infoRef, true);
         }
-    }
-
-    @Override
-    public boolean isUILabelEnabled() {
-        return true;
     }
 }

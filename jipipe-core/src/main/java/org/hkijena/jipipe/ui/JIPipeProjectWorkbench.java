@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.ui;
 
-import com.google.common.eventbus.Subscribe;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -46,7 +45,7 @@ import org.hkijena.jipipe.ui.documentation.WelcomePanel;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipeModernPluginManagerUI;
-import org.hkijena.jipipe.ui.extensions.legacy.JIPipePluginValidityCheckerPanel;
+import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
@@ -82,7 +81,7 @@ import java.util.*;
 /**
  * UI around an {@link JIPipeProject}
  */
-public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
+public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipeService.ExtensionRegisteredEventListener {
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
@@ -121,8 +120,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.context = context;
         this.memoryOptionsControl = new MemoryOptionsControl(this);
         initialize(showIntroduction, isNewProject);
-        project.getEventBus().register(this);
-        JIPipe.getInstance().getEventBus().register(this);
+        project.getCompartmentRemovedEventEmitter().subscribe(this);
+        JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeWeak(this);
 
         validatePlugins(true);
 
@@ -133,18 +132,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
 
         // Register modification state watchers
-        project.getGraph().getEventBus().register(new Object() {
-            @Subscribe
-            public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
-                setProjectModified(true);
-            }
-        });
-        project.getCompartmentGraph().getEventBus().register(new Object() {
-            @Subscribe
-            public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
-                setProjectModified(true);
-            }
-        });
+        project.getGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) ->  setProjectModified(true));
+        project.getCompartmentGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) ->  setProjectModified(true));
 
         // Install the run notifier
         JIPipeRunQueueNotifier.install();
@@ -200,16 +189,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
             documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
         }
-    }
-
-    /**
-     * Informs the user about registered extensions.
-     *
-     * @param event the event
-     */
-    @Subscribe
-    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
-        sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
     private void initialize(boolean showIntroduction, boolean isNewProject) {
@@ -365,21 +344,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                     compartmentUI,
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);
-            compartment.getEventBus().register(new Object() {
-                @Subscribe
-                public void onRenamed(JIPipeParameterCollection.ParameterChangedEvent event) {
-                    if (event.getKey().equals("jipipe:node:name")) {
-                        documentTab.setTitle(compartment.getName());
-                        documentTab.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(compartment, "title"));
-                    }
+            compartment.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
+                if (event.getKey().equals("jipipe:node:name")) {
+                    documentTab.setTitle(compartment.getName());
+                    documentTab.emitParameterChangedEvent("title");
                 }
             });
-            project.getEventBus().register(new Object() {
-                @Subscribe
-                public void onCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
-                    if (event.getCompartment() == compartment) {
-                        documentTabPane.closeTab(documentTab);
-                    }
+            project.getCompartmentRemovedEventEmitter().subscribeLambda((emitter, event) -> {
+                if (event.getCompartment() == compartment) {
+                    documentTabPane.closeTab(documentTab);
                 }
             });
             if (switchToTab)
@@ -957,19 +930,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     /**
-     * Triggered when a compartment is deleted.
-     * Closes corresponding tabs.
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
-        for (JIPipePipelineGraphEditorUI compartmentUI : findOpenPipelineEditorTabs(event.getCompartmentUUID())) {
-            documentTabPane.remove(compartmentUI);
-        }
-    }
-
-    /**
      * @return SciJava context
      */
     @Override
@@ -997,5 +957,23 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
     public void unload() {
         project.getCache().clearAll(new JIPipeProgressInfo());
+    }
+
+    /**
+     * Triggered when a compartment is deleted.
+     * Closes corresponding tabs.
+     *
+     * @param event Generated event
+     */
+    @Override
+    public void onProjectCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
+        for (JIPipePipelineGraphEditorUI compartmentUI : findOpenPipelineEditorTabs(event.getCompartmentUUID())) {
+            documentTabPane.remove(compartmentUI);
+        }
+    }
+
+    @Override
+    public void onJIPipeExtensionRegistered(JIPipeService.ExtensionRegisteredEvent event) {
+        sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 }

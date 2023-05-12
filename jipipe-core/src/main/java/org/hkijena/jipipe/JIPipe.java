@@ -14,7 +14,6 @@
 package org.hkijena.jipipe;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
@@ -32,6 +31,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -43,6 +44,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.*;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventEmitter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.*;
@@ -100,7 +102,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-    private final EventBus eventBus = new EventBus();
     private final Set<String> registeredExtensionIds = new HashSet<>();
     private final List<JIPipeDependency> registeredExtensions = new ArrayList<>();
     private final List<JIPipeDependency> failedExtensions = new ArrayList<>();
@@ -125,6 +126,20 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     @Parameter
     private PluginService pluginService;
+
+    private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
+
+    private final ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new ExtensionContentAddedEventEmitter();
+
+    private final ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new ExtensionContentRemovedEventEmitter();
+
+    private final ExtensionDiscoveredEventEmitter extensionDiscoveredEventEmitter = new ExtensionDiscoveredEventEmitter();
+
+    private final ExtensionRegisteredEventEmitter extensionRegisteredEventEmitter = new ExtensionRegisteredEventEmitter();
+
+    private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
+
+    private final NodeTemplatesRefreshedEventEmitter nodeTemplatesRefreshedEventEmitter = new NodeTemplatesRefreshedEventEmitter();
 
     public JIPipe() {
         nodeRegistry = new JIPipeNodeRegistry(this);
@@ -196,6 +211,40 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     public static JIPipeDatatypeRegistry getDataTypes() {
         return instance.datatypeRegistry;
+    }
+
+    public NodeTemplatesRefreshedEventEmitter getNodeTemplatesRefreshedEventEmitter() {
+        return nodeTemplatesRefreshedEventEmitter;
+    }
+
+    @Override
+    public DatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
+        return datatypeRegisteredEventEmitter;
+    }
+
+    @Override
+    public ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
+        return extensionContentAddedEventEmitter;
+    }
+
+    @Override
+    public ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
+        return extensionContentRemovedEventEmitter;
+    }
+
+    @Override
+    public ExtensionDiscoveredEventEmitter getExtensionDiscoveredEventEmitter() {
+        return extensionDiscoveredEventEmitter;
+    }
+
+    @Override
+    public ExtensionRegisteredEventEmitter getExtensionRegisteredEventEmitter() {
+        return extensionRegisteredEventEmitter;
+    }
+
+    @Override
+    public NodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter() {
+        return nodeInfoRegisteredEventEmitter;
     }
 
     /**
@@ -565,11 +614,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
         initializing = true;
 
         progressInfo.setProgress(0, 5);
-        progressInfo.getEventBus().register(new Object() {
-            @Subscribe
-            public void onProgressStatusUpdated(JIPipeProgressInfo.StatusUpdatedEvent event) {
-                logService.info(event.getMessage());
-            }
+        progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+            logService.info(event.getMessage());
         });
 
         IJ.showStatus("Initializing JIPipe ...");
@@ -625,7 +671,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     ((AbstractService) extension).setContext(getContext());
                 }
                 javaExtensions.add(extension);
-                eventBus.post(new ExtensionDiscoveredEvent(this, extension));
+                extensionDiscoveredEventEmitter.emit(new ExtensionDiscoveredEvent(this, extension));
             } catch (Throwable e) {
                 e.printStackTrace();
                 issues.getErroneousPlugins().add(info);
@@ -650,7 +696,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 extension.register(this, getContext(), progressInfo.resolve(extension.getDependencyId()));
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
-                eventBus.post(new ExtensionRegisteredEvent(this, extension));
+                extensionRegisteredEventEmitter.emit(new ExtensionRegisteredEvent(this, extension));
             } catch (NoClassDefFoundError | Exception e) {
                 e.printStackTrace();
                 progressInfo.log(e.toString());
@@ -1128,7 +1174,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         extension.register();
         registeredExtensions.add(extension);
         registeredExtensionIds.add(extension.getDependencyId());
-        eventBus.post(new ExtensionRegisteredEvent(this, extension));
+        extensionRegisteredEventEmitter.emit(new ExtensionRegisteredEvent(this, extension));
     }
 
     @Override
@@ -1159,11 +1205,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeCustomMenuRegistry getCustomMenuRegistry() {
         return customMenuRegistry;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @Override
@@ -1227,137 +1268,5 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeUtilityRegistry getUtilityRegistry() {
         return utilityRegistry;
-    }
-
-    /**
-     * Triggered when a new data type is registered
-     */
-    public static class DatatypeRegisteredEvent {
-        private final String id;
-
-        /**
-         * @param id the data type id
-         */
-        public DatatypeRegisteredEvent(String id) {
-            this.id = id;
-        }
-
-        public String getId() {
-            return id;
-        }
-    }
-
-    /**
-     * Generated when content is added to an {@link JIPipeJsonExtension}
-     */
-    public static class ExtensionContentAddedEvent {
-        private final JIPipeJsonExtension extension;
-        private final Object content;
-
-        /**
-         * @param extension event source
-         * @param content   the new content
-         */
-        public ExtensionContentAddedEvent(JIPipeJsonExtension extension, Object content) {
-            this.extension = extension;
-            this.content = content;
-        }
-
-        public JIPipeJsonExtension getExtension() {
-            return extension;
-        }
-
-        public Object getContent() {
-            return content;
-        }
-    }
-
-    /**
-     * Generated when content is removed from an {@link JIPipeJsonExtension}
-     */
-    public static class ExtensionContentRemovedEvent {
-        private final JIPipeJsonExtension extension;
-        private final Object content;
-
-        /**
-         * @param extension event source
-         * @param content   removed content
-         */
-        public ExtensionContentRemovedEvent(JIPipeJsonExtension extension, Object content) {
-            this.extension = extension;
-            this.content = content;
-        }
-
-        public JIPipeJsonExtension getExtension() {
-            return extension;
-        }
-
-        public Object getContent() {
-            return content;
-        }
-    }
-
-    /**
-     * Triggered when a new extension was discovered
-     */
-    public static class ExtensionDiscoveredEvent {
-        private final JIPipe registry;
-        private final JIPipeDependency extension;
-
-        public ExtensionDiscoveredEvent(JIPipe registry, JIPipeDependency extension) {
-            this.registry = registry;
-            this.extension = extension;
-        }
-
-        public JIPipe getRegistry() {
-            return registry;
-        }
-
-        public JIPipeDependency getExtension() {
-            return extension;
-        }
-    }
-
-    /**
-     * Triggered by {@link JIPipeService} when an extension is registered
-     */
-    public static class ExtensionRegisteredEvent {
-        private final JIPipeService registry;
-        private final JIPipeDependency extension;
-
-        /**
-         * @param registry  event source
-         * @param extension registered extension
-         */
-        public ExtensionRegisteredEvent(JIPipeService registry, JIPipeDependency extension) {
-            this.registry = registry;
-            this.extension = extension;
-        }
-
-        public JIPipeService getRegistry() {
-            return registry;
-        }
-
-        public JIPipeDependency getExtension() {
-            return extension;
-        }
-    }
-
-    /**
-     * Triggered when an algorithm is registered
-     */
-    public static class NodeInfoRegisteredEvent {
-        private final JIPipeNodeInfo nodeInfo;
-
-        /**
-         * @param nodeInfo the algorithm type
-         */
-        public NodeInfoRegisteredEvent(JIPipeNodeInfo nodeInfo) {
-            this.nodeInfo = nodeInfo;
-        }
-
-        public JIPipeNodeInfo getNodeInfo() {
-            return nodeInfo;
-        }
     }
 }

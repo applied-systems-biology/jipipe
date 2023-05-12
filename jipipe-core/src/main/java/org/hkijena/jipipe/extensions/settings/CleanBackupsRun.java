@@ -121,7 +121,7 @@ public class CleanBackupsRun implements JIPipeRunnable {
                 }
             }
 
-            settings.triggerParameterChange("last-saves");
+            settings.emitParameterChangedEvent("last-saves");
             if (workbench != null) {
                 workbench.sendStatusBarText("Deleted " + toDelete.size() + " duplicate/missing backups");
             }

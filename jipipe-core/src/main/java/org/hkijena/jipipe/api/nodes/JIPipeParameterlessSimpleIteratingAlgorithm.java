@@ -25,10 +25,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
@@ -240,8 +237,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         return batches;
     }
 
-    public static class DataBatchGenerationSettings implements JIPipeDataBatchGenerationSettings {
-        private final EventBus eventBus = new EventBus();
+    public static class DataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
         private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
 
         public DataBatchGenerationSettings() {
@@ -249,11 +245,6 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
 
         public DataBatchGenerationSettings(DataBatchGenerationSettings other) {
             this.limit = new OptionalIntegerRange(other.limit);
-        }
-
-        @Override
-        public EventBus getEventBus() {
-            return eventBus;
         }
 
         @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")

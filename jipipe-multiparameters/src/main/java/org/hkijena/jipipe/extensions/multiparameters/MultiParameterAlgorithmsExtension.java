@@ -61,7 +61,6 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        JIPipe.getNodes().getEventBus().register(this);
 
         // Register algorithms
         registerNodeType("parameters-define", DefineParametersAlgorithm.class);

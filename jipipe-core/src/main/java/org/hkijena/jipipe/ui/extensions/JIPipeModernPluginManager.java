@@ -26,6 +26,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.ijupdater.ConflictDialog;
@@ -41,10 +43,10 @@ import java.nio.file.Files;
 import java.util.List;
 import java.util.*;
 
-public class JIPipeModernPluginManager {
+public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.ScheduledActivateExtensionEventListener, JIPipeExtensionRegistry.ScheduledDeactivateExtensionEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
-    private final EventBus eventBus = new EventBus();
-
+    private final UpdateSitesReadyEventEmitter updateSitesReadyEventEmitter = new UpdateSitesReadyEventEmitter();
+    private final UpdateSitesFailedEventEmitter updateSitesFailedEventEmitter = new UpdateSitesFailedEventEmitter();
     private final Component parent;
 
     private final MessagePanel messagePanel;
@@ -59,10 +61,20 @@ public class JIPipeModernPluginManager {
     public JIPipeModernPluginManager(Component parent, MessagePanel messagePanel) {
         this.parent = parent;
         this.messagePanel = messagePanel;
-        JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getExtensionRegistry().getScheduledActivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getExtensionRegistry().getScheduledDeactivateExtensionEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
 
         updateMessagePanel();
+    }
+
+    public UpdateSitesReadyEventEmitter getUpdateSitesReadyEventEmitter() {
+        return updateSitesReadyEventEmitter;
+    }
+
+    public UpdateSitesFailedEventEmitter getUpdateSitesFailedEventEmitter() {
+        return updateSitesFailedEventEmitter;
     }
 
     private JIPipeExtensionRegistry getExtensionRegistry() {
@@ -148,19 +160,9 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    @Subscribe
-    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtension event) {
-        updateMessagePanel();
-    }
-
-    @Subscribe
-    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtension event) {
-        updateMessagePanel();
-    }
-
     private void onFailure() {
         removeUpdateSiteMessage();
-        eventBus.post(new UpdateSitesFailedEvent(this));
+        updateSitesFailedEventEmitter.emit(new UpdateSitesFailedEvent(this));
     }
 
     private void onSuccess() {
@@ -168,7 +170,7 @@ public class JIPipeModernPluginManager {
         removeUpdateSiteMessage();
         createUpdateSitesWrappers();
         resolveConflicts();
-        eventBus.post(new UpdateSitesReadyEvent(this));
+        updateSitesReadyEventEmitter.emit(new UpdateSitesReadyEvent(this));
     }
 
     private void removeUpdateSiteMessage() {
@@ -176,10 +178,6 @@ public class JIPipeModernPluginManager {
             messagePanel.removeMessage(updateSiteMessage);
             updateSiteMessage = null;
         }
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     public MessagePanel getMessagePanel() {
@@ -209,25 +207,6 @@ public class JIPipeModernPluginManager {
                 UpdateSiteExtension extension = new UpdateSiteExtension(updateSite);
                 updateSiteWrapperExtensions.add(extension);
             }
-        }
-    }
-
-    @Subscribe
-    public void onOperationInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        if (event.getRun() == refreshRepositoryRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.", true, true);
-            onFailure();
-        }
-    }
-
-    @Subscribe
-    public void onOperationFinished(JIPipeRunnable.FinishedEvent event) {
-        if (event.getRun() == refreshRepositoryRun) {
-            this.updateSites = refreshRepositoryRun.getFilesCollection();
-            onSuccess();
-        } else if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
-            updateSitesApplied = true;
-            updateMessagePanel();
         }
     }
 
@@ -374,10 +353,40 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    public static class UpdateSitesReadyEvent {
+    @Override
+    public void onScheduledActivateExtension(JIPipeExtensionRegistry.ScheduledActivateExtensionEvent event) {
+        updateMessagePanel();
+    }
+
+    @Override
+    public void onScheduledDeactivateExtension(JIPipeExtensionRegistry.ScheduledDeactivateExtensionEvent event) {
+        updateMessagePanel();
+    }
+
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        if (event.getRun() == refreshRepositoryRun) {
+            this.updateSites = refreshRepositoryRun.getFilesCollection();
+            onSuccess();
+        } else if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
+            updateSitesApplied = true;
+            updateMessagePanel();
+        }
+    }
+
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        if (event.getRun() == refreshRepositoryRun) {
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.", true, true);
+            onFailure();
+        }
+    }
+
+    public static class UpdateSitesReadyEvent extends AbstractJIPipeEvent {
         private final JIPipeModernPluginManager pluginManager;
 
         public UpdateSitesReadyEvent(JIPipeModernPluginManager pluginManager) {
+            super(pluginManager);
             this.pluginManager = pluginManager;
         }
 
@@ -386,15 +395,39 @@ public class JIPipeModernPluginManager {
         }
     }
 
-    public static class UpdateSitesFailedEvent {
+    public interface UpdateSitesReadyEventListener {
+        void onPluginManagerUpdateSitesReady(UpdateSitesReadyEvent event);
+    }
+
+    public static class UpdateSitesReadyEventEmitter extends JIPipeEventEmitter<UpdateSitesReadyEvent, UpdateSitesReadyEventListener> {
+        @Override
+        protected void call(UpdateSitesReadyEventListener updateSitesReadyEventListener, UpdateSitesReadyEvent event) {
+            updateSitesReadyEventListener.onPluginManagerUpdateSitesReady(event);
+        }
+    }
+
+    public static class UpdateSitesFailedEvent extends AbstractJIPipeEvent {
         private final JIPipeModernPluginManager pluginManager;
 
         public UpdateSitesFailedEvent(JIPipeModernPluginManager pluginManager) {
+            super(pluginManager);
             this.pluginManager = pluginManager;
         }
 
         public JIPipeModernPluginManager getPluginManager() {
             return pluginManager;
+        }
+    }
+
+    public interface UpdateSitesFailedEventListener {
+        void onPluginManagerUpdateSitesFailed(UpdateSitesFailedEvent event);
+    }
+
+    public static class UpdateSitesFailedEventEmitter extends JIPipeEventEmitter<UpdateSitesFailedEvent, UpdateSitesFailedEventListener> {
+
+        @Override
+        protected void call(UpdateSitesFailedEventListener updateSitesFailedEventListener, UpdateSitesFailedEvent event) {
+            updateSitesFailedEventListener.onPluginManagerUpdateSitesFailed(event);
         }
     }
 }

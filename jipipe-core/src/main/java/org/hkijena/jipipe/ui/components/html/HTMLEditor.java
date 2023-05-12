@@ -364,16 +364,13 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
                 new Rectangle(0, 14, 16, 2), true, false));
         UIUtils.makeFlat25x25(foregroundColorButton);
         foregroundColorButton.setToolTipText("Set color");
-        foregroundColorButton.getEventBus().register(new Object() {
-            @Subscribe
-            public void onColorSelected(ColorChooserButton.ColorChosenEvent event) {
-                if (!isUpdating) {
-                    new StyledEditorKit.ForegroundAction("set-foreground", event.getColor()).actionPerformed(
-                            new ActionEvent(wysiwygEditorPane, 0, "set-foreground")
-                    );
-                    updateSelection();
-                    wysiwygEditorPane.requestFocusInWindow();
-                }
+        foregroundColorButton.getColorChosenEventEmitter().subscribeLambda((emitter, event) -> {
+            if (!isUpdating) {
+                new StyledEditorKit.ForegroundAction("set-foreground", event.getColor()).actionPerformed(
+                        new ActionEvent(wysiwygEditorPane, 0, "set-foreground")
+                );
+                updateSelection();
+                wysiwygEditorPane.requestFocusInWindow();
             }
         });
 

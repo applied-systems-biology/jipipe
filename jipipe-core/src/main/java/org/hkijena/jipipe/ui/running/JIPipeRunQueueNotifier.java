@@ -12,14 +12,15 @@ import java.awt.*;
 /**
  * Generates notifications based on the the runner
  */
-public class JIPipeRunQueueNotifier {
+public class JIPipeRunQueueNotifier implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private static JIPipeRunQueueNotifier INSTANCE;
     private final NotificationUISettings settings;
 
     private JIPipeRunQueueNotifier() {
         this.settings = NotificationUISettings.getInstance();
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeRunnerQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
     }
 
     /**
@@ -36,8 +37,8 @@ public class JIPipeRunQueueNotifier {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onWorkerFinished(JIPipeRunnable.FinishedEvent event) {
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
                 return;
@@ -66,8 +67,8 @@ public class JIPipeRunQueueNotifier {
      *
      * @param event Generated event
      */
-    @Subscribe
-    public void onWorkerInterrupted(JIPipeRunnable.InterruptedEvent event) {
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
                 return;

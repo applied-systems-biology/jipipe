@@ -156,7 +156,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("method")
     public void setMethod(Method method) {
         this.method = method;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @JIPipeDocumentation(name = "Connectivity", description = "The connectivity for the connected components algorithm")

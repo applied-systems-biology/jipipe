@@ -1,15 +1,29 @@
 package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
 /**
  * {@link JIPipeParameterCollection} that implements the {@link com.google.common.eventbus.EventBus}
  */
 public class AbstractJIPipeParameterCollection implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+
+    private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
+    private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
+    private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
 
     @Override
-    public EventBus getEventBus() {
-        return eventBus;
+    public ParameterChangedEventEmitter getParameterChangedEventEmitter() {
+        return parameterChangedEventEmitter;
+    }
+
+    @Override
+    public ParameterStructureChangedEventEmitter getParameterStructureChangedEventEmitter() {
+        return parameterStructureChangedEventEmitter;
+    }
+
+    @Override
+    public ParameterUIChangedEventEmitter getParameterUIChangedEventEmitter() {
+        return parameterUIChangedEventEmitter;
     }
 }

@@ -31,7 +31,9 @@ import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.events.WindowClosedEvent;
+import org.hkijena.jipipe.ui.events.WindowClosedEventEmitter;
 import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
+import org.hkijena.jipipe.ui.events.WindowOpenedEventEmitter;
 import org.hkijena.jipipe.ui.project.*;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
@@ -56,8 +58,8 @@ import java.util.Set;
  * Window that holds an {@link JIPipeProjectWorkbench} instance
  */
 public class JIPipeProjectWindow extends JFrame {
-
-    public static final EventBus WINDOWS_EVENTS = new EventBus();
+    public static final WindowOpenedEventEmitter WINDOW_OPENED_EVENT_EMITTER = new WindowOpenedEventEmitter();
+    public static final WindowClosedEventEmitter WINDOW_CLOSED_EVENT_EMITTER = new WindowClosedEventEmitter();
     private static final Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private Context context;
     private JIPipeProject project;
@@ -74,7 +76,7 @@ public class JIPipeProjectWindow extends JFrame {
         SplashScreen.getInstance().hideSplash();
         this.context = context;
         OPEN_WINDOWS.add(this);
-        WINDOWS_EVENTS.post(new WindowOpenedEvent(this));
+        WINDOW_OPENED_EVENT_EMITTER.emit(new WindowOpenedEvent(this));
         initialize();
         loadProject(project, showIntroduction, isNewProject);
     }
@@ -147,13 +149,6 @@ public class JIPipeProjectWindow extends JFrame {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
     }
 
-    /**
-     * @return EventBus that generate window open/close events
-     */
-    public static EventBus getWindowsEvents() {
-        return WINDOWS_EVENTS;
-    }
-
     private void initialize() {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(8, 8));
@@ -179,7 +174,7 @@ public class JIPipeProjectWindow extends JFrame {
     public void dispose() {
         unloadProject();
         OPEN_WINDOWS.remove(this);
-        WINDOWS_EVENTS.post(new WindowClosedEvent(this));
+        WINDOW_CLOSED_EVENT_EMITTER.emit(new WindowClosedEvent(this));
         super.dispose();
     }
 
@@ -255,21 +250,19 @@ public class JIPipeProjectWindow extends JFrame {
         if (loadZipTarget != null) {
             ExtractTemplateZipFileRun run = new ExtractTemplateZipFileRun(template, loadZipTarget);
             Path finalLoadZipTarget = loadZipTarget;
-            JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
-                @Subscribe
-                public void onRunFinished(JIPipeRunnable.FinishedEvent event) {
-                    if (event.getRun() == run) {
-                        SwingUtilities.invokeLater(() -> {
-                            Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
-                            if (projectFile == null) {
-                                JOptionPane.showMessageDialog(JIPipeProjectWindow.this,
-                                        "No project file in " + finalLoadZipTarget,
-                                        "Load template",
-                                        JOptionPane.ERROR_MESSAGE);
-                            }
-                            openProject(projectFile);
-                        });
-                    }
+
+            JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
+                if (event.getRun() == run) {
+                    SwingUtilities.invokeLater(() -> {
+                        Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
+                        if (projectFile == null) {
+                            JOptionPane.showMessageDialog(JIPipeProjectWindow.this,
+                                    "No project file in " + finalLoadZipTarget,
+                                    "Load template",
+                                    JOptionPane.ERROR_MESSAGE);
+                        }
+                        openProject(projectFile);
+                    });
                 }
             });
             JIPipeRunExecuterUI.runInDialog(this, run);

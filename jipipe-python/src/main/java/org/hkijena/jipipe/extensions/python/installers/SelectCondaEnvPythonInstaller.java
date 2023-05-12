@@ -123,7 +123,6 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
     }
 
     public static class Configuration extends AbstractJIPipeParameterCollection {
-        private final EventBus eventBus = new EventBus();
         private Path condaExecutable = Paths.get("");
         private String environmentName = "base";
         private OptionalPathParameter overrideEnvironment = new OptionalPathParameter();

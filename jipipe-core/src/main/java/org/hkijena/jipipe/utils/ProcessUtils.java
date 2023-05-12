@@ -21,6 +21,8 @@ import org.apache.commons.exec.*;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
@@ -326,7 +328,7 @@ public class ProcessUtils {
     /**
      * Based on {@link ExecuteWatchdog}. Adapted to listed to {@link JIPipeProgressInfo} cancellation.
      */
-    public static class RunCancellationExecuteWatchdog extends ExecuteWatchdog {
+    public static class RunCancellationExecuteWatchdog extends ExecuteWatchdog implements RunCancellationWatchdog.CancelledEventListener {
 
         private final JIPipeProgressInfo progressInfo;
         private final RunCancellationWatchdog cancellationWatchdog;
@@ -344,7 +346,7 @@ public class ProcessUtils {
             this.progressInfo = progressInfo;
             this.cancellationWatchdog = new RunCancellationWatchdog(progressInfo);
             this.extendedExecutor = extendedExecutor;
-            this.cancellationWatchdog.getEventBus().register(this);
+            this.cancellationWatchdog.getCancelledEventEmitter().subscribe(this);
         }
 
         @Override
@@ -353,11 +355,6 @@ public class ProcessUtils {
             long pid = extendedExecutor.getPid();
             killProcessTree(pid, progressInfo);
             super.timeoutOccured(w);
-        }
-
-        @Subscribe
-        public synchronized void onProcessCancelled(RunCancellationWatchdog.CancelledEvent event) {
-            this.timeoutOccured(null);
         }
 
         @Override
@@ -371,6 +368,11 @@ public class ProcessUtils {
             cancellationWatchdog.stop();
             super.stop();
         }
+
+        @Override
+        public void onCancelled(RunCancellationWatchdog.CancelledEvent event) {
+            this.timeoutOccured(null);
+        }
     }
 
     /**
@@ -379,7 +381,7 @@ public class ProcessUtils {
      * Based on {@link Watchdog}
      */
     public static class RunCancellationWatchdog implements Runnable {
-        private final EventBus eventBus = new EventBus();
+        private final CancelledEventEmitter cancelledEventEmitter = new CancelledEventEmitter();
         private final JIPipeProgressInfo progressInfo;
         private boolean stopped = false;
 
@@ -414,23 +416,36 @@ public class ProcessUtils {
 
             // notify the listeners outside of the synchronized block (see EXEC-60)
             if (!isWaiting) {
-                eventBus.post(new CancelledEvent(this));
+                cancelledEventEmitter.emit(new CancelledEvent(this));
             }
         }
 
-        public EventBus getEventBus() {
-            return eventBus;
+        public CancelledEventEmitter getCancelledEventEmitter() {
+            return cancelledEventEmitter;
         }
 
-        public static class CancelledEvent {
+        public static class CancelledEvent extends AbstractJIPipeEvent {
             private final RunCancellationWatchdog watchdog;
 
             public CancelledEvent(RunCancellationWatchdog watchdog) {
+                super(watchdog);
                 this.watchdog = watchdog;
             }
 
             public RunCancellationWatchdog getWatchdog() {
                 return watchdog;
+            }
+        }
+
+        public interface CancelledEventListener {
+            void onCancelled(CancelledEvent event);
+        }
+
+        public static class CancelledEventEmitter extends JIPipeEventEmitter<CancelledEvent, CancelledEventListener> {
+
+            @Override
+            protected void call(CancelledEventListener cancelledEventListener, CancelledEvent event) {
+                cancelledEventListener.onCancelled(event);
             }
         }
     }

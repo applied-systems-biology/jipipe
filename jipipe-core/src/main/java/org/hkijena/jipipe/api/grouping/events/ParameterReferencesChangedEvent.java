@@ -13,10 +13,14 @@
 
 package org.hkijena.jipipe.api.grouping.events;
 
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 
 /**
  * Triggered by {@link GraphNodeParameterReferenceGroupCollection} and related classes
  */
-public class ParameterReferencesChangedEvent {
+public class ParameterReferencesChangedEvent extends AbstractJIPipeEvent {
+    public ParameterReferencesChangedEvent(Object source) {
+        super(source);
+    }
 }

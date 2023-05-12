@@ -6,6 +6,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 
 public class JIPipeProjectTemplateRegistry {
     private final JIPipe jiPipe;
+
+    private final TemplatesUpdatedEventEmitter templatesUpdatedEventEmitter = new TemplatesUpdatedEventEmitter();
 
     private final Map<String, JIPipeProjectTemplate> registeredTemplates = new HashMap<>();
 
@@ -30,9 +34,13 @@ public class JIPipeProjectTemplateRegistry {
         return Collections.unmodifiableMap(registeredTemplates);
     }
 
+    public TemplatesUpdatedEventEmitter getTemplatesUpdatedEventEmitter() {
+        return templatesUpdatedEventEmitter;
+    }
+
     public void register(JIPipeProjectTemplate template) {
         registeredTemplates.put(template.getId(), template);
-        jiPipe.getEventBus().post(new TemplatesUpdatedEvent(this));
+        templatesUpdatedEventEmitter.emit(new TemplatesUpdatedEvent(this));
         jiPipe.getProgressInfo().log("Registered project template " + template.getId() +
                 (template.getZipFile() != null ? " [has ZIP data stored in " + template.getZipFile() + "]" : ""));
         blockedTemplateNames.add(template.getMetadata().getName());
@@ -48,7 +56,7 @@ public class JIPipeProjectTemplateRegistry {
                 JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
                 JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, file, file);
                 register(template);
-                jiPipe.getEventBus().post(new TemplatesUpdatedEvent(this));
+               templatesUpdatedEventEmitter.emit(new TemplatesUpdatedEvent(this));
             }
         } else {
             JsonNode node = JsonUtils.readFromFile(file, JsonNode.class);
@@ -56,7 +64,7 @@ public class JIPipeProjectTemplateRegistry {
             JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
             JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, file, null);
             register(template);
-            jiPipe.getEventBus().post(new TemplatesUpdatedEvent(this));
+            templatesUpdatedEventEmitter.emit(new TemplatesUpdatedEvent(this));
         }
     }
 
@@ -68,15 +76,28 @@ public class JIPipeProjectTemplateRegistry {
         return Collections.unmodifiableSet(blockedTemplateNames);
     }
 
-    public static class TemplatesUpdatedEvent {
+    public static class TemplatesUpdatedEvent extends AbstractJIPipeEvent {
         private final JIPipeProjectTemplateRegistry registry;
 
         public TemplatesUpdatedEvent(JIPipeProjectTemplateRegistry registry) {
+            super(registry);
             this.registry = registry;
         }
 
         public JIPipeProjectTemplateRegistry getRegistry() {
             return registry;
+        }
+    }
+
+    public interface TemplatesUpdatedEventListener {
+        void onJIPipeTemplatesUpdated(TemplatesUpdatedEvent event);
+    }
+
+    public static class TemplatesUpdatedEventEmitter extends JIPipeEventEmitter<TemplatesUpdatedEvent, TemplatesUpdatedEventListener> {
+
+        @Override
+        protected void call(TemplatesUpdatedEventListener templatesUpdatedEventListener, TemplatesUpdatedEvent event) {
+            templatesUpdatedEventListener.onJIPipeTemplatesUpdated(event);
         }
     }
 }

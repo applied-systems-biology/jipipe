@@ -12,10 +12,11 @@
  *
  */
 
-package org.hkijena.jipipe.ui.extensions.legacy;
+package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 
@@ -24,23 +25,18 @@ import java.util.HashMap;
 /**
  * Panel that checks plugin validity
  */
-public class JIPipePluginValidityCheckerPanel extends ReloadableValidityChecker {
+public class JIPipePluginValidityCheckerPanel extends ReloadableValidityChecker implements JIPipeService.ExtensionRegisteredEventListener {
     /**
      * Creates new instance
      */
     public JIPipePluginValidityCheckerPanel() {
         super(JIPipe.getInstance(),
                 MarkdownDocument.fromPluginResource("documentation/plugin-validation.md", new HashMap<>()));
-        JIPipe.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeWeak(this);
     }
 
-    /**
-     * Triggered when a new extension is registered
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
+    @Override
+    public void onJIPipeExtensionRegistered(JIPipeService.ExtensionRegisteredEvent event) {
         recheckValidity();
     }
 }

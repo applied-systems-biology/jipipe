@@ -32,7 +32,7 @@ public class CellposeSegmentationModelSettings_Old extends AbstractJIPipeParamet
     @JIPipeParameter("model")
     public void setModel(CellposeModel model) {
         this.model = model;
-        triggerParameterUIChange();
+        emitParameterUIChangedEvent();
     }
 
     @Override

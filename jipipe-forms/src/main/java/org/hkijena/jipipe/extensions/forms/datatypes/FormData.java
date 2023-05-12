@@ -37,18 +37,15 @@ import java.nio.file.Paths;
 @JsonSerialize(using = FormData.Serializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a file forms.json that stores all metadata of the current form type in JSON format.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/form-data.schema.json")
-public abstract class FormData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
+public abstract class FormData extends AbstractJIPipeParameterCollection implements JIPipeData, JIPipeValidatable {
 
-    private final EventBus eventBus = new EventBus();
     private TabSettings tabSettings = new TabSettings();
 
     public FormData() {
-        tabSettings.getEventBus().register(this);
     }
 
     public FormData(FormData other) {
         this.tabSettings = new TabSettings(other.tabSettings);
-        tabSettings.getEventBus().register(this);
     }
 
     /**
@@ -92,11 +89,6 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
      * @return the editor
      */
     public abstract Component getEditor(JIPipeWorkbench workbench);
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
 
     /**
      * This method is called by the form processor nodes on loading data into this form.

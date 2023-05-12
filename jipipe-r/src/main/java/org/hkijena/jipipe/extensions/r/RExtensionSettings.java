@@ -21,17 +21,15 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 import java.util.List;
 
-public class RExtensionSettings implements ExternalEnvironmentSettings {
+public class RExtensionSettings extends AbstractJIPipeParameterCollection implements ExternalEnvironmentSettings {
 
     public static String ID = "org.hkijena.jipipe:r";
-
-    private final EventBus eventBus = new EventBus();
-
     private REnvironment environment = new REnvironment();
     private REnvironment.List presets = new REnvironment.List();
 
@@ -90,11 +88,6 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
             return report.isValid();
         }
         return false;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "R environment", description = "Describes the R environment to use.")

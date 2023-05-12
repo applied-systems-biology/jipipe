@@ -33,7 +33,9 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.events.WindowClosedEvent;
+import org.hkijena.jipipe.ui.events.WindowClosedEventEmitter;
 import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
+import org.hkijena.jipipe.ui.events.WindowOpenedEventEmitter;
 import org.hkijena.jipipe.ui.ijupdater.MissingRegistrationUpdateSiteResolver;
 import org.hkijena.jipipe.ui.project.MissingProjectDependenciesDialog;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -58,7 +60,8 @@ import java.util.Set;
 public class JIPipeJsonExtensionWindow extends JFrame {
 
 
-    public static final EventBus WINDOWS_EVENTS = new EventBus();
+    public static final WindowOpenedEventEmitter WINDOW_OPENED_EVENT_EMITTER = new WindowOpenedEventEmitter();
+    public static final WindowClosedEventEmitter WINDOW_CLOSED_EVENT_EMITTER = new WindowClosedEventEmitter();
     private static final Set<JIPipeJsonExtensionWindow> OPEN_WINDOWS = new HashSet<>();
     private Context context;
     private JIPipeJsonExtension project;
@@ -74,7 +77,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
      */
     public JIPipeJsonExtensionWindow(Context context, JIPipeJsonExtension project, boolean showIntroduction) {
         OPEN_WINDOWS.add(this);
-        WINDOWS_EVENTS.post(new WindowOpenedEvent(this));
+        WINDOW_OPENED_EVENT_EMITTER.emit(new WindowOpenedEvent(this));
         this.context = context;
         initialize();
         loadProject(project, showIntroduction);
@@ -240,17 +243,10 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         return Collections.unmodifiableSet(OPEN_WINDOWS);
     }
 
-    /**
-     * @return EventBus that generate window open/close events
-     */
-    public static EventBus getWindowsEvents() {
-        return WINDOWS_EVENTS;
-    }
-
     @Override
     public void dispose() {
         OPEN_WINDOWS.remove(this);
-        WINDOWS_EVENTS.post(new WindowClosedEvent(this));
+        WINDOW_CLOSED_EVENT_EMITTER.emit(new WindowClosedEvent(this));
         super.dispose();
     }
 

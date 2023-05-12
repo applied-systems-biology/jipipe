@@ -17,6 +17,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.components.MultiSelectionModel;
 import org.hkijena.jipipe.ui.components.SingleSelectionModel;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -35,9 +37,12 @@ import java.util.stream.Collectors;
  */
 public class JIPipeDataTypePicker extends JPanel {
 
+    private final DataTypeDeselectedEventEmitter dataTypeDeselectedEventEmitter = new DataTypeDeselectedEventEmitter();
+    private final DataTypeSelectedEventEmitter dataTypeSelectedEventEmitter = new DataTypeSelectedEventEmitter();
+    private final SelectedDataTypesChangedEventEmitter selectedDataTypesChangedEventEmitter = new SelectedDataTypesChangedEventEmitter();
+
     boolean reloading = false;
     private Mode mode;
-    private EventBus eventBus = new EventBus();
     private SearchTextField searchField;
     private JList<JIPipeDataInfo> dataTypeList;
     private Set<JIPipeDataInfo> hiddenDataTypes = new HashSet<>();
@@ -127,6 +132,18 @@ public class JIPipeDataTypePicker extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
+    public DataTypeDeselectedEventEmitter getDataTypeDeselectedEventEmitter() {
+        return dataTypeDeselectedEventEmitter;
+    }
+
+    public DataTypeSelectedEventEmitter getDataTypeSelectedEventEmitter() {
+        return dataTypeSelectedEventEmitter;
+    }
+
+    public SelectedDataTypesChangedEventEmitter getSelectedDataTypesChangedEventEmitter() {
+        return selectedDataTypesChangedEventEmitter;
+    }
+
     private void updateSelection() {
         if (reloading)
             return;
@@ -141,19 +158,19 @@ public class JIPipeDataTypePicker extends JPanel {
             if (uiSelected != modelSelected) {
                 if (modelSelected) {
                     selectedDataTypes.remove(dataInfo);
-                    eventBus.post(new DataTypeDeselectedEvent(this, dataInfo));
+                    dataTypeDeselectedEventEmitter.emit(new DataTypeDeselectedEvent(this, dataInfo));
                     changed = true;
                 }
                 if (uiSelected) {
                     selectedDataTypes.add(dataInfo);
-                    eventBus.post(new DataTypeSelectedEvent(this, dataInfo));
+                    dataTypeSelectedEventEmitter.emit(new DataTypeSelectedEvent(this, dataInfo));
                     changed = true;
                 }
             }
         }
 
         if (changed) {
-            eventBus.post(new SelectedDataTypesChangedEvent(this));
+            selectedDataTypesChangedEventEmitter.emit(new SelectedDataTypesChangedEvent(this));
         }
     }
 
@@ -184,10 +201,6 @@ public class JIPipeDataTypePicker extends JPanel {
         reloading = false;
     }
 
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     public Mode getMode() {
         return mode;
     }
@@ -203,7 +216,7 @@ public class JIPipeDataTypePicker extends JPanel {
 
     public void setSelectedDataTypes(Set<JIPipeDataInfo> dataInfos) {
         this.selectedDataTypes = new HashSet<>(dataInfos);
-        eventBus.post(new SelectedDataTypesChangedEvent(this));
+        selectedDataTypesChangedEventEmitter.emit(new SelectedDataTypesChangedEvent(this));
         refreshDataInfoList();
     }
 
@@ -214,24 +227,6 @@ public class JIPipeDataTypePicker extends JPanel {
         NonInteractive,
         Single,
         Multiple
-    }
-
-    /**
-     * Generated when a data type is selected
-     */
-    public static class SelectedDataTypesChangedEvent {
-        private JIPipeDataTypePicker dataTypePicker;
-
-        /**
-         * @param dataTypePicker event source
-         */
-        public SelectedDataTypesChangedEvent(JIPipeDataTypePicker dataTypePicker) {
-            this.dataTypePicker = dataTypePicker;
-        }
-
-        public JIPipeDataTypePicker getDataTypePicker() {
-            return dataTypePicker;
-        }
     }
 
     /**
@@ -267,7 +262,38 @@ public class JIPipeDataTypePicker extends JPanel {
     /**
      * Generated when a data type is selected
      */
-    public static class DataTypeSelectedEvent {
+    public static class SelectedDataTypesChangedEvent extends AbstractJIPipeEvent {
+        private JIPipeDataTypePicker dataTypePicker;
+
+        /**
+         * @param dataTypePicker event source
+         */
+        public SelectedDataTypesChangedEvent(JIPipeDataTypePicker dataTypePicker) {
+            super(dataTypePicker);
+            this.dataTypePicker = dataTypePicker;
+        }
+
+        public JIPipeDataTypePicker getDataTypePicker() {
+            return dataTypePicker;
+        }
+    }
+
+    public interface SelectedDataTypesChangedEventListener {
+        void onDataTypePickerSelectedDataTypesChanged(SelectedDataTypesChangedEvent event);
+    }
+
+    public static class SelectedDataTypesChangedEventEmitter extends JIPipeEventEmitter<SelectedDataTypesChangedEvent, SelectedDataTypesChangedEventListener> {
+
+        @Override
+        protected void call(SelectedDataTypesChangedEventListener selectedDataTypesChangedEventListener, SelectedDataTypesChangedEvent event) {
+            selectedDataTypesChangedEventListener.onDataTypePickerSelectedDataTypesChanged(event);
+        }
+    }
+
+    /**
+     * Generated when a data type is selected
+     */
+    public static class DataTypeSelectedEvent extends AbstractJIPipeEvent {
         private JIPipeDataTypePicker dataTypePicker;
         private JIPipeDataInfo dataInfo;
 
@@ -276,6 +302,7 @@ public class JIPipeDataTypePicker extends JPanel {
          * @param dataInfo       picked data type
          */
         public DataTypeSelectedEvent(JIPipeDataTypePicker dataTypePicker, JIPipeDataInfo dataInfo) {
+            super(dataTypePicker);
             this.dataTypePicker = dataTypePicker;
             this.dataInfo = dataInfo;
         }
@@ -289,10 +316,22 @@ public class JIPipeDataTypePicker extends JPanel {
         }
     }
 
+    public interface DataTypeSelectedEventListener {
+        void onDataTypePickerDataTypeSelected(DataTypeSelectedEvent event);
+    }
+
+    public static class DataTypeSelectedEventEmitter extends JIPipeEventEmitter<DataTypeSelectedEvent, DataTypeSelectedEventListener> {
+
+        @Override
+        protected void call(DataTypeSelectedEventListener dataTypeSelectedEventListener, DataTypeSelectedEvent event) {
+            dataTypeSelectedEventListener.onDataTypePickerDataTypeSelected(event);
+        }
+    }
+
     /**
      * Generated when a data type is deselected
      */
-    public static class DataTypeDeselectedEvent {
+    public static class DataTypeDeselectedEvent extends AbstractJIPipeEvent {
         private JIPipeDataTypePicker dataTypePicker;
         private JIPipeDataInfo dataInfo;
 
@@ -301,6 +340,7 @@ public class JIPipeDataTypePicker extends JPanel {
          * @param dataInfo       deselected data type
          */
         public DataTypeDeselectedEvent(JIPipeDataTypePicker dataTypePicker, JIPipeDataInfo dataInfo) {
+            super(dataTypePicker);
             this.dataTypePicker = dataTypePicker;
             this.dataInfo = dataInfo;
         }
@@ -311,6 +351,18 @@ public class JIPipeDataTypePicker extends JPanel {
 
         public JIPipeDataInfo getDataInfo() {
             return dataInfo;
+        }
+    }
+
+    public interface DataTypeDeselectedEventListener {
+        void onDataTypePickerDataTypeDeselected(DataTypeDeselectedEvent event);
+    }
+
+    public static class DataTypeDeselectedEventEmitter extends JIPipeEventEmitter<DataTypeDeselectedEvent, DataTypeDeselectedEventListener> {
+
+        @Override
+        protected void call(DataTypeDeselectedEventListener dataTypeDeselectedEventListener, DataTypeDeselectedEvent event) {
+            dataTypeDeselectedEventListener.onDataTypePickerDataTypeDeselected(event);
         }
     }
 }

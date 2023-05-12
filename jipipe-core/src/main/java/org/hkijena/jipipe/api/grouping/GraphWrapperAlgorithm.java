@@ -452,19 +452,14 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     /**
      * Keeps track of changes in the graph wrapper's input and output slots
      */
-    private class IOSlotWatcher {
+    private class IOSlotWatcher implements JIPipeSlotConfiguration.SlotConfigurationChangedEventListener {
         public IOSlotWatcher() {
-            getGroupInput().getSlotConfiguration().getEventBus().register(this);
-            getGroupOutput().getSlotConfiguration().getEventBus().register(this);
+            getGroupInput().getSlotConfiguration().getSlotConfigurationChangedEventEmitter().subscribe(this);
+            getGroupOutput().getSlotConfiguration().getSlotConfigurationChangedEventEmitter().subscribe(this);
         }
 
-        /**
-         * Should be triggered the slot configuration was changed
-         *
-         * @param event The event
-         */
-        @Subscribe
-        public void onIOSlotsChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
+        @Override
+        public void onSlotConfigurationChanged(JIPipeSlotConfiguration.SlotConfigurationChangedEvent event) {
             updateGroupSlots();
         }
     }

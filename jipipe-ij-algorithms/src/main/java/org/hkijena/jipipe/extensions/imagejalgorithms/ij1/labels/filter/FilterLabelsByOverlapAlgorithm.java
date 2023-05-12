@@ -63,7 +63,6 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(labels1Settings);
         registerSubParameter(labels2Settings);
         updateSlots();
-        getEventBus().register(this);
     }
 
     public FilterLabelsByOverlapAlgorithm(FilterLabelsByOverlapAlgorithm other) {
@@ -75,7 +74,6 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(labels1Settings);
         registerSubParameter(labels2Settings);
         updateSlots();
-        getEventBus().register(this);
     }
 
     private void updateSlots() {
@@ -103,8 +101,9 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @Subscribe
+    @Override
     public void onParameterChanged(ParameterChangedEvent event) {
+        super.onParameterChanged(event);
         if (event.getSource() == labels1Settings || event.getSource() == labels2Settings) {
             if ("enabled".equals(event.getKey())) {
                 updateSlots();

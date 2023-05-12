@@ -32,7 +32,7 @@ import java.awt.event.MouseEvent;
 /**
  * Dialog for selecting templates
  */
-public class JIPipeTemplateSelectionDialog extends JDialog {
+public class JIPipeTemplateSelectionDialog extends JDialog implements JIPipeProjectTemplateRegistry.TemplatesUpdatedEventListener {
 
     private final JIPipeWorkbench workbench;
     private final SearchTextField templateSearch = new SearchTextField();
@@ -45,7 +45,7 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         initialize();
         refreshTemplateProjects();
         templateJList.setSelectedIndex(0);
-        JIPipe.getInstance().getEventBus().register(this);
+        JIPipe.getInstance().getProjectTemplateRegistry().getTemplatesUpdatedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -115,11 +115,6 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         JIPipeRunExecuterUI.runInDialog(this, new ProjectTemplateDownloaderRun(workbench));
     }
 
-    @Subscribe
-    public void onTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
-        refreshTemplateProjects();
-    }
-
     private void refreshTemplateProjects() {
         DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
         for (JIPipeProjectTemplate template : JIPipe.getInstance().getProjectTemplateRegistry().getSortedRegisteredTemplates()) {
@@ -135,5 +130,10 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
 
     public JIPipeProjectTemplate getSelectedTemplate() {
         return isConfirmed ? templateJList.getSelectedValue() : null;
+    }
+
+    @Override
+    public void onJIPipeTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
+        refreshTemplateProjects();
     }
 }
