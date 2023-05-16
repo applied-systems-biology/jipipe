@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -38,6 +37,7 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings extends Abstr
 
     private boolean forceFlowGraphSolver = false;
 
+
     public JIPipeMissingDataGeneratorDataBatchGenerationSettings() {
     }
 
@@ -49,6 +49,7 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings extends Abstr
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
         this.forceFlowGraphSolver = other.forceFlowGraphSolver;
+
     }
 
     @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")

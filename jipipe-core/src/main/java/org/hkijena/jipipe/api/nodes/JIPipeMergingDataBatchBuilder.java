@@ -43,6 +43,8 @@ public class JIPipeMergingDataBatchBuilder {
 
     private boolean forceFlowGraphSolver = false;
 
+    private boolean forceNAIsAny = false;
+
     public JIPipeMergingDataBatchBuilder() {
 
     }
@@ -210,7 +212,7 @@ public class JIPipeMergingDataBatchBuilder {
             return null;
 
         // Apply "empty" to all other keys if we have any other ones (distribute case - only for multiple inputs)
-        if (allKeys.contains("") && slotList.size() > 1 && allKeys.size() > 1) {
+        if (allKeys.contains("") && (forceNAIsAny || slotList.size() > 1) && allKeys.size() > 1) {
 
             // Expand the empty key to all other keys
             for (String key : allKeys) {
@@ -420,7 +422,7 @@ public class JIPipeMergingDataBatchBuilder {
             JIPipeDataSlot currentSlot = slotList.get(layer);
             for (RowNode previousNode : rowNodesBySlot.get(previousSlot)) {
                 for (RowNode currentNode : rowNodesBySlot.get(currentSlot)) {
-                    if (previousNode.isCompatibleTo(currentNode, getAnnotationMatchingMethod(), getCustomAnnotationMatching())) {
+                    if (previousNode.isCompatibleTo(currentNode, getAnnotationMatchingMethod(), getCustomAnnotationMatching(), forceNAIsAny)) {
                         graph.addEdge(previousNode, currentNode);
                     }
                 }
@@ -578,6 +580,14 @@ public class JIPipeMergingDataBatchBuilder {
         this.customAnnotationMatching = customAnnotationMatching;
     }
 
+    public boolean isForceNAIsAny() {
+        return forceNAIsAny;
+    }
+
+    public void setForceNAIsAny(boolean forceNAIsAny) {
+        this.forceNAIsAny = forceNAIsAny;
+    }
+
     public boolean isForceFlowGraphSolver() {
         return forceFlowGraphSolver;
     }
@@ -606,9 +616,12 @@ public class JIPipeMergingDataBatchBuilder {
             this.annotations = annotations;
         }
 
-        public boolean isCompatibleTo(RowNode otherNode, JIPipeTextAnnotationMatchingMethod annotationMatchingMethod, DefaultExpressionParameter customAnnotationMatching) {
+        public boolean isCompatibleTo(RowNode otherNode, JIPipeTextAnnotationMatchingMethod annotationMatchingMethod, DefaultExpressionParameter customAnnotationMatching, boolean forceNAIsAny) {
             boolean exactMatchResults;
-            {
+            if(forceNAIsAny && annotations.containsKey("")) {
+                exactMatchResults = true;
+            }
+            else {
                 Set<String> annotationsToTest = new HashSet<>(annotations.keySet());
                 annotationsToTest.retainAll(otherNode.annotations.keySet());
                 exactMatchResults = true;

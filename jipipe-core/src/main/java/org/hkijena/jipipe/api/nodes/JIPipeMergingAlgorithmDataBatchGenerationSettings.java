@@ -37,8 +37,8 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings extends AbstractJ
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
-
     private boolean forceFlowGraphSolver = false;
+    private boolean forceNAIsAny = false;
 
     public JIPipeMergingAlgorithmDataBatchGenerationSettings() {
     }
@@ -53,6 +53,19 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings extends AbstractJ
         this.customAnnotationMatching = new DefaultExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
         this.forceFlowGraphSolver = other.forceFlowGraphSolver;
+        this.forceNAIsAny = other.forceNAIsAny;
+    }
+
+    @JIPipeDocumentation(name = "Force NA is ANY (if available)", description = "If enabled, missing annotations are considered as ANY (and thus merged with other data) even if there is only one input. " +
+            "Currently only works for the dictionary solver.")
+    @JIPipeParameter("force-na-is-any")
+    public boolean isForceNAIsAny() {
+        return forceNAIsAny;
+    }
+
+    @JIPipeParameter("force-na-is-any")
+    public void setForceNAIsAny(boolean forceNAIsAny) {
+        this.forceNAIsAny = forceNAIsAny;
     }
 
     @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
