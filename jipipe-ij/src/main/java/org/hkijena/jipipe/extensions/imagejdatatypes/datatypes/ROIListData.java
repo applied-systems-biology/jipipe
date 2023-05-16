@@ -1417,6 +1417,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements, boolean addNameToTable, boolean measurePhysicalSizes) {
         ResultsTableData result = new ResultsTableData(new ResultsTable());
+        if(addNameToTable) {
+            result.addStringColumn("Name");
+        }
         if (imp != null) {
             Calibration oldCalibration = imp.getCalibration();
             try {
@@ -1495,9 +1498,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     }
                 }
                 if (addNameToTable) {
-                    int columnName = result.getOrCreateColumnIndex("Name", true);
-                    for (int row = 0; row < result.getRowCount(); row++) {
-                        result.setValueAt(roi.getName(), row, columnName);
+                    int columnName = forRoi.getOrCreateColumnIndex("Name", true);
+                    for (int row = 0; row < forRoi.getRowCount(); row++) {
+                        forRoi.setValueAt(roi.getName(), row, columnName);
                     }
                 }
                 result.addRows(forRoi);
