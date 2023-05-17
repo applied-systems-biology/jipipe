@@ -20,8 +20,8 @@ import java.util.*;
 
 @JIPipeDocumentation(name = "Equality", description = "Returns TRUE if the left and right operands are equal")
 public class EqualityPredicateOperator extends GenericPredicateOperator {
-    public EqualityPredicateOperator(String symbol) {
-        super(symbol);
+    public EqualityPredicateOperator(String symbol, int precedence) {
+        super(symbol, precedence);
     }
 
     @Override

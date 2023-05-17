@@ -18,8 +18,8 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Divide", description = "Divides the left operand by the right operand")
 public class NumericDivideFunctionOperator extends NumericFunctionOperator {
-    public NumericDivideFunctionOperator() {
-        super("/", 7);
+    public NumericDivideFunctionOperator(int precedence) {
+        super("/", precedence);
     }
 
     @Override

@@ -22,10 +22,6 @@ import java.util.Map;
 
 public abstract class GenericPredicateOperator extends ExpressionOperator {
 
-    public GenericPredicateOperator(String symbol) {
-        super(symbol, 2, Associativity.LEFT, 5);
-    }
-
     public GenericPredicateOperator(String symbol, int precedence) {
         super(symbol, 2, Associativity.LEFT, precedence);
     }

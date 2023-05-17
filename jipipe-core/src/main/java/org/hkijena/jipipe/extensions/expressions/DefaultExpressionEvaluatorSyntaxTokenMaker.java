@@ -101,7 +101,7 @@ public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMak
                 currentTokenStart = index + 1;
                 continue;
             }
-            if (!isQuoted && (c == '(' || c == ')' || c == ',')) {
+            if (!isQuoted && (c == '(' || c == ')' || c == ',' || c == '[' || c == ']')) {
                 addToken(text, buffer.toString(), currentTokenStart, newStartOffset + currentTokenStart);
                 buffer.setLength(0);
                 currentTokenStart = index;

@@ -18,8 +18,8 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Greater than or equal", description = "Returns TRUE if the left operand is greater than or equal to the right operand")
 public class NumericGreaterThanOrEqualPredicateOperator extends NumericPredicateOperator {
-    public NumericGreaterThanOrEqualPredicateOperator() {
-        super(">=");
+    public NumericGreaterThanOrEqualPredicateOperator(int precedence) {
+        super(">=", precedence);
     }
 
     @Override

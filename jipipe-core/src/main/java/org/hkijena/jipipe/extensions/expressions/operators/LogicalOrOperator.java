@@ -23,8 +23,8 @@ import java.util.Iterator;
 @JIPipeDocumentation(name = "Logical OR", description = "Returns TRUE if one of the operands is TRUE")
 public class LogicalOrOperator extends ExpressionOperator {
 
-    public LogicalOrOperator(String symbol) {
-        super(symbol, 2, Associativity.LEFT, 1);
+    public LogicalOrOperator(String symbol, int precedence) {
+        super(symbol, 2, Associativity.LEFT, precedence);
     }
 
     @Override

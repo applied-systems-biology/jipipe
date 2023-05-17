@@ -23,8 +23,8 @@ import java.util.Iterator;
 @JIPipeDocumentation(name = "Logical AND", description = "Returns true if both operands are TRUE.")
 public class LogicalAndOperator extends ExpressionOperator {
 
-    public LogicalAndOperator(String symbol) {
-        super(symbol, 2, Associativity.LEFT, 2);
+    public LogicalAndOperator(String symbol, int precedence) {
+        super(symbol, 2, Associativity.LEFT, precedence);
     }
 
     @Override

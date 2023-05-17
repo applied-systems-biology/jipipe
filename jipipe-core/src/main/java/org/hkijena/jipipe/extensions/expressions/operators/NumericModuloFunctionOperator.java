@@ -18,8 +18,8 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Modulo", description = "Calculates the modulo between the left and right operands")
 public class NumericModuloFunctionOperator extends NumericFunctionOperator {
-    public NumericModuloFunctionOperator() {
-        super("%", 7);
+    public NumericModuloFunctionOperator(int precedence) {
+        super("%", precedence);
     }
 
     @Override

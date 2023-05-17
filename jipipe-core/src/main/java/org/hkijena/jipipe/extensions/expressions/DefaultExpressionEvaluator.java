@@ -37,38 +37,38 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionConstant CONSTANT_PI = new NumericPiConstant();
     public static final ExpressionConstant CONSTANT_TAU = new NumericTauConstant();
     public static final ExpressionConstant CONSTANT_E = new NumericEulerConstant();
-    public static final ExpressionOperator OPERATOR_NEGATE_SYMBOL = new LogicalNotOperator("!");
-    public static final ExpressionOperator OPERATOR_NEGATE_TEXT = new LogicalNotOperator("NOT");
-    public static final ExpressionOperator OPERATOR_AND_SYMBOL = new LogicalAndOperator("&");
-    public static final ExpressionOperator OPERATOR_AND_TEXT = new LogicalAndOperator("AND");
-    public static final ExpressionOperator OPERATOR_OR_SYMBOL = new LogicalOrOperator("|");
-    public static final ExpressionOperator OPERATOR_OR_TEXT = new LogicalOrOperator("OR");
-    public static final ExpressionOperator OPERATOR_XOR_TEXT = new LogicalXOrOperator("XOR");
-    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS = new EqualityPredicateOperator("==");
-    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS_TEXT = new EqualityPredicateOperator("EQUALS");
-    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS = new InequalityPredicateOperator("!=");
-    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS_TEXT = new InequalityPredicateOperator("UNEQUAL");
-    public static final ExpressionOperator OPERATOR_NUMERIC_LESS_THAN = new NumericLessThanPredicateOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_GREATER_THAN = new NumericGreaterThanPredicateOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL = new NumericLessThanOrEqualPredicateOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL = new NumericGreaterThanOrEqualPredicateOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_STRING_PLUS = new AdditionFunctionOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_MINUS = new SubtractionFunctionOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_MULTIPLY = new NumericMultiplyFunctionOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_DIVIDE = new NumericDivideFunctionOperator();
-    public static final ExpressionOperator OPERATOR_NUMERIC_MODULO = new NumericModuloFunctionOperator();
+    public static final ExpressionOperator OPERATOR_NEGATE_SYMBOL = new LogicalNotOperator("!", 3);
+    public static final ExpressionOperator OPERATOR_NEGATE_TEXT = new LogicalNotOperator("NOT", 3);
+    public static final ExpressionOperator OPERATOR_AND_SYMBOL = new LogicalAndOperator("&", 2);
+    public static final ExpressionOperator OPERATOR_AND_TEXT = new LogicalAndOperator("AND", 2);
+    public static final ExpressionOperator OPERATOR_OR_SYMBOL = new LogicalOrOperator("|", 1);
+    public static final ExpressionOperator OPERATOR_OR_TEXT = new LogicalOrOperator("OR", 1);
+    public static final ExpressionOperator OPERATOR_XOR_TEXT = new LogicalXOrOperator("XOR", 2);
+    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS = new EqualityPredicateOperator("==", 5);
+    public static final ExpressionOperator OPERATOR_NUMERIC_EQUALS_TEXT = new EqualityPredicateOperator("EQUALS", 5);
+    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS = new InequalityPredicateOperator("!=", 5);
+    public static final ExpressionOperator OPERATOR_NUMERIC_UNEQUALS_TEXT = new InequalityPredicateOperator("UNEQUAL", 5);
+    public static final ExpressionOperator OPERATOR_NUMERIC_LESS_THAN = new NumericLessThanPredicateOperator(5);
+    public static final ExpressionOperator OPERATOR_NUMERIC_GREATER_THAN = new NumericGreaterThanPredicateOperator(5);
+    public static final ExpressionOperator OPERATOR_NUMERIC_LESS_THAN_OR_EQUAL = new NumericLessThanOrEqualPredicateOperator(5);
+    public static final ExpressionOperator OPERATOR_NUMERIC_GREATER_THAN_OR_EQUAL = new NumericGreaterThanOrEqualPredicateOperator(5);
+    public static final ExpressionOperator OPERATOR_NUMERIC_STRING_PLUS = new AdditionFunctionOperator(6);
+    public static final ExpressionOperator OPERATOR_NUMERIC_MINUS = new SubtractionFunctionOperator(6);
+    public static final ExpressionOperator OPERATOR_NUMERIC_MULTIPLY = new NumericMultiplyFunctionOperator(7);
+    public static final ExpressionOperator OPERATOR_NUMERIC_DIVIDE = new NumericDivideFunctionOperator(7);
+    public static final ExpressionOperator OPERATOR_NUMERIC_MODULO = new NumericModuloFunctionOperator(7);
     public static final ExpressionOperator OPERATOR_NUMERIC_EXPONENT = new NumericExponentFunctionOperator();
-    public static final Operator OPERATOR_NUMERIC_NEGATE = new Operator("-", 1, Operator.Associativity.RIGHT, 8);
-    public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1, Operator.Associativity.RIGHT, 10);
-    public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new ContainsOperator();
-    public static final ExpressionOperator OPERATOR_STRING_CONTAINS2 = new ContainsOperator2();
-    public static final ExpressionOperator OPERATOR_VARIABLE_EXISTS = new VariableExistsOperator();
-    public static final ExpressionOperator OPERATOR_VARIABLE_RESOLVE = new ResolveVariableOperator();
-    public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_TEXT = new ElementAccessOperator("AT");
-    public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_SYMBOL = new ElementAccessOperator("@");
-    public static final ExpressionOperator OPERATOR_STATEMENT = new StatementOperator();
+    public static final Operator OPERATOR_NUMERIC_NEGATE = new Operator("-", 1, Operator.Associativity.RIGHT, 11);
+    public static final Operator OPERATOR_NUMERIC_NEGATE_HIGH = new Operator("-", 1, Operator.Associativity.RIGHT, 12);
+    public static final ExpressionOperator OPERATOR_STRING_CONTAINS = new ContainsOperator(6);
+    public static final ExpressionOperator OPERATOR_STRING_CONTAINS2 = new ContainsOperator2(6);
+    public static final ExpressionOperator OPERATOR_VARIABLE_EXISTS = new VariableExistsOperator(7);
+    public static final ExpressionOperator OPERATOR_VARIABLE_RESOLVE = new ResolveVariableOperator(10);
+    public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_TEXT = new ElementAccessOperator("AT", 9);
+    public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_SYMBOL = new ElementAccessOperator("@", 9);
+    public static final ExpressionOperator OPERATOR_STATEMENT = new StatementOperator(-99999);
 
-    public static final ExpressionOperator OPERATOR_PAIR = new PairOperator();
+    public static final ExpressionOperator OPERATOR_PAIR = new PairOperator(-1000);
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
     private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
@@ -238,6 +238,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         boolean isQuoted = false;
         boolean escape = false;
         int expressionEscape = 0;
+        int arrayAccessBracketDepth = 0;
         AtomicBoolean resolveVariable = new AtomicBoolean(false);
         List<String> tokens = new ArrayList<>();
 
@@ -302,6 +303,13 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 flushBufferToToken(buffer, tokens, resolveVariable);
                 resolveVariable.set(true);
                 tokens.add("" + c);
+            } else if(!isQuoted && c == '[') {
+                tokens.add("@"); // Resolve as @ operator
+                ++arrayAccessBracketDepth;
+            }
+            else if(!isQuoted && c == ']' && arrayAccessBracketDepth > 0) {
+                --arrayAccessBracketDepth;
+                continue; // Ignore token
             } else {
                 buffer.append(c);
             }

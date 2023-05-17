@@ -13,8 +13,8 @@ import java.util.Iterator;
  */
 @JIPipeDocumentation(name = "Pair", description = "Creates an array of the left and the right operand (equivalent to PAIR(x, y))")
 public class PairOperator extends ExpressionOperator {
-    public PairOperator() {
-        super(":", 2, Associativity.LEFT, -1000);
+    public PairOperator(int precedence) {
+        super(":", 2, Associativity.LEFT, precedence);
     }
 
     @Override

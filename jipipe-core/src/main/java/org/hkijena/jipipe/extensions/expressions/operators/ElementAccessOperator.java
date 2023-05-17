@@ -11,8 +11,8 @@ import java.util.*;
 @JIPipeDocumentation(name = "Element access", description = "Access the array element at given position. The first position is zero. If a string is provided, the character at the given position is returned instead.")
 public class ElementAccessOperator extends ExpressionOperator {
 
-    public ElementAccessOperator(String symbol) {
-        super(symbol, 2, Associativity.RIGHT, 9);
+    public ElementAccessOperator(String symbol, int precedence) {
+        super(symbol, 2, Associativity.RIGHT, precedence);
     }
 
     @Override

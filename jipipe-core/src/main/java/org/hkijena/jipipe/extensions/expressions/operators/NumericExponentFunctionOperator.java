@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 @JIPipeDocumentation(name = "Power", description = "Calculates the left operand to the power of the right operand")
 public class NumericExponentFunctionOperator extends NumericFunctionOperator {
     public NumericExponentFunctionOperator() {
-        super("^", 9);
+        super("^", 10);
     }
 
     @Override

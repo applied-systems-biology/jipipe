@@ -23,8 +23,8 @@ import java.util.Iterator;
 @JIPipeDocumentation(name = "Logical XOR", description = "Returns true if exactly one of the operands are TRUE.")
 public class LogicalXOrOperator extends ExpressionOperator {
 
-    public LogicalXOrOperator(String symbol) {
-        super(symbol, 2, Associativity.LEFT, 2);
+    public LogicalXOrOperator(String symbol, int precedence) {
+        super(symbol, 2, Associativity.LEFT, precedence);
     }
 
     @Override

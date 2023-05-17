@@ -18,8 +18,8 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 @JIPipeDocumentation(name = "Multiply", description = "Multiplies the left and right operands")
 public class NumericMultiplyFunctionOperator extends NumericFunctionOperator {
-    public NumericMultiplyFunctionOperator() {
-        super("*", 7);
+    public NumericMultiplyFunctionOperator(int precedence) {
+        super("*", precedence);
     }
 
     @Override

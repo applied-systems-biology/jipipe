@@ -20,8 +20,8 @@ import java.util.*;
 
 @JIPipeDocumentation(name = "Addition", description = "Adds two numbers together, concatenates two strings, or concatenates two arrays.")
 public class AdditionFunctionOperator extends GenericOperator {
-    public AdditionFunctionOperator() {
-        super("+", 6);
+    public AdditionFunctionOperator(int precedence) {
+        super("+", precedence);
     }
 
     @Override

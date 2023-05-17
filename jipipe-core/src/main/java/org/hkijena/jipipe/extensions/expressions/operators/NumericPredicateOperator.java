@@ -20,8 +20,8 @@ import java.util.Iterator;
 
 public abstract class NumericPredicateOperator extends ExpressionOperator {
 
-    public NumericPredicateOperator(String symbol) {
-        super(symbol, 2, Associativity.LEFT, 5);
+    public NumericPredicateOperator(String symbol, int precedence) {
+        super(symbol, 2, Associativity.LEFT, precedence);
     }
 
     @Override

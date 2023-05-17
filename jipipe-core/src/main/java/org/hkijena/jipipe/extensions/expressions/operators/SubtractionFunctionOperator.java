@@ -21,8 +21,8 @@ import java.util.*;
 
 @JIPipeDocumentation(name = "Subtract", description = "Subtracts the right operand from the left operand. If the left operand is an array, the right operand is removed from the array. If the left operand is a map, the right operand is removed from the map's keys.")
 public class SubtractionFunctionOperator extends GenericOperator {
-    public SubtractionFunctionOperator() {
-        super("-", 6);
+    public SubtractionFunctionOperator(int precedence) {
+        super("-", precedence);
     }
 
     @Override

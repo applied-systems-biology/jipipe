@@ -23,8 +23,8 @@ import java.util.Iterator;
 @JIPipeDocumentation(name = "Logical NOT", description = "Returns TRUE if the input is FALSE and vice versa.")
 public class LogicalNotOperator extends ExpressionOperator {
 
-    public LogicalNotOperator(String symbol) {
-        super(symbol, 1, Associativity.RIGHT, 3);
+    public LogicalNotOperator(String symbol, int precedence) {
+        super(symbol, 1, Associativity.RIGHT, precedence);
     }
 
     @Override

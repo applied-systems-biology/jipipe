@@ -29,8 +29,8 @@ import java.util.Iterator;
         "If the right operand is an array, the operator checks if the left operand is in the array.")
 public class ContainsOperator extends ExpressionOperator {
 
-    public ContainsOperator() {
-        super("IN", 2, Associativity.LEFT, 6);
+    public ContainsOperator(int precedence) {
+        super("IN", 2, Associativity.LEFT, precedence);
     }
 
     @Override

@@ -12,8 +12,8 @@ import java.util.Iterator;
  */
 @JIPipeDocumentation(name = "Statement", description = "Returns the right parameter.")
 public class StatementOperator extends ExpressionOperator {
-    public StatementOperator() {
-        super(";", 2, Associativity.LEFT, -99999);
+    public StatementOperator(int precedence) {
+        super(";", 2, Associativity.LEFT, precedence);
     }
 
     @Override

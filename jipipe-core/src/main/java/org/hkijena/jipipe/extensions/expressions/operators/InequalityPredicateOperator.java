@@ -21,8 +21,8 @@ import java.util.*;
 @JIPipeDocumentation(name = "Inequality", description = "Returns TRUE if the left and right operands are unequal")
 public class InequalityPredicateOperator extends GenericPredicateOperator {
 
-    public InequalityPredicateOperator(String symbol) {
-        super(symbol);
+    public InequalityPredicateOperator(String symbol, int precedence) {
+        super(symbol, precedence);
     }
 
     @Override
