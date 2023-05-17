@@ -185,6 +185,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         static {
             VARIABLES = new HashSet<>();
             VARIABLES.add(new ExpressionParameterVariable("value", "For selecting columns: Contains the currently selected column. Return TRUE if the column should be selected.", "value"));
+            VARIABLES.add(new ExpressionParameterVariable("row", "For generating columns: The current row.", "row"));
             VARIABLES.add(new ExpressionParameterVariable("<Column>", "For generating columns: The value of the column in the current row", ""));
             VARIABLES.add(new ExpressionParameterVariable("all.<Column>", "For generating columns: All values of a column", ""));
             VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
