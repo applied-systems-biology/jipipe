@@ -194,11 +194,22 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                 if (target.getNonSpatialLocation().getFrame() != t && !ignoreT)
                     continue;
 
+                int sourceRadius = (int) source.getRadius();
+                int targetRadius = (int) target.getRadius();
+                if(overrideVertexRadius.isEnabled()) {
+                    sourceRadius = overrideVertexRadius.getContent();
+                    targetRadius = overrideVertexRadius.getContent();
+                }
+                if(overrideEdgeThickness.isEnabled()) {
+                    sourceRadius = overrideEdgeThickness.getContent();
+                    targetRadius = overrideEdgeThickness.getContent();
+                }
+
                 createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
                         target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
                         edge.getColor(),
-                        (int) (overrideVertexRadius.isEnabled() ? overrideVertexRadius.getContent() : source.getRadius()),
-                        (int) (overrideVertexRadius.isEnabled() ? overrideVertexRadius.getContent() : target.getRadius()),
+                        sourceRadius,
+                        targetRadius,
                         processor,
                         z);
             }
