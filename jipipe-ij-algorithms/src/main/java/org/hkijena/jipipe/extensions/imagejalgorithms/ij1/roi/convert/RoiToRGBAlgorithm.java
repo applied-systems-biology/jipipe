@@ -29,10 +29,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiLabel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
@@ -50,7 +47,7 @@ import java.util.Collections;
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where ROI are drawn on", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where ROI are drawn on", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", description = "The ROI visualization (RGB image)", autoCreate = true)
 public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -126,7 +123,11 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData rois = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
-        ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
+        ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Image", ImagePlusData.class, progressInfo));
+
+        if(reference == null) {
+            reference = rois.createBlankCanvas("empty", BitDepth.ColorRGB);
+        }
 
         RoiDrawer drawer = new RoiDrawer();
         drawer.setDrawOutlineMode(drawOutlineMode);
@@ -158,8 +159,9 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             final int targetWidth = (int) (magnification * reference.getWidth());
             final int targetHeight = (int) (magnification * reference.getHeight());
             ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
+            ImagePlus finalReference = reference;
             ImageJUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
-                drawScaledRoi(reference, drawer, finalRois, targetStack, sourceIp, index);
+                drawScaledRoi(finalReference, drawer, finalRois, targetStack, sourceIp, index);
             }, progressInfo);
 
             // Generate final output

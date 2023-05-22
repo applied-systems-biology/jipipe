@@ -43,10 +43,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
@@ -1580,5 +1577,27 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             }
         }
         return Math.max(0, result);
+    }
+
+    public ImagePlus createBlankCanvas(String title, BitDepth bitDepth) {
+        return createBlankCanvas(title, bitDepth.getBitDepth());
+    }
+
+    public ImagePlus createBlankCanvas(String title, int bitDepth) {
+        int maxX = 0;
+        int maxY = 0;
+        int maxZ = 0;
+        int maxC = 0;
+        int maxT = 0;
+
+        for (Roi roi : this) {
+            maxX = (int) Math.max(maxX, roi.getBounds().x + roi.getBounds().width);
+            maxY = (int) Math.max(maxY, roi.getBounds().y + roi.getBounds().height);
+            maxZ = (int) Math.max(maxZ, roi.getZPosition() - 1);
+            maxC = Math.max(maxC, roi.getCPosition() - 1);
+            maxT = Math.max(maxT, roi.getTPosition() - 1);
+        }
+
+        return IJ.createHyperStack(title, maxX + 1, maxY + 1, maxC + 1, maxZ + 1, maxT + 1, bitDepth);
     }
 }

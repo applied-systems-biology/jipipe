@@ -160,7 +160,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
             repaint();
         }
 
-        reloadMenu();
+//        reloadMenu();
     }
 
     @Override
