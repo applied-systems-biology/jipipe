@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import ij.process.ColorProcessor;
 import mcib3d.geom.Vector3D;
-import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -10,6 +9,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageBlendMode;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
+import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.awt.*;
 
@@ -33,6 +33,10 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
     }
 
     public FilamentsDrawer(FilamentsDrawer other) {
+        copyFrom(other);
+    }
+
+    public void copyFrom(FilamentsDrawer other) {
         this.overrideVertexColor = new OptionalColorParameter(other.overrideVertexColor);
         this.overrideEdgeColor = new OptionalColorParameter(other.overrideEdgeColor);
         this.overrideVertexRadius = new OptionalIntegerParameter(other.overrideVertexRadius);
@@ -205,7 +209,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                     targetRadius = overrideEdgeThickness.getContent();
                 }
 
-                createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
+                drawLineOnProcessor(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
                         target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
                         edge.getColor(),
                         sourceRadius,
@@ -230,12 +234,12 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                 if (overrideVertexRadius.isEnabled())
                     radius = overrideVertexRadius.getContent();
 
-                drawBall(vertex.getSpatialLocation().getX(), vertex.getSpatialLocation().getY(), vertex.getSpatialLocation().getZ(), color, radius, hollowVertices, processor, z);
+                drawBallOnProcessor(vertex.getSpatialLocation().getX(), vertex.getSpatialLocation().getY(), vertex.getSpatialLocation().getZ(), color, radius, hollowVertices, processor, z);
             }
         }
     }
 
-    private void createLine(int x0, int y0, int z0, int x1, int y1, int z1, Color color, int rad0, int rad1, ColorProcessor processor, int imageZ) {
+    private void drawLineOnProcessor(int x0, int y0, int z0, int x1, int y1, int z1, Color color, int rad0, int rad1, ColorProcessor processor, int imageZ) {
         Vector3D V = new Vector3D(x1 - x0, y1 - y0, z1 - z0);
         double len = V.getLength();
         V.normalize();
@@ -245,11 +249,11 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         for (int i = 0; i < (int) len; i++) {
             double perc = i / len;
             int rad = (int) (rad0 + perc * (rad1 - rad0));
-            drawBall((int) (x0 + i * vx), (int) (y0 + i * vy), (int) (z0 + i * vz), color, rad, false, processor, imageZ);
+            drawBallOnProcessor((int) (x0 + i * vx), (int) (y0 + i * vy), (int) (z0 + i * vz), color, rad, false, processor, imageZ);
         }
     }
 
-    private void drawBall(int targetX, int targetY, int targetZ, Color color, int radius, boolean hollow, ColorProcessor processor, int imageZ) {
+    private void drawBallOnProcessor(int targetX, int targetY, int targetZ, Color color, int radius, boolean hollow, ColorProcessor processor, int imageZ) {
         int rgb = color.getRGB();
         int imageWidth = processor.getWidth();
         int imageHeight = processor.getHeight();
@@ -275,7 +279,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                     if(k > radius * radius) {
                         continue;
                     }
-                    if(hollow && k < Math.pow(radius - 2, 2)) {
+                    if(hollow && k < Math.pow(radius - 1, 2)) {
                         continue;
                     }
                     if(opacity >= 1 && blendMode == ImageBlendMode.Normal) {
@@ -288,4 +292,110 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
             }
         }
     }
+
+    public void drawFilamentsOnGraphics(Filaments3DData graph, Graphics2D graphics2D, Rectangle renderArea, double magnification, int z, int c, int t, boolean drawMuted) {
+        if(drawEdges) {
+            for (FilamentEdge edge : graph.edgeSet()) {
+                FilamentVertex source = graph.getEdgeSource(edge);
+                FilamentVertex target = graph.getEdgeTarget(edge);
+
+                if (source.getNonSpatialLocation().getChannel() != c && !ignoreC)
+                    continue;
+                if (source.getNonSpatialLocation().getFrame() != t && !ignoreT)
+                    continue;
+                if (target.getNonSpatialLocation().getChannel() != c && !ignoreC)
+                    continue;
+                if (target.getNonSpatialLocation().getFrame() != t && !ignoreT)
+                    continue;
+
+                int sourceRadius = (int) source.getRadius();
+                int targetRadius = (int) target.getRadius();
+                if(overrideVertexRadius.isEnabled()) {
+                    sourceRadius = overrideVertexRadius.getContent();
+                    targetRadius = overrideVertexRadius.getContent();
+                }
+                if(overrideEdgeThickness.isEnabled()) {
+                    sourceRadius = overrideEdgeThickness.getContent();
+                    targetRadius = overrideEdgeThickness.getContent();
+                }
+
+                drawLineOnGraphics(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
+                        target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
+                        edge.getColor(),
+                        sourceRadius,
+                        targetRadius,
+                        graphics2D,
+                        z,
+                        renderArea,
+                        magnification,
+                        drawMuted);
+            }
+        }
+        if(drawVertices) {
+            for (FilamentVertex vertex : graph.vertexSet()) {
+//            if(vertex.getSpatialLocation().getZ() != z && !ignoreZ)
+//                continue;
+                if (vertex.getNonSpatialLocation().getChannel() != c && !ignoreC)
+                    continue;
+                if (vertex.getNonSpatialLocation().getFrame() != t && !ignoreT)
+                    continue;
+                Color color = vertex.getColor();
+                int radius = (int) vertex.getRadius();
+
+                if (overrideVertexColor.isEnabled())
+                    color = overrideVertexColor.getContent();
+                if (overrideVertexRadius.isEnabled())
+                    radius = overrideVertexRadius.getContent();
+
+                drawBallOnGraphics(vertex.getSpatialLocation().getX(), vertex.getSpatialLocation().getY(), vertex.getSpatialLocation().getZ(), color, radius,
+                        hollowVertices, graphics2D, z, renderArea, magnification, drawMuted);
+            }
+        }
+    }
+
+    private void drawLineOnGraphics(int x0, int y0, int z0, int x1, int y1, int z1, Color color, int rad0, int rad1, Graphics2D graphics2D, int imageZ, Rectangle renderArea, double magnification, boolean drawMuted) {
+        Vector3D V = new Vector3D(x1 - x0, y1 - y0, z1 - z0);
+        double len = V.getLength();
+        V.normalize();
+        double vx = V.getX();
+        double vy = V.getY();
+        double vz = V.getZ();
+        for (int i = 0; i < (int) len; i++) {
+            double perc = i / len;
+            int rad = (int) (rad0 + perc * (rad1 - rad0));
+            drawBallOnGraphics((int) (x0 + i * vx), (int) (y0 + i * vy), (int) (z0 + i * vz), color, rad, false, graphics2D, imageZ, renderArea, magnification, drawMuted);
+        }
+    }
+
+    private void drawBallOnGraphics(int targetX, int targetY, int targetZ, Color color, int radius, boolean hollow, Graphics2D graphics2D, int imageZ, Rectangle renderArea, double magnification, boolean drawMuted) {
+        if(drawMuted) {
+            color = ColorUtils.scaleHSV(color, 0.8f, 1, 0.5f);
+        }
+        if(opacity < 1) {
+            color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (color.getAlpha() * opacity));
+        }
+        graphics2D.setColor(color);
+        int renderWidth = renderArea.width;
+        int renderHeight = renderArea.height;
+        int magTargetX = (int)(targetX * magnification);
+        int magTargetY = (int)(targetY * magnification);
+        int magTargetZ = (int)(targetZ * magnification);
+        double magRadius = radius * magnification;
+        if(radius <= 0) {
+            if(targetZ == imageZ) {
+                graphics2D.drawRect(magTargetX + renderArea.x, magTargetY + renderArea.y, Math.max(1, (int)magnification), Math.max(1, (int)magnification));
+            }
+        }
+        else {
+            double radiusAtZ = Math.cos(Math.abs(imageZ - targetZ)) * magRadius;
+            if(hollow) {
+                graphics2D.drawOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
+            }
+            else {
+                graphics2D.fillOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
+            }
+        }
+    }
+
+
 }

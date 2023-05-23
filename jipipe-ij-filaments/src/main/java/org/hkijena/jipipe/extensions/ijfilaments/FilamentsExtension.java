@@ -44,8 +44,10 @@ import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.RemoveDuplicateVe
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SimplifyFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.process.SmoothFilamentsAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.settings.ImageViewerUIFilamentDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -120,6 +122,13 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeTypeCategory(new FilamentsNodeTypeCategory());
+        registerSettingsSheet(ImageViewerUIFilamentDisplaySettings.ID,
+                "Filaments display",
+                "Settings for the filaments manager component of the JIPipe image viewer",
+                RESOURCES.getIconFromResources("data-type-filaments.png"),
+                "Image viewer",
+                UIUtils.getIconFromResources("actions/viewimage.png"),
+                new ImageViewerUIFilamentDisplaySettings());
 
         registerDatatype("filaments", Filaments3DData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());

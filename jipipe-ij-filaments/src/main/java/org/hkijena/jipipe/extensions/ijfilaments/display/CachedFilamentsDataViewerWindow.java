@@ -22,11 +22,15 @@ import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
+import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
+import java.util.List;
+import java.util.Map;
 
 public class CachedFilamentsDataViewerWindow extends JIPipeImageViewerCacheDataViewerWindow {
 
@@ -37,37 +41,18 @@ public class CachedFilamentsDataViewerWindow extends JIPipeImageViewerCacheDataV
     @Override
     protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         Filaments3DData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), Filaments3DData.class, progressInfo);
-        ROIListData rois = data.toRoi(false, true, true, -1, -1);
-        int width;
-        int height;
-        int numZ = 1;
-        int numC = 1;
-        int numT = 1;
-
-        if (data.isEmpty()) {
-            width = 128;
-            height = 128;
-        } else {
-            Rectangle bounds = rois.getBounds();
-            width = bounds.x + bounds.width;
-            height = bounds.y + bounds.height;
-            for (Roi roi : rois) {
-                numZ = Math.max(roi.getZPosition(), numZ);
-                numC = Math.max(roi.getCPosition(), numC);
-                numT = Math.max(roi.getTPosition(), numT);
-            }
-        }
-
         getImageViewer().setError(null);
-        ImagePlus image = IJ.createImage("empty", "8-bit", width, height, numC, numZ, numT);
-        ImageJUtils.forEachSlice(image, ip -> {
-            ip.setColor(0);
-            ip.fill();
-        }, new JIPipeProgressInfo());
+        ImagePlus image = data.createBlankCanvas("empty", BitDepth.Grayscale8u);
         getImageViewer().clearOverlays();
         getImageViewer().setImagePlus(image);
-        getImageViewer().addOverlay(rois);
+        getImageViewer().addOverlay(data);
         fitImageToScreenOnce();
     }
 
+    @Override
+    protected void initializePlugins(List<Class<? extends JIPipeImageViewerPlugin>> plugins, Map<Class<?>, Object> contextObjects) {
+        super.initializePlugins(plugins, contextObjects);
+        plugins.add(FilamentsManagerPlugin2D.class);
+        plugins.add(FilamentsManagerPlugin3D.class);
+    }
 }

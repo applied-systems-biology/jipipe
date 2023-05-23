@@ -663,6 +663,34 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return copy;
     }
 
+    /**
+     * Extracts a deep copy of the nodes end edges that only contains the selected vertices
+     *
+     * @param vertices the vertices
+     * @return the shallow copy
+     */
+    public Filaments3DData extractDeepCopy(Set<FilamentVertex> vertices) {
+        Filaments3DData copy = new Filaments3DData();
+        Map<FilamentVertex, FilamentVertex> vertexMap = new IdentityHashMap<>();
+        for (FilamentVertex vertex : vertexSet()) {
+            if (vertices.contains(vertex)) {
+                FilamentVertex cv = new FilamentVertex(vertex);
+                copy.addVertex(cv);
+                vertexMap.put(vertex, cv);
+            }
+        }
+        for (FilamentEdge edge : edgeSet()) {
+            FilamentVertex edgeSource = vertexMap.get(getEdgeSource(edge));
+            FilamentVertex edgeTarget = vertexMap.get(getEdgeTarget(edge));
+            if (edgeSource != null && edgeTarget != null) {
+                copy.addEdge(edgeSource, edgeTarget, edge);
+            }
+        }
+        return copy;
+    }
+
+
+
     public ConnectivityInspector<FilamentVertex, FilamentEdge> getConnectivityInspector() {
         return new ConnectivityInspector<>(this);
     }
@@ -985,5 +1013,33 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         }, progressInfo);
 
         return result;
+    }
+
+    public Color getAverageVertexColor() {
+        double r = 0;
+        double g = 0;
+        double b = 0;
+        for (FilamentVertex vertex : vertexSet()) {
+            r += vertex.getColor().getRed();
+            g += vertex.getColor().getGreen();
+            b += vertex.getColor().getBlue();
+        }
+        return new Color((int)(r / vertexSet().size()),
+                (int)(g / vertexSet().size()),
+                (int)(b / vertexSet().size()));
+    }
+
+    public Color getAverageEdgeColor() {
+        double r = 0;
+        double g = 0;
+        double b = 0;
+        for (FilamentEdge edge : edgeSet()) {
+            r += edge.getColor().getRed();
+            g += edge.getColor().getGreen();
+            b += edge.getColor().getBlue();
+        }
+        return new Color((int)(r / edgeSet().size()),
+                (int)(g / edgeSet().size()),
+                (int)(b / edgeSet().size()));
     }
 }

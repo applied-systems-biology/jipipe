@@ -147,6 +147,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
         cancelScheduledTasks();
         currentRendereredContent = null;
         rois.clear();
+        roiListControl.setModel(new DefaultListModel<>());
     }
 
     @Override
