@@ -307,6 +307,11 @@ See the LICENSE file provided with this code for the full license.
                 <artifactId>jipipe-ij-3d</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-scene-3d</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -354,6 +359,7 @@ See the LICENSE file provided with this code for the full license.
         <module>jipipe-ij-weka</module>
         <module>jipipe-ij-trackmate</module>
         <module>jipipe-ij-3d</module>
+        <module>jipipe-scene-3d</module>
         <module>jipipe-launcher</module>
     </modules>
 
