@@ -267,7 +267,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                 }
             }
         }
-        else {
+        else if(Math.abs(imageZ - targetZ) <= radius) {
             int[] pixels = (int[]) processor.getPixels();
             for (int y = targetY - radius; y < targetY + radius; y++) {
                 if(y < 0 || y >= imageHeight)
