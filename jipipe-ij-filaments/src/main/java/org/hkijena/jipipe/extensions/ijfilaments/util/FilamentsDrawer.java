@@ -386,7 +386,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                 graphics2D.drawRect(magTargetX + renderArea.x, magTargetY + renderArea.y, Math.max(1, (int)magnification), Math.max(1, (int)magnification));
             }
         }
-        else {
+        else if(Math.abs(imageZ - targetZ) <= radius) {
             double radiusAtZ = Math.cos(Math.abs(imageZ - targetZ)) * magRadius;
             if(hollow) {
                 graphics2D.drawOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
