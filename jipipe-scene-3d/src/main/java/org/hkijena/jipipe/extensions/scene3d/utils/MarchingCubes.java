@@ -1,5 +1,10 @@
 package org.hkijena.jipipe.extensions.scene3d.utils;
 
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.utils.CoreImageJUtils;
+
 import java.util.ArrayList;
 
 /**
@@ -7,7 +12,7 @@ import java.util.ArrayList;
  */
 public class MarchingCubes {
 
-    static int[] MC_EDGE_TABLE = {
+    private static int[] MC_EDGE_TABLE = {
             0x0, 0x109, 0x203, 0x30a, 0x406, 0x50f, 0x605, 0x70c,
             0x80c, 0x905, 0xa0f, 0xb06, 0xc0a, 0xd03, 0xe09, 0xf00,
             0x190, 0x99, 0x393, 0x29a, 0x596, 0x49f, 0x795, 0x69c,
@@ -41,7 +46,7 @@ public class MarchingCubes {
             0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c,
             0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0 };
 
-    static int[] MC_TRI_TABLE = {
+    private static int[] MC_TRI_TABLE = {
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             0, 1, 9, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -299,11 +304,11 @@ public class MarchingCubes {
             0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
     
-    static float[] lerp(float[] vec1, float[] vec2, float alpha){
+    private static float[] lerp(float[] vec1, float[] vec2, float alpha){
         return new float[]{vec1[0] + (vec2[0] - vec1[0]) * alpha, vec1[1] + (vec2[1] - vec1[1]) * alpha, vec1[2] + (vec2[2] - vec1[2]) * alpha};
     }
 
-    static ArrayList<float[]> marchingCubesChar(char[] values, int[] volDim, int volZFull, float[] voxDim, char isoLevel, int offset) {
+    public static ArrayList<float[]> marchingCubesChar(char[] values, int[] volDim, int volZFull, float[] voxDim, char isoLevel, int offset) {
 
         ArrayList<float[]> vertices = new ArrayList<>();
         // Actual position along edge weighted according to function values.
@@ -454,7 +459,7 @@ public class MarchingCubes {
         return vertices;
     }
 
-    static ArrayList<float[]> marchingCubesShort(short[] values, int[] volDim, int volZFull, float[] voxDim, short isoLevel, int offset) {
+    public static ArrayList<float[]> marchingCubesShort(short[] values, int[] volDim, int volZFull, float[] voxDim, short isoLevel, int offset) {
 
         ArrayList<float[]> vertices = new ArrayList<>();
         // Actual position along edge weighted according to function values.
@@ -605,7 +610,7 @@ public class MarchingCubes {
         return vertices;
     }
 
-    static ArrayList<float[]> marchingCubesInt(int[] values, int[] volDim, int volZFull, float[] voxDim, int isoLevel, int offset) {
+    public static ArrayList<float[]> marchingCubesInt(int[] values, int[] volDim, int volZFull, float[] voxDim, int isoLevel, int offset) {
 
         ArrayList<float[]> vertices = new ArrayList<>();
         // Actual position along edge weighted according to function values.
@@ -756,7 +761,7 @@ public class MarchingCubes {
         return vertices;
     }
 
-    static ArrayList<float[]> marchingCubesFloat(float[] values, int[] volDim, int volZFull, float[] voxDim, float isoLevel, int offset) {
+    public static ArrayList<float[]> marchingCubesFloat(float[] values, int[] volDim, int volZFull, float[] voxDim, float isoLevel, int offset) {
 
         ArrayList<float[]> vertices = new ArrayList<>();
         // Actual position along edge weighted according to function values.
@@ -907,7 +912,7 @@ public class MarchingCubes {
         return vertices;
     }
 
-    static ArrayList<float[]> marchingCubesDouble(double[] values, int[] volDim, int volZFull, float[] voxDim, double isoLevel, int offset) {
+    public static ArrayList<float[]> marchingCubesDouble(double[] values, int[] volDim, int volZFull, float[] voxDim, double isoLevel, int offset) {
 
         ArrayList<float[]> vertices = new ArrayList<>();
         // Actual position along edge weighted according to function values.
@@ -1056,5 +1061,36 @@ public class MarchingCubes {
         }
 
         return vertices;
+    }
+
+    public static ArrayList<float[]> marchingCubes(ImagePlus img,  double isoLevel, int offset) {
+        int[] volDim = new int[] { img.getWidth(), img.getHeight(), img.getNSlices()};
+        float[] voxDim = new float[] {(float) img.getCalibration().pixelWidth, (float) img.getCalibration().pixelHeight, (float) img.getCalibration().pixelDepth};
+        if(img.getType() == ImagePlus.GRAY8) {
+            char[] pixels = new char[img.getWidth() * img.getHeight() * img.getNSlices()];
+
+            for (int z = 0; z < img.getNSlices(); z++) {
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, 0, z, 0);
+                char[] ipPixels = (char[]) ip.getPixels();
+                for (int i = 0; i < ipPixels.length; i++) {
+                    pixels[i + z] = ipPixels[i];
+                }
+            }
+
+            return marchingCubesChar(pixels, volDim, volDim[2], voxDim, (char) isoLevel, offset);
+        }
+        else if(img.getType() == ImagePlus.GRAY16) {
+            short[] pixels = new short[img.getWidth() * img.getHeight() * img.getNSlices()];
+
+            return marchingCubesShort(pixels, volDim, volDim[2], voxDim, (short) isoLevel, offset);
+        }
+        else if(img.getType() == ImagePlus.GRAY32) {
+            float[] pixels = new float[img.getWidth() * img.getHeight() * img.getNSlices()];
+
+            return marchingCubesFloat(pixels, volDim, volDim[2], voxDim, (float) isoLevel, offset);
+        }
+        else {
+            throw new UnsupportedOperationException("Unsupported image type!");
+        }
     }
 }
