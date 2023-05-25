@@ -13,6 +13,7 @@ import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesE
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
+import org.hkijena.jipipe.extensions.scene3d.nodes.ExportScene3DToColladaAlgorithm;
 import org.hkijena.jipipe.extensions.scene3d.nodes.MaskTo3DMeshAlgorithm;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -71,6 +72,7 @@ public class Scene3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("scene-3d", Scene3DData.class, RESOURCES.getIcon16URLFromResources("data-type-scene3d.png"));
 
         registerNodeType("mask-to-3d-mesh", MaskTo3DMeshAlgorithm.class, UIUtils.getIconURLFromResources("actions/shape-cuboid.png"));
+        registerNodeType("export-3d-scene-to-collada", ExportScene3DToColladaAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
     }
 
     @Override
