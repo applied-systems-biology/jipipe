@@ -102,6 +102,10 @@
             <groupId>sc.fiji</groupId>
             <artifactId>TrackMate</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

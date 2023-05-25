@@ -1,11 +1,9 @@
 package org.hkijena.jipipe.extensions.scene3d.utils;
 
+import gnu.trove.list.array.TFloatArrayList;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.utils.CoreImageJUtils;
-
-import java.util.ArrayList;
 
 /**
  * Adapted from https://github.com/PrimozLavric/MarchingCubes
@@ -308,12 +306,13 @@ public class MarchingCubes {
         return new float[]{vec1[0] + (vec2[0] - vec1[0]) * alpha, vec1[1] + (vec2[1] - vec1[1]) * alpha, vec1[2] + (vec2[2] - vec1[2]) * alpha};
     }
 
-    public static ArrayList<float[]> marchingCubesChar(char[] values, int[] volDim, int volZFull, float[] voxDim, char isoLevel, int offset) {
+    public static float[] marchingCubesByte(byte[] values, int[] volDim, int volZFull, float[] voxDim, char isoLevel, int offset) {
 
-        ArrayList<float[]> vertices = new ArrayList<>();
         // Actual position along edge weighted according to function values.
         float vertList[][] = new float[12][3];
 
+        // Output array
+        TFloatArrayList vertices = new TFloatArrayList();
 
         // Calculate maximal possible axis value (used in vertice normalization)
         float maxX = voxDim[0] * (volDim[0] - 1);
@@ -354,7 +353,7 @@ public class MarchingCubes {
                     float position[] = new float[]{x * voxDim[0], y * voxDim[1], (z + offset) * voxDim[2]};
 
                     // Voxel intensities
-                    char value0 = values[p],
+                    byte value0 = values[p],
                             value1 = values[px],
                             value2 = values[py],
                             value3 = values[pxy],
@@ -365,14 +364,22 @@ public class MarchingCubes {
 
                     // Voxel is active if its intensity is above isolevel
                     int cubeindex = 0;
-                    if (value0 > isoLevel) cubeindex |= 1;
-                    if (value1 > isoLevel) cubeindex |= 2;
-                    if (value2 > isoLevel) cubeindex |= 8;
-                    if (value3 > isoLevel) cubeindex |= 4;
-                    if (value4 > isoLevel) cubeindex |= 16;
-                    if (value5 > isoLevel) cubeindex |= 32;
-                    if (value6 > isoLevel) cubeindex |= 128;
-                    if (value7 > isoLevel) cubeindex |= 64;
+                    if (Byte.toUnsignedInt(value0) > isoLevel)
+                        cubeindex |= 1;
+                    if (Byte.toUnsignedInt(value1) > isoLevel)
+                        cubeindex |= 2;
+                    if (Byte.toUnsignedInt(value2) > isoLevel)
+                        cubeindex |= 8;
+                    if (Byte.toUnsignedInt(value3) > isoLevel)
+                        cubeindex |= 4;
+                    if (Byte.toUnsignedInt(value4) > isoLevel)
+                        cubeindex |= 16;
+                    if (Byte.toUnsignedInt(value5) > isoLevel)
+                        cubeindex |= 32;
+                    if (Byte.toUnsignedInt(value6) > isoLevel)
+                        cubeindex |= 128;
+                    if (Byte.toUnsignedInt(value7) > isoLevel)
+                        cubeindex |= 64;
 
                     // Fetch the triggered edges
                     int bits = MC_EDGE_TABLE[cubeindex];
@@ -446,9 +453,9 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
+                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
+                                vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f,
+                                vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
                         i += 3;
                     }
@@ -456,15 +463,15 @@ public class MarchingCubes {
             }
         }
 
-        return vertices;
+        return vertices.toArray();
     }
 
-    public static ArrayList<float[]> marchingCubesShort(short[] values, int[] volDim, int volZFull, float[] voxDim, short isoLevel, int offset) {
-
-        ArrayList<float[]> vertices = new ArrayList<>();
+    public static float[] marchingCubesShort(short[] values, int[] volDim, int volZFull, float[] voxDim, short isoLevel, int offset) {
         // Actual position along edge weighted according to function values.
         float vertList[][] = new float[12][3];
 
+        // Output array
+        TFloatArrayList vertices = new TFloatArrayList();
 
         // Calculate maximal possible axis value (used in vertice normalization)
         float maxX = voxDim[0] * (volDim[0] - 1);
@@ -607,12 +614,12 @@ public class MarchingCubes {
             }
         }
 
-        return vertices;
+        return vertices.toArray();
     }
 
-    public static ArrayList<float[]> marchingCubesInt(int[] values, int[] volDim, int volZFull, float[] voxDim, int isoLevel, int offset) {
+    public static float[] marchingCubesInt(int[] values, int[] volDim, int volZFull, float[] voxDim, int isoLevel, int offset) {
 
-        ArrayList<float[]> vertices = new ArrayList<>();
+        TFloatArrayList vertices = new TFloatArrayList();
         // Actual position along edge weighted according to function values.
         float vertList[][] = new float[12][3];
 
@@ -748,9 +755,9 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
+                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
+                                vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f,
+                                vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
                         i += 3;
                     }
@@ -758,15 +765,16 @@ public class MarchingCubes {
             }
         }
 
-        return vertices;
+        return vertices.toArray();
     }
 
-    public static ArrayList<float[]> marchingCubesFloat(float[] values, int[] volDim, int volZFull, float[] voxDim, float isoLevel, int offset) {
+    public static float[] marchingCubesFloat(float[] values, int[] volDim, int volZFull, float[] voxDim, float isoLevel, int offset) {
 
-        ArrayList<float[]> vertices = new ArrayList<>();
         // Actual position along edge weighted according to function values.
         float vertList[][] = new float[12][3];
 
+        // Output array
+        TFloatArrayList vertices = new TFloatArrayList();
 
         // Calculate maximal possible axis value (used in vertice normalization)
         float maxX = voxDim[0] * (volDim[0] - 1);
@@ -899,9 +907,9 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
+                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
+                                vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f,
+                                vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
                         i += 3;
                     }
@@ -909,15 +917,16 @@ public class MarchingCubes {
             }
         }
 
-        return vertices;
+        return vertices.toArray();
     }
 
-    public static ArrayList<float[]> marchingCubesDouble(double[] values, int[] volDim, int volZFull, float[] voxDim, double isoLevel, int offset) {
+    public static float[] marchingCubesDouble(double[] values, int[] volDim, int volZFull, float[] voxDim, double isoLevel, int offset) {
 
-        ArrayList<float[]> vertices = new ArrayList<>();
         // Actual position along edge weighted according to function values.
         float vertList[][] = new float[12][3];
 
+        // Output array
+        TFloatArrayList vertices = new TFloatArrayList();
 
         // Calculate maximal possible axis value (used in vertice normalization)
         float maxX = voxDim[0] * (volDim[0] - 1);
@@ -1050,9 +1059,9 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
+                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
+                                vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f,
+                                vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
                         i += 3;
                     }
@@ -1060,24 +1069,25 @@ public class MarchingCubes {
             }
         }
 
-        return vertices;
+        return vertices.toArray();
     }
 
-    public static ArrayList<float[]> marchingCubes(ImagePlus img,  double isoLevel, int offset) {
+    public static float[] marchingCubes(ImagePlus img, double isoLevel, int offset) {
         int[] volDim = new int[] { img.getWidth(), img.getHeight(), img.getNSlices()};
         float[] voxDim = new float[] {(float) img.getCalibration().pixelWidth, (float) img.getCalibration().pixelHeight, (float) img.getCalibration().pixelDepth};
         if(img.getType() == ImagePlus.GRAY8) {
-            char[] pixels = new char[img.getWidth() * img.getHeight() * img.getNSlices()];
+            byte[] pixels = new byte[img.getWidth() * img.getHeight() * img.getNSlices()];
+            int sz = img.getWidth() * img.getHeight();
 
             for (int z = 0; z < img.getNSlices(); z++) {
                 ImageProcessor ip = ImageJUtils.getSliceZero(img, 0, z, 0);
-                char[] ipPixels = (char[]) ip.getPixels();
+                byte[] ipPixels = (byte[]) ip.getPixels();
                 for (int i = 0; i < ipPixels.length; i++) {
-                    pixels[i + z] = ipPixels[i];
+                    pixels[i + z * sz] = ipPixels[i];
                 }
             }
 
-            return marchingCubesChar(pixels, volDim, volDim[2], voxDim, (char) isoLevel, offset);
+            return marchingCubesByte(pixels, volDim, volDim[2], voxDim, (char) isoLevel, offset);
         }
         else if(img.getType() == ImagePlus.GRAY16) {
             short[] pixels = new short[img.getWidth() * img.getHeight() * img.getNSlices()];
