@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
 
+import java.awt.*;
 import java.util.List;
 
 public class Scene3DSphereGeometry implements Scene3DGeometry {
@@ -13,6 +14,7 @@ public class Scene3DSphereGeometry implements Scene3DGeometry {
     private float radiusX = 1;
     private float radiusY = 1;
     private float radiusZ = 1;
+    private Color color = Color.RED;
 
     @Override
     @JsonGetter("name")
@@ -54,6 +56,18 @@ public class Scene3DSphereGeometry implements Scene3DGeometry {
     @JsonSetter("radius-z")
     public void setRadiusZ(float radiusZ) {
         this.radiusZ = radiusZ;
+    }
+
+    @JsonGetter("color")
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @JsonSetter("color")
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     @Override

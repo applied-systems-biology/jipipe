@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 
+import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,6 +16,7 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
     private float[] normals;
     private int[] verticesIndex;
     private int[] normalsIndex;
+    private Color color = Color.RED;
 
     /**
      * Creates a mesh object
@@ -95,5 +97,17 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
     @Override
     public int getNumVertices() {
         return verticesIndex.length / 9;
+    }
+
+    @JsonGetter("color")
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @JsonSetter("color")
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
     }
 }

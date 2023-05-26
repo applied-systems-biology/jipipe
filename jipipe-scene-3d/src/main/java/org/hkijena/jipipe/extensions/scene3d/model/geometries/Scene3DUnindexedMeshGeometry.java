@@ -12,6 +12,7 @@ import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 import org.joml.Vector3f;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,6 +24,7 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
     private float[] vertices;
     private float[] normals;
     private int[] index;
+    private Color color = Color.RED;
 
     /**
      * Creates a mesh object
@@ -98,6 +100,18 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
     @Override
     public int getNumVertices() {
         return vertices.length / 9;
+    }
+
+    @JsonGetter("color")
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @JsonSetter("color")
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
     }
 
     /**
