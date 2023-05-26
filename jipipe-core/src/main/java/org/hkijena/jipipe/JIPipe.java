@@ -622,28 +622,85 @@ public class JIPipe extends AbstractService implements JIPipeService {
         nodeRegistry.installEvents();
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
                 .sorted(JIPipe::comparePlugins).collect(Collectors.toList());
-        List<JIPipeDependency> javaExtensions = new ArrayList<>();
+        List<JIPipeDependency> loadedJavaExtensions = new ArrayList<>();
         extensionRegistry.initialize(); // Init extension registry
         extensionRegistry.load();
         progressInfo.setProgress(1);
         progressInfo.log("Pre-initialization phase ...");
+
+        // Creating instances of extensions
+        List<JIPipeJavaExtension> allJavaExtensionInstances = new ArrayList<>();
+        List<PluginInfo<JIPipeJavaExtension>> allJavaExtensionPluginInfos = new ArrayList<>();
+        Map<String, JIPipeJavaExtension> allJavaExtensionsByID = new HashMap<>();
+
         for (int i = 0; i < pluginList.size(); ++i) {
             PluginInfo<JIPipeJavaExtension> info = pluginList.get(i);
-            IJ.showProgress(i + 1, pluginList.size());
             try {
+                progressInfo.log("Creating instance of " + info + " ...");
                 JIPipeJavaExtension extension = info.createInstance();
-                extensionRegistry.registerKnownExtension(extension);
+                allJavaExtensionInstances.add(extension);
+                allJavaExtensionPluginInfos.add(info);
 
                 // Validate ID
                 if (!isValidExtensionId(extension.getDependencyId())) {
                     System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
                     progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
                 }
+                else {
+                    if(!allJavaExtensionsByID.containsKey(extension.getDependencyId())) {
+                        allJavaExtensionsByID.put(extension.getDependencyId(), extension);
+                    }
+                    else {
+                        System.err.println("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder");
+                        progressInfo.log("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder");
+                    }
+                }
+
+            } catch (Throwable e) {
+                e.printStackTrace();
+                issues.getErroneousPlugins().add(info);
+            }
+        }
+
+        // First loading check
+        progressInfo.log("Determining extensions to be loaded ...");
+        Set<String> impliedLoadedJavaExtensions = new HashSet<>();
+        boolean impliedLoadedJavaExtensionsChanged;
+        do {
+            impliedLoadedJavaExtensionsChanged = false;
+            for (JIPipeJavaExtension extension : allJavaExtensionInstances) {
+                if (extension.isCoreExtension() || extensionRegistry.getStartupExtensions().contains(extension.getDependencyId()) || impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
+                    if(isValidExtensionId(extension.getDependencyId())) {
+                        if(!impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
+                            progressInfo.log("-> Core/User: " + extension.getDependencyId());
+                            impliedLoadedJavaExtensions.add(extension.getDependencyId());
+                            impliedLoadedJavaExtensionsChanged = true;
+                        }
+                    }
+                    for (JIPipeDependency dependency : extension.getDependencies()) {
+                        if(isValidExtensionId(dependency.getDependencyId())) {
+                            if(!impliedLoadedJavaExtensions.contains(dependency.getDependencyId())) {
+                                impliedLoadedJavaExtensions.add(dependency.getDependencyId());
+                                impliedLoadedJavaExtensionsChanged = true;
+                                progressInfo.log("-> Required by " + extension.getDependencyId() + ": " + dependency.getDependencyId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        while (impliedLoadedJavaExtensionsChanged);
+
+        for (int i = 0; i < allJavaExtensionInstances.size(); i++) {
+            IJ.showProgress(i + 1, pluginList.size());
+            JIPipeJavaExtension extension = allJavaExtensionInstances.get(i);
+            try {
+                extensionRegistry.registerKnownExtension(extension);
 
                 // Check if the extension should be loaded
-                if (!extension.isCoreExtension() && !extensionRegistry.getStartupExtensions().contains(extension.getDependencyId())) {
+                if (!extension.isCoreExtension() && !extensionRegistry.getStartupExtensions().contains(extension.getDependencyId()) && !impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
                     progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (deactivated in extension manager)");
-                    javaExtensions.add(null);
+                    loadedJavaExtensions.add(null);
                     continue;
                 }
 
@@ -657,12 +714,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
                                 "Please refer to the other items if available.",
                                 extension);
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
-                        javaExtensions.add(null);
+                        loadedJavaExtensions.add(null);
                         continue;
                     } else {
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " indicated that its pre-activation checks failed. WILL BE LOADED ANYWAYS DUE TO APPLICATION SETTINGS!");
                     }
-
                 }
 
                 getContext().inject(extension);
@@ -670,11 +726,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 if (extension instanceof AbstractService) {
                     ((AbstractService) extension).setContext(getContext());
                 }
-                javaExtensions.add(extension);
+                loadedJavaExtensions.add(extension);
                 extensionDiscoveredEventEmitter.emit(new ExtensionDiscoveredEvent(this, extension));
             } catch (Throwable e) {
                 e.printStackTrace();
-                issues.getErroneousPlugins().add(info);
+                issues.getErroneousPlugins().add(allJavaExtensionPluginInfos.get(i));
             }
         }
 
@@ -686,7 +742,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             registerFeaturesProgress.log("Registering plugin " + info);
             JIPipeJavaExtension extension = null;
             try {
-                extension = (JIPipeJavaExtension) javaExtensions.get(i);
+                extension = (JIPipeJavaExtension) loadedJavaExtensions.get(i);
 
                 if (extension == null) {
                     registerFeaturesProgress.log("Skipping (deactivated in extension manager or is refusing to activate)");
@@ -732,7 +788,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         // Check for update sites
         if (extensionSettings.isValidateImageJDependencies()) {
             JIPipeProgressInfo dependencyProgress = progressInfo.resolve("ImageJ dependencies").detachProgress();
-            checkUpdateSites(issues, javaExtensions,
+            checkUpdateSites(issues, loadedJavaExtensions,
                     new JIPipeProgressAdapter(dependencyProgress), dependencyProgress);
         }
 

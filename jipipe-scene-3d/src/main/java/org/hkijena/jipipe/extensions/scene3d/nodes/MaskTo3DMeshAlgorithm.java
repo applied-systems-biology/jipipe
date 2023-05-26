@@ -13,6 +13,8 @@ import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DUnindexedMe
 import org.hkijena.jipipe.extensions.scene3d.utils.MarchingCubes;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 
+import java.awt.*;
+
 @JIPipeDocumentation(name = "Mask to 3D scene", description = "Applies the 'Marching cubes' algorithm to convert a 3D mask into a 3D mesh.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
@@ -20,7 +22,7 @@ import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String meshName;
-
+    private Color meshColor = Color.RED;
     public MaskTo3DMeshAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -28,6 +30,7 @@ public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public MaskTo3DMeshAlgorithm(MaskTo3DMeshAlgorithm other) {
         super(other);
         this.meshName = other.meshName;
+        this.meshColor = other.meshColor;
     }
 
     @JIPipeDocumentation(name = "Mesh name", description = "The name of the generated mesh")
@@ -41,6 +44,17 @@ public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.meshName = meshName;
     }
 
+    @JIPipeDocumentation(name = "Mesh color", description = "The color (diffuse) of the mesh")
+    @JIPipeParameter("mesh-color")
+    public Color getMeshColor() {
+        return meshColor;
+    }
+
+    @JIPipeParameter("mesh-color")
+    public void setMeshColor(Color meshColor) {
+        this.meshColor = meshColor;
+    }
+
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
@@ -52,6 +66,7 @@ public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         vertices = Scene3DUtils.filterArray(vertices, mask, false);
         normals = Scene3DUtils.filterArray(normals, mask, false);
         Scene3DUnindexedMeshGeometry meshObject = new Scene3DUnindexedMeshGeometry(vertices, normals);
+        meshObject.setColor(meshColor);
         Scene3DData scene3DData = new Scene3DData();
         scene3DData.add(meshObject);
         dataBatch.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
