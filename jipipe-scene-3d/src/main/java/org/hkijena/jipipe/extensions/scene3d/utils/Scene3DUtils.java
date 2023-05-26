@@ -2,39 +2,27 @@ package org.hkijena.jipipe.extensions.scene3d.utils;
 
 import gnu.trove.list.array.TFloatArrayList;
 
-import java.awt.*;
-
 public class Scene3DUtils {
 
-    public static void checkVertexArray(float[] vertices) {
+    public static void checkUnindexedVertexArray(float[] vertices) {
         if(vertices.length % 9 != 0) {
             throw new IllegalArgumentException("Invalid vertex array: length not divisable by 3");
         }
     }
-    public static float[] generateVertexColors(float[] vertices, Color color) {
-        checkVertexArray(vertices);
-        float[] colors = new float[vertices.length];
-        for (int i = 0; i < vertices.length / 3; i++) {
-            colors[i * 3] = color.getRed() / 255.0f;
-            colors[i * 3 + 1] = color.getGreen() / 255.0f;
-            colors[i * 3 + 2] = color.getBlue() / 255.0f;
-        }
-        return colors;
-    }
 
-    public static float[] generateVertexNormalsFlat(float[] vertices) {
-        checkVertexArray(vertices);
+    public static float[] generateUnindexedVertexNormalsFlat(float[] vertices) {
+        checkUnindexedVertexArray(vertices);
         float[] normals = new float[vertices.length];
         for (int i = 0; i < vertices.length / 9; i++) {
-            float ax = vertices[i / 9];
-            float ay = vertices[i / 9 + 1];
-            float az = vertices[i / 9 + 2];
-            float bx = vertices[i / 9 + 3];
-            float by = vertices[i / 9 + 4];
-            float bz = vertices[i / 9 + 5];
-            float cx = vertices[i / 9 + 6];
-            float cy = vertices[i / 9 + 7];
-            float cz = vertices[i / 9 + 8];
+            float ax = vertices[i * 9];
+            float ay = vertices[i * 9 + 1];
+            float az = vertices[i * 9 + 2];
+            float bx = vertices[i * 9 + 3];
+            float by = vertices[i * 9 + 4];
+            float bz = vertices[i * 9 + 5];
+            float cx = vertices[i * 9 + 6];
+            float cy = vertices[i * 9 + 7];
+            float cz = vertices[i * 9 + 8];
 
             float bax = bx - ax;
             float bay = by - ay;
@@ -50,33 +38,27 @@ public class Scene3DUtils {
 
             float magnitude = (float) Math.sqrt(crossProductX * crossProductX + crossProductY * crossProductY + crossProductZ * crossProductZ);
 
-
-
             float normalizedCrossProductX = crossProductX / magnitude;
             float normalizedCrossProductY = crossProductY / magnitude;
             float normalizedCrossProductZ = crossProductZ / magnitude;
 
-            if(Float.isNaN(normalizedCrossProductX) || Float.isNaN(normalizedCrossProductY) || Float.isNaN(normalizedCrossProductZ)) {
-                System.out.println();
-            }
-
-            normals[i / 9] = normalizedCrossProductX;
-            normals[i / 9 + 1] = normalizedCrossProductY;
-            normals[i / 9 + 2] = normalizedCrossProductZ;
-            normals[i / 9 + 3] = normalizedCrossProductX;
-            normals[i / 9 + 4] = normalizedCrossProductY;
-            normals[i / 9 + 5] = normalizedCrossProductZ;
-            normals[i / 9 + 6] = normalizedCrossProductX;
-            normals[i / 9 + 7] = normalizedCrossProductY;
-            normals[i / 9 + 8] = normalizedCrossProductZ;
+            normals[i * 9] = normalizedCrossProductX;
+            normals[i * 9 + 1] = normalizedCrossProductY;
+            normals[i * 9 + 2] = normalizedCrossProductZ;
+            normals[i * 9 + 3] = normalizedCrossProductX;
+            normals[i * 9 + 4] = normalizedCrossProductY;
+            normals[i * 9 + 5] = normalizedCrossProductZ;
+            normals[i * 9 + 6] = normalizedCrossProductX;
+            normals[i * 9 + 7] = normalizedCrossProductY;
+            normals[i * 9 + 8] = normalizedCrossProductZ;
         }
 
         return normals;
     }
 
-    public static boolean[] findNaNNormalVertices(float[] vertices, float[] normals) {
-        checkVertexArray(vertices);
-        checkNormalsArray(vertices, normals);
+    public static boolean[] findUnindexedNaNNormalVertices(float[] vertices, float[] normals) {
+        checkUnindexedVertexArray(vertices);
+        checkUnindexedNormalsArray(vertices, normals);
         boolean[] mask = new boolean[vertices.length];
         for (int i = 0; i < vertices.length / 9; i++) {
             boolean invalid = false;
@@ -105,7 +87,7 @@ public class Scene3DUtils {
         return masked.toArray();
     }
 
-    public static void checkNormalsArray(float[] vertices, float[] normals) {
+    public static void checkUnindexedNormalsArray(float[] vertices, float[] normals) {
         if(vertices.length % 9 != 0) {
             throw new IllegalArgumentException("Invalid vertex array: length not divisable by 3");
         }
