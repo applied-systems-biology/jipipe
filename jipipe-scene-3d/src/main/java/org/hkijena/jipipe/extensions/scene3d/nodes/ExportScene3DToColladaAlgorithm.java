@@ -44,6 +44,8 @@ public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
     private Path outputDirectory = Paths.get("exported-data");
     private boolean relativeToProjectDir = false;
 
+    private boolean indexMeshes = true;
+
     public ExportScene3DToColladaAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
@@ -55,6 +57,7 @@ public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.outputDirectory = other.outputDirectory;
         this.relativeToProjectDir = other.relativeToProjectDir;
+        this.indexMeshes = other.indexMeshes;
         registerSubParameter(exporter);
     }
 
@@ -91,6 +94,7 @@ public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
         Path outputFile = PathUtils.ensureExtension(outputPath, ".dae");
 
         Scene3DToColladaExporter scene3DToColladaExporter = new Scene3DToColladaExporter(scene3DData, outputFile);
+        scene3DToColladaExporter.setIndexMeshes(indexMeshes);
         scene3DToColladaExporter.setProgressInfo(progressInfo.resolve("Export DAE"));
         scene3DToColladaExporter.run();
 
@@ -127,5 +131,16 @@ public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("relative-to-project-dir")
     public void setRelativeToProjectDir(boolean relativeToProjectDir) {
         this.relativeToProjectDir = relativeToProjectDir;
+    }
+
+    @JIPipeDocumentation(name = "Index/simplify meshes", description = "If enabled, meshes are automatically indexed (simplified), which reduces the size of the output file, but needs additional processing time")
+    @JIPipeParameter("index-meshes")
+    public boolean isIndexMeshes() {
+        return indexMeshes;
+    }
+
+    @JIPipeParameter("index-meshes")
+    public void setIndexMeshes(boolean indexMeshes) {
+        this.indexMeshes = indexMeshes;
     }
 }

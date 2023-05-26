@@ -110,4 +110,9 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
     public void setColor(Color color) {
         this.color = color;
     }
+
+    @Override
+    public String toString() {
+        return String.format("Indexed mesh (%d faces, %d MB)", getNumVertices(), ((vertices.length + normals.length + verticesIndex.length + normalsIndex.length) * 32L) / 1024 / 1024 );
+    }
 }

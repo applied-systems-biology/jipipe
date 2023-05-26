@@ -35,6 +35,8 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
 
     private final Path outputFile;
 
+    private boolean indexMeshes = true;
+
     public Scene3DToColladaExporter(Scene3DData scene3DNodes, Path outputFile) {
         this.scene3DNodes = scene3DNodes;
         this.outputFile = outputFile;
@@ -43,6 +45,14 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
     @Override
     public String getTaskLabel() {
         return "Export Collada";
+    }
+
+    public boolean isIndexMeshes() {
+        return indexMeshes;
+    }
+
+    public void setIndexMeshes(boolean indexMeshes) {
+        this.indexMeshes = indexMeshes;
     }
 
     @Override
@@ -138,8 +148,8 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
 
             // Create a new geometry element
             Scene3DMeshGeometry meshGeometry = ((Scene3DGeometry) scene3DNode).toMeshGeometry(processingProgress);
-            if(meshGeometry instanceof Scene3DUnindexedMeshGeometry) {
-                meshGeometry = ((Scene3DUnindexedMeshGeometry) meshGeometry).toIndexedMeshGeometry(processingProgress.resolve("Mesh indexing"));
+            if(indexMeshes && meshGeometry instanceof Scene3DUnindexedMeshGeometry) {
+                meshGeometry = ((Scene3DUnindexedMeshGeometry) meshGeometry).toIndexedMeshGeometry(processingProgress.resolveAndLog("Mesh indexing"));
             }
 
             Element geometryElement = doc.createElement("geometry");

@@ -126,7 +126,22 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
         int[] verticesIndex = new int[vertices.length / 3];
         int[] normalsIndex = new int[normals.length / 3];
 
+        int lastPercentage = 0;
+
         for (int i = 0; i < vertices.length / 3; i++) {
+
+            int nextPercentage = (int)(100.0 * i / (vertices.length / 3));
+
+            if(nextPercentage != lastPercentage) {
+
+                if(progressInfo.isCancelled()) {
+                    return null;
+                }
+
+                progressInfo.log("Finding unique vertices/normals ... " + nextPercentage + "%");
+                lastPercentage = nextPercentage;
+            }
+
             Vector3f vertex = new Vector3f(vertices[i * 3], vertices[i * 3 + 1], vertices[i * 3 + 2]);
             Vector3f normal = new Vector3f(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2]);
 
@@ -146,9 +161,14 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
             normalsIndex[i] = normalIndex;
         }
 
+        if(progressInfo.isCancelled()) {
+            return null;
+        }
+
         float[] compressedVertices = new float[uniqueVertices.size() * 3];
         float[] compressedNormals = new float[uniqueNormals.size() * 3];
 
+        progressInfo.log("Generating output arrays ...");
         for (int i = 0; i < uniqueVertices.size(); i++) {
             Vector3f vertex = uniqueVertices.get(i);
             compressedVertices[i * 3] = vertex.x;
@@ -165,5 +185,10 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
         Scene3DIndexedMeshGeometry geometry = new Scene3DIndexedMeshGeometry(compressedVertices, compressedNormals, verticesIndex, normalsIndex);
         geometry.copyMetadataFrom(this);
         return geometry;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Unindexed mesh (%d faces, %d MB)", getNumVertices(), ((vertices.length + normals.length) * 32L) / 1024 / 1024 );
     }
 }
