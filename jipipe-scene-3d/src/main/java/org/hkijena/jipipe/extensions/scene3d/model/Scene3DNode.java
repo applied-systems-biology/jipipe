@@ -24,13 +24,6 @@ public interface Scene3DNode {
     void setName(String name);
 
     /**
-     * Converts this node into a mesh
-     * @param target the list of target meshes
-     * @param progressInfo the progress info
-     */
-    void toMesh(List<Scene3DMeshGeometry> target, JIPipeProgressInfo progressInfo);
-
-    /**
      * Copies metadata from another node
      * @param other the other node
      */

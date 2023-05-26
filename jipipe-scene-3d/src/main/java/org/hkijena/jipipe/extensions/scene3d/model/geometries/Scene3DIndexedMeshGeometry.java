@@ -32,8 +32,8 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
     }
 
     @Override
-    public void toMesh(List<Scene3DMeshGeometry> target, JIPipeProgressInfo progressInfo) {
-        target.add(this);
+    public Scene3DMeshGeometry toMeshGeometry(JIPipeProgressInfo progressInfo) {
+        return this;
     }
 
     @Override

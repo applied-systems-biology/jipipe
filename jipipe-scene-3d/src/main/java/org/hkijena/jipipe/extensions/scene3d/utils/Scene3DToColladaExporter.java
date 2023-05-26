@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.clij2.Scene3DExtension;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
+import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DMeshGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DUnindexedMeshGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
@@ -53,12 +54,9 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
             rootElement.setAttribute("version", "1.4.1");
             doc.appendChild(rootElement);
 
-            Set<String> geometryIds = new HashSet<>();
-
             // Create content
             createAssetMetadata(doc, rootElement);
-            createGeometryLibrary(doc, rootElement, geometryIds);
-            createSceneLibrary(doc, rootElement, geometryIds);
+            createSceneLibrary(doc, rootElement);
 
             // Write XML file
             try(FileOutputStream outputStream = new FileOutputStream(outputFile.toString())) {
@@ -77,7 +75,11 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
         }
     }
 
-    private void createSceneLibrary(Document doc, Element rootElement, Set<String> geometryIds) {
+    private void createSceneLibrary(Document doc, Element rootElement) {
+
+        Element geometryListElement = doc.createElement("library_geometries");
+        rootElement.appendChild(geometryListElement);
+
         Element visualScenesListElement = doc.createElement("library_visual_scenes");
         rootElement.appendChild(visualScenesListElement);
 
@@ -86,23 +88,10 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
         sceneElement.setAttribute("id", "Scene");
         sceneElement.setAttribute("name", "Scene");
 
-        for (String geometryId : geometryIds) {
-            Element nodeElement = doc.createElement("node");
-            sceneElement.appendChild(nodeElement);
+        Set<String> nodeIds = new HashSet<>();
 
-            nodeElement.setAttribute("id", "node-" + geometryId);
-            nodeElement.setAttribute("name", "node-" + geometryId);
-            nodeElement.setAttribute("type", "NODE");
-
-            Element matrixElement = doc.createElement("matrix");
-            nodeElement.appendChild(matrixElement);
-            matrixElement.setAttribute("sid", "transform");
-            matrixElement.setTextContent("1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1");
-
-            Element instanceGeometryElement = doc.createElement("instance_geometry");
-            nodeElement.appendChild(instanceGeometryElement);
-            instanceGeometryElement.setAttribute("url", "#" + geometryId);
-            instanceGeometryElement.setAttribute("name", geometryId);
+        for (Scene3DNode scene3DNode : scene3DNodes) {
+            createNode(doc, scene3DNode, nodeIds, sceneElement, geometryListElement);
         }
 
         Element rootSceneElement = doc.createElement("scene");
@@ -112,38 +101,41 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
         instanceVisualSceneElement.setAttribute("url", "#Scene");
     }
 
-    private void createGeometryLibrary(Document doc, Element rootElement, Set<String> geometryIds) {
-        Element geometryListElement = doc.createElement("library_geometries");
-        rootElement.appendChild(geometryListElement);
+    private void createNode(Document doc, Scene3DNode scene3DNode, Set<String> nodeIds, Element targetElement, Element geometryListElement) {
 
-        // Converting to mesh
-        List<Scene3DMeshGeometry> meshObjectList = new ArrayList<>();
-        getProgressInfo().setProgress(0, scene3DNodes.size());
-        for (int i = 0; i < scene3DNodes.size(); i++) {
-            JIPipeProgressInfo nodeProgress = getProgressInfo().resolveAndLog("Generating meshes", i, scene3DNodes.size());
-            Scene3DNode scene3DNode = scene3DNodes.get(i);
-            scene3DNode.toMesh(meshObjectList, nodeProgress);
-        }
+        String id = StringUtils.makeUniqueString(StringUtils.orElse(scene3DNode.getName(), "unnamed"), "-", nodeIds);
 
-        // Generate XML data
-        getProgressInfo().setProgress(0, meshObjectList.size());
-        for (int i = 0; i < meshObjectList.size(); i++) {
-            JIPipeProgressInfo meshProgress = getProgressInfo().resolveAndLog("Indexing meshes", i, scene3DNodes.size());
+        Element nodeElement = doc.createElement("node");
+        nodeElement.setAttribute("id", "node-" + id);
+        nodeElement.setAttribute("name", StringUtils.orElse(scene3DNode.getName(), "Unnamed"));
+        nodeElement.setAttribute("type", "NODE");
+        targetElement.appendChild(nodeElement);
 
-            Scene3DMeshGeometry meshObject = meshObjectList.get(i);
-            if(meshObject instanceof Scene3DUnindexedMeshGeometry) {
-                meshObject = ((Scene3DUnindexedMeshGeometry) meshObject).toIndexedMeshGeometry(meshProgress);
+        if(scene3DNode instanceof Scene3DGeometry) {
+
+            JIPipeProgressInfo processingProgress = getProgressInfo().resolveAndLog("Processing geometry " + scene3DNode + " ...");
+
+            // Create a new geometry element
+            Scene3DMeshGeometry meshGeometry = ((Scene3DGeometry) scene3DNode).toMeshGeometry(processingProgress);
+            if(meshGeometry instanceof Scene3DUnindexedMeshGeometry) {
+                meshGeometry = ((Scene3DUnindexedMeshGeometry) meshGeometry).toIndexedMeshGeometry(processingProgress.resolve("Mesh indexing"));
             }
-
-            String id = StringUtils.makeUniqueString(StringUtils.orElse(meshObject.getName(), "unnamed"), "-", geometryIds);
-            geometryIds.add(id);
 
             Element geometryElement = doc.createElement("geometry");
             geometryListElement.appendChild(geometryElement);
             geometryElement.setAttribute("id", id);
             geometryElement.setAttribute("name", id);
 
-            createMesh(doc, meshObject, geometryElement, id);
+            createMesh(doc, meshGeometry, geometryElement, id);
+
+            // Insert the geometry into the node
+            Element instanceGeometryElement = doc.createElement("instance_geometry");
+            nodeElement.appendChild(instanceGeometryElement);
+            instanceGeometryElement.setAttribute("url", "#" + id);
+            instanceGeometryElement.setAttribute("name", id);
+        }
+        else {
+            throw new UnsupportedOperationException();
         }
     }
 

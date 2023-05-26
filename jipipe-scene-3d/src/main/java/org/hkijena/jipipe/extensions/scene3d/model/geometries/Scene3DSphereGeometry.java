@@ -57,7 +57,7 @@ public class Scene3DSphereGeometry implements Scene3DGeometry {
     }
 
     @Override
-    public void toMesh(List<Scene3DMeshGeometry> target, JIPipeProgressInfo progressInfo) {
-
+    public Scene3DMeshGeometry toMeshGeometry(JIPipeProgressInfo progressInfo) {
+        return null;
     }
 }
