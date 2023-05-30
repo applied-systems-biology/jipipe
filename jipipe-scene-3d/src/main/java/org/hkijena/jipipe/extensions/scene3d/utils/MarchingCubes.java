@@ -1092,10 +1092,30 @@ public class MarchingCubes {
         else if(img.getType() == ImagePlus.GRAY16) {
             short[] pixels = new short[img.getWidth() * img.getHeight() * img.getNSlices()];
 
+            int sz = img.getWidth() * img.getHeight();
+
+            for (int z = 0; z < img.getNSlices(); z++) {
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, 0, z, 0);
+                short[] ipPixels = (short[]) ip.getPixels();
+                for (int i = 0; i < ipPixels.length; i++) {
+                    pixels[i + z * sz] = ipPixels[i];
+                }
+            }
+
             return marchingCubesShort(pixels, volDim, volDim[2], voxDim, (short) isoLevel, offset);
         }
         else if(img.getType() == ImagePlus.GRAY32) {
             float[] pixels = new float[img.getWidth() * img.getHeight() * img.getNSlices()];
+
+            int sz = img.getWidth() * img.getHeight();
+
+            for (int z = 0; z < img.getNSlices(); z++) {
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, 0, z, 0);
+                float[] ipPixels = (float[]) ip.getPixels();
+                for (int i = 0; i < ipPixels.length; i++) {
+                    pixels[i + z * sz] = ipPixels[i];
+                }
+            }
 
             return marchingCubesFloat(pixels, volDim, volDim[2], voxDim, (float) isoLevel, offset);
         }
