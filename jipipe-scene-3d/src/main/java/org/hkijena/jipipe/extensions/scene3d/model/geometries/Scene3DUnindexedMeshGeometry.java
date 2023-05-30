@@ -2,9 +2,12 @@ package org.hkijena.jipipe.extensions.scene3d.model.geometries;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import gnu.trove.impl.Constants;
 import gnu.trove.list.TFloatList;
 import gnu.trove.map.TFloatIntMap;
+import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.hash.TFloatIntHashMap;
+import gnu.trove.map.hash.TObjectIntHashMap;
 import gnu.trove.set.TFloatSet;
 import gnu.trove.set.hash.TFloatHashSet;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -13,10 +16,8 @@ import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 import org.joml.Vector3f;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
 
@@ -120,8 +121,8 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
      * @return the indexed geometry
      */
     public Scene3DIndexedMeshGeometry toIndexedMeshGeometry(JIPipeProgressInfo progressInfo) {
-        List<Vector3f> uniqueVertices = new ArrayList<>();
-        List<Vector3f> uniqueNormals = new ArrayList<>();
+        TObjectIntMap<Vector3f> uniqueVertices = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
+        TObjectIntMap<Vector3f> uniqueNormals = new TObjectIntHashMap<>(Constants.DEFAULT_CAPACITY, Constants.DEFAULT_LOAD_FACTOR, -1);
 
         int[] verticesIndex = new int[vertices.length / 3];
         int[] normalsIndex = new int[normals.length / 3];
@@ -145,16 +146,16 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
             Vector3f vertex = new Vector3f(vertices[i * 3], vertices[i * 3 + 1], vertices[i * 3 + 2]);
             Vector3f normal = new Vector3f(normals[i * 3], normals[i * 3 + 1], normals[i * 3 + 2]);
 
-            int vertexIndex = uniqueVertices.indexOf(vertex);
-            int normalIndex = uniqueNormals.indexOf(normal);
+            int vertexIndex = uniqueVertices.get(vertex);
+            int normalIndex = uniqueNormals.get(normal);
 
             if(vertexIndex < 0) {
                 vertexIndex = uniqueVertices.size();
-                uniqueVertices.add(vertex);
+                uniqueVertices.put(vertex, vertexIndex);
             }
             if(normalIndex < 0) {
                 normalIndex = uniqueNormals.size();
-                uniqueNormals.add(normal);
+                uniqueNormals.put(normal, normalIndex);
             }
 
             verticesIndex[i] = vertexIndex;
@@ -169,17 +170,17 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
         float[] compressedNormals = new float[uniqueNormals.size() * 3];
 
         progressInfo.log("Generating output arrays ...");
-        for (int i = 0; i < uniqueVertices.size(); i++) {
-            Vector3f vertex = uniqueVertices.get(i);
-            compressedVertices[i * 3] = vertex.x;
-            compressedVertices[i * 3 + 1] = vertex.y;
-            compressedVertices[i * 3 + 2] = vertex.z;
+        for (Vector3f vec : uniqueVertices.keySet()) {
+            int i = uniqueVertices.get(vec);
+            compressedVertices[i * 3] = vec.x;
+            compressedVertices[i * 3 + 1] = vec.y;
+            compressedVertices[i * 3 + 2] = vec.z;
         }
-        for (int i = 0; i < uniqueNormals.size(); i++) {
-            Vector3f normal = uniqueNormals.get(i);
-            compressedNormals[i * 3] = normal.x;
-            compressedNormals[i * 3 + 1] = normal.y;
-            compressedNormals[i * 3 + 2] = normal.z;
+        for (Vector3f vec : uniqueNormals.keySet()) {
+            int i = uniqueNormals.get(vec);
+            compressedNormals[i * 3] = vec.x;
+            compressedNormals[i * 3 + 1] = vec.y;
+            compressedNormals[i * 3 + 2] = vec.z;
         }
 
         Scene3DIndexedMeshGeometry geometry = new Scene3DIndexedMeshGeometry(compressedVertices, compressedNormals, verticesIndex, normalsIndex);
