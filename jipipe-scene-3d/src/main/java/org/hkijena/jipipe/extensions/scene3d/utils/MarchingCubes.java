@@ -4,6 +4,7 @@ import gnu.trove.list.array.TFloatArrayList;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 
 /**
  * Adapted from https://github.com/PrimozLavric/MarchingCubes
@@ -318,7 +319,7 @@ public class MarchingCubes {
         float maxX = voxDim[0] * (volDim[0] - 1);
         float maxY = voxDim[1] * (volDim[1] - 1);
         float maxZ = voxDim[2] * (volZFull - 1);
-        float maxAxisVal = Math.max(maxX, Math.max(maxY, maxZ));
+        float maxAxisVal = 1;
 
         // Volume iteration
         for (int z = 0; z < volDim[2] - 1; z++) {
@@ -477,7 +478,7 @@ public class MarchingCubes {
         float maxX = voxDim[0] * (volDim[0] - 1);
         float maxY = voxDim[1] * (volDim[1] - 1);
         float maxZ = voxDim[2] * (volZFull - 1);
-        float maxAxisVal = Math.max(maxX, Math.max(maxY, maxZ));
+        float maxAxisVal = 1;
 
         // Volume iteration
         for (int z = 0; z < volDim[2] - 1; z++) {
@@ -628,7 +629,7 @@ public class MarchingCubes {
         float maxX = voxDim[0] * (volDim[0] - 1);
         float maxY = voxDim[1] * (volDim[1] - 1);
         float maxZ = voxDim[2] * (volZFull - 1);
-        float maxAxisVal = Math.max(maxX, Math.max(maxY, maxZ));
+        float maxAxisVal = 1;
 
         // Volume iteration
         for (int z = 0; z < volDim[2] - 1; z++) {
@@ -780,7 +781,7 @@ public class MarchingCubes {
         float maxX = voxDim[0] * (volDim[0] - 1);
         float maxY = voxDim[1] * (volDim[1] - 1);
         float maxZ = voxDim[2] * (volZFull - 1);
-        float maxAxisVal = Math.max(maxX, Math.max(maxY, maxZ));
+        float maxAxisVal = 1;
 
         // Volume iteration
         for (int z = 0; z < volDim[2] - 1; z++) {
@@ -932,7 +933,7 @@ public class MarchingCubes {
         float maxX = voxDim[0] * (volDim[0] - 1);
         float maxY = voxDim[1] * (volDim[1] - 1);
         float maxZ = voxDim[2] * (volZFull - 1);
-        float maxAxisVal = Math.max(maxX, Math.max(maxY, maxZ));
+        float maxAxisVal = 1;
 
         // Volume iteration
         for (int z = 0; z < volDim[2] - 1; z++) {
@@ -1072,15 +1073,33 @@ public class MarchingCubes {
         return vertices.toArray();
     }
 
-    public static float[] marchingCubes(ImagePlus img, double isoLevel, int offset) {
+    public static float[] marchingCubes(ImagePlus img, int channel, int frame, double isoLevel, int offset, boolean physicalSizes, boolean forceMeshLengthUnit, Quantity.LengthUnit meshLengthUnit) {
+
+        float voxDimX = 1;
+        float voxDimY = 1;
+        float voxDimZ = 1;
+
+        if(physicalSizes) {
+            voxDimX = (float) img.getCalibration().pixelWidth;
+            voxDimY = (float) img.getCalibration().pixelHeight;
+            voxDimZ = (float) img.getCalibration().pixelDepth;
+            if(forceMeshLengthUnit) {
+                Quantity inputQuantity = new Quantity(1, img.getCalibration().getUnits());
+                Quantity outputQuantity = inputQuantity.convertTo(meshLengthUnit.toString());
+                voxDimX *= outputQuantity.getValue();
+                voxDimY *= outputQuantity.getValue();
+                voxDimZ *= outputQuantity.getValue();
+            }
+        }
+
         int[] volDim = new int[] { img.getWidth(), img.getHeight(), img.getNSlices()};
-        float[] voxDim = new float[] {(float) img.getCalibration().pixelWidth, (float) img.getCalibration().pixelHeight, (float) img.getCalibration().pixelDepth};
+        float[] voxDim = new float[] {voxDimX, voxDimY, voxDimZ};
         if(img.getType() == ImagePlus.GRAY8) {
             byte[] pixels = new byte[img.getWidth() * img.getHeight() * img.getNSlices()];
             int sz = img.getWidth() * img.getHeight();
 
             for (int z = 0; z < img.getNSlices(); z++) {
-                ImageProcessor ip = ImageJUtils.getSliceZero(img, 0, z, 0);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, channel, z, frame);
                 byte[] ipPixels = (byte[]) ip.getPixels();
                 for (int i = 0; i < ipPixels.length; i++) {
                     pixels[i + z * sz] = ipPixels[i];
@@ -1095,7 +1114,7 @@ public class MarchingCubes {
             int sz = img.getWidth() * img.getHeight();
 
             for (int z = 0; z < img.getNSlices(); z++) {
-                ImageProcessor ip = ImageJUtils.getSliceZero(img, 0, z, 0);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, channel, z, frame);
                 short[] ipPixels = (short[]) ip.getPixels();
                 for (int i = 0; i < ipPixels.length; i++) {
                     pixels[i + z * sz] = ipPixels[i];
@@ -1110,7 +1129,7 @@ public class MarchingCubes {
             int sz = img.getWidth() * img.getHeight();
 
             for (int z = 0; z < img.getNSlices(); z++) {
-                ImageProcessor ip = ImageJUtils.getSliceZero(img, 0, z, 0);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, channel, z, frame);
                 float[] ipPixels = (float[]) ip.getPixels();
                 for (int i = 0; i < ipPixels.length; i++) {
                     pixels[i + z * sz] = ipPixels[i];

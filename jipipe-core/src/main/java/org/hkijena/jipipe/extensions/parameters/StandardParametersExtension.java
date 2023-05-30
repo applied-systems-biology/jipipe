@@ -165,6 +165,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     private void registerQuantityParameters() {
         registerParameterType("quantity", Quantity.class, "Quantity", "A value with a unit", QuantityParameterEditorUI.class);
         registerParameterType("optional-quantity", OptionalQuantity.class, "Optional quantity", "A value with a unit");
+        registerEnumParameterType("quantity-image-unit", Quantity.LengthUnit.class, "Length unit", "A length unit");
     }
 
     private void registerRangeParameters() {
