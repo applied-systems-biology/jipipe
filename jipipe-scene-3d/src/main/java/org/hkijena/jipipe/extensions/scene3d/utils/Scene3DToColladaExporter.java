@@ -123,6 +123,7 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
     private void createNode(Document doc, Scene3DNode scene3DNode, Set<String> nodeIds, Element effectsListElement, Element materialsListElement, Element geometryListElement, Element targetElement) {
 
         String id = StringUtils.makeUniqueString(StringUtils.orElse(scene3DNode.getName(), "unnamed"), "-", nodeIds);
+        nodeIds.add(id);
 
         Element nodeElement = doc.createElement("node");
         nodeElement.setAttribute("id", "node-" + id);

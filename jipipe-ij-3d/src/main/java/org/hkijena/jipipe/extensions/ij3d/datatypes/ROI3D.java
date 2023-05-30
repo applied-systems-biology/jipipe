@@ -3,10 +3,18 @@ package org.hkijena.jipipe.extensions.ij3d.datatypes;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import mcib3d.geom.Object3D;
+import mcib3d.geom.Object3DSurface;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
+import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
+import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
+import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DUnindexedMeshGeometry;
+import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
+import org.scijava.vecmath.Point3f;
 
 import java.awt.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -104,5 +112,49 @@ public class ROI3D {
 
     public void setName(String name) {
         object3D.setName(name);
+    }
+
+    public Scene3DUnindexedMeshGeometry toGeometry(Color overrideColor, boolean physicalSizes, boolean forceMeshLengthUnit, Quantity.LengthUnit meshLengthUnit, boolean smooth, JIPipeProgressInfo progressInfo) {
+
+        float voxDimXY = 1;
+        float voxDimZ = 1;
+
+        if(physicalSizes) {
+            voxDimXY = (float) object3D.getResXY();
+            voxDimZ = (float) object3D.getResZ();
+            if(forceMeshLengthUnit) {
+                Quantity inputQuantity = new Quantity(1, object3D.getUnits());
+                Quantity outputQuantity = inputQuantity.convertTo(meshLengthUnit.toString());
+                voxDimXY *= outputQuantity.getValue();
+                voxDimZ *= outputQuantity.getValue();
+            }
+        }
+
+        progressInfo.log("Calculating surface ...");
+        Object3DSurface object3DSurface = object3D.getObject3DSurface();
+
+        progressInfo.log("Extracting vertices ...");
+        List<Point3f> surfaceTriangles = object3DSurface.getSurfaceTrianglesPixels(smooth);
+
+        float[] vertices = new float[surfaceTriangles.size() * 3];
+        for (int i = 0; i < surfaceTriangles.size(); i++) {
+            Point3f surfaceTriangle = surfaceTriangles.get(i);
+            float x = surfaceTriangle.x * voxDimXY;
+            float y = surfaceTriangle.y * voxDimXY;
+            float z = surfaceTriangle.z * voxDimZ;
+            vertices[i * 3] = x;
+            vertices[i * 3 + 1] = y;
+            vertices[i * 3 + 2] = z;
+        }
+
+        progressInfo.log("Calculating normals ...");
+        float[] normals = Scene3DUtils.generateUnindexedVertexNormalsFlat(vertices);
+        boolean[] mask = Scene3DUtils.findUnindexedNaNNormalVertices(vertices, normals);
+        vertices = Scene3DUtils.filterArray(vertices, mask, false);
+        normals = Scene3DUtils.filterArray(normals, mask, false);
+
+        Scene3DUnindexedMeshGeometry meshObject = new Scene3DUnindexedMeshGeometry(vertices, normals);
+        meshObject.setColor(overrideColor != null ? overrideColor : getFillColor());
+        return meshObject;
     }
 }

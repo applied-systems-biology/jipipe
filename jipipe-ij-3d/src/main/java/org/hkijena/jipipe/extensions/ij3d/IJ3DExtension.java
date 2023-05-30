@@ -13,9 +13,13 @@
 
 package org.hkijena.jipipe.extensions.ij3d;
 
+import com.google.common.collect.Sets;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.clij2.Scene3DExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
 import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJExporter;
 import org.hkijena.jipipe.extensions.ij3d.compat.ROI3DImageJImporter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
@@ -55,9 +59,13 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgo
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.extensions.ij3d.utils.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
+import org.hkijena.jipipe.extensions.multiparameters.MultiParameterAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.scene3d.nodes.MaskTo3DMeshAlgorithm;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -65,6 +73,7 @@ import org.scijava.plugin.Plugin;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
@@ -100,6 +109,12 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
         return Collections.singletonList(new JIPipeImageJUpdateSiteDependency("3D ImageJ Suite", "https://sites.imagej.net/Tboudier/"));
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, FilesystemExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY,
+                ImageJAlgorithmsExtension.AS_DEPENDENCY, MultiParameterAlgorithmsExtension.AS_DEPENDENCY, Scene3DExtension.AS_DEPENDENCY);
     }
 
     @Override
@@ -163,6 +178,7 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("ij3d-roi-convert-to-mask", Roi3DToMaskAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij3d-roi-convert-to-labels", Roi3DToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
         registerNodeType("ij3d-roi-convert-to-rgb", Roi3DToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));
+        registerNodeType("ij3d-roi-convert-to-3d-mesh", Roi3DTo3DMeshAlgorithm.class, UIUtils.getIconURLFromResources("actions/shape-cuboid.png"));
 
         registerNodeType("ij3d-roi-extract-metadata", ExtractROI3DMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
         registerNodeType("ij3d-roi-set-metadata-from-table", SetROI3DMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
