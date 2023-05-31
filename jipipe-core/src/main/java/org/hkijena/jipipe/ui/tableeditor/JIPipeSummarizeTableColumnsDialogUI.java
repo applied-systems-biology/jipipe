@@ -27,9 +27,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * UI for integrating table columns
+ * UI for summarizing table columns
  */
-public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
+public class JIPipeSummarizeTableColumnsDialogUI extends JDialog {
     private ResultsTableData inputTableModel;
     private ResultsTableData outputTableModel;
     private Map<String, JComboBox<Object>> columnOperations = new HashMap<>();
@@ -37,13 +37,13 @@ public class JIPipeIntegrateTableColumnsDialogUI extends JDialog {
     /**
      * @param inputTableModel The table model
      */
-    public JIPipeIntegrateTableColumnsDialogUI(ResultsTableData inputTableModel) {
+    public JIPipeSummarizeTableColumnsDialogUI(ResultsTableData inputTableModel) {
         this.inputTableModel = inputTableModel;
         initialize();
     }
 
     private void initialize() {
-        setTitle("Integrate columns");
+        setTitle("Summarize columns");
         setLayout(new BorderLayout(8, 8));
 
         JPanel columnPanel = new JPanel(new GridBagLayout());

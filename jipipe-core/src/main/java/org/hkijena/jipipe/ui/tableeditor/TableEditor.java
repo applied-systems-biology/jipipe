@@ -214,7 +214,7 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         importExportBand.add(new SmallButtonAction("From ImageJ", "Imports a table from ImageJ", UIUtils.getIcon16FromResources("apps/imagej.png"), this::importTableFromImageJ));
         importExportBand.add(new SmallButtonAction("To ImageJ", "Exports the table to ImageJ", UIUtils.getIcon16FromResources("apps/imagej.png"), this::exportTableToImageJ));
 
-        dataBand.add(new LargeButtonAction("Integrate", "Collapses the table into a one-row table by applying an integration operation on each column", UIUtils.getIcon32FromResources("actions/statistics.png"), this::integrateColumns));
+        dataBand.add(new LargeButtonAction("Summarize", "Collapses the table into a one-row table by applying a sum operation on each column", UIUtils.getIcon32FromResources("actions/statistics.png"), this::summarizeColumns));
         {
             LargeButtonAction convertButton = new LargeButtonAction("Apply function", "Applies a function to the selected table cells", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"), () -> {
             });
@@ -308,8 +308,8 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         plotBuilderUI.importData(tableModel, getWorkbench().getDocumentTabPane().findTabNameFor(this));
     }
 
-    private void integrateColumns() {
-        JIPipeIntegrateTableColumnsDialogUI dialog = new JIPipeIntegrateTableColumnsDialogUI(tableModel);
+    private void summarizeColumns() {
+        JIPipeSummarizeTableColumnsDialogUI dialog = new JIPipeSummarizeTableColumnsDialogUI(tableModel);
         dialog.pack();
         dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
