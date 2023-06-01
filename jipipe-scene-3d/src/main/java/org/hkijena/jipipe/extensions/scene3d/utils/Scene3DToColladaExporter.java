@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.clij2.Scene3DExtension;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
+import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DMeshGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DUnindexedMeshGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
@@ -175,6 +176,11 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
             techniqueCommonElement.appendChild(instanceMaterialElement);
             instanceMaterialElement.setAttribute("symbol", "material-" + id);
             instanceMaterialElement.setAttribute("target", "#material-" + id);
+        }
+        else if(scene3DNode instanceof Scene3DGroupNode) {
+            for (Scene3DNode child : ((Scene3DGroupNode) scene3DNode).getChildren()) {
+                createNode(doc, child, nodeIds, effectsListElement, materialsListElement, geometryListElement, nodeElement);
+            }
         }
         else {
             throw new UnsupportedOperationException();

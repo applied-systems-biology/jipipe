@@ -155,6 +155,7 @@ public class ROI3D {
 
         Scene3DUnindexedMeshGeometry meshObject = new Scene3DUnindexedMeshGeometry(vertices, normals);
         meshObject.setColor(overrideColor != null ? overrideColor : getFillColor());
+        meshObject.setName(getName());
         return meshObject;
     }
 }

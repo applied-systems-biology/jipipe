@@ -30,6 +30,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
+import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;
+import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DSphereGeometry;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -1041,5 +1043,69 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return new Color((int)(r / edgeSet().size()),
                 (int)(g / edgeSet().size()),
                 (int)(b / edgeSet().size()));
+    }
+
+    public Scene3DGroupNode toScene3D(boolean withVertices, boolean withEdges, boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, float overrideVertexRadius, float overrideEdgeRadius, Color overrideVertexColor, Color overrideEdgeColor) {
+        Scene3DGroupNode componentGroup = new Scene3DGroupNode();
+        componentGroup.setName("Filament component");
+
+        String consensusUnit = getConsensusPhysicalSizeUnit();
+
+        if(withVertices) {
+            Scene3DGroupNode verticesGroup = new Scene3DGroupNode();
+            verticesGroup.setName("Vertices");
+            componentGroup.addChild(verticesGroup);
+
+            for (FilamentVertex vertex : vertexSet()) {
+                Vector3d location = getFinalVertexLocationFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, vertex);
+
+                Scene3DSphereGeometry geometry = new Scene3DSphereGeometry();
+                geometry.setColor(overrideVertexColor != null ? overrideVertexColor : vertex.getColor());
+                geometry.setRadiusX(getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) vertex.getRadius(), vertex.getPhysicalVoxelSizeX()));
+                geometry.setRadiusY(getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) vertex.getRadius(), vertex.getPhysicalVoxelSizeY()));
+                geometry.setRadiusZ(getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) vertex.getRadius(), vertex.getPhysicalVoxelSizeZ()));
+                verticesGroup.addChild(geometry);
+            }
+
+        }
+        if(withEdges) {
+            Scene3DGroupNode edgesGroup = new Scene3DGroupNode();
+            edgesGroup.setName("Edges");
+            componentGroup.addChild(edgesGroup);
+        }
+
+        return componentGroup;
+    }
+
+    private float getFinalVertexRadiusFor3DExport(boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, String consensusUnit, float radius, Quantity voxelSize) {
+        float finalRadius;
+        if(physicalSizes) {
+            if(forceMeshLengthUnit) {
+                finalRadius = (float) (voxelSize.convertTo(consensusUnit).convertTo(meshLengthUnit.name()).getValue() * radius);
+            }
+            else {
+                finalRadius = (float) (voxelSize.convertTo(consensusUnit).getValue() * radius);
+            }
+        }
+        else {
+            finalRadius = radius;
+        }
+        return finalRadius;
+    }
+
+    private static Vector3d getFinalVertexLocationFor3DExport(boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, String consensusUnit, FilamentVertex vertex) {
+        Vector3d finalLocation;
+        if(physicalSizes) {
+            if(forceMeshLengthUnit) {
+                finalLocation = vertex.getSpatialLocationInUnit(meshLengthUnit.name());
+            }
+            else {
+                finalLocation = vertex.getSpatialLocationInUnit(consensusUnit);
+            }
+        }
+        else {
+            finalLocation = vertex.getSpatialLocation().toVector3d();
+        }
+        return finalLocation;
     }
 }

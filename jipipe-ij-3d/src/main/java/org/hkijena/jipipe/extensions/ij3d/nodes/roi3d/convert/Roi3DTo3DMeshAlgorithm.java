@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DUnindexedMeshGeometry;
 import org.hkijena.jipipe.extensions.scene3d.utils.MarchingCubes;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
@@ -122,6 +123,7 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ROI3D roi3D = rois.get(i);
             JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("ROI", i, rois.size());
             Scene3DUnindexedMeshGeometry geometry = roi3D.toGeometry(overrideMeshColor.getContentOrDefault(null), physicalSizes, forceMeshLengthUnit, meshLengthUnit, smooth, roiProgress);
+            geometry.setName(StringUtils.nullToEmpty(meshNamePrefix) + StringUtils.nullToEmpty(geometry.getName()));
             scene3DData.add(geometry);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);

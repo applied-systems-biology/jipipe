@@ -1,17 +1,25 @@
 package org.hkijena.jipipe.extensions.scene3d.utils;
 
 import gnu.trove.list.array.TFloatArrayList;
+import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Scene3DUtils {
 
-    public static void checkUnindexedVertexArray(float[] vertices) {
+    public static Vector3f getPerpendicularVector(Vector3f vec) {
+        return Math.abs(vec.z) < Math.abs(vec.x) ? new Vector3f(vec.y, -vec.x, 0) : new Vector3f(0, -vec.z, vec.y);
+    }
+
+    public static void checkUnindexedPolygonArray(float[] vertices) {
         if(vertices.length % 9 != 0) {
             throw new IllegalArgumentException("Invalid vertex array: length not divisable by 3");
         }
     }
 
     public static float[] generateUnindexedVertexNormalsFlat(float[] vertices) {
-        checkUnindexedVertexArray(vertices);
+        checkUnindexedPolygonArray(vertices);
         float[] normals = new float[vertices.length];
         for (int i = 0; i < vertices.length / 9; i++) {
             float ax = vertices[i * 9];
@@ -57,7 +65,7 @@ public class Scene3DUtils {
     }
 
     public static boolean[] findUnindexedNaNNormalVertices(float[] vertices, float[] normals) {
-        checkUnindexedVertexArray(vertices);
+        checkUnindexedPolygonArray(vertices);
         checkUnindexedNormalsArray(vertices, normals);
         boolean[] mask = new boolean[vertices.length];
         for (int i = 0; i < vertices.length / 9; i++) {
@@ -95,4 +103,68 @@ public class Scene3DUtils {
             throw new IllegalArgumentException("Invalid normals array: length not the same as number of vertex data!");
         }
     }
+
+    public static float[] generateUVSphereVertices(float radiusX, float radiusY, float radiusZ, int subDiv) {
+        int stacks = (int) Math.max(1, Math.ceil(radiusZ * subDiv));
+        int slices = (int)Math.max(1, Math.max(Math.ceil(radiusX * subDiv), Math.ceil(radiusY * subDiv)));
+
+        float[] vertices = new float[stacks * slices * 3];
+        int vertexIndex = 0;
+        for (int i = 0; i < stacks; i++) {
+            float phi = (float) Math.PI * i / (stacks - 1);
+            float sinPhi = (float) Math.sin(phi);
+            float cosPhi = (float) Math.cos(phi);
+
+            for (int j = 0; j < slices; j++) {
+                float theta = (float) (2 * Math.PI * j / (slices - 1));
+                float sinTheta = (float) Math.sin(theta);
+                float cosTheta = (float) Math.cos(theta);
+
+                float x = radiusX * sinPhi * cosTheta;
+                float y = radiusY * sinPhi * sinTheta;
+                float z = radiusZ * cosPhi;
+
+                vertices[vertexIndex++] = x / subDiv;
+                vertices[vertexIndex++] = y / subDiv;
+                vertices[vertexIndex++] = z / subDiv;
+            }
+        }
+
+        float[] triangles = new float[vertices.length * 3 * 2];
+        int trianglesIndex = 0;
+
+        for (int i = 0; i < stacks; i++) {
+            int k1 = i * (slices + 1);
+            int k2 = k1 + slices + 1;
+
+            for (int j = 0; j < slices; j++, k1++, k2++) {
+                if (i != 0) {
+                    triangles[trianglesIndex++] = vertices[k1 * 3];
+                    triangles[trianglesIndex++] = vertices[k1 * 3 + 1];
+                    triangles[trianglesIndex++] = vertices[k1 * 3 + 2];
+                    triangles[trianglesIndex++] = vertices[k2 * 3];
+                    triangles[trianglesIndex++] = vertices[k2 * 3 + 1];
+                    triangles[trianglesIndex++] = vertices[k2 * 3 + 2];
+                    triangles[trianglesIndex++] = vertices[(k1 + 1) * 3];
+                    triangles[trianglesIndex++] = vertices[(k1 + 1) * 3 + 1];
+                    triangles[trianglesIndex++] = vertices[(k1 + 1) * 3 + 2];
+                }
+
+                if (i != stacks - 1) {
+                    triangles[trianglesIndex++] = vertices[(k1 + 1) * 3];
+                    triangles[trianglesIndex++] = vertices[(k1 + 1) * 3 + 1];
+                    triangles[trianglesIndex++] = vertices[(k1 + 1) * 3 + 2];
+                    triangles[trianglesIndex++] = vertices[k2 * 3];
+                    triangles[trianglesIndex++] = vertices[k2 * 3 + 1];
+                    triangles[trianglesIndex++] = vertices[k2 * 3 + 2];
+                    triangles[trianglesIndex++] = vertices[(k2 + 1) * 3];
+                    triangles[trianglesIndex++] = vertices[(k2 + 1) * 3 + 1];
+                    triangles[trianglesIndex++] = vertices[(k2 + 1) * 3 + 2];
+                }
+            }
+        }
+
+        return triangles;
+    }
+
 }

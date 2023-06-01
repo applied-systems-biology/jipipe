@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.clij2.Scene3DExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DExtension;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -81,7 +82,13 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public Set<JIPipeDependency> getDependencies() {
-        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY, IJ3DExtension.AS_DEPENDENCY);
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY,
+                TablesExtension.AS_DEPENDENCY,
+                StringsExtension.AS_DEPENDENCY,
+                ImageJDataTypesExtension.AS_DEPENDENCY,
+                ImageJAlgorithmsExtension.AS_DEPENDENCY,
+                IJ3DExtension.AS_DEPENDENCY,
+                Scene3DExtension.AS_DEPENDENCY);
     }
 
     @Override
@@ -155,6 +162,7 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("filaments-convert-to-mask", ConvertFilamentsToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
         registerNodeType("filaments-convert-to-labels", ConvertFilamentsToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
         registerNodeType("filaments-convert-to-rgb", ConvertFilamentsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
+        registerNodeType("filaments-convert-to-scene-3d", ConvertFilamentsTo3DMeshAlgorithm.class, UIUtils.getIconURLFromResources("actions/shape-cuboid.png"));
 
         registerNodeType("filaments-set-vertex-thickness-from-image", SetVertexRadiusFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
         registerNodeType("filaments-set-vertex-intensity-from-image", SetVertexIntensityFromImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-circle-from-radius.png"));
