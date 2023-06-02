@@ -118,8 +118,8 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         dataBatch.addOutputData(getFirstOutputSlot(), filamentsData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Force 2D", description = "Sets the calibration parameters so that the filament is only present in two dimensions.")
-    @JIPipeParameter("force-2d")
+    @JIPipeDocumentation(name = "Force 2D", description = "Sets the calibration parameters so that the filament is only present in two dimensions. If not set and filaments are present in 2D only, issues regarding calibrated lengths might arise.")
+    @JIPipeParameter(value = "force-2d", important = true)
     public boolean isForce2D() {
         return force2D;
     }

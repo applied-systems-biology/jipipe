@@ -290,7 +290,18 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
         sourceElement.appendChild(floatArrayElement);
         floatArrayElement.setAttribute("id", id + "-array");
         floatArrayElement.setAttribute("count", String.valueOf(values.length));
-        floatArrayElement.setTextContent(Floats.join(" ", values));
+        StringBuilder textContentBuilder = new StringBuilder();
+        for (int i = 0; i < values.length / 3; i++) {
+            if(i > 0) {
+                textContentBuilder.append(" ");
+            }
+            float x = values[i * 3];
+            float y = -values[i * 3 + 1];
+            float z = -values[i * 3 + 2];
+
+            textContentBuilder.append(x).append(" ").append(y).append(" ").append(z);
+        }
+        floatArrayElement.setTextContent(textContentBuilder.toString());
 
         Element techniqueCommonElement = doc.createElement("technique_common");
         sourceElement.appendChild(techniqueCommonElement);

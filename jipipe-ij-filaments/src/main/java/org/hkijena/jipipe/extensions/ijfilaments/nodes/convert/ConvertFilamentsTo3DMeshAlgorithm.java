@@ -38,6 +38,8 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
     private OptionalFloatParameter overrideEdgeRadius = new OptionalFloatParameter(false, 1);
     private OptionalFloatParameter overrideVertexRadius = new OptionalFloatParameter(false, 1);
 
+    private boolean splitIntoConnectedComponents = true;
+
     public ConvertFilamentsTo3DMeshAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -54,6 +56,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.withVertices = other.withVertices;
         this.overrideEdgeRadius = new OptionalFloatParameter(other.overrideEdgeRadius);
         this.overrideVertexRadius = new OptionalFloatParameter(other.overrideVertexRadius);
+        this.splitIntoConnectedComponents = other.splitIntoConnectedComponents;
     }
 
     @JIPipeDocumentation(name = "Override vertex color", description = "Overrides the mesh color of vertices")
@@ -166,13 +169,38 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
         this.meshNamePrefix = meshNamePrefix;
     }
 
+    @JIPipeDocumentation(name = "Split into connected components", description = "If enabled, one mesh group is created per connected component")
+    @JIPipeParameter("split-into-connected-components")
+    public boolean isSplitIntoConnectedComponents() {
+        return splitIntoConnectedComponents;
+    }
+
+    @JIPipeParameter("split-into-connected-components")
+    public void setSplitIntoConnectedComponents(boolean splitIntoConnectedComponents) {
+        this.splitIntoConnectedComponents = splitIntoConnectedComponents;
+    }
+
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         Scene3DData scene3DData = new Scene3DData();
-        for (Set<FilamentVertex> connectedSet : inputData.getConnectivityInspector().connectedSets()) {
-            Filaments3DData component = inputData.extractShallowCopy(connectedSet);
-            scene3DData.add(component.toScene3D(withVertices,
+        if(splitIntoConnectedComponents) {
+            for (Set<FilamentVertex> connectedSet : inputData.getConnectivityInspector().connectedSets()) {
+                Filaments3DData component = inputData.extractShallowCopy(connectedSet);
+                scene3DData.add(component.toScene3D(withVertices,
+                        withEdges,
+                        physicalSizes,
+                        meshLengthUnit,
+                        forceMeshLengthUnit,
+                        overrideVertexRadius.getContentOrDefault(-1f),
+                        overrideEdgeRadius.getContentOrDefault(-1f),
+                        overrideVertexColor.getContentOrDefault(null),
+                        overrideEdgeColor.getContentOrDefault(null),
+                        meshNamePrefix));
+            }
+        }
+        else {
+            scene3DData.add(inputData.toScene3D(withVertices,
                     withEdges,
                     physicalSizes,
                     meshLengthUnit,
@@ -180,7 +208,8 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
                     overrideVertexRadius.getContentOrDefault(-1f),
                     overrideEdgeRadius.getContentOrDefault(-1f),
                     overrideVertexColor.getContentOrDefault(null),
-                    overrideEdgeColor.getContentOrDefault(null)));
+                    overrideEdgeColor.getContentOrDefault(null),
+                    meshNamePrefix));
         }
         dataBatch.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
     }

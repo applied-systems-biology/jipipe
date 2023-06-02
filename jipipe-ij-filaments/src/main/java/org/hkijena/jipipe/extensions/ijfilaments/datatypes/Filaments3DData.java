@@ -31,6 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;
+import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DLineGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DSphereGeometry;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -1045,9 +1046,9 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 (int)(b / edgeSet().size()));
     }
 
-    public Scene3DGroupNode toScene3D(boolean withVertices, boolean withEdges, boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, float overrideVertexRadius, float overrideEdgeRadius, Color overrideVertexColor, Color overrideEdgeColor) {
+    public Scene3DGroupNode toScene3D(boolean withVertices, boolean withEdges, boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, float overrideVertexRadius, float overrideEdgeRadius, Color overrideVertexColor, Color overrideEdgeColor, String name) {
         Scene3DGroupNode componentGroup = new Scene3DGroupNode();
-        componentGroup.setName("Filament component");
+        componentGroup.setName(name);
 
         String consensusUnit = getConsensusPhysicalSizeUnit();
 
@@ -1064,6 +1065,9 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 geometry.setRadiusX(getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) vertex.getRadius(), vertex.getPhysicalVoxelSizeX()));
                 geometry.setRadiusY(getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) vertex.getRadius(), vertex.getPhysicalVoxelSizeY()));
                 geometry.setRadiusZ(getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) vertex.getRadius(), vertex.getPhysicalVoxelSizeZ()));
+                geometry.setCenterX((float) location.x);
+                geometry.setCenterY((float) location.y);
+                geometry.setCenterZ((float) location.z);
                 verticesGroup.addChild(geometry);
             }
 
@@ -1071,6 +1075,36 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         if(withEdges) {
             Scene3DGroupNode edgesGroup = new Scene3DGroupNode();
             edgesGroup.setName("Edges");
+
+            for (FilamentEdge edge : edgeSet()) {
+                FilamentVertex source = getEdgeSource(edge);
+                FilamentVertex target = getEdgeTarget(edge);
+
+                float sourceRadius = (getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) source.getRadius(), source.getPhysicalVoxelSizeX()) +
+                        getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) source.getRadius(), source.getPhysicalVoxelSizeY()) +
+                        getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) source.getRadius(), source.getPhysicalVoxelSizeY())) / 3;
+                float targetRadius = (getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) target.getRadius(), target.getPhysicalVoxelSizeX()) +
+                        getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) target.getRadius(), target.getPhysicalVoxelSizeY()) +
+                        getFinalVertexRadiusFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, (float) target.getRadius(), target.getPhysicalVoxelSizeY())) / 3;
+
+                Vector3d sourceLocation = getFinalVertexLocationFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, source);
+                Vector3d targetLocation = getFinalVertexLocationFor3DExport(physicalSizes, meshLengthUnit, forceMeshLengthUnit, consensusUnit, target);
+
+                Scene3DLineGeometry lineGeometry = new Scene3DLineGeometry();
+                lineGeometry.getStart().setX((float) sourceLocation.x);
+                lineGeometry.getStart().setY((float) sourceLocation.y);
+                lineGeometry.getStart().setZ((float) sourceLocation.z);
+                lineGeometry.getStart().setRadius(sourceRadius);
+                lineGeometry.getEnd().setX((float) targetLocation.x);
+                lineGeometry.getEnd().setY((float) targetLocation.y);
+                lineGeometry.getEnd().setZ((float) targetLocation.z);
+                lineGeometry.getEnd().setRadius(targetRadius);
+                lineGeometry.setColor(edge.getColor());
+
+                edgesGroup.addChild(lineGeometry);
+            }
+
+
             componentGroup.addChild(edgesGroup);
         }
 

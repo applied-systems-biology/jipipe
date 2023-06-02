@@ -10,39 +10,38 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
+import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DLineGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DSphereGeometry;
 
-import java.awt.*;
-
-@JIPipeDocumentation(name = "Create 3D sphere mesh", description = "Generates a 3D scene containing a sphere mesh at the specified location.")
+@JIPipeDocumentation(name = "Create 3D line mesh", description = "Generates a 3D scene containing a line mesh.")
 @JIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class CreateSphereMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class CreateLineMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private final Scene3DSphereGeometry geometry;
+    private final Scene3DLineGeometry geometry;
 
-    public CreateSphereMeshAlgorithm(JIPipeNodeInfo info) {
+    public CreateLineMeshAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        geometry = new Scene3DSphereGeometry();
+        geometry = new Scene3DLineGeometry();
         registerSubParameter(geometry);
     }
 
-    public CreateSphereMeshAlgorithm(CreateSphereMeshAlgorithm other) {
+    public CreateLineMeshAlgorithm(CreateLineMeshAlgorithm other) {
         super(other);
-        this.geometry = new Scene3DSphereGeometry(other.geometry);
+        this.geometry = new Scene3DLineGeometry(other.geometry);
         registerSubParameter(geometry);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Scene3DData scene3DData = new Scene3DData();
-        scene3DData.add(new Scene3DSphereGeometry(getGeometry()));
+        scene3DData.add(new Scene3DLineGeometry(getGeometry()));
         dataBatch.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Sphere parameters", description = "The following settings allow to determine the properties of the sphere")
+    @JIPipeDocumentation(name = "Line parameters", description = "The following settings allow to determine the properties of the line")
     @JIPipeParameter("geometry")
-    public Scene3DSphereGeometry getGeometry() {
+    public Scene3DLineGeometry getGeometry() {
         return geometry;
     }
 }

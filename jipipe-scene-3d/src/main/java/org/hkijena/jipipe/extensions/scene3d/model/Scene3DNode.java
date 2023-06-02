@@ -30,4 +30,10 @@ public interface Scene3DNode {
     default void copyMetadataFrom(Scene3DNode other) {
         setName(other.getName());
     }
+
+    /**
+     * Duplicates the node
+     * @return the copy
+     */
+    Scene3DNode duplicate();
 }

@@ -19,6 +19,18 @@ import java.util.*;
 public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<Scene3DNode> {
 
     private final List<Scene3DNode> nodes = new ArrayList<>();
+
+    public Scene3DData() {
+
+    }
+
+    public Scene3DData(Scene3DData other) {
+        for (Scene3DNode node : other) {
+            add(node.duplicate());
+        }
+    }
+
+
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
 

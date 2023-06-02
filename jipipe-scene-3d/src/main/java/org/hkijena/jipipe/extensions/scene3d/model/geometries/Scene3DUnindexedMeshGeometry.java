@@ -12,6 +12,7 @@ import gnu.trove.set.TFloatSet;
 import gnu.trove.set.hash.TFloatHashSet;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
+import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 import org.joml.Vector3f;
 
@@ -36,6 +37,19 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
         this.vertices = Objects.requireNonNull(vertices);
         this.normals = Objects.requireNonNull(normals);
         Scene3DUtils.checkUnindexedNormalsArray(vertices, normals);
+    }
+
+    public Scene3DUnindexedMeshGeometry(Scene3DUnindexedMeshGeometry other) {
+        this.name = other.name;
+        this.vertices = Arrays.copyOf(other.vertices, other.vertices.length);
+        this.normals = Arrays.copyOf(other.normals, other.normals.length);
+        this.index = Arrays.copyOf(other.index, other.index.length);
+        this.color = other.color;
+    }
+
+    @Override
+    public Scene3DNode duplicate() {
+        return new Scene3DUnindexedMeshGeometry(this);
     }
 
     @Override

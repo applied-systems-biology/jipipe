@@ -13,9 +13,7 @@ import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesE
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
-import org.hkijena.jipipe.extensions.scene3d.nodes.CreateSphereMeshAlgorithm;
-import org.hkijena.jipipe.extensions.scene3d.nodes.ExportScene3DToColladaAlgorithm;
-import org.hkijena.jipipe.extensions.scene3d.nodes.MaskTo3DMeshAlgorithm;
+import org.hkijena.jipipe.extensions.scene3d.nodes.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -74,8 +72,11 @@ public class Scene3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("mask-to-3d-mesh", MaskTo3DMeshAlgorithm.class, UIUtils.getIconURLFromResources("actions/shape-cuboid.png"));
         registerNodeType("export-3d-scene-to-collada", ExportScene3DToColladaAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("group-scene-3d", GroupSceneAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
+        registerNodeType("merge-scene-3d", MergeScenesAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
 
         registerNodeType("scene-3d-create-sphere", CreateSphereMeshAlgorithm.class);
+        registerNodeType("scene-3d-create-line", CreateLineMeshAlgorithm.class);
     }
 
     @Override

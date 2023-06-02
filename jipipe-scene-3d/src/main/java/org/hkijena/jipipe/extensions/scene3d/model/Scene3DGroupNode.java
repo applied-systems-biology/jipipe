@@ -14,6 +14,18 @@ public class Scene3DGroupNode implements Scene3DNode {
     public Scene3DGroupNode() {
     }
 
+    public Scene3DGroupNode(Scene3DGroupNode other) {
+        this.name = other.name;
+        for (Scene3DNode child : other.children) {
+            this.children.add(child.duplicate());
+        }
+    }
+
+    @Override
+    public Scene3DNode duplicate() {
+        return new Scene3DGroupNode(this);
+    }
+
     @JsonGetter("name")
     @Override
     public String getName() {

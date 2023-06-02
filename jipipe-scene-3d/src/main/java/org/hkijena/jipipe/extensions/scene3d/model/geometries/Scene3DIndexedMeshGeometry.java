@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 
 import java.awt.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,6 +33,20 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
         this.normals = Objects.requireNonNull(normals);
         this.verticesIndex = Objects.requireNonNull(verticesIndex);
         this.normalsIndex = Objects.requireNonNull(normalsIndex);
+    }
+
+    public Scene3DIndexedMeshGeometry(Scene3DIndexedMeshGeometry other) {
+        this.name = other.name;
+        this.vertices = Arrays.copyOf(other.vertices, other.vertices.length);
+        this.normals = Arrays.copyOf(other.normals, other.normals.length);
+        this.verticesIndex = Arrays.copyOf(other.verticesIndex, other.verticesIndex.length);
+        this.normalsIndex = Arrays.copyOf(other.normalsIndex, other.normalsIndex.length);
+        this.color = other.color;
+    }
+
+    @Override
+    public Scene3DNode duplicate() {
+        return new Scene3DIndexedMeshGeometry(this);
     }
 
     @Override
