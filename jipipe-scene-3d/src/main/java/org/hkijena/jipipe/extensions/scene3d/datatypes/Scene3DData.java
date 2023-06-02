@@ -9,9 +9,16 @@ import org.hkijena.jipipe.api.data.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
+import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DToColladaExporter;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.strings.JsonData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.nio.file.Path;
 import java.util.*;
 
 @JIPipeDocumentation(name = "3D scene", description = "3D objects arranged in a scene")
@@ -30,14 +37,23 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
         }
     }
 
-
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-
+        Path outputFile = FileChooserSettings.saveFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export Collada (*.dae)", new FileNameExtensionFilter("Collada 1.4 (*.dae)", "dae"));
+        if(outputFile != null) {
+            JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Collada export");
+            Scene3DToColladaExporter exporter = new Scene3DToColladaExporter(this, outputFile);
+            JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), exporter, queue);
+        }
     }
 
     public static Scene3DData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return JIPipeSerializedJsonObjectData.importData(storage, Scene3DData.class);
+    }
+
+    @Override
+    public String toString() {
+        return "3D scene (" + nodes.size() + " nodes)";
     }
 
     @Override
