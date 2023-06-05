@@ -84,6 +84,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageProcessor croppedImage = imp.crop();
             imp.resetRoi();
             croppedImg = new ImagePlus("Cropped", croppedImage);
+            croppedImg.copyScale(img);
         }
         return croppedImg;
     }
