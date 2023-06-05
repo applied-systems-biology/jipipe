@@ -63,6 +63,11 @@ public class Scene3DExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
+    public boolean isBeta() {
+        return true;
+    }
+
+    @Override
     public HTMLText getDescription() {
         return new HTMLText("Allows to create and export 3D scenes.");
     }
