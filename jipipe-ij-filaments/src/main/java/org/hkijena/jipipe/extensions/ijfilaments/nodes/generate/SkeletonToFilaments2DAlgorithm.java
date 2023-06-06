@@ -35,13 +35,14 @@ import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Binary skeleton to 2D filaments", description = "Applies a simple algorithm that converts a binary skeleton into a filament. This algorithm only supports 2D data and will apply the processing per Z/C/T slice.")
+@JIPipeDocumentation(name = "Binary skeleton to 2D filaments", description = "Applies a simple algorithm that converts a binary skeleton into a filament. This algorithm only supports 2D data and will apply the processing per Z/C/T slice. Please note that by default " +
+        "the Z voxel size is set to zero.")
 @JIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Skeleton", autoCreate = true)
 @JIPipeOutputSlot(value = Filaments3DData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", autoCreate = true)
 public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private boolean force2D = false;
+    private boolean force2D = true;
 
     public SkeletonToFilaments2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -118,7 +119,7 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         dataBatch.addOutputData(getFirstOutputSlot(), filamentsData, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Force 2D", description = "Sets the calibration parameters so that the filament is only present in two dimensions. If not set and filaments are present in 2D only, issues regarding calibrated lengths might arise.")
+    @JIPipeDocumentation(name = "Zero Z voxel size (2D)", description = "Sets the calibration parameters so that the filament is only present in two dimensions by setting the Z voxel size to zero. If not set and filaments are present in 2D only, issues regarding calibrated lengths might arise.")
     @JIPipeParameter(value = "force-2d", important = true)
     public boolean isForce2D() {
         return force2D;
