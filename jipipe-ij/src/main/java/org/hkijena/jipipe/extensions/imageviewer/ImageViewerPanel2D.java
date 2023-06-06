@@ -956,7 +956,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         if (getImagePlus() != null) {
             ImageStatistics stats = statisticsMap.getOrDefault(sliceIndex, null);
             if (stats == null) {
-                ImageProcessor processor = ImageJUtils.getSliceZero(image.getImage(), sliceIndex);
+                ImageProcessor processor = ImageJUtils.getSliceZeroSafe(image.getImage(), sliceIndex);
                 stats = processor.getStats();
                 statisticsMap.put(sliceIndex, stats);
             }

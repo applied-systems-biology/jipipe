@@ -506,6 +506,41 @@ public class ImageJUtils {
     }
 
     /**
+     * Gets slice from image.
+     * Will not trigger an {@link IndexOutOfBoundsException}
+     *
+     * @param img   the image
+     * @param index the index (zero-based)
+     * @return the processor
+     */
+    public static ImageProcessor getSliceZeroSafe(ImagePlus img, ImageSliceIndex index) {
+        if (img.hasImageStack()) {
+            return img.getStack().getProcessor(img.getStackIndex(Math.min(index.getC() + 1, img.getNChannels()),
+                    Math.min(index.getZ() + 1, img.getNSlices()),
+                    Math.min(index.getT() + 1, img.getNFrames())));
+        } else {
+            return img.getProcessor();
+        }
+    }
+
+    /**
+     * Gets slice from image
+     * Will not trigger an {@link IndexOutOfBoundsException}
+     *
+     * @param img the image
+     * @return the processor
+     */
+    public static ImageProcessor getSliceZeroSafe(ImagePlus img, int c, int z, int t) {
+        if (img.hasImageStack()) {
+            return img.getStack().getProcessor(img.getStackIndex(Math.min(c + 1, img.getNChannels()),
+                    Math.min(z + 1, img.getNSlices()),
+                    Math.min(t + 1, img.getNFrames())));
+        } else {
+            return img.getProcessor();
+        }
+    }
+
+    /**
      * Gets slice from image
      *
      * @param img   the image
