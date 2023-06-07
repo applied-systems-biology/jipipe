@@ -37,8 +37,15 @@ public class TitleBoxAnnotationGraphNode extends JIPipeAnnotationGraphNode {
     }
 
     @Override
+    public boolean isPaintNodeShadow() {
+        return false;
+    }
+
+    @Override
     public void paintNode(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI) {
         g2.setColor(fillColor);
         g2.fillRect(0,0, nodeUI.getWidth(), nodeUI.getHeight());
+        g2.setColor(fillColor.darker());
+        g2.drawRect(0,0, nodeUI.getWidth() - 1, nodeUI.getHeight() - 1);
     }
 }
