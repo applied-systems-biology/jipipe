@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -29,19 +29,19 @@ import java.util.stream.Collectors;
 
 public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
         if (!GraphEditorUISettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(),
                 "Do you really want to remove the following compartments: " +
-                        selection.stream().map(JIPipeNodeUI::getNode).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
+                        selection.stream().map(JIPipeGraphNodeUI::getNode).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            for (JIPipeNodeUI ui : ImmutableList.copyOf(selection)) {
+            for (JIPipeGraphNodeUI ui : ImmutableList.copyOf(selection)) {
                 if (ui.getNode() instanceof JIPipeProjectCompartment) {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
                     if (canvasUI.getHistoryJournal() != null) {

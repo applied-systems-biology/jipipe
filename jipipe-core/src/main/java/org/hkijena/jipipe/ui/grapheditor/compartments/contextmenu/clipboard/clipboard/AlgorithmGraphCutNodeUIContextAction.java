@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.cli
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 public class AlgorithmGraphCutNodeUIContextAction extends AlgorithmGraphCopyNodeUIContextAction {
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         super.run(canvasUI, selection);
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
-        Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
+        Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet());
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeCutNodes(nodes, nodes.stream().map(JIPipeGraphNode::getCompartmentUUIDInParentGraph).findFirst().orElse(null));
         }

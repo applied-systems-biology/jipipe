@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -29,21 +29,21 @@ import java.util.stream.Collectors;
 
 public class IsolateNodesUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         if (selection.isEmpty())
             return false;
         return true;
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         if (canvasUI.getHistoryJournal() != null) {
-            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
+            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet());
             UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
             canvasUI.getHistoryJournal().snapshot("Isolate nodes", "Isolated nodes", compartment, UIUtils.getIconFromResources("actions/object-group.png"));
         }
         Set<JIPipeDataSlot> slots = new HashSet<>();
-        for (JIPipeNodeUI ui : selection) {
+        for (JIPipeGraphNodeUI ui : selection) {
             slots.addAll(ui.getNode().getInputSlots());
             slots.addAll(ui.getNode().getOutputSlots());
         }

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,12 +32,12 @@ import java.util.UUID;
 
 public class ExportCompartmentToNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         return selection.size() == 1;
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) selection.iterator().next().getNode();
         JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) canvasUI.getWorkbench();
         JIPipeProject project = projectWorkbench.getProject();

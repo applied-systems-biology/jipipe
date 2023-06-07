@@ -13,9 +13,8 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -23,8 +22,8 @@ import java.util.Set;
 
 public class RemoveBookmarkNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
+        for (JIPipeGraphNodeUI ui : selection) {
             if (ui.getNode().isBookmarked()) {
                 return true;
             }
@@ -33,8 +32,8 @@ public class RemoveBookmarkNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
+        for (JIPipeGraphNodeUI ui : selection) {
             ui.getNode().setBookmarked(false);
             ui.getNode().emitParameterChangedEvent("jipipe:node:bookmarked");
         }

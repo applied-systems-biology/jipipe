@@ -22,7 +22,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 
 public class ExportNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
+        Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet());
         JIPipeIssueReport report = new JIPipeIssueReport();
         for (JIPipeGraphNode algorithm : algorithms) {
             algorithm.reportValidity(report.resolve(algorithm.getName()));

@@ -185,7 +185,7 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void postprocess() {
+    public void postprocess(JIPipeProgressInfo progressInfo) {
         createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }

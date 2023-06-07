@@ -218,7 +218,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void postprocess() {
+    public void postprocess(JIPipeProgressInfo progressInfo) {
         createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
         createOldLibJIPipePythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }

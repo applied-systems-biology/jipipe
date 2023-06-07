@@ -15,7 +15,7 @@ import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 
@@ -372,7 +372,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
                 canvasUI.revalidate();
                 canvasUI.crop(false);
                 canvasUI.revalidate();
-                for (Map.Entry<JIPipeGraphNode, JIPipeNodeUI> entry : canvasUI.getNodeUIs().entrySet()) {
+                for (Map.Entry<JIPipeGraphNode, JIPipeGraphNodeUI> entry : canvasUI.getNodeUIs().entrySet()) {
                     compartmentBounds.put(entry.getKey().getUUIDInParentGraph(), entry.getValue().getBounds());
                 }
             });

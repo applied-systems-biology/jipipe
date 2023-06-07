@@ -65,7 +65,7 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeExtension {
     /**
      * Called after registration.
      */
-    default void postprocess() {
+    default void postprocess(JIPipeProgressInfo progressInfo) {
 
     }
 

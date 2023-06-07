@@ -35,7 +35,7 @@ import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedMultiDataTableUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
@@ -195,10 +195,10 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
 
     private void updateCache(boolean storeIntermediateResults) {
         if (graphCanvasUI != null) {
-            JIPipeNodeUI ui = graphCanvasUI.getNodeUIs().getOrDefault(graphNode, null);
+            JIPipeGraphNodeUI ui = graphCanvasUI.getNodeUIs().getOrDefault(graphNode, null);
             if (ui != null) {
                 // Same event as triggered by any other canvas tool
-                ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(storeIntermediateResults, false)));
+                ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeGraphNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(storeIntermediateResults, false)));
                 return;
             }
         }

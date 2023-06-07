@@ -3,7 +3,7 @@ package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -15,12 +15,12 @@ import java.util.UUID;
 
 public class SetNodeHotkeyContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         return selection.size() == 1;
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         JDialog dialog = new JDialog(canvasUI.getWorkbench().getWindow(), "Set quick access hotkey");
         dialog.setModal(true);
 
@@ -81,7 +81,7 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
         dialog.setVisible(true);
 
         // Update hotkey uis
-        for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
+        for (JIPipeGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
             ui.updateHotkeyInfo();
         }
     }

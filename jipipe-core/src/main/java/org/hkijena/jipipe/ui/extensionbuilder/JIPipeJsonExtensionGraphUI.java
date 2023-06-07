@@ -27,7 +27,7 @@ import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clip
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
 import javax.swing.*;
@@ -137,7 +137,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
                     getSelection().iterator().next().getNode()), true);
         } else {
             setPropertyPanel(new JIPipeJsonExtensionMultiAlgorithmSelectionPanelUI((JIPipeJsonExtensionWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
+                    getSelection().stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet())), true);
         }
     }
 }

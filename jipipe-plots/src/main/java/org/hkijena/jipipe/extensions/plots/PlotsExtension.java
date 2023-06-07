@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.plots;
 
-import com.google.common.eventbus.Subscribe;
 import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -215,8 +214,8 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension implem
     }
 
     @Override
-    public void postprocess() {
-        super.postprocess();
+    public void postprocess(JIPipeProgressInfo progressInfo) {
+        super.postprocess(progressInfo);
         for (Class<? extends JIPipeData> value : getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()) {
             if (PlotData.class.isAssignableFrom(value)) {
                 configureDefaultImageJAdapters(value, DataTableImageJDataImporter.ID, "image-to-imagej-window");

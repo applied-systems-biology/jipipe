@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -41,10 +41,10 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         JIPipeGraph graph = canvasUI.getGraph();
 
         // Create an algorithm UI graph
-        Set<JIPipeNodeUI> freeFloating = new HashSet<>();
+        Set<JIPipeGraphNodeUI> freeFloating = new HashSet<>();
         DefaultDirectedGraph<SugiyamaVertex, DefaultEdge> sugiyamaGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
-        Map<JIPipeNodeUI, SugiyamaVertex> vertexMap = new HashMap<>();
-        for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
+        Map<JIPipeGraphNodeUI, SugiyamaVertex> vertexMap = new HashMap<>();
+        for (JIPipeGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
             // Ignore all free-floating nodes (no inputs, no outputs within this compartment)
             boolean isFreeFloating = true;
             outer:
@@ -78,8 +78,8 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
         for (JIPipeGraphEdge edge : graph.getGraph().edgeSet()) {
-            JIPipeNodeUI sourceUI = canvasUI.getNodeUIs().getOrDefault(graph.getGraph().getEdgeSource(edge).getNode(), null);
-            JIPipeNodeUI targetUI = canvasUI.getNodeUIs().getOrDefault(graph.getGraph().getEdgeTarget(edge).getNode(), null);
+            JIPipeGraphNodeUI sourceUI = canvasUI.getNodeUIs().getOrDefault(graph.getGraph().getEdgeSource(edge).getNode(), null);
+            JIPipeGraphNodeUI targetUI = canvasUI.getNodeUIs().getOrDefault(graph.getGraph().getEdgeTarget(edge).getNode(), null);
             if (sourceUI == null || targetUI == null)
                 continue;
             if (sourceUI.getNode() == targetUI.getNode())
@@ -142,13 +142,13 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         // Add free-floating algorithms back into the graph
         if (!freeFloating.isEmpty()) {
             int minX = canvasUI.getViewMode().getGridWidth() * 4;
-            for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
+            for (JIPipeGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
                 if (!freeFloating.contains(ui)) {
                     minX = Math.max(ui.getRightX(), minX);
                 }
             }
             int y = canvasUI.getViewMode().getGridHeight();
-            for (JIPipeNodeUI ui : freeFloating) {
+            for (JIPipeGraphNodeUI ui : freeFloating) {
                 ui.moveToClosestGridPoint(new Point(minX, y), true, true);
                 y += ui.getHeight() + canvasUI.getViewMode().getGridHeight();
             }
@@ -202,7 +202,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
-                    JIPipeNodeUI ui = vertex.algorithmUI;
+                    JIPipeGraphNodeUI ui = vertex.algorithmUI;
                     ui.moveToClosestGridPoint(new Point(x, y), true, true);
                 }
                 y += rowHeights.getOrDefault(row, 0);
@@ -259,7 +259,7 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             for (int row = 0; row <= maxRow; ++row) {
                 SugiyamaVertex vertex = columnMap.getOrDefault(row, null);
                 if (vertex != null && !vertex.virtual) {
-                    JIPipeNodeUI ui = vertex.algorithmUI;
+                    JIPipeGraphNodeUI ui = vertex.algorithmUI;
                     ui.moveToClosestGridPoint(new Point(x, y), true, true);
                 }
                 y += rowHeights.getOrDefault(row, 0);
@@ -274,12 +274,12 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
      * Model for graph layout
      */
     private static class SugiyamaVertex {
-        private JIPipeNodeUI algorithmUI;
+        private JIPipeGraphNodeUI algorithmUI;
         private int layer = 0;
         private int index = 0;
         private boolean virtual = false;
 
-        private SugiyamaVertex(JIPipeNodeUI algorithmUI) {
+        private SugiyamaVertex(JIPipeGraphNodeUI algorithmUI) {
             this.algorithmUI = algorithmUI;
         }
 

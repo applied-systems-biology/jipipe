@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 
 import javax.swing.*;
 import java.util.Set;
@@ -35,7 +35,7 @@ public interface NodeUIContextAction {
      * @param selection the list of algorithm UIs
      * @return if the action shows up
      */
-    boolean matches(Set<JIPipeNodeUI> selection);
+    boolean matches(Set<JIPipeGraphNodeUI> selection);
 
     /**
      * Runs the workload
@@ -43,7 +43,7 @@ public interface NodeUIContextAction {
      * @param canvasUI  the canvas that contains all algorithm UIs
      * @param selection the current selection of algorithms
      */
-    void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection);
+    void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection);
 
     /**
      * @return the name

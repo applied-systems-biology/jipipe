@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -33,8 +33,8 @@ import java.util.Set;
 
 public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI nodeUI : selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
+        for (JIPipeGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             if (node instanceof JIPipeProjectCompartment)
                 return true;
@@ -49,14 +49,14 @@ public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         if (selection.size() == 1) {
             // Classic mode (via UI)
-            JIPipeNodeUI ui = selection.iterator().next();
-            ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false, false)));
+            JIPipeGraphNodeUI ui = selection.iterator().next();
+            ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeGraphNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false, false)));
         } else {
             // Batch mode (enqueue)
-            for (JIPipeNodeUI nodeUI : selection) {
+            for (JIPipeGraphNodeUI nodeUI : selection) {
                 JIPipeGraphNode node = nodeUI.getNode();
                 JIPipeProject project = node.getParentGraph().getProject();
                 if (node instanceof JIPipeProjectCompartment) {

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -164,20 +164,20 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
     }
 
-    private DefaultDirectedGraph<Node, Edge> generateGraph(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> uis) {
+    private DefaultDirectedGraph<Node, Edge> generateGraph(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> uis) {
         DefaultDirectedGraph<Node, Edge> graph = new DefaultDirectedGraph<>(Edge.class);
         DefaultDirectedGraph<Node, Edge> helperGraph = new DefaultDirectedGraph<>(Edge.class);
-        Map<JIPipeNodeUI, Node> nodeMap = new HashMap<>();
-        for (JIPipeNodeUI ui : uis) {
+        Map<JIPipeGraphNodeUI, Node> nodeMap = new HashMap<>();
+        for (JIPipeGraphNodeUI ui : uis) {
             Node node = new Node(ui);
             graph.addVertex(node);
             helperGraph.addVertex(node);
             nodeMap.put(ui, node);
         }
-        for (JIPipeNodeUI ui : uis) {
+        for (JIPipeGraphNodeUI ui : uis) {
             for (JIPipeDataSlot outputSlot : ui.getNode().getOutputSlots()) {
                 for (JIPipeDataSlot targetSlot : ui.getGraphCanvasUI().getGraph().getOutputOutgoingTargetSlots(outputSlot)) {
-                    JIPipeNodeUI targetUI = canvasUI.getNodeUIs().getOrDefault(targetSlot.getNode(), null);
+                    JIPipeGraphNodeUI targetUI = canvasUI.getNodeUIs().getOrDefault(targetSlot.getNode(), null);
                     if (targetUI != null) {
                         Node targetNode = nodeMap.get(targetUI);
                         helperGraph.addEdge(nodeMap.get(ui), targetNode);
@@ -247,15 +247,15 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
     }
 
     public static class Node {
-        private final JIPipeNodeUI ui;
+        private final JIPipeGraphNodeUI ui;
         private int depth = 0;
         private int track = -1;
 
-        public Node(JIPipeNodeUI ui) {
+        public Node(JIPipeGraphNodeUI ui) {
             this.ui = ui;
         }
 
-        public JIPipeNodeUI getUi() {
+        public JIPipeGraphNodeUI getUi() {
             return ui;
         }
 

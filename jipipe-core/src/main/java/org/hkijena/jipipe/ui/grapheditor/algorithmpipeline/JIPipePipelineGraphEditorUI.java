@@ -43,7 +43,7 @@ import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clip
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
 import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.*;
@@ -404,18 +404,18 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         if (getSelection().isEmpty()) {
             setPropertyPanel(defaultPanel, true);
         } else if (getSelection().size() == 1) {
-            JIPipeNodeUI ui = getSelection().iterator().next();
+            JIPipeGraphNodeUI ui = getSelection().iterator().next();
             setPropertyPanel(new JIPipePipelineSingleAlgorithmSelectionPanelUI(this, ui.getNode()), true);
         } else {
             setPropertyPanel(new JIPipePipelineMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
+                    getSelection().stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet())), true);
         }
     }
 
 
 
     @Override
-    public void onDefaultNodeUIActionRequested(JIPipeNodeUI.DefaultNodeUIActionRequestedEvent event) {
+    public void onDefaultNodeUIActionRequested(JIPipeGraphNodeUI.DefaultNodeUIActionRequestedEvent event) {
         if (event.getUi().getNode() instanceof NodeGroup) {
             if (event.getUi().getNode() instanceof NodeGroup) {
                 if (getWorkbench() instanceof JIPipeProjectWorkbench) {
@@ -439,7 +439,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
      * @param event the event
      */
     @Override
-    public void onNodeUIActionRequested(JIPipeNodeUI.NodeUIActionRequestedEvent event) {
+    public void onNodeUIActionRequested(JIPipeGraphNodeUI.NodeUIActionRequestedEvent event) {
         if (event.getAction() instanceof RunAndShowResultsAction) {
             disableUpdateOnSelection = true;
             selectOnly(event.getUi());

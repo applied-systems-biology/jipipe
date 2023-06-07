@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.components.pickers.PickNodeDialog;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,19 +27,19 @@ import java.util.Set;
 
 public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         return selection.size() <= 1;
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         JIPipeGraphNode preSelected = selection.isEmpty() ? null : selection.iterator().next().getNode();
         JIPipeGraphNode algorithm = PickNodeDialog.showDialog(canvasUI.getWorkbench().getWindow(),
                 canvasUI.getNodeUIs().keySet(),
                 preSelected,
                 "Move node");
         if (algorithm != null) {
-            JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
+            JIPipeGraphNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
             if (ui != null) {
                 if (canvasUI.getHistoryJournal() != null) {
                     canvasUI.getHistoryJournal().snapshotBeforeMoveNodes(Collections.singleton(ui.getNode()), ui.getNode().getCompartmentUUIDInParentGraph());

@@ -18,7 +18,7 @@ public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
     private String slotLabel;
 
     private boolean slotLabelIsCustom;
-    private JIPipeNodeUI.SlotStatus slotStatus = JIPipeNodeUI.SlotStatus.Default;
+    private JIPipeGraphNodeUI.SlotStatus slotStatus = JIPipeGraphNodeUI.SlotStatus.Default;
 
     private Point nativeLocation;
 
@@ -26,7 +26,7 @@ public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
 
     private Image icon;
 
-    public JIPipeNodeUISlotActiveArea(JIPipeNodeUI nodeUI, JIPipeSlotType slotType, String slotName, JIPipeDataSlot slot) {
+    public JIPipeNodeUISlotActiveArea(JIPipeGraphNodeUI nodeUI, JIPipeSlotType slotType, String slotName, JIPipeDataSlot slot) {
         super(nodeUI, 100);
         this.slotType = slotType;
         this.slotName = slotName;
@@ -49,11 +49,11 @@ public class JIPipeNodeUISlotActiveArea extends JIPipeNodeUIActiveArea {
         return slotName;
     }
 
-    public JIPipeNodeUI.SlotStatus getSlotStatus() {
+    public JIPipeGraphNodeUI.SlotStatus getSlotStatus() {
         return slotStatus;
     }
 
-    public void setSlotStatus(JIPipeNodeUI.SlotStatus slotStatus) {
+    public void setSlotStatus(JIPipeGraphNodeUI.SlotStatus slotStatus) {
         this.slotStatus = slotStatus;
     }
 

@@ -14,7 +14,6 @@
 package org.hkijena.jipipe;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
 import net.imagej.ImageJ;
@@ -31,8 +30,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -813,7 +810,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         for (JIPipeDependency extension : registeredExtensions) {
             if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaExtension) {
                 postprocessingProgress.log(extension.getDependencyId());
-                ((JIPipeJavaExtension) extension).postprocess();
+                ((JIPipeJavaExtension) extension).postprocess(postprocessingProgress);
             }
         }
         datatypeRegistry.convertDisplayOperationsToImportOperations();

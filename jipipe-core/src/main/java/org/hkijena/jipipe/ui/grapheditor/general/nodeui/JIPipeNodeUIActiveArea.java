@@ -6,12 +6,12 @@ import java.awt.*;
 
 public class JIPipeNodeUIActiveArea implements Comparable<JIPipeNodeUIActiveArea> {
 
-    private final JIPipeNodeUI nodeUI;
+    private final JIPipeGraphNodeUI nodeUI;
     private final int priority;
 
     private Rectangle zoomedHitArea;
 
-    public JIPipeNodeUIActiveArea(JIPipeNodeUI nodeUI, int priority) {
+    public JIPipeNodeUIActiveArea(JIPipeGraphNodeUI nodeUI, int priority) {
         this.nodeUI = nodeUI;
         this.priority = priority;
     }
@@ -33,7 +33,7 @@ public class JIPipeNodeUIActiveArea implements Comparable<JIPipeNodeUIActiveArea
         this.zoomedHitArea = zoomedHitArea;
     }
 
-    public JIPipeNodeUI getNodeUI() {
+    public JIPipeGraphNodeUI getNodeUI() {
         return nodeUI;
     }
 

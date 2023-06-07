@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
@@ -39,10 +39,10 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
     }
 
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         if (selection.isEmpty())
             return false;
-        for (JIPipeNodeUI ui : selection) {
+        for (JIPipeGraphNodeUI ui : selection) {
             if (ui.getNode().getInfo() != nodeInfo)
                 return false;
         }
@@ -50,9 +50,9 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         try {
-            for (JIPipeNodeUI ui : selection) {
+            for (JIPipeGraphNodeUI ui : selection) {
                 method.invoke(ui.getNode(), canvasUI.getWorkbench());
             }
         } catch (IllegalAccessException | InvocationTargetException e) {

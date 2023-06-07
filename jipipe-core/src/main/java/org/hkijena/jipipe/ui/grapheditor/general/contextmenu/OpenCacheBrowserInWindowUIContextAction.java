@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -27,15 +27,15 @@ import java.util.Set;
 
 public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         return !selection.isEmpty() && selection.stream().allMatch(ui -> ui.getNode().getInfo().isRunnable() &&
                 ui.getNode() instanceof JIPipeAlgorithm &&
                 ui.getNode().getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project);
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
+        for (JIPipeGraphNodeUI ui : selection) {
             JIPipeAlgorithmCacheBrowserUI browserUI =
                     new JIPipeAlgorithmCacheBrowserUI((JIPipeProjectWorkbench) ui.getWorkbench(), ui.getNode(), canvasUI);
             JFrame frame = new JFrame("Cache browser: " + ui.getNode().getName());

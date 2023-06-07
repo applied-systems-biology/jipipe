@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -17,9 +17,9 @@ import java.util.Set;
 
 public class LoadExampleContextMenuAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         if (selection.size() == 1) {
-            JIPipeNodeUI nodeUI = selection.iterator().next();
+            JIPipeGraphNodeUI nodeUI = selection.iterator().next();
             if (!(nodeUI.getNode() instanceof JIPipeAlgorithm)) {
                 return false;
             }
@@ -28,7 +28,7 @@ public class LoadExampleContextMenuAction implements NodeUIContextAction {
         return false;
     }
 
-    private List<JIPipeNodeExample> getExamples(JIPipeNodeUI nodeUI) {
+    private List<JIPipeNodeExample> getExamples(JIPipeGraphNodeUI nodeUI) {
         List<JIPipeNodeExample> result;
         if (nodeUI.getGraphCanvasUI().getWorkbench() instanceof JIPipeProjectWorkbench) {
             result = ((JIPipeProjectWorkbench) nodeUI.getGraphCanvasUI().getWorkbench()).getProject().getNodeExamples(nodeUI.getNode().getInfo().getId());
@@ -39,8 +39,8 @@ public class LoadExampleContextMenuAction implements NodeUIContextAction {
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        JIPipeNodeUI nodeUI = selection.iterator().next();
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
+        JIPipeGraphNodeUI nodeUI = selection.iterator().next();
         JIPipeGraphNode node = nodeUI.getNode();
         JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(canvasUI.getWorkbench().getWindow());
         pickerDialog.setTitle("Load example");

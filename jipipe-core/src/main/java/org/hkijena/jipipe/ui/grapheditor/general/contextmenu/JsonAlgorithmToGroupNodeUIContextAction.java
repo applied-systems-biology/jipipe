@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.grouping.JsonAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,20 +28,20 @@ import java.util.stream.Collectors;
 
 public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
-        return JIPipe.getNodes().hasNodeInfoWithId("node-group") && selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof JsonAlgorithm);
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
+        return JIPipe.getNodes().hasNodeInfoWithId("node-group") && selection.stream().map(JIPipeGraphNodeUI::getNode).anyMatch(a -> a instanceof JsonAlgorithm);
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
         if (canvasUI.getHistoryJournal() != null) {
-            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
+            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet());
             UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
             canvasUI.getHistoryJournal().snapshot("Convert to group", "Converted nodes into a group", compartment, UIUtils.getIconFromResources("actions/extract-archive.png"));
         }
-        for (JIPipeNodeUI ui : selection) {
+        for (JIPipeGraphNodeUI ui : selection) {
             if (ui.getNode() instanceof JsonAlgorithm) {
                 JsonAlgorithm.unpackToNodeGroup((JsonAlgorithm) ui.getNode());
             }

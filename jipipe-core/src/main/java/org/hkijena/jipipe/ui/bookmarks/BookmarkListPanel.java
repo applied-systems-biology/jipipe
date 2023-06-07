@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.bookmarks;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -14,7 +13,7 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,7 +24,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import static org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI.RUN_NODE_CONTEXT_MENU_ENTRIES;
+import static org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI.RUN_NODE_CONTEXT_MENU_ENTRIES;
 
 public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGraph.GraphChangedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
@@ -112,7 +111,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGra
             JIPipeProjectCompartment compartment = node.getProjectCompartment();
             DocumentTabPane.DocumentTab tab = ((JIPipeProjectWorkbench) getWorkbench()).getOrOpenPipelineEditorTab(compartment, true);
             JIPipePipelineGraphEditorUI editorUI = (JIPipePipelineGraphEditorUI) tab.getContent();
-            JIPipeNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
+            JIPipeGraphNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
             if (ui != null) {
                 entry.run(editorUI.getCanvasUI(), Collections.singleton(ui));
             } else {
@@ -149,7 +148,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGra
                 DocumentTabPane.DocumentTab tab = ((JIPipeProjectWorkbench) getWorkbench()).getOrOpenPipelineEditorTab(compartment, true);
                 SwingUtilities.invokeLater(() -> {
                     JIPipePipelineGraphEditorUI editorUI = (JIPipePipelineGraphEditorUI) tab.getContent();
-                    JIPipeNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
+                    JIPipeGraphNodeUI ui = editorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
                     if (ui != null) {
                         editorUI.selectOnly(ui);
                     } else {
@@ -158,7 +157,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGra
                 });
             }
         } else if (graphEditorUI != null) {
-            JIPipeNodeUI ui = graphEditorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
+            JIPipeGraphNodeUI ui = graphEditorUI.getCanvasUI().getNodeUIs().getOrDefault(node, null);
             if (ui != null) {
                 graphEditorUI.selectOnly(ui);
             } else {

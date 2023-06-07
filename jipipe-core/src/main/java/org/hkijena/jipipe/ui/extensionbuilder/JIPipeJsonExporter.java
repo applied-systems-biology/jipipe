@@ -24,7 +24,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -165,7 +165,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
         } else {
             setPropertyPanel(new JIPipeJsonAlgorithmExporterMultiSelectionPanelUI(getWorkbench(),
                     getCanvasUI(),
-                    getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())), true);
+                    getSelection().stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet())), true);
         }
     }
 

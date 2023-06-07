@@ -190,7 +190,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void postprocess() {
+    public void postprocess(JIPipeProgressInfo progressInfo) {
         createMissingRNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }

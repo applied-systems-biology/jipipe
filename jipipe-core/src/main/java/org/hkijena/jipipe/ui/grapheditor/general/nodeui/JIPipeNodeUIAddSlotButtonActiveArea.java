@@ -11,7 +11,7 @@ public class JIPipeNodeUIAddSlotButtonActiveArea extends JIPipeNodeUIActiveArea 
 
     private double nativeWidth;
 
-    public JIPipeNodeUIAddSlotButtonActiveArea(JIPipeNodeUI nodeUI, JIPipeSlotType slotType) {
+    public JIPipeNodeUIAddSlotButtonActiveArea(JIPipeGraphNodeUI nodeUI, JIPipeSlotType slotType) {
         super(nodeUI, 50);
         this.slotType = slotType;
     }

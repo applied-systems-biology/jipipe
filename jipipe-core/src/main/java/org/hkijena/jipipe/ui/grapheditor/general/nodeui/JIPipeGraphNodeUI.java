@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 /**
  * UI around an {@link JIPipeGraphNode} instance
  */
-public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener,
+public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener,
         JIPipeCache.ModifiedEventListener, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeGraph.NodeConnectedEventListener,
         JIPipeGraph.NodeDisconnectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
     public static final Color COLOR_DISABLED_1 = new Color(227, 86, 86);
@@ -104,7 +104,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private final Font nativeSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, 11);
     private final Color mainTextColor;
     private final Color secondaryTextColor;
-    private final List<JIPipeNodeUIActiveArea> activeAreas = new ArrayList<>();
+    protected final List<JIPipeNodeUIActiveArea> activeAreas = new ArrayList<>();
     private final boolean showInputs;
     private final boolean showOutputs;
     private JIPipeNodeUIAddSlotButtonActiveArea addInputSlotArea;
@@ -127,7 +127,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
      * @param graphCanvasUI The graph UI that contains this UI
      * @param node          The algorithm
      */
-    public JIPipeNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphCanvasUI, JIPipeGraphNode node) {
+    public JIPipeGraphNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphCanvasUI, JIPipeGraphNode node) {
         super(workbench);
         this.graphCanvasUI = graphCanvasUI;
         this.node = node;
@@ -242,7 +242,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         updateActiveAreas();
     }
 
-    private void updateActiveAreas() {
+    protected void updateActiveAreas() {
         activeAreas.clear();
 
         // Add whole node
@@ -263,7 +263,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         return outputSlotMap;
     }
 
-    private void updateSlotActiveAreas() {
+    protected void updateSlotActiveAreas() {
         for (JIPipeNodeUISlotActiveArea slotState : inputSlotMap.values()) {
             Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom),
                     (int) Math.round(slotState.getNativeLocation().y * zoom),
@@ -318,7 +318,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
     }
 
-    private void updateWholeNodeActiveAreas() {
+    protected void updateWholeNodeActiveAreas() {
         FontMetrics mainFontMetrics;
 
         if (getGraphics() != null) {
@@ -359,7 +359,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
     }
 
-    private void updateAssets() {
+    protected void updateAssets() {
         // Update fonts
         zoomedMainFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(12 * zoom));
         zoomedSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(11 * zoom));
@@ -431,7 +431,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     /**
      * Recalculates the UI size
      */
-    private void updateSize() {
+    protected void updateSize() {
 
         FontMetrics mainFontMetrics;
         FontMetrics secondaryFontMetrics;
@@ -510,6 +510,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         updateActiveAreas();
     }
 
+    public JIPipeGraphViewMode getViewMode() {
+        return viewMode;
+    }
+
+
+
     private void scaleSlotsNativeWidth(Map<String, JIPipeNodeUISlotActiveArea> slotStateMap, JIPipeNodeUIAddSlotButtonActiveArea addSlotActiveArea, double nodeWidth, double sumWidth, boolean hasButton) {
 //        if(slotStateMap.size() == 1 && hasButton) {
 //            return;
@@ -548,8 +554,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             Rectangle futureBounds = new Rectangle(location.x, location.y, getWidth(), getHeight());
             for (int i = 0; i < graphCanvasUI.getComponentCount(); ++i) {
                 Component component = graphCanvasUI.getComponent(i);
-                if (component instanceof JIPipeNodeUI) {
-                    JIPipeNodeUI ui = (JIPipeNodeUI) component;
+                if (component instanceof JIPipeGraphNodeUI) {
+                    JIPipeGraphNodeUI ui = (JIPipeGraphNodeUI) component;
                     if (ui != this) {
                         if (ui.getBounds().intersects(futureBounds)) {
                             return false;
@@ -667,7 +673,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 //        }
     }
 
-    private void paintNode(Graphics2D g2) {
+    public boolean isDrawShadow() {
+        return true;
+    }
+
+    protected void paintNode(Graphics2D g2) {
 
         g2.setPaint(nodeFillColor);
         g2.fillRect(0, 0, getWidth(), getHeight());
@@ -1038,7 +1048,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         return addOutputSlotArea;
     }
 
-    private void updateSlots() {
+    protected void updateSlots() {
         JIPipeGraph graph = node.getParentGraph();
 
         inputSlotMap.clear();
@@ -1575,7 +1585,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     JIPipe.getDataTypes().getIconFor(target.getAcceptedDataType()));
             connectButton.addActionListener(e -> getGraphCanvasUI().connectSlot(slot, target));
             connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getInfo()));
-            JIPipeNodeUI targetNodeUI = getGraphCanvasUI().getNodeUIs().getOrDefault(target.getNode(), null);
+            JIPipeGraphNodeUI targetNodeUI = getGraphCanvasUI().getNodeUIs().getOrDefault(target.getNode(), null);
 
             if (targetNodeUI != null) {
                 openSlotMenuInstallHighlightForConnect(slotActiveArea, target, connectButton);
@@ -1764,7 +1774,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         connectButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                JIPipeNodeUI sourceNodeUI = getGraphCanvasUI().getNodeUIs().getOrDefault(source.getNode(), null);
+                JIPipeGraphNodeUI sourceNodeUI = getGraphCanvasUI().getNodeUIs().getOrDefault(source.getNode(), null);
                 if (sourceNodeUI != null) {
                     if (source.isOutput()) {
                         JIPipeNodeUISlotActiveArea sourceUI = sourceNodeUI.getOutputSlotMap().getOrDefault(source.getName(), null);
@@ -2049,10 +2059,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     }
 
     /**
-     * An action that is requested by an {@link JIPipeNodeUI} and passed down to a {@link JIPipeGraphEditorUI}
+     * An action that is requested by an {@link JIPipeGraphNodeUI} and passed down to a {@link JIPipeGraphEditorUI}
      */
     public static class NodeUIActionRequestedEvent extends AbstractJIPipeEvent {
-        private final JIPipeNodeUI ui;
+        private final JIPipeGraphNodeUI ui;
         private final JIPipeNodeUIAction action;
 
         /**
@@ -2061,13 +2071,13 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
          * @param ui     the requesting UI
          * @param action the action parameter
          */
-        public NodeUIActionRequestedEvent(JIPipeNodeUI ui, JIPipeNodeUIAction action) {
+        public NodeUIActionRequestedEvent(JIPipeGraphNodeUI ui, JIPipeNodeUIAction action) {
             super(ui);
             this.ui = ui;
             this.action = action;
         }
 
-        public JIPipeNodeUI getUi() {
+        public JIPipeGraphNodeUI getUi() {
             return ui;
         }
 
@@ -2085,21 +2095,21 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     }
 
     /**
-     * Triggered when an {@link JIPipeNodeUI} requests a default action (double click)
+     * Triggered when an {@link JIPipeGraphNodeUI} requests a default action (double click)
      */
     public static class DefaultNodeUIActionRequestedEvent extends AbstractJIPipeEvent {
 
-        private final JIPipeNodeUI ui;
+        private final JIPipeGraphNodeUI ui;
 
         /**
          * @param ui event source
          */
-        public DefaultNodeUIActionRequestedEvent(JIPipeNodeUI ui) {
+        public DefaultNodeUIActionRequestedEvent(JIPipeGraphNodeUI ui) {
             super(ui);
             this.ui = ui;
         }
 
-        public JIPipeNodeUI getUi() {
+        public JIPipeGraphNodeUI getUi() {
             return ui;
         }
     }

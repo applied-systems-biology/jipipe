@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -32,14 +32,14 @@ import java.util.stream.Collectors;
 
 public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         return !selection.isEmpty();
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         JIPipeGraph graph = canvasUI.getGraph()
-                .extract(selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet()), true);
+                .extract(selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet()), true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
             StringSelection stringSelection = new StringSelection(json);

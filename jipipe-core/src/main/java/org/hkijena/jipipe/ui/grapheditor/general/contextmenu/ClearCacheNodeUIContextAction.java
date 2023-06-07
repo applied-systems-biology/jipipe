@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,13 +28,13 @@ import java.util.Set;
 
 public class ClearCacheNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI nodeUI : selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
+        for (JIPipeGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             if (node.getParentGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
                 return false;
         }
-        for (JIPipeNodeUI nodeUI : selection) {
+        for (JIPipeGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             if (node instanceof JIPipeProjectCompartment)
                 return true;
@@ -47,8 +47,8 @@ public class ClearCacheNodeUIContextAction implements NodeUIContextAction {
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI nodeUI : selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
+        for (JIPipeGraphNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
             JIPipeProject project = nodeUI.getGraphCanvasUI().getGraph().getProject();
             if (node instanceof JIPipeProjectCompartment) {

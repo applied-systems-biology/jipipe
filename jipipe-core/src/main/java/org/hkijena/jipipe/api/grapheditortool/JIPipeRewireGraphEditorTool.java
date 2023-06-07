@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -98,7 +98,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             if (currentRewireDragSource.isInput()) {
                 for (JIPipeDataSlot inputIncomingSourceSlot : graph.getInputIncomingSourceSlots(currentRewireDragSource.getSlot())) {
                     // The slot is an output
-                    JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(inputIncomingSourceSlot.getNode());
+                    JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(inputIncomingSourceSlot.getNode());
                     if (nodeUI != null) {
                         PointRange slotLocation = nodeUI.getSlotLocation(inputIncomingSourceSlot);
                         slotLocation.add(nodeUI.getLocation());
@@ -108,7 +108,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
             } else {
                 for (JIPipeDataSlot outputOutgoingTargetSlot : graph.getOutputOutgoingTargetSlots(currentRewireDragSource.getSlot())) {
                     // The slot is an input
-                    JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(outputOutgoingTargetSlot.getNode());
+                    JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(outputOutgoingTargetSlot.getNode());
                     if (nodeUI != null) {
                         PointRange slotLocation = nodeUI.getSlotLocation(outputOutgoingTargetSlot);
                         slotLocation.add(nodeUI.getLocation());
@@ -122,7 +122,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     private void paintRewireEdge(Graphics2D g, PointRange sourcePoint, Point mousePosition) {
         PointRange targetPoint = null;
         if (currentRewireDragTarget != null) {
-            JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(currentRewireDragTarget.getSlot().getNode());
+            JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(currentRewireDragTarget.getSlot().getNode());
             PointRange slotLocation = nodeUI.getSlotLocation(currentRewireDragTarget.getSlot());
             slotLocation.add(nodeUI.getLocation());
             targetPoint = slotLocation;
@@ -148,7 +148,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     @Override
     public void mousePressed(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e)) {
-            JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
+            JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
             if (nodeUI != null) {
                 JIPipeNodeUISlotActiveArea slot = nodeUI.pickSlotAtMousePosition(e);
                 setCurrentRewireDragSource(slot);
@@ -160,7 +160,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     @Override
     public void mouseReleased(MouseEvent e) {
         if (SwingUtilities.isLeftMouseButton(e) && currentRewireDragSource != null) {
-            JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
+            JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
             if (nodeUI != null) {
                 JIPipeNodeUISlotActiveArea target = nodeUI.pickSlotAtMousePosition(e);
                 if (target != null) {
@@ -297,7 +297,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     public void mouseDragged(MouseEvent e) {
         if (currentRewireDragSource != null) {
 
-            JIPipeNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
+            JIPipeGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().pickNodeUI(e);
             if (nodeUI != null) {
                 // Advanced dragging behavior
                 boolean snapped = false;

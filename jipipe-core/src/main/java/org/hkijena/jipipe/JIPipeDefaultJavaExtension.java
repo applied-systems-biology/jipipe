@@ -26,10 +26,7 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeDefaultParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
@@ -248,6 +245,19 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerDatatypeConversion(JIPipeDataConverter converter) {
         registry.getDatatypeRegistry().registerConversion(converter);
+    }
+
+    /**
+     * Registers a new annotation node type and associated {@link JIPipeGraphEditorTool}
+     * @param id the ID of the node type (must be unique)
+     * @param nodeClass the node class
+     * @param graphToolClass the graph editor class
+     * @param icon the icon URL
+     * @param <T> the node class
+     */
+    public <T extends JIPipeAnnotationGraphNode> void registerAnnotationNodeType(String id, Class<T> nodeClass, Class<? extends JIPipeAnnotationGraphNodeTool<T>> graphToolClass, URL icon) {
+        registerNodeType(id, nodeClass, icon);
+        registerGraphEditorTool(graphToolClass);
     }
 
     /**

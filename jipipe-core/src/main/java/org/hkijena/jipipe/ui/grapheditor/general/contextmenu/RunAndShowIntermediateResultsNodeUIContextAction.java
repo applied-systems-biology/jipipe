@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.RunAndShowResultsAction;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,7 +26,7 @@ import java.util.Set;
 
 public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
         if (selection.size() == 1) {
             JIPipeGraphNode node = selection.iterator().next().getNode();
             if (node instanceof JIPipeProjectCompartment)
@@ -41,9 +41,9 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIC
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        JIPipeNodeUI ui = selection.iterator().next();
-        ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeNodeUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(true)));
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
+        JIPipeGraphNodeUI ui = selection.iterator().next();
+        ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeGraphNodeUI.NodeUIActionRequestedEvent(ui, new RunAndShowResultsAction(true)));
     }
 
     @Override

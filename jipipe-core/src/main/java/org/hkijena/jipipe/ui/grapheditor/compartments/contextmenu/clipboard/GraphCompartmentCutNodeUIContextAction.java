@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,12 +28,12 @@ import java.util.Set;
 public class GraphCompartmentCutNodeUIContextAction extends GraphCompartmentCopyNodeUIContextAction {
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         super.run(canvasUI, selection);
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
         JIPipeProject project = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject();
-        for (JIPipeNodeUI ui : selection) {
+        for (JIPipeGraphNodeUI ui : selection) {
             JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
             if (canvasUI.getHistoryJournal() != null) {
                 canvasUI.getHistoryJournal().snapshotBeforeCutCompartment(compartment);

@@ -27,7 +27,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -91,7 +91,7 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
 
     private void initializeActionPanel(JPanel actionPanel) {
         FormPanel content = new FormPanel(FormPanel.WITH_SCROLLING);
-        Set<JIPipeNodeUI> nodeUIs = canvas.getNodeUIsFor(nodes);
+        Set<JIPipeGraphNodeUI> nodeUIs = canvas.getNodeUIsFor(nodes);
         boolean canAddSeparator = false;
         for (NodeUIContextAction action : canvas.getContextActions()) {
             if (action == null) {

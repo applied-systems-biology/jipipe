@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -23,13 +23,13 @@ import java.util.Set;
 
 public class CollapseIOInterfaceNodeUIContextAction implements NodeUIContextAction {
     @Override
-    public boolean matches(Set<JIPipeNodeUI> selection) {
-        return selection.stream().map(JIPipeNodeUI::getNode).anyMatch(a -> a instanceof IOInterfaceAlgorithm && a.canUserDelete());
+    public boolean matches(Set<JIPipeGraphNodeUI> selection) {
+        return selection.stream().map(JIPipeGraphNodeUI::getNode).anyMatch(a -> a instanceof IOInterfaceAlgorithm && a.canUserDelete());
     }
 
     @Override
-    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
-        for (JIPipeNodeUI ui : selection) {
+    public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
+        for (JIPipeGraphNodeUI ui : selection) {
             if (ui.getNode() instanceof IOInterfaceAlgorithm) {
                 IOInterfaceAlgorithm.collapse((IOInterfaceAlgorithm) ui.getNode());
             }
