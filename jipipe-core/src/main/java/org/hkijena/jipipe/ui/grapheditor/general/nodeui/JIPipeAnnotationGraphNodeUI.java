@@ -50,11 +50,6 @@ public class JIPipeAnnotationGraphNodeUI extends JIPipeGraphNodeUI {
     }
 
     @Override
-    public boolean isResizable() {
-        return true;
-    }
-
-    @Override
     public boolean isDrawShadow() {
         JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
         return annotationGraphNode.isPaintNodeShadow();

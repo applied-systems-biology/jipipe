@@ -677,10 +677,6 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
         return true;
     }
 
-    public boolean isResizable() {
-        return false;
-    }
-
     protected void paintNode(Graphics2D g2) {
 
         g2.setPaint(nodeFillColor);
