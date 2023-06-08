@@ -118,6 +118,8 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     private BufferedImage nodeBuffer;
     private boolean nodeBufferInvalid = true;
 
+    private boolean buffered = true;
+
     private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
 
     /**
@@ -197,6 +199,14 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
         // Initialization
         initialize();
         updateView(true, true, true);
+    }
+
+    public boolean isBuffered() {
+        return buffered;
+    }
+
+    public void setBuffered(boolean buffered) {
+        this.buffered = buffered;
     }
 
     public NodeUIActionRequestedEventEmitter getNodeUIActionRequestedEventEmitter() {
@@ -651,21 +661,26 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
         super.paintComponent(g);
 
-        if (nodeBufferInvalid || nodeBuffer == null || nodeBuffer.getWidth() != getWidth() || nodeBuffer.getHeight() != getHeight()) {
-            if (nodeBuffer == null || nodeBuffer.getWidth() != getWidth() || nodeBuffer.getHeight() != getHeight()) {
-                nodeBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
-            }
-            Graphics2D bufferGraphics = nodeBuffer.createGraphics();
+        if(buffered) {
+            if (nodeBufferInvalid || nodeBuffer == null || nodeBuffer.getWidth() != getWidth() || nodeBuffer.getHeight() != getHeight()) {
+                if (nodeBuffer == null || nodeBuffer.getWidth() != getWidth() || nodeBuffer.getHeight() != getHeight()) {
+                    nodeBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
+                }
+                Graphics2D bufferGraphics = nodeBuffer.createGraphics();
 //            bufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            bufferGraphics.setRenderingHints(graphCanvasUI.getDesktopRenderingHints());
-            bufferGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            bufferGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            paintNode(bufferGraphics);
-            bufferGraphics.dispose();
-            nodeBufferInvalid = false;
-        }
+                bufferGraphics.setRenderingHints(graphCanvasUI.getDesktopRenderingHints());
+                bufferGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                bufferGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                paintNode(bufferGraphics);
+                bufferGraphics.dispose();
+                nodeBufferInvalid = false;
+            }
 
-        g2.drawImage(nodeBuffer, 0, 0, getWidth(), getHeight(), null);
+            g2.drawImage(nodeBuffer, 0, 0, getWidth(), getHeight(), null);
+        }
+        else {
+            paintNode(g2);
+        }
 
 //        for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
 //            g2.setPaint(Color.RED);

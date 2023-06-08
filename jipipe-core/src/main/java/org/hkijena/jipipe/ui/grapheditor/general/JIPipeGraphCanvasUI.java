@@ -1044,11 +1044,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
         // Let the tool handle the event
+        Cursor defaultCursor = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
         if (currentTool != null) {
             currentTool.mouseMoved(mouseEvent);
             if (mouseEvent.isConsumed()) {
                 return;
             }
+            defaultCursor = currentTool.getCursor();
         }
 
         // Resize handler
@@ -1083,19 +1085,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                                 setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
                                 break;
                             default:
-                                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                                setCursor(defaultCursor);
                                 break;
                         }
                         return;
                     }
                 }
                 else {
-                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    setCursor(defaultCursor);
                 }
             }
         }
         else {
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            setCursor(defaultCursor);
         }
 
         // Handling by node

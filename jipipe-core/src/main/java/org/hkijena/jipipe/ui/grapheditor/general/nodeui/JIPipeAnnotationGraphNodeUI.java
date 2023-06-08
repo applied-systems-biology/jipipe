@@ -19,6 +19,7 @@ public class JIPipeAnnotationGraphNodeUI extends JIPipeGraphNodeUI {
      */
     public JIPipeAnnotationGraphNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphCanvasUI, JIPipeAnnotationGraphNode node) {
         super(workbench, graphCanvasUI, node);
+        setBuffered(false);
         setOpaque(false);
     }
 

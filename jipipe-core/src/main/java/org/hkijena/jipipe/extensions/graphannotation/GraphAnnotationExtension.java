@@ -17,15 +17,13 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.graphannotation.nodes.TitleBoxAnnotationGraphNode;
-import org.hkijena.jipipe.extensions.graphannotation.tools.TitleBoxAnnotationGraphNodeTool;
+import org.hkijena.jipipe.extensions.graphannotation.nodes.TextBoxAnnotationGraphNode;
+import org.hkijena.jipipe.extensions.graphannotation.tools.TextBoxAnnotationGraphNodeTool;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
-
-import java.net.URL;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class GraphAnnotationExtension extends JIPipePrepackagedDefaultJavaExtension {
@@ -47,7 +45,7 @@ public class GraphAnnotationExtension extends JIPipePrepackagedDefaultJavaExtens
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerAnnotationNodeType("graph-annotation-title-box", TitleBoxAnnotationGraphNode.class, TitleBoxAnnotationGraphNodeTool.class, UIUtils.getIconURLFromResources("actions/window-new.png"));
+        registerAnnotationNodeType("graph-annotation-text-box", TextBoxAnnotationGraphNode.class, TextBoxAnnotationGraphNodeTool.class, UIUtils.getIconURLFromResources("actions/insert-text-frame.png"));
     }
 
     @Override
