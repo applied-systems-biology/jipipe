@@ -5,9 +5,12 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 
 import java.awt.*;
+import java.util.Set;
 
 /**
  * A node that is an annotation
@@ -65,4 +68,10 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
     }
 
     public abstract void paintNode(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI);
+
+    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeGraphNodeUI> selection) {
+        graphics2D.setColor(Color.GRAY);
+        graphics2D.setStroke(JIPipeGraphCanvasUI.STROKE_MARQUEE);
+        graphics2D.drawRect(x,y,width, height);
+    }
 }

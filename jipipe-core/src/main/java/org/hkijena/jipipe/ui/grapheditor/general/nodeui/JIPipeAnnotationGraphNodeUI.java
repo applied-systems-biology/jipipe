@@ -1,12 +1,12 @@
 package org.hkijena.jipipe.ui.grapheditor.general.nodeui;
 
 import org.hkijena.jipipe.api.nodes.JIPipeAnnotationGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 
 import java.awt.*;
+import java.util.Set;
 
 public class JIPipeAnnotationGraphNodeUI extends JIPipeGraphNodeUI {
 
@@ -19,6 +19,7 @@ public class JIPipeAnnotationGraphNodeUI extends JIPipeGraphNodeUI {
      */
     public JIPipeAnnotationGraphNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphCanvasUI, JIPipeAnnotationGraphNode node) {
         super(workbench, graphCanvasUI, node);
+        setOpaque(false);
     }
 
     @Override
@@ -59,5 +60,20 @@ public class JIPipeAnnotationGraphNodeUI extends JIPipeGraphNodeUI {
     protected void paintNode(Graphics2D g2) {
         JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
         annotationGraphNode.paintNode(g2, this);
+    }
+
+    public void setNodeGridSize(int width, int height) {
+        width = Math.max(1, width);
+        height = Math.max(1, height);
+        JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
+        annotationGraphNode.setGridWidth(width);
+        annotationGraphNode.setGridHeight(height);
+        updateView(true, true, true);
+    }
+
+    @Override
+    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeGraphNodeUI> selection) {
+        JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
+        annotationGraphNode.paintMinimap(graphics2D, x, y, width, height, defaultStroke, selectedStroke, selection);
     }
 }

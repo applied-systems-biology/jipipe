@@ -2044,6 +2044,30 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
         }
     }
 
+    public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeGraphNodeUI> selection) {
+        graphics2D.setStroke(selection.contains(this) ? selectedStroke : defaultStroke);
+        graphics2D.setColor(getFillColor());
+        graphics2D.fillRect(x, y, width, height);
+        if (getNode().isBookmarked()) {
+            graphics2D.setColor(new Color(0x33cc33));
+        } else {
+            graphics2D.setColor(getBorderColor());
+        }
+        graphics2D.drawRect(x, y, width, height);
+
+
+        ImageIcon icon = JIPipe.getInstance().getNodeRegistry().getIconFor(getNode().getInfo());
+        int iconSize = Math.min(16, Math.min(width, height)) - 3;
+        if (iconSize > 4) {
+            graphics2D.drawImage(icon.getImage(),
+                    x + (int) Math.round((width / 2.0) - (iconSize / 2.0)),
+                    y + (int) Math.round((height / 2.0) - (iconSize / 2.0)),
+                    iconSize,
+                    iconSize,
+                    null);
+        }
+    }
+
     public enum SlotStatus {
         Default,
         Unconnected,

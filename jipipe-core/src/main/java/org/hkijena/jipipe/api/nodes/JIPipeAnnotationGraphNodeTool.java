@@ -118,7 +118,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     public void mouseDragged(MouseEvent e) {
         if(firstPoint != null) {
             secondPoint = getGraphCanvas().getViewMode().realLocationToGrid(e.getPoint(), getGraphCanvas().getZoom());
-            getGraphCanvas().repaint(50);
+            getGraphCanvas().repaintLowLag();
             e.consume();
         }
     }
