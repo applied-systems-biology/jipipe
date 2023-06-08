@@ -301,6 +301,14 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
     }
 
     /**
+     * The current custom (user-defined) name
+     * @return the custom name
+     */
+    public String getCustomName() {
+        return customName;
+    }
+
+    /**
      * Sets a custom name. If set to null, the standard algorithm name is automatically used by getName()
      *
      * @param customName custom name

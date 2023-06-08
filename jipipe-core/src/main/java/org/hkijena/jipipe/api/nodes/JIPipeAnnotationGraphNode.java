@@ -32,7 +32,7 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
     }
 
     @JIPipeDocumentation(name = "Width", description = "Width of this node in grid coordinates")
-    @JIPipeParameter("grid-width")
+    @JIPipeParameter(value = "grid-width", uiOrder = 1000)
     public int getGridWidth() {
         return gridWidth;
     }
@@ -43,7 +43,7 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
     }
 
     @JIPipeDocumentation(name = "Height", description = "Width of this node in grid coordinates")
-    @JIPipeParameter("grid-height")
+    @JIPipeParameter(value = "grid-height", uiOrder = 1010)
     public int getGridHeight() {
         return gridHeight;
     }
@@ -67,7 +67,7 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
         return true;
     }
 
-    public abstract void paintNode(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI);
+    public abstract void paintNode(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom);
 
     public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeGraphNodeUI> selection) {
         graphics2D.setColor(Color.GRAY);
