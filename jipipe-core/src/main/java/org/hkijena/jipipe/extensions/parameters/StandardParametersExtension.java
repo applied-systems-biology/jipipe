@@ -306,6 +306,14 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Margin (fixed size)",
                 "Places fixed-size objects into an area",
                 FixedMarginEditorUI.class);
+        registerParameterType("inner-margin",
+                InnerMargin.class,
+                InnerMargin.List.class,
+                null,
+                null,
+                "Margin (inner)",
+                "An inner margin (left, top, right, bottom)",
+                InnerMarginEditorUI.class);
         registerParameterType("anchor",
                 Anchor.class,
                 null,

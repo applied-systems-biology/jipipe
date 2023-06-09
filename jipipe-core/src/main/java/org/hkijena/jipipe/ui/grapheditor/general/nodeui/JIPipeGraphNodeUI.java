@@ -2053,7 +2053,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
             nodeBufferInvalid = true;
         }
         if (canvas) {
-            graphCanvasUI.repaint(50);
+            graphCanvasUI.repaintLowLag();
         } else {
             repaint(50);
         }
