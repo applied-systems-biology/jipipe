@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -22,13 +23,13 @@ import java.awt.image.BufferedImage;
 public class ImageFrame extends JPanel {
 
     private boolean withGrid;
-    private Mode mode;
+    private SizeFitMode mode;
     private boolean center;
     private BufferedImage backgroundImage;
 
     private double scaleFactor = 1;
 
-    public ImageFrame(BufferedImage backgroundImage, boolean withGrid, Mode mode, boolean center) {
+    public ImageFrame(BufferedImage backgroundImage, boolean withGrid, SizeFitMode mode, boolean center) {
         this.backgroundImage = backgroundImage;
         this.withGrid = withGrid;
         this.mode = mode;
@@ -61,11 +62,11 @@ public class ImageFrame extends JPanel {
         this.withGrid = withGrid;
     }
 
-    public Mode getMode() {
+    public SizeFitMode getMode() {
         return mode;
     }
 
-    public void setMode(Mode mode) {
+    public void setMode(SizeFitMode mode) {
         this.mode = mode;
     }
 
@@ -90,35 +91,9 @@ public class ImageFrame extends JPanel {
             g.fillRect(0, 0, getWidth(), getHeight());
         }
         if (backgroundImage != null) {
-            int newWidth, newHeight;
-            double factorH = 1.0 * getHeight() / backgroundImage.getHeight();
-            double factorW = 1.0 * getWidth() / backgroundImage.getWidth();
-            switch (mode) {
-                case Cover: {
-                    double factor = Math.max(factorH, factorW) * scaleFactor;
-                    newWidth = (int) (factor * backgroundImage.getWidth());
-                    newHeight = (int) (factor * backgroundImage.getHeight());
-                }
-                break;
-                case FitHeight: {
-                    newWidth = (int) (factorH * scaleFactor * backgroundImage.getWidth());
-                    newHeight = (int) (factorH * scaleFactor * backgroundImage.getHeight());
-                }
-                break;
-                case FitWidth: {
-                    newWidth = (int) (factorW * scaleFactor * backgroundImage.getWidth());
-                    newHeight = (int) (factorW * scaleFactor * backgroundImage.getHeight());
-                }
-                break;
-                case Fit: {
-                    double factor = Math.min(factorH, factorW) * scaleFactor;
-                    newWidth = (int) (factor * backgroundImage.getWidth());
-                    newHeight = (int) (factor * backgroundImage.getHeight());
-                }
-                break;
-                default:
-                    throw new IllegalStateException();
-            }
+            Dimension newSize = mode.fitSize(getWidth(), getHeight(), backgroundImage.getWidth(), backgroundImage.getHeight(), scaleFactor);
+            int newWidth = newSize.width;
+            int newHeight = newSize.height;
             if (center) {
                 g.drawImage(backgroundImage, getWidth() / 2 - newWidth / 2, getHeight() / 2 - newHeight / 2, newWidth, newHeight, null);
             } else {
@@ -140,10 +115,4 @@ public class ImageFrame extends JPanel {
         super.paint(g);
     }
 
-    public enum Mode {
-        Cover,
-        Fit,
-        FitWidth,
-        FitHeight
-    }
 }

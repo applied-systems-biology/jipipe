@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.documentation;
 
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -98,7 +97,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
         } catch (Throwable e) {
             backgroundImage = null;
         }
-        JPanel heroPanel = new ImageFrame(backgroundImage, false, ImageFrame.Mode.Cover, true);
+        JPanel heroPanel = new ImageFrame(backgroundImage, false, SizeFitMode.Cover, true);
         heroPanel.setLayout(new BoxLayout(heroPanel, BoxLayout.Y_AXIS));
 
         heroPanel.add(Box.createVerticalGlue());
@@ -274,7 +273,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel implements JIPipeP
     }
 
     private void initializeHeroLogo(JPanel heroPanel) {
-        ImageFrame logoPanel = new ImageFrame(UIUtils.getLogo(), false, ImageFrame.Mode.Fit, true);
+        ImageFrame logoPanel = new ImageFrame(UIUtils.getLogo(), false, SizeFitMode.Fit, true);
         logoPanel.setScaleFactor(0.7);
         logoPanel.setOpaque(false);
         heroPanel.add(logoPanel);

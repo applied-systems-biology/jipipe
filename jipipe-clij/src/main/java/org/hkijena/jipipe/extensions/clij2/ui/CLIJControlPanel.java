@@ -10,6 +10,7 @@ import org.hkijena.jipipe.ui.components.ImageFrame;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -66,7 +67,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
 
     private void initializeHeaderPanel() {
         JPanel headerPanel;
-        headerPanel = new ImageFrame(UIUtils.getHeaderPanelBackground(), false, ImageFrame.Mode.FitHeight, false);
+        headerPanel = new ImageFrame(UIUtils.getHeaderPanelBackground(), false, SizeFitMode.FitHeight, false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));

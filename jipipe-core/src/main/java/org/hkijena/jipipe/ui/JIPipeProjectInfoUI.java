@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
@@ -24,6 +23,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -186,7 +186,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
     }
 
     private void initializeHeaderPanel() {
-        headerPanel = new ImageFrame(null, false, ImageFrame.Mode.FitHeight, false);
+        headerPanel = new ImageFrame(null, false, SizeFitMode.FitHeight, false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));

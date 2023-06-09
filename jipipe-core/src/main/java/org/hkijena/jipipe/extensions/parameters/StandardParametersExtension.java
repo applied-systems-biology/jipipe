@@ -82,6 +82,7 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.layout.GraphAutoLayout;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.Priority;
@@ -509,6 +510,11 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Categories",
                 "ImageJ categories",
                 null);
+
+        registerParameterType("size-fit-mode",
+                SizeFitMode.class,
+                "Size fit mode",
+                "Algorithms to fit objects into other objects");
     }
 
     private void registerPairParameters() {
