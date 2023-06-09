@@ -117,6 +117,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
     private final Color smartEdgeSlotBackground = UIManager.getColor("EditorPane.background");
     private final Color smartEdgeSlotForeground = UIManager.getColor("Label.foreground");
+    private final ImageIcon lockIcon = UIUtils.getIconInvertedFromResources("actions/lock.png");
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private final Map<?, ?> desktopRenderingHints = UIUtils.getDesktopRenderingHints();
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
@@ -185,6 +186,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         this.autoHideEdges = settings.isAutoHideEdgeEnabled();
         this.autoHideDrawLabels = settings.isAutoHideDrawLabels();
+
 
         graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
         initialize();
@@ -830,6 +832,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (currentTimeMillis - lastTimeExpandedNegative > 100) {
             for (Map.Entry<JIPipeGraphNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
                 JIPipeGraphNodeUI currentlyDragged = entry.getKey();
+
                 Point newGridLocation = new Point(currentlyDragged.getStoredGridLocation().x + gridDx, currentlyDragged.getStoredGridLocation().y + gridDy);
                 if (newGridLocation.x <= 0) {
                     negativeDx = Math.min(negativeDx, newGridLocation.x - 1);
@@ -854,6 +857,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         for (Map.Entry<JIPipeGraphNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
             JIPipeGraphNodeUI currentlyDragged = entry.getKey();
+
             Point newGridLocation = new Point(currentlyDragged.getStoredGridLocation().x + gridDx, currentlyDragged.getStoredGridLocation().y + gridDy);
 
             if (!hasDragSnapshot) {
@@ -1054,7 +1058,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Resize handler
-        if(currentResizeTarget != null) {
+        if(currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
             for (Anchor anchor : Anchor.values()) {
                 Rectangle rectangle = getCurrentResizeTargetAnchorArea(anchor);
                 if(rectangle != null) {
@@ -1225,7 +1229,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
 
             // Resize handling
-            if(currentResizeTarget != null) {
+            if(currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
                 for (Anchor anchor : Anchor.values()) {
                     Rectangle rectangle = getCurrentResizeTargetAnchorArea(anchor);
                     if(rectangle != null) {
@@ -1294,6 +1298,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             this.hasDragSnapshot = false;
             this.currentConnectionDragSourceDragged = false;
             for (JIPipeGraphNodeUI nodeUI : selection) {
+                if(nodeUI.getNode().isUiLocked())
+                    continue;
                 Point offset = new Point();
                 offset.x = nodeUI.getX() - mouseEvent.getX();
                 offset.y = nodeUI.getY() - mouseEvent.getY();
@@ -1910,7 +1916,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-        // Draw node selections
+        // Draw node selections & lock
         graphics2D.setStroke(STROKE_SELECTION);
         for (JIPipeGraphNodeUI ui : selection) {
             Rectangle bounds = ui.getBounds();
@@ -1920,6 +1926,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             bounds.height += 8;
             g.setColor(ui.getBorderColor());
             g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
+            // Lock icon
+            if(ui.getNode().isUiLocked()) {
+                g.fillRect(bounds.x - 1, bounds.y - 1, 22, 22);
+                graphics2D.drawImage(lockIcon.getImage(), bounds.x + 2, bounds.y + 2, 16, 16, null);
+            }
         }
 
         // Draw marquee rectangle
@@ -1956,7 +1968,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Draw resize handles
-        if(currentResizeTarget != null) {
+        if(currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
             g.setColor(Color.GRAY);
             graphics2D.setStroke(STROKE_MARQUEE);
             g.drawRect(currentResizeTarget.getX() - RESIZE_HANDLE_DISTANCE, currentResizeTarget.getY() - RESIZE_HANDLE_DISTANCE, currentResizeTarget.getWidth() + RESIZE_HANDLE_DISTANCE * 2, currentResizeTarget.getHeight() + RESIZE_HANDLE_DISTANCE * 2);

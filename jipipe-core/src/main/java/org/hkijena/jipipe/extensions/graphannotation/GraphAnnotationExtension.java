@@ -17,7 +17,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.graphannotation.nodes.ArrowAnnotationGraphNode;
 import org.hkijena.jipipe.extensions.graphannotation.nodes.TextBoxAnnotationGraphNode;
+import org.hkijena.jipipe.extensions.graphannotation.tools.ArrowAnnotationGraphNodeTool;
 import org.hkijena.jipipe.extensions.graphannotation.tools.TextBoxAnnotationGraphNodeTool;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -46,6 +48,7 @@ public class GraphAnnotationExtension extends JIPipePrepackagedDefaultJavaExtens
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerAnnotationNodeType("graph-annotation-text-box", TextBoxAnnotationGraphNode.class, TextBoxAnnotationGraphNodeTool.class, UIUtils.getIconURLFromResources("actions/insert-text-frame.png"));
+        registerAnnotationNodeType("graph-annotation-arrow", ArrowAnnotationGraphNode.class, ArrowAnnotationGraphNodeTool.class, UIUtils.getIconURLFromResources("actions/draw-arrow.png"));
     }
 
     @Override

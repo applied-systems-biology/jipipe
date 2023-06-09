@@ -81,6 +81,8 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
     private Path scratchBaseDirectory;
     private boolean bookmarked;
 
+    private boolean uiLocked;
+
     /**
      * Initializes this algorithm with a custom provided slot configuration
      *
@@ -298,6 +300,18 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
         if (customName == null || customName.isEmpty())
             return getInfo().getName();
         return customName;
+    }
+
+    @JIPipeDocumentation(name = "Lock location/size", description = "If enabled, lock the location and size of this node. Does not affect automated alignment operations. " +
+            "Will lock the size if the node supports a resize handle. Slots can still be edited/connected and parameters can still be changed.")
+    @JIPipeParameter("jipipe:node:ui-locked")
+    public boolean isUiLocked() {
+        return uiLocked;
+    }
+
+    @JIPipeParameter("jipipe:node:ui-locked")
+    public void setUiLocked(boolean uiLocked) {
+        this.uiLocked = uiLocked;
     }
 
     /**
