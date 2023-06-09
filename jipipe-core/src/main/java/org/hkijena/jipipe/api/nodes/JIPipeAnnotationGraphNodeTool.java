@@ -91,15 +91,24 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     }
 
     private void createNodeAtPoint() {
-        T newNode = JIPipe.createNode(nodeClass);
         int x = Math.min(firstPoint.x, secondPoint.x);
         int y = Math.min(firstPoint.y, secondPoint.y);
         int w = Math.abs(firstPoint.x - secondPoint.x);
         int h = Math.abs(firstPoint.y - secondPoint.y);
+        T newNode = createAndConfigureNode(x,y,w,h);
+        getGraphCanvas().getGraph().insertNode(newNode, getGraphEditor().getCompartment());
+    }
+
+    protected T createAndConfigureNode(int x, int y, int w, int h) {
+        T newNode = JIPipe.createNode(nodeClass);
         newNode.setGridWidth(w);
         newNode.setGridHeight(h);
         newNode.setLocationWithin(getGraphEditor().getCompartment(), new Point(x,y), getGraphEditor().getCanvasUI().getViewMode().name());
-        getGraphCanvas().getGraph().insertNode(newNode, getGraphEditor().getCompartment());
+        return newNode;
+    }
+
+    public Class<T> getNodeClass() {
+        return nodeClass;
     }
 
     @Override
@@ -160,7 +169,11 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
             int y = Math.min(y0, y1);
             int w = Math.abs(x0 - x1);
             int h = Math.abs(y0 - y1);
-            graphics2D.drawRect(x, y, w, h);
+            paintDragOverlay(graphics2D,x,y,w,h);
         }
+    }
+
+    protected void paintDragOverlay(Graphics2D graphics2D, int x,int y,int w,int h) {
+        graphics2D.drawRect(x, y, w, h);
     }
 }
