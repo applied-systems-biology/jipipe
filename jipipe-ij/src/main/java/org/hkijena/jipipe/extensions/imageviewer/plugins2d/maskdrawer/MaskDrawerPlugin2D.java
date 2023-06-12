@@ -633,7 +633,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
         final int renderW = renderArea.width;
         final int renderH = renderArea.height;
         final double zoom = getViewerPanel2D().getCanvas().getZoom();
-        if (drawCurrentMaskSlicePreview) {
+        if (drawCurrentMaskSlicePreview && currentMaskSlicePreview != null) {
             AffineTransform transform = new AffineTransform();
             transform.scale(zoom, zoom);
             BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
