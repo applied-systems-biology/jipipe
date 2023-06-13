@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
 import org.hkijena.jipipe.extensions.nodetemplate.AddTemplateContextMenuAction;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
@@ -204,6 +205,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                             MarkdownDocument.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
                             "Configure external parameters",
                             ParameterPanel.DEFAULT_DIALOG_FLAGS);
+                    node.getParameterUIChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterUIChangedEvent(node));
                 });
 
                 messagePanel.addMessage(MessagePanel.MessageType.Gray, "Adaptive parameters are supported", false, false,configureButton, helpButton);

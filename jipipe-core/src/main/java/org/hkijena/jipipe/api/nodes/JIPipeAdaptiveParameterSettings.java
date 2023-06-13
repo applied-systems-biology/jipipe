@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
@@ -25,6 +26,7 @@ import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpress
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -124,23 +126,21 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
         this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
     }
 
-//    @JIPipeDocumentation(name = "Add", description = "Adds an adaptive parameter.")
-//    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/list-add.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/list-add.png")
-//    public void addAdaptiveParameterAssistant(JIPipeWorkbench parent) {
-//        AdaptiveParameterBuilder dialog = new AdaptiveParameterBuilder(parent, getNode() != null ? getNode() : this);
-//        dialog.setModal(true);
-//        dialog.setSize(800, 600);
-//        dialog.revalidate();
-//        dialog.repaint();
-//        dialog.setLocationRelativeTo(parent.getWindow());
-//        dialog.setVisible(true);
-//        if (!dialog.isCanceled() && dialog.getCurrentParameterAccess() != null) {
-//            DefaultExpressionParameter parameter = dialog.build();
-//            String uniqueKey = dialog.getParameterTree().getUniqueKey(dialog.getCurrentParameterAccess());
-//            overriddenParameters.add(new StringQueryExpressionAndStringPairParameter(parameter.getExpression(), uniqueKey));
-//            triggerParameterChange("overridden-parameters");
-//        }
-//    }
+
+    public DefaultExpressionParameter getAdaptiveParameter(String key) {
+        for (StringQueryExpressionAndStringPairParameter overriddenParameter : getOverriddenParameters()) {
+            if(Objects.equals(key, overriddenParameter.getValue())) {
+                return overriddenParameter.getKey();
+            }
+        }
+        return null;
+    }
+
+    public void removeAdaptiveParameter(String key) {
+        getOverriddenParameters().removeIf(p -> Objects.equals(p.getValue(), key));
+        getParameterChangedEventEmitter().emit(new ParameterChangedEvent(this, "overridden-parameters"));
+        getParameterUIChangedEventEmitter().emit(new ParameterUIChangedEvent(this));
+    }
 
     public JIPipeGraphNode getNode() {
         return node;
@@ -148,6 +148,14 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
 
     public void setNode(JIPipeGraphNode node) {
         this.node = node;
+    }
+
+    public void addAdaptiveParameter(String key) {
+        if(getAdaptiveParameter(key) == null) {
+            getOverriddenParameters().add(new StringQueryExpressionAndStringPairParameter("default", key));
+            getParameterChangedEventEmitter().emit(new ParameterChangedEvent(this, "overridden-parameters"));
+            getParameterUIChangedEventEmitter().emit(new ParameterUIChangedEvent(this));
+        }
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {
