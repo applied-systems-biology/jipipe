@@ -757,10 +757,6 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         triggerSlotConfigurationChangedEvent();
     }
 
-    public void triggerSlotConfigurationChangedEvent() {
-        slotConfigurationChangedEventEmitter.emit(new SlotConfigurationChangedEvent(this));
-    }
-
     /**
      * A builder for creating a configuration
      */

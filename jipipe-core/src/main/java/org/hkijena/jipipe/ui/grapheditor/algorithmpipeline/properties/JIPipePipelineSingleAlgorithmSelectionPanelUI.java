@@ -172,22 +172,39 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
             panel.add(messagePanel, BorderLayout.NORTH);
             if(node instanceof JIPipeParameterSlotAlgorithm) {
                 JButton configureButton = new JButton("Configure", UIUtils.getIconFromResources("actions/configure.png"));
+                configureButton.addActionListener(e -> {
+                    ParameterPanel.showDialog(getWorkbench(),
+                            ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings(),
+                            MarkdownDocument.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()),
+                            "Configure external parameters",
+                            ParameterPanel.DEFAULT_DIALOG_FLAGS);
+                });
 
-                JToggleButton parameterSlotToggle = new JToggleButton("Enable", UIUtils.getIconFromResources("data-types/parameters.png"));
-                parameterSlotToggle.setToolTipText("If enabled, the node will include an additional input 'Parameters' that receives parameter sets from an external source. " +
+                JToggleButton toggleButton = new JToggleButton("Enable", UIUtils.getIconFromResources("data-types/parameters.png"));
+                toggleButton.setToolTipText("If enabled, the node will include an additional input 'Parameters' that receives parameter sets from an external source. " +
                         "If the parameter data contains multiple items, the node's workload will be repeated for each parameter set.");
+                toggleButton.setSelected(((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot());
+                toggleButton.addActionListener(e -> ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().setParameter("has-parameter-slot", toggleButton.isSelected()));
 
                 JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
                 helpButton.addActionListener(e -> MarkdownReader.showDialog(MarkdownDocument.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()), true, "About external parameters", this, false));
                 UIUtils.makeFlat(helpButton);
 
-                messagePanel.addMessage(MessagePanel.MessageType.Gray, "External parameters are supported", false, false,configureButton, parameterSlotToggle, helpButton);
+                messagePanel.addMessage(MessagePanel.MessageType.Gray, "External parameters are supported", false, false,configureButton, toggleButton, helpButton);
             }
             if(node instanceof JIPipeAdaptiveParametersAlgorithm) {
                 JButton configureButton = new JButton("Configure", UIUtils.getIconFromResources("actions/configure.png"));
                 JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
                 helpButton.addActionListener(e -> MarkdownReader.showDialog(MarkdownDocument.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()), true, "About external parameters", this, false));
                 UIUtils.makeFlat(helpButton);
+
+                configureButton.addActionListener(e -> {
+                    ParameterPanel.showDialog(getWorkbench(),
+                            ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings(),
+                            MarkdownDocument.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()),
+                            "Configure external parameters",
+                            ParameterPanel.DEFAULT_DIALOG_FLAGS);
+                });
 
                 messagePanel.addMessage(MessagePanel.MessageType.Gray, "Adaptive parameters are supported", false, false,configureButton, helpButton);
             }

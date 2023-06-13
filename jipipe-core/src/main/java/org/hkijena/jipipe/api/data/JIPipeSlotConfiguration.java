@@ -58,6 +58,10 @@ public interface JIPipeSlotConfiguration {
      */
     SlotConfigurationChangedEventEmitter getSlotConfigurationChangedEventEmitter();
 
+    default void triggerSlotConfigurationChangedEvent() {
+        getSlotConfigurationChangedEventEmitter().emit(new SlotConfigurationChangedEvent(this));
+    }
+
     /**
      * @return the input slots
      */
