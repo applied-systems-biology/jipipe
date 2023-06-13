@@ -1,10 +1,13 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 @JIPipeDocumentation(name = "Group box", description = "A text box pre-configured to contain a title at the top left")
+@JIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
 public class GroupBoxAnnotationGraphNode extends TextBoxAnnotationGraphNode {
     public GroupBoxAnnotationGraphNode(JIPipeNodeInfo info) {
         super(info);

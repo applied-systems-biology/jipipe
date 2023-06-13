@@ -22,6 +22,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
 
 /**
  * Panel that carries multiple user-friendly messages
@@ -34,9 +35,9 @@ public class MessagePanel extends FormPanel {
         super(null, FormPanel.NONE);
     }
 
-    public Message addMessage(MessageType type, String message, boolean withCloseButton, boolean autoClose, JButton... actionButtons) {
+    public Message addMessage(MessageType type, String message, boolean withCloseButton, boolean autoClose, Component... components) {
         if (!existingMessages.contains(message)) {
-            Message instance = new Message(this, type, message, withCloseButton, autoClose, actionButtons);
+            Message instance = new Message(this, type, message, withCloseButton, autoClose, components);
             addWideToForm(instance, null);
             revalidate();
             repaint();
@@ -44,6 +45,10 @@ public class MessagePanel extends FormPanel {
             return instance;
         }
         return null;
+    }
+
+    public Message addMessage(MessageType type, String message, boolean withCloseButton, boolean autoClose, List<Component> components) {
+        return addMessage(type, message, withCloseButton, autoClose, components.toArray(new Component[0]));
     }
 
     public void removeMessage(Message message) {
@@ -61,6 +66,8 @@ public class MessagePanel extends FormPanel {
 
     public enum MessageType {
         Info(new Color(0x65a4e3), Color.WHITE),
+        InfoLight(new Color(0xA6CEF4), Color.BLACK),
+        Gray(new Color(0xE6E6E6), Color.BLACK),
         Success(new Color(0x5CB85C), Color.WHITE),
         Warning(new Color(0xffc155), Color.DARK_GRAY),
         Error(new Color(0xd7263b), Color.WHITE);
@@ -81,15 +88,15 @@ public class MessagePanel extends FormPanel {
         private final String text;
         private final boolean withCloseButton;
         private final boolean autoClose;
-        private final JButton[] actionButtons;
+        private final Component[] components;
 
-        public Message(MessagePanel parent, MessageType type, String text, boolean withCloseButton, boolean autoClose, JButton[] actionButtons) {
+        public Message(MessagePanel parent, MessageType type, String text, boolean withCloseButton, boolean autoClose, Component[] components) {
             this.parent = parent;
             this.type = type;
             this.text = text;
             this.withCloseButton = withCloseButton;
             this.autoClose = autoClose;
-            this.actionButtons = actionButtons;
+            this.components = components;
             this.setOpaque(false);
             initialize();
         }
@@ -104,12 +111,12 @@ public class MessagePanel extends FormPanel {
             JPanel buttonPanel = new JPanel();
             buttonPanel.setOpaque(false);
             buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-            for (JButton actionButton : actionButtons) {
+            for (Component actionButton : components) {
                 if (actionButton != null) {
-                    buttonPanel.add(Box.createHorizontalStrut(8));
+                    buttonPanel.add(Box.createHorizontalStrut(4));
                     buttonPanel.add(actionButton);
-                    if (autoClose) {
-                        actionButton.addActionListener(e -> closeMessage());
+                    if (autoClose && actionButton instanceof AbstractButton) {
+                        ((AbstractButton) actionButton).addActionListener(e -> closeMessage());
                     }
                 }
             }

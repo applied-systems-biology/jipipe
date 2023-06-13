@@ -3,6 +3,8 @@ package org.hkijena.jipipe.api.nodes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 
@@ -11,7 +13,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> implements JIPipeToggleableGraphEditorTool {
+public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> implements JIPipeToggleableGraphEditorTool, JIPipeWorkbenchAccess {
     private final Class<T> nodeClass;
     private final JIPipeAnnotationGraphNode nodeInstance;
     private JIPipeGraphEditorUI graphEditorUI;
@@ -176,5 +178,10 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
         int w = Math.abs(x0 - x1);
         int h = Math.abs(y0 - y1);
         graphics2D.drawRect(x, y, w, h);
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return graphEditorUI.getWorkbench();
     }
 }

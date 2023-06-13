@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
@@ -13,6 +15,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 @JIPipeDocumentation(name = "Image box", description = "An annotation that contains an image")
+@JIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
 public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNode {
     private final ImageParameters imageParameters;
 

@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
@@ -10,6 +12,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNod
 import java.awt.*;
 
 @JIPipeDocumentation(name = "Text box", description = "An annotation that contains text")
+@JIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
 public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNode {
     private final ShapeParameters shapeParameters;
 

@@ -82,6 +82,26 @@ public class MarkdownReader extends JPanel {
         this.setDocument(document);
     }
 
+    public static MarkdownReader showDialog(MarkdownDocument document, boolean withToolbar, String title, Component parent, boolean modal) {
+        MarkdownReader reader = new MarkdownReader(withToolbar, document);
+        Window owner = parent != null ? SwingUtilities.getWindowAncestor(parent) : null;
+        JDialog dialog = new JDialog(owner);
+        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        JPanel panel = new JPanel(new BorderLayout(8, 8));
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        panel.add(reader, BorderLayout.CENTER);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle(title);
+        dialog.setModal(modal);
+        dialog.pack();
+        dialog.setSize(new Dimension(640, 480));
+        dialog.setLocationRelativeTo(owner);
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+        return reader;
+    }
+
     private void initialize(boolean withToolbar) {
         setLayout(new BorderLayout());
 
