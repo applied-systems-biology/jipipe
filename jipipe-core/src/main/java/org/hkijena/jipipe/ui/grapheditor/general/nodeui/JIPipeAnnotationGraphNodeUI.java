@@ -59,8 +59,9 @@ public class JIPipeAnnotationGraphNodeUI extends JIPipeGraphNodeUI {
 
     @Override
     protected void paintNode(Graphics2D g2) {
-        JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
-        annotationGraphNode.paintNode(g2, this, getZoom());
+        // The graph canvas takes over drawing due to issues with edges & shadows
+//        JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
+//        annotationGraphNode.paintNode(g2, this, getZoom());
     }
 
     public void setNodeGridSize(int width, int height) {

@@ -57,6 +57,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.dnd.DropTarget;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
@@ -1660,21 +1661,49 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         super.paintComponent(graphics);
 
         Graphics2D g = (Graphics2D) graphics;
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 
-        if (settings.isDrawNodeShadows()) {
-            for (JIPipeGraphNodeUI ui : nodeUIs.values()) {
-                if(ui.isDrawShadow()) {
-                    DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
+
+        // Draw the annotations and shadows
+        boolean finalDrawShadows = settings.isDrawNodeShadows();
+        AffineTransform originalTransform = g.getTransform();
+        for (int i = getComponentCount() - 1; i >= 0; i--) {
+            Component component = getComponent(i);
+
+            if(component instanceof JIPipeGraphNodeUI) {
+                JIPipeGraphNodeUI ui = (JIPipeGraphNodeUI) component;
+
+                // Draw shadow
+                if (finalDrawShadows) {
+
+                    // Set render settings (LQ)
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+
+                    if(ui.isDrawShadow()) {
+                        DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
+                    }
+                    if (ui.getNode().isBookmarked()) {
+                        BOOKMARK_SHADOW_BORDER.paint(g, ui.getX() - 12, ui.getY() - 12, ui.getWidth() + 24, ui.getHeight() + 24);
+                    }
                 }
-                if (ui.getNode().isBookmarked()) {
-                    BOOKMARK_SHADOW_BORDER.paint(g, ui.getX() - 12, ui.getY() - 12, ui.getWidth() + 24, ui.getHeight() + 24);
+
+                // Draw annotation
+                if(component instanceof JIPipeAnnotationGraphNodeUI) {
+
+                    // Set render settings (HQ)
+                    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+                    JIPipeAnnotationGraphNodeUI annotationGraphNodeUI = (JIPipeAnnotationGraphNodeUI) component;
+                    g.translate(annotationGraphNodeUI.getX(), annotationGraphNodeUI.getY());
+                    JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) (annotationGraphNodeUI).getNode();
+                    node.paintNode(g, annotationGraphNodeUI, zoom);
+                    g.setTransform(originalTransform);
                 }
             }
         }
 
-        // Set render settings
+        // Set render settings (HQ)
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
