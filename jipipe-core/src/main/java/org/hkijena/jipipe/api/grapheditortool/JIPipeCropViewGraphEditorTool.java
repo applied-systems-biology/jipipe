@@ -4,6 +4,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class JIPipeCropViewGraphEditorTool implements JIPipeGraphEditorTool {
@@ -33,6 +34,11 @@ public class JIPipeCropViewGraphEditorTool implements JIPipeGraphEditorTool {
     @Override
     public void setGraphEditor(JIPipeGraphEditorUI graphEditorUI) {
         this.graphEditor = graphEditorUI;
+    }
+
+    @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_F12, 0);
     }
 
     @Override

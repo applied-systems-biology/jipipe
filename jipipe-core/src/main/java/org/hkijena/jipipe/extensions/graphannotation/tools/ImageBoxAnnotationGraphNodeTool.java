@@ -10,7 +10,9 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -44,5 +46,15 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
             }
         }
         return node;
+    }
+
+    @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0);
+    }
+
+    @Override
+    public int getPriority() {
+        return -4700;
     }
 }

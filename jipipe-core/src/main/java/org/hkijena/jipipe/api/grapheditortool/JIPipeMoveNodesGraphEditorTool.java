@@ -4,6 +4,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class JIPipeMoveNodesGraphEditorTool implements JIPipeToggleableGraphEditorTool {
@@ -43,6 +44,11 @@ public class JIPipeMoveNodesGraphEditorTool implements JIPipeToggleableGraphEdit
     @Override
     public void activate() {
 
+    }
+
+    @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
     }
 
     @Override

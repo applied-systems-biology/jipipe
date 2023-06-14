@@ -34,7 +34,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
 
     @Override
     public String getTooltip() {
-        return nodeInstance.getInfo().getDescription().getHtml();
+        return nodeInstance.getInfo().getDescription().getBody();
     }
 
     @Override

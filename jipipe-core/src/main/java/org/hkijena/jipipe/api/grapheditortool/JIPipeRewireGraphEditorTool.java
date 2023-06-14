@@ -14,6 +14,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 import java.util.Set;
@@ -41,7 +42,10 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
         return UIUtils.getIconFromResources("actions/edit-node.png");
     }
 
-
+    @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
+    }
     @Override
     public JIPipeGraphEditorUI getGraphEditor() {
         return graphEditorUI;

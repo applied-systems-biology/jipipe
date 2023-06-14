@@ -5,6 +5,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
 public class JIPipeConnectGraphEditorTool implements JIPipeToggleableGraphEditorTool {
@@ -29,6 +30,11 @@ public class JIPipeConnectGraphEditorTool implements JIPipeToggleableGraphEditor
     @Override
     public int getPriority() {
         return -9800;
+    }
+
+    @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0);
     }
 
     @Override

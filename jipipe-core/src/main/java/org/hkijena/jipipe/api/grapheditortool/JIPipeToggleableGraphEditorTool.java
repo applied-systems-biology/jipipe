@@ -33,8 +33,4 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
     default void paintAfterNodesAndEdges(Graphics2D graphics2D) {
 
     }
-
-    default KeyStroke getKeyBinding() {
-        return null;
-    }
 }

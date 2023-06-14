@@ -10,9 +10,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
-@JIPipeDocumentation(name = "Text box", description = "A box with a title and optional text")
-@JIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
 public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<TextBoxAnnotationGraphNode> {
     public TextBoxAnnotationGraphNodeTool() {
         super(TextBoxAnnotationGraphNode.class);
@@ -26,5 +25,15 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
             node.setTextTitle(title);
         }
         return node;
+    }
+
+    @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0);
+    }
+
+    @Override
+    public int getPriority() {
+        return -5000;
     }
 }

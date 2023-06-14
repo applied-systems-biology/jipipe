@@ -3014,7 +3014,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         nodeUIActionRequestedEventEmitter.emit(event);
     }
 
-    public void moveSelection(int gridDx, int gridDy) {
+    public void moveSelection(int gridDx, int gridDy, boolean force) {
 
         if(selection.isEmpty())
             return;
@@ -3022,6 +3022,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         int negativeDx = 0;
         int negativeDy = 0;
         for (JIPipeGraphNodeUI nodeUI : selection) {
+
+            if(force || nodeUI.getNode().isUiLocked())
+                continue;
+
             Point newGridLocation = new Point(nodeUI.getStoredGridLocation().x + gridDx, nodeUI.getStoredGridLocation().y + gridDy);
             if (newGridLocation.x <= 0) {
                 negativeDx = Math.min(negativeDx, newGridLocation.x - 1);
@@ -3042,6 +3046,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         for (JIPipeGraphNodeUI nodeUI : selection) {
+
+            if(force || nodeUI.getNode().isUiLocked())
+                continue;
+
+
             Point newGridLocation = new Point(nodeUI.getStoredGridLocation().x + gridDx, nodeUI.getStoredGridLocation().y + gridDy);
 
             if (!hasDragSnapshot) {

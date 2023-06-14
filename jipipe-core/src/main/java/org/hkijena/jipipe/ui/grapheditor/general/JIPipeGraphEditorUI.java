@@ -45,7 +45,6 @@ import org.jfree.graphics2d.svg.SVGUtils;
 import org.scijava.Disposable;
 
 import javax.imageio.ImageIO;
-import javax.swing.FocusManager;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -269,10 +268,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         registerKeyboardAction(e -> canvasUI.zoomOut(), KEY_STROKE_ZOOM_OUT, JComponent.WHEN_IN_FOCUSED_WINDOW);
         registerKeyboardAction(e -> canvasUI.resetZoom(), KEY_STROKE_ZOOM_RESET, JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(-1, 0), KEY_STROKE_MOVE_SELECTION_LEFT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(1, 0), KEY_STROKE_MOVE_SELECTION_RIGHT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, -1), KEY_STROKE_MOVE_SELECTION_UP, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, 1), KEY_STROKE_MOVE_SELECTION_DOWN, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(-1, 0, false), KEY_STROKE_MOVE_SELECTION_LEFT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(1, 0, false), KEY_STROKE_MOVE_SELECTION_RIGHT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, -1, false), KEY_STROKE_MOVE_SELECTION_UP, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, 1, false), KEY_STROKE_MOVE_SELECTION_DOWN, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
     }
 
@@ -353,32 +352,35 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             if (i > 0 && !Objects.equals(tool.getCategory(), tools.get(i - 1).getCategory())) {
                 toolBar.addSeparator();
             }
-            if (tool instanceof JIPipeToggleableGraphEditorTool) {
 
+            // Hotkeys
+            KeyStroke keyBinding = tool.getKeyBinding();
+            if(keyBinding != null) {
+                registerKeyboardAction(e -> selectTool(tool),
+                        keyBinding,
+                        JComponent.WHEN_IN_FOCUSED_WINDOW);
+            }
+
+            if (tool instanceof JIPipeToggleableGraphEditorTool) {
                 JIPipeToggleableGraphEditorTool toggleableGraphEditorTool = (JIPipeToggleableGraphEditorTool) tool;
-                KeyStroke keyBinding = toggleableGraphEditorTool.getKeyBinding();
 
                 JToggleButton toggleButton = new JToggleButton(tool.getIcon());
-                toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
+                toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
+                        (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
                 toggleButton.addActionListener(e -> selectTool(tool));
                 UIUtils.makeFlat25x25(toggleButton);
                 toolBar.add(toggleButton);
                 toolToggles.put(toggleableGraphEditorTool, toggleButton);
 
-                // Key binding
-                if(keyBinding != null) {
-                    registerKeyboardAction(e -> selectTool(tool),
-                            keyBinding,
-                            JComponent.WHEN_IN_FOCUSED_WINDOW);
-                }
-
             } else {
                 JButton button = new JButton(tool.getIcon());
-                button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + "</html>");
+                button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() +
+                        (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
                 button.addActionListener(e -> selectTool(tool));
                 UIUtils.makeFlat25x25(button);
                 toolBar.add(button);
             }
+
         }
 
 
@@ -414,8 +416,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             currentTool = (JIPipeToggleableGraphEditorTool) tool;
             canvasUI.setCurrentTool(currentTool);
             tool.activate();
+            getWorkbench().sendStatusBarText("Activated tool '" + tool.getName() + "'");
         } else {
             tool.activate();
+            getWorkbench().sendStatusBarText("Activated tool '" + tool.getName() + "'");
         }
     }
 

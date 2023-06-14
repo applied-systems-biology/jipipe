@@ -39,4 +39,8 @@ public interface JIPipeGraphEditorTool extends MouseMotionListener, MouseListene
     default Cursor getCursor() {
         return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
     }
+
+    default KeyStroke getKeyBinding() {
+        return null;
+    }
 }

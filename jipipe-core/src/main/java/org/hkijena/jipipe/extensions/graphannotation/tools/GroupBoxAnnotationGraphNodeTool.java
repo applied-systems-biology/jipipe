@@ -8,6 +8,7 @@ import org.jsoup.helper.StringUtil;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class GroupBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<GroupBoxAnnotationGraphNode> {
     public GroupBoxAnnotationGraphNodeTool() {
@@ -24,5 +25,15 @@ public class GroupBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
         }
 
         return node;
+    }
+
+    @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0);
+    }
+
+    @Override
+    public int getPriority() {
+        return -4900;
     }
 }

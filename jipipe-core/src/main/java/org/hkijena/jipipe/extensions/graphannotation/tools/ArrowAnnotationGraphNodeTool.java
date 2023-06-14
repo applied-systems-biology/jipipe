@@ -3,7 +3,9 @@ package org.hkijena.jipipe.extensions.graphannotation.tools;
 import org.hkijena.jipipe.api.nodes.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.extensions.graphannotation.nodes.ArrowAnnotationGraphNode;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 
 public class ArrowAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ArrowAnnotationGraphNode> {
     public ArrowAnnotationGraphNodeTool() {
@@ -31,5 +33,15 @@ public class ArrowAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<
         int ay2 = (int) (y1 - arrowSize * Math.sin(angle + Math.PI / 6));
         graphics2D.drawLine(x1, y1, ax1, ay1);
         graphics2D.drawLine(x1, y1, ax2, ay2);
+    }
+
+    @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0);
+    }
+
+    @Override
+    public int getPriority() {
+        return -4800;
     }
 }
