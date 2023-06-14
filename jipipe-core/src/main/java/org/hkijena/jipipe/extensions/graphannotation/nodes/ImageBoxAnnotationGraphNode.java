@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI;
 import org.hkijena.jipipe.utils.SizeFitMode;
 
@@ -51,7 +52,43 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
         BufferedImage image = imageParameters.getImage().getImage();
         if(image != null) {
             Dimension fitted = imageParameters.getFitMode().fitSize(nodeWidth, nodeHeight, image.getWidth(), image.getHeight(), 1);
-            g2.drawImage(image, nodeWidth / 2 - fitted.width / 2, nodeHeight / 2 - fitted.height / 2, fitted.width, fitted.height, null);
+            int fittedWidth = (int) (fitted.width * Math.max(0.01, imageParameters.scaleX));
+            int fittedHeight = (int) (fitted.height * Math.max(0.01, imageParameters.scaleY));
+            int centerX = nodeWidth / 2 - fittedWidth / 2;
+            int centerY = nodeHeight / 2 - fittedHeight / 2;
+            int finalMarginTop = (int) (imageParameters.marginTop * zoom);
+            int finalMarginLeft = (int) (imageParameters.marginLeft * zoom);
+            int finalMarginRight = (int) (imageParameters.marginRight * zoom);
+            int finalMarginBottom = (int) (imageParameters.marginBottom * zoom);
+            switch (imageParameters.anchor) {
+                case TopLeft:
+                    g2.drawImage(image, finalBorderThickness + finalMarginLeft, finalBorderThickness + finalMarginTop, fittedWidth, fittedHeight, null);
+                    break;
+                case TopCenter:
+                    g2.drawImage(image, centerX, finalBorderThickness + finalMarginTop, fittedWidth, fittedHeight, null);
+                    break;
+                case TopRight:
+                    g2.drawImage(image, nodeWidth - finalBorderThickness - fittedWidth - finalMarginRight, finalBorderThickness + finalMarginTop, fittedWidth, fittedHeight, null);
+                    break;
+                case CenterLeft:
+                    g2.drawImage(image, finalBorderThickness + finalMarginLeft, centerY, fittedWidth, fittedHeight, null);
+                    break;
+                case CenterCenter:
+                    g2.drawImage(image, centerX, centerY, fittedWidth, fittedHeight, null);
+                    break;
+                case CenterRight:
+                    g2.drawImage(image, nodeWidth - finalBorderThickness - fittedWidth - finalMarginRight, centerY, fittedWidth, fittedHeight, null);
+                    break;
+                case BottomLeft:
+                    g2.drawImage(image, finalBorderThickness + finalMarginLeft, nodeHeight - finalBorderThickness - fittedHeight - finalMarginBottom, fittedWidth, fittedHeight, null);
+                    break;
+                case BottomCenter:
+                    g2.drawImage(image, centerX, nodeHeight - finalBorderThickness - fittedHeight - finalMarginBottom, fittedWidth, fittedHeight, null);
+                    break;
+                case BottomRight:
+                    g2.drawImage(image, nodeWidth - finalBorderThickness - fittedWidth - finalMarginRight, nodeHeight - finalBorderThickness - fittedHeight - finalMarginBottom, fittedWidth, fittedHeight, null);
+                    break;
+            }
         }
 
         // Border
@@ -70,6 +107,16 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
         private Color borderColor = new Color(255, 255, 204).darker();
         private int borderThickness = 1;
 
+        private Anchor anchor = Anchor.CenterCenter;
+
+        private double scaleX = 1;
+        private double scaleY = 1;
+
+        private int marginLeft;
+        private int marginRight;
+        private int marginTop;
+        private int marginBottom;
+
         private ImageParameter image = new ImageParameter();
 
         private SizeFitMode fitMode = SizeFitMode.Fit;
@@ -84,6 +131,13 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
             this.borderThickness = other.borderThickness;
             this.image = new ImageParameter(other.image);
             this.fitMode = other.fitMode;
+            this.anchor = other.anchor;
+            this.scaleX = other.scaleX;
+            this.scaleY = other.scaleY;
+            this.marginLeft = other.marginLeft;
+            this.marginRight = other.marginRight;
+            this.marginTop = other.marginTop;
+            this.marginBottom = other.marginBottom;
         }
 
         @JIPipeDocumentation(name = "Image", description = "The image to be displayed")
@@ -139,6 +193,83 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
         @JIPipeParameter("border-thickness")
         public void setBorderThickness(int borderThickness) {
             this.borderThickness = borderThickness;
+        }
+
+        @JIPipeDocumentation(name = "Anchor", description = "Determines to which anchor location the image is attached to.")
+        @JIPipeParameter("anchor")
+        public Anchor getAnchor() {
+            return anchor;
+        }
+
+        @JIPipeParameter("anchor")
+        public void setAnchor(Anchor anchor) {
+            this.anchor = anchor;
+        }
+
+        @JIPipeDocumentation(name = "Scale (X)", description = "Custom image scale in X direction")
+        @JIPipeParameter("scale-x")
+        public double getScaleX() {
+            return scaleX;
+        }
+
+        @JIPipeParameter("scale-x")
+        public void setScaleX(double scaleX) {
+            this.scaleX = scaleX;
+        }
+
+        @JIPipeDocumentation(name = "Scale (Y)", description = "Custom image scale in Y direction")
+        @JIPipeParameter("scale-y")
+        public double getScaleY() {
+            return scaleY;
+        }
+
+        @JIPipeParameter("scale-y")
+        public void setScaleY(double scaleY) {
+            this.scaleY = scaleY;
+        }
+
+        @JIPipeDocumentation(name = "Margin left", description = "The left margin of the available text area relative to the node border")
+        @JIPipeParameter("margin-left")
+        public int getMarginLeft() {
+            return marginLeft;
+        }
+
+        @JIPipeParameter("margin-left")
+        public void setMarginLeft(int marginLeft) {
+            this.marginLeft = marginLeft;
+        }
+
+        @JIPipeDocumentation(name = "Margin right", description = "The right margin of the available text area relative to the node border")
+        @JIPipeParameter("margin-right")
+        public int getMarginRight() {
+            return marginRight;
+        }
+
+        @JIPipeParameter("margin-right")
+        public void setMarginRight(int marginRight) {
+            this.marginRight = marginRight;
+        }
+
+        @JIPipeDocumentation(name = "Margin top", description = "The top margin of the available text area relative to the node border")
+        @JIPipeParameter("margin-top")
+        public int getMarginTop() {
+            return marginTop;
+        }
+
+        @JIPipeParameter("margin-top")
+        public void setMarginTop(int marginTop) {
+            this.marginTop = marginTop;
+        }
+
+        @JIPipeDocumentation(name = "Margin bottom", description = "The bottom margin of the available text area relative to the node border")
+        @JIPipeParameter("margin-bottom")
+        public int getMarginBottom() {
+            return marginBottom;
+        }
+
+        @JIPipeParameter("margin-bottom")
+        public void setMarginBottom(int marginBottom) {
+            this.marginBottom = marginBottom;
         }
     }
 }
