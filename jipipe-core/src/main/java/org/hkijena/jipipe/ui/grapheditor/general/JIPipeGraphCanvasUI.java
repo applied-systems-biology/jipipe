@@ -2837,17 +2837,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     public void setZoom(double zoom) {
+        double oldZoom = this.zoom;
+        this.zoom = zoom;
+
         // Recalculate assets
         updateAssets();
 
         // Zoom the cursor
-        double oldZoom = this.zoom;
         double normalizedCursorX = getGraphEditorCursor().x / oldZoom;
         double normalizedCursorY = getGraphEditorCursor().y / oldZoom;
         setGraphEditCursor(new Point((int) Math.round(normalizedCursorX * zoom), (int) Math.round(normalizedCursorY * zoom)));
 
         // Zoom nodes
-        this.zoom = zoom;
+
         zoomChangedEventEmitter.emit(new ZoomChangedEvent(this));
         for (JIPipeGraphNodeUI ui : nodeUIs.values()) {
             ui.moveToStoredGridLocation(true);
