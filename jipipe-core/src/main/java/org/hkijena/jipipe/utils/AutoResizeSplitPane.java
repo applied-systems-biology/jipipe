@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
 
 /**
  * A split pane that automatically resizes itself to a ratio
@@ -42,5 +43,11 @@ public class AutoResizeSplitPane extends JSplitPane {
                 setDividerLocation(ratio);
             }
         });
+
+        // Remove interfering hotkeys
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0), "none");
+        getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT)
+                .put(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0), "none");
     }
 }
