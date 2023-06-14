@@ -83,7 +83,9 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
                 new DisableVirtualOutputNodeUIContextAction(),
                 new DeleteNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
-                new SelectAndMoveNodeHereNodeUIContextAction()
+                new SelectAndMoveNodeHereNodeUIContextAction(),
+                new LockNodeLocationSizeUIContextAction(),
+                new UnlockNodeLocationSizeUIContextAction()
         ));
     }
 

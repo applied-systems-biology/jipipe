@@ -101,7 +101,9 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new SetNodeHotkeyContextAction(),
                 NodeUIContextAction.SEPARATOR,
-                new SelectAndMoveNodeHereNodeUIContextAction()
+                new SelectAndMoveNodeHereNodeUIContextAction(),
+                new LockNodeLocationSizeUIContextAction(),
+                new UnlockNodeLocationSizeUIContextAction()
         );
         // Custom entries (from registry)
         List<NodeUIContextAction> registeredEntries = JIPipe.getCustomMenus().getRegisteredContextMenuActions().stream()
