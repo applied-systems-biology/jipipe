@@ -114,7 +114,8 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
             imagePreview.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
         } else {
             imagePreview.setText("");
-            imagePreview.setIcon(new ImageIcon(parameter.getImage()));
+            BufferedImage thumbnail = BufferedImageUtils.scaleImageToFit(parameter.getImage(), 64, 64);
+            imagePreview.setIcon(new ImageIcon(thumbnail));
         }
     }
 }
