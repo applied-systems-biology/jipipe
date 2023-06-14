@@ -3014,6 +3014,52 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         nodeUIActionRequestedEventEmitter.emit(event);
     }
 
+    public void moveSelection(int gridDx, int gridDy) {
+
+        if(selection.isEmpty())
+            return;
+
+        int negativeDx = 0;
+        int negativeDy = 0;
+        for (JIPipeGraphNodeUI nodeUI : selection) {
+            Point newGridLocation = new Point(nodeUI.getStoredGridLocation().x + gridDx, nodeUI.getStoredGridLocation().y + gridDy);
+            if (newGridLocation.x <= 0) {
+                negativeDx = Math.min(negativeDx, newGridLocation.x - 1);
+            }
+            if (newGridLocation.y <= 0) {
+                negativeDy = Math.min(negativeDy, newGridLocation.y - 1);
+            }
+        }
+
+        if (negativeDx < 0 || negativeDy < 0) {
+            // Negative expansion
+            for (JIPipeGraphNodeUI value : nodeUIs.values()) {
+                if (!currentlyDraggedOffsets.containsKey(value)) {
+                    Point storedGridLocation = value.getStoredGridLocation();
+                    value.moveToGridLocation(new Point(storedGridLocation.x - negativeDx, storedGridLocation.y - negativeDy), true, true);
+                }
+            }
+        }
+
+        for (JIPipeGraphNodeUI nodeUI : selection) {
+            Point newGridLocation = new Point(nodeUI.getStoredGridLocation().x + gridDx, nodeUI.getStoredGridLocation().y + gridDy);
+
+            if (!hasDragSnapshot) {
+                // Check if something would change
+                if (!Objects.equals(nodeUI.getStoredGridLocation(), newGridLocation)) {
+                    createMoveSnapshotIfNeeded();
+                }
+            }
+
+            nodeUI.moveToGridLocation(newGridLocation, true, true);
+        }
+
+        repaintLowLag();
+        if (getParent() != null)
+            getParent().revalidate();
+        graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+    }
+
     public static class DisplayedSlotEdge implements Comparable<DisplayedSlotEdge> {
         private final JIPipeDataSlot source;
         private final JIPipeDataSlot target;

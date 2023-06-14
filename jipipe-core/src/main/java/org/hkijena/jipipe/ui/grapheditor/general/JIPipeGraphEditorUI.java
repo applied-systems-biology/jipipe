@@ -71,11 +71,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
-    public static final KeyStroke KEY_STROKE_AUTO_LAYOUT = KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
-    public static final KeyStroke KEY_STROKE_NAVIGATE = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true);
     public static final KeyStroke KEY_STROKE_ZOOM_IN = KeyStroke.getKeyStroke(KeyEvent.VK_ADD, InputEvent.CTRL_MASK, false);
     public static final KeyStroke KEY_STROKE_ZOOM_OUT = KeyStroke.getKeyStroke(KeyEvent.VK_SUBTRACT, InputEvent.CTRL_MASK, false);
     public static final KeyStroke KEY_STROKE_ZOOM_RESET = KeyStroke.getKeyStroke(KeyEvent.VK_NUMPAD0, InputEvent.CTRL_MASK, false);
+    public static final KeyStroke KEY_STROKE_MOVE_SELECTION_LEFT = KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0, false);
+    public static final KeyStroke KEY_STROKE_MOVE_SELECTION_RIGHT = KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0, false);
+    public static final KeyStroke KEY_STROKE_MOVE_SELECTION_UP = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false);
+    public static final KeyStroke KEY_STROKE_MOVE_SELECTION_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
     private final GraphEditorUISettings graphUISettings;
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeGraph graph;
@@ -84,6 +86,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private final int flags;
     private final JMenu graphMenu = new JMenu("Graph");
     private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
+
+    private final Map<Class<? extends JIPipeGraphEditorTool>, JIPipeGraphEditorTool> toolMap = new HashMap<>();
     private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
     protected JMenuBar menuBar = new JMenuBar();
     private JSplitPane splitPane;
@@ -242,6 +246,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         JIPipe.getInstance().getNodeInfoRegisteredEventEmitter().unsubscribe(this);
         graph.getGraphChangedEventEmitter().unsubscribe(this);
         canvasUI.dispose();
+//        getRootPane().unregisterKeyboardAction(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0));
     }
 
     public int getFlags() {
@@ -257,33 +262,18 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     private void initializeHotkeys() {
-        KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        focusManager.addKeyEventDispatcher(e -> {
-            KeyStroke keyStroke = KeyStroke.getKeyStrokeForEvent(e);
-            if (this.isDisplayable() && FocusManager.getCurrentManager().getFocusOwner() == canvasUI) {
-                if (Objects.equals(keyStroke, KEY_STROKE_UNDO)) {
-                    undo();
-                    return true;
-                } else if (Objects.equals(keyStroke, KEY_STROKE_REDO)) {
-                    redo();
-                    return true;
-                } else if (Objects.equals(keyStroke, KEY_STROKE_AUTO_LAYOUT)) {
-                    getWorkbench().sendStatusBarText("Auto-layout");
-                    canvasUI.autoLayoutAll();
-                    return true;
-                } else if (Objects.equals(keyStroke, KEY_STROKE_NAVIGATE)) {
-                    navigator.requestFocusInWindow();
-                    return true;
-                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_IN)) {
-                    canvasUI.zoomIn();
-                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_OUT)) {
-                    canvasUI.zoomOut();
-                } else if (Objects.equals(keyStroke, KEY_STROKE_ZOOM_RESET)) {
-                    canvasUI.resetZoom();
-                }
-            }
-            return false;
-        });
+
+        registerKeyboardAction(e -> undo(), KEY_STROKE_UNDO, JComponent.WHEN_IN_FOCUSED_WINDOW);
+        registerKeyboardAction(e -> redo(), KEY_STROKE_REDO, JComponent.WHEN_IN_FOCUSED_WINDOW);
+        registerKeyboardAction(e -> canvasUI.zoomIn(), KEY_STROKE_ZOOM_IN, JComponent.WHEN_IN_FOCUSED_WINDOW);
+        registerKeyboardAction(e -> canvasUI.zoomOut(), KEY_STROKE_ZOOM_OUT, JComponent.WHEN_IN_FOCUSED_WINDOW);
+        registerKeyboardAction(e -> canvasUI.resetZoom(), KEY_STROKE_ZOOM_RESET, JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(-1, 0), KEY_STROKE_MOVE_SELECTION_LEFT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(1, 0), KEY_STROKE_MOVE_SELECTION_RIGHT, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, -1), KEY_STROKE_MOVE_SELECTION_UP, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        canvasUI.registerKeyboardAction(e -> canvasUI.moveSelection(0, 1), KEY_STROKE_MOVE_SELECTION_DOWN, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
     }
 
     public JScrollPane getScrollPane() {
@@ -336,7 +326,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             } else if (o instanceof JIPipeNodeExample) {
                 return ((JIPipeNodeExample) o).getNodeTemplate().getName() + ((JIPipeNodeExample) o).getNodeInfo().getName();
             } else {
-                return "" + o;
+                return String.valueOf(o);
             }
         });
         navigator.setRenderer(new NavigationRenderer());
@@ -354,6 +344,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             if (tool.supports(this)) {
                 tool.setGraphEditor(this);
                 tools.add(tool);
+                toolMap.put(klass, tool);
             }
         }
         tools.sort(Comparator.comparing(JIPipeGraphEditorTool::getCategory).thenComparing(JIPipeGraphEditorTool::getPriority));
@@ -363,12 +354,24 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 toolBar.addSeparator();
             }
             if (tool instanceof JIPipeToggleableGraphEditorTool) {
+
+                JIPipeToggleableGraphEditorTool toggleableGraphEditorTool = (JIPipeToggleableGraphEditorTool) tool;
+                KeyStroke keyBinding = toggleableGraphEditorTool.getKeyBinding();
+
                 JToggleButton toggleButton = new JToggleButton(tool.getIcon());
-                toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + "</html>");
+                toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + (keyBinding != null ? "<br><br>Shortcut: <i><strong>" + UIUtils.keyStrokeToString(keyBinding) + "</strong></i>" : "") + "</html>");
                 toggleButton.addActionListener(e -> selectTool(tool));
                 UIUtils.makeFlat25x25(toggleButton);
                 toolBar.add(toggleButton);
-                toolToggles.put((JIPipeToggleableGraphEditorTool) tool, toggleButton);
+                toolToggles.put(toggleableGraphEditorTool, toggleButton);
+
+                // Key binding
+                if(keyBinding != null) {
+                    registerKeyboardAction(e -> selectTool(tool),
+                            keyBinding,
+                            JComponent.WHEN_IN_FOCUSED_WINDOW);
+                }
+
             } else {
                 JButton button = new JButton(tool.getIcon());
                 button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + "</html>");

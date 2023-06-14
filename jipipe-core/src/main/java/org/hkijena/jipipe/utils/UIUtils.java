@@ -1861,6 +1861,46 @@ public class UIUtils {
         return button;
     }
 
+    public static String keyStrokeToString(KeyStroke key) {
+        int m = key.getModifiers();
+        List<String> keyNames = new ArrayList<>();
+
+        if ((m & (InputEvent.SHIFT_DOWN_MASK | InputEvent.SHIFT_MASK)) != 0) {
+            keyNames.add("Shift");
+        }
+        if ((m & (InputEvent.CTRL_DOWN_MASK | InputEvent.CTRL_MASK)) != 0) {
+            keyNames.add("Ctrl");
+        }
+        if ((m & (InputEvent.META_DOWN_MASK | InputEvent.META_MASK)) != 0) {
+            keyNames.add("Meta");
+        }
+        if ((m & (InputEvent.ALT_DOWN_MASK | InputEvent.ALT_MASK)) != 0) {
+            keyNames.add("Alt");
+        }
+        if ((m & (InputEvent.BUTTON1_DOWN_MASK | InputEvent.BUTTON1_MASK)) != 0) {
+            keyNames.add("Mouse Left");
+        }
+        if ((m & (InputEvent.BUTTON2_DOWN_MASK | InputEvent.BUTTON2_MASK)) != 0) {
+            keyNames.add("Mouse Middle");
+        }
+        if ((m & (InputEvent.BUTTON3_DOWN_MASK | InputEvent.BUTTON3_MASK)) != 0) {
+            keyNames.add("Mouse Right");
+        }
+        switch (key.getKeyEventType()) {
+            case KeyEvent.KEY_TYPED:
+                keyNames.add(String.valueOf(key.getKeyChar()));
+                break;
+            case KeyEvent.KEY_PRESSED:
+                keyNames.add(KeyEvent.getKeyText(key.getKeyCode()));
+                break;
+            case KeyEvent.KEY_RELEASED:
+                keyNames.add(KeyEvent.getKeyText(key.getKeyCode()));
+                break;
+        }
+
+        return String.join("+", keyNames);
+    }
+
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
         private final Component target;

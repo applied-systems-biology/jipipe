@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.grapheditortool;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 
+import javax.swing.*;
 import java.awt.*;
 
 public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
@@ -31,5 +32,9 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
 
     default void paintAfterNodesAndEdges(Graphics2D graphics2D) {
 
+    }
+
+    default KeyStroke getKeyBinding() {
+        return null;
     }
 }
