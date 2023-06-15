@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeAnnotationGraphNode;
@@ -85,6 +86,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             true,
             true,
             true);
+
+    public static final Font GRAPH_TOOL_CURSOR_FONT = new Font("Dialog", Font.PLAIN, 12);
 
     private static final int RESIZE_HANDLE_DISTANCE = 12;
 
@@ -165,6 +168,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final JIPipeGraphNodeUI.NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new JIPipeGraphNodeUI.NodeUIActionRequestedEventEmitter();
     private Rectangle currentResizeOperationStartProperties;
     private Anchor currentResizeOperationAnchor;
+    private boolean mouseIsEntered;
 
     /**
      * Creates a new UI
@@ -198,6 +202,22 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         initializeHotkeys();
         updateAssets();
+    }
+
+    public Color getImprovedStrokeBackgroundColor() {
+        return improvedStrokeBackgroundColor;
+    }
+
+    public Color getSmartEdgeSlotBackground() {
+        return smartEdgeSlotBackground;
+    }
+
+    public Color getSmartEdgeSlotForeground() {
+        return smartEdgeSlotForeground;
+    }
+
+    public boolean isMouseIsEntered() {
+        return mouseIsEntered;
     }
 
     public Point getLastMousePosition() {
@@ -1125,8 +1145,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (currentlyMouseEnteredNode != null) {
             currentlyMouseEnteredNode.mouseMoved(mouseEvent);
         }
+        if(currentTool != null && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
+            changed = true;
+        }
         if (changed && settings.isDrawLabelsOnHover()) {
-            repaint(50);
+            repaintLowLag();
         }
     }
 
@@ -1559,6 +1582,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         // Update last mouse position
         lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
+        mouseIsEntered = true;
 
         // End resize operation
         stopAllResizing();
@@ -1577,6 +1601,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         // Update last mouse position
         lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
+        mouseIsEntered = false;
 
         // End resize operation
         stopAllResizing();
@@ -2012,6 +2037,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     g.drawOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 }
             }
+        }
+
+        // Draw cursor info
+        if(mouseIsEntered && lastMousePosition != null && currentTool != null && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
+            currentTool.paintMouse(this, lastMousePosition, graphics2D);
         }
     }
 
