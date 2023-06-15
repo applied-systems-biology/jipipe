@@ -34,9 +34,9 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
 
     }
 
-    default void paintMouse(JIPipeGraphCanvasUI canvasUI, Point lastMousePosition, Graphics2D graphics2D) {
-        int x = lastMousePosition.x + 16;
-        int y = lastMousePosition.y + 16;
+    default void paintMouse(JIPipeGraphCanvasUI canvasUI, Point lastMousePosition, int toolInfoDistance, Graphics2D graphics2D) {
+        int x = lastMousePosition.x + toolInfoDistance;
+        int y = lastMousePosition.y + toolInfoDistance;
 
         graphics2D.setFont(JIPipeGraphCanvasUI.GRAPH_TOOL_CURSOR_FONT);
         FontMetrics fontMetrics = graphics2D.getFontMetrics();

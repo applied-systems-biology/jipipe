@@ -51,10 +51,36 @@ public class GraphEditorUISettings extends AbstractJIPipeParameterCollection {
     private boolean drawLabelsOnHover = true;
     private double autoHideEdgeOverlapThreshold = 0.5;
 
+    private boolean showToolInfo = true;
+
+    private int toolInfoDistance = 16;
+
     private JIPipeGraphEdge.Visibility defaultEdgeVisibility = JIPipeGraphEdge.Visibility.Smart;
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
+    }
+
+    @JIPipeDocumentation(name = "Show current tool info", description = "If enabled, show a tooltip text to the mouse cursor if a graph editor tool is active")
+    @JIPipeParameter("show-tool-info")
+    public boolean isShowToolInfo() {
+        return showToolInfo;
+    }
+
+    @JIPipeParameter("show-tool-info")
+    public void setShowToolInfo(boolean showToolInfo) {
+        this.showToolInfo = showToolInfo;
+    }
+
+    @JIPipeDocumentation(name = "Tool info distance", description = "The distance of the current tool info to the mouse pointer")
+    @JIPipeParameter("tool-info-distance")
+    public int getToolInfoDistance() {
+        return toolInfoDistance;
+    }
+
+    @JIPipeParameter("tool-info-distance")
+    public void setToolInfoDistance(int toolInfoDistance) {
+        this.toolInfoDistance = toolInfoDistance;
     }
 
     @JIPipeDocumentation(name = "Draw input labels on hovering nodes", description = "If enabled, display a label for node inputs if it is hovered by the mouse cursor")

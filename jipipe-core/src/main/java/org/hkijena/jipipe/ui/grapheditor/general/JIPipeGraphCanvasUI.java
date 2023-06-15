@@ -1145,7 +1145,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (currentlyMouseEnteredNode != null) {
             currentlyMouseEnteredNode.mouseMoved(mouseEvent);
         }
-        if(currentTool != null && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
+        if(currentTool != null && settings.isShowToolInfo() && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
             changed = true;
         }
         if (changed && settings.isDrawLabelsOnHover()) {
@@ -2040,8 +2040,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Draw cursor info
-        if(mouseIsEntered && lastMousePosition != null && currentTool != null && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
-            currentTool.paintMouse(this, lastMousePosition, graphics2D);
+        if(mouseIsEntered && lastMousePosition != null && currentTool != null && settings.isShowToolInfo() && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
+            currentTool.paintMouse(this, lastMousePosition, settings.getToolInfoDistance(), graphics2D);
         }
     }
 
