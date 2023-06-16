@@ -87,7 +87,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     //    private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
-    private Component currentContentPanel;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private Component currentContentPanel;
+
+    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private boolean isUpdatingSliders = false;
     private JScrollPane canvasScrollPane;
     private boolean composite;
@@ -105,6 +107,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         } else {
             settings = new ImageViewer2DUISettings();
         }
+        exportDisplayedScaleToggle.setState(settings.isExportAsDisplayed());
         initialize();
         updateZoomStatus();
     }
@@ -225,6 +228,14 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         frameSlider.addChangeListener(e -> {
             if (!isUpdatingSliders)
                 refreshSlice();
+        });
+
+        // Export
+        exportAllSlicesItem.addActionListener(e -> {
+            if(settings != null) {
+                settings.setExportAsDisplayed(exportDisplayedScaleToggle.getState());
+                JIPipe.getSettings().save();
+            }
         });
 
         initializeAnimationControls();

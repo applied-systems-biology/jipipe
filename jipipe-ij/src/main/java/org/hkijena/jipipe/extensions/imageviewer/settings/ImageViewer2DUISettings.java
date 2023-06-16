@@ -31,8 +31,23 @@ public class ImageViewer2DUISettings extends AbstractJIPipeParameterCollection {
 
     private double zoomDynamicSpeed = 0.1;
 
+
+    private boolean exportAsDisplayed = true;
+
     public static ImageViewer2DUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, ImageViewer2DUISettings.class);
+    }
+
+    @JIPipeDocumentation(name = "Export images/movies as displayed", description = "If enabled, the 'Snapshot' menu will images and movies as displayed (including zoom). Otherwise, " +
+            "the image in its original size is exported.")
+    @JIPipeParameter("export-as-displayed")
+    public boolean isExportAsDisplayed() {
+        return exportAsDisplayed;
+    }
+
+    @JIPipeParameter("export-as-displayed")
+    public void setExportAsDisplayed(boolean exportAsDisplayed) {
+        this.exportAsDisplayed = exportAsDisplayed;
     }
 
     @JIPipeDocumentation(name = "Show side bar", description = "If enabled, show a side bar with additional settings and tools")
