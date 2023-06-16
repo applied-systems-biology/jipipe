@@ -601,6 +601,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
 
         // Compartments link
         JButton openCompartmentsButton = new JButton("Compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"));
+        openCompartmentsButton.setToolTipText("Opens the compartment editor if it was closed or switches to the existing tab if it is currently open.");
         openCompartmentsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR));
         UIUtils.setStandardButtonBorder(openCompartmentsButton);
         menu.add(openCompartmentsButton);
