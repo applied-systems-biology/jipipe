@@ -231,7 +231,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         });
 
         // Export
-        exportAllSlicesItem.addActionListener(e -> {
+        exportDisplayedScaleToggle.addActionListener(e -> {
             if(settings != null) {
                 settings.setExportAsDisplayed(exportDisplayedScaleToggle.getState());
                 JIPipe.getSettings().save();
