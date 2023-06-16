@@ -5,6 +5,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class LockNodeLocationSizeUIContextAction implements NodeUIContextAction {
@@ -36,4 +37,8 @@ public class LockNodeLocationSizeUIContextAction implements NodeUIContextAction 
         return UIUtils.getIconFromResources("actions/lock.png");
     }
 
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_L, 0);
+    }
 }

@@ -42,4 +42,9 @@ public class UnlockNodeLocationSizeUIContextAction implements NodeUIContextActio
         return UIUtils.getIconFromResources("actions/unlock.png");
     }
 
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK);
+    }
+
 }
