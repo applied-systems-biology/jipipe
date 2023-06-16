@@ -57,8 +57,8 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeTypeCategory(new CompartmentNodeTypeCategory());
-        registerNodeType("jipipe:compartment-output", JIPipeCompartmentOutput.class, UIUtils.getIconURLFromResources("data-types/graph-compartment.png"));
-        registerNodeType("jipipe:project-compartment", JIPipeProjectCompartment.class, UIUtils.getIconURLFromResources("data-types/graph-compartment.png"));
+        registerNodeType("jipipe:compartment-output", JIPipeCompartmentOutput.class, UIUtils.getIconURLFromResources("actions/graph-compartment.png"));
+        registerNodeType("jipipe:project-compartment", JIPipeProjectCompartment.class, UIUtils.getIconURLFromResources("actions/graph-compartment.png"));
 
         registerDatatype("jipipe:compartment-output", JIPipeCompartmentOutputData.class,
                 ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png"));

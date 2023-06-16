@@ -215,7 +215,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
                 DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",
-                UIUtils.getIconFromResources("actions/straight-connector.png"),
+                UIUtils.getIconFromResources("actions/graph-compartments.png"),
                 () -> new JIPipeCompartmentsGraphEditorUI(this),
                 DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PROJECT_SETTINGS,
@@ -340,7 +340,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         if (compartmentUIs.isEmpty()) {
             JIPipePipelineGraphEditorUI compartmentUI = new JIPipePipelineGraphEditorUI(this, compartment.getProject().getGraph(), compartment.getProjectCompartmentUUID());
             DocumentTabPane.DocumentTab documentTab = documentTabPane.addTab(compartment.getName(),
-                    UIUtils.getIconFromResources("data-types/graph-compartment.png"),
+                    UIUtils.getIconFromResources("actions/graph-compartment.png"),
                     compartmentUI,
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     false);
@@ -500,7 +500,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
 
         projectMenu.addSeparator();
 
-        JMenuItem editCompartmentsButton = new JMenuItem("Edit compartments", UIUtils.getIconFromResources("actions/edit.png"));
+        JMenuItem editCompartmentsButton = new JMenuItem("Edit compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"));
         editCompartmentsButton.setToolTipText("Opens an editor that allows to add more compartments and edit connections");
 //        editCompartmentsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         editCompartmentsButton.addActionListener(e -> openCompartmentEditor());
@@ -598,6 +598,12 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
+
+        // Compartments link
+        JButton openCompartmentsButton = new JButton("Compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"));
+        openCompartmentsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR));
+        UIUtils.setStandardButtonBorder(openCompartmentsButton);
+        menu.add(openCompartmentsButton);
 
         // Cache monitor
         JIPipeCacheManagerUI cacheManagerUI = new JIPipeCacheManagerUI(this);
