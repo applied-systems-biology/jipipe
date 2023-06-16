@@ -381,6 +381,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         int magTargetY = (int)(targetY * magnification);
         int magTargetZ = (int)(targetZ * magnification);
         double magRadius = radius * magnification;
+
         if(radius <= 0) {
             if(targetZ == imageZ) {
                 graphics2D.drawRect(magTargetX + renderArea.x, magTargetY + renderArea.y, Math.max(1, (int)magnification), Math.max(1, (int)magnification));
@@ -388,11 +389,20 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         }
         else if(Math.abs(imageZ - targetZ) <= radius) {
             double radiusAtZ = Math.cos(Math.abs(imageZ - targetZ)) * magRadius;
-            if(hollow) {
-                graphics2D.drawOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
+            int radiusAtZ_ = (int)radiusAtZ;
+
+            if(radiusAtZ_ <= 0) {
+                if(targetZ == imageZ) {
+                    graphics2D.drawRect(magTargetX + renderArea.x, magTargetY + renderArea.y, Math.max(1, (int)magnification), Math.max(1, (int)magnification));
+                }
             }
             else {
-                graphics2D.fillOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
+                if(hollow) {
+                    graphics2D.drawOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
+                }
+                else {
+                    graphics2D.fillOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
+                }
             }
         }
     }
