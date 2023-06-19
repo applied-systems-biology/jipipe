@@ -44,7 +44,7 @@ import java.util.Map;
  * An algorithm that allows to run Python code
  */
 @JIPipeDocumentation(name = "Python script (multi-parameter capable, custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
-        "This node uses an existing dedicated Python interpreter that must be set up in the application settings. ")
+        "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
@@ -169,7 +169,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
             "<li><code>jipipe_variables</code> is a dict of variables passed from the script parameters.</li>" +
             "</ul>" +
             "The script is designed to be used with the JIPipe Python API (supplied automatically by default). " +
-            "You can find the full API documentation here: https://www.jipipe.org/documentation/standard-library/python/api/")
+            "You can find the full API documentation here: https://jipipe.hki-jena.de/apidocs/python-current/index.html")
     @JIPipeParameter("code")
     public PythonScript getCode() {
         return code;
