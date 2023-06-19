@@ -834,28 +834,21 @@ public class JIPipe extends AbstractService implements JIPipeService {
         List<Path> invalidBackups = new ArrayList<>();
         {
             long lastTime = System.currentTimeMillis();
-            long accumulatedDifference = 0;
             long maxDifference = Math.max(0, autoSaveSettings.getMaxBackupCheckTimeSeconds() * 1000);
             for (Path path : autoSaveSettings.getLastBackups()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
                 if(!Files.exists(path)) {
                     invalidBackups.add(path);
                 }
                 long currentTime = System.currentTimeMillis();
                 long timeDifference = currentTime - lastTime;
-                accumulatedDifference += timeDifference;
-                if(maxDifference > 0 && accumulatedDifference > maxDifference) {
+                if(maxDifference > 0 && timeDifference > maxDifference) {
 
-                    progressInfo.log("Backup checking was cancelled. The time of " + (accumulatedDifference / 1000.0) + " exceeded " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s");
+                    progressInfo.log("Backup checking was cancelled. The time of " + (timeDifference / 1000.0) + " exceeded " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s");
 
                     // Create notification
                     JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:check-backup-max-time-exceeded");
                     notification.setHeading("Checking backups took very long");
-                    notification.setDescription("Checking the backups took " + (accumulatedDifference / 1000.0) + "s, which is higher than the limit of " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s.\n\n" +
+                    notification.setDescription("Checking the backups took " + (timeDifference / 1000.0) + "s, which is higher than the limit of " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s.\n\n" +
                             "You might want to clean your backups by cleaning duplicate backups. If this does not help, you can also open the backup directory manually.\n\n" +
                             "The limit can be changed by navigating to Project/Application settings/General/Backup/Maximum backup checking time (s)");
                     notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the message", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {}));
