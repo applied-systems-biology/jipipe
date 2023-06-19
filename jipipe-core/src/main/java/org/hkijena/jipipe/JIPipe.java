@@ -856,7 +856,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:check-backup-max-time-exceeded");
                     notification.setHeading("Checking backups took very long");
                     notification.setDescription("Checking the backups took " + (accumulatedDifference / 1000.0) + "s, which is higher than the limit of " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s.\n\n" +
-                            "You might want to clean your backups by cleaning duplicate backups. If this does not help, you can also open the backup directory manually.");
+                            "You might want to clean your backups by cleaning duplicate backups. If this does not help, you can also open the backup directory manually.\n\n" +
+                            "The limit can be changed by navigating to Project/Application settings/General/Backup/Maximum backup checking time (s)");
                     notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the message", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {}));
                     notification.getActions().add(new JIPipeNotificationAction("Remove duplicate backups", "Opens a tool to detect and remove duplicate backups", UIUtils.getIconFromResources("actions/clear-brush.png"),
                             workbench -> AutoSaveSettings.getInstance().removeDuplicateBackups(workbench)));
