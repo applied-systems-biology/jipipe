@@ -159,6 +159,8 @@ public class JIPipeSlotEditorUI extends JPanel implements JIPipeGraphNode.NodeSl
                 editorUI.getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
             slot.getInfo().setCustomName(newLabel);
+            slot.getNode().getNodeSlotsChangedEventEmitter().emit(new JIPipeGraphNode.NodeSlotsChangedEvent(slot.getNode()));
+            reloadList();
         }
     }
 

@@ -1889,6 +1889,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
             getGraphCanvasUI().getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
         }
         slot.getInfo().setCustomName(newLabel);
+        updateView(false, true, true);
         getGraphCanvasUI().getWorkbench().setProjectModified(true);
     }
 
