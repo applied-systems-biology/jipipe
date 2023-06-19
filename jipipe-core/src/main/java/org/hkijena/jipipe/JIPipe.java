@@ -70,6 +70,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.*;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,6 +83,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -829,7 +831,50 @@ public class JIPipe extends AbstractService implements JIPipeService {
         progressInfo.setProgress(7);
         progressInfo.log("Checking backups ...");
         AutoSaveSettings autoSaveSettings = AutoSaveSettings.getInstance();
-        List<Path> invalidBackups = autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
+        List<Path> invalidBackups = new ArrayList<>();
+        {
+            long lastTime = System.currentTimeMillis();
+            long accumulatedDifference = 0;
+            long maxDifference = Math.max(0, autoSaveSettings.getMaxBackupCheckTimeSeconds() * 1000);
+            for (Path path : autoSaveSettings.getLastBackups()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                if(!Files.exists(path)) {
+                    invalidBackups.add(path);
+                }
+                long currentTime = System.currentTimeMillis();
+                long timeDifference = currentTime - lastTime;
+                accumulatedDifference += timeDifference;
+                if(maxDifference > 0 && accumulatedDifference > maxDifference) {
+
+                    progressInfo.log("Backup checking was cancelled. The time of " + (accumulatedDifference / 1000.0) + " exceeded " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s");
+
+                    // Create notification
+                    JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:check-backup-max-time-exceeded");
+                    notification.setHeading("Checking backups took very long");
+                    notification.setDescription("Checking the backups took " + (accumulatedDifference / 1000.0) + "s, which is higher than the limit of " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s.\n\n" +
+                            "You might want to clean your backups by cleaning duplicate backups. If this does not help, you can also open the backup directory manually.");
+                    notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the message", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {}));
+                    notification.getActions().add(new JIPipeNotificationAction("Remove duplicate backups", "Opens a tool to detect and remove duplicate backups", UIUtils.getIconFromResources("actions/clear-brush.png"),
+                            workbench -> AutoSaveSettings.getInstance().removeDuplicateBackups(workbench)));
+                    notification.getActions().add(new JIPipeNotificationAction("Open backup directory", "Opens the directory that contains the backups", UIUtils.getIconFromResources("actions/folder-open.png"),
+                            workbench -> {
+                                try {
+                                    Desktop.getDesktop().open(autoSaveSettings.getCurrentSavePath().toFile());
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }));
+                    JIPipeNotificationInbox.getInstance().push(notification);
+                    break;
+                }
+            }
+        }
+
+        autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
         if (!invalidBackups.isEmpty()) {
             autoSaveSettings.getLastBackups().removeAll(invalidBackups);
         }

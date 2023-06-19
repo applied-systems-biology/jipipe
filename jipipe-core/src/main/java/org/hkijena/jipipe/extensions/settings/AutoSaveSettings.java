@@ -48,7 +48,8 @@ public class AutoSaveSettings extends AbstractJIPipeParameterCollection {
     private boolean enableAutoSave = true;
     private int autoSaveDelay = 3;
     private OptionalPathParameter customSavePath = new OptionalPathParameter();
-    private Set<String> savedBackupHashes = new HashSet<>();
+    private final Set<String> savedBackupHashes = new HashSet<>();
+    private int maxBackupCheckTimeSeconds = 20;
 
     public AutoSaveSettings() {
         autoSaveTimer = new Timer(autoSaveDelay * 60 * 1000, e -> autoSaveAll());
@@ -131,6 +132,18 @@ public class AutoSaveSettings extends AbstractJIPipeParameterCollection {
         for (JIPipeProjectWindow window : JIPipeProjectWindow.getOpenWindows()) {
             autoSave(window);
         }
+    }
+
+    @JIPipeDocumentation(name = "Maximum backup checking time (s)", description = "Time maximum time in seconds JIPipe should check for backups. If the limit is exceeded during the JIPipe startup, " +
+            "the user will be prompted to clean the backup directory")
+    @JIPipeParameter("max-backup-check-time")
+    public int getMaxBackupCheckTimeSeconds() {
+        return maxBackupCheckTimeSeconds;
+    }
+
+    @JIPipeParameter("max-backup-check-time")
+    public void setMaxBackupCheckTimeSeconds(int maxBackupCheckTimeSeconds) {
+        this.maxBackupCheckTimeSeconds = maxBackupCheckTimeSeconds;
     }
 
     @JIPipeDocumentation(name = "Enable", description = "If enabled, JIPipe will automatically save all projects into a separate folder for crash recovery.")
