@@ -150,7 +150,7 @@ class DataSlot:
                         "name": name,
                         "true-data-type": value["true-data-type"],
                         "row-storage-folder": value["row-storage-folder"]
-                    } for name, value in self.text_annotations[row].items()
+                    } for name, value in self.data_annotations[row].items()
                 ]
             } for row in range(self.rows)]
         }
