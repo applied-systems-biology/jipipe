@@ -690,6 +690,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
         }
         while (impliedLoadedJavaExtensionsChanged);
 
+        boolean preActivationScheduledSave = false;
+
         for (int i = 0; i < allJavaExtensionInstances.size(); i++) {
             IJ.showProgress(i + 1, pluginList.size());
             JIPipeJavaExtension extension = allJavaExtensionInstances.get(i);
@@ -714,6 +716,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
                                 extension);
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
                         loadedJavaExtensions.add(null);
+                        if(!StringUtils.isNullOrEmpty(extension.getDependencyId())) {
+                            progressInfo.log("Extension with ID " + extension.getDependencyId() + " was removed from the list of activated extensions");
+                            extensionRegistry.getSettings().getActivatedExtensions().remove(extension.getDependencyId());
+                            preActivationScheduledSave = true;
+                        }
                         continue;
                     } else {
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " indicated that its pre-activation checks failed. WILL BE LOADED ANYWAYS DUE TO APPLICATION SETTINGS!");
@@ -731,6 +738,11 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 e.printStackTrace();
                 issues.getErroneousPlugins().add(allJavaExtensionPluginInfos.get(i));
             }
+        }
+
+        // Save extension settings
+        if(preActivationScheduledSave) {
+            extensionRegistry.save();
         }
 
         progressInfo.setProgress(2);

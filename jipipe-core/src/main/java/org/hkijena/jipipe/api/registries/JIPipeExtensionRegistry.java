@@ -119,6 +119,10 @@ public class JIPipeExtensionRegistry {
         }
     }
 
+    public Settings getSettings() {
+        return settings;
+    }
+
     public ScheduledDeactivateExtensionEventEmitter getScheduledDeactivateExtensionEventEmitter() {
         return scheduledDeactivateExtensionEventEmitter;
     }
