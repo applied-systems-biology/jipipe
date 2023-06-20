@@ -199,6 +199,17 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
         markdownString.append("<td><strong>Unique identifier</strong>: <code>");
         markdownString.append(HtmlEscapers.htmlEscaper().escape(tree != null ? tree.getUniqueKey(access) : access.getKey())).append("</code></td></tr>\n\n");
 
+        // Node full unique identifier
+        if(access.getSource() instanceof JIPipeGraphNode) {
+            JIPipeGraphNode node = (JIPipeGraphNode) access.getSource();
+            if(node.getParentGraph() != null && node.getParentGraph().getProject() != null) {
+                markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
+                markdownString.append("<td><strong>Global parameter identifier</strong>: <code>");
+                String parameterId = tree != null ? tree.getUniqueKey(access) : access.getKey();
+                markdownString.append(HtmlEscapers.htmlEscaper().escape(node.getUUIDInParentGraph() + "/" + parameterId)).append("</code></td></tr>\n\n");
+            }
+        }
+
         JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass());
         if (info != null) {
             markdownString.append("<td><img src=\"").append(ResourceUtils.getPluginResource("icons/data-types/data-type.png")).append("\" /></td>");
