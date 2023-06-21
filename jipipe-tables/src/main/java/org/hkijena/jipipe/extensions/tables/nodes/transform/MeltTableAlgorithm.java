@@ -33,7 +33,8 @@ import java.util.Set;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Melt table", description = "Moves values from different columns (value columns) into their own rows, " +
-        "while the other columns are copied (category columns).")
+        "while the other columns are copied (category columns). Also known as unpivot operation.")
+@JIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform", aliasName = "Unpivot table")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)

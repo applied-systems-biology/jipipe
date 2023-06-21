@@ -6,6 +6,8 @@ import java.util.List;
 
 public enum TableColumnNormalization {
     ZeroOrEmpty("Zero or empty"),
+
+    NaNOrEmpty("NaN or empty"),
     RowIndex("Row index"),
     LastValue("Last value"),
     Cycling("Cycle");
@@ -35,6 +37,9 @@ public enum TableColumnNormalization {
                         switch (this) {
                             case RowIndex:
                                 data[row] = row;
+                                break;
+                            case NaNOrEmpty:
+                                data[row] = Double.NaN;
                                 break;
                             case LastValue:
                                 if (inputColumn.getRows() > 0)

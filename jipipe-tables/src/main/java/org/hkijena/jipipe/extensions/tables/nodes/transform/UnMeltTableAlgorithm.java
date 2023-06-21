@@ -15,28 +15,32 @@
 package org.hkijena.jipipe.extensions.tables.nodes.transform;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 
-@JIPipeDocumentation(name = "Un-Melt table", description = "Moves values located in a value column into separate columns according to a set of categorization columns.")
+@JIPipeDocumentation(name = "Pivot table", description = "Moves values located in a value column into separate columns according to a set of categorization columns. Also known as dcast in R.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringQueryExpression valueColumns = new StringQueryExpression();
-    private String outputValueColumnName = "Value";
+    private StringQueryExpression valueColumn = new StringQueryExpression();
+    private StringQueryExpression categoryColumns = new StringQueryExpression();
+    private DefaultExpressionParameter newColumnName = new DefaultExpressionParameter("JOIN_STRING(category_values, \"_\")");
+    private TableColumnNormalization columnNormalization = TableColumnNormalization.ZeroOrEmpty;
 
     /**
      * Creates a new instance
@@ -54,77 +58,123 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public UnMeltTableAlgorithm(UnMeltTableAlgorithm other) {
         super(other);
-        this.valueColumns = new StringQueryExpression(other.valueColumns);
-        this.outputValueColumnName = other.outputValueColumnName;
+        this.valueColumn = new StringQueryExpression(other.valueColumn);
+        this.categoryColumns = new StringQueryExpression(other.categoryColumns);
+        this.newColumnName = new DefaultExpressionParameter(other.newColumnName);
+        this.columnNormalization = other.columnNormalization;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        ResultsTableData output = new ResultsTableData();
 
-        Set<String> valueColumnNames = new HashSet<>();
+        ExpressionVariables variables = new ExpressionVariables();
+        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+
+        List<String> categoryColumnNames = new ArrayList<>();
         for (String columnName : input.getColumnNames()) {
-            if (valueColumns.test(columnName))
-                valueColumnNames.add(columnName);
-            else
-                output.addColumn(columnName, input.isStringColumn(columnName));
-        }
-
-        // Create the output value column
-        boolean valueColumnIsStringColumn = valueColumnNames.stream().anyMatch(input::isStringColumn);
-        String uniqueOutputValueColumn = StringUtils.makeUniqueString(outputValueColumnName, ".", output.getColumnNames());
-        output.addColumn(uniqueOutputValueColumn, valueColumnIsStringColumn);
-
-        for (int row = 0; row < input.getRowCount(); row++) {
-            for (String columnName : valueColumnNames) {
-                output.addRow();
-                int targetRow = output.getRowCount() - 1;
-
-                // Write value
-                output.setValueAt(input.getValueAt(row, input.getColumnIndex(columnName)),
-                        targetRow,
-                        uniqueOutputValueColumn);
-
-                // Copy category data
-                for (String categoryColumnName : input.getColumnNames()) {
-                    if (!valueColumnNames.contains(categoryColumnName)) {
-                        output.setValueAt(input.getValueAt(row, input.getColumnIndex(categoryColumnName)),
-                                targetRow, categoryColumnName);
-                    }
-                }
+            if(categoryColumns.test(columnName, variables)) {
+                categoryColumnNames.add(columnName);
             }
         }
+        String valueColumnName = valueColumn.queryFirst(input.getColumnNames(), variables);
+        int valueColumnIndex = input.getColumnIndex(valueColumnName);
+        Map<String, List<Object>> categorizedValues = new HashMap<>();
+
+        List<String> categoryColumnValues = new ArrayList<>();
+        for (int row = 0; row < input.getRowCount(); row++) {
+            Object value = input.getValueAt(row, valueColumnIndex);
+            categoryColumnValues.clear();
+            for (String columnName : categoryColumnNames) {
+                categoryColumnValues.add(input.getValueAsString(row, columnName));
+            }
+
+            variables.set("value", value);
+            variables.set("category_values", categoryColumnValues);
+            variables.set("category_columns", categoryColumnNames);
+
+            String category = newColumnName.evaluateToString(variables);
+            if(StringUtils.isNullOrEmpty(category))
+                continue;
+            List<Object> values = categorizedValues.getOrDefault(category, null);
+            if(values == null) {
+                values = new ArrayList<>();
+                categorizedValues.put(category, values);
+            }
+            values.add(value);
+        }
+
+        List<TableColumn> unNormalizedColumns = new ArrayList<>();
+        for (Map.Entry<String, List<Object>> entry : categorizedValues.entrySet()) {
+            List<Object> values = entry.getValue();
+            if(values.stream().anyMatch(o -> !(o instanceof Number))) {
+                String[] array = new String[values.size()];
+                for (int i = 0; i < values.size(); i++) {
+                    array[i] = StringUtils.nullToEmpty(values.get(i));
+                }
+                unNormalizedColumns.add(new StringArrayTableColumn(array, entry.getKey()));
+            }
+            else {
+                double[] array = new double[values.size()];
+                for (int i = 0; i < values.size(); i++) {
+                    array[i] = ((Number)values.get(i)).doubleValue();
+                }
+                unNormalizedColumns.add(new DoubleArrayTableColumn(array, entry.getKey()));
+            }
+        }
+
+        List<TableColumn> normalizedColumns = columnNormalization.normalize(unNormalizedColumns);
+        ResultsTableData output = new ResultsTableData(normalizedColumns);
+
 
         dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        report.resolve("Output value column name").checkNonEmpty(outputValueColumnName, this);
+    @JIPipeDocumentation(name = "New column name", description = "The function that creates the new column name. If the returned string is empty or null, then the value will be skipped.")
+    @JIPipeParameter("new-column-name")
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(name = "Category values", key = "category_values", description = "The values of the selected categories")
+    @ExpressionParameterSettingsVariable(name = "Category columns", key = "category_columns", description = "The column names of the selected categories")
+    @ExpressionParameterSettingsVariable(name = "Value", key = "value", description = "The current value")
+    public DefaultExpressionParameter getNewColumnName() {
+        return newColumnName;
     }
 
-    @JIPipeDocumentation(name = "Value columns", description = "Allows to select the value columns by their name via a filter expression. ")
-    @JIPipeParameter("value-columns")
-    public StringQueryExpression getValueColumns() {
-        return valueColumns;
+    @JIPipeParameter("new-column-name")
+    public void setNewColumnName(DefaultExpressionParameter newColumnName) {
+        this.newColumnName = newColumnName;
     }
 
-    @JIPipeParameter("value-columns")
-    public void setValueColumns(StringQueryExpression valueColumns) {
-        this.valueColumns = valueColumns;
+    @JIPipeDocumentation(name = "Value column", description = "Determines the column that contains the value")
+    @JIPipeParameter(value = "value-column", important = true)
+    public StringQueryExpression getValueColumn() {
+        return valueColumn;
     }
 
-    @JIPipeDocumentation(name = "Output value column name", description = "Name of the output value column. If the column already exists as category column," +
-            " a unique name is generated based on this one.")
-    @JIPipeParameter("output-value-column-name")
-    public String getOutputValueColumnName() {
-        return outputValueColumnName;
+    @JIPipeParameter("value-column")
+    public void setValueColumn(StringQueryExpression valueColumn) {
+        this.valueColumn = valueColumn;
     }
 
-    @JIPipeParameter("output-value-column-name")
-    public void setOutputValueColumnName(String outputValueColumnName) {
-        this.outputValueColumnName = outputValueColumnName;
+    @JIPipeDocumentation(name = "Category columns")
+    @JIPipeParameter(value = "category-columns", important = true)
+    public StringQueryExpression getCategoryColumns() {
+        return categoryColumns;
+    }
+
+    @JIPipeParameter("category-columns")
+    public void setCategoryColumns(StringQueryExpression categoryColumns) {
+        this.categoryColumns = categoryColumns;
+    }
+
+    @JIPipeDocumentation(name = "Column normalization", description = "Determines what happens with columns that have fewer values than the number of output table rows")
+    @JIPipeParameter("column-normalization")
+    public TableColumnNormalization getColumnNormalization() {
+        return columnNormalization;
+    }
+
+    @JIPipeParameter("column-normalization")
+    public void setColumnNormalization(TableColumnNormalization columnNormalization) {
+        this.columnNormalization = columnNormalization;
     }
 }
