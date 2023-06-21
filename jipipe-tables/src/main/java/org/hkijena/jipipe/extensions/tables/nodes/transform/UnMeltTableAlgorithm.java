@@ -131,7 +131,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "New column name", description = "The function that creates the new column name. If the returned string is empty or null, then the value will be skipped.")
-    @JIPipeParameter("new-column-name")
+    @JIPipeParameter(value = "new-column-name")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Category values", key = "category_values", description = "The values of the selected categories")
     @ExpressionParameterSettingsVariable(name = "Category columns", key = "category_columns", description = "The column names of the selected categories")
@@ -146,7 +146,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Value column", description = "Determines the column that contains the value")
-    @JIPipeParameter(value = "value-column", important = true)
+    @JIPipeParameter(value = "value-column", important = true, uiOrder = -100)
     public StringQueryExpression getValueColumn() {
         return valueColumn;
     }
@@ -157,7 +157,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Category columns")
-    @JIPipeParameter(value = "category-columns", important = true)
+    @JIPipeParameter(value = "category-columns", important = true, uiOrder = -90)
     public StringQueryExpression getCategoryColumns() {
         return categoryColumns;
     }
@@ -167,7 +167,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.categoryColumns = categoryColumns;
     }
 
-    @JIPipeDocumentation(name = "Column normalization", description = "Determines what happens with columns that have fewer values than the number of output table rows")
+    @JIPipeDocumentation(name = "Column length normalization", description = "Determines what happens with columns that have fewer values than the number of output table rows")
     @JIPipeParameter("column-normalization")
     public TableColumnNormalization getColumnNormalization() {
         return columnNormalization;
