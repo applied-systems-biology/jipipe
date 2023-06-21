@@ -30,7 +30,7 @@ import java.util.Set;
 
 
 @JIPipeDocumentation(name = "Un-Melt table", description = "Moves values located in a value column into separate columns according to a set of categorization columns.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

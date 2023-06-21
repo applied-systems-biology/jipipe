@@ -34,7 +34,7 @@ import java.util.Set;
  */
 @JIPipeDocumentation(name = "Melt table", description = "Moves values from different columns (value columns) into their own rows, " +
         "while the other columns are copied (category columns).")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
