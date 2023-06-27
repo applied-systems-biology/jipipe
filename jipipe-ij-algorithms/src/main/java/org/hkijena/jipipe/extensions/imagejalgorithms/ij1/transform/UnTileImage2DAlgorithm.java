@@ -20,7 +20,7 @@ import java.awt.*;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Un-Tile image", description = "Merges/Assembles multiple image tiles back into one image. Utilizes annotations to determine the location of tiles.")
+@JIPipeDocumentation(name = "Un-Tile image 2D", description = "Merges/Assembles multiple image tiles back into one image. Utilizes annotations to determine the location of tiles.")
 @JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
