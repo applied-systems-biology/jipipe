@@ -84,6 +84,8 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
         this.imageHeightAnnotation = new OptionalAnnotationNameParameter(other.imageHeightAnnotation);
         this.tileInsetXAnnotation = new OptionalAnnotationNameParameter(other.tileInsetXAnnotation);
         this.tileInsetYAnnotation = new OptionalAnnotationNameParameter(other.tileInsetYAnnotation);
+        this.numTilesX = new OptionalAnnotationNameParameter(other.numTilesX);
+        this.numTilesY = new OptionalAnnotationNameParameter(other.numTilesY);
         this.overlapX = other.overlapX;
         this.overlapY = other.overlapY;
         this.borderMode = other.borderMode;
