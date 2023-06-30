@@ -31,9 +31,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 /**
  * Wrapper around {@link GaussianBlur}
  */
-@JIPipeDocumentation(name = "Median blur 3D", description = "Applies convolution with a local median function in 3D space for smoothing. " +
+@JIPipeDocumentation(name = "Median filter 3D", description = "Applies convolution with a local median function in 3D space for smoothing. " +
         "If higher-dimensional data is provided, the filter is applied to each 3D slice.")
-@JIPipeNode(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Filter", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nProcess", aliasName = "Median (3D)")
