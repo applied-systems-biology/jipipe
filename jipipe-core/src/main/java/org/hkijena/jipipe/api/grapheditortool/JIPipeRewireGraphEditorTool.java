@@ -240,6 +240,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                     "The rewire operation failed. No changes were applied.\nPlease check if the new connections lead to the creation of loops.",
                     "Rewire not possible",
                     JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         // Create snapshot
