@@ -65,6 +65,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double maxParticleCircularity = 1;
     private boolean excludeEdges = false;
     private boolean includeHoles = true;
+
+    private boolean compositeROI = false;
     private boolean splitSlices = false;
     private boolean blackBackground = true;
     private OptionalStringParameter annotationType = new OptionalStringParameter();
@@ -99,7 +101,20 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.includeHoles = other.includeHoles;
         this.neighborhood = other.neighborhood;
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
+        this.compositeROI = other.compositeROI;
         this.statisticsParameters = new ImageStatisticsSetParameter(other.statisticsParameters);
+    }
+
+    @JIPipeDocumentation(name = "Composite ROI", description = "If enabled, generate composite ROI that can contain holes. Please note " +
+            "that not all operations can appropriately handle composite ROI.")
+    @JIPipeParameter("composite-roi")
+    public boolean isCompositeROI() {
+        return compositeROI;
+    }
+
+    @JIPipeParameter("composite-roi")
+    public void setCompositeROI(boolean compositeROI) {
+        this.compositeROI = compositeROI;
     }
 
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
@@ -134,6 +149,9 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
             }
             if (neighborhood == Neighborhood2D.FourConnected) {
                 options |= ParticleAnalyzer.FOUR_CONNECTED;
+            }
+            if(compositeROI) {
+                options |= ParticleAnalyzer.COMPOSITE_ROIS;
             }
 
             if (splitSlices) {
@@ -355,7 +373,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.blackBackground = blackBackground;
     }
 
-    @JIPipeDocumentation(name = "Include holes", description = "If enabled, holes are not filled.")
+    @JIPipeDocumentation(name = "Fill interior holes (flood-fill)", description = "If enabled, interior holes are filled.")
     @JIPipeParameter("include-holes")
     public boolean isIncludeHoles() {
         return includeHoles;
