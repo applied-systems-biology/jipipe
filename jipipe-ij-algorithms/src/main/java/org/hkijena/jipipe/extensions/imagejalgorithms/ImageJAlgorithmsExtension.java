@@ -74,6 +74,8 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgori
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddSaltAndPepperNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFilter2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.ome.ExtractOMEROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.ome.ExtractOMEXMLAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEBlockFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEGaussianFlowAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.PMCCBlockFlowAlgorithm;
@@ -685,6 +687,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-convert-matrix-to-image", MatrixToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-table-column-to-image", TableColumnToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-image-to-table-column", ImageToTableColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-extract-ome-image-xml", ExtractOMEXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/dialog-xml-editor.png"));
+        registerNodeType("ij1-extract-ome-image-roi", ExtractOMEROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
     }
 
     private void registerFormAlgorithms() {
