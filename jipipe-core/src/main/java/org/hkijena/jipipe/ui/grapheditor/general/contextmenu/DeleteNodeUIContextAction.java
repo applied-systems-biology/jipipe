@@ -45,7 +45,7 @@ public class DeleteNodeUIContextAction implements NodeUIContextAction {
         if (!GraphEditorUISettings.getInstance().isAskOnDeleteNode() || JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(),
                 "Do you really want to remove the selected nodes?", "Delete algorithms",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet());
+            Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeGraphNodeUI::getNode).filter(node -> !node.isUiLocked()).collect(Collectors.toSet());
             UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
             if (canvasUI.getHistoryJournal() != null) {
                 canvasUI.getHistoryJournal().snapshotBeforeRemoveNodes(nodes, compartment);

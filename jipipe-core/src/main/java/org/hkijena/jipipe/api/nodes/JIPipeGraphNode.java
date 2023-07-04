@@ -303,7 +303,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
     }
 
     @JIPipeDocumentation(name = "Lock location/size", description = "If enabled, lock the location and size of this node. Does not affect automated alignment operations. " +
-            "Will lock the size if the node supports a resize handle. Slots can still be edited/connected and parameters can still be changed.")
+            "Will lock the size if the node supports a resize handle. Will prevent deletion of the node by the user. Slots can still be edited/connected and parameters can still be changed.")
     @JIPipeParameter(value = "jipipe:node:ui-locked", pinned = true, functional = false)
     public boolean isUiLocked() {
         return uiLocked;

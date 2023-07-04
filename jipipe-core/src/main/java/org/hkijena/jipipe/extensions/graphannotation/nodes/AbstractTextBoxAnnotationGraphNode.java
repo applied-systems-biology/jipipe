@@ -35,6 +35,8 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
     private String renderedTitleRaw;
     private String renderedContentRaw;
     private double renderedZoom;
+    private int renderedGridWidth;
+    private int renderedGridHeight;
 
     public AbstractTextBoxAnnotationGraphNode(JIPipeNodeInfo info) {
         super(info);
@@ -293,7 +295,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
     protected abstract void paintShape(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom);
 
     private void updateAssetsIfNeeded(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom)  {
-        if(!Objects.equals(renderedContentRaw, textContent) || !Objects.equals(renderedTitleRaw, textTitle) || renderedZoom != zoom) {
+        if(!Objects.equals(renderedContentRaw, textContent) || !Objects.equals(renderedTitleRaw, textTitle) || renderedZoom != zoom || renderedGridWidth != getGridWidth() || renderedGridHeight != getGridHeight()) {
 
             int finalBorderThickness = (int) Math.max(1, getBorderThickness() * zoom);
             int finalMarginLeft = (int) (textLocation.marginLeft * zoom);
@@ -307,6 +309,8 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             renderedTextWidth = 0;
             renderedTitleHeight = 0;
             renderedContentHeight = 0;
+            renderedGridWidth = 0;
+            renderedGridHeight = 0;
 
             if(!StringUtils.isNullOrEmpty(textTitle)) {
                 titleFont = new Font(this.titleStyle.fontFamily.getValue(), this.titleStyle.fontStyle.getNativeValue(), (int) Math.max(1, this.titleStyle.fontSize * zoom));
@@ -336,6 +340,8 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             renderedContentRaw = textContent;
             renderedTitleRaw = textTitle;
             renderedZoom = zoom;
+            renderedGridWidth = getGridWidth();
+            renderedGridHeight = getGridHeight();
         }
     }
 
