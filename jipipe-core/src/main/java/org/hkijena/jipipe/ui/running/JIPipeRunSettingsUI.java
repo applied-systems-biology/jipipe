@@ -189,6 +189,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
         runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> runNow());
         messagePanel.addMessage(MessagePanel.MessageType.Success, "Please review the settings below. Then proceed to click the following button.", false, false, runButton);
+        messagePanel.addMessage(MessagePanel.MessageType.Info, "Please note that a copy of the project was created. Feel free to schedule multiple runs with different pipeline configurations.", true, false);
 
         formPanel.getStaticContentPanel().add(messagePanel, BorderLayout.NORTH);
 
