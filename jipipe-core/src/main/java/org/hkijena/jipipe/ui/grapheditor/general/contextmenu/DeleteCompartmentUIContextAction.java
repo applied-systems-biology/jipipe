@@ -38,10 +38,12 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
             return;
         if (!GraphEditorUISettings.getInstance().isAskOnDeleteCompartment() || JOptionPane.showConfirmDialog(canvasUI.getWorkbench().getWindow(),
-                "Do you really want to remove the following compartments: " +
-                        selection.stream().map(JIPipeGraphNodeUI::getNode).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
+                "Do you really want to remove the following compartments/annotations: " +
+                        selection.stream().map(JIPipeGraphNodeUI::getNode).filter(node -> !node.isUiLocked()).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             for (JIPipeGraphNodeUI ui : ImmutableList.copyOf(selection)) {
+                if(ui.getNode().isUiLocked())
+                    continue;
                 if (ui.getNode() instanceof JIPipeProjectCompartment) {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
                     if (canvasUI.getHistoryJournal() != null) {

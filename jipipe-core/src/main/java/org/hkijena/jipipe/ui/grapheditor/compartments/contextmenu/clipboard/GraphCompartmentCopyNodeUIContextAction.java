@@ -42,6 +42,10 @@ public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAct
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         List<JIPipeExportedCompartment> compartments = new ArrayList<>();
         for (JIPipeGraphNodeUI ui : selection) {
+            if(!(ui.getNode() instanceof JIPipeProjectCompartment))
+                continue;
+            if(ui.getNode().isUiLocked())
+                continue;
             JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
             JIPipeExportedCompartment exportedCompartment = new JIPipeExportedCompartment(compartment);
             compartments.add(exportedCompartment);
@@ -51,7 +55,7 @@ public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAct
             StringSelection stringSelection = new StringSelection(json);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, stringSelection);
-            canvasUI.getWorkbench().sendStatusBarText("Copied " + selection.size() + " compartments");
+            canvasUI.getWorkbench().sendStatusBarText("Copied " + selection.size() + " compartments (skipped locked nodes)");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

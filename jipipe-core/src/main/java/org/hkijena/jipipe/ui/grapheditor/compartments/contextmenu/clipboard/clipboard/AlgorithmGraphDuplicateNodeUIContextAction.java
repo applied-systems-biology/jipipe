@@ -36,7 +36,7 @@ public class AlgorithmGraphDuplicateNodeUIContextAction implements NodeUIContext
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         JIPipeGraph copyGraph = canvasUI.getGraph()
-                .extract(selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet()), true);
+                .extract(selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet()), true, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(copyGraph);
             AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvasUI, json);

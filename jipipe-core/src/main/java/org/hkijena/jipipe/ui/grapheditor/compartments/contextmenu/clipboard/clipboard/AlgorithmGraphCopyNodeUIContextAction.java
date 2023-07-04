@@ -39,13 +39,13 @@ public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextActio
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         JIPipeGraph graph = canvasUI.getGraph()
-                .extract(selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet()), true);
+                .extract(selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet()), true, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(graph);
             StringSelection stringSelection = new StringSelection(json);
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(stringSelection, stringSelection);
-            canvasUI.getWorkbench().sendStatusBarText("Copied " + selection.size() + " nodes");
+            canvasUI.getWorkbench().sendStatusBarText("Copied " + selection.size() + " nodes (locked nodes were skipped)");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

@@ -1120,9 +1120,25 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @return graph that only contains the selected algorithms, UUIDs are the same between the original and copies
      */
     public JIPipeGraph extract(Collection<JIPipeGraphNode> nodes, boolean withInternal) {
+        return extract(nodes, withInternal, false);
+    }
+
+    /**
+     * Copies the selected algorithms into a new graph
+     * Connections between the nodes are kept
+     * UUIDs are kept
+     *
+     * @param nodes        the nodes
+     * @param withInternal also copy internal algorithms
+     * @param skipLocked skip locked nodes
+     * @return graph that only contains the selected algorithms, UUIDs are the same between the original and copies
+     */
+    public JIPipeGraph extract(Collection<JIPipeGraphNode> nodes, boolean withInternal, boolean skipLocked) {
         JIPipeGraph graph = new JIPipeGraph();
         for (JIPipeGraphNode node : nodes) {
             if (!withInternal && !node.getCategory().canExtract())
+                continue;
+            if(node.isUiLocked() && skipLocked)
                 continue;
             String compartment = StringUtils.nullToEmpty(getCompartmentUUIDOf(node));
             JIPipeGraphNode copy = node.getInfo().duplicate(node);

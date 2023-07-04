@@ -42,7 +42,7 @@ public class AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction impl
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         JIPipeGraph copyGraph = canvasUI.getGraph()
-                .extract(selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet()), true);
+                .extract(selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet()), true, true);
         try {
             String json = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(copyGraph);
             Map<UUID, JIPipeGraphNode> pastedNodes = AlgorithmGraphPasteNodeUIContextAction.pasteNodes(canvasUI, json);
