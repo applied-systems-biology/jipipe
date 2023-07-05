@@ -227,6 +227,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             return;
         }
         JIPipeNodeTemplate template = templateList.getSelectedValue();
+        if(template.isFromExtension()) {
+            JOptionPane.showMessageDialog(this, "Extension-provided templates cannot be edited!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
         if (ParameterPanel.showDialog(getWorkbench(), copy, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
@@ -323,7 +327,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         }
         if (!copied.isEmpty()) {
             if (JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the global storage.\n" +
-                    "Do you want to remove these from the project storage?", "Copy selection to global storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you want to remove these from the project storage (if applicable)?", "Copy selection to global storage", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 for (JIPipeNodeTemplate template : copied) {
                     project.getMetadata().getNodeTemplates().remove(template);
                 }
@@ -355,7 +359,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         }
         if (!copied.isEmpty()) {
             if (JOptionPane.showConfirmDialog(this, "Successfully copied " + copied.size() + " templates into the project storage.\n" +
-                    "Do you want to remove these from the global storage?", "Copy selection to project", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+                    "Do you want to remove these from the global storage (if applicable)?", "Copy selection to project", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                 for (JIPipeNodeTemplate template : copied) {
                     templateSettings.getNodeTemplates().remove(template);
                 }
@@ -376,8 +380,13 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         }
         boolean modifiedProject = false;
         boolean modifiedGlobal = false;
+        boolean triedModifyExtension = false;
         NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
         for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateList.getSelectedValuesList())) {
+            if(template.isFromExtension()) {
+                triedModifyExtension = true;
+                continue;
+            }
             if (templateSettings.getNodeTemplates().remove(template)) {
                 modifiedGlobal = true;
             }
@@ -393,6 +402,12 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         }
         if (modifiedProject || modifiedGlobal) {
             NodeTemplateSettings.triggerRefreshedEvent();
+        }
+        if(triedModifyExtension) {
+            JOptionPane.showMessageDialog(this,
+                    "Extension-provided templates cannot be deleted.",
+                    "Delete templates",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -427,6 +442,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             templates.addAll(project.getMetadata().getNodeTemplates());
             this.projectTemplateList.addAll(project.getMetadata().getNodeTemplates());
         }
+        templates.addAll(JIPipe.getNodes().getRegisteredTemplates());
         return RankedData.getSortedAndFilteredData(templates,
                 JIPipeNodeTemplate::getName,
                 NodeTemplateBox::rankNavigationEntry,

@@ -827,8 +827,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 ((JIPipeJavaExtension) extension).postprocess(postprocessingProgress);
             }
         }
+        postprocessingProgress.log("Converting display operations to import operations ...");
         datatypeRegistry.convertDisplayOperationsToImportOperations();
+        postprocessingProgress.log("Registering examples ...");
         nodeRegistry.executeScheduledRegisterExamples();
+        postprocessingProgress.log("Registering extension-provided templates ...");
+        nodeRegistry.executeScheduledRegisterTemplates();
 
         // Check recent projects and backups
         progressInfo.setProgress(6);

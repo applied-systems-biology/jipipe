@@ -733,12 +733,69 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         }).collect(Collectors.toSet());
         for (String resource : jsonResources) {
             if (resource.startsWith(directory)) {
-                JIPipe.getInstance().getProgressInfo().log("Loading node template list " + resource);
+                JIPipe.getInstance().getProgressInfo().log("Loading node example list " + resource);
                 try {
                     try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
                         JIPipeNodeTemplate.List templates = JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplate.List.class).readValue(stream);
                         for (JIPipeNodeTemplate template : templates) {
                             registerNodeExample(template);
+                        }
+                    }
+                } catch (Throwable throwable) {
+                    JIPipe.getInstance().getProgressInfo().log("Error: " + throwable + " @ " + resource);
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers a node template
+     *
+     * @param template the template
+     */
+    public void registerNodeTemplate(JIPipeNodeTemplate template) {
+        registry.getNodeRegistry().scheduleRegisterTemplate(template);
+    }
+
+    /**
+     * Registers node templates from plugin resources via a {@link JIPipeResourceManager}.
+     * Will detect *.json files and attempt to load them (fails silently)
+     *
+     * @param resourceManager the resource manager
+     * @param subDirectory    the directory within the resource manager's base path
+     */
+    public void registerNodeTemplatesFromResources(JIPipeResourceManager resourceManager, String subDirectory) {
+        registerNodeTemplatesFromResources(resourceManager.getResourceClass(), JIPipeResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
+    }
+
+    /**
+     * Registers node examples from plugin resources.
+     * Will detect *.json files and attempt to load them (fails silently)
+     *
+     * @param resourceClass the resource class
+     * @param directory     the directory within the resources
+     */
+    public void registerNodeTemplatesFromResources(Class<?> resourceClass, String directory) {
+        JIPipe.getInstance().getProgressInfo().log("Scanning for node templates within " + resourceClass + " -> " + directory);
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forClass(resourceClass))
+                .setScanners(new ResourcesScanner()));
+
+        Set<String> jsonResources = reflections.getResources(Pattern.compile(".*\\.json"));
+        jsonResources = jsonResources.stream().map(s -> {
+            if (!s.startsWith("/"))
+                return "/" + s;
+            else
+                return s;
+        }).collect(Collectors.toSet());
+        for (String resource : jsonResources) {
+            if (resource.startsWith(directory)) {
+                JIPipe.getInstance().getProgressInfo().log("Loading node template list " + resource);
+                try {
+                    try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
+                        JIPipeNodeTemplate.List templates = JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplate.List.class).readValue(stream);
+                        for (JIPipeNodeTemplate template : templates) {
+                            registerNodeTemplate(template);
                         }
                     }
                 } catch (Throwable throwable) {
