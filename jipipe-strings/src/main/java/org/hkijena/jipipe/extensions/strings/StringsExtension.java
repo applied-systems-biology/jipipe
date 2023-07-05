@@ -23,7 +23,11 @@ import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImport
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.strings.datasources.ImportJsonAlgorithm;
+import org.hkijena.jipipe.extensions.strings.datasources.ImportStringAlgorithm;
+import org.hkijena.jipipe.extensions.strings.datasources.ImportXMLAlgorithm;
 import org.hkijena.jipipe.extensions.strings.datasources.StringDefinitionDataSource;
+import org.hkijena.jipipe.extensions.strings.nodes.json.AnnotateWithJsonDataAlgorithm;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -72,6 +76,11 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeConversion(new StringDataConverter(JsonData.class));
 
         registerNodeType("define-string", StringDefinitionDataSource.class);
+        registerNodeType("import-string-from-file", ImportStringAlgorithm.class);
+        registerNodeType("import-xml-from-file", ImportXMLAlgorithm.class);
+        registerNodeType("import-json-from-file", ImportJsonAlgorithm.class);
+
+        registerNodeType("json-annotate-with-json-data", AnnotateWithJsonDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
     }
 
     @Override

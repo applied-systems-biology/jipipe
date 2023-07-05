@@ -116,5 +116,5 @@ def add_image(data, data_slot: DataSlot, text_annotations: dict = None, data_ann
     file_name = row_storage_path / Path("data.tif")
     from tifffile import imwrite
     print("Writing image to " + str(file_name))
-    imwrite(file=str(file_name), data=data, imagej=imagej, **kwargs)
+    imwrite(str(file_name), data=data, imagej=imagej, **kwargs)
     return row

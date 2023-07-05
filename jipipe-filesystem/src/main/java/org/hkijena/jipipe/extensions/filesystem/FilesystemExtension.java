@@ -159,6 +159,8 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("annotation-table-to-paths", AnnotationTableToPaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
         registerNodeType("annotate-with-path-properties", AnnotateWithPathProperties.class, UIUtils.getIconURLFromResources("data-types/path.png"));
 
+        registerNodeType("path-modify-with-expression", ModifyPathWithExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
