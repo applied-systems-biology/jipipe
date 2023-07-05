@@ -175,6 +175,10 @@ if [ ! -e "./dependencies/log4j-api-2.17.1.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/log4j-api-2.17.1.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/logging/log4j/log4j-api/2.17.1/log4j-api-2.17.1.jar
 fi
+if [ ! -e "./dependencies/json-path-2.7.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/json-path-2.7.0.jar https://maven.scijava.org/service/local/repositories/central/content/com/jayway/jsonpath/json-path/2.7.0/json-path-2.7.0.jar
+fi
 if [ ! -e "./dependencies/LICENSE_Javaluator.html" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_Javaluator.html https://opensource.org/licenses/lgpl-3.0.html
