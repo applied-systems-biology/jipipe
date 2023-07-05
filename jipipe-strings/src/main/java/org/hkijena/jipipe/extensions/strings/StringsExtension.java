@@ -28,6 +28,9 @@ import org.hkijena.jipipe.extensions.strings.datasources.ImportStringAlgorithm;
 import org.hkijena.jipipe.extensions.strings.datasources.ImportXMLAlgorithm;
 import org.hkijena.jipipe.extensions.strings.datasources.StringDefinitionDataSource;
 import org.hkijena.jipipe.extensions.strings.nodes.json.AnnotateWithJsonDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.text.AnnotateWithTextDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.xml.AnnotateWithXPathDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.xml.PrettifyXMLAlgorithm;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -81,6 +84,10 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("import-json-from-file", ImportJsonAlgorithm.class);
 
         registerNodeType("json-annotate-with-json-data", AnnotateWithJsonDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("json-annotate-with-text-data", AnnotateWithTextDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("json-annotate-with-xml-data", AnnotateWithXPathDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+
+        registerNodeType("xml-prettify", PrettifyXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/format-justify-left.png"));
     }
 
     @Override
