@@ -16,13 +16,12 @@ package org.hkijena.jipipe.ui.datatable;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ui.ExpressionBuilderUI;
@@ -160,10 +159,13 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
                     int[] selectedRows = table.getSelectedRows();
                     if (selectedRows.length > 0)
                         handleSlotRowDefaultAction(selectedRows[0], table.columnAtPoint(e.getPoint()));
+                }
+                else if(SwingUtilities.isRightMouseButton(e)) {
+                    showContextMenu(e);
                 }
             }
         });
@@ -181,6 +183,72 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
 
         // Search toolbar
         initializeToolbar(menuContainerPanel);
+    }
+
+    private void showContextMenu(MouseEvent e) {
+        int viewRow = table.rowAtPoint(e.getPoint());
+        int viewCol = table.columnAtPoint(e.getPoint());
+        if(viewRow >= 0) {
+            int modelRow = table.convertRowIndexToModel(viewRow);
+            table.setRowSelectionInterval(viewRow, viewRow);
+            Object objectAtColumn;
+            JIPipeDataTable dataTable = dataTableModel.getDataTable();
+            int dataAnnotationColumn = -1;
+            if(viewCol >= 0) {
+                int modelColumn = table.convertColumnIndexToModel(viewCol);
+                objectAtColumn = table.getModel().getValueAt(modelRow,
+                        modelColumn);
+                dataAnnotationColumn = modelColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(modelColumn)) : -1;
+            } else {
+                objectAtColumn = null;
+            }
+
+            JPopupMenu popupMenu = new JPopupMenu();
+
+            // Show/open with for data
+            if(dataAnnotationColumn >= 0) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
+                popupMenu.add(UIUtils.createMenuItem("Show data annotation", "Shows the data annotation '" + dataAnnotation.getName() + "'",
+                        UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, viewCol)));
+            }
+
+            // Show/open with controls
+            popupMenu.add(UIUtils.createMenuItem("Show", "Shows the data", UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, 0)));
+
+            JMenu openWithMenu = new JMenu();
+            openWithMenu.setText("Open with ...");
+
+            Class<? extends JIPipeData> dataClass = dataTable.getDataClass(modelRow);
+            String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
+            for (JIPipeDataDisplayOperation displayOperation : JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId)) {
+                openWithMenu.add(UIUtils.createMenuItem(displayOperation.getName(), displayOperation.getDescription(), displayOperation.getIcon(),
+                        () -> displayOperation.display(dataTable, modelRow, getWorkbench(), false)));
+            }
+            popupMenu.add(openWithMenu);
+
+            // String (preview)
+            if(objectAtColumn instanceof String) {
+                popupMenu.addSeparator();
+                popupMenu.add(UIUtils.createMenuItem("Copy string representation", "Copies the string '" + objectAtColumn + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(objectAtColumn))));
+            }
+
+            // Annotations
+            if(objectAtColumn instanceof JIPipeTextAnnotation) {
+                popupMenu.addSeparator();
+                String annotationName = ((JIPipeTextAnnotation) objectAtColumn).getName();
+                String annotationValue = ((JIPipeTextAnnotation) objectAtColumn).getValue();
+                String annotationNameAndValue = annotationName + "=" + annotationValue;
+                popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name", "Copies the string '" + annotationName + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
+                popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " value", "Copies the string '" + annotationValue + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationValue))));
+                popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name and value", "Copies the string '" + annotationNameAndValue + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationNameAndValue))));
+            }
+
+            popupMenu.show(table, e.getX(), e.getY());
+        }
     }
 
     private void initializeRibbon(JPanel menuContainerPanel) {

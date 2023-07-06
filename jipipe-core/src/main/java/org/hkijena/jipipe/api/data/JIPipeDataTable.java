@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.data;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -1356,5 +1355,15 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public String getLocation(String key, String defaultValue) {
         return defaultValue;
+    }
+
+    /**
+     * Gets a data annotation
+     * @param row the row
+     * @param col the data annotation column
+     * @return the data annotation
+     */
+    public JIPipeDataAnnotation getDataAnnotation(int row, int col) {
+        return getDataAnnotation(row, getDataAnnotationColumns().get(col));
     }
 }
