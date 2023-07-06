@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  */
 public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionConstant CONSTANT_NULL = new NullConstant();
+    public static final ExpressionConstant CONSTANT_NEWLINE = new NewLineConstant();
     public static final ExpressionConstant CONSTANT_TRUE = new BooleanTrueConstant();
     public static final ExpressionConstant CONSTANT_FALSE = new BooleanFalseConstant();
     public static final ExpressionConstant CONSTANT_PI = new NumericPiConstant();
@@ -95,6 +96,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         parameters.add(CONSTANT_NULL);
         parameters.add(CONSTANT_TRUE);
         parameters.add(CONSTANT_FALSE);
+        parameters.add(CONSTANT_NEWLINE);
         parameters.add(CONSTANT_E);
         parameters.add(CONSTANT_PI);
         parameters.add(CONSTANT_TAU);

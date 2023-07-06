@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.tableeditor;
 
+import com.google.common.html.HtmlEscapers;
 import com.google.common.primitives.Ints;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
@@ -622,9 +623,9 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
 
             if (!tableEditor.tableModel.isNumericColumn(column)) {
-                setText("<html><i><span style=\"color:gray;\">\"</span>" + value + "<span style=\"color:gray;\">\"</span></i></html>");
+                setText("<html><i><span style=\"color:gray;\">\"</span>" + HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(value)) + "<span style=\"color:gray;\">\"</span></i></html>");
             } else {
-                setText("" + value);
+                setText(String.valueOf(value));
             }
 
             if (isSelected) {

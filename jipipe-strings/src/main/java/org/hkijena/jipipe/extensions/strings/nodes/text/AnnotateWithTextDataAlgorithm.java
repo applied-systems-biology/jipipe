@@ -109,6 +109,7 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
         @JIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
         @JIPipeParameter(value = "annotation-name", uiOrder = -90)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+        @ExpressionParameterSettingsVariable(name = "Text", key = "text", description = "The input text")
         public DefaultExpressionParameter getAnnotationName() {
             return annotationName;
         }
