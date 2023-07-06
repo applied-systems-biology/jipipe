@@ -22,6 +22,7 @@ import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCol
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.strings.JsonData;
 import org.hkijena.jipipe.extensions.strings.StringData;
+import org.hkijena.jipipe.extensions.strings.XMLData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
@@ -37,8 +38,8 @@ import java.util.*;
         "Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn about XPath.")
 @JIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
 @JIPipeNode(menuPath = "For XML", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
-@JIPipeInputSlot(value = StringData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = StringData.class, slotName = "Output", autoCreate = true)
+@JIPipeInputSlot(value = XMLData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = XMLData.class, slotName = "Output", autoCreate = true)
 public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
@@ -58,7 +59,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JsonData data = dataBatch.getInputData(getFirstInputSlot(), JsonData.class, progressInfo);
+        XMLData data = dataBatch.getInputData(getFirstInputSlot(), XMLData.class, progressInfo);
         Document document = XmlUtils.readFromString(data.getData());
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
 
@@ -73,31 +74,8 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
             String path = entry.getxPath().evaluateToString(variables);
             String annotationName = entry.getAnnotationName().evaluateToString(variables);
 
-            try {
-                XPath xPath = XPathFactory.newInstance().newXPath();
-                xPath.setNamespaceContext(new NamespaceContext() {
-                    @Override
-                    public Iterator<?> getPrefixes(String arg0) {
-                        return null;
-                    }
-                    @Override
-                    public String getPrefix(String arg0) {
-                        return null;
-                    }
-                    @Override
-                    public String getNamespaceURI(String arg0) {
-                        if(arg0 != null) {
-                            return namespaces.getOrDefault(arg0, null);
-                        }
-                        return null;
-                    }
-                });
-                String annotationValue = StringUtils.nullToEmpty(xPath.compile(path).evaluate(document, XPathConstants.STRING)).replace("\n", "");
-
-                annotationList.add(new JIPipeTextAnnotation(annotationName, annotationValue));
-            } catch (XPathExpressionException e) {
-                throw new RuntimeException(e);
-            }
+            String annotationValue = XmlUtils.extractFromXPath(document, path, namespaces);
+            annotationList.add(new JIPipeTextAnnotation(annotationName, annotationValue));
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);

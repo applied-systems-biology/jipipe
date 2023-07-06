@@ -28,8 +28,11 @@ import org.hkijena.jipipe.extensions.strings.datasources.ImportStringAlgorithm;
 import org.hkijena.jipipe.extensions.strings.datasources.ImportXMLAlgorithm;
 import org.hkijena.jipipe.extensions.strings.datasources.StringDefinitionDataSource;
 import org.hkijena.jipipe.extensions.strings.nodes.json.AnnotateWithJsonDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.json.ExtractTextFromJsonAlgorithm;
 import org.hkijena.jipipe.extensions.strings.nodes.text.AnnotateWithTextDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.text.ProcessTextDataAlgorithm;
 import org.hkijena.jipipe.extensions.strings.nodes.xml.AnnotateWithXPathDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.xml.ExtractTextFromXMLAlgorithm;
 import org.hkijena.jipipe.extensions.strings.nodes.xml.PrettifyXMLAlgorithm;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -86,6 +89,10 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("json-annotate-with-json-data", AnnotateWithJsonDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("json-annotate-with-text-data", AnnotateWithTextDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("json-annotate-with-xml-data", AnnotateWithXPathDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+
+        registerNodeType("json-extract-text-from-json-path", ExtractTextFromJsonAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("xml-extract-text-from-xpath", ExtractTextFromXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("text-process-expression", ProcessTextDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
 
         registerNodeType("xml-prettify", PrettifyXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/format-justify-left.png"));
     }
