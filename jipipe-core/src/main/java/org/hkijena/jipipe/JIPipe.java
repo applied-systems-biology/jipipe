@@ -882,7 +882,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             }
         }
 
-        autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
+//        autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
         if (!invalidBackups.isEmpty()) {
             autoSaveSettings.getLastBackups().removeAll(invalidBackups);
         }
