@@ -244,16 +244,33 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
 
             // Show/open with controls
             popupMenu.add(UIUtils.createMenuItem("Show", "Shows the data", UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, 0)));
-            JMenu openWithMenu = new JMenu();
-            openWithMenu.setText("Open with ...");
 
-            Class<? extends JIPipeData> dataClass = dataTable.getDataClass(modelRow);
-            String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
-            for (JIPipeDataDisplayOperation displayOperation : JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId)) {
-                openWithMenu.add(UIUtils.createMenuItem(displayOperation.getName(), displayOperation.getDescription(), displayOperation.getIcon(),
-                        () -> displayOperation.display(dataTable, modelRow, getWorkbench(), false)));
+            {
+                JMenu openWithMenu = new JMenu();
+                openWithMenu.setText("Open with ...");
+
+                Class<? extends JIPipeData> dataClass = dataTable.getDataClass(modelRow);
+                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
+                for (JIPipeDataDisplayOperation displayOperation : JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId)) {
+                    openWithMenu.add(UIUtils.createMenuItem(displayOperation.getName(), displayOperation.getDescription(), displayOperation.getIcon(),
+                            () -> displayOperation.display(dataTable, modelRow, getWorkbench(), false)));
+                }
+                popupMenu.add(openWithMenu);
             }
-            popupMenu.add(openWithMenu);
+
+            if(dataAnnotationColumn >= 0) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
+                JMenu openWithMenu = new JMenu();
+                openWithMenu.setText("Open " + dataAnnotation.getName() + " with ...");
+
+                Class<? extends JIPipeData> dataClass = dataAnnotation.getDataClass();
+                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
+                for (JIPipeDataDisplayOperation displayOperation : JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId)) {
+                    openWithMenu.add(UIUtils.createMenuItem(displayOperation.getName(), displayOperation.getDescription(), displayOperation.getIcon(),
+                            () -> displayOperation.displayDataAnnotation(dataTable, modelRow, dataAnnotation, getWorkbench())));
+                }
+                popupMenu.add(openWithMenu);
+            }
 
             // String (preview)
             if(objectAtColumn instanceof String) {

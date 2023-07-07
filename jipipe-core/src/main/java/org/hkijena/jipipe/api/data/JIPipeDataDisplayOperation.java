@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -44,20 +45,20 @@ public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
     /**
      * Applies the operation on a data table
      * @param dataTable the data table
-     * @param modelRow the model row
+     * @param row the model row
      * @param workbench the workbench
      * @param saveAsDefault saves the operation as new default
      */
-    default void display(JIPipeDataTable dataTable, int modelRow, JIPipeWorkbench workbench, boolean saveAsDefault) {
-        JIPipeData data = dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo());
+    default void display(JIPipeDataTable dataTable, int row, JIPipeWorkbench workbench, boolean saveAsDefault) {
+        JIPipeData data = dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());
         String displayName;
         String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
         String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
         if (!StringUtils.isNullOrEmpty(nodeName))
-            displayName = nodeName + "/" + slotName + "/" + modelRow;
+            displayName = nodeName + "/" + slotName + "/" + row;
         else
-            displayName = slotName + "/" + modelRow;
-        display(data, displayName, workbench, new JIPipeDataTableDataSource(dataTable, modelRow));
+            displayName = slotName + "/" + row;
+        display(data, displayName, workbench, new JIPipeDataTableDataSource(dataTable, row));
         if (saveAsDefault && GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
             String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
             DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
@@ -67,5 +68,25 @@ public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
                 JIPipe.getSettings().save();
             }
         }
+    }
+
+    /**
+     * Applies the operation on a data table
+     * @param dataTable the data table
+     * @param row the model row
+     * @param dataAnnotation the data annotation to show
+     * @param workbench the workbench
+     */
+    default void displayDataAnnotation(JIPipeDataTable dataTable, int row, JIPipeDataAnnotation dataAnnotation, JIPipeWorkbench workbench) {
+        JIPipeData data = dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo());
+        String displayName;
+        String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
+        String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
+        if (!StringUtils.isNullOrEmpty(nodeName))
+            displayName = nodeName + "/" + slotName + "/" + row + "/$" + dataAnnotation.getName();
+        else
+            displayName = slotName + "/" + row + "/$" + dataAnnotation.getName();
+
+        display(data, displayName, workbench, new JIPipeDataTableDataSource(dataTable, row, dataAnnotation.getName()));
     }
 }
