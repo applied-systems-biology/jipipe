@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.datatable;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -33,6 +34,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
+import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToZIPExporterRun;
@@ -48,7 +50,9 @@ import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeAnnotationTableCellRenderer;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -56,6 +60,7 @@ import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -239,12 +244,44 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
                 String annotationName = ((JIPipeTextAnnotation) objectAtColumn).getName();
                 String annotationValue = ((JIPipeTextAnnotation) objectAtColumn).getValue();
                 String annotationNameAndValue = annotationName + "=" + annotationValue;
+                String filterExpression = annotationName + " == " + "\"" + MacroUtils.escapeString(annotationValue) + "\"";
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name", "Copies the string '" + annotationName + "' into the clipboard",
                         UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " value", "Copies the string '" + annotationValue + "' into the clipboard",
                         UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationValue))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name and value", "Copies the string '" + annotationNameAndValue + "' into the clipboard",
                         UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationNameAndValue))));
+                popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " as filter", "Copies the string '" + filterExpression + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/filter.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(filterExpression))));
+            }
+
+            popupMenu.addSeparator();
+
+            popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
+                    () -> {
+                        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                        if(path != null) {
+                            Path directory = path.getParent();
+                            String name = path.getFileName().toString();
+                            JIPipeDataExporterRun run = new JIPipeDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
+                                    directory, name);
+                            JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnerQueue("Export"));
+                        }
+                    }));
+
+            if(dataAnnotationColumn >= 0) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
+                popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
+                        () -> {
+                            Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                            if(path != null) {
+                                Path directory = path.getParent();
+                                String name = path.getFileName().toString();
+                                JIPipeDataExporterRun run = new JIPipeDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),
+                                        directory, name);
+                                JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnerQueue("Export"));
+                            }
+                        }));
             }
 
             popupMenu.show(table, e.getX(), e.getY());
