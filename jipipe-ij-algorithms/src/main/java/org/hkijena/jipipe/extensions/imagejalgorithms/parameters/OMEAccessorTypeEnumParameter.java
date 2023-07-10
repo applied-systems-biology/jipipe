@@ -27,4 +27,15 @@ public class OMEAccessorTypeEnumParameter extends DynamicStringEnumParameter {
             return value;
         }
     }
+
+    @Override
+    public String renderTooltip(String value) {
+        OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(value, null);
+        if(template != null) {
+            return template.getDescription();
+        }
+        else {
+            return "";
+        }
+    }
 }

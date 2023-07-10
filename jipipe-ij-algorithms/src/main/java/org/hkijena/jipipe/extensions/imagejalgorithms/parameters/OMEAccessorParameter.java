@@ -2,10 +2,14 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import ome.xml.meta.MetadataRetrieve;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OMEAccessorTemplate;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.Set;
 
 public class OMEAccessorParameter {
@@ -36,6 +40,7 @@ public class OMEAccessorParameter {
         if(parameters.getParameters().isEmpty()) {
             // Load appropriate parameters in
             resetParameters();
+
         }
     }
 
@@ -54,5 +59,33 @@ public class OMEAccessorParameter {
     @JsonSetter("parameters")
     public void setParameters(JIPipeDynamicParameterCollection parameters) {
         this.parameters = parameters;
+    }
+
+    public Object evaluate(MetadataRetrieve metadataRetrieve) {
+        OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(accessorId, null);
+        if(template != null) {
+            Object[] parameters = new Object[template.getParameterIds().size()];
+            List<String> parameterIds = template.getParameterIds();
+            for (int i = 0; i < parameterIds.size(); i++) {
+                String parameterId = parameterIds.get(i);
+                JIPipeMutableParameterAccess parameterAccess = this.parameters.getParameter(parameterId);
+                if(parameterAccess != null) {
+                    parameters[i] = parameterAccess.get(Object.class);
+                }
+                else {
+                    System.err.println("Resetting parameter map of " + this);
+                    resetParameters();
+                    return null;
+                }
+            }
+            try {
+                return template.getMethod().invoke(metadataRetrieve, parameters);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            return null;
+        }
     }
 }

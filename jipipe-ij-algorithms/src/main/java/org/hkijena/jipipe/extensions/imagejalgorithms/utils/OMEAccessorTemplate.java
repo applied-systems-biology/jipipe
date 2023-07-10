@@ -32,5 +32,11 @@ public class OMEAccessorTemplate {
         return parameterIds;
     }
 
+    public String getDescription() {
+        return description;
+    }
 
+    public Method getMethod() {
+        return method;
+    }
 }

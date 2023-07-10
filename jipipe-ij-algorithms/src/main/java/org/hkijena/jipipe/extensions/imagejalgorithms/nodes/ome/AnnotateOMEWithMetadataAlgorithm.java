@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.OMEAccessorPara
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.strings.XMLData;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 
@@ -51,9 +52,8 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String annotationName = entry.getAnnotationName().evaluateToString(variables);
-
-//            String annotationValue = XmlUtils.extractStringFromXPath(document, path, namespaces);
-//            annotationList.add(new JIPipeTextAnnotation(annotationName, annotationValue));
+            String annotationValue = StringUtils.nullToEmpty(entry.getAccessor().evaluate(data.getMetadata()));
+            annotationList.add(new JIPipeTextAnnotation(annotationName, annotationValue));
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
