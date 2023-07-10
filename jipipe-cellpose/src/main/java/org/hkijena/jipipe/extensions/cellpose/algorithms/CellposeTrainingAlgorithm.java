@@ -25,10 +25,10 @@ import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeChannelSettings
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeGPUSettings;
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeTrainingTweaksSettings;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;

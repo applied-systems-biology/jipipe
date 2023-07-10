@@ -42,7 +42,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
     /**
      * Creates new instance
      *
-     * @param workbench       the workbech
+     * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
     public JIPipeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
