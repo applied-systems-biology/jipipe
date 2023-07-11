@@ -32,6 +32,7 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
     private JIPipePythonAdapterLibraryEnvironment pythonAdapterLibraryEnvironment = new JIPipePythonAdapterLibraryEnvironment();
     private JIPipePythonAdapterLibraryEnvironment.List pythonAdapterPresets = new JIPipePythonAdapterLibraryEnvironment.List();
     private StringList easyInstallerRepositories = new StringList();
+    private boolean checkForUpdates = true;
 
     public PythonAdapterExtensionSettings() {
         easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-lib-jipipe-python.json");
@@ -103,6 +104,17 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
     @JIPipeParameter("python-adapter-library")
     public void setPythonAdapterLibraryEnvironment(JIPipePythonAdapterLibraryEnvironment pythonAdapterLibraryEnvironment) {
         this.pythonAdapterLibraryEnvironment = pythonAdapterLibraryEnvironment;
+    }
+
+    @JIPipeDocumentation(name = "Automatically check for updates", description = "If enabled, automatically check for updates of the adapter library when JIPipe is started")
+    @JIPipeParameter("check-for-updates")
+    public boolean isCheckForUpdates() {
+        return checkForUpdates;
+    }
+
+    @JIPipeParameter("check-for-updates")
+    public void setCheckForUpdates(boolean checkForUpdates) {
+        this.checkForUpdates = checkForUpdates;
     }
 
     @Override

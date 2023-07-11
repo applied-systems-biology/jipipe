@@ -28,16 +28,14 @@ import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.python.adapter.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.extensions.python.adapter.JIPipePythonAdapterLibraryEnvironmentInstaller;
-import org.hkijena.jipipe.extensions.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.extensions.python.adapter.PythonAdapterExtensionSettings;
+import org.hkijena.jipipe.extensions.python.adapter.*;
 import org.hkijena.jipipe.extensions.python.algorithms.*;
 import org.hkijena.jipipe.extensions.python.installers.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -258,6 +256,9 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void postprocess(JIPipeProgressInfo progressInfo) {
         createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
         createMissingLibJIPipePythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
+        if(PythonAdapterExtensionSettings.getInstance().isCheckForUpdates()) {
+            JIPipeRunnerQueue.getInstance().enqueue(new JIPipePythonAdapterUpdateChecker());
+        }
     }
 
     @Override
