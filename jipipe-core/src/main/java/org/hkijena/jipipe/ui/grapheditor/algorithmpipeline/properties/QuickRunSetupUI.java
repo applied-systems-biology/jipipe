@@ -233,7 +233,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
 
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms(true);
         if (algorithmsWithMissingInput.contains(algorithm)) {
-            report.resolve("Test Bench").reportIsInvalid(
+            report.resolve("Quick run").reportIsInvalid(
                     "Selected algorithm is deactivated or missing inputs!",
                     "The selected algorithm would not be executed, as it is deactivated or missing input data. " +
                             "You have to ensure that all input slots are assigned for the selected algorithm and its dependencies.",
