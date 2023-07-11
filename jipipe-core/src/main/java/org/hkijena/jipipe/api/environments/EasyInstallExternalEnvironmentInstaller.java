@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.environments;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -113,6 +114,8 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
             }
         }
         progressInfo.setProgress(5);
+        JIPipe.getSettings().save();
+        SwingUtilities.invokeLater(this::showFinishedDialog);
     }
 
     /**
@@ -390,6 +393,10 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         }
     }
 
+    private void showFinishedDialog() {
+        JOptionPane.showMessageDialog(getWorkbench().getWindow(), getFinishedMessage().getHtml(), getTaskLabel(), JOptionPane.INFORMATION_MESSAGE);
+    }
+
     /**
      * This method should return all repositories that are available
      *
@@ -411,5 +418,11 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
      * @return the description
      */
     public abstract HTMLText getDialogDescription();
+
+    /**
+     * The message shown after the operation is finished
+     * @return the message
+     */
+    public abstract HTMLText getFinishedMessage();
 
 }

@@ -37,8 +37,8 @@ public class NotificationButton extends JButton implements JIPipeNotificationInb
     private final JIPipeWorkbench workbench;
     private final Timer timer;
     private AnimatedIcon warningIcon;
-    private Set<JIPipeNotification> notificationSet = new TreeSet<>();
-    private List<String> headings = new ArrayList<>();
+    private final Set<JIPipeNotification> notificationSet = new TreeSet<>();
+    private final List<String> headings = new ArrayList<>();
     private int currentHeading;
 
     /**

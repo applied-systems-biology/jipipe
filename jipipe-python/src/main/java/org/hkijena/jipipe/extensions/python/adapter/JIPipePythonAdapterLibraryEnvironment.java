@@ -11,10 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.python;
+package org.hkijena.jipipe.extensions.python.adapter;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.extensions.python.PythonExtension;
+import org.hkijena.jipipe.extensions.python.PythonPackageLibraryEnvironment;
 
 import java.nio.file.Paths;
 import java.util.Map;
@@ -28,21 +30,11 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
 
     public JIPipePythonAdapterLibraryEnvironment() {
         this.setName("Default");
-        this.setLibraryDirectory(Paths.get("jipipe").resolve("lib-jipipe-py"));
+        this.setLibraryDirectory(Paths.get("jipipe").resolve("lib-jipipe-python"));
     }
 
     public JIPipePythonAdapterLibraryEnvironment(PythonPackageLibraryEnvironment other) {
         super(other);
-    }
-
-    @Override
-    public void install(JIPipeProgressInfo progressInfo) {
-        installFromResources("org.hkijena.jipipe", "/org/hkijena/jipipe/extensions/python/lib", PythonExtension.class, progressInfo);
-    }
-
-    @Override
-    public Map<String, String> getPackagedVersions() {
-        return getPackagedVersionsFromResources("/org/hkijena/jipipe/extensions/python/lib/version.txt", PythonExtension.class);
     }
 
     /**

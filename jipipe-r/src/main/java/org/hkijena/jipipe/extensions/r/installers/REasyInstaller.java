@@ -64,6 +64,11 @@ public class REasyInstaller extends EasyInstallExternalEnvironmentInstaller<REnv
     }
 
     @Override
+    public HTMLText getFinishedMessage() {
+        return new HTMLText("R was successfully installed. You can close this window.");
+    }
+
+    @Override
     protected void writeEnvironmentToParameters(REnvironment environment, JIPipeParameterAccess parameterAccess) {
         if (OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
             parameterAccess.set(new OptionalREnvironment(environment));

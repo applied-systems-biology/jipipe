@@ -912,10 +912,14 @@ public class JIPipe extends AbstractService implements JIPipeService {
             notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the newly available extensions. You will not be warned again about them.", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {
                 extensionRegistry.dismissNewExtensions();
             }));
-            notification.getActions().add(new JIPipeNotificationAction("Open in extension manager", "Opens the extension manager. You will not be warned again about the new extensions.", UIUtils.getIconFromResources("actions/plugins.png"), workbench -> {
-                extensionRegistry.dismissNewExtensions();
-                workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_PLUGIN_MANAGER);
-            }));
+            notification.getActions().add(new JIPipeNotificationAction("Open in extension manager",
+                    "Opens the extension manager. You will not be warned again about the new extensions.",
+                    UIUtils.getIconInvertedFromResources("actions/plugins.png"),
+                    JIPipeNotificationAction.Style.Success,
+                    workbench -> {
+                        extensionRegistry.dismissNewExtensions();
+                        workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_PLUGIN_MANAGER);
+                    }));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
 

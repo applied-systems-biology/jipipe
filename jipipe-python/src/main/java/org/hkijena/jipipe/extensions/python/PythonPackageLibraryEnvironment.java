@@ -91,7 +91,14 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-
+        if(!isProvidedByEnvironment()) {
+            if(!Files.isDirectory(getAbsoluteLibraryDirectory())) {
+                report.reportIsInvalid("Missing Python adapter library!",
+                        "The Python integration requires an adapter library. It was not found at " + getAbsoluteLibraryDirectory(),
+                        "Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable.",
+                        this);
+            }
+        }
     }
 
     public Path getAbsoluteLibraryDirectory() {
@@ -118,9 +125,6 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
      * @param code the current Python code
      */
     public void generateCode(StringBuilder code, JIPipeProgressInfo progressInfo) {
-        if (needsInstall()) {
-            install(progressInfo);
-        }
         if (!isProvidedByEnvironment()) {
             if (!code.toString().contains("import sys")) {
                 code.append("import sys\n");
@@ -129,135 +133,4 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
         }
     }
 
-    /**
-     * Returns true if the library is not installed
-     *
-     * @return if the library is not installed
-     */
-    public boolean needsInstall() {
-        if (!isProvidedByEnvironment()) {
-            return !Files.isDirectory(getAbsoluteLibraryDirectory());
-        }
-        return false;
-    }
-
-    /**
-     * Returns true if the currently installed library is the newest version
-     * Only auto-installed (resource-based) installations are tested
-     * Returns true if needsInstall() returns true (as the newest lib will be installed anyways)
-     *
-     * @return if the newest version is installed
-     */
-    public boolean isNewestVersion() {
-        if (needsInstall())
-            return true;
-        Map<String, String> installedVersions = getInstalledVersions();
-        Map<String, String> packagedVersions = getPackagedVersions();
-
-        for (Map.Entry<String, String> entry : packagedVersions.entrySet()) {
-            String installedVersion = installedVersions.getOrDefault(entry.getKey(), "0");
-            if (StringUtils.compareVersions(installedVersion, entry.getValue()) < 0)
-                return false;
-        }
-        return true;
-    }
-
-    /**
-     * Gets the installed versions of packages
-     * Returns an empty map if the version file could not be found or the environment is not installed
-     * Returns an empty map if the library is provided by the environment
-     *
-     * @return package to version map
-     */
-    public Map<String, String> getInstalledVersions() {
-        if (needsInstall())
-            return Collections.emptyMap();
-        Path versionsFile = getAbsoluteLibraryDirectory().resolve("version.txt");
-        if (Files.exists(versionsFile)) {
-            try {
-                Map<String, String> result = new HashMap<>();
-                for (String line : Files.readAllLines(versionsFile)) {
-                    String[] split = line.split("[><=]+");
-                    result.put(split[0].trim(), split[1].trim());
-                }
-                return result;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return Collections.emptyMap();
-            }
-        } else {
-            return Collections.emptyMap();
-        }
-    }
-
-    /**
-     * Gets the packaged versions of the installed libraries
-     *
-     * @return package to version map
-     */
-    public abstract Map<String, String> getPackagedVersions();
-
-    /**
-     * Installs the library into the target directory
-     */
-    public abstract void install(JIPipeProgressInfo progressInfo);
-
-    /**
-     * Gets the packaged versions from resources
-     *
-     * @param resourcePath   the resource path
-     * @param resourceLoader the resource loader
-     * @return packaged versions
-     */
-    protected Map<String, String> getPackagedVersionsFromResources(String resourcePath, Class<?> resourceLoader) {
-        Map<String, String> result = new HashMap<>();
-        URL url = resourceLoader.getResource(resourcePath);
-        try {
-            String text = Resources.toString(url, StandardCharsets.UTF_8);
-            for (String line : text.split("\n")) {
-                String[] split = line.split("[><=]+");
-                result.put(split[0].trim(), split[1].trim());
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
-    }
-
-    /**
-     * Installs the library from resources into the target directory
-     *
-     * @param javaPackage    the java package (for the resource search)
-     * @param globalFolder   the folder that contains the library
-     * @param resourceLoader the resource loader
-     */
-    protected void installFromResources(String javaPackage, String globalFolder, Class<?> resourceLoader, JIPipeProgressInfo progressInfo) {
-        Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage(javaPackage))
-                .setScanners(new ResourcesScanner()));
-        Set<String> allResources = reflections.getResources(Pattern.compile(".*"));
-        allResources = allResources.stream().map(s -> {
-            if (!s.startsWith("/"))
-                return "/" + s;
-            else
-                return s;
-        }).collect(Collectors.toSet());
-        Set<String> toInstall = allResources.stream().filter(s -> s.startsWith(globalFolder)).collect(Collectors.toSet());
-        for (String resource : toInstall) {
-            Path targetPath = PathUtils.relativeToImageJToAbsolute(getLibraryDirectory().resolve(resource.substring(globalFolder.length() + 1)));
-            progressInfo.log("Installing " + resource + " to " + targetPath);
-            if (!Files.isDirectory(targetPath.getParent())) {
-                try {
-                    Files.createDirectories(targetPath.getParent());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            try {
-                Files.copy(resourceLoader.getResourceAsStream(resource), targetPath);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
 }

@@ -65,6 +65,11 @@ public class PythonEasyInstaller extends EasyInstallExternalEnvironmentInstaller
     }
 
     @Override
+    public HTMLText getFinishedMessage() {
+        return new HTMLText("Python is now installed and configured. You can close this message.");
+    }
+
+    @Override
     protected void writeEnvironmentToParameters(PythonEnvironment environment, JIPipeParameterAccess parameterAccess) {
         if (OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
             parameterAccess.set(new OptionalPythonEnvironment(environment));

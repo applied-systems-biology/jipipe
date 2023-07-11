@@ -204,6 +204,6 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
         PythonExtension.createMissingPythonNotificationIfNeeded(notifications);
-        PythonExtension.createOldLibJIPipePythonNotificationIfNeeded(notifications);
+        PythonExtension.createMissingLibJIPipePythonNotificationIfNeeded(notifications);
     }
 }

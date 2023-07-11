@@ -66,6 +66,11 @@ public class OmniposeEasyInstaller extends EasyInstallExternalEnvironmentInstall
     }
 
     @Override
+    public HTMLText getFinishedMessage() {
+        return new HTMLText("Omnipose was successfully installed. ");
+    }
+
+    @Override
     protected void writeEnvironmentToParameters(PythonEnvironment environment, JIPipeParameterAccess parameterAccess) {
         if (OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
             parameterAccess.set(new OptionalPythonEnvironment(environment));
