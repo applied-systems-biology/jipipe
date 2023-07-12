@@ -20,7 +20,9 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;
@@ -635,13 +637,21 @@ public class FormPanel extends JXPanel {
         private final JTextPane descriptionArea;
         private int columnCount = 0;
 
+        private final Color backgroundColor;
+
+        private final Color borderColor;
+
         /**
          * @param text           the text
          * @param icon           the icon
          * @param leftComponents Components added after the icon
          */
         public GroupHeaderPanel(String text, Icon icon, Component... leftComponents) {
-            setBorder(BorderFactory.createEmptyBorder(8, 0, 4, 0));
+
+            this.backgroundColor = ColorUtils.mix(ModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1,1,0.98f), 0.92);
+            this.borderColor = ColorUtils.scaleHSV(backgroundColor, 1,1,0.8f);
+
+            setBorder(BorderFactory.createEmptyBorder(8, 0, 32, 0));
             setLayout(new GridBagLayout());
 
             for (Component leftComponent : leftComponents) {
@@ -649,6 +659,8 @@ public class FormPanel extends JXPanel {
             }
 
             titleLabel = new JLabel(text, icon, JLabel.LEFT);
+            titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(4,8,4,4));
             add(titleLabel, new GridBagConstraints() {
                 {
                     gridx = columnCount;
@@ -658,8 +670,7 @@ public class FormPanel extends JXPanel {
                 }
             });
             ++columnCount;
-
-            add(new JSeparator(), new GridBagConstraints() {
+            add(Box.createHorizontalGlue(), new GridBagConstraints() {
                 {
                     gridx = columnCount;
                     gridy = 0;
@@ -674,7 +685,7 @@ public class FormPanel extends JXPanel {
             descriptionArea = UIUtils.makeBorderlessReadonlyTextPane("", true);
             descriptionArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
             descriptionArea.setOpaque(false);
-            descriptionArea.setBorder(null);
+            descriptionArea.setBorder(BorderFactory.createEmptyBorder(4,8,4,4));
             descriptionArea.setVisible(false);
             add(descriptionArea, new GridBagConstraints() {
                 {
@@ -686,6 +697,21 @@ public class FormPanel extends JXPanel {
                     insets = UI_PADDING;
                 }
             });
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+
+            Graphics2D g2 = (Graphics2D) g;
+            g2.setColor(backgroundColor);
+            int x = 1;
+            int y = 8;
+            int w = getWidth() - x - 1;
+            int h = getHeight() - y - 1 - 32;
+            g2.fillRoundRect(x,y,w,h,4,4);
+            g2.setColor(borderColor);
+            g2.drawRoundRect(x,y,w,h,4,4);
         }
 
         public JLabel getTitleLabel() {

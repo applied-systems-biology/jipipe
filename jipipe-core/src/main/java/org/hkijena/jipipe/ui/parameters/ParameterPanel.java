@@ -399,7 +399,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
                         groupIcon = UIUtils.getIconFromResources("actions/configure.png");
                     }
                 }
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader(tree.getSourceDocumentationName(parameterCollection), groupIcon);
+                GroupHeaderPanel groupHeaderPanel = addGroupHeader(StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "General"), groupIcon);
                 for (Component leftComponent : leftComponents) {
                     groupHeaderPanel.addColumn(leftComponent);
                 }
