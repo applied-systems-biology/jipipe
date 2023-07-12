@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
+import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
@@ -87,6 +88,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 this::createParametersPanel, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
+
             JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
             tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                     () -> slotEditorUI,
@@ -214,7 +216,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         }
 
         // Additional tabs for the help panel
-        parametersUI.getDocumentationTabPane().addTab("Available nodes", UIUtils.getIconFromResources("actions/graph-node.png"),
+        parametersUI.getDocumentationTabPane().addTab("Available nodes", UIUtils.getIconFromResources("actions/graph-node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         parametersUI.getDocumentationTabPane().addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
