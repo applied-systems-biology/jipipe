@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -96,6 +95,8 @@ public class FormPanel extends JXPanel {
     private final boolean withDocumentation;
     private final boolean documentationHasUI;
     private JPanel staticContentPanel;
+
+    private final List<GroupHeaderPanel> groupHeaderPanels = new ArrayList<>();
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
@@ -185,6 +186,10 @@ public class FormPanel extends JXPanel {
             this.documentationHasUI = false;
             add(content, BorderLayout.CENTER);
         }
+    }
+
+    public List<GroupHeaderPanel> getGroupHeaderPanels() {
+        return Collections.unmodifiableList(groupHeaderPanels);
     }
 
     /**
@@ -428,7 +433,7 @@ public class FormPanel extends JXPanel {
      * @return the panel that allows adding more components to it
      */
     public GroupHeaderPanel addGroupHeader(String text, Icon icon) {
-        GroupHeaderPanel panel = new GroupHeaderPanel(text, icon);
+        GroupHeaderPanel panel = new GroupHeaderPanel(text, icon, getGroupHeaderPanels().isEmpty() ? 8 : 32);
         GridBagConstraints gridBagConstraints = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
@@ -442,6 +447,7 @@ public class FormPanel extends JXPanel {
         };
         contentPanel.add(panel, gridBagConstraints);
         entries.add(new FormPanelEntry(numRows, null, panel, null, true));
+        groupHeaderPanels.add(panel);
         ++numRows;
         return panel;
     }
@@ -472,6 +478,10 @@ public class FormPanel extends JXPanel {
      */
     public void removeLastRow() {
         if (contentPanel.getComponentCount() > 0) {
+            FormPanelEntry lastEntry = entries.get(entries.size() - 1);
+            if(lastEntry.getContent() instanceof GroupHeaderPanel) {
+                groupHeaderPanels.remove(lastEntry.getContent());
+            }
             entries.remove(entries.size() - 1);
             contentPanel.remove(contentPanel.getComponentCount() - 1);
             --numRows;
@@ -493,6 +503,7 @@ public class FormPanel extends JXPanel {
                 ((Disposable) entry.content).dispose();
             }
         }
+        groupHeaderPanels.clear();
         entries.clear();
         contentPanel.removeAll();
         numRows = 0;
@@ -636,7 +647,7 @@ public class FormPanel extends JXPanel {
         private final JLabel titleLabel;
         private final JTextPane descriptionArea;
         private int columnCount = 0;
-
+        private final int marginTop;
         private final Color backgroundColor;
 
         private final Color borderColor;
@@ -644,14 +655,16 @@ public class FormPanel extends JXPanel {
         /**
          * @param text           the text
          * @param icon           the icon
+         * @param marginTop the margin to the top
          * @param leftComponents Components added after the icon
          */
-        public GroupHeaderPanel(String text, Icon icon, Component... leftComponents) {
+        public GroupHeaderPanel(String text, Icon icon, int marginTop, Component... leftComponents) {
+            this.marginTop = marginTop;
 
             this.backgroundColor = ColorUtils.mix(ModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1,1,0.98f), 0.92);
             this.borderColor = ColorUtils.scaleHSV(backgroundColor, 1,1,0.8f);
 
-            setBorder(BorderFactory.createEmptyBorder(8, 0, 32, 0));
+            setBorder(BorderFactory.createEmptyBorder(marginTop, 0, 8, 0));
             setLayout(new GridBagLayout());
 
             for (Component leftComponent : leftComponents) {
@@ -706,9 +719,9 @@ public class FormPanel extends JXPanel {
             Graphics2D g2 = (Graphics2D) g;
             g2.setColor(backgroundColor);
             int x = 1;
-            int y = 8;
+            int y = marginTop;
             int w = getWidth() - x - 1;
-            int h = getHeight() - y - 1 - 32;
+            int h = getHeight() - y - 1 - 8;
             g2.fillRoundRect(x,y,w,h,4,4);
             g2.setColor(borderColor);
             g2.drawRoundRect(x,y,w,h,4,4);
@@ -719,7 +732,7 @@ public class FormPanel extends JXPanel {
         }
 
         /**
-         * Adds an additional component on the right hand side
+         * Adds a component on the right hand side
          *
          * @param component the component
          */
