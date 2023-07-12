@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.utils.xml;
 
+import com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -38,7 +39,7 @@ public class XmlUtils {
             InputSource src = new InputSource(new StringReader(xmlString));
             Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(src);
 
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            TransformerFactory transformerFactory = new TransformerFactoryImpl();
             transformerFactory.setAttribute("indent-number", indent);
             Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
