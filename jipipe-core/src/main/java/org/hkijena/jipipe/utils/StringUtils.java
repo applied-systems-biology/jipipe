@@ -465,18 +465,18 @@ public class StringUtils {
      *
      * @param version1 the first version
      * @param version2 the second version
-     * @return -1 if version1 is is less than version. 1 if version2 is less than version1. 0 if equal
+     * @return -1 if version1 is less than version2. 1 if version2 is less than version1. 0 if equal
      */
     public static int compareVersions(String version1, String version2) {
         int comparisonResult = 0;
 
-        String[] version1Splits = version1.split("\\.");
-        String[] version2Splits = version2.split("\\.");
+        String[] version1Splits = org.apache.commons.lang3.StringUtils.split(version1, ".-");
+        String[] version2Splits = org.apache.commons.lang3.StringUtils.split(version2, ".-");
         int maxLengthOfVersionSplits = Math.max(version1Splits.length, version2Splits.length);
 
         for (int i = 0; i < maxLengthOfVersionSplits; i++) {
-            Integer v1 = i < version1Splits.length ? Integer.parseInt(version1Splits[i]) : 0;
-            Integer v2 = i < version2Splits.length ? Integer.parseInt(version2Splits[i]) : 0;
+            Double v1 = i < version1Splits.length ? tryParseDouble(version1Splits[i], 0) : 0;
+            Double v2 = i < version2Splits.length ? tryParseDouble(version2Splits[i], 0) : 0;
             int compare = v1.compareTo(v2);
             if (compare != 0) {
                 comparisonResult = compare;
@@ -509,6 +509,26 @@ public class StringUtils {
             value = Double.NaN;
         } else {
             return str;
+        }
+        return value;
+    }
+
+    public static double tryParseDouble(String str, double defaultValue) {
+        str = StringUtils.nullToEmpty(str);
+        str = str.replace(',', '.').replace(" ", "");
+        double value;
+        if (NumberUtils.isCreatable(str)) {
+            value = NumberUtils.createDouble(str);
+        } else if (StringUtils.isNullOrEmpty(str)) {
+            value = 0d;
+        } else if (str.toLowerCase().startsWith("-inf")) {
+            value = Double.NEGATIVE_INFINITY;
+        } else if (str.toLowerCase().startsWith("inf")) {
+            value = Double.POSITIVE_INFINITY;
+        } else if (str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+            value = Double.NaN;
+        } else {
+            value = defaultValue;
         }
         return value;
     }

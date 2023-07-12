@@ -5,7 +5,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstallerPackage;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.python.PythonExtension;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -51,6 +54,9 @@ public class JIPipePythonAdapterUpdateChecker extends AbstractJIPipeRunnable {
                 progressInfo.log("Unable to read " + easyInstallVersionFile + ": " + e);
             }
         }
+        else {
+            progressInfo.log("Missing file: " + easyInstallVersionFile + ". Falling back to pyproject.toml version information.");
+        }
 
         // Look for the pyproject metadata
         if(currentVersion == null) {
@@ -85,6 +91,22 @@ public class JIPipePythonAdapterUpdateChecker extends AbstractJIPipeRunnable {
         List<EasyInstallExternalEnvironmentInstallerPackage> packages = EasyInstallExternalEnvironmentInstallerPackage.loadFromURLs(repositories, progressInfo);
 
         // Compare versions
-        Version
+        EasyInstallExternalEnvironmentInstallerPackage update = null;
+        String updateVersion = currentVersion;
+
+        for (EasyInstallExternalEnvironmentInstallerPackage installerPackage : packages) {
+            if(org.hkijena.jipipe.utils.StringUtils.compareVersions(updateVersion, installerPackage.getVersion()) < 0) {
+                updateVersion = installerPackage.getVersion();
+                update = installerPackage;
+            }
+        }
+
+        if(update != null) {
+            progressInfo.log("Update found: " + update);
+            PythonExtension.createOldLibJIPipePythonNotification(JIPipeNotificationInbox.getInstance(), currentVersion, updateVersion);
+        }
+        else {
+            progressInfo.log("No update found.");
+        }
     }
 }

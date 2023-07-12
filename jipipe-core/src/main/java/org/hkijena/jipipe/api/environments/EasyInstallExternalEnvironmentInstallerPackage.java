@@ -146,7 +146,7 @@ public class EasyInstallExternalEnvironmentInstallerPackage {
 
     @Override
     public String toString() {
-        return getName() + " [" + getUrl() + "] -> " + getInstallDir() + " on " + "win=" + isSupportsWindows() + ",mac=" + isSupportsMacOS() + ",linux=" + isSupportsMacOS();
+        return getName() + " v" + getVersion() + " [" + getUrl() + "] -> " + getInstallDir() + " on " + "win=" + isSupportsWindows() + ",mac=" + isSupportsMacOS() + ",linux=" + isSupportsMacOS();
     }
 
     public static List<EasyInstallExternalEnvironmentInstallerPackage> loadFromJson(JsonNode rootNode, JIPipeProgressInfo repositoryProgress) {
@@ -156,6 +156,7 @@ public class EasyInstallExternalEnvironmentInstallerPackage {
             availablePackage.setName(packageNodeEntry.get("name").textValue());
             availablePackage.setDescription(packageNodeEntry.get("description").textValue());
             availablePackage.setInstallDir(packageNodeEntry.get("install-dir").textValue());
+            availablePackage.setVersion(packageNodeEntry.get("version").textValue());
 
             availablePackage.setAdditionalData(packageNodeEntry);
 

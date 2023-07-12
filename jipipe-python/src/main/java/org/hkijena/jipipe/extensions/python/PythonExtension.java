@@ -143,7 +143,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public static void createMissingLibJIPipePythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
         if(!PythonAdapterExtensionSettings.pythonSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":missing-python-library");
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":missing-lib-jipipe-python");
             notification.setHeading("Missing Python adapter library");
             notification.setDescription("To make use of Python within JIPipe, you need to install the JIPipe Python adapter. " +
                     "Click 'Install Python adapter' to install the adapter from an online source. " +
@@ -159,6 +159,24 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                     PythonExtension::openAdapterSettingsPage));
             inbox.push(notification);
         }
+    }
+
+    public static void createOldLibJIPipePythonNotification(JIPipeNotificationInbox inbox, String currentVersion, String updateVersion) {
+        JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":old-lib-jipipe-python");
+        notification.setHeading("Old Python adapter library");
+        notification.setDescription("The currently installed version of the JIPipe Python update library is " + currentVersion + ". A new version (v" + updateVersion + ") is available. " +
+                "Click 'Update Python adapter' to install the adapter from an online source. " +
+                "Alternatively, click 'Open settings' to visit the settings page with more options.");
+        notification.getActions().add(new JIPipeNotificationAction("Update Python adapter",
+                "Installs a pre-packaged Python distribution",
+                UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                JIPipeNotificationAction.Style.Success,
+                PythonExtension::easyInstallPythonAdapter));
+        notification.getActions().add(new JIPipeNotificationAction("Open settings",
+                "Opens the applications settings page",
+                UIUtils.getIconFromResources("actions/configure.png"),
+                PythonExtension::openAdapterSettingsPage));
+        inbox.push(notification);
     }
 
     @Override
