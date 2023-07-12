@@ -26,7 +26,7 @@ public class CustomGradientThumbRenderer extends JComponent implements ThumbRend
         if (selected) {
             g.fillRect(0, 0, w - 1, w - 1);
             graphics2D.setStroke(STROKE_SELECTED);
-            g.setColor(ColorUtils.invert(getForeground()));
+            g.setColor(ColorUtils.invertRGB(getForeground()));
             g.drawRect(0, 0, w - 1, w - 1);
         } else {
             g.fillOval(2, 2, w - 3, w - 3);

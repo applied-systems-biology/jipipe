@@ -16,6 +16,8 @@ package org.hkijena.jipipe.ui.grapheditor.general;
 import com.google.common.collect.*;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.*;
@@ -137,8 +139,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
     private boolean hasDragSnapshot = false;
     private int currentNodeLayer = 0;
-
-    private int currentAnnotationLayer = Integer.MIN_VALUE;
     private boolean renderCursor = true;
     private boolean renderOutsideEdges = true;
     /**
@@ -424,7 +424,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if(algorithm instanceof JIPipeAnnotationGraphNode) {
                 ui = new JIPipeAnnotationGraphNodeUI(getWorkbench(), this, (JIPipeAnnotationGraphNode) algorithm);
                 registerNodeUIEvents(ui);
-                add(ui, new Integer(currentAnnotationLayer++)); // Layered pane
+                add(ui, new Integer(Integer.MIN_VALUE)); // Layered pane (initial value)
             }
             else {
                 ui = new JIPipeGraphNodeUI(getWorkbench(), this, algorithm);
@@ -438,6 +438,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 newlyPlacedAlgorithms.add(ui);
             }
         }
+
+        updateAnnotationNodeLayers();
 
         revalidate();
         repaint();
@@ -460,6 +462,192 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
             scheduledSelection.clear();
         }
+    }
+
+    public void updateAnnotationNodeLayers() {
+        // Collect all annotations
+        List<JIPipeAnnotationGraphNode> annotationGraphNodes = new ArrayList<>();
+        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            if(graphNode instanceof JIPipeAnnotationGraphNode) {
+                JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) graphNode;
+                annotationGraphNodes.add(annotationGraphNode);
+                JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+                if(nodeUI != null) {
+                    if(selection.contains(nodeUI)) {
+                        selectedAnnotationGraphNodes.add(annotationGraphNode);
+                    }
+                }
+            }
+        }
+        if(annotationGraphNodes.isEmpty())
+            return;
+
+        // Sort by Z-order (so we can do a rank transformation)
+        // Rank transformation into negative space to fix z-order
+        annotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder));
+        int nextZOrder = 0;
+        for (int i = annotationGraphNodes.size() - 1; i >= 0; i--) {
+            JIPipeAnnotationGraphNode annotationGraphNode = annotationGraphNodes.get(i);
+            annotationGraphNode.setzOrder(nextZOrder--);
+        }
+
+        // Determine the displayed Z-order: selected nodes need to be at the front of the other annotations
+        for (JIPipeAnnotationGraphNode annotationGraphNode : annotationGraphNodes) {
+            JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+            if(nodeUI != null) {
+                setLayer(nodeUI, annotationGraphNode.getzOrder() - selectedAnnotationGraphNodes.size());
+            }
+        }
+//        for (int i = 0; i < selectedAnnotationGraphNodes.size(); i++) {
+//            JIPipeAnnotationGraphNode annotationGraphNode = selectedAnnotationGraphNodes.get(i);
+//            JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+//            if(nodeUI != null) {
+//                setLayer(nodeUI, -i);
+//            }
+//        }
+    }
+
+    public void sendSelectionToForeground(Set<JIPipeGraphNodeUI> selection) {
+        boolean updated = false;
+        for (JIPipeGraphNodeUI nodeUI : selection) {
+            if(nodeUI.getNode().isUiLocked())
+                continue;
+            if(nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
+
+                if(!updated) {
+                    getHistoryJournal().snapshot("Send selected nodes to foreground",
+                            "Sent a selection of graph annotations to the foreground",
+                            getCompartment(),
+                            UIUtils.getIconFromResources("actions/object-order-front.png"));
+                }
+
+                ((JIPipeAnnotationGraphNode) nodeUI.getNode()).setzOrder(Integer.MAX_VALUE);
+                updated = true;
+            }
+        }
+        if(updated)
+            updateAnnotationNodeLayers();
+    }
+
+    public void sendSelectionToBackground(Set<JIPipeGraphNodeUI> selection) {
+        boolean updated = false;
+        for (JIPipeGraphNodeUI nodeUI : selection) {
+            if(nodeUI.getNode().isUiLocked())
+                continue;
+            if(nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
+
+                if(!updated) {
+                    getHistoryJournal().snapshot("Send selected nodes to background",
+                            "Sent a selection of graph annotations to the background",
+                            getCompartment(),
+                            UIUtils.getIconFromResources("actions/object-order-back.png"));
+                }
+
+                ((JIPipeAnnotationGraphNode) nodeUI.getNode()).setzOrder(Integer.MIN_VALUE);
+                updated = true;
+            }
+        }
+        if(updated)
+            updateAnnotationNodeLayers();
+    }
+
+    public void raiseSelection(Set<JIPipeGraphNodeUI> selection) {
+        TIntObjectMap<JIPipeAnnotationGraphNode> zOrderAnnotations = new TIntObjectHashMap<>();
+        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            if (graphNode instanceof JIPipeAnnotationGraphNode) {
+                JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) graphNode;
+                zOrderAnnotations.put(annotationGraphNode.getzOrder(), annotationGraphNode);
+                JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+                if(nodeUI != null) {
+                    if(selection.contains(nodeUI)) {
+                        selectedAnnotationGraphNodes.add(annotationGraphNode);
+                    }
+                }
+            }
+        }
+
+        if(!selectedAnnotationGraphNodes.isEmpty()) {
+            getHistoryJournal().snapshot("Raise selected nodes",
+                    "Raised a selection of graph annotations",
+                    getCompartment(),
+                    UIUtils.getIconFromResources("actions/object-order-raise.png"));
+        }
+        else {
+            return;
+        }
+
+        // Iterate from hi to low
+        selectedAnnotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder).reversed());
+        boolean updated = false;
+        for (JIPipeAnnotationGraphNode annotationGraphNode : selectedAnnotationGraphNodes) {
+            if(annotationGraphNode.isUiLocked())
+                continue;
+            int oldZ = annotationGraphNode.getzOrder();
+            int newZ = annotationGraphNode.getzOrder() + 1;
+            JIPipeAnnotationGraphNode existing = zOrderAnnotations.get(newZ);
+            if(existing != null) {
+                // Swap
+                existing.setzOrder(oldZ);
+                zOrderAnnotations.put(oldZ, existing);
+            }
+            annotationGraphNode.setzOrder(newZ);
+            zOrderAnnotations.put(newZ, annotationGraphNode);
+            updated = true;
+        }
+
+        if(updated)
+            updateAnnotationNodeLayers();
+    }
+
+    public void lowerSelection(Set<JIPipeGraphNodeUI> selection) {
+        TIntObjectMap<JIPipeAnnotationGraphNode> zOrderAnnotations = new TIntObjectHashMap<>();
+        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            if (graphNode instanceof JIPipeAnnotationGraphNode) {
+                JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) graphNode;
+                zOrderAnnotations.put(annotationGraphNode.getzOrder(), annotationGraphNode);
+                JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+                if(nodeUI != null) {
+                    if(selection.contains(nodeUI)) {
+                        selectedAnnotationGraphNodes.add(annotationGraphNode);
+                    }
+                }
+            }
+        }
+
+        if(!selectedAnnotationGraphNodes.isEmpty()) {
+            getHistoryJournal().snapshot("Lowered selected nodes",
+                    "Lowered a selection of graph annotations",
+                    getCompartment(),
+                    UIUtils.getIconFromResources("actions/object-order-lower.png"));
+        }
+        else {
+            return;
+        }
+
+        // Iterate from low to hi
+        selectedAnnotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder));
+        boolean updated = false;
+        for (JIPipeAnnotationGraphNode annotationGraphNode : selectedAnnotationGraphNodes) {
+            if(annotationGraphNode.isUiLocked())
+                continue;
+            int oldZ = annotationGraphNode.getzOrder();
+            int newZ = annotationGraphNode.getzOrder() - 1;
+            JIPipeAnnotationGraphNode existing = zOrderAnnotations.get(newZ);
+            if(existing != null) {
+                // Swap
+                existing.setzOrder(oldZ);
+                zOrderAnnotations.put(oldZ, existing);
+            }
+            annotationGraphNode.setzOrder(newZ);
+            zOrderAnnotations.put(newZ, annotationGraphNode);
+            updated = true;
+        }
+
+        if(updated)
+            updateAnnotationNodeLayers();
     }
 
     private void registerNodeUIEvents(JIPipeGraphNodeUI ui) {
@@ -1986,6 +2174,23 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 g.fillRect(bounds.x - 1, bounds.y - 1, 22, 22);
                 graphics2D.drawImage(lockIcon.getImage(), bounds.x + 2, bounds.y + 2, 16, 16, null);
             }
+
+            // Layer Z (annotations)
+            if(ui.getNode() instanceof JIPipeAnnotationGraphNode) {
+                int zLayer = ((JIPipeAnnotationGraphNode) ui.getNode()).getzOrder();
+                g.setFont(GRAPH_TOOL_CURSOR_FONT);
+                FontMetrics fontMetrics = g.getFontMetrics();
+                String text = "z " + zLayer;
+                int rawStringWidth = fontMetrics.stringWidth(text);
+                int indicatorWidth = rawStringWidth + 8;
+                int xStart = bounds.x + bounds.width + 4 - indicatorWidth - 1 - 8 - 4;
+                int yStart = bounds.y + bounds.height - 22 - 8;
+
+                g.fillRoundRect(xStart, yStart, indicatorWidth, 22, 4, 4);
+                g.setColor(Color.WHITE);
+
+                g.drawString(text, xStart + indicatorWidth / 2 - rawStringWidth / 2, yStart + (fontMetrics.getAscent() - fontMetrics.getLeading()) + 22 / 2 - fontMetrics.getHeight() / 2);
+            }
         }
 
         // Draw marquee rectangle
@@ -2706,6 +2911,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     private void updateSelection() {
+        updateAnnotationNodeLayers();
         repaint();
         requestFocusInWindow();
         nodeSelectionChangedEventEmitter.emit(new NodeSelectionChangedEvent(this));
@@ -2767,12 +2973,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      */
     public void addToSelection(JIPipeGraphNodeUI ui) {
         selection.add(ui);
-        if(ui instanceof JIPipeAnnotationGraphNodeUI) {
-            if (getLayer(ui) < currentAnnotationLayer) {
-                setLayer(ui, ++currentAnnotationLayer);
-            }
-        }
-        else {
+        if(!(ui instanceof JIPipeAnnotationGraphNodeUI)) {
             if (getLayer(ui) < currentNodeLayer) {
                 setLayer(ui, ++currentNodeLayer);
             }

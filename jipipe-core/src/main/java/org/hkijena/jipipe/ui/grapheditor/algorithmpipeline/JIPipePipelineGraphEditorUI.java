@@ -331,6 +331,11 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 new DisableVirtualOutputNodeUIContextAction(),
                 new DeleteNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
+                new SendToForegroundUIContextAction(),
+                new RaiseUIContextAction(),
+                new LowerUIContextAction(),
+                new SendToBackgroundUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction(),
                 new LockNodeLocationSizeUIContextAction(),
                 new UnlockNodeLocationSizeUIContextAction()

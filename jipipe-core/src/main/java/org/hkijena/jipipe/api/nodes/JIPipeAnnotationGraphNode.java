@@ -20,6 +20,7 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
 
     private int gridWidth = 4;
     private int gridHeight = 3;
+    private int zOrder = 1; // default value pushes the node in front of all others
 
     public JIPipeAnnotationGraphNode(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().seal().build());
@@ -51,6 +52,17 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
     @JIPipeParameter("grid-height")
     public void setGridHeight(int gridHeight) {
         this.gridHeight = gridHeight;
+    }
+
+    @JIPipeDocumentation(name = "Z-Order", description = "Determines the Z order of this annotation. This is an internal value and will be updated automatically.")
+    @JIPipeParameter(value = "z-order", hidden = true)
+    public int getzOrder() {
+        return zOrder;
+    }
+
+    @JIPipeParameter("z-order")
+    public void setzOrder(int zOrder) {
+        this.zOrder = zOrder;
     }
 
     @Override

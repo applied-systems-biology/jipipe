@@ -101,6 +101,11 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new SetNodeHotkeyContextAction(),
                 NodeUIContextAction.SEPARATOR,
+                new SendToForegroundUIContextAction(),
+                new RaiseUIContextAction(),
+                new LowerUIContextAction(),
+                new SendToBackgroundUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction(),
                 new LockNodeLocationSizeUIContextAction(),
                 new UnlockNodeLocationSizeUIContextAction()
