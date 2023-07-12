@@ -2,12 +2,18 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import ome.units.quantity.Power;
+import ome.units.quantity.Quantity;
 import ome.xml.meta.MetadataRetrieve;
+import ome.xml.model.primitives.PrimitiveNumber;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OMEAccessorTemplate;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.lang.model.type.PrimitiveType;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Set;
@@ -87,5 +93,23 @@ public class OMEAccessorParameter {
         else {
             return null;
         }
+    }
+
+    public String evaluateToString(MetadataRetrieve metadataRetrieve) {
+        Object object = evaluate(metadataRetrieve);
+        if(object == null) {
+            return "";
+        }
+        else if(object instanceof Quantity) {
+            Quantity quantity = (Quantity) object;
+            return quantity.value() + " " + quantity.unit().getSymbol();
+        }
+        else if(object.getClass().isArray()) {
+            return JsonUtils.toJsonString(object);
+        }
+        else if(object instanceof PrimitiveNumber) {
+            return StringUtils.nullToEmpty(((PrimitiveNumber) object).getNumberValue());
+        }
+        return StringUtils.nullToEmpty(object);
     }
 }

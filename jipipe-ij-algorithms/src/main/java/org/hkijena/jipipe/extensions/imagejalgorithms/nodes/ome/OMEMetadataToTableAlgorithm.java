@@ -48,7 +48,7 @@ public class OMEMetadataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String columnName = entry.getColumnName().evaluateToString(variables);
-            Object columnValue = StringUtils.tryParseDoubleOrReturnString(StringUtils.nullToEmpty(entry.getAccessor().evaluate(inputData.getMetadata())));
+            Object columnValue = StringUtils.tryParseDoubleOrReturnString(StringUtils.nullToEmpty(entry.getAccessor().evaluateToString(inputData.getMetadata())));
             outputData.setValueAt(columnValue, 0, columnName);
         }
 

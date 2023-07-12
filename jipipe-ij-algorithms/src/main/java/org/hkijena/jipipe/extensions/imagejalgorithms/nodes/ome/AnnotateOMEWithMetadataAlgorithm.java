@@ -52,7 +52,7 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String annotationName = entry.getAnnotationName().evaluateToString(variables);
-            String annotationValue = StringUtils.nullToEmpty(entry.getAccessor().evaluate(data.getMetadata()));
+            String annotationValue = StringUtils.nullToEmpty(entry.getAccessor().evaluateToString(data.getMetadata()));
             annotationList.add(new JIPipeTextAnnotation(annotationName, annotationValue));
         }
 
