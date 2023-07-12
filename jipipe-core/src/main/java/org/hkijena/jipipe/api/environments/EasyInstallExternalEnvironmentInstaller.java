@@ -326,7 +326,8 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         absoluteInstallationPath = PathUtils.relativeToImageJToAbsolute(Paths.get("jipipe").resolve(targetPackage.getInstallDir()));
         if (Files.exists(absoluteInstallationPath)) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + absoluteInstallationPath
-                    + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                    + " already exists. Do you want to overwrite it?\n\n" +
+                    "If you are unsure, click 'Yes'.", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                 getProgressInfo().log("Cancelled by user.");
                 return;
             }
