@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 
 import java.io.IOException;
@@ -66,12 +65,14 @@ public class JIPipeNodeInfoRef implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (info == null)
-            report.reportIsInvalid("No algorithm type is selected!",
-                    "You have to select an algorithm type.",
-                    "Please select an algorithm type.",
-                    this);
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        if (info == null) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    parentCause,
+                    "No node type is selected!",
+                    "You have to select a node type.",
+                    "Please select a node type."));
+        }
     }
 
     @Override

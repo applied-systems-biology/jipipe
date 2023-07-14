@@ -38,13 +38,18 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.JavaExtensionValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventEmitter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeLogs;
@@ -342,7 +347,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
     public static JIPipeProject loadProject(Path fileName) throws IOException {
-        return loadProject(fileName, new JIPipeIssueReport(), new JIPipeNotificationInbox());
+        return loadProject(fileName, new JIPipeValidationReport(), new JIPipeNotificationInbox());
     }
 
     /**
@@ -354,7 +359,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
     public static JIPipeProject loadProject(Path fileName, JIPipeNotificationInbox notifications) throws IOException {
-        return loadProject(fileName, new JIPipeIssueReport(), notifications);
+        return loadProject(fileName, new JIPipeValidationReport(), notifications);
     }
 
     /**
@@ -366,8 +371,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
-        return JIPipeProject.loadProject(fileName, report, notifications);
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
+        return JIPipeProject.loadProject(fileName, new UnspecifiedReportEntryCause(), report, notifications);
     }
 
     /**
@@ -378,8 +383,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
-        return JIPipeProject.loadProject(fileName, report, new JIPipeNotificationInbox());
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReport report) throws IOException {
+        return JIPipeProject.loadProject(fileName, new UnspecifiedReportEntryCause(), report, new JIPipeNotificationInbox());
     }
 
     /**
@@ -704,14 +709,16 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 }
 
                 // Extension self-check
-                JIPipeIssueReport preActivationIssues = new JIPipeIssueReport();
+                JIPipeValidationReport preActivationIssues = new JIPipeValidationReport();
                 issues.getPreActivationIssues().put(extension.getDependencyId(), preActivationIssues);
                 if (!extension.canActivate(preActivationIssues, progressInfo.resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
                     if (!extensionSettings.isIgnorePreActivationChecks()) {
-                        preActivationIssues.resolve("Registry").reportIsInvalid("Extension '" + extension.getMetadata().getName() + "' refuses to activate!",
-                                "The extension's pre-activation check failed. It will not be activated.",
-                                "Please refer to the other items if available.",
-                                extension);
+                        preActivationIssues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                                new JavaExtensionValidationReportEntryCause(extension),
+                                "Extension '" + extension.getMetadata().getName() + "' refuses to activate!",
+                                "The extension's pre-activation check failed. It will not be activated. Please refer to the other items if available.",
+                                null,
+                                null));
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
                         loadedJavaExtensions.add(null);
                         if(!StringUtils.isNullOrEmpty(extension.getDependencyId())) {
@@ -1323,18 +1330,20 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Nodes").report(nodeRegistry);
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        report.report(parentCause, nodeRegistry);
         for (JIPipeDependency extension : failedExtensions) {
             if (extension != null) {
-                report.resolve("Extensions").resolve(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
-                        "There was an error while loading the extension. Please refer to the message that you get on restarting JIPipe.",
-                        "Please refer to the message that you get on restarting JIPipe.",
-                        failedExtensions);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new JavaExtensionValidationReportEntryCause(extension),
+                        "Error during loading the extension!",
+                        "There was an error while loading the extension. Please refer to the message that you get on restarting JIPipe. Please refer to the message that you get on restarting JIPipe.",
+                        null,
+                        null));
             }
         }
         for (JIPipeDependency extension : registeredExtensions) {
-            report.resolve("Extensions").resolve(extension.getDependencyId()).report(extension);
+            report.report(parentCause, extension);
         }
     }
 

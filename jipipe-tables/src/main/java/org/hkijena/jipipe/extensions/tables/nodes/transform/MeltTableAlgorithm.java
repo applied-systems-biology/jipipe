@@ -15,12 +15,13 @@
 package org.hkijena.jipipe.extensions.tables.nodes.transform;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -126,8 +127,8 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        super.reportValidity(parentCause, report);
         report.resolve("Output value column name").checkNonEmpty(outputValueColumnName, this);
         if (outputCategoryColumnName.isEnabled()) {
             report.resolve("Output category column name").checkNonEmpty(outputCategoryColumnName.getContent(), this);

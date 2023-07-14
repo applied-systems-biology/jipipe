@@ -23,7 +23,7 @@ import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.EigenvalueSelection2D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscaleData;
@@ -201,7 +202,7 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         report.checkIfWithin(this, gradientRadius, 0, Double.POSITIVE_INFINITY, false, true);
         report.checkIfWithin(this, smoothing, 0, Double.POSITIVE_INFINITY, false, true);
         report.resolve("Auto thresholding").report(autoThresholding);

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.JIPipeService;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.ui.components.RecentJsonExtensionsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
@@ -240,7 +240,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
 
     private void installProject() {
         validityCheckerPanel.recheckValidity();
-        JIPipeIssueReport report = validityCheckerPanel.getReport();
+        JIPipeValidationReport report = validityCheckerPanel.getReport();
         if (!report.isValid()) {
             validateProject();
             if (JOptionPane.showConfirmDialog(this, "The extension builder found potential issues with the extension. Install anyways?",

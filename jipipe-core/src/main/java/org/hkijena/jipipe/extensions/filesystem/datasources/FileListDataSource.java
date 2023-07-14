@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -24,6 +24,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterSettings;
@@ -195,18 +198,20 @@ public class FileListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         for (Path fileName : getAbsoluteFileNames()) {
             if (fileName == null) {
-                report.reportIsInvalid("Invalid file path!",
-                        "An input file does not exist!",
-                        "Please provide a valid input file.",
-                        this);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                        parentCause,
+                        "Input file not set!",
+                        "One of the input paths is not set.",
+                        "Please provide a valid input file."));
             } else if (!Files.isRegularFile(fileName)) {
-                report.reportIsInvalid("Invalid file path!",
-                        "Input file '" + fileName + "' does not exist!",
-                        "Please provide a valid input file.",
-                        this);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                        parentCause,
+                        "Input file does not exist!",
+                        "The file '" + fileName + "' does not exist.",
+                        "Please provide a valid input file."));
             }
         }
     }

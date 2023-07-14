@@ -15,16 +15,13 @@ package org.hkijena.jipipe.extensions.parameters.library.references;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalBooleanParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 
@@ -96,12 +93,14 @@ public class ImageJDataImportOperationRef extends AbstractJIPipeParameterCollect
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (id == null)
-            report.reportIsInvalid("No operation is selected!",
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        if (id == null) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    parentCause,
+                    "No operation is selected!",
                     "You have to select an operation.",
-                    "Please select an operation.",
-                    this);
+                    "Please select an operation."));
+        }
     }
 
     @Override

@@ -16,13 +16,12 @@ package org.hkijena.jipipe.extensions.python;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 
 import java.util.List;
 
@@ -46,7 +45,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
      *
      * @param report the report
      */
-    public static void checkPythonSettings(JIPipeIssueReport report) {
+    public static void checkPythonSettings(JIPipeValidationReport report) {
         if (!pythonSettingsAreValid()) {
             report.reportIsInvalid("Python is not configured!",
                     "Project > Application settings > Extensions > Python integration",
@@ -65,8 +64,8 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
             PythonExtensionSettings instance = getInstance();
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            instance.getPythonEnvironment().reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            instance.getPythonEnvironment().reportValidity(parentCause, report);
             return report.isValid();
         }
         return false;

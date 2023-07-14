@@ -15,21 +15,20 @@ package org.hkijena.jipipe.ui.plotbuilder;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
@@ -66,11 +65,11 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
     private PlotData currentPlot;
     private JSplitPane splitPane;
-    private BiMap<String, TableColumn> availableData = HashBiMap.create();
-    private List<JIPipePlotSeriesBuilder> seriesBuilders = new ArrayList<>();
+    private final BiMap<String, TableColumn> availableData = HashBiMap.create();
+    private final List<JIPipePlotSeriesBuilder> seriesBuilders = new ArrayList<>();
     private boolean isRebuilding = false;
     private PlotReader plotReader;
-    private DocumentTabPane sideBar = new DocumentTabPane(false);
+    private final DocumentTabPane sideBar = new DocumentTabPane(false);
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
     private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
     private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
@@ -197,13 +196,18 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Plot type").checkNonNull(getPlotType().getInfo(), this);
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        if(getPlotType().getInfo() == null) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    parentCause,
+                    "Plot type not selected!",
+                    "Please select a plot type!"));
+        }
         if (currentPlot != null) {
-            report.resolve("Plot parameters").report(currentPlot);
+            report.report(new CustomReportEntryCause("Plot parameters"), currentPlot);
         }
         for (int i = 0; i < seriesBuilders.size(); ++i) {
-            report.resolve("Series").resolve("Series #" + (i + 1)).report(seriesBuilders.get(i));
+            report.report(new CustomReportEntryCause("Series #" + (i + 1)), seriesBuilders.get(i));
         }
 
     }
@@ -313,8 +317,8 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         try {
             isRebuilding = true;
 
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            this.reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            this.reportValidity(new UnspecifiedReportEntryCause(), report);
             if (!report.isValid()) {
                 UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);

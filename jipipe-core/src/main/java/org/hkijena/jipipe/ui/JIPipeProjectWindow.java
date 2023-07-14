@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import net.imagej.updater.UpdateSite;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
@@ -25,6 +23,8 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -61,7 +61,7 @@ public class JIPipeProjectWindow extends JFrame {
     public static final WindowOpenedEventEmitter WINDOW_OPENED_EVENT_EMITTER = new WindowOpenedEventEmitter();
     public static final WindowClosedEventEmitter WINDOW_CLOSED_EVENT_EMITTER = new WindowClosedEventEmitter();
     private static final Set<JIPipeProjectWindow> OPEN_WINDOWS = new HashSet<>();
-    private Context context;
+    private final Context context;
     private JIPipeProject project;
     private JIPipeProjectWorkbench projectUI;
     private Path projectSavePath;
@@ -111,7 +111,7 @@ public class JIPipeProjectWindow extends JFrame {
                     JIPipe.getInstance().getSettingsRegistry().save();
                 }
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().get(id);
-                JIPipeIssueReport report = new JIPipeIssueReport();
+                JIPipeValidationReport report = new JIPipeValidationReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
                 project = template.loadAsProject(report, notifications);
             } catch (Exception e) {
@@ -268,7 +268,7 @@ public class JIPipeProjectWindow extends JFrame {
             JIPipeRunExecuterUI.runInDialog(this, run);
         } else {
             try {
-                JIPipeIssueReport report = new JIPipeIssueReport();
+                JIPipeValidationReport report = new JIPipeValidationReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
                 JIPipeProject project = template.loadAsProject(report, notifications);
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
@@ -313,7 +313,7 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public void openProject(Path path) {
         if (Files.isRegularFile(path)) {
-            JIPipeIssueReport report = new JIPipeIssueReport();
+            JIPipeValidationReport report = new JIPipeValidationReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
@@ -343,7 +343,7 @@ public class JIPipeProjectWindow extends JFrame {
                 }
 
                 JIPipeProject project = new JIPipeProject();
-                project.fromJson(jsonData, report, notifications);
+                project.fromJson(jsonData, new UnspecifiedReportEntryCause(), report, notifications);
                 project.setWorkDirectory(path.getParent());
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open project", project, false, false);
                 if (window == null)
@@ -364,7 +364,7 @@ public class JIPipeProjectWindow extends JFrame {
                         "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
         } else if (Files.isDirectory(path)) {
-            JIPipeIssueReport report = new JIPipeIssueReport();
+            JIPipeValidationReport report = new JIPipeValidationReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
@@ -470,7 +470,7 @@ public class JIPipeProjectWindow extends JFrame {
             getProject().saveProject(tempFile);
 
             // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile, new JIPipeIssueReport(), new JIPipeNotificationInbox());
+            JIPipeProject.loadProject(tempFile, new UnspecifiedReportEntryCause(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
 
             // Overwrite the target file
             if (Files.exists(savePath))

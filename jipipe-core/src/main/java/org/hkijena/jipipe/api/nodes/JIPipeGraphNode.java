@@ -33,6 +33,9 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -160,22 +163,6 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
         this.projectDirectory = other.projectDirectory;
         updateGraphNodeSlots();
         slotConfiguration.getSlotConfigurationChangedEventEmitter().subscribe(this);
-    }
-
-    public static <T extends JIPipeGraphNode> T fromJsonNode(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
-        String id = node.get("jipipe:node-info-id").asText();
-        if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
-            System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
-            issues.resolve("Nodes").resolve(id).reportIsInvalid("Unable to find node type '" + id + "'!",
-                    "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
-                    "Please check if all extensions are are correctly loaded.",
-                    node);
-            return null;
-        }
-        JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
-        JIPipeGraphNode algorithm = info.newInstance();
-        algorithm.fromJson(node, issues.resolve("Nodes").resolve(id), notifications);
-        return (T) algorithm;
     }
 
     public NodeSlotsChangedEventEmitter getNodeSlotsChangedEventEmitter() {
@@ -582,10 +569,11 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
      * Please do not override this method if absolutely necessary. Use onDeserialized() to add methods after deserialization
      *
      * @param node          The JSON data to load from
+     * @param parentCause
      * @param issues        issues during deserializing. these should be severe issues (missing parameters etc.). if you want to notify the user about potential issues that can be acted upon, use the notification inbox
      * @param notifications additional notifications for the user. these can be acted upon
      */
-    public void fromJson(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+    public void fromJson(JsonNode node, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         if (node.has("jipipe:slot-configuration"))
             slotConfiguration.fromJson(node.get("jipipe:slot-configuration"));
         if (node.has("jipipe:ui-grid-location")) {
@@ -602,7 +590,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
         }
 
         // Deserialize algorithm-specific parameters
-        ParameterUtils.deserializeParametersFromJson(this, node, issues);
+        ParameterUtils.deserializeParametersFromJson(this, node, parentCause, issues);
 
         // Run postprocess command
         onDeserialized(node, issues, notifications);
@@ -615,7 +603,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
      * @param issues        issues during deserialization. if you want to notify the user about potential issues that can be acted upon, use the notification inbox
      * @param notifications additional notifications for the user. these can be acted upon
      */
-    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
 
     }
 

@@ -6,14 +6,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -92,7 +92,7 @@ public abstract class JIPipeSerializedParameterCollectionData extends AbstractJI
             Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(dataTypeId);
             JIPipeSerializedParameterCollectionData data = (JIPipeSerializedParameterCollectionData) ReflectionUtils.newInstance(dataClass);
             JsonNode parameterData = node.get("parameters");
-            ParameterUtils.deserializeParametersFromJson(data, parameterData, new JIPipeIssueReport());
+            ParameterUtils.deserializeParametersFromJson(data, parameterData, new UnspecifiedReportEntryCause(), new JIPipeValidationReport());
             return data;
         }
     }

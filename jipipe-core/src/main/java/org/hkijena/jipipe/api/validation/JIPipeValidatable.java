@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api;
+package org.hkijena.jipipe.api.validation;
 
 
 /**
@@ -22,32 +22,20 @@ public interface JIPipeValidatable {
     /**
      * Generates a validity report
      *
-     * @param report the report to be added to
+     * @param parentCause
+     * @param report      the report to be added to
      */
-    void reportValidity(JIPipeIssueReport report);
+    void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report);
 
     /**
      * Generates a report for this object
+     * @param parentCause the
      *
      * @return the report
      */
-    default JIPipeIssueReport generateValidityReport() {
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        reportValidity(report);
+    default JIPipeValidationReport generateValidityReport(JIPipeValidationReportEntryCause parentCause) {
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        reportValidity(parentCause, report);
         return report;
     }
-
-//    @Override
-//    boolean isValid();
-//
-//    @Override
-//    default List<ValidityProblem> getProblems() {
-//        JIPipeIssueReport report = new JIPipeIssueReport();
-//        reportValidity(report);
-//        List<ValidityProblem> list = new ArrayList<>();
-//        for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
-//            list.add(new ValidityProblem(entry.getKey() + ": " + entry.getValue().toString()));
-//        }
-//        return list;
-//    }
 }

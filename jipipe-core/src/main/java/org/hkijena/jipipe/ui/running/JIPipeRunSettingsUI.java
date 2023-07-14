@@ -13,9 +13,8 @@
 
 package org.hkijena.jipipe.ui.running;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -23,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -69,8 +69,8 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
     private void initialize() {
         setLayout(new BorderLayout(8, 8));
 
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        getProjectWorkbench().getProject().reportValidity(report);
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        getProjectWorkbench().getProject().reportValidity(new UnspecifiedReportEntryCause(), report);
         if (report.isValid()) {
             initializeSetupGUI();
         } else {
@@ -78,7 +78,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
         }
     }
 
-    private void initializeValidityCheckUI(JIPipeIssueReport report) {
+    private void initializeValidityCheckUI(JIPipeValidationReport report) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(8, 8));
         JIPipeValidityReportUI reportUI = new JIPipeValidityReportUI(false);
@@ -96,8 +96,8 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
         JButton runButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> {
-            report.clearAll();
-            getProjectWorkbench().getProject().reportValidity(report);
+            report.clear();
+            getProjectWorkbench().getProject().reportValidity(new UnspecifiedReportEntryCause(), report);
             getProjectWorkbench().sendStatusBarText("Re-validated JIPipe project");
             if (report.isValid())
                 initializeSetupGUI();

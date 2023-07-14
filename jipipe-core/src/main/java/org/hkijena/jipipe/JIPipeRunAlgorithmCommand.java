@@ -13,15 +13,16 @@
 
 package org.hkijena.jipipe;
 
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
@@ -90,8 +91,8 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
         }
         if (!extensionSettings.isSilent()) {
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            issues.reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            issues.reportValidity(new UnspecifiedReportEntryCause(), report);
             if (!report.isValid()) {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
@@ -121,13 +122,13 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             initializeRegistry(false);
             settings = new SingleImageJAlgorithmRunConfiguration(nodeId, parameters, inputs, outputs, threads);
             algorithm = settings.getAlgorithm();
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            settings.reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            settings.reportValidity(new UnspecifiedReportEntryCause(), report);
             if (!report.isValid()) {
                 StringBuilder message = new StringBuilder();
                 message.append("The provided algorithm options are invalid:\n\n");
-                for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
-                    message.append(entry.getKey()).append("\t").append(entry.getValue());
+                for (JIPipeValidationReportEntry entry : report) {
+                    message.append(entry.toString()).append(", ");
                 }
                 cancel(message.toString());
                 return;

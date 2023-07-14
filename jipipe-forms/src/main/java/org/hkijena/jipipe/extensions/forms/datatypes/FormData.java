@@ -5,11 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -110,7 +109,7 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeIssueReport());
+        ParameterUtils.deserializeParametersFromJson(this, node, parentCause, new JIPipeValidationReport());
     }
 
     /**
@@ -146,12 +145,12 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
 
     /**
      * A custom copy function that copies the contents from source into this form.
-     * Should never raise exceptions. Use {@link JIPipeIssueReport} to report issues.
+     * Should never raise exceptions. Use {@link JIPipeValidationReport} to report issues.
      *
      * @param source the source data
      * @param report the error report
      */
-    public void customCopy(FormData source, JIPipeIssueReport report) {
+    public void customCopy(FormData source, JIPipeValidationReport report) {
 
     }
 

@@ -13,10 +13,13 @@
 
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -34,6 +37,7 @@ import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -228,20 +232,20 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
     }
 
     private boolean validateOrShowError() {
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        getProject().reportValidity(report, algorithm);
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        getProject().reportValidity(new UnspecifiedReportEntryCause(), report, algorithm);
 
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms(true);
         if (algorithmsWithMissingInput.contains(algorithm)) {
-            report.resolve("Quick run").reportIsInvalid(
-                    "Selected algorithm is deactivated or missing inputs!",
-                    "The selected algorithm would not be executed, as it is deactivated or missing input data. " +
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportEntryCause(algorithm),
+                    "Selected node is deactivated or missing inputs!",
+                    "The selected node would not be executed, as it is deactivated or missing input data. " +
                             "You have to ensure that all input slots are assigned for the selected algorithm and its dependencies.",
                     "Please check if the parameter 'Enabled' is checked. Please check if all input slots are assigned. Also check all dependency algorithms.",
-                    algorithm
-            );
+                    JsonUtils.toPrettyJsonString(algorithm)));
         }
-        if (report.isValid())
+        if (report.isEmpty())
             return true;
 
         // Replace by error UI
@@ -334,9 +338,9 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
 
     private void generateQuickRun(boolean showResults) {
 
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        getProject().reportValidity(report, algorithm);
-        if (!report.isValid()) {
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        getProject().reportValidity(new UnspecifiedReportEntryCause(), report, algorithm);
+        if (!report.isEmpty()) {
             tryShowSelectionPanel();
             return;
         }

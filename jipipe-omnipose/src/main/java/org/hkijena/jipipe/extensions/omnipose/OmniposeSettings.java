@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.omnipose;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -36,8 +36,8 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
             OmniposeSettings instance = getInstance();
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            instance.getPythonEnvironment().reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            instance.getPythonEnvironment().reportValidity(parentCause, report);
             return report.isValid();
         }
         return false;
@@ -48,7 +48,7 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
      *
      * @param report the report
      */
-    public static void checkPythonSettings(JIPipeIssueReport report) {
+    public static void checkPythonSettings(JIPipeValidationReport report) {
         if (!pythonSettingsAreValid()) {
             report.reportIsInvalid("Python is not configured!",
                     "Project > Application settings > Extensions > Omnipose",

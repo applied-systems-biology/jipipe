@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -63,10 +65,10 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeIssueReport report = new JIPipeIssueReport();
+        JIPipeValidationReport report = new JIPipeValidationReport();
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile, report, new JIPipeNotificationInbox());
+            project = JIPipeProject.loadProject(projectFile, parentCause, report, new JIPipeNotificationInbox());
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e,
                     "Could not load project!",
@@ -77,12 +79,12 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (!ignoreValidation) {
             if (!report.isValid()) {
                 report.print();
-                for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
+                for (Map.Entry<String, JIPipeValidationReportEntry> entry : report.getIssues().entries()) {
                     throw new UserFriendlyRuntimeException(entry.getValue().getDetails(),
-                            entry.getValue().getUserWhat(),
+                            entry.getValue().getTitle(),
                             entry.getKey(),
-                            entry.getValue().getUserWhy(),
-                            entry.getValue().getUserHow());
+                            entry.getValue().getExplanation(),
+                            entry.getValue().getSolution());
                 }
             }
         }
@@ -113,15 +115,15 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Main validation
         if (!ignoreValidation) {
-            project.reportValidity(report);
+            project.reportValidity(parentCause, report);
             if (!report.isValid()) {
                 report.print();
-                for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
+                for (Map.Entry<String, JIPipeValidationReportEntry> entry : report.getIssues().entries()) {
                     throw new UserFriendlyRuntimeException(entry.getValue().getDetails(),
-                            entry.getValue().getUserWhat(),
+                            entry.getValue().getTitle(),
                             entry.getKey(),
-                            entry.getValue().getUserWhy(),
-                            entry.getValue().getUserHow());
+                            entry.getValue().getExplanation(),
+                            entry.getValue().getSolution());
                 }
             }
         }

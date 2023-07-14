@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.python.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtension;
@@ -103,14 +105,14 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, report.resolve("Script parameters"));
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        super.reportValidity(parentCause, report);
+        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportEntryCause(parentCause, this, "Script parameters", "script-parameters"), report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.resolve("Override Python environment").report(overrideEnvironment.getContent());
+                report.report(new ParameterValidationReportEntryCause(parentCause, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
             } else {
-                PythonExtensionSettings.checkPythonSettings(report.resolve("Python"));
+                PythonExtensionSettings.checkPythonSettings(report);
             }
         }
     }
@@ -201,7 +203,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
         PythonExtension.createMissingPythonNotificationIfNeeded(notifications);
         PythonExtension.createMissingLibJIPipePythonNotificationIfNeeded(notifications);

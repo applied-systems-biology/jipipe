@@ -15,9 +15,10 @@ package org.hkijena.jipipe;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 
 import java.nio.file.Path;
@@ -174,5 +175,5 @@ public interface JIPipeDependency extends JIPipeValidatable {
     }
 
     @Override
-    void reportValidity(JIPipeIssueReport report);
+    void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report);
 }

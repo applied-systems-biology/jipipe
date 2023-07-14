@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.BiMap;
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -31,6 +30,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -77,9 +78,9 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
      * @return The loaded run
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
-    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
+    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
-        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report, notifications);
+        JIPipeProject project = JIPipeProject.loadProject(parameterFile, new UnspecifiedReportEntryCause(), report, notifications);
         JIPipeRunSettings configuration = new JIPipeRunSettings();
         configuration.setOutputPath(folder);
         JIPipeProjectRun run = new JIPipeProjectRun(project, configuration);

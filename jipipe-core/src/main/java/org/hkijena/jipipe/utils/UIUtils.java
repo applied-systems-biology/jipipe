@@ -14,15 +14,13 @@
 package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import ij.IJ;
 import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -1001,7 +999,7 @@ public class UIUtils {
      * @param infoText the info text
      * @param modal    make the dialog modal
      */
-    public static void openValidityReportDialog(Component parent, JIPipeIssueReport report, String title, String infoText, boolean modal) {
+    public static void openValidityReportDialog(Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
         JIPipeValidityReportUI ui = new JIPipeValidityReportUI(false);

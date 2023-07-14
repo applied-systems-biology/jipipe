@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
@@ -124,11 +124,11 @@ public class JIPipeCLI {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         jiPipe.initialize(extensionSettings, issues);
 
-        JIPipeIssueReport projectIssues = new JIPipeIssueReport();
+        JIPipeValidationReport projectIssues = new JIPipeValidationReport();
         JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile, projectIssues, notifications);
+            project = JIPipeProject.loadProject(projectFile, parentCause, projectIssues, notifications);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -162,7 +162,7 @@ public class JIPipeCLI {
             access.set(value);
         }
 
-        project.reportValidity(projectIssues);
+        project.reportValidity(parentCause, projectIssues);
         projectIssues.print();
 
         if (!notifications.isEmpty()) {

@@ -13,12 +13,13 @@
 
 package org.hkijena.jipipe;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -71,9 +72,9 @@ public class JIPipeRunCommand implements Command {
             JIPipe.getInstance().initialize(extensionSettings, issues);
         }
         if (!extensionSettings.isSilent()) {
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            issues.reportValidity(report);
-            if (!report.isValid()) {
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            issues.reportValidity(new UnspecifiedReportEntryCause(), report);
+            if (!report.isEmpty()) {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
@@ -83,7 +84,7 @@ public class JIPipeRunCommand implements Command {
         }
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile.toPath(), new JIPipeIssueReport(), new JIPipeNotificationInbox());
+            project = JIPipeProject.loadProject(projectFile.toPath(), new UnspecifiedReportEntryCause(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
             project.setWorkDirectory(projectFile.toPath().getParent());
 
         } catch (IOException e) {

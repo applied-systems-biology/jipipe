@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.eventbus.EventBus;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;
@@ -28,6 +27,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.plots.CachedPlotViewerWindow;
@@ -123,7 +124,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
             String dataTypeId = node.get("plot-data-type").textValue();
             Class<? extends JIPipeData> klass = JIPipe.getDataTypes().getById(dataTypeId);
             PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
-            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
+            ParameterUtils.deserializeParametersFromJson(plotData, node, new UnspecifiedReportEntryCause(), new JIPipeValidationReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {
@@ -140,7 +141,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
             Path storageFilePath = storage.getFileSystemPath();
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
             PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
-            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
+            ParameterUtils.deserializeParametersFromJson(plotData, node, new UnspecifiedReportEntryCause(), new JIPipeValidationReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {
@@ -460,9 +461,13 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Export width").checkIfWithin(this, exportWidth, 0, Double.POSITIVE_INFINITY, false, true);
-        report.resolve("Export height").checkIfWithin(this, exportHeight, 0, Double.POSITIVE_INFINITY, false, true);
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        if(exportWidth <= 0) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, parentCause, "Export width is too small!", "The export width must be at least 1"));
+        }
+        if(exportHeight <= 0) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, parentCause, "Export height is too small!", "The export height must be at least 1"));
+        }
     }
 
     public List<PlotDataSeries> getSeries() {
@@ -508,7 +513,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeIssueReport());
+        ParameterUtils.deserializeParametersFromJson(this, node, new UnspecifiedReportEntryCause(), new JIPipeValidationReport());
     }
 
     /**

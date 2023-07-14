@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -25,6 +25,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterSettings;
@@ -211,18 +214,20 @@ public class PathListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        for (Path folderPath : getAbsolutePaths()) {
-            if (folderPath == null) {
-                report.reportIsInvalid("Invalid path!",
-                        "An input folder path does not exist!",
-                        "Please provide a valid path.",
-                        this);
-            } else if (!Files.exists(folderPath)) {
-                report.reportIsInvalid("Invalid path!",
-                        "Input path '" + folderPath + "' does not exist!",
-                        "Please provide a valid path.",
-                        this);
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        for (Path path : getAbsolutePaths()) {
+            if (path == null) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                        parentCause,
+                        "Input path not set!",
+                        "One of the paths is not set.",
+                        "Please provide a valid input path."));
+            } else if (!Files.exists(path)) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                        parentCause,
+                        "Input path does not exist!",
+                        "The path '" + path + "' does not exist.",
+                        "Please provide a valid input path."));
             }
         }
     }

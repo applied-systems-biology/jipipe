@@ -16,6 +16,8 @@ package org.hkijena.jipipe.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 
 import java.io.IOException;
@@ -53,9 +55,9 @@ public class JIPipeProjectTemplate {
      * @return the project
      * @throws IOException thrown by project loading
      */
-    public JIPipeProject loadAsProject(JIPipeIssueReport issueReport, JIPipeNotificationInbox inbox) throws IOException {
+    public JIPipeProject loadAsProject(JIPipeValidationReport issueReport, JIPipeNotificationInbox inbox) throws IOException {
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(node, issueReport, inbox);
+        project.fromJson(node, new UnspecifiedReportEntryCause(), issueReport, inbox);
         // Apply selected default style
         project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
         project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);

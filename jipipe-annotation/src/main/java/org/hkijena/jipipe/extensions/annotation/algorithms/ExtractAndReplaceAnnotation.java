@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.api.functions.StringPatternExtractionFunction;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 
@@ -75,10 +76,10 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         report.resolve("Functions").report(functions);
         for (int i = 0; i < functions.size(); i++) {
-            JIPipeIssueReport subReport = report.resolve("Functions").resolve("Item #" + (i + 1));
+            JIPipeValidationReport subReport = report.resolve("Functions").resolve("Item #" + (i + 1));
             subReport.resolve("Input").checkNonEmpty(functions.get(i).getInput(), this);
             subReport.resolve("Output").checkNonEmpty(functions.get(i).getOutput(), this);
         }

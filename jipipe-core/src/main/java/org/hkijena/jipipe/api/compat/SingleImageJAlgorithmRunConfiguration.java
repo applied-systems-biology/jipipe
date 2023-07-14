@@ -17,16 +17,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.causes.APIErrorValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -139,7 +138,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
 
     private void importParameterString(String parametersString) {
         JsonNode jsonNode = JsonUtils.readFromString(parametersString, JsonNode.class);
-        ParameterUtils.deserializeParametersFromJson(algorithm, jsonNode, new JIPipeIssueReport());
+        ParameterUtils.deserializeParametersFromJson(algorithm, jsonNode, new UnspecifiedReportEntryCause(), new JIPipeValidationReport());
     }
 
     public int getNumThreads() {
@@ -151,12 +150,14 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         if (algorithm == null) {
-            report.reportIsInvalid("No algorithm was provided!",
-                    "This is an programming error.",
-                    "Please contact the JIPipe author.",
-                    this);
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new APIErrorValidationReportEntryCause(),
+                    "No algorithm was provided!",
+                    "This is an programming error. Please contact the JIPipe author.",
+                    null,
+                    null));
         }
     }
 

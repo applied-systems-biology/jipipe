@@ -16,13 +16,13 @@ package org.hkijena.jipipe.extensions.python.adapter;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 
 import java.util.List;
 
@@ -43,20 +43,6 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
     }
 
     /**
-     * Checks if the Python settings are valid or reports an invalid state
-     *
-     * @param report the report
-     */
-    public static void checkPythonAdapterSettings(JIPipeIssueReport report) {
-        if (!pythonSettingsAreValid()) {
-            report.reportIsInvalid("Python adapter is not configured!",
-                    "Project > Application settings > Extensions > Python integration (adapter)",
-                    "This node requires an installation of the JIPipe Python adapter. Please follow the instructions to download and install the Python adapter.",
-                    "Go to Project > Application settings > Extensions > Python integration (adapter) and install the environment from ");
-        }
-    }
-
-    /**
      * Checks the Python settings
      *
      * @return if the settings are correct
@@ -64,8 +50,8 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
             PythonAdapterExtensionSettings instance = getInstance();
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            instance.getPythonAdapterLibraryEnvironment().reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            instance.getPythonAdapterLibraryEnvironment().reportValidity(new UnspecifiedReportEntryCause(), report);
             return report.isValid();
         }
         return false;

@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
 import org.hkijena.jipipe.extensions.pipelinerender.RenderPipelineRun;
@@ -43,7 +44,7 @@ public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         try {
-            JIPipeProject project = JIPipeProject.loadProject(dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath(), new JIPipeIssueReport(), new JIPipeNotificationInbox());
+            JIPipeProject project = JIPipeProject.loadProject(dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath(), parentCause, new JIPipeValidationReport(), new JIPipeNotificationInbox());
             RenderPipelineRun run = new RenderPipelineRun(project, null, settings);
             run.setProgressInfo(progressInfo.detachProgress().resolve("Render"));
             run.run();

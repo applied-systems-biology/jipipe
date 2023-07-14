@@ -15,11 +15,12 @@ package org.hkijena.jipipe.ui.compat;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRunAlgorithmCommand;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
@@ -383,9 +384,9 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
     }
 
     private void copyCommand() {
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        currentRunSettingsPanel.getRun().reportValidity(report);
-        if (!report.isValid()) {
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedReportEntryCause(), report);
+        if (!report.isEmpty()) {
             UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
             return;
         }
@@ -404,9 +405,9 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
     }
 
     private void runNow() {
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        currentRunSettingsPanel.getRun().reportValidity(report);
-        if (!report.isValid()) {
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedReportEntryCause(), report);
+        if (!report.isEmpty()) {
             UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
             return;
         }

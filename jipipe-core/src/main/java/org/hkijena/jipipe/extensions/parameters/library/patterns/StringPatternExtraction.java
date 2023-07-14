@@ -15,9 +15,10 @@ package org.hkijena.jipipe.extensions.parameters.library.patterns;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.function.Function;
 import java.util.regex.Matcher;
@@ -123,23 +124,39 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         switch (mode) {
             case SplitAndPick:
-                report.resolve("Split character").checkNonEmpty(splitCharacter, this);
+                if(StringUtils.isNullOrEmpty(splitCharacter)) {
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new CustomReportEntryCause(parentCause, "Split character"),
+                            "Empty split character!",
+                            "The split character cannot be empty!"));
+                }
                 break;
             case SplitAndFind:
-                report.resolve("Split character").checkNonEmpty(splitCharacter, this);
-                report.resolve("Selected index").checkIfWithin(this, splitPickedIndex, 0, Double.POSITIVE_INFINITY, true, false);
+                if(StringUtils.isNullOrEmpty(splitCharacter)) {
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new CustomReportEntryCause(parentCause, "Split character"),
+                            "Empty split character!",
+                            "The split character cannot be empty!"));
+                }
+                if(splitPickedIndex < 0) {
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new CustomReportEntryCause(parentCause, "Selected index"),
+                            "Negative selected index!",
+                            "The selected index cannot be negative!"));
+                }
                 break;
             case Regex:
                 try {
                     Pattern.compile(regexString);
                 } catch (PatternSyntaxException e) {
-                    report.resolve("RegEx").reportIsInvalid("RegEx syntax is wrong!",
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new CustomReportEntryCause(parentCause, "RegEx"),
+                            "RegEx syntax is wrong!",
                             "The regular expression string is wrong.",
-                            "Please check the syntax. If you are not familiar with it, you can find plenty of resources online.",
-                            this);
+                            "Please check the syntax. If you are not familiar with it, you can find plenty of resources online."));
                 }
                 break;
         }

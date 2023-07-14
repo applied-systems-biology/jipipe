@@ -1,11 +1,12 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.forms;
 
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -69,7 +70,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public void customCopy(FormData source, JIPipeIssueReport report) {
+    public void customCopy(FormData source, JIPipeValidationReport report) {
         // Initialize the viewer
         getImageViewerPanel();
 
@@ -108,7 +109,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
 
     }
 

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -24,11 +24,11 @@ import java.awt.*;
 import java.util.HashMap;
 
 /**
- * UI for an {@link JIPipeIssueReport}
+ * UI for an {@link JIPipeValidationReport}
  */
 public class JIPipeValidityReportUI extends JPanel {
     private JSplitPane splitPane;
-    private JIPipeIssueReport report;
+    private JIPipeValidationReport report;
     private UserFriendlyErrorUI errorUI;
     private boolean withHelp;
     private JPanel everythingValidPanel;
@@ -101,7 +101,7 @@ public class JIPipeValidityReportUI extends JPanel {
     }
 
     private void refreshUI() {
-        if (report == null || report.isValid()) {
+        if (report == null || report.isEmpty()) {
             switchToEverythingValid();
         } else {
             errorUI.clear();
@@ -111,7 +111,7 @@ public class JIPipeValidityReportUI extends JPanel {
         }
     }
 
-    public void setReport(JIPipeIssueReport report) {
+    public void setReport(JIPipeValidationReport report) {
         this.report = report;
         refreshUI();
     }

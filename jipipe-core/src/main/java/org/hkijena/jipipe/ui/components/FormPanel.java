@@ -672,7 +672,7 @@ public class FormPanel extends JXPanel {
             }
 
             titleLabel = new JLabel(text, icon, JLabel.LEFT);
-            titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+            titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
             titleLabel.setBorder(BorderFactory.createEmptyBorder(4,8,4,4));
             add(titleLabel, new GridBagConstraints() {
                 {

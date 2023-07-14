@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -23,6 +23,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -160,12 +163,14 @@ public class FileDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (needsToExist && (fileName == null || !Files.isRegularFile(getAbsoluteFileName())))
-            report.reportIsInvalid("Input file does not exist!",
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        if (needsToExist && (fileName == null || !Files.isRegularFile(getAbsoluteFileName()))) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                    parentCause,
+                    "Input file does not exist!",
                     "The file '" + getAbsoluteFileName() + "' does not exist.",
-                    "Please provide a valid input file.",
-                    this);
+                    "Please provide a valid input file."));
+        }
     }
 
     @Override

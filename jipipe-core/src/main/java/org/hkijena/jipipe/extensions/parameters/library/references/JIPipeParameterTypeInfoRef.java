@@ -20,8 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 
 import java.io.IOException;
@@ -92,12 +91,14 @@ public class JIPipeParameterTypeInfoRef implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (info == null)
-            report.reportIsInvalid("No parameter type type is selected!",
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        if (info == null) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    parentCause,
+                    "No parameter type is selected!",
                     "You have to select a parameter type.",
-                    "Please select a parameter type.",
-                    this);
+                    "Please select a parameter type."));
+        }
     }
 
     @Override

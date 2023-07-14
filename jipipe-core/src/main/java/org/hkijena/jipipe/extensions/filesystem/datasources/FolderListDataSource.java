@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -25,6 +25,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterSettings;
@@ -208,18 +211,20 @@ public class FolderListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         for (Path folderPath : getAbsoluteFolderPaths()) {
             if (folderPath == null) {
-                report.reportIsInvalid("Invalid folder path!",
-                        "An input folder path does not exist!",
-                        "Please provide a valid path.",
-                        this);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                        parentCause,
+                        "Input folder not set!",
+                        "One of the folder paths is not set.",
+                        "Please provide a valid input folder."));
             } else if (!Files.isDirectory(folderPath)) {
-                report.reportIsInvalid("Invalid folder path!",
-                        "Input folder '" + folderPath + "' does not exist!",
-                        "Please provide a valid path.",
-                        this);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                        parentCause,
+                        "Input folder does not exist!",
+                        "The folder '" + folderPath + "' does not exist.",
+                        "Please provide a valid input folder."));
             }
         }
     }

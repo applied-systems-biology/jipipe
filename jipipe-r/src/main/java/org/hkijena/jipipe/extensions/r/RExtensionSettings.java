@@ -14,10 +14,9 @@
 package org.hkijena.jipipe.extensions.r;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -65,7 +64,7 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
      *
      * @param report the report
      */
-    public static void checkRSettings(JIPipeIssueReport report) {
+    public static void checkRSettings(JIPipeValidationReport report) {
         if (!RSettingsAreValid()) {
             report.reportIsInvalid("R is not configured!",
                     "Project > Application settings > Extensions > R  integration",
@@ -83,8 +82,8 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
     public static boolean RSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
             RExtensionSettings instance = getInstance();
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            instance.getEnvironment().reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            instance.getEnvironment().reportValidity(parentCause, report);
             return report.isValid();
         }
         return false;

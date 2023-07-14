@@ -13,9 +13,12 @@
 
 package org.hkijena.jipipe.utils.scripting;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
 import org.python.core.PyCode;
@@ -53,32 +56,37 @@ public class JythonUtils {
         }
     }
 
-    public static void checkScriptValidity(String code, JIPipeCustomParameterCollection scriptParameters, JIPipeIssueReport report) {
+    public static void checkScriptValidity(String code, JIPipeCustomParameterCollection scriptParameters, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         try {
             PythonInterpreter pythonInterpreter = new PythonInterpreter();
             JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
             PyCode compile = pythonInterpreter.compile(code);
             if (compile == null) {
-                report.reportIsInvalid("The script is invalid!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        parentCause,
+                        "The script is invalid!",
                         "The script could not be compiled.",
                         "Please check if your Python script is correct.",
-                        code);
+                        code));
             }
         } catch (Exception e) {
-            report.reportIsInvalid("The script is invalid!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    parentCause,
+                    "The script is invalid!",
                     "The script could not be compiled.",
                     "Please check if your Python script is correct.",
-                    e);
+                    code + "\n\n" + e));
         }
     }
 
-    public static void checkScriptParametersValidity(JIPipeCustomParameterCollection scriptParameters, JIPipeIssueReport report) {
+    public static void checkScriptParametersValidity(JIPipeCustomParameterCollection scriptParameters, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         for (String key : scriptParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
-                report.resolve(key).reportIsInvalid("Invalid name!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        parentCause,
+                        "Invalid name!",
                         "'" + key + "' is an invalid Python variable name!",
-                        "Please ensure that script variables are compatible with the Python language.",
-                        scriptParameters);
+                        "Please ensure that script variables are compatible with the Python language."));
             }
         }
     }

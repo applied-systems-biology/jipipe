@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
@@ -80,7 +80,7 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public boolean canActivate(JIPipeIssueReport report, JIPipeProgressInfo progressInfo) {
+    public boolean canActivate(JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
 
         String[] classes = new String[]{
                 "ome.xml.meta.OMEXMLMetadata",

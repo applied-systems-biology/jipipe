@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -26,10 +27,10 @@ import java.awt.*;
  * Allows users to reevaluate the {@link JIPipeValidatable}
  */
 public class ReloadableValidityChecker extends JPanel {
-    private JIPipeValidatable validatable;
-    private MarkdownDocument helpDocument;
+    private final JIPipeValidatable validatable;
+    private final MarkdownDocument helpDocument;
     private JIPipeValidityReportUI reportUI;
-    private JIPipeIssueReport report = new JIPipeIssueReport();
+    private final JIPipeValidationReport report = new JIPipeValidationReport();
 
     /**
      * @param validatable the validated object
@@ -69,12 +70,12 @@ public class ReloadableValidityChecker extends JPanel {
      * Revalidates the object
      */
     public void recheckValidity() {
-        report.clearAll();
-        validatable.reportValidity(report);
+        report.clear();
+        validatable.reportValidity(new UnspecifiedReportEntryCause(), report);
         reportUI.setReport(report);
     }
 
-    public JIPipeIssueReport getReport() {
+    public JIPipeValidationReport getReport() {
         return report;
     }
 }

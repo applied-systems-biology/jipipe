@@ -38,6 +38,10 @@ import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeSlotValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
@@ -64,11 +68,11 @@ import java.util.stream.Collectors;
 public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyComparable, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener {
 
     private DefaultDirectedGraph<JIPipeDataSlot, JIPipeGraphEdge> graph = new DefaultDirectedGraph<>(JIPipeGraphEdge.class);
-    private BiMap<UUID, String> nodeAliasIds = HashBiMap.create();
-    private Map<UUID, UUID> nodeCompartmentUUIDs = new HashMap<>();
-    private Map<UUID, Set<UUID>> nodeVisibleCompartmentUUIDs = new HashMap<>();
-    private Map<UUID, String> nodeLegacyCompartmentIDs = new HashMap<>();
-    private BiMap<UUID, JIPipeGraphNode> nodeUUIDs = HashBiMap.create();
+    private final BiMap<UUID, String> nodeAliasIds = HashBiMap.create();
+    private final Map<UUID, UUID> nodeCompartmentUUIDs = new HashMap<>();
+    private final Map<UUID, Set<UUID>> nodeVisibleCompartmentUUIDs = new HashMap<>();
+    private final Map<UUID, String> nodeLegacyCompartmentIDs = new HashMap<>();
+    private final BiMap<UUID, JIPipeGraphNode> nodeUUIDs = HashBiMap.create();
     private List<JIPipeDataSlot> traversedSlots;
     private List<JIPipeGraphNode> traversedAlgorithms;
     private Map<Class<?>, Object> attachments = new HashMap<>();
@@ -917,18 +921,19 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * Loads this graph from JSON
      *
      * @param jsonNode      JSON data
+     * @param parentCause the parent cause for the issue reporting
      * @param issues        issues reported during deserializing
      * @param notifications notifications for the user
      */
-    public void fromJson(JsonNode jsonNode, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+    public void fromJson(JsonNode jsonNode, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         if (!jsonNode.has("nodes"))
             return;
 
         // Load nodes
-        nodesFromJson(jsonNode, issues, notifications);
+        nodesFromJson(jsonNode, parentCause, issues, notifications);
 
         // Load edges
-        edgesFromJson(jsonNode, issues);
+        edgesFromJson(jsonNode, parentCause, issues);
 
         // Deserialize additional metadata
         JsonNode additionalMetadataNode = jsonNode.path("additional-metadata");
@@ -937,7 +942,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
                 if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
                     JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
-                    ParameterUtils.deserializeParametersFromJson(metadata, metadataEntry.getValue(), issues.resolve("Metadata"));
+                    ParameterUtils.deserializeParametersFromJson(metadata, metadataEntry.getValue(), parentCause, issues);
                     additionalMetadata.put(metadataEntry.getKey(), metadata);
                 } else {
                     Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
@@ -951,27 +956,29 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         }
     }
 
-    public void edgesFromJson(JsonNode jsonNode, JIPipeIssueReport issues) {
+    public void edgesFromJson(JsonNode jsonNode, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport issues) {
         for (JsonNode edgeNode : ImmutableList.copyOf(jsonNode.get("edges").elements())) {
             String sourceAlgorithmName = edgeNode.get("source-node").asText();
             String targetAlgorithmName = edgeNode.get("target-node").asText();
             JIPipeGraphNode sourceAlgorithm = findNode(sourceAlgorithmName);
             JIPipeGraphNode targetAlgorithm = findNode(targetAlgorithmName);
             if (sourceAlgorithm == null) {
-                issues.resolve("Edges").resolve("Source").resolve(sourceAlgorithmName).reportIsInvalid("Unable to find node '" + sourceAlgorithmName + "'!",
+                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, parentCause,
+                        "Unable to find node '" + sourceAlgorithmName + "'!",
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
                                 "This might have been caused by a previous error.",
                         "Please check if all extensions are are correctly loaded.",
-                        jsonNode);
+                        JsonUtils.toPrettyJsonString(jsonNode)));
                 System.err.println("Unable to find node with ID '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             if (targetAlgorithm == null) {
-                issues.resolve("Edges").resolve("Target").resolve(sourceAlgorithmName).reportIsInvalid("Unable to find node '" + targetAlgorithmName + "'!",
+                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, parentCause,
+                        "Unable to find node '" + targetAlgorithmName + "'!",
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source does not exist. " +
                                 "This might have been caused by a previous error.",
                         "Please check if all extensions are are correctly loaded.",
-                        jsonNode);
+                        JsonUtils.toPrettyJsonString(jsonNode)));
                 System.err.println("Unable to find node with ID '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -980,20 +987,24 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             JIPipeDataSlot source = sourceAlgorithm.getOutputSlotMap().get(sourceSlotName);
             JIPipeDataSlot target = targetAlgorithm.getInputSlotMap().get(targetSlotName);
             if (source == null) {
-                issues.resolve("Edges").resolve("Output slots").resolve(sourceAlgorithmName).reportIsInvalid("Unable to find output slot '" + sourceSlotName + "' in node '" + sourceAlgorithmName + "'!",
+                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        parentCause,
+                        "Unable to find output slot '" + sourceSlotName + "' in node '" + sourceAlgorithmName + "'!",
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the source slot does not exist. " +
                                 "This might have been caused by a previous error.",
                         "Please check if all extensions are are correctly loaded.",
-                        jsonNode);
+                        JsonUtils.toPrettyJsonString(jsonNode)));
                 System.err.println("Unable to find data slot '" + sourceSlotName + "' in algorithm '" + sourceAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
             if (target == null) {
-                issues.resolve("Edges").resolve("Input slots").resolve(sourceAlgorithmName).reportIsInvalid("Unable to find input slot '" + targetSlotName + "' in node '" + targetAlgorithmName + "'!",
+                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        parentCause,
+                        "Unable to find input slot '" + targetSlotName + "' in node '" + targetAlgorithmName + "'!",
                         "The JSON data requested to create an edge between the nodes '" + sourceAlgorithmName + "' and '" + targetAlgorithmName + "', but the target slot does not exist. " +
                                 "This might have been caused by a previous error.",
                         "Please check if all extensions are are correctly loaded.",
-                        jsonNode);
+                        JsonUtils.toPrettyJsonString(jsonNode)));
                 System.err.println("Unable to find data slot '" + targetSlotName + "' in algorithm '" + targetAlgorithmName + "'. Skipping this instruction.");
                 continue;
             }
@@ -1014,10 +1025,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 try {
                     JsonUtils.getObjectMapper().readerForUpdating(edgeInstance).readValue(metadataNode);
                 } catch (IOException e) {
-                    issues.resolve("Metadata").reportIsInvalid("Unable to deserialize graph metadata!",
+                    issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                            parentCause,
+                            "Unable to deserialize graph metadata!",
                             "The JSON data contains some metadata, but it could not be recovered.",
                             "Metadata does not contain critical information. You can ignore this message.",
-                            jsonNode);
+                            JsonUtils.toPrettyJsonString(jsonNode)));
                     System.err.println("Cannot deserialize edge metadata!");
                     e.printStackTrace();
                 }
@@ -1025,7 +1038,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         }
     }
 
-    public void nodesFromJson(JsonNode jsonNode, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+    public void nodesFromJson(JsonNode jsonNode, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("nodes").fields())) {
             JsonNode currentNodeJson = entry.getValue();
 
@@ -1043,10 +1056,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 String id = currentNodeJson.get("jipipe:node-info-id").asText();
                 if (!JIPipe.getNodes().hasNodeInfoWithId(id)) {
                     System.err.println("Unable to find node type with ID '" + id + "'. Skipping.");
-                    issues.resolve("Nodes").resolve(id).reportIsInvalid("Unable to find node type '" + id + "'!",
+                    issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            parentCause,
+                            "Unable to find node type '" + id + "'!",
                             "The JSON data requested to load a node of type '" + id + "', but it is not known to JIPipe.",
                             "Please check if all extensions are are correctly loaded.",
-                            jsonNode);
+                            JsonUtils.toPrettyJsonString(jsonNode)));
                     continue;
                 }
 
@@ -1068,7 +1083,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
                 JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
                 JIPipeGraphNode node = info.newInstance();
-                node.fromJson(currentNodeJson, issues.resolve("Nodes").resolve(id), notifications);
+                node.fromJson(currentNodeJson, parentCause, issues, notifications);
                 insertNode(nodeUUID, node, compartmentUUID);
 //                System.out.println("Insert: " + algorithm + " alias " + aliasId + " in compartment " + compartmentUUID);
                 if (aliasId != null) {
@@ -1383,7 +1398,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
             JIPipeGraphNode node = entry.getValue();
             if (node instanceof JIPipeAlgorithm) {
@@ -1391,7 +1406,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (!algorithm.isEnabled() || (algorithm.canPassThrough() && algorithm.isPassThrough()))
                     continue;
             }
-            report.resolve(getCompartmentDisplayNameOf(node)).resolve(node.getName()).report(node);
+            report.report(new GraphNodeValidationReportEntryCause(parentCause, node), node);
         }
         if (!RuntimeSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
@@ -1399,11 +1414,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     continue;
                 if (slot.isInput()) {
                     if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
-                        report.resolve(getCompartmentDisplayNameOf(slot.getNode())).resolve(slot.getNode().getName())
-                                .resolve("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
-                                        "Input slots must always be provided with input data.",
-                                        "Please connect the slot to an output of another algorithm.",
-                                        this);
+                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                new GraphNodeSlotValidationReportEntryCause(parentCause, slot.getNode(), slot.getName(), slot.getSlotType()),
+                                "An input slot has no incoming data!",
+                                "Input slots must always be provided with input data.",
+                                "Please connect the slot to an output of another algorithm."));
                     }
                 }
             }
@@ -1427,21 +1442,23 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     /**
      * Reports the validity for the target node and its dependencies
      *
-     * @param report     the report
-     * @param targetNode the target node
+     * @param parentCause the parent cause
+     * @param report      the report
+     * @param targetNode  the target node
      */
-    public void reportValidity(JIPipeIssueReport report, JIPipeGraphNode targetNode) {
-        reportValidity(report, targetNode, Collections.emptySet());
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report, JIPipeGraphNode targetNode) {
+        reportValidity(parentCause, report, targetNode, Collections.emptySet());
     }
 
     /**
      * Reports the validity for the target node and its dependencies
      *
-     * @param report     the report
-     * @param targetNode the target node
-     * @param satisfied  all algorithms that are considered to have a satisfied input
+     * @param parentCause the parent cause
+     * @param report      the report
+     * @param targetNode  the target node
+     * @param satisfied   all algorithms that are considered to have a satisfied input
      */
-    public void reportValidity(JIPipeIssueReport report, JIPipeGraphNode targetNode, Set<JIPipeGraphNode> satisfied) {
+    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report, JIPipeGraphNode targetNode, Set<JIPipeGraphNode> satisfied) {
         List<JIPipeGraphNode> predecessorAlgorithms = getPredecessorAlgorithms(targetNode, traverse());
         predecessorAlgorithms.add(targetNode);
         for (JIPipeGraphNode node : predecessorAlgorithms) {
@@ -1453,12 +1470,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     continue;
                 }
                 if (!algorithm.isEnabled()) {
-                    report.resolve(getCompartmentDisplayNameOf(node)).resolve(node.getName()).reportIsInvalid(
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new GraphNodeValidationReportEntryCause(parentCause, algorithm),
                             "Dependency algorithm is deactivated!",
                             "A dependency algorithm is not enabled. It blocks the execution of all following algorithms.",
-                            "Check if all dependency algorithms are enabled. If you just want to skip the processing, try 'Pass through'.",
-                            algorithm
-                    );
+                            "Check if all dependency algorithms are enabled. If you just want to skip the processing, try 'Pass through'."));
                     return;
                 }
             }
@@ -1466,16 +1482,16 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 if (!slot.getNode().getInfo().isRunnable())
                     continue;
                 if (!slot.getInfo().isOptional() && graph.incomingEdgesOf(slot).isEmpty()) {
-                    report.resolve(getCompartmentDisplayNameOf(slot.getNode())).resolve(slot.getNode().getName())
-                            .resolve("Slot: " + slot.getName()).reportIsInvalid("An input slot has no incoming data!",
-                                    "Input slots must always be provided with input data.",
-                                    "Please connect the slot to an output of another algorithm.",
-                                    this);
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new GraphNodeSlotValidationReportEntryCause(parentCause, slot.getNode(), slot.getName(), slot.getSlotType()),
+                            "An input slot has no incoming data!",
+                            "Input slots must always be provided with input data.",
+                            "Please connect the slot to an output of another algorithm."));
                     return;
                 }
             }
 
-            report.resolve(getCompartmentDisplayNameOf(node)).resolve(node.getName()).report(node);
+            report.report(new GraphNodeValidationReportEntryCause(parentCause, node), node);
         }
     }
 
@@ -1969,7 +1985,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         @Override
         public JIPipeGraph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeGraph graph = new JIPipeGraph();
-            graph.fromJson(jsonParser.readValueAsTree(), new JIPipeIssueReport(), new JIPipeNotificationInbox());
+            graph.fromJson(jsonParser.readValueAsTree(), new UnspecifiedReportEntryCause(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
             return graph;
         }
     }

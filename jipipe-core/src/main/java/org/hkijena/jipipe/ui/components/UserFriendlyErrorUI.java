@@ -14,12 +14,15 @@
 package org.hkijena.jipipe.ui.components;
 
 import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -31,7 +34,7 @@ import java.util.Map;
 
 /**
  * Displays exceptions in a user-friendly way.
- * Can handle {@link org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException} and {@link JIPipeIssueReport}
+ * Can handle {@link org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException} and {@link JIPipeValidationReport}
  */
 public class UserFriendlyErrorUI extends FormPanel {
 
@@ -83,14 +86,12 @@ public class UserFriendlyErrorUI extends FormPanel {
      *
      * @param report the report
      */
-    public void displayErrors(JIPipeIssueReport report) {
-        for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
-            String key = entry.getKey();
-            JIPipeIssueReport.Issue issue = entry.getValue();
-            addEntry(new ErrorEntry(issue.getUserWhat(),
-                    key,
-                    issue.getUserWhy(),
-                    issue.getUserHow(),
+    public void displayErrors(JIPipeValidationReport report) {
+        for (JIPipeValidationReportEntry issue : report) {
+            addEntry(new ErrorEntry(issue.getTitle(),
+                    issue.getCause().renderName(),
+                    issue.getExplanation(),
+                    issue.getSolution(),
                     issue.getDetails()));
         }
     }
@@ -177,8 +178,13 @@ public class UserFriendlyErrorUI extends FormPanel {
         }
 
         private void initialize() {
+
+            Color backgroundColor = ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.95f);
+            Color borderColor = ColorUtils.scaleHSV(backgroundColor, 1, 1, 0.8f);
+
+            setBackground(backgroundColor);
             setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
-                    BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true)));
+                    new RoundedLineBorder(borderColor, 1, 4)));
 
             String markdown = "<table><tr><td><img src=\"" + ResourceUtils.getPluginResource("icons-32/error.png") +
                     "\" /></td><td><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getUserWhat()) + "</strong></td></tr></table>" +
