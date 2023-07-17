@@ -27,7 +27,6 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
@@ -38,10 +37,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.*;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.causes.JavaExtensionValidationReportEntryCause;
 import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventEmitter;
@@ -532,7 +528,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             return ConstructorUtils.invokeConstructor(klass, constructorParameters);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
                  InstantiationException e) {
-            throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
+            throw new JIPipeValidationRuntimeException(e, "Cannot create data instance!", "There is an error in the code that provides the annotation type.",
                     "Please contact the author of the plugin that provides the annotation type " + klass);
         }
     }
@@ -1046,12 +1042,13 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
                     if (JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
-                        throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
-                                + algorithm + " -> " + entry.getKey(),
+                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                new UnspecifiedReportEntryCause(),
                                 "A plugin is invalid!",
-                                "JIPipe plugin checker",
+                                "Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
+                                        + algorithm + " -> " + entry.getKey(),
                                 "There is an error in the plugin's code that makes it use an unsupported parameter type.",
-                                "Please contact the plugin author for further help.");
+                                "Please contact the plugin author for further help."));
                     }
                 }
 
@@ -1060,9 +1057,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     algorithm.duplicate();
                 } catch (Exception e1) {
                     e1.printStackTrace();
-                    throw new UserFriendlyRuntimeException(e1,
+                    throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
-                            "JIPipe plugin checker",
                             "There is an error in the plugin's code that prevents the copying of a node.",
                             "Please contact the plugin author for further help.");
                 }
@@ -1072,9 +1068,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     JsonUtils.toJsonString(algorithm);
                 } catch (Exception e1) {
                     e1.printStackTrace();
-                    throw new UserFriendlyRuntimeException(e1,
+                    throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
-                            "JIPipe plugin checker",
                             "There is an error in the plugin's code that prevents the saving of a node.",
                             "Please contact the plugin author for further help.");
                 }
@@ -1086,9 +1081,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
-                    throw new UserFriendlyRuntimeException(e1,
+                    throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
-                            "JIPipe plugin checker",
                             "There is an error in the plugin's code that prevents the cache state generation of a node.",
                             "Please contact the plugin author for further help.");
                 }

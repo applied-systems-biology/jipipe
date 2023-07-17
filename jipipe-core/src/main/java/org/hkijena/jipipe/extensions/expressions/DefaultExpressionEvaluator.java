@@ -18,8 +18,8 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.expressions.constants.*;
 import org.hkijena.jipipe.extensions.expressions.operators.*;
 
@@ -377,9 +377,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 return true;
             return super.evaluate(expression, evaluationContext);
         } catch (Exception e) {
-            throw new UserFriendlyRuntimeException(e,
-                    "Error while evaluating expression",
-                    "Expression: " + expression,
+            throw new JIPipeValidationRuntimeException(e,
+                    "Error while evaluating expression " + expression,
                     "The expression could not be evaluated. Available variables are " + expressionVariables.entrySet().stream()
                             .map(kv -> kv.getKey() + "=" + kv.getValue()).collect(Collectors.joining(" ")),
                     "Please check if the expression is correct.");
@@ -474,8 +473,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         else {
             Object variable = variableSet.get(literal);
             if (variable == null) {
-                throw new UserFriendlyRuntimeException(new NullPointerException(), "Unable to find variable '" + literal + "' in expression",
-                        "Expression parser",
+                throw new JIPipeValidationRuntimeException(new NullPointerException(), "Unable to find variable '" + literal + "' in expression",
                         "Your expression has a variable '" + literal + "', but it does not exist",
                         "Check if the variable exists. If you intended to create a string, put double quotes around it.");
             }

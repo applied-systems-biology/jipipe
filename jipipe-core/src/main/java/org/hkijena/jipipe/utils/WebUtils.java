@@ -15,7 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
@@ -148,10 +148,9 @@ public class WebUtils {
                 }
             }
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e,
+            throw new JIPipeValidationRuntimeException(e,
                     "Error while downloading!",
-                    label,
-                    "There was an error downloading URL '" + url + "' to " + outputFile,
+                    "At " + label + ": there was an error downloading URL '" + url + "' to " + outputFile,
                     "Please check if the URL is valid, an internet connection is available, and the target device has enough space.");
         }
     }

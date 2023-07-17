@@ -26,7 +26,6 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeMetadata;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -83,8 +82,9 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         try {
             return JsonUtils.getObjectMapper().readerFor(JIPipeJsonExtension.class).readValue(jsonData);
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
+            throw new JIPipeValidationRuntimeException(e,
+                    "Could not load JSON plugin.",
+                    "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
                     "Try to update JIPipe. If this does not work, contact the plugin's author.");
         }
     }
@@ -108,8 +108,9 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
             return loadProject(jsonData);
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
+            throw new JIPipeValidationRuntimeException(e,
+                    "Could not load JSON plugin.",
+                    "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
                     "Try to update JIPipe. If this does not work, contact the plugin's author.");
         }
     }

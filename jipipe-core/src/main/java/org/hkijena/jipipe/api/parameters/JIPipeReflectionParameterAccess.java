@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -133,8 +133,8 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
         try {
             return (T) getter.invoke(source);
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to get parameter data!",
-                    "Parameter " + getName(), "There is an error in the algorithm's code.",
+            throw new JIPipeValidationRuntimeException(e, "Unable to get parameter data!",
+                    "Affected parameter " + getName() + "." + " There is an error in the code.",
                     "Please contact the authors of the algorithm.");
         }
     }
@@ -158,8 +158,8 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
                 return true;
             }
         } catch (IllegalAccessException | InvocationTargetException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to set parameter data!",
-                    "Parameter " + getName(), "There is an error in the algorithm's code.",
+            throw new JIPipeValidationRuntimeException(e, "Unable to set parameter data!",
+                    "Affected parameter " + getName() + "." + " There is an error in the code.",
                     "Please contact the authors of the algorithm.");
         }
     }

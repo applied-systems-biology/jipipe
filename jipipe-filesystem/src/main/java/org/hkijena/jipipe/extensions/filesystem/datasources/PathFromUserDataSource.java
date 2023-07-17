@@ -3,13 +3,13 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
@@ -124,9 +124,8 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
 
         if (pathList.isEmpty()) {
             progressInfo.log("User input was cancelled!");
-            throw new UserFriendlyRuntimeException("User input was cancelled!",
+            throw new JIPipeValidationRuntimeException(new InterruptedException(),
                     "User input was cancelled!",
-                    "Node '" + getName() + "'",
                     "You had to provide input to allow the pipeline to continue. Instead, you cancelled the input.",
                     "");
         }

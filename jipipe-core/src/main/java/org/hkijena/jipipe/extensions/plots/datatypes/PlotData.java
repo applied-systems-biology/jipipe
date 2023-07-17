@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
@@ -213,8 +212,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storage.getFileSystemPath().resolve(name + "_plot-metadata.json").toFile(), this);
             }
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
-                    "Internal plot-export function",
+            throw new JIPipeValidationRuntimeException(e, "Unable to export plot!",
                     "A plot should be saved to '" + storage + "'. There was an error during this export.",
                     "Please check if you can write to the output folder. Please check if the algorithm inputs are valid. " +
                             "If you cannot solve the issue, please contact the plugin author.");
@@ -246,8 +244,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
             SVGUtils.writeToSVG(storage.getFileSystemPath().resolve(name + ".svg").toFile(), g2.getSVGElement());
 
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
-                    "Internal plot-export function",
+            throw new JIPipeValidationRuntimeException(e, "Unable to export plot!",
                     "A plot should be saved to '" + storage + "'. There was an error during this export.",
                     "Please check if you can write to the output folder. Please check if the algorithm inputs are valid. " +
                             "If you cannot solve the issue, please contact the plugin author.");

@@ -199,13 +199,6 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        if (titleAnnotation.isEnabled())
-            report.resolve("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
-    }
-
     @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +
             "Does not alter underlying values in the image.  " +
             "If unselected, all channel histograms are scaled to the image's digitization bit depth. " +

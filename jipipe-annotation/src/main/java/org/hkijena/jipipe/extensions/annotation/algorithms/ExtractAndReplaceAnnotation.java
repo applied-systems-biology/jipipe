@@ -75,16 +75,6 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Functions").report(functions);
-        for (int i = 0; i < functions.size(); i++) {
-            JIPipeValidationReport subReport = report.resolve("Functions").resolve("Item #" + (i + 1));
-            subReport.resolve("Input").checkNonEmpty(functions.get(i).getInput(), this);
-            subReport.resolve("Output").checkNonEmpty(functions.get(i).getOutput(), this);
-        }
-    }
-
     @JIPipeDocumentation(name = "Functions", description = "The functions that allow you to extract and replace annotation values. " +
             "To extract values, you can split the incoming string into multiple components and then select the n-th component " +
             "or select the one that matches RegEx. Alternatively you can define a RegEx string that contains a matching group (brackets). " +

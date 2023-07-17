@@ -20,10 +20,10 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -115,44 +115,37 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         if (user) {
             if (definition.getSlotType() == JIPipeSlotType.Input &&
                     !allowedInputSlotTypes.contains(definition.getDataClass()))
-                throw new UserFriendlyRuntimeException("Slot type is not accepted by this configuration!", "Unable to add slot!",
-                        "Algorithm slot configuration",
-                        "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),
+                        "Unable to add slot: slot type is not accepted by this configuration!",
+                        "The algorithm is configured to not accept this type of slot.",
+                        "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Input && !allowInputSlots)
-                throw new UserFriendlyRuntimeException("Slot configuration does not allow input slots", "Unable to add slot!",
-                        "Algorithm slot configuration",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot configuration does not allow input slots",
                         "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Input && inputSlotsSealed)
-                throw new UserFriendlyRuntimeException("Slot configuration is sealed!", "Unable to add slot!",
-                        "Algorithm slot configuration",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot configuration is sealed!",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Input &&
                     inputSlotOrder.size() >= maxInputSlots)
-                throw new UserFriendlyRuntimeException("Slot already reached the limit of input slots!", "Unable to add slot!",
-                        "Algorithm slot configuration",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot already reached the limit of input slots!",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Output &&
                     !allowedOutputSlotTypes.contains(definition.getDataClass()))
-                throw new UserFriendlyRuntimeException("Slot type is not accepted by this configuration!", "Unable to add slot!",
-                        "Algorithm slot configuration",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot type is not accepted by this configuration!",
                         "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Output && !allowOutputSlots)
-                throw new UserFriendlyRuntimeException("Slot configuration does not allow output slots", "Unable to add slot!",
-                        "Algorithm slot configuration",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot configuration does not allow output slots",
                         "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Output && outputSlotsSealed)
-                throw new UserFriendlyRuntimeException("Slot configuration is sealed!", "Unable to add slot!",
-                        "Algorithm slot configuration",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot configuration is sealed!",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Output &&
                     outputSlotOrder.size() >= maxOutputSlots)
-                throw new UserFriendlyRuntimeException("Slot already reached the limit of output slots!", "Unable to add slot!",
-                        "Algorithm slot configuration",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot already reached the limit of output slots!",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
         }
         if ((definition.isInput() && hasInputSlot(name)) || (definition.isOutput() && hasOutputSlot(name)))
-            throw new UserFriendlyRuntimeException("Slot already exists!", "Unable to add slot!",
-                    "Algorithm slot configuration",
+            throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot already exists!",
                     "There is already a slot with the same name.", "Slot names have to be unique across input and output slots. Please choose another name.");
 
 
@@ -204,12 +197,10 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         if (slot != null) {
             if (user) {
                 if (!canModifyInputSlots())
-                    throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
-                            "Algorithm slot configuration",
+                    throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to remove slot: input slots can not be modified!",
                             "The algorithm is configured, so input slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
                 if (!slot.isUserModifiable())
-                    throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
-                            "Algorithm slot configuration",
+                    throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to remove slot: input slots can not be modified!",
                             "The slot is configured, so it cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
             }
 
@@ -299,13 +290,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         if (slot != null) {
             if (user) {
                 if (!canModifyOutputSlots())
-                    throw new UserFriendlyRuntimeException("Output slots can not be modified!", "Unable to remove slot!",
-                            "Algorithm slot configuration",
+                    throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to remove slot: output slots can not be modified!",
                             "The algorithm is configured, so output slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
                 if (!slot.isUserModifiable())
-                    throw new UserFriendlyRuntimeException("Input slots can not be modified!", "Unable to remove slot!",
-                            "Algorithm slot configuration",
-                            "The slot is configured, so it cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
+                    throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to remove slot: output slots can not be modified!",
+                            "The algorithm is configured, so output slots cannot be removed.", "Contact the authors of the plugin that provides the algorithm.");
             }
 
             outputSlots.remove(name);

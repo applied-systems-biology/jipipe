@@ -63,11 +63,6 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Add data as string").report(addDataToString);
-    }
-
-    @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Set<Integer> inputDataRows = dataBatch.getInputRows(getFirstInputSlot());
 

@@ -67,12 +67,6 @@ public class ExtractParent extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(result), progressInfo);
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        report.resolve("Order").checkIfWithin(this, order, 0, Double.POSITIVE_INFINITY, true, false);
-    }
-
     @JIPipeDocumentation(name = "Select N-th parent", description = "Determines which N-th parent is chosen. For example the 2nd parent of /a/b/c is 'a'. " +
             "If N=0, the path is not changed.")
     @JIPipeParameter("order")

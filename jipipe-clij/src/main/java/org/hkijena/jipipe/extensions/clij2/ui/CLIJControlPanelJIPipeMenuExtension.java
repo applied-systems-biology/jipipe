@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.clij2.ui;
 
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;

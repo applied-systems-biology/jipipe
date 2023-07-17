@@ -21,12 +21,13 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnProcessorParameterList;
@@ -97,11 +98,10 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
         for (ExpressionTableColumnProcessorParameter processor : processorParameters) {
             String sourceColumn = processor.getInput().queryFirst(input.getColumnNames(), new ExpressionVariables());
             if (sourceColumn == null) {
-                throw new UserFriendlyRuntimeException(new NullPointerException(),
-                        "Unable to find column matching " + processor.getInput(),
-                        "Algorithm '" + getName() + "'",
-                        "The column filter '" + processor.getInput() + "' tried to find a matching column in " + String.join(", ", input.getColumnNames()) + ". None of the columns matched.",
-                        "Please check if the filter is correct.");
+                throw new JIPipeValidationRuntimeException(new NullPointerException("Could not find column matching '" + processor.getInput() + "'"),
+                        "Could not find column matching '" + processor.getInput() + "'",
+                        "You tried to rename a column '" + processor.getInput() + "', but it was not found.",
+                        "Please check if the table '" + input + "' contains the column.");
             }
             int columnIndex = input.getColumnIndex(sourceColumn);
             List<Object> values = new ArrayList<>();
@@ -148,25 +148,8 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
 
     @Override
     public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Processors").report(processorParameters);
-        Set<String> columnNames = new HashSet<>();
-        for (ExpressionTableColumnProcessorParameter parameter : processorParameters) {
-            if (columnNames.contains(parameter.getOutput())) {
-                report.resolve("Processors").reportIsInvalid("Duplicate output column: " + parameter.getOutput(),
-                        "There should not be multiple output columns with the same name.",
-                        "Change the name to a unique non-empty string",
-                        this);
-                break;
-            }
-            if (StringUtils.isNullOrEmpty(parameter.getOutput())) {
-                report.resolve("Processors").reportIsInvalid("An output column has no name!",
-                        "All output columns must have a non-empty name.",
-                        "Change the name to a non-empty string",
-                        this);
-                break;
-            }
-            columnNames.add(parameter.getOutput());
-        }
+        super.reportValidity(parentCause, report);
+        report.report(new ParameterValidationReportEntryCause(parentCause, this, "Processors", "processors"), processorParameters);
     }
 
     @JIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")

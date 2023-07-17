@@ -13,12 +13,13 @@
 
 package org.hkijena.jipipe;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -88,8 +89,10 @@ public class JIPipeRunCommand implements Command {
             project.setWorkDirectory(projectFile.toPath().getParent());
 
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load project from '" + projectFile.toString() + "'!",
-                    "Run JIPipe project", "Either the provided parameter file does not exist or is inaccessible, or it was corrupted.",
+            throw new JIPipeValidationRuntimeException(
+                    e,
+                    "Could not load project from '" + projectFile.toString() + "'!",
+                    "Either the provided parameter file does not exist or is inaccessible, or it was corrupted.",
                     "Try to load the parameter file in the JIPipe GUI.");
         }
 

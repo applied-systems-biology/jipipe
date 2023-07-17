@@ -20,10 +20,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.*;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -487,10 +488,9 @@ public class JIPipeProjectWindow extends JFrame {
             // Remove tmp file
             Files.delete(tempFile);
         } catch (IOException e) {
-            UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(e,
+            UIUtils.openErrorDialog(this, new JIPipeValidationRuntimeException(e,
                     "Error during saving!",
-                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten.",
-                    "The issue cannot be determined. Please contact the JIPipe authors.",
+                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
                     "Please check if you have write access to the temporary directory and the target directory. " +
                             "If this is the case, please contact the JIPipe authors."));
         }

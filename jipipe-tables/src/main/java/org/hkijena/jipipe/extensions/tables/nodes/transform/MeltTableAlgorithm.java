@@ -126,15 +126,6 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        report.resolve("Output value column name").checkNonEmpty(outputValueColumnName, this);
-        if (outputCategoryColumnName.isEnabled()) {
-            report.resolve("Output category column name").checkNonEmpty(outputCategoryColumnName.getContent(), this);
-        }
-    }
-
     @JIPipeDocumentation(name = "Value columns", description = "Allows to select the value columns by their name via a filter expression. ")
     @JIPipeParameter("value-columns")
     public StringQueryExpression getValueColumns() {

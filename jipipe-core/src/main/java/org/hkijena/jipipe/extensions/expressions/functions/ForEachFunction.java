@@ -1,7 +1,10 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -32,12 +35,12 @@ public class ForEachFunction extends ExpressionFunction {
             String assignment = (String) parameters.get(1);
             int separatorIndex = assignment.indexOf('=');
             if (separatorIndex < 0) {
-                throw new UserFriendlyRuntimeException("Variable assignment '" + assignment + "' is invalid: Missing '='.",
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomReportEntryCause("Expression" ),
+                        "Variable assignment '" + assignment + "' is invalid: Missing '='.",
                         "Invalid variable assignment expression!",
-                        "Assignment '" + assignment + "'",
                         "You used an expression function that assigns variables. Variable assignments always have following format: [Variable name]=[Expression]. " +
                                 "For example: var1=x+1",
-                        "Insert a correct variable assignment");
+                        "Insert a correct variable assignment"));
             }
             variableName = assignment.substring(0, separatorIndex);
             String expression = assignment.substring(separatorIndex + 1);

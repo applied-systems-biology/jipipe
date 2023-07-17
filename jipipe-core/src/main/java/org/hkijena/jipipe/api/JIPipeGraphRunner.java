@@ -14,9 +14,7 @@
 package org.hkijena.jipipe.api;
 
 import com.google.common.collect.BiMap;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.looping.LoopGroup;
@@ -24,6 +22,7 @@ import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 
 import java.nio.file.Paths;
 import java.util.*;
@@ -99,10 +98,10 @@ public class JIPipeGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.Sl
         progressInfo.setMaxProgress(traversedSlots.size());
         for (int currentIndex = 0; currentIndex < traversedSlots.size(); ++currentIndex) {
             if (progressInfo.isCancelled())
-                throw new UserFriendlyRuntimeException("Execution was cancelled",
+                throw new JIPipeValidationRuntimeException(new InterruptedException(),
+                        "Execution was cancelled",
                         "You cancelled the execution of the algorithm pipeline.",
-                        "Pipeline run", "You clicked 'Cancel'.",
-                        "Do not click 'Cancel' if you do not want to cancel the execution.");
+                        null);
             JIPipeDataSlot slot = traversedSlots.get(currentIndex);
             progressInfo.setProgress(currentIndex, traversedSlots.size());
             JIPipeProgressInfo subProgress = progressInfo.resolveAndLog(slot.getNode().getName());
@@ -245,11 +244,9 @@ public class JIPipeGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.Sl
             try {
                 node.run(subProgress);
             } catch (Exception e) {
-                throw new UserFriendlyRuntimeException("Algorithm " + node + " raised an exception!",
-                        e,
+                throw new JIPipeValidationRuntimeException(e,
                         "An error occurred during processing",
                         "On running the algorithm '" + node.getName() + "', within graph '" + algorithmGraph + "'",
-                        "Please refer to the other error messages.",
                         "Please follow the instructions for the other error messages.");
             }
 

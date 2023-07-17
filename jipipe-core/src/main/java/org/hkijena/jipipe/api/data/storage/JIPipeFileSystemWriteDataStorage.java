@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.api.data.storage;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -56,8 +56,8 @@ public class JIPipeFileSystemWriteDataStorage implements JIPipeWriteDataStorage 
         try {
             Files.createDirectories(newPath);
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + newPath + "'!",
-                    toString(), "The path might be invalid, or you might not have the permissions to write in a parent folder.",
+            throw new JIPipeValidationRuntimeException(e, "Unable to create directory '" + newPath + "'!",
+                    "The path might be invalid, or you might not have the permissions to write in a parent folder.",
                     "Check if the path is valid, and you have write-access.");
         }
         return new JIPipeFileSystemWriteDataStorage(progressInfo, newPath, getInternalPath().resolve(path));

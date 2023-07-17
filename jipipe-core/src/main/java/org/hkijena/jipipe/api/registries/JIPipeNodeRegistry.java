@@ -22,10 +22,10 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -199,10 +199,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
     public JIPipeNodeInfo getInfoById(String id) {
         JIPipeNodeInfo info = registeredNodeInfos.getOrDefault(id, null);
         if (info == null) {
-            throw new UserFriendlyRuntimeException(new NullPointerException("Could not find algorithm info with id '" + id + "' in " +
+            throw new JIPipeValidationRuntimeException(new NullPointerException("Could not find algorithm info with id '" + id + "' in " +
                     String.join(", ", registeredNodeInfos.keySet())),
                     "Unable to find an algorithm type!",
-                    "JIPipe plugin manager",
                     "A project or extension requires an algorithm of type '" + id + "'. It could not be found.",
                     "Check if JIPipe is up-to-date and the newest version of all plugins are installed. If you know that an algorithm was assigned a new ID, " +
                             "search for '" + id + "' in the JSON file and replace it with the new identifier.");

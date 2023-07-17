@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -66,13 +67,6 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
         this.annotations = new NamedTextAnnotationGeneratorExpression.List(other.annotations);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        for (int i = 0; i < annotations.size(); i++) {
-            report.resolve("Annotations").resolve("Item #" + (i + 1)).resolve("Name").checkNonEmpty(annotations.get(i).getValue(), this);
-        }
     }
 
     @Override

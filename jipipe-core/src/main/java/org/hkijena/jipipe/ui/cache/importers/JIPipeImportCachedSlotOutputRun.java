@@ -9,8 +9,11 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,21 +89,21 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
         slotProgressInfo.log("Importing from " + dataFolder);
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             slotProgressInfo.log("Error: data-table.json missing");
-            throw new UserFriendlyRuntimeException("Missing data-table.json!",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportEntryCause(graphNode),
+                    "Missing data-table.json!",
                     "Wrong input folder!",
-                    "Import cache into algorithm " + graphNode.getName(),
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". JIPipe has a very specific format to store such folders. The directory seems to not conform to this format.",
-                    "Check if the folder contains many numeric subfolders and a data-table.json file.");
+                    "Check if the folder contains many numeric subfolders and a data-table.json file."));
         }
         JIPipeDataTableMetadata exportedDataTable = JIPipeDataTableMetadata.loadFromJson(dataFolder.resolve("data-table.json"));
         Class<? extends JIPipeData> dataType = JIPipe.getDataTypes().getById(exportedDataTable.getAcceptedDataTypeId());
         if (dataType == null) {
             slotProgressInfo.log("Error: Unknown data type id " + exportedDataTable.getAcceptedDataTypeId());
-            throw new UserFriendlyRuntimeException("Unknown data type id: " + exportedDataTable.getAcceptedDataTypeId(),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportEntryCause(graphNode),
+                    "Unknown data type id: " + exportedDataTable.getAcceptedDataTypeId(),
                     "Unknown data type",
-                    "Import cache into algorithm " + graphNode.getName(),
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". The data contained in this folder is identified by a type id '" + exportedDataTable.getAcceptedDataTypeId() + "', but it could not be found.",
-                    "Check if you installed the necessary plugins and extensions.");
+                    "Check if you installed the necessary plugins and extensions."));
         }
 
         for (JIPipeDataTableMetadataRow row : exportedDataTable.getRowList()) {

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 
 import java.util.Map;
@@ -73,7 +74,8 @@ public class DefineParametersAlgorithm extends JIPipeAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Parameters").report(parameters);
+        super.reportValidity(parentCause, report);
+        report.report(new ParameterValidationReportEntryCause(parentCause, this, "Parameters", "parameters"), parameters);
     }
 
     @JIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")

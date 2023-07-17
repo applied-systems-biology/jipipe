@@ -20,7 +20,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.utils.*;
@@ -80,10 +82,11 @@ public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironmen
     public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         if(!isProvidedByEnvironment()) {
             if(!Files.isDirectory(getAbsoluteLibraryDirectory())) {
-                report.reportIsInvalid("Missing Python adapter library!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        parentCause,
+                        "Missing Python adapter library!",
                         "The Python integration requires an adapter library. It was not found at " + getAbsoluteLibraryDirectory(),
-                        "Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable.",
-                        this);
+                        "Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable."));
             }
         }
     }

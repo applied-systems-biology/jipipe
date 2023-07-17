@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.utils.json.JsonDeserializable;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -282,7 +282,8 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
                 parameterAccess.setSource(this);
                 dynamicParameters.put(entry.getKey(), parameterAccess);
             } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to read parameter from JSON!", "User-modifiable parameters", "There is essential information missing in the JSON data.",
+                throw new JIPipeValidationRuntimeException(e, "Unable to read parameter from JSON!",
+                        "There is essential information missing in the JSON data.",
                         "Please check if the JSON data is valid.");
             }
         }

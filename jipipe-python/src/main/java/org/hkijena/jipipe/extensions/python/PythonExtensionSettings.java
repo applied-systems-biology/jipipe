@@ -21,6 +21,9 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 import java.util.List;
@@ -43,16 +46,19 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
     /**
      * Checks if the Python settings are valid or reports an invalid state
      *
-     * @param report the report
+     * @param parentCause the parent cause
+     * @param report      the report
      */
-    public static void checkPythonSettings(JIPipeValidationReport report) {
-        if (!pythonSettingsAreValid()) {
-            report.reportIsInvalid("Python is not configured!",
+    public static void checkPythonSettings(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+        if (!pythonSettingsAreValid(parentCause)) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    parentCause,
+                    "Python is not configured!",
                     "Project > Application settings > Extensions > Python integration",
                     "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
                     "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html. " +
                             "Then go to Project > Application settings > Extensions > Python integration and choose the environment. " +
-                            "Alternatively, you can install a Conda environment from the settings page.");
+                            "Alternatively, you can install a Conda environment from the settings page."));
         }
     }
 
@@ -61,7 +67,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
      *
      * @return if the settings are correct
      */
-    public static boolean pythonSettingsAreValid() {
+    public static boolean pythonSettingsAreValid(JIPipeValidationReportEntryCause parentCause) {
         if (JIPipe.getInstance() != null) {
             PythonExtensionSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();

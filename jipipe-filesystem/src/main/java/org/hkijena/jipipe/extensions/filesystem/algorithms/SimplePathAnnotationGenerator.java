@@ -102,11 +102,6 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
             return fileName.substring(0, dotIndex);
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
-    }
-
     @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each path")
     @JIPipeParameter("generated-annotation")
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")

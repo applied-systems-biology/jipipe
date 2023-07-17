@@ -112,7 +112,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
             if (overrideEnvironment.isEnabled()) {
                 report.report(new ParameterValidationReportEntryCause(parentCause, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
             } else {
-                PythonExtensionSettings.checkPythonSettings(report);
+                PythonExtensionSettings.checkPythonSettings(parentCause, report);
             }
         }
     }

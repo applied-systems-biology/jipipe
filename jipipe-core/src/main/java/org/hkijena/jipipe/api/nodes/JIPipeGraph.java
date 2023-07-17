@@ -30,7 +30,6 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.looping.LoopEndNode;
 import org.hkijena.jipipe.api.looping.LoopGroup;
@@ -41,6 +40,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.causes.GraphNodeSlotValidationReportEntryCause;
 import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphValidationReportEntryCause;
 import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
@@ -307,11 +307,13 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      */
     public UUID insertNode(UUID uuid, JIPipeGraphNode node, UUID compartment) {
         if (nodeUUIDs.containsKey(uuid))
-            throw new UserFriendlyRuntimeException("Already contains algorithm with UUID " + uuid,
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportEntryCause(node),
+                    "Already contains algorithm with UUID " + uuid,
                     "Could not add an algorithm node into the graph!",
-                    "Algorithm graph", "There already exists an algorithm with the same identifier.",
+                    "There already exists an algorithm with the same identifier.",
                     "If you are loading from a JSON project or plugin, check if the file is valid. Contact " +
-                            "the JIPipe or plugin developers for further assistance.");
+                            "the JIPipe or plugin developers for further assistance."));
         node.setParentGraph(this);
         nodeUUIDs.put(uuid, node);
         nodeCompartmentUUIDs.put(uuid, compartment);
@@ -601,10 +603,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             return;
         }
         if (!canConnect(source, target, false))
-            throw new UserFriendlyRuntimeException("Cannot connect data slots: " + source.getDisplayName() + " ==> " + target.getDisplayName(),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportEntryCause(source.getNode()),
+                    "Cannot connect data slots: " + source.getDisplayName() + " ==> " + target.getDisplayName(),
                     "Cannot create a connection between '" + source.getDisplayName() + "' and '" + target.getDisplayName() + "'!",
-                    "Algorithm graph", "The connection is invalid, such as one that causes cycles in the graph, or a connection where a slot receives multiple inputs",
-                    "Check if your pipeline contains complicated sections prone to cycles. Reorganize the graph by dragging the nodes around.");
+                    "The connection is invalid, such as one that causes cycles in the graph, or a connection where a slot receives multiple inputs",
+                    "Check if your pipeline contains complicated sections prone to cycles. Reorganize the graph by dragging the nodes around."));
         graph.addEdge(source, target, new JIPipeGraphEdge(userCanDisconnect));
         postChangedEvent();
         nodeConnectedEventEmitter.emit(new NodeConnectedEvent(this, source, target));
@@ -1824,12 +1828,12 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                         detectedLoopDepths.put(targetNode, previousLoopDepth);
                     }
                 } else {
-                    throw new UserFriendlyRuntimeException("Invalid loop detected: The node '" + targetNode.getDisplayName() + "' is rooted in different loops: "
-                            + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
-                            "Invalid loop detected!",
-                            "Node '" + targetNode.getDisplayName() + "', loop start nodes " + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
+                    throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphValidationReportEntryCause(this),
+                            "Invalid loop detected: The node '" + targetNode.getDisplayName() + "' is rooted in different loops: "
+                                    + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
+                            "Invalid loop detected: " + "Node '" + targetNode.getDisplayName() + "', loop start nodes " + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
                             "You have created a loop section that has more than one loop starts. JIPipe does not know how to resolve this.",
-                            "Check the affected node and trace back the loop start nodes. You can nest loops, but you cannot have multiple loop starts with equal depths.");
+                            "Check the affected node and trace back the loop start nodes. You can nest loops, but you cannot have multiple loop starts with equal depths."));
                 }
             }
         }

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.components;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyException;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -30,15 +30,14 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Displays exceptions in a user-friendly way.
- * Can handle {@link org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException} and {@link JIPipeValidationReport}
+ * Can handle {@link JIPipeValidationRuntimeException} and {@link JIPipeValidationReport}
  */
 public class UserFriendlyErrorUI extends FormPanel {
 
-    private List<ErrorEntry> entries = new ArrayList<>();
+    private final List<ErrorEntry> entries = new ArrayList<>();
 
     /**
      * @param helpDocument the help document to be displayed. If null, no help is displayed
@@ -55,15 +54,17 @@ public class UserFriendlyErrorUI extends FormPanel {
      * @param e the exception
      */
     public void displayErrors(Throwable e) {
-        if (e instanceof UserFriendlyException) {
+        if (e instanceof JIPipeValidationRuntimeException) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
-            UserFriendlyException exception = (UserFriendlyException) e;
-            addEntry(new ErrorEntry(exception.getUserWhat(),
-                    exception.getUserWhere(),
-                    exception.getUserWhy(),
-                    exception.getUserHow(),
-                    writer.toString()));
+            JIPipeValidationRuntimeException exception = (JIPipeValidationRuntimeException) e;
+            for (JIPipeValidationReportEntry entry : exception.getReport()) {
+                addEntry(new ErrorEntry(entry.getTitle(),
+                        entry.getTitle(),
+                        entry.getExplanation(),
+                        entry.getSolution(),
+                        entry.getDetails() + "\n\nCaused by: " + writer));
+            }
         } else {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
@@ -76,7 +77,7 @@ public class UserFriendlyErrorUI extends FormPanel {
                     writer.toString()));
         }
         if (e.getCause() instanceof Exception) {
-            displayErrors((Exception) e.getCause());
+            displayErrors(e.getCause());
         }
     }
 

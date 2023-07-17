@@ -35,7 +35,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -152,8 +151,8 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         try {
             return JsonUtils.getObjectMapper().readerFor(typeReference).readValue(node);
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load dependencies from JIPipe project",
-                    "Project", "The JSON data that describes the project dependencies is missing essential information",
+            throw new JIPipeValidationRuntimeException(e, "Could not load dependencies from JIPipe project",
+                    "The JSON data that describes the project dependencies is missing essential information",
                     "Open the file in a text editor and compare the dependencies with a valid project. You can also try " +
                             "to delete the whole dependencies section - you just have to make sure that they are actually satisfied. " +
                             "To do this, use the plugin manager in JIPipe's GUI.");
@@ -173,8 +172,8 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         try {
             return JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node);
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load metadata from JIPipe project",
-                    "Project", "The JSON data that describes the project metadata is missing essential information",
+            throw new JIPipeValidationRuntimeException(e, "Could not load metadata from JIPipe project",
+                    "The JSON data that describes the project metadata is missing essential information",
                     "Open the file in a text editor and compare the metadata with a valid project.");
         }
     }

@@ -10,7 +10,9 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -53,10 +55,18 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         super.reportValidity(parentCause, report);
         for (Column column : columns.mapToCollection(Column.class)) {
             if (StringUtils.isNullOrEmpty(column.key)) {
-                report.reportIsInvalid("Column key cannot be empty!", "You cannot have empty parameter keys!", "Provide an appropriate parameter key.", column);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        parentCause,
+                        "Column key cannot be empty!",
+                        "You cannot have empty parameter keys!",
+                        "Provide an appropriate parameter key."));
             }
             if (column.type.getInfo() == null) {
-                report.reportIsInvalid("Column type cannot be empty!", "You cannot have empty parameter type!", "Provide an appropriate parameter type.", column);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        parentCause,
+                        "Column type cannot be empty!",
+                        "You cannot have empty parameter type!",
+                        "Provide an appropriate parameter type."));
             }
         }
     }

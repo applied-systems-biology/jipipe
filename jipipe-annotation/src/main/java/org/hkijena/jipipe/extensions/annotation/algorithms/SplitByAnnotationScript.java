@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
@@ -85,8 +86,8 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, parentCause, report.resolve("Script"));
-        JythonUtils.checkScriptParametersValidity(scriptParameters, parentCause, report.resolve("Script parameters"));
+        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportEntryCause(parentCause, this, "Script", "code"), report);
+        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportEntryCause(parentCause, this, "Script parameters", "script-parameters"), report);
     }
 
     @Override

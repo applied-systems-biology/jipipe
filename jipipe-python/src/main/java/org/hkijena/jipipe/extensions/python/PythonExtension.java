@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -120,7 +121,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
-        if (!PythonExtensionSettings.pythonSettingsAreValid()) {
+        if (!PythonExtensionSettings.pythonSettingsAreValid(new UnspecifiedReportEntryCause())) {
             JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":python-not-configured");
             notification.setHeading("Python is not configured");
             notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +

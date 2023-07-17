@@ -67,11 +67,6 @@ public class SimpleFileAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
-    }
-
     /**
      * @return Generated annotation type
      */

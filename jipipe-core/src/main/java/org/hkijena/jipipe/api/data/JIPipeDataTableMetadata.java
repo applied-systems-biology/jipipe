@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -63,8 +63,9 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
             }
             return result;
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to load data table from '" + fileName + "'!",
-                    "Load JIPipe results", "Either the file is inaccessible, or corrupt.",
+            throw new JIPipeValidationRuntimeException(e,
+                    "Unable to load data table from '" + fileName + "'!",
+                    "Either the file is inaccessible, or corrupt.",
                     "Check if the file is readable and contains valid JSON data.");
         }
     }

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableCellExpressionParameterVariableSource;
@@ -91,9 +92,9 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
 
     @Override
     public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Columns").report(columns);
+        super.reportValidity(parentCause, report);
+        report.report(new ParameterValidationReportEntryCause(parentCause, this, "Columns", "columns"), columns);
     }
-
 
     @JIPipeDocumentation(name = "Columns", description = "Columns to be generated")
     @JIPipeParameter("columns")

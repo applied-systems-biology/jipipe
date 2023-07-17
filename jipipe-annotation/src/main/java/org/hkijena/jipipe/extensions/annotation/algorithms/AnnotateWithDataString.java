@@ -72,11 +72,6 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
-    }
-
     @JIPipeDocumentation(name = "Prefer detailed string", description = "If enabled, a more detailed string information (if available) is used instead of the string shown in the UI.")
     @JIPipeParameter("detailed-data-string")
     public boolean isDetailedDataString() {

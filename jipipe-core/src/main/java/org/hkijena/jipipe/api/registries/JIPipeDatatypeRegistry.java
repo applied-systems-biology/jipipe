@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.registries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
@@ -23,7 +22,10 @@ import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotPreview;
@@ -162,12 +164,12 @@ public class JIPipeDatatypeRegistry {
         else {
             GraphPath<JIPipeDataInfo, DataConverterEdge> path = shortestPath.getPath(JIPipeDataInfo.getInstance(inputData.getClass()), JIPipeDataInfo.getInstance(outputDataType));
             if (path == null) {
-                throw new UserFriendlyRuntimeException("Could not convert " + inputData.getClass() + " to " + outputDataType,
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomReportEntryCause("Data type conversion"),
+                        "Could not convert " + inputData.getClass() + " to " + outputDataType,
                         "Unable to convert data type!",
-                        "JIPipe plugin manager",
                         "An algorithm requested that the data of type '" + JIPipeData.getNameOf(inputData.getClass()) + "' should be converted to type '" + JIPipeData.getNameOf(outputDataType) + "'." +
                                 " There no available conversion function.",
-                        "Please check if the input data has the correct format by using the quick run. If you cannot resolve the issue, please contact the plugin or JIPipe authors.");
+                        "Please check if the input data has the correct format by using the quick run. If you cannot resolve the issue, please contact the plugin or JIPipe authors."));
             }
             JIPipeData data = inputData;
             for (DataConverterEdge edge : path.getEdgeList()) {
@@ -389,10 +391,9 @@ public class JIPipeDatatypeRegistry {
     public Class<? extends JIPipeData> getById(String id) {
         Class<? extends JIPipeData> klass = registeredDataTypes.getOrDefault(id, null);
         if (klass == null) {
-            throw new UserFriendlyRuntimeException(new NullPointerException("Could not find data type with id '" + id + "' in " +
+            throw new JIPipeValidationRuntimeException(new NullPointerException("Could not find data type with id '" + id + "' in " +
                     String.join(", ", registeredDataTypes.keySet())),
                     "Unable to find an data type!",
-                    "JIPipe plugin manager",
                     "A project or extension requires an data type '" + id + "'. It could not be found.",
                     "Check if JIPipe is up-to-date and the newest version of all plugins are installed. If you know that a data type was assigned a new ID, " +
                             "search for '" + id + "' in the JSON file and replace it with the new identifier.");

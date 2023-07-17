@@ -28,7 +28,6 @@ import omero.model.Annotation;
 import omero.model.IObject;
 import omero.model.NamedValue;
 import omero.model.Pixels;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.*;

@@ -25,7 +25,10 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -97,11 +100,17 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
         super.reportValidity(parentCause, report);
         if (dataType.getInfo() == null) {
-            report.resolve("Data type").reportIsInvalid("Please select a data type!", "This node requires you to select a data type that should be imported.",
-                    "Please select a data type in the parameters", this);
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    parentCause,
+                    "Please select a data type!",
+                    "This node requires you to select a data type that should be imported.",
+                    "Please select a data type in the parameters"));
         } else if (ReflectionUtils.isAbstractOrInterface(dataType.getInfo().getDataClass())) {
-            report.resolve("Data type").reportIsInvalid("Data type is generic!", "This node requires you to select a data type that does not act as general concept.",
-                    "Please select a data type in the parameters", this);
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    parentCause,
+                    "Data type is generic!",
+                    "This node requires you to select a data type that does not act as general concept.",
+                    "Please select a data type in the parameters"));
         }
     }
 }

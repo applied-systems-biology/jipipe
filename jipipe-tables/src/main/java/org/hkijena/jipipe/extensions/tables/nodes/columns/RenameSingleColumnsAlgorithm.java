@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
@@ -79,15 +80,8 @@ public class RenameSingleColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @Override
     public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Renaming entries").report(renamingEntries);
-        for (int i = 0; i < renamingEntries.size(); i++) {
-            if (StringUtils.isNullOrEmpty(renamingEntries.get(i).getValue())) {
-                report.resolve("Item #" + (i + 1)).reportIsInvalid("Target cannot be empty!",
-                        "You cannot rename a column to an empty name!",
-                        "Please change the target to a unique non-empty name.",
-                        this);
-            }
-        }
+        super.reportValidity(parentCause, report);
+        report.report(new ParameterValidationReportEntryCause(parentCause, this, "Renaming entries", "renaming-entries"), renamingEntries);
     }
 
     @JIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
