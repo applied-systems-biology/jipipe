@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.library.patterns;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -124,12 +124,12 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         switch (mode) {
             case SplitAndPick:
                 if(StringUtils.isNullOrEmpty(splitCharacter)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new CustomReportEntryCause(parentCause, "Split character"),
+                            new CustomValidationReportContext(context, "Split character"),
                             "Empty split character!",
                             "The split character cannot be empty!"));
                 }
@@ -137,13 +137,13 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
             case SplitAndFind:
                 if(StringUtils.isNullOrEmpty(splitCharacter)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new CustomReportEntryCause(parentCause, "Split character"),
+                            new CustomValidationReportContext(context, "Split character"),
                             "Empty split character!",
                             "The split character cannot be empty!"));
                 }
                 if(splitPickedIndex < 0) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new CustomReportEntryCause(parentCause, "Selected index"),
+                            new CustomValidationReportContext(context, "Selected index"),
                             "Negative selected index!",
                             "The selected index cannot be negative!"));
                 }
@@ -153,7 +153,7 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
                     Pattern.compile(regexString);
                 } catch (PatternSyntaxException e) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new CustomReportEntryCause(parentCause, "RegEx"),
+                            new CustomValidationReportContext(context, "RegEx"),
                             "RegEx syntax is wrong!",
                             "The regular expression string is wrong.",
                             "Please check the syntax. If you are not familiar with it, you can find plenty of resources online."));

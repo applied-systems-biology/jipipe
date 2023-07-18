@@ -24,8 +24,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.validation.causes.APIErrorValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.APIErrorValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -138,7 +138,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
 
     private void importParameterString(String parametersString) {
         JsonNode jsonNode = JsonUtils.readFromString(parametersString, JsonNode.class);
-        ParameterUtils.deserializeParametersFromJson(algorithm, jsonNode, new UnspecifiedReportEntryCause(), new JIPipeValidationReport());
+        ParameterUtils.deserializeParametersFromJson(algorithm, jsonNode, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
     }
 
     public int getNumThreads() {
@@ -150,10 +150,10 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (algorithm == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new APIErrorValidationReportEntryCause(),
+                    new APIErrorValidationReportContext(),
                     "No algorithm was provided!",
                     "This is an programming error. Please contact the JIPipe author.",
                     null,

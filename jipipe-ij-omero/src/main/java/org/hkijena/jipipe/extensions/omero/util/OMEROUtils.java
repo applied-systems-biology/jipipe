@@ -28,6 +28,7 @@ import omero.model.Annotation;
 import omero.model.IObject;
 import omero.model.NamedValue;
 import omero.model.Pixels;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.*;
@@ -137,9 +138,8 @@ public class OMEROUtils {
                                         ic.getCustomAnnotationList().add((Annotation) obj);
                                     }
                                 } catch (Exception e) {
-                                    throw new UserFriendlyRuntimeException(e,
+                                    throw new JIPipeValidationRuntimeException(e,
                                             "OMERO upload was interrupted",
-                                            "OMERO upload",
                                             "The input file " + ic.getFile() + " could not be loaded",
                                             "Please check if you can upload data via OMERO Insight.");
                                 }
@@ -147,9 +147,8 @@ public class OMEROUtils {
                             result.addAll(library.importImage(ic, uploadThreadPoolFinal, indexFinal));
                             return true;
                         } catch (Throwable t) {
-                            throw new UserFriendlyRuntimeException(t,
+                            throw new JIPipeValidationRuntimeException(t,
                                     "OMERO upload was interrupted",
-                                    "OMERO upload",
                                     "Please consider the technical information",
                                     "Please check if you can upload data via OMERO Insight.");
                         }
@@ -167,9 +166,8 @@ public class OMEROUtils {
                         }
                     }
                 } catch (InterruptedException | ExecutionException ie) {
-                    throw new UserFriendlyRuntimeException(ie,
+                    throw new JIPipeValidationRuntimeException(ie,
                             "OMERO upload was interrupted",
-                            "OMERO upload",
                             "Please consider the technical information",
                             "Please check if you can upload data via OMERO Insight.");
                 }

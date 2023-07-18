@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 
@@ -84,13 +84,6 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Start slice").checkIfWithin(this, startSlice, -1, Double.POSITIVE_INFINITY, true, true);
-        report.resolve("Stop slice").checkIfWithin(this, stopSlice, -1, Double.POSITIVE_INFINITY, true, true);
     }
 
     @JIPipeDocumentation(name = "Method", description = "The function that is applied to each stack of pixels.")

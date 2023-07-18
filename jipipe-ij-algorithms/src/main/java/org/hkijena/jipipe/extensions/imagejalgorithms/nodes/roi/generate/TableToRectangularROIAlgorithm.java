@@ -17,13 +17,14 @@ import ij.gui.OvalRoi;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -88,17 +89,18 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        report.resolve("Column 'X1'").report(columnX1);
-        report.resolve("Column 'Y1'").report(columnY1);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        report.report(new ParameterValidationReportContext(context, this, "Column 'X1'", "column-x1"), columnX1);
+        report.report(new ParameterValidationReportContext(context, this, "Column 'Y1'", "column-y1"), columnY1);
+
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
-            report.resolve("Column 'Width'").report(columnWidth);
-            report.resolve("Column 'Height'").report(columnHeight);
+            report.report(new ParameterValidationReportContext(context, this, "Column 'Width'", "column-width"), columnWidth);
+            report.report(new ParameterValidationReportContext(context, this, "Column 'Height'", "column-height"), columnHeight);
         }
         if (anchor == Anchor.TwoPoints) {
-            report.resolve("Column 'X2'").report(columnX2);
-            report.resolve("Column 'Y2'").report(columnY2);
+            report.report(new ParameterValidationReportContext(context, this, "Column 'X2'", "column-x2"), columnX2);
+            report.report(new ParameterValidationReportContext(context, this, "Column 'Y2'", "column-y2"), columnY2);
         }
     }
 
@@ -204,11 +206,11 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     private void ensureColumnExists(TableColumn column, ResultsTableData table, String name) {
         if (column == null) {
-            throw new UserFriendlyRuntimeException("Could not find column for " + name + "!",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
+                    "Could not find column for " + name + "!",
                     "The algorithm requires a column that provides coordinate " + name + ".",
-                    getName() + ", table " + table,
-                    "A column reference or generator is required that supplies the coordinates.",
-                    "Please check if the settings are correct and if your table contains the requested column.");
+                    "Please check if the settings are correct and if your table contains the requested column."));
         }
     }
 

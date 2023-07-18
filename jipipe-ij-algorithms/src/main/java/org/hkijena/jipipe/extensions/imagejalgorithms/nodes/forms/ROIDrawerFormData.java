@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -73,7 +74,7 @@ public class ROIDrawerFormData extends FormData {
     }
 
     @Override
-    public void customCopy(FormData source, JIPipeValidationReport report) {
+    public void customCopy(FormData source, CustomValidationReportContext context, JIPipeValidationReport report) {
         // Initialize the viewer
         getImageViewerPanel();
 
@@ -103,7 +104,7 @@ public class ROIDrawerFormData extends FormData {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
 
     }
 

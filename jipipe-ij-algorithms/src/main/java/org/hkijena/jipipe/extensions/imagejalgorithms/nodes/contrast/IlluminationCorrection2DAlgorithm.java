@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.blur.GaussianBlur2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -91,10 +91,5 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
     @JIPipeParameter(value = "gaussian-algorithm")
     public GaussianBlur2DAlgorithm getGaussianAlgorithm() {
         return gaussianAlgorithm;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        report.resolve("Gaussian filter").report(gaussianAlgorithm);
     }
 }

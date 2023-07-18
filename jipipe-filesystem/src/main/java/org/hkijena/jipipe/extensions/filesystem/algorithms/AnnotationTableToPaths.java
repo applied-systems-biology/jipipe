@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -71,7 +71,7 @@ public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {
         AnnotationTableData tableData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
         TableColumn tableColumn = column.pickOrGenerateColumn(tableData);
         if (tableColumn == null) {
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportEntryCause(this),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                     "Could not find column that matches '" + column.toString() + "'!",
                     "No column matching the rule '" + column.toString() + "' was found. " +
                             "The table contains only following columns: " + String.join(", ", tableData.getColumnNames()),

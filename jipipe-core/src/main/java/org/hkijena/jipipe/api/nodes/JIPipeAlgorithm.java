@@ -26,10 +26,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -86,10 +86,10 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (passThrough && !canPassThrough()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new ParameterValidationReportEntryCause(this, "Pass through", "jipipe:algorithm:pass-through"),
+                    new ParameterValidationReportContext(this, "Pass through", "jipipe:algorithm:pass-through"),
                     "Pass through is not supported!",
                     "The algorithm reports that it does not support pass through. This is often the case for multi-output algorithms or " +
                             "algorithms that apply a conversion."));
@@ -293,7 +293,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             JsonNode node2 = JsonUtils.readFromString(jsonString, JsonNode.class);
             JIPipeValidationReport report = new JIPipeValidationReport();
             getSlotConfiguration().setTo(node.getSlotConfiguration());
-            ParameterUtils.deserializeParametersFromJson(this, node2, new UnspecifiedReportEntryCause(), report);
+            ParameterUtils.deserializeParametersFromJson(this, node2, new UnspecifiedValidationReportContext(), report);
             getSlotConfiguration().setTo(node.getSlotConfiguration());
             if (!report.isEmpty()) {
                 report.print();

@@ -1,21 +1,21 @@
 package org.hkijena.jipipe.api.validation.causes;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class GraphValidationReportEntryCause extends JIPipeValidationReportEntryCause {
+public class GraphValidationReportContext extends JIPipeValidationReportContext {
 
     private final JIPipeGraph graph;
 
-    public GraphValidationReportEntryCause(JIPipeGraph graph) {
+    public GraphValidationReportContext(JIPipeGraph graph) {
         this.graph = graph;
     }
 
-    public GraphValidationReportEntryCause(JIPipeValidationReportEntryCause parent, JIPipeGraph graph) {
+    public GraphValidationReportContext(JIPipeValidationReportContext parent, JIPipeGraph graph) {
         super(parent);
         this.graph = graph;
     }

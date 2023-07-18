@@ -30,9 +30,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -81,7 +80,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
      */
     public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
-        JIPipeProject project = JIPipeProject.loadProject(parameterFile, new UnspecifiedReportEntryCause(), report, notifications);
+        JIPipeProject project = JIPipeProject.loadProject(parameterFile, new UnspecifiedValidationReportContext(), report, notifications);
         JIPipeRunSettings configuration = new JIPipeRunSettings();
         configuration.setOutputPath(folder);
         JIPipeProjectRun run = new JIPipeProjectRun(project, configuration);

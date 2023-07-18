@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ParameterUtils;
@@ -109,7 +111,7 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        ParameterUtils.deserializeParametersFromJson(this, node, parentCause, new JIPipeValidationReport());
+        ParameterUtils.deserializeParametersFromJson(this, node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
     }
 
     /**
@@ -147,10 +149,11 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
      * A custom copy function that copies the contents from source into this form.
      * Should never raise exceptions. Use {@link JIPipeValidationReport} to report issues.
      *
-     * @param source the source data
-     * @param report the error report
+     * @param source                        the source data
+     * @param context the context
+     * @param report                        the error report
      */
-    public void customCopy(FormData source, JIPipeValidationReport report) {
+    public void customCopy(FormData source, CustomValidationReportContext context, JIPipeValidationReport report) {
 
     }
 

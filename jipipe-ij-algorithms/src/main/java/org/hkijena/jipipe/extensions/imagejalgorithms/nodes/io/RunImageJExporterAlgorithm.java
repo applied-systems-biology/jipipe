@@ -17,7 +17,10 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataExporterRef;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -61,11 +64,13 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (exporterType.getInstance() == null) {
-            report.reportIsInvalid("No exporter type selected!", "No exporter type was selected", "Please select an exporter", this);
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new ParameterValidationReportContext(context, this, "Exporter type", "exporter-type"),
+                    "No exporter type selected!", "No exporter type was selected", "Please select an exporter"));
         }
-        super.reportValidity(parentCause, report);
+        super.reportValidity(context, report);
     }
 
     @JIPipeDocumentation(name = "Set export parameters", description = "Sets the export parameters via its default UI")

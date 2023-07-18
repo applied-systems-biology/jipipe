@@ -39,11 +39,11 @@ public class OptionalDataAnnotationNameParameter extends OptionalStringParameter
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (isEnabled()) {
             if(!StringUtils.isNullOrEmpty(getContent())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        parentCause,
+                        context,
                         "The annotation name is empty!",
                         "Annotation names cannot be empty!"));
             }

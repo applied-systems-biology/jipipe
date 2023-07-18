@@ -62,11 +62,11 @@ public class JsonExtensionRegistrationTask implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         for (String dependencyId : dependencyIds) {
             if (!registry.getRegisteredExtensionIds().contains(dependencyId)) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        parentCause,
+                        context,
                         "A dependency is missing!",
                         "Dependency '" + dependencyId + "' is missing!",
                         "Please ensure that the matching extension is installed. Otherwise you can try to open the extension" +

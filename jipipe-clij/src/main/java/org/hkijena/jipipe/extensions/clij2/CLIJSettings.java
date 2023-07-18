@@ -7,6 +7,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.scijava.Context;
 import org.scijava.log.LogService;
@@ -46,21 +50,19 @@ public class CLIJSettings extends AbstractJIPipeParameterCollection {
         try {
             deviceList = CLIJ.getAvailableDeviceNames();
         } catch (Exception e) {
-            throw new UserFriendlyRuntimeException(e,
+            throw new JIPipeValidationRuntimeException(e,
                     "Could not get list of available graphics cards!",
-                    "CLIJ2 initialization",
                     "There was an error during the detection of installed graphics cards. This is often caused by " +
                             "old drivers or missing software.",
                     "Please check if you have OpenCL installed and a modern graphics card that can make use of it. " +
                             "Try updating your graphics driver. Try Installing 'ocl-icd-opencl-dev' if you are on Ubuntu, as this package provides some mandatory library.");
         }
         if (deviceList.isEmpty()) {
-            throw new UserFriendlyRuntimeException("No graphics card device available!",
-                    "No compatible graphics card detected!",
-                    "CLIJ2 initialization",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(),
+                    "No graphics card device available!",
                     "CLIJ could not detect a compatible graphics card. You cannot use any of the CLIJ2 functions.",
                     "Please check if you have OpenCL installed and a modern graphics card that can make use of it. " +
-                            "Try updating your graphics driver. Try Installing 'ocl-icd-opencl-dev' if you are on Ubuntu.");
+                            "Try updating your graphics driver. Try Installing 'ocl-icd-opencl-dev' if you are on Ubuntu."));
         }
 
         int deviceId = Math.max(0, Math.min(deviceList.size() - 1, getInstance().device));

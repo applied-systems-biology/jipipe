@@ -8,6 +8,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -42,11 +46,10 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus src = dataBatch.getInputData("Source", targetImageData.getClass(), progressInfo).getImage();
 
         if (src.getWidth() != output.getWidth() || src.getHeight() != output.getHeight() || src.getStackSize() != output.getStackSize()) {
-            throw new UserFriendlyRuntimeException("Images have different sizes!",
-                    "Source and target images have different sizes!",
-                    getName(),
-                    "You wanted to overlay two images with different sizes (width/height/planes).",
-                    "Please check if the images are correct.");
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
+                    "Input images do not have the same size!",
+                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels."));
         }
 
         ImageJUtils.forEachIndexedZCTSlice(output, (ip, index) -> {

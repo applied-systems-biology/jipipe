@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
@@ -102,31 +102,6 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionZAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionZAnnotation);
         this.physicalDimensionTAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionTAnnotation);
         this.physicalDimensionValueAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionValueAnnotation);
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        if (getTitleAnnotation().isEnabled())
-            report.resolve("Annotate with title").checkNonEmpty(getTitleAnnotation().getContent(), this);
-        if (getWidthAnnotation().isEnabled())
-            report.resolve("Annotate with image width").checkNonEmpty(getWidthAnnotation().getContent(), this);
-        if (getHeightAnnotation().isEnabled())
-            report.resolve("Annotate with image height").checkNonEmpty(getHeightAnnotation().getContent(), this);
-        if (getStackSizeAnnotation().isEnabled())
-            report.resolve("Annotate with stack size (Z)").checkNonEmpty(getStackSizeAnnotation().getContent(), this);
-        if (getPlaneNumberAnnotation().isEnabled())
-            report.resolve("Annotate with number of planes").checkNonEmpty(getPlaneNumberAnnotation().getContent(), this);
-        if (getChannelSizeAnnotation().isEnabled())
-            report.resolve("Annotate with channel size (C)").checkNonEmpty(getChannelSizeAnnotation().getContent(), this);
-        if (getFramesSizeAnnotation().isEnabled())
-            report.resolve("Annotate with number of frames (T)").checkNonEmpty(getFramesSizeAnnotation().getContent(), this);
-        if (getImageTypeAnnotation().isEnabled())
-            report.resolve("Annotate with image type").checkNonEmpty(getImageTypeAnnotation().getContent(), this);
-        if (getBitDepthAnnotation().isEnabled())
-            report.resolve("Annotate with bit depth").checkNonEmpty(getBitDepthAnnotation().getContent(), this);
-        if (getBitDepthAnnotation().isEnabled())
-            report.resolve("Annotate with color space").checkNonEmpty(getColorSpaceAnnotation().getContent(), this);
     }
 
     @Override

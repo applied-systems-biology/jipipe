@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndSortOrderPairParameter;
@@ -129,7 +129,7 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         if (result == null) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new GraphNodeValidationReportEntryCause(this),
+                    new GraphNodeValidationReportContext(this),
                     "Could not find column that matches '" + expression.toString() + "'!",
                     "A plot generator algorithm was instructed to extract a column matching the rule '" + expression + "' for plotting. The column could note be found. " +
                             "The table contains only following columns: " + String.join(", ", input.getColumnNames()),
@@ -151,9 +151,9 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        report.report(new ParameterValidationReportEntryCause(this, "Filters", "sort-order"), sortOrderList);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        report.report(new ParameterValidationReportContext(this, "Filters", "sort-order"), sortOrderList);
     }
 
     @JIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +

@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.StringMapQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
@@ -140,20 +140,6 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     @JIPipeParameter("credentials")
     public OMEROCredentials getCredentials() {
         return credentials;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        if (datasetNameAnnotation.isEnabled()) {
-            report.resolve("Annotate with dataset name").checkNonEmpty(datasetNameAnnotation.getContent(), this);
-        }
-        if (projectNameAnnotation.isEnabled()) {
-            report.resolve("Annotate with project name").checkNonEmpty(projectNameAnnotation.getContent(), this);
-        }
-        if (tagAnnotation.isEnabled()) {
-            report.resolve("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
-        }
     }
 
     @JIPipeDocumentation(name = "Annotate with dataset name", description = "Creates an annotation with the dataset name")

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
@@ -385,7 +385,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
 
     private void copyCommand() {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedReportEntryCause(), report);
+        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
         if (!report.isEmpty()) {
             UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
             return;
@@ -406,7 +406,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
 
     private void runNow() {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedReportEntryCause(), report);
+        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
         if (!report.isEmpty()) {
             UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
             return;

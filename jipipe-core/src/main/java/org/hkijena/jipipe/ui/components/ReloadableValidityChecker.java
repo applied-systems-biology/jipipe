@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -71,7 +71,7 @@ public class ReloadableValidityChecker extends JPanel {
      */
     public void recheckValidity() {
         report.clear();
-        validatable.reportValidity(new UnspecifiedReportEntryCause(), report);
+        validatable.reportValidity(new UnspecifiedValidationReportContext(), report);
         reportUI.setReport(report);
     }
 

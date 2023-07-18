@@ -1,17 +1,17 @@
 package org.hkijena.jipipe.api.validation.causes;
 
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class APIErrorValidationReportEntryCause extends JIPipeValidationReportEntryCause {
+public class APIErrorValidationReportContext extends JIPipeValidationReportContext {
 
-    public APIErrorValidationReportEntryCause() {
+    public APIErrorValidationReportContext() {
     }
 
-    public APIErrorValidationReportEntryCause(JIPipeValidationReportEntryCause parent) {
+    public APIErrorValidationReportContext(JIPipeValidationReportContext parent) {
         super(parent);
     }
 

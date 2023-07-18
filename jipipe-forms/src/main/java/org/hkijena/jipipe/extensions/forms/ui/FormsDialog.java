@@ -6,6 +6,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
@@ -298,7 +301,7 @@ public class FormsDialog extends JFrame {
             if (formData instanceof ParameterFormData) {
                 name = ((ParameterFormData) formData).getName();
             }
-            formData.reportValidity(parentCause, report.resolve(tab).resolve(name + " (#" + row + ")"));
+            formData.reportValidity(new CustomValidationReportContext(tab + " -> " + name + " (#" + row + ")"), report);
         }
         return report;
     }
@@ -310,7 +313,7 @@ public class FormsDialog extends JFrame {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 for (int row = 0; row < dataBatchForms.get(i).getRowCount(); row++) {
                     FormData formData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
-                    formData.reportValidity(parentCause, report.resolve("Form " + row));
+                    formData.reportValidity(new CustomValidationReportContext("Form " + row), report);
                     if (!report.isValid()) {
                         dataBatchStatuses.set(i, DataBatchStatus.Invalid);
                         break;
@@ -561,7 +564,7 @@ public class FormsDialog extends JFrame {
                 FormData targetData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
                 if (!targetData.isImmutable()) {
                     if (targetData.isUsingCustomCopy())
-                        targetData.customCopy(srcData, report.resolve("Item " + (i + 1)));
+                        targetData.customCopy(srcData, new CustomValidationReportContext("Item " + (i + 1)), report);
                     else
                         targetData = (FormData) srcData.duplicate(progressInfo);
                 } else {

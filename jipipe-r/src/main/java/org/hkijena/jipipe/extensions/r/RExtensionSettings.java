@@ -21,6 +21,10 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
 import java.util.List;
@@ -43,33 +47,17 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
     }
 
     /**
-     * Checks if the R settings are valid or throws an exception
-     */
-    public static void checkRSettings() {
-        if (!RSettingsAreValid()) {
-            throw new UserFriendlyRuntimeException("The R installation is invalid!\n" +
-                    "R=" + RExtensionSettings.getInstance().getEnvironment().getRExecutablePath() + "\n" +
-                    "RScript=" + RExtensionSettings.getInstance().getEnvironment().getRScriptExecutablePath(),
-                    "R is not configured!",
-                    "Project > Application settings > Extensions > R  integration",
-                    "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
-                    "Please install R from https://www.r-project.org/. If R is installed, go to Project > Application settings > Extensions > R  integration and " +
-                            "manually override R executable and RScript executable (please refer to the documentation in the settings page).");
-        }
-    }
-
-    /**
      * Checks if the R settings are valid or reports an invalid state
      *
-     * @param report the report
+     * @param context the context
+     * @param report  the report
      */
-    public static void checkRSettings(JIPipeValidationReport report) {
+    public static void checkRSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!RSettingsAreValid()) {
-            report.reportIsInvalid("R is not configured!",
-                    "Project > Application settings > Extensions > R  integration",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "R is not configured!",
                     "This node requires an installation of R. Either R is not installed or JIPipe cannot find R.",
                     "Please install R from https://www.r-project.org/. If R is installed, go to Project > Application settings > Extensions > R  integration and " +
-                            "manually override R executable and RScript executable (please refer to the documentation in the settings page).");
+                            "manually override R executable and RScript executable (please refer to the documentation in the settings page)."));
         }
     }
 
@@ -82,7 +70,7 @@ public class RExtensionSettings extends AbstractJIPipeParameterCollection implem
         if (JIPipe.getInstance() != null) {
             RExtensionSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getEnvironment().reportValidity(parentCause, report);
+            instance.getEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
         }
         return false;

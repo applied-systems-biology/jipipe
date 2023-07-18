@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
@@ -46,7 +46,7 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
         JIPipeValidationReport report = new JIPipeValidationReport();
         for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
             if (Objects.equals(node.getCompartmentUUIDInParentGraph(), compartmentId)) {
-                report.report(new GraphNodeValidationReportEntryCause(node), node);
+                report.report(new GraphNodeValidationReportContext(node), node);
             }
         }
         if (!report.isEmpty()) {

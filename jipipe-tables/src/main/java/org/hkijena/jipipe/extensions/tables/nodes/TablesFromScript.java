@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
@@ -82,10 +82,10 @@ public class TablesFromScript extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportEntryCause(parentCause,this, "Script", "script"), report);
-        JythonUtils.checkScriptParametersValidity(scriptParameters,  new ParameterValidationReportEntryCause(parentCause,this, "Script parameters", "script-parameters"), report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(context,this, "Script", "script"), report);
+        JythonUtils.checkScriptParametersValidity(scriptParameters,  new ParameterValidationReportContext(context,this, "Script parameters", "script-parameters"), report);
     }
 
     @Override

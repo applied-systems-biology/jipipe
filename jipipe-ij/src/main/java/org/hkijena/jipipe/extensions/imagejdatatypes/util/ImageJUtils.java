@@ -32,6 +32,7 @@ import ij.plugin.filter.AVI_Writer;
 import ij.plugin.filter.Convolver;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -2038,9 +2039,8 @@ public class ImageJUtils {
 
     public static void assertImageDimensions(ImagePlus image, int maxDimensions) {
         if (image.getNDimensions() > maxDimensions) {
-            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + maxDimensions + "D data!"),
+            throw new JIPipeValidationRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + maxDimensions + "D data!"),
                     "Trying to fit higher-dimensional data into " + maxDimensions + "D data!",
-                    "ImageJ integration internals",
                     image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + maxDimensions + "D data. " +
                             "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
                             " from N-dimensional data into data with a defined dimensionality.",

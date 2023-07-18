@@ -29,8 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 
 import java.nio.file.Files;
@@ -75,7 +74,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
         Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new GraphNodeValidationReportEntryCause(this),
+                    new GraphNodeValidationReportContext(this),
                     "Missing data-table.json!",
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". JIPipe has a very specific format to store such folders. The directory seems to not conform to this format.",
                     "Check if the folder contains many numeric subfolders and a data-table.json file."));

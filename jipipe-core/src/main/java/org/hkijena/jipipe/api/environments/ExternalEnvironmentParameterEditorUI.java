@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeExternalEnvironmentRegistry;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -166,7 +166,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
     private void saveAsPreset() {
         JIPipeValidationReport report = new JIPipeValidationReport();
         ExternalEnvironment parameter = getParameter(ExternalEnvironment.class);
-        parameter.reportValidity(new UnspecifiedReportEntryCause(), report);
+        parameter.reportValidity(new UnspecifiedValidationReportContext(), report);
 
         if (!report.isValid()) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
@@ -224,7 +224,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         nameLabel.setText(parameter.getName());
         pathLabel.setText(StringUtils.orElse(parameter.getInfo(), "<Nothing set>"));
         JIPipeValidationReport report = new JIPipeValidationReport();
-        parameter.reportValidity(new UnspecifiedReportEntryCause(), report);
+        parameter.reportValidity(new UnspecifiedValidationReportContext(), report);
         if (!report.isValid()) {
             pathLabel.setForeground(Color.RED);
         } else {

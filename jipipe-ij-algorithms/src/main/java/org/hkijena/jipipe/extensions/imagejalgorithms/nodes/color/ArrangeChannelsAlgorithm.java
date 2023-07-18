@@ -28,7 +28,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -131,7 +134,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (channelReordering.size() > 1) {
             TIntSet generatedTargets = new TIntHashSet();
             IntegerAndIntegerPairParameter max = channelReordering.stream().max(Comparator.comparing(IntegerAndIntegerPairParameter::getKey)).get();
@@ -140,12 +143,12 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (IntegerAndIntegerPairParameter integerAndIntegerPair : channelReordering) {
                     if (integerAndIntegerPair.getValue() == i) {
                         if (generatedTargets.contains(i)) {
-                            report.resolve("Channel reordering").reportIsInvalid("Duplicate reordering targets!",
+                            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                    new ParameterValidationReportContext(this, "Channel reordering", "channel-reordering"),
                                     "The channel " + integerAndIntegerPair.getKey() + " is assigned to channel " + i + ", but it is already assigned.",
                                     "Please check if you have duplicate targets. If you don't have duplicate targets, please note that " +
                                             "channels without instructions are automatically assigned an identity transform. In this case, " +
-                                            "you also have to specify where this channel is assigned to.",
-                                    this);
+                                            "you also have to specify where this channel is assigned to."));
                         }
                         generatedTargets.add(i);
                     }
@@ -155,10 +158,11 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         for (IntegerAndIntegerPairParameter renaming : channelReordering) {
             if (renaming.getKey() < 0 | renaming.getValue() < 0) {
-                report.resolve("Channel reordering").reportIsInvalid("Invalid channel index!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new ParameterValidationReportContext(this, "Channel reordering", "channel-reordering"),
+                        "Invalid channel index!",
                         "A channel index cannot be negative. The first channel index is 0.",
-                        "Please update the reordering and remove negative values.",
-                        this);
+                        "Please update the reordering and remove negative values."));
             }
         }
 

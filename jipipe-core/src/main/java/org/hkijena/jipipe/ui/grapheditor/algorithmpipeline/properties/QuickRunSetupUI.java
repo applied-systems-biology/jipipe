@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -233,12 +233,12 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
 
     private boolean validateOrShowError() {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        getProject().reportValidity(new UnspecifiedReportEntryCause(), report, algorithm);
+        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, algorithm);
 
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms(true);
         if (algorithmsWithMissingInput.contains(algorithm)) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new GraphNodeValidationReportEntryCause(algorithm),
+                    new GraphNodeValidationReportContext(algorithm),
                     "Selected node is deactivated or missing inputs!",
                     "The selected node would not be executed, as it is deactivated or missing input data. " +
                             "You have to ensure that all input slots are assigned for the selected algorithm and its dependencies.",
@@ -339,7 +339,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
     private void generateQuickRun(boolean showResults) {
 
         JIPipeValidationReport report = new JIPipeValidationReport();
-        getProject().reportValidity(new UnspecifiedReportEntryCause(), report, algorithm);
+        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, algorithm);
         if (!report.isEmpty()) {
             tryShowSelectionPanel();
             return;

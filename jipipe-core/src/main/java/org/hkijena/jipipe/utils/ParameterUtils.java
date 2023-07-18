@@ -21,9 +21,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonDeserializable;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -44,10 +44,10 @@ public class ParameterUtils {
      *
      * @param target      the target object that contains the parameters
      * @param node        the JSON node
-     * @param parentCause the parent cause
+     * @param context the context
      * @param issues      issues during deserialization
      */
-    public static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport issues) {
+    public static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node, JIPipeValidationReportContext context, JIPipeValidationReport issues) {
         AtomicBoolean changedStructure = new AtomicBoolean();
         changedStructure.set(true);
 
@@ -93,7 +93,7 @@ public class ParameterUtils {
                                 } catch (Exception | Error e) {
                                     e.printStackTrace();
                                     issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                                            new ParameterValidationReportEntryCause(parentCause, parameterCollection, parameterAccess.getName(), key),
+                                            new ParameterValidationReportContext(context, parameterCollection, parameterAccess.getName(), key),
                                             "Could not load parameter '" + key + "'!",
                                             "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
                                             "Please check the value of the parameter.",

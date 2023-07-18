@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.grouping;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.collect.Sets;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -25,8 +24,8 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGro
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.validation.causes.JsonNodeInfoValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.JsonNodeInfoValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -336,25 +335,25 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (id == null || id.isEmpty()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new JsonNodeInfoValidationReportEntryCause(this),
+                    new JsonNodeInfoValidationReportContext(this),
                     "ID is null or empty!",
                     "Algorithms must have a unique and non-empty ID.",
                     "Please provide a valid algorithm ID."));
         }
         if (!getCategory().userCanCreate() || !getCategory().userCanDelete()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new JsonNodeInfoValidationReportEntryCause(this),
+                    new JsonNodeInfoValidationReportContext(this),
                     "The selected category is reserved for internal usage!",
                     "This is reserved for algorithm nodes used by JIPipe to control program flow.",
                     "Please choose another algorithm category."));
         }
-        report.report(new ParameterValidationReportEntryCause(this, "Exported parameters", "exported-parameters"), exportedParameters);
+        report.report(new ParameterValidationReportContext(this, "Exported parameters", "exported-parameters"), exportedParameters);
 
         // Only check if the graph creates a valid group output
-        report.report(new ParameterValidationReportEntryCause(this, "Wrapped graph", "wrapped-graph"), getGraph());
+        report.report(new ParameterValidationReportContext(this, "Wrapped graph", "wrapped-graph"), getGraph());
     }
 
     @Override

@@ -9,6 +9,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
@@ -143,11 +147,11 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
                     throw new UnsupportedOperationException();
             }
             if (vectorChannels != 2) {
-                throw new UserFriendlyRuntimeException("Vector field has wrong number of slices!",
-                        "Invalid vector field!",
-                        getName(),
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
+                        "Vector field has wrong number of slices!",
                         "The vector field for warping must have exactly two slices in the selected vector dimension or only two slices at all!",
-                        "Please provide a valid vector field.");
+                        "Please provide a valid vector field."));
             }
         }
 

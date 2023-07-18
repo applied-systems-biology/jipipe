@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.StringMapQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
@@ -140,18 +140,6 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("credentials")
     public OMEROCredentials getCredentials() {
         return credentials;
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        if (projectNameAnnotation.isEnabled()) {
-            report.resolve("Annotate with name").checkNonEmpty(projectNameAnnotation.getContent(), this);
-        }
-        if (tagAnnotation.isEnabled()) {
-            report.resolve("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
-        }
     }
 
     @JIPipeDocumentation(name = "Annotate with project name", description = "Creates an annotation with the project name")

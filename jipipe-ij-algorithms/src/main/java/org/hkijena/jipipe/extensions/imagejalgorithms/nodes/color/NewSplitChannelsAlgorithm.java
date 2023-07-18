@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
@@ -124,9 +125,8 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     progressInfo.log("Ignoring missing channel index " + channelIndex);
                     continue;
                 } else {
-                    throw new UserFriendlyRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + split.length + " channels are available."),
+                    throw new JIPipeValidationRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + split.length + " channels are available."),
                             "Could not find channel with index " + channelIndex,
-                            "'Split channels' algorithm, slot '" + slotName + "'",
                             "You requested that the input channel " + channelIndex + " should be assigned to slot '" + slotName + "', but there are only " + split.length + " channels available.",
                             "Please check if the index is correct. The first channel index is zero. You can also enable 'Ignore missing channels' to skip such occurrences silently.");
                 }

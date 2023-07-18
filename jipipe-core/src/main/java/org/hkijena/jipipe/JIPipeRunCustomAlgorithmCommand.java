@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
@@ -36,7 +36,6 @@ import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 
 /**
  * This {@link Command} allows to run a specified {@link JIPipeNodeInfo} from within ImageJ.
@@ -94,7 +93,7 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
         }
         if (!extensionSettings.isSilent()) {
             JIPipeValidationReport report = new JIPipeValidationReport();
-            issues.reportValidity(new UnspecifiedReportEntryCause(), report);
+            issues.reportValidity(new UnspecifiedValidationReportContext(), report);
             if (!report.isValid()) {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
@@ -124,7 +123,7 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
             settings = new SingleImageJAlgorithmRunConfiguration(nodeId, parameters, inputs, outputs, threads);
             algorithm = settings.getAlgorithm();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            settings.reportValidity(new UnspecifiedReportEntryCause(), report);
+            settings.reportValidity(new UnspecifiedValidationReportContext(), report);
             if (!report.isValid()) {
                 StringBuilder message = new StringBuilder();
                 message.append("The provided algorithm options are invalid:\n\n");

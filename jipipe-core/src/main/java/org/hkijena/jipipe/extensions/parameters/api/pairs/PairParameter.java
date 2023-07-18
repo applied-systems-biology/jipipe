@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -70,12 +70,12 @@ public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entr
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (key instanceof JIPipeValidatable) {
-            report.report(new CustomReportEntryCause(parentCause, "Key"), (JIPipeValidatable) key);
+            report.report(new CustomValidationReportContext(context, "Key"), (JIPipeValidatable) key);
         }
         if (value instanceof JIPipeValidatable) {
-            report.report(new CustomReportEntryCause(parentCause, "Value"), (JIPipeValidatable) value);
+            report.report(new CustomValidationReportContext(context, "Value"), (JIPipeValidatable) value);
         }
     }
 

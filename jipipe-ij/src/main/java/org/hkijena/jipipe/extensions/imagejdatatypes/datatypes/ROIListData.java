@@ -40,6 +40,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.*;
@@ -761,7 +765,11 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         // Find the bounds and future stack position
         Rectangle bounds = imageArea.getInsideArea(this.getBounds(), new ExpressionVariables());
         if (bounds == null) {
-            throw new UserFriendlyRuntimeException("Invalid margin:" + imageArea, "Invalid margin!", "ROI list to mask", "The provided margin is invalid.", "Please check any margin parameters. Set them to Center/Center and all values to zero to be sure.");
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new UnspecifiedValidationReportContext(),
+                    "Invalid margin:" + imageArea,
+                    "The provided margin is invalid.",
+                    "Please check any margin parameters. Set them to Center/Center and all values to zero to be sure."));
         }
         int sx = bounds.width + bounds.x;
         int sy = bounds.height + bounds.y;
@@ -798,7 +806,11 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         // Find the bounds and future stack position
         Rectangle bounds = imageArea.getInsideArea(this.getBounds(), new ExpressionVariables());
         if (bounds == null) {
-            throw new UserFriendlyRuntimeException("Invalid margin:" + imageArea, "Invalid margin!", "ROI list to mask", "The provided margin is invalid.", "Please check any margin parameters. Set them to Center/Center and all values to zero to be sure.");
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new UnspecifiedValidationReportContext(),
+                    "Invalid margin:" + imageArea,
+                    "The provided margin is invalid.",
+                    "Please check any margin parameters. Set them to Center/Center and all values to zero to be sure."));
         }
         int sx = bounds.width + bounds.x;
         int sy = bounds.height + bounds.y;

@@ -142,10 +142,10 @@ public class ImageJDataExportOperationRef extends AbstractJIPipeParameterCollect
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (id == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    parentCause,
+                    context,
                     "No operation is selected!",
                     "You have to select an operation.",
                     "Please select an operation."));

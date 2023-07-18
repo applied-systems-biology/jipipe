@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -86,13 +86,6 @@ public class DifferenceOfGaussian2DAlgorithm extends JIPipeSimpleIteratingAlgori
     @Override
     public boolean supportsParallelization() {
         return true;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        report.resolve("First Sigma (X)").checkIfWithin(this, sigma0X, 0, Double.POSITIVE_INFINITY, false, true);
-        report.resolve("Second Sigma (X)").checkIfWithin(this, sigma1X, 0, Double.POSITIVE_INFINITY, false, true);
     }
 
     @JIPipeDocumentation(name = "First Sigma (X)", description = "Standard deviation of the Gaussian (pixels) in X direction. ")

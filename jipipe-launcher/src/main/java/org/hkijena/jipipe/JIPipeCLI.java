@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -129,7 +129,7 @@ public class JIPipeCLI {
         JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile, new UnspecifiedReportEntryCause(), projectIssues, notifications);
+            project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), projectIssues, notifications);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -163,7 +163,7 @@ public class JIPipeCLI {
             access.set(value);
         }
 
-        project.reportValidity(new UnspecifiedReportEntryCause(), projectIssues);
+        project.reportValidity(new UnspecifiedValidationReportContext(), projectIssues);
         projectIssues.print();
 
         if (!notifications.isEmpty()) {

@@ -10,6 +10,10 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -86,11 +90,10 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
         List<ImagePlus> inputImagesList = sliceMappings.keySet().stream().map(ImagePlusData::getImage).collect(Collectors.toList());
 
         if (!ImageJUtils.imagesHaveSameSize(inputImagesList)) {
-            throw new UserFriendlyRuntimeException("Input images do not have the same size!",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
                     "Input images do not have the same size!",
-                    getDisplayName(),
-                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels.",
-                    "Please check the input images.");
+                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels."));
         }
 
         int consensusBitDepth = ImageJUtils.getConsensusBitDepth(inputImagesList);

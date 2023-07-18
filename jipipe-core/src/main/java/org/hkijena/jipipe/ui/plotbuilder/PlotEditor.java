@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
@@ -196,18 +196,18 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if(getPlotType().getInfo() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    parentCause,
+                    context,
                     "Plot type not selected!",
                     "Please select a plot type!"));
         }
         if (currentPlot != null) {
-            report.report(new CustomReportEntryCause("Plot parameters"), currentPlot);
+            report.report(new CustomValidationReportContext("Plot parameters"), currentPlot);
         }
         for (int i = 0; i < seriesBuilders.size(); ++i) {
-            report.report(new CustomReportEntryCause("Series #" + (i + 1)), seriesBuilders.get(i));
+            report.report(new CustomValidationReportContext("Series #" + (i + 1)), seriesBuilders.get(i));
         }
 
     }
@@ -318,7 +318,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
             isRebuilding = true;
 
             JIPipeValidationReport report = new JIPipeValidationReport();
-            this.reportValidity(new UnspecifiedReportEntryCause(), report);
+            this.reportValidity(new UnspecifiedValidationReportContext(), report);
             if (!report.isValid()) {
                 UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -50,7 +50,7 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
     }
 
     /**
@@ -98,7 +98,7 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
             JButton confirmButton = new JButton("Generate", UIUtils.getIconFromResources("actions/run-build.png"));
             confirmButton.addActionListener(e -> {
                 JIPipeValidationReport report = new JIPipeValidationReport();
-                generator.reportValidity(new UnspecifiedReportEntryCause(), report);
+                generator.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isEmpty()) {
                     UIUtils.openValidityReportDialog(this, report, "Invalid settings detected", "Please resolve the following issues:", true);
                     return;

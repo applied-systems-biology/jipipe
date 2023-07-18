@@ -36,7 +36,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -390,27 +393,29 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         long roiInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         if (roiInputSlotCount > 1) {
-            report.reportIsInvalid("Too many ROI inputs!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            context,
+                    "Too many ROI inputs!",
                     "ImageJ1 has no concept of multiple ROI Managers.",
-                    "Please make sure to only have at most one ROI data input.",
-                    this);
+                    "Please make sure to only have at most one ROI data input."));
         }
         if (roiOutputSlotCount > 1) {
-            report.reportIsInvalid("Too many ROI outputs!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "Too many ROI outputs!",
                     "ImageJ1 has no concept of multiple ROI Managers.",
-                    "Please make sure to only have at most one ROI data output.",
-                    this);
+                    "Please make sure to only have at most one ROI data outputs."));
         }
         for (String key : macroParameters.getParameters().keySet()) {
             if (!MacroUtils.isValidVariableName(key)) {
-                report.resolve("Macro Parameters").resolve(key).reportIsInvalid("Invalid name!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new ParameterValidationReportContext(context, this, "Macro parameters", "macro-parameters"),
                         "'" + key + "' is an invalid ImageJ macro variable name!",
-                        "Please ensure that macro variables are compatible with the ImageJ macro language.",
-                        this);
+                        "Please ensure that macro variables are compatible with the ImageJ macro language."));
             }
         }
     }

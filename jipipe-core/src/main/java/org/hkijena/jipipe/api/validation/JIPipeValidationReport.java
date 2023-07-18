@@ -43,11 +43,11 @@ public class JIPipeValidationReport extends ArrayList<JIPipeValidationReportEntr
     /**
      * Reports a {@link JIPipeValidatable} into this report
      *
-     * @param parentCause the parent cause
+     * @param context the context
      * @param validatable the validatable
      */
-    public void report(JIPipeValidationReportEntryCause parentCause, JIPipeValidatable validatable) {
-        validatable.reportValidity(parentCause, this);
+    public void report(JIPipeValidationReportContext context, JIPipeValidatable validatable) {
+        validatable.reportValidity(context, this);
     }
 
     /**

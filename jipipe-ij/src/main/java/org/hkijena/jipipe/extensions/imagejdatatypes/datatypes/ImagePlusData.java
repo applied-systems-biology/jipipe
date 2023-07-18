@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
@@ -40,10 +41,9 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -65,41 +65,25 @@ public class ImagePlusData implements JIPipeData {
      * @param image wrapped image
      */
     public ImagePlusData(ImagePlus image) {
-        if (image == null) {
-            throw new UserFriendlyNullPointerException("ImagePlus cannot be null!", "No image provided!",
-                    "Internal JIPipe image type",
-                    "An algorithm tried to pass an empty ImageJ image back to JIPipe. This is not allowed. " +
-                            "Either the algorithm inputs are wrong, or there is an error in the program code.",
-                    "Please check the inputs via the quick run to see if they are satisfying the algorithm's assumptions. " +
-                            "If you cannot solve the issue, please contact the plugin's author.");
-        }
-        this.image = image;
+        this.image = Objects.requireNonNull(image);
     }
 
 
     /**
      * @param image      the wrapped image
-     * @param colorSpace the color space. please not that it is ignored if the image is greyscale
+     * @param colorSpace the color space. please note that it is ignored if the image is greyscale
      */
     public ImagePlusData(ImagePlus image, ColorSpace colorSpace) {
-        if (image == null) {
-            throw new UserFriendlyNullPointerException("ImagePlus cannot be null!", "No image provided!",
-                    "Internal JIPipe image type",
-                    "An algorithm tried to pass an empty ImageJ image back to JIPipe. This is not allowed. " +
-                            "Either the algorithm inputs are wrong, or there is an error in the program code.",
-                    "Please check the inputs via the quick run to see if they are satisfying the algorithm's assumptions. " +
-                            "If you cannot solve the issue, please contact the plugin's author.");
-        }
-        this.image = image;
+        this.image = Objects.requireNonNull(image);
         this.colorSpace = colorSpace;
     }
 
     public static ImagePlus importImagePlusFrom(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
         if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storage + "'!",
-                    "Unable to find file in location '" + storage + "'",
-                    "ImagePlusData loading",
+            throw new JIPipeValidationRuntimeException(
+                    new FileNotFoundException("Unable to find file in location '" + storage + "'"),
+                    "Could not find a compatible image file in '" + storage + "'!",
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");
         }

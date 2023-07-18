@@ -1,21 +1,21 @@
 package org.hkijena.jipipe.api.validation.causes;
 
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class JsonNodeInfoValidationReportEntryCause extends JIPipeValidationReportEntryCause {
+public class JsonNodeInfoValidationReportContext extends JIPipeValidationReportContext {
 
     private final JsonNodeInfo nodeInfo;
 
-    public JsonNodeInfoValidationReportEntryCause(JsonNodeInfo nodeInfo) {
+    public JsonNodeInfoValidationReportContext(JsonNodeInfo nodeInfo) {
         this.nodeInfo = nodeInfo;
     }
 
-    public JsonNodeInfoValidationReportEntryCause(JIPipeValidationReportEntryCause parent, JsonNodeInfo nodeInfo) {
+    public JsonNodeInfoValidationReportContext(JIPipeValidationReportContext parent, JsonNodeInfo nodeInfo) {
         super(parent);
         this.nodeInfo = nodeInfo;
     }

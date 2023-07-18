@@ -1,21 +1,21 @@
 package org.hkijena.jipipe.api.validation.causes;
 
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class JavaExtensionValidationReportEntryCause extends JIPipeValidationReportEntryCause {
+public class JavaExtensionValidationReportContext extends JIPipeValidationReportContext {
 
     private final JIPipeDependency extension;
 
-    public JavaExtensionValidationReportEntryCause(JIPipeDependency extension) {
+    public JavaExtensionValidationReportContext(JIPipeDependency extension) {
         this.extension = extension;
     }
 
-    public JavaExtensionValidationReportEntryCause(JIPipeValidationReportEntryCause parent, JIPipeDependency extension) {
+    public JavaExtensionValidationReportContext(JIPipeValidationReportContext parent, JIPipeDependency extension) {
         super(parent);
         this.extension = extension;
     }

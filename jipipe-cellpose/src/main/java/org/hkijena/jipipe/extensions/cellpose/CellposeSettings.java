@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -37,7 +38,7 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
         if (JIPipe.getInstance() != null) {
             CellposeSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getPythonEnvironment().reportValidity(parentCause, report);
+            instance.getPythonEnvironment().reportValidity(context, report);
             return report.isValid();
         }
         return false;
@@ -46,9 +47,10 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
     /**
      * Checks if the Python settings are valid or reports an invalid state
      *
-     * @param report the report
+     * @param context
+     * @param report  the report
      */
-    public static void checkPythonSettings(JIPipeValidationReport report) {
+    public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!pythonSettingsAreValid()) {
             report.reportIsInvalid("Python is not configured!",
                     "Project > Application settings > Extensions > Cellpose",

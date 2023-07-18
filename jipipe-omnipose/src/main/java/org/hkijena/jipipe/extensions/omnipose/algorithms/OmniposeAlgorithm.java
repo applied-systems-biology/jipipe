@@ -7,7 +7,7 @@ import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
@@ -177,13 +177,13 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.resolve("Override Python environment").report(overrideEnvironment.getContent());
+                report.report(context, overrideEnvironment.getContent());
             } else {
-                OmniposeSettings.checkPythonSettings(report.resolve("Python"));
+                OmniposeSettings.checkPythonSettings(context, report);
             }
         }
     }
@@ -487,11 +487,10 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
             ImagePlus img = getInputSlot("Input").getData(row, ImagePlusData.class, rowProgress).getImage();
             if (img.getNFrames() > 1) {
-                throw new UserFriendlyRuntimeException("Omnipose does not support time series!",
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                         "Omnipose does not support time series!",
-                        getDisplayName(),
                         "Please ensure that the image dimensions are correctly assigned.",
-                        "Remove the frames or reorder the dimensions before applying Cellpose");
+                        "Remove the frames or reorder the dimensions before applying Cellpose"));
             }
             if (img.getNSlices() == 1) {
                 // Output the image as-is
@@ -507,11 +506,10 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
                 if (enable3DSegmentation) {
                     // Cannot have channels AND RGB
                     if (img.getNChannels() > 1 && img.getType() == ImagePlus.COLOR_RGB) {
-                        throw new UserFriendlyRuntimeException("Omnipose does not support 3D multichannel images with RGB!",
+                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                                 "Omnipose does not support 3D multichannel images with RGB!",
-                                getDisplayName(),
                                 "Python will convert the RGB channels into greyscale slices, thus conflicting with the channel slices defined in the input image",
-                                "Convert the image from RGB to greyscale or remove the additional channel slices.");
+                                "Convert the image from RGB to greyscale or remove the additional channel slices."));
                     }
 
                     // Output the image as-is

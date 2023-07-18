@@ -28,8 +28,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -115,9 +115,8 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     if (ignoreMissingChannels) {
                         continue;
                     } else {
-                        throw new UserFriendlyRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + nChannels + " channels are available."),
+                        throw new JIPipeValidationRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + nChannels + " channels are available."),
                                 "Could not find channel with index " + channelIndex,
-                                "'Split channels' algorithm, slot '" + slotName + "'",
                                 "You requested that the input channel " + channelIndex + " should be assigned to slot '" + slotName + "', but there are only " + nChannels + " channels available.",
                                 "Please check if the index is correct. The first channel index is zero. You can also enable 'Ignore missing channels' to skip such occurrences silently.");
                     }
@@ -170,9 +169,8 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 if (ignoreMissingChannels) {
                     continue;
                 } else {
-                    throw new UserFriendlyRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + nChannels + " channels are available."),
+                    throw new JIPipeValidationRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + nChannels + " channels are available."),
                             "Could not find channel with index " + channelIndex,
-                            "'Split channels' algorithm, slot '" + slotName + "'",
                             "You requested that the input channel " + channelIndex + " should be assigned to slot '" + slotName + "', but there are only " + nChannels + " channels available.",
                             "Please check if the index is correct. The first channel index is zero. You can also enable 'Ignore missing channels' to skip such occurrences silently.");
                 }
@@ -217,18 +215,20 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (annotateWithChannelIndex && StringUtils.isNullOrEmpty(annotationColumnChannelIndex)) {
-            report.resolve("Channel index annotation column").reportIsInvalid("Column name is empty!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new ParameterValidationReportContext(context, this, "Channel assignment", "channel-assignment"),
+                    "Column name is empty!",
                     "You enabled adding the channel index as output annotation, but the column name is empty",
-                    "Change the column name to a non-empty string",
-                    this);
+                    "Change the column name to a non-empty string"));
         }
         if (annotateWithSlotName && StringUtils.isNullOrEmpty(annotationColumnSlotName)) {
-            report.resolve("Slot name annotation column").reportIsInvalid("Column name is empty!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new ParameterValidationReportContext(context, this, "Channel assignment", "channel-assignment"),
+                    "Column name is empty!",
                     "You enabled adding the channel index as output annotation, but the column name is empty",
-                    "Change the column name to a non-empty string",
-                    this);
+                    "Change the column name to a non-empty string"));
         }
     }
 

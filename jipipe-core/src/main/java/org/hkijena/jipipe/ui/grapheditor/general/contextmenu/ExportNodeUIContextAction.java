@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
@@ -41,7 +41,7 @@ public class ExportNodeUIContextAction implements NodeUIContextAction {
         Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet());
         JIPipeValidationReport report = new JIPipeValidationReport();
         for (JIPipeGraphNode algorithm : algorithms) {
-            algorithm.reportValidity(new UnspecifiedReportEntryCause(), report);
+            algorithm.reportValidity(new UnspecifiedValidationReportContext(), report);
         }
         if (!report.isEmpty()) {
             UIUtils.openValidityReportDialog(canvasUI, report, "Issues detected", "There are issues with the configuration of the selected node. Try again after resolving them.", false);

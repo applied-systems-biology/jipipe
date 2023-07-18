@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -103,9 +104,8 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         Rectangle cropped = roi.getInsideArea(imageArea, variables);
         if (cropped == null || cropped.width == 0 || cropped.height == 0) {
-            throw new UserFriendlyRuntimeException(new NullPointerException("Cropped rectangle is null or empty!"),
+            throw new JIPipeValidationRuntimeException(new NullPointerException("Cropped rectangle is null or empty!"),
                     "Cropped rectangle is empty!",
-                    "Algorithm '" + getName() + "'",
                     "The input for the cropping operator was an image of size w=" + img.getWidth() + ", h=" + img.getHeight() + ". The resulting ROI is empty.",
                     "Please check the parameters and ensure that a non-empty area is cropped out.");
         }

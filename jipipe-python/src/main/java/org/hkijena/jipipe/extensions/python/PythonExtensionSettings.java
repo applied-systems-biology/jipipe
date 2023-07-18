@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
@@ -46,13 +46,13 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
     /**
      * Checks if the Python settings are valid or reports an invalid state
      *
-     * @param parentCause the parent cause
+     * @param context the context
      * @param report      the report
      */
-    public static void checkPythonSettings(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        if (!pythonSettingsAreValid(parentCause)) {
+    public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (!pythonSettingsAreValid(context)) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    parentCause,
+                    context,
                     "Python is not configured!",
                     "Project > Application settings > Extensions > Python integration",
                     "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
@@ -67,11 +67,11 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
      *
      * @return if the settings are correct
      */
-    public static boolean pythonSettingsAreValid(JIPipeValidationReportEntryCause parentCause) {
+    public static boolean pythonSettingsAreValid(JIPipeValidationReportContext context) {
         if (JIPipe.getInstance() != null) {
             PythonExtensionSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getPythonEnvironment().reportValidity(parentCause, report);
+            instance.getPythonEnvironment().reportValidity(context, report);
             return report.isValid();
         }
         return false;

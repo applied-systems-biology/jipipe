@@ -22,6 +22,10 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
@@ -101,11 +105,10 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
                 for (String sheetName : importedSheetNames) {
                     ResultsTableData data = map.getOrDefault(sheetName, null);
                     if (data == null && !ignoreMissingSheets) {
-                        throw new UserFriendlyNullPointerException("Unable to find sheet '" + sheetName + "' in " + String.join(", ", map.keySet()),
-                                "Unable to find sheet '" + sheetName + "'",
-                                getDisplayName(),
+                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
+                                "Unable to find sheet '" + sheetName + "' in " + String.join(", ", map.keySet()),
                                 "Tried to import Excel sheet '" + sheetName + "', but it is not there.",
-                                "Please check if the sheet exists. You can also ignore missing sheets.");
+                                "Please check if the sheet exists. You can also ignore missing sheets."));
                     }
                     if (data == null)
                         continue;

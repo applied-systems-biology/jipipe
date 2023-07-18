@@ -16,7 +16,7 @@ package org.hkijena.jipipe.utils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 import org.hkijena.jipipe.extensions.settings.DownloadSettings;
@@ -55,7 +55,7 @@ public class WebUtils {
                 ex.printStackTrace();
             }
             if (settings != null) {
-                useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport(new UnspecifiedReportEntryCause()).isValid();
+                useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport(new UnspecifiedValidationReportContext()).isValid();
                 try {
                     if (!useExternalDownloader) {
                         downloadNative(url, outputFile, label, progressInfo);

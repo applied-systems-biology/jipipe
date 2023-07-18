@@ -130,13 +130,13 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (graph != null) {
             JIPipeParameterTree tree = graph.getParameterTree(false, null);
             for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {
                 for (GraphNodeParameterReference reference : parameterReferenceGroup.getContent()) {
                     if (reference.resolve(tree) == null) {
-                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, parentCause,
+                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context,
                                 "Could not find parameter!",
                                 "There is a an exported parameter referencing the internal ID '" + reference.getPath() + "'. " +
                                         "It could not be found.",

@@ -21,6 +21,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.TableCellExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
@@ -112,11 +116,11 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     private void ensureColumnExists(TableColumn column, ResultsTableData table, String name) {
         if (column == null) {
-            throw new UserFriendlyRuntimeException("Could not find column for " + name + "!",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
+                    "Could not find column for " + name + "!",
                     "The algorithm requires a column that provides coordinate " + name + ".",
-                    getName() + ", table " + table,
-                    "A column reference or generator is required that supplies the coordinates.",
-                    "Please check if the settings are correct and if your table contains the requested column.");
+                    "Please check if the settings are correct and if your table contains the requested column."));
         }
     }
 

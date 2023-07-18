@@ -9,6 +9,10 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
@@ -58,11 +62,11 @@ public class SpotDetectorNode extends JIPipeIteratingAlgorithm {
 
         if (!trackMate.process()) {
             progressInfo.log(trackMate.getErrorMessage());
-            throw new UserFriendlyRuntimeException(trackMate.getErrorMessage(),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
                     "TrackMate: Error while processing",
-                    getDisplayName(),
                     "TrackMate could not successfully process the data",
-                    "Please check the error message");
+                    trackMate.getErrorMessage()));
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new SpotsCollectionData(model, settings, image), progressInfo);

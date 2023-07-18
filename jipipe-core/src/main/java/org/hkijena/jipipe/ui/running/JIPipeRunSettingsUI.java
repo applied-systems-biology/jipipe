@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -70,7 +70,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
         setLayout(new BorderLayout(8, 8));
 
         JIPipeValidationReport report = new JIPipeValidationReport();
-        getProjectWorkbench().getProject().reportValidity(new UnspecifiedReportEntryCause(), report);
+        getProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), report);
         if (report.isValid()) {
             initializeSetupGUI();
         } else {
@@ -97,7 +97,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
         runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> {
             report.clear();
-            getProjectWorkbench().getProject().reportValidity(new UnspecifiedReportEntryCause(), report);
+            getProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), report);
             getProjectWorkbench().sendStatusBarText("Re-validated JIPipe project");
             if (report.isValid())
                 initializeSetupGUI();

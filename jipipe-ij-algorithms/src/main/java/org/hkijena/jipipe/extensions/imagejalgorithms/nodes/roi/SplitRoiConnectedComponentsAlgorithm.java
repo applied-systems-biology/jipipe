@@ -23,8 +23,9 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -217,11 +218,11 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
                 } else if ("REMOVE".equals(result)) {
                     graph.removeVertex(index);
                 } else {
-                    throw new UserFriendlyRuntimeException("Unsupported return value: " + result,
-                            "Invalid return value for graph postprocessing!",
-                            getName(),
+                    throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new GraphNodeValidationReportContext(this),
+                            "Unsupported return value: " + result,
                             "Graph postprocessing expressions only can return one of following values: KEEP, ISOLATE, or REMOVE. Boolean values are also allowed (true = KEEP, false = REMOVE)",
-                            "Check if your expression is correct.");
+                            "Check if your expression is correct."));
                 }
             }
         }
@@ -421,12 +422,6 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("component-name-annotation")
     public void setComponentNameAnnotation(OptionalAnnotationNameParameter componentNameAnnotation) {
         this.componentNameAnnotation = componentNameAnnotation;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
-        report.resolve("Component index annotation").report(componentNameAnnotation);
     }
 
     @JIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. Please open the expression builder to see a list of all available variables. If the filter is empty, " +

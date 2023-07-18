@@ -1,13 +1,13 @@
 package org.hkijena.jipipe.api.validation;
 
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 
 /**
  * A validity report message
  */
 public class JIPipeValidationReportEntry {
     private final JIPipeValidationReportEntryLevel level;
-    private final JIPipeValidationReportEntryCause cause;
+    private final JIPipeValidationReportContext cause;
     private final String title;
     private final String explanation;
     private final String solution;
@@ -21,9 +21,9 @@ public class JIPipeValidationReportEntry {
      * @param solution  explanation how to solve the issue
      * @param details  optional details
      */
-    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportEntryCause cause, String title, String explanation, String solution, String details) {
+    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext cause, String title, String explanation, String solution, String details) {
         this.level = level;
-        this.cause = cause != null ? cause : new UnspecifiedReportEntryCause();
+        this.cause = cause != null ? cause : new UnspecifiedValidationReportContext();
         this.title = title;
         this.explanation = explanation;
         this.solution = solution;
@@ -37,7 +37,7 @@ public class JIPipeValidationReportEntry {
      * @param explanation  explanation why it happened
      * @param solution  explanation how to solve the issue
      */
-    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportEntryCause cause, String title, String explanation, String solution) {
+    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext cause, String title, String explanation, String solution) {
        this(level, cause, title, explanation, solution, null);
     }
 
@@ -47,7 +47,7 @@ public class JIPipeValidationReportEntry {
      * @param title explanation what happened
      * @param explanation  explanation why it happened
      */
-    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportEntryCause cause, String title, String explanation) {
+    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext cause, String title, String explanation) {
         this(level, cause, title, explanation, null, null);
     }
 
@@ -67,7 +67,7 @@ public class JIPipeValidationReportEntry {
         return solution;
     }
 
-    public JIPipeValidationReportEntryCause getCause() {
+    public JIPipeValidationReportContext getCause() {
         return cause;
     }
 

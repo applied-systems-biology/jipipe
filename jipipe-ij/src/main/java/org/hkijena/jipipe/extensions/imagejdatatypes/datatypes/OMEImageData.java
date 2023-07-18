@@ -49,6 +49,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
@@ -62,6 +66,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -93,9 +98,9 @@ public class OMEImageData implements JIPipeData {
     public static OMEImageData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif");
         if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storage + "'!",
-                    "Unable to find file in location '" + storage + "'",
-                    "ImagePlusData loading",
+            throw new JIPipeValidationRuntimeException(
+                    new FileNotFoundException("Unable to find file in location '" + storage + "'"),
+                    "Could not find TIFF file in '" + storage + "'!",
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");
         }
@@ -131,11 +136,11 @@ public class OMEImageData implements JIPipeData {
             }
 
             if (images.length == 0) {
-                throw new UserFriendlyNullPointerException("OME loaded empty array!",
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new UnspecifiedValidationReportContext(),
                         "Could not load image from '" + targetFile + "'",
-                        "ImagePlusData loading",
                         "JIPipe used Bio-Formats to load an image from '" + targetFile + "'. Something went wrong.",
-                        "Please contact the JIPipe developers about this issue.");
+                        "Please contact the JIPipe developers about this issue."));
             }
             if (images.length > 1) {
                 System.err.println("[JIPipe][ImagePlusData from OME] Encountered multiple images! This should not happen. File=" + targetFile);

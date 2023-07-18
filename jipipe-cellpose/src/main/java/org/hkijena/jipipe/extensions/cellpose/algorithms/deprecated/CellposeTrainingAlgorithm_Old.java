@@ -16,6 +16,10 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
@@ -424,11 +428,11 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         if (pretrainedModel == CellposePretrainedModel.Custom) {
             Set<Integer> pretrainedModelRows = dataBatch.getInputRows("Pretrained model");
             if (pretrainedModelRows.size() != 1) {
-                throw new UserFriendlyRuntimeException("Only one pretrained model is allowed",
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
                         "Only one pretrained model is allowed",
-                        getDisplayName(),
                         "You can only provide one pretrained model per data batch for training.",
-                        "Ensure that only one pretrained model is in a data batch.");
+                        "Ensure that only one pretrained model is in a data batch."));
             }
             CellposeModelData modelData = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo).get(0);
             customModelPath = workDirectory.resolve(modelData.getName());

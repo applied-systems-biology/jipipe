@@ -25,6 +25,10 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.color.MergeChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
@@ -130,11 +134,10 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
             return;
         }
         if (!ImageJUtils.imagesHaveSameSize(inputImages)) {
-            throw new UserFriendlyRuntimeException("Images do not have the same size!",
-                    "Images do not have the same size!",
-                    getName(),
-                    "All images in a batch must have exactly the same size.",
-                    "Please check if the input is correct.");
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
+                    "Input images do not have the same size!",
+                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels."));
         }
 
         // Collect

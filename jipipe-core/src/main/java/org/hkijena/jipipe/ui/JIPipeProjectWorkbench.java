@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -844,7 +844,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
      */
     private void exportProjectAsAlgorithm() {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        report.report(new UnspecifiedReportEntryCause(), getProject().getGraph());
+        report.report(new UnspecifiedValidationReportContext(), getProject().getGraph());
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, "Error while exporting", "There seem to be various issues with the project. Please resolve these and try to export the project again.", false);
             return;

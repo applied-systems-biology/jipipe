@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -89,7 +89,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
         slotProgressInfo.log("Importing from " + dataFolder);
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             slotProgressInfo.log("Error: data-table.json missing");
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportEntryCause(graphNode),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(graphNode),
                     "Missing data-table.json!",
                     "Wrong input folder!",
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". JIPipe has a very specific format to store such folders. The directory seems to not conform to this format.",
@@ -99,7 +99,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
         Class<? extends JIPipeData> dataType = JIPipe.getDataTypes().getById(exportedDataTable.getAcceptedDataTypeId());
         if (dataType == null) {
             slotProgressInfo.log("Error: Unknown data type id " + exportedDataTable.getAcceptedDataTypeId());
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportEntryCause(graphNode),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(graphNode),
                     "Unknown data type id: " + exportedDataTable.getAcceptedDataTypeId(),
                     "Unknown data type",
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". The data contained in this folder is identified by a type id '" + exportedDataTable.getAcceptedDataTypeId() + "', but it could not be found.",

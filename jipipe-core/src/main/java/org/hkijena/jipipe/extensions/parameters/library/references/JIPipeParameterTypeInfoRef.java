@@ -91,10 +91,10 @@ public class JIPipeParameterTypeInfoRef implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (info == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    parentCause,
+                    context,
                     "No parameter type is selected!",
                     "You have to select a parameter type.",
                     "Please select a parameter type."));

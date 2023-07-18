@@ -16,7 +16,7 @@ package org.hkijena.jipipe;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
@@ -98,7 +98,7 @@ public class JIPipeGUICommand implements Command {
 
             {
                 JIPipeValidationReport report = new JIPipeValidationReport();
-                issues.reportValidity(new UnspecifiedReportEntryCause(), report);
+                issues.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isValid()) {
                     UIUtils.openValidityReportDialog(null, report, "JIPipe extension registry", "Issues were detected during the initialization of certain extensions. " +
                             "Please review the following items. Close the window to ignore the messages and load JIPipe.", true);

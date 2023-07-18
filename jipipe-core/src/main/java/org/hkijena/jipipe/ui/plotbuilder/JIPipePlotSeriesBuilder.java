@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
@@ -144,13 +144,13 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         for (Map.Entry<String, JIPipeParameterAccess> entry : columnAssignments.getParameters().entrySet()) {
             JIPipeMutableParameterAccess parameterAccess = (JIPipeMutableParameterAccess) entry.getValue();
             UIPlotDataSeriesColumnEnum parameter = parameterAccess.get(UIPlotDataSeriesColumnEnum.class);
             if (parameter.getValue() == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                        new CustomReportEntryCause("Data assignments: " + entry.getKey()),
+                        new CustomValidationReportContext("Data assignments: " + entry.getKey()),
                         "No data selected!",
                         "The plot requires that you select a data source.",
                         "Please select a data source."));
@@ -165,7 +165,7 @@ public class JIPipePlotSeriesBuilder extends AbstractJIPipeParameterCollection i
         }
         if (rows == 0) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    new CustomReportEntryCause("Data integrity"),
+                    new CustomValidationReportContext("Data integrity"),
                     "Selected data is empty!",
                     "The plot requires that you select a data source.",
                     "Please select at least one data source with a known row count."));

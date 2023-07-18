@@ -22,20 +22,20 @@ public interface JIPipeValidatable {
     /**
      * Generates a validity report
      *
-     * @param parentCause
+     * @param context
      * @param report      the report to be added to
      */
-    void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report);
+    void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report);
 
     /**
      * Generates a report for this object
-     * @param parentCause the
+     * @param context the
      *
      * @return the report
      */
-    default JIPipeValidationReport generateValidityReport(JIPipeValidationReportEntryCause parentCause) {
+    default JIPipeValidationReport generateValidityReport(JIPipeValidationReportContext context) {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        reportValidity(parentCause, report);
+        reportValidity(context, report);
         return report;
     }
 }

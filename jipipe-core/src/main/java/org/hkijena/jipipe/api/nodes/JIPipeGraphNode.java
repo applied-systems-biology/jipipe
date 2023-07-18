@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -569,11 +569,11 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
      * Please do not override this method if absolutely necessary. Use onDeserialized() to add methods after deserialization
      *
      * @param node          The JSON data to load from
-     * @param parentCause
+     * @param context
      * @param issues        issues during deserializing. these should be severe issues (missing parameters etc.). if you want to notify the user about potential issues that can be acted upon, use the notification inbox
      * @param notifications additional notifications for the user. these can be acted upon
      */
-    public void fromJson(JsonNode node, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
+    public void fromJson(JsonNode node, JIPipeValidationReportContext context, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         if (node.has("jipipe:slot-configuration"))
             slotConfiguration.fromJson(node.get("jipipe:slot-configuration"));
         if (node.has("jipipe:ui-grid-location")) {
@@ -590,7 +590,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
         }
 
         // Deserialize algorithm-specific parameters
-        ParameterUtils.deserializeParametersFromJson(this, node, parentCause, issues);
+        ParameterUtils.deserializeParametersFromJson(this, node, context, issues);
 
         // Run postprocess command
         onDeserialized(node, issues, notifications);

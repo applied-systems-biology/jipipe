@@ -27,6 +27,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -112,21 +116,19 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             } else {
                 for (Integer integer : sliceIndices) {
                     if (integer >= img.getStackSize()) {
-                        throw new UserFriendlyRuntimeException("Data does not have slice: " + integer,
-                                "Invalid slice requested!",
-                                "Algorithm '" + getName() + "'",
+                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
+                                "Data does not have slice: " + integer,
                                 "The algorithm was set up to select slice " + integer + ", but this slice does not exist. The image only has " + img.getStackSize() + " slices.",
                                 "Please check if the incoming data has at least the amount of slices as requested. Please do not forget that the first slice index is zero. " +
-                                        "If you are sure what you do, enable 'Ignore missing slices' in the algorithm settings.");
+                                        "If you are sure what you do, enable 'Ignore missing slices' in the algorithm settings."));
                     }
                 }
             }
             if (sliceIndices.isEmpty()) {
-                throw new UserFriendlyRuntimeException("No slices selected!",
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                         "No slices selected!",
-                        "Algorithm '" + getName() + "'",
                         "You have to select a valid set of slices from the data set.",
-                        "Please check if the incoming data has at least the amount of slices as requested.");
+                        "Please check if the incoming data has at least the amount of slices as requested."));
             }
             if (uniqueStackIds) {
                 sliceIndices = sliceIndices.stream().distinct().collect(Collectors.toList());

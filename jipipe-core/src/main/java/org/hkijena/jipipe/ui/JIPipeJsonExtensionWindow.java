@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -345,7 +345,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
                     }
 
                     @Override
-                    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+                    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
 
                     }
                 });

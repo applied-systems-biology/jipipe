@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -66,7 +66,7 @@ public class SerializationUtils {
      */
     public static void jsonStringToParameterCollection(JIPipeParameterCollection target, String json) {
         JsonNode node = jsonStringToObject(json, JsonNode.class);
-        ParameterUtils.deserializeParametersFromJson(target, node, new UnspecifiedReportEntryCause(), new JIPipeValidationReport());
+        ParameterUtils.deserializeParametersFromJson(target, node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
     }
 
     /**

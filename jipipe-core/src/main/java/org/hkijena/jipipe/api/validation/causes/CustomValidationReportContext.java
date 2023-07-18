@@ -1,33 +1,33 @@
 package org.hkijena.jipipe.api.validation.causes;
 
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class CustomReportEntryCause extends JIPipeValidationReportEntryCause {
+public class CustomValidationReportContext extends JIPipeValidationReportContext {
 
     private final String name;
 
     private final Icon icon;
 
-    public CustomReportEntryCause(String name, Icon icon) {
+    public CustomValidationReportContext(String name, Icon icon) {
         this.name = name;
         this.icon = icon;
     }
 
-    public CustomReportEntryCause(JIPipeValidationReportEntryCause parent, String name, Icon icon) {
+    public CustomValidationReportContext(JIPipeValidationReportContext parent, String name, Icon icon) {
         super(parent);
         this.name = name;
         this.icon = icon;
     }
 
-    public CustomReportEntryCause(String name) {
+    public CustomValidationReportContext(String name) {
         this(name, UIUtils.getIconFromResources("actions/dialog-warning.png"));
     }
 
-    public CustomReportEntryCause(JIPipeValidationReportEntryCause parent, String name) {
+    public CustomValidationReportContext(JIPipeValidationReportContext parent, String name) {
         this(parent, name, UIUtils.getIconFromResources("actions/dialog-warning.png"));
     }
 

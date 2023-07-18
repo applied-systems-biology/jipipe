@@ -17,7 +17,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -115,11 +116,10 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Ensure same size
         if (!ImageJUtils.imagesHaveSameSize(leftOperand, rightOperand)) {
-            throw new UserFriendlyRuntimeException("Input images do not have the same size!",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
                     "Input images do not have the same size!",
-                    getDisplayName(),
-                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels.",
-                    "Please check the input images.");
+                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels."));
         }
 
         ImagePlus result = IJ.createHyperStack("Result", leftOperand.getWidth(), leftOperand.getHeight(), leftOperand.getNChannels(), leftOperand.getNSlices(), leftOperand.getNFrames(), 8);
@@ -166,18 +166,25 @@ public class ImageComparer2DAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        super.reportValidity(parentCause, report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
         Set<Operand> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
-            report.resolve("Operands").resolve(entry.getKey()).checkNonNull(operand, this);
+            if(operand == null) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new ParameterValidationReportContext(context, this, "Operands", "operands"),
+                        "Operand not selected!",
+                        "Please ensure that all operands are selected"));
+            }
             if (operand != null) {
-                if (existing.contains(operand))
-                    report.resolve("Operands").resolve(entry.getKey()).reportIsInvalid("Duplicate operand assignment!",
+                if (existing.contains(operand)) {
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new ParameterValidationReportContext(context, this, "Operands", "operands"),
+                            "Duplicate operand assignment!",
                             "Operand '" + operand + "' is already assigned.",
-                            "Please assign the other operand.",
-                            this);
+                            "Please assign the other operand."));
+                }
                 existing.add(operand);
             }
         }

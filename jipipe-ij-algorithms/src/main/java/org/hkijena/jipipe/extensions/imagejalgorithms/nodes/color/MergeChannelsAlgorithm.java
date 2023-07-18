@@ -32,7 +32,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
@@ -246,17 +249,24 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         Set<ChannelColor> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
             ChannelColor color = entry.getValue().get(ChannelColor.class);
-            report.resolve("Channel colors").resolve(entry.getKey()).checkNonNull(color, this);
+            if(color == null) {
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new ParameterValidationReportContext(context, this, "Channel colors", "channel-color-assignments"),
+                        "No channel color selected!",
+                        "Please ensure that all channels are assigned a color."));
+            }
             if (color != null) {
-                if (existing.contains(color))
-                    report.resolve("Channel colors").resolve(entry.getKey()).reportIsInvalid("Duplicate color assignment!",
+                if (existing.contains(color)) {
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            new ParameterValidationReportContext(context, this, "Channel colors", "channel-color-assignments"),
+                            "Duplicate color assignment!",
                             "Color '" + color + "' is already assigned.",
-                            "Please assign another color.",
-                            this);
+                            "Please assign another color."));
+                }
                 existing.add(color);
             }
         }

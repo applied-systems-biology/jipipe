@@ -22,8 +22,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.CustomReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -70,15 +70,15 @@ public abstract class FunctionParameter<I, P, O> implements JIPipeValidatable {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (input instanceof JIPipeValidatable) {
-            report.report(new CustomReportEntryCause(parentCause, "Input"), (JIPipeValidatable) input);
+            report.report(new CustomValidationReportContext(context, "Input"), (JIPipeValidatable) input);
         }
         if (parameter instanceof JIPipeValidatable) {
-            report.report(new CustomReportEntryCause(parentCause, "Parameter"), (JIPipeValidatable) parameter);
+            report.report(new CustomValidationReportContext(context, "Parameter"), (JIPipeValidatable) parameter);
         }
         if (output instanceof JIPipeValidatable) {
-            report.report(new CustomReportEntryCause(parentCause, "Output"), (JIPipeValidatable) output);
+            report.report(new CustomValidationReportContext(context, "Output"), (JIPipeValidatable) output);
         }
     }
 

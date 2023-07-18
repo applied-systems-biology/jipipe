@@ -1,14 +1,14 @@
 package org.hkijena.jipipe.api.validation.causes;
 
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryCause;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 
-public class UnspecifiedReportEntryCause extends JIPipeValidationReportEntryCause {
+public class UnspecifiedValidationReportContext extends JIPipeValidationReportContext {
 
-    public UnspecifiedReportEntryCause() {
+    public UnspecifiedValidationReportContext() {
     }
 
     @Override

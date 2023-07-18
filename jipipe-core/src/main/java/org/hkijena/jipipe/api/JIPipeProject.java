@@ -40,8 +40,8 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportEntryCause;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedReportEntryCause;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -108,29 +108,29 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * Loads a project from a file
      *
      * @param fileName    JSON file
-     * @param parentCause the parent cause
+     * @param context the context
      * @param report      issue report
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) throws IOException {
-        return loadProject(fileName, parentCause, report, new JIPipeNotificationInbox());
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report) throws IOException {
+        return loadProject(fileName, context, report, new JIPipeNotificationInbox());
     }
 
     /**
      * Loads a project from a file
      *
      * @param fileName      JSON file
-     * @param parentCause the parent cause
+     * @param context the context
      * @param report        issue report
      * @param notifications notifications for the user
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
         JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(jsonData, parentCause, report, notifications);
+        project.fromJson(jsonData, context, report, notifications);
         project.setWorkDirectory(fileName.getParent());
         return project;
     }
@@ -422,19 +422,19 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report) {
-        graph.reportValidity(parentCause, report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        graph.reportValidity(context, report);
     }
 
     /**
      * Reports the validity for the target node and its dependencies
      *
-     * @param parentCause the parent cause
+     * @param context the context
      * @param report      the report
      * @param targetNode  the target node
      */
-    public void reportValidity(JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report, JIPipeGraphNode targetNode) {
-        graph.reportValidity(parentCause, report, targetNode);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode) {
+        graph.reportValidity(context, report, targetNode);
     }
 
     /**
@@ -605,10 +605,10 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * Loads the project from JSON
      *
      * @param jsonNode      the node
-     * @param parentCause the parent cause
+     * @param context the context
      * @param notifications notifications for the user
      */
-    public void fromJson(JsonNode jsonNode, JIPipeValidationReportEntryCause parentCause, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
+    public void fromJson(JsonNode jsonNode, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
         try {
             isLoading = true;
 
@@ -623,7 +623,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                     Class<?> metadataClass = JsonUtils.getObjectMapper().readerFor(Class.class).readValue(metadataEntry.getValue().get("jipipe:type"));
                     if (JIPipeParameterCollection.class.isAssignableFrom(metadataClass)) {
                         JIPipeParameterCollection metadata = (JIPipeParameterCollection) ReflectionUtils.newInstance(metadataClass);
-                        ParameterUtils.deserializeParametersFromJson(metadata, metadataEntry.getValue(), parentCause, report);
+                        ParameterUtils.deserializeParametersFromJson(metadata, metadataEntry.getValue(), context, report);
                         additionalMetadata.put(metadataEntry.getKey(), metadata);
                     } else {
                         Object data = JsonUtils.getObjectMapper().readerFor(metadataClass).readValue(metadataEntry.getValue().get("data"));
@@ -637,10 +637,10 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             }
 
             // We must first load the graph, as we can infer compartments later
-            graph.fromJson(jsonNode.get("graph"), parentCause, new JIPipeValidationReport(), notifications);
+            graph.fromJson(jsonNode.get("graph"), context, new JIPipeValidationReport(), notifications);
 
             // read compartments
-            compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), parentCause, new JIPipeValidationReport(), notifications);
+            compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), context, new JIPipeValidationReport(), notifications);
 
             // Fix legacy nodes
             for (Map.Entry<UUID, String> entry : graph.getNodeLegacyCompartmentIDs().entrySet()) {
@@ -681,7 +681,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             }
 
             // Reading compartments might break some connections. This will restore them
-            graph.edgesFromJson(jsonNode.get("graph"), parentCause, report);
+            graph.edgesFromJson(jsonNode.get("graph"), context, report);
 
             // Update node visibilities
             updateCompartmentVisibility();
@@ -691,7 +691,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                 UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInParentGraph();
                 if (compartmentUUIDInGraph == null || !compartments.containsKey(compartmentUUIDInGraph)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                            new GraphNodeValidationReportEntryCause(graphNode),
+                            new GraphNodeValidationReportContext(graphNode),
                             "Node has no compartment!",
                             "The node '" + graphNode.getDisplayName() + "' has no compartment assigned!",
                             "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
@@ -701,7 +701,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                     JIPipeGraphNode compartmentNode = compartmentGraph.getNodeByUUID(compartmentUUIDInGraph);
                     if (compartmentNode == null) {
                         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                                new GraphNodeValidationReportEntryCause(compartmentNode),
+                                new GraphNodeValidationReportContext(compartmentNode),
                                 "Node has invalid compartment!",
                         "The node '" + graphNode.getDisplayName() + "' is assigned to compartment '" + compartmentUUIDInGraph + "', but it does not exist!",
                                 "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
@@ -879,7 +879,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         public JIPipeProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeProject project = new JIPipeProject();
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            project.fromJson(node, new UnspecifiedReportEntryCause(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
+            project.fromJson(node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
             return project;
         }
     }
