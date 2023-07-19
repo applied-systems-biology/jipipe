@@ -80,7 +80,7 @@ public class JIPipeValidationReportEntry {
         JIPipeValidationReportContext currentContext = context;
         stringBuilder.append("-- Location:\n");
         while(currentContext != null) {
-            stringBuilder.append("--- ").append(currentContext.renderName()).append("\n");
+            stringBuilder.append("--- ").append(currentContext.renderName()).append(" [").append(currentContext.getClass()).append("]").append("\n");
             currentContext = currentContext.getParent();
         }
         stringBuilder.append("\n");

@@ -166,10 +166,10 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
             do {
                 if(!(context instanceof UnspecifiedValidationReportContext)) {
                     contexts.add(context);
-                    context = context.getParent();
                     if(context.canNavigate(getWorkbench())) {
                        navigationContext = context;
                     }
+                    context = context.getParent();
                 }
             }
             while(!(context instanceof UnspecifiedValidationReportContext));
@@ -220,7 +220,7 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
             formPanel.addWideToForm(toolBar);
 
             if(navigationContext != null) {
-                JButton navigateButton = new JButton("Copy", UIUtils.getIconFromResources("actions/go-jump.png"));
+                JButton navigateButton = new JButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"));
                 navigateButton.setOpaque(false);
                 toolBar.add(navigateButton);
             }
