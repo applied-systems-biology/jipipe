@@ -24,8 +24,8 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGro
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.validation.causes.JsonNodeInfoValidationReportContext;
-import org.hkijena.jipipe.api.validation.causes.ParameterValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;

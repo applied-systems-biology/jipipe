@@ -20,8 +20,9 @@ import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -387,7 +388,12 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         JIPipeValidationReport report = new JIPipeValidationReport();
         currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
         if (!report.isEmpty()) {
-            UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
+            UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                    this,
+                    report,
+                    "Issues with the run",
+                    "The following issues have been detected:",
+                    false);
             return;
         }
         String parameters = getRun().getParametersString();
@@ -408,7 +414,12 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         JIPipeValidationReport report = new JIPipeValidationReport();
         currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
         if (!report.isEmpty()) {
-            UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
+            UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                    this,
+                    report,
+                    "Issues with the run",
+                    "The following issues have been detected:",
+                    false);
             return;
         }
         if (!keepWindowToggle.isSelected())

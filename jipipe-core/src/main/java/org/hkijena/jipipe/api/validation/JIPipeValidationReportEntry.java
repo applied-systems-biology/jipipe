@@ -1,13 +1,14 @@
 package org.hkijena.jipipe.api.validation;
 
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.utils.StringUtils;
 
 /**
  * A validity report message
  */
 public class JIPipeValidationReportEntry {
     private final JIPipeValidationReportEntryLevel level;
-    private final JIPipeValidationReportContext cause;
+    private final JIPipeValidationReportContext context;
     private final String title;
     private final String explanation;
     private final String solution;
@@ -15,15 +16,15 @@ public class JIPipeValidationReportEntry {
 
     /**
      * @param level    the level of this entry
-     * @param cause the object that caused the problem
+     * @param context the object that caused the problem
      * @param title explanation what happened
      * @param explanation  explanation why it happened
      * @param solution  explanation how to solve the issue
      * @param details  optional details
      */
-    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext cause, String title, String explanation, String solution, String details) {
+    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation, String solution, String details) {
         this.level = level;
-        this.cause = cause != null ? cause : new UnspecifiedValidationReportContext();
+        this.context = context != null ? context : new UnspecifiedValidationReportContext();
         this.title = title;
         this.explanation = explanation;
         this.solution = solution;
@@ -32,23 +33,23 @@ public class JIPipeValidationReportEntry {
 
     /**
      * @param level    the level of this entry
-     * @param cause the object that caused the problem
+     * @param context the object that caused the problem
      * @param title explanation what happened
      * @param explanation  explanation why it happened
      * @param solution  explanation how to solve the issue
      */
-    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext cause, String title, String explanation, String solution) {
-       this(level, cause, title, explanation, solution, null);
+    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation, String solution) {
+       this(level, context, title, explanation, solution, null);
     }
 
     /**
      * @param level    the level of this entry
-     * @param cause the object that caused the problem
+     * @param context the object that caused the problem
      * @param title explanation what happened
      * @param explanation  explanation why it happened
      */
-    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext cause, String title, String explanation) {
-        this(level, cause, title, explanation, null, null);
+    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation) {
+        this(level, context, title, explanation, null, null);
     }
 
     public JIPipeValidationReportEntryLevel getLevel() {
@@ -67,8 +68,34 @@ public class JIPipeValidationReportEntry {
         return solution;
     }
 
-    public JIPipeValidationReportContext getCause() {
-        return cause;
+    public JIPipeValidationReportContext getContext() {
+        return context;
+    }
+
+    public String toReport() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("- ").append(level.toString()).append(": ").append(StringUtils.orElse(title, "Unnamed")).append("\n");
+        stringBuilder.append("-----\n\n");
+
+        JIPipeValidationReportContext currentContext = context;
+        stringBuilder.append("-- Location:\n");
+        while(currentContext != null) {
+            stringBuilder.append("--- ").append(currentContext.renderName()).append("\n");
+            currentContext = currentContext.getParent();
+        }
+        stringBuilder.append("\n");
+
+        if(!StringUtils.isNullOrEmpty(explanation)) {
+            stringBuilder.append("-- Explanation: ").append(explanation).append("\n\n");
+        }
+        if(!StringUtils.isNullOrEmpty(solution)) {
+            stringBuilder.append("-- Solution: ").append(solution).append("\n\n");
+        }
+        if(!StringUtils.isNullOrEmpty(details)) {
+            stringBuilder.append("-- Details: ").append(details).append("\n\n");
+        }
+
+        return stringBuilder.append("\n\n").toString();
     }
 
     @Override

@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -73,7 +73,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         this.algorithm = algorithm;
 
         setLayout(new BorderLayout());
-        this.validationReportUI = new JIPipeValidityReportUI(false);
+        this.validationReportUI = new JIPipeValidityReportUI(workbenchUI, false);
 
         initializeValidationReportUI();
         initializeSelectionPanel();
@@ -184,7 +184,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
     private void initializeValidationReportUI() {
         validationReportPanel = new JPanel();
         validationReportPanel.setLayout(new BorderLayout());
-        validationReportUI = new JIPipeValidityReportUI(false);
+        validationReportUI = new JIPipeValidityReportUI(getWorkbench(), false);
         DocumentedComponent pane = new DocumentedComponent(true,
                 MarkdownDocument.fromPluginResource("documentation/testbench.md", new HashMap<>()),
                 validationReportUI);
@@ -278,7 +278,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
     private void openError(Throwable exception) {
         removeAll();
 
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(getWorkbench(), null, UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
 

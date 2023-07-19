@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.library.patterns;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 

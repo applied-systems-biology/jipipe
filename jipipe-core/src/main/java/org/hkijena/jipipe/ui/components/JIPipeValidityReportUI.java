@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -26,26 +28,29 @@ import java.util.HashMap;
 /**
  * UI for an {@link JIPipeValidationReport}
  */
-public class JIPipeValidityReportUI extends JPanel {
+public class JIPipeValidityReportUI extends JIPipeWorkbenchPanel {
     private JSplitPane splitPane;
     private JIPipeValidationReport report;
     private UserFriendlyErrorUI errorUI;
-    private boolean withHelp;
+    private final boolean withHelp;
     private JPanel everythingValidPanel;
-    private MarkdownDocument helpDocument;
+    private final MarkdownDocument helpDocument;
 
     /**
-     * @param withHelp if a help panel should be shown
+     * @param workbench the workbench
+     * @param withHelp  if a help panel should be shown
      */
-    public JIPipeValidityReportUI(boolean withHelp) {
-        this(withHelp, MarkdownDocument.fromPluginResource("documentation/validation.md", new HashMap<>()));
+    public JIPipeValidityReportUI(JIPipeWorkbench workbench, boolean withHelp) {
+        this(workbench, withHelp, MarkdownDocument.fromPluginResource("documentation/validation.md", new HashMap<>()));
     }
 
     /**
+     * @param workbench the workbench
      * @param withHelp     if a help panel should be shown
      * @param helpDocument a custom help document
      */
-    public JIPipeValidityReportUI(boolean withHelp, MarkdownDocument helpDocument) {
+    public JIPipeValidityReportUI(JIPipeWorkbench workbench, boolean withHelp, MarkdownDocument helpDocument) {
+        super(workbench);
         if (helpDocument == null)
             helpDocument = MarkdownDocument.fromPluginResource("documentation/validation.md", new HashMap<>());
 
@@ -82,7 +87,7 @@ public class JIPipeValidityReportUI extends JPanel {
         setLayout(new BorderLayout());
 
         // Create table panel
-        errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+        errorUI = new UserFriendlyErrorUI(getWorkbench(), null, UserFriendlyErrorUI.WITH_SCROLLING);
 
         // Create alternative panel
         everythingValidPanel = new JPanel(new BorderLayout());

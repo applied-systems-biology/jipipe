@@ -14,9 +14,9 @@
 
 package org.hkijena.jipipe.ui.extensions;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeService;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 
@@ -29,8 +29,8 @@ public class JIPipePluginValidityCheckerPanel extends ReloadableValidityChecker 
     /**
      * Creates new instance
      */
-    public JIPipePluginValidityCheckerPanel() {
-        super(JIPipe.getInstance(),
+    public JIPipePluginValidityCheckerPanel(JIPipeWorkbench workbench) {
+        super(workbench, JIPipe.getInstance(),
                 MarkdownDocument.fromPluginResource("documentation/plugin-validation.md", new HashMap<>()));
         JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeWeak(this);
     }

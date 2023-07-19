@@ -254,7 +254,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             try {
                 Files.write(path, JsonUtils.toPrettyJsonString(templateList.getSelectedValuesList()).getBytes(StandardCharsets.UTF_8));
             } catch (IOException e) {
-                UIUtils.openErrorDialog(this, e);
+                UIUtils.openErrorDialog(getWorkbench(), this, e);
             }
         }
     }
@@ -300,7 +300,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
                 }
                 NodeTemplateSettings.triggerRefreshedEvent();
             } catch (Exception e) {
-                UIUtils.openErrorDialog(this, e);
+                UIUtils.openErrorDialog(getWorkbench(), this, e);
             }
         }
     }

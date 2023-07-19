@@ -23,9 +23,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
-import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -247,7 +245,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                     JIPipeRunnable runnable = new ExportAsFolderRun(row, dataTable, path);
                     JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
                 } catch (Exception e) {
-                    UIUtils.openErrorDialog(getWorkbench().getWindow(), e);
+                    UIUtils.openErrorDialog(getWorkbench(), getWorkbench().getWindow(), e);
                 }
             }
         }

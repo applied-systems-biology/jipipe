@@ -936,13 +936,14 @@ public class UIUtils {
     /**
      * Opens a dialog showing an exception
      *
+     * @param workbench the workbench
      * @param parent    the parent component
      * @param exception the exception
      */
-    public static void openErrorDialog(Component parent, Exception exception) {
+    public static void openErrorDialog(JIPipeWorkbench workbench, Component parent, Exception exception) {
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(workbench, null, UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
         dialog.setContentPane(errorUI);
@@ -993,16 +994,17 @@ public class UIUtils {
     /**
      * Opens a dialog showing a validity report
      *
-     * @param parent   the parent component
-     * @param report   the report
-     * @param title    the title
-     * @param infoText the info text
-     * @param modal    make the dialog modal
+     * @param workbench the workbench
+     * @param parent    the parent component
+     * @param report    the report
+     * @param title     the title
+     * @param infoText  the info text
+     * @param modal     make the dialog modal
      */
-    public static void openValidityReportDialog(Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
+    public static void openValidityReportDialog(JIPipeWorkbench workbench, Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
-        JIPipeValidityReportUI ui = new JIPipeValidityReportUI(false);
+        JIPipeValidityReportUI ui = new JIPipeValidityReportUI(workbench, false);
         ui.setReport(report);
         contentPanel.add(ui, BorderLayout.CENTER);
 

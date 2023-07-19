@@ -6,9 +6,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
@@ -221,7 +219,7 @@ public class FormsDialog extends JFrame {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             JIPipeValidationReport report = getReportForDataBatch(selectedRow, progressInfo);
             if (!report.isValid()) {
-                UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+                UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(workbench, null, UserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);
                 errorUI.addVerticalGlue();
                 tabPane.addTab(TAB_ISSUES_DETECTED,
@@ -586,7 +584,7 @@ public class FormsDialog extends JFrame {
                     "they are marked immutable.", "Copy settings", JOptionPane.WARNING_MESSAGE);
         }
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, "Errors while copying settings", "The following issues were detected while copying the data:", true);
+            UIUtils.openValidityReportDialog(workbench, this, report, "Errors while copying settings", "The following issues were detected while copying the data:", true);
         }
     }
 

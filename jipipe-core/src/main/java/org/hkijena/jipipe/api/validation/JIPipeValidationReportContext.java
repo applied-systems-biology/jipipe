@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.api.validation;
 
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;

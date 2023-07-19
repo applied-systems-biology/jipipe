@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -81,7 +81,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
     private void initializeValidityCheckUI(JIPipeValidationReport report) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout(8, 8));
-        JIPipeValidityReportUI reportUI = new JIPipeValidityReportUI(false);
+        JIPipeValidityReportUI reportUI = new JIPipeValidityReportUI(getWorkbench(), false);
         reportUI.setReport(report);
 
         MarkdownReader help = new MarkdownReader(false);
@@ -320,7 +320,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
 
     private void openError(Throwable exception) {
         removeAll();
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(MarkdownDocument.fromPluginResource("documentation/run-error.md", new HashMap<>()),
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(getWorkbench(), MarkdownDocument.fromPluginResource("documentation/run-error.md", new HashMap<>()),
                 UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();

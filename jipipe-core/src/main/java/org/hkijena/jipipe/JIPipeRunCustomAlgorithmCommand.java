@@ -22,8 +22,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -98,7 +99,12 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(null, report, "Errors while initializing JIPipe", "There were some issues while initializing JIPipe. Please run the JIPipe GUI for more information.", false);
+                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                            null,
+                            report,
+                            "Errors while initializing JIPipe",
+                            "There were some issues while initializing JIPipe. Please run the JIPipe GUI for more information.",
+                            false);
                 }
             }
         }

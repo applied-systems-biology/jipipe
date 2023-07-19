@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -234,13 +234,13 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 () -> new JIPipeModernPluginManagerUI(this),
                 DocumentTabPane.SingletonTabMode.Hidden);
-        validityCheckerPanel = new ReloadableValidityChecker(project);
+        validityCheckerPanel = new ReloadableValidityChecker(this, project);
         documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,
                 "Project validation",
                 UIUtils.getIconFromResources("actions/checkmark.png"),
                 () -> validityCheckerPanel,
                 DocumentTabPane.SingletonTabMode.Hidden);
-        pluginValidityCheckerPanel = new JIPipePluginValidityCheckerPanel();
+        pluginValidityCheckerPanel = new JIPipePluginValidityCheckerPanel(this);
         documentTabPane.registerSingletonTab(TAB_PLUGIN_VALIDITY_CHECK,
                 "Plugin validation",
                 UIUtils.getIconFromResources("actions/plugins.png"),
@@ -846,7 +846,12 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         JIPipeValidationReport report = new JIPipeValidationReport();
         report.report(new UnspecifiedValidationReportContext(), getProject().getGraph());
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, "Error while exporting", "There seem to be various issues with the project. Please resolve these and try to export the project again.", false);
+            UIUtils.openValidityReportDialog(this,
+                    this,
+                    report,
+                    "Error while exporting",
+                    "There seem to be various issues with the project. Please resolve these and try to export the project again.",
+                    false);
             return;
         }
         NodeGroup nodeGroup = new NodeGroup(new JIPipeGraph(getProject().getGraph()), true, false, true);

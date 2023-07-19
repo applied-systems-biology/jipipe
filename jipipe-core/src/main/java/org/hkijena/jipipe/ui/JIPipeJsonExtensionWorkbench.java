@@ -99,7 +99,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 () -> new JIPipeJsonExtensionContentListUI(this),
                 DocumentTabPane.SingletonTabMode.Present);
-        validityCheckerPanel = new ReloadableValidityChecker(new JIPipeJsonExtensionProjectValidation(project));
+        validityCheckerPanel = new ReloadableValidityChecker(this, new JIPipeJsonExtensionProjectValidation(project));
         documentTabPane.registerSingletonTab("VALIDITY_CHECK",
                 "Project validation",
                 UIUtils.getIconFromResources("actions/checkmark.png"),

@@ -56,7 +56,7 @@ public class JIPipeValidationReport extends ArrayList<JIPipeValidationReportEntr
     public void print() {
         for (JIPipeValidationReportEntry entry : this) {
             System.err.println();
-            System.err.println(entry.getLevel() + " at " + entry.getCause() + ":");
+            System.err.println(entry.getLevel() + " at " + entry.getContext() + ":");
             System.err.println("\t" + entry.getTitle());
             System.err.println("\t" + entry.getExplanation());
             System.err.println("\t-> " + entry.getSolution());

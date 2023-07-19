@@ -16,9 +16,10 @@ package org.hkijena.jipipe;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.ui.ijupdater.MissingRegistrationUpdateSiteResolver;
@@ -88,7 +89,7 @@ public class JIPipeGUICommand implements Command {
         } catch (Exception e) {
             e.printStackTrace();
             if (!extensionSettings.isSilent())
-                UIUtils.openErrorDialog(null, e);
+                UIUtils.openErrorDialog(new JIPipeDummyWorkbench(), null, e);
             return;
         }
 
@@ -100,7 +101,7 @@ public class JIPipeGUICommand implements Command {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 issues.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(null, report, "JIPipe extension registry", "Issues were detected during the initialization of certain extensions. " +
+                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(), null, report, "JIPipe extension registry", "Issues were detected during the initialization of certain extensions. " +
                             "Please review the following items. Close the window to ignore the messages and load JIPipe.", true);
                 }
             }

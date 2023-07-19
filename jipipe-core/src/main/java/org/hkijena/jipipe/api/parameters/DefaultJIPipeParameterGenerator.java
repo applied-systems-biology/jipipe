@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.parameters;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -100,7 +100,7 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 generator.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isEmpty()) {
-                    UIUtils.openValidityReportDialog(this, report, "Invalid settings detected", "Please resolve the following issues:", true);
+                    UIUtils.openValidityReportDialog(workbench, this, report, "Invalid settings detected", "Please resolve the following issues:", true);
                     return;
                 }
                 this.cancelled = false;

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.api.validation;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hkijena.jipipe.api.validation.causes.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 
 public class JIPipeValidationRuntimeException extends RuntimeException {
     private final JIPipeValidationReport report;

@@ -237,7 +237,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 };
                 JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
             } catch (Exception e) {
-                UIUtils.openErrorDialog(getWorkbench().getWindow(), e);
+                UIUtils.openErrorDialog(getWorkbench(), getWorkbench().getWindow(), e);
             }
         }
     }

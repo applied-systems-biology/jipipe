@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
-import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -281,7 +281,7 @@ public class JIPipeProjectWindow extends JFrame {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
                             "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
                 }
             } catch (IOException e) {
@@ -360,7 +360,7 @@ public class JIPipeProjectWindow extends JFrame {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(), this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
                         "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
         } else if (Files.isDirectory(path)) {
@@ -421,8 +421,13 @@ public class JIPipeProjectWindow extends JFrame {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
-                        "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
+                UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                        this,
+                        report,
+                        "Errors while loading the project",
+                        "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                                "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).",
+                        false);
             }
 
         }
@@ -487,7 +492,7 @@ public class JIPipeProjectWindow extends JFrame {
             // Remove tmp file
             Files.delete(tempFile);
         } catch (IOException e) {
-            UIUtils.openErrorDialog(this, new JIPipeValidationRuntimeException(e,
+            UIUtils.openErrorDialog(getProjectUI(), this, new JIPipeValidationRuntimeException(e,
                     "Error during saving!",
                     "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
                     "Please check if you have write access to the temporary directory and the target directory. " +

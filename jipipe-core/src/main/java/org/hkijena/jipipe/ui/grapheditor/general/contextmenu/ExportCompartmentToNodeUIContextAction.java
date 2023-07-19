@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
@@ -50,7 +50,12 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
             }
         }
         if (!report.isEmpty()) {
-            UIUtils.openValidityReportDialog(canvasUI, report, "Issues with nodes", "The following issues were found with the contained nodes. Retry after resolving the problems.", false);
+            UIUtils.openValidityReportDialog(canvasUI.getWorkbench(),
+                    canvasUI,
+                    report,
+                    "Issues with nodes",
+                    "The following issues were found with the contained nodes. Retry after resolving the problems.",
+                    false);
             return;
         }
 

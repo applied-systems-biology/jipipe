@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.api.validation.causes;
+package org.hkijena.jipipe.api.validation.contexts;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
