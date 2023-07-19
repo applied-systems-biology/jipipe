@@ -7,6 +7,9 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.causes.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -38,7 +41,7 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
         if (JIPipe.getInstance() != null) {
             CellposeSettings instance = getInstance();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            instance.getPythonEnvironment().reportValidity(context, report);
+            instance.getPythonEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
         }
         return false;
@@ -52,13 +55,14 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
      */
     public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!pythonSettingsAreValid()) {
-            report.reportIsInvalid("Python is not configured!",
-                    "Project > Application settings > Extensions > Cellpose",
-                    "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            context,
+                    "Cellpose is not configured!",
+                    "This node requires an installation of Python with Cellpose. You have to point JIPipe to a Cellpose installation.",
                     "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install Cellpose " +
                             "according to the documentation https://cellpose.readthedocs.io/en/latest/installation.html\n" +
                             "Then go to Project > Application settings > Extensions > Cellpose and choose the correct environment. " +
-                            "Alternatively, the settings page will provide you with means to install Cellpose automatically.");
+                            "Alternatively, the settings page will provide you with means to install Cellpose automatically."));
         }
     }
 

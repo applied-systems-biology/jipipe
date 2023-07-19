@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.causes.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
@@ -207,11 +207,11 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
             List<CellposeSizeModelData> sizeModels = dataBatch.getInputData("Size model", CellposeSizeModelData.class, progressInfo);
             if (sizeModels.size() > 1) {
-                throw new UserFriendlyRuntimeException("Only 1 size model supported!",
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
                         "Only one size model is supported!",
-                        getDisplayName(),
                         "Currently, the node supports only one size model.",
-                        "Remove or modify inputs so that there is only one size model.");
+                        "Remove or modify inputs so that there is only one size model."));
             }
             if (!sizeModels.isEmpty()) {
                 CellposeSizeModelData sizeModelData = sizeModels.get(0);
