@@ -49,7 +49,7 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
                     if (canvasUI.getHistoryJournal() != null) {
                         canvasUI.getHistoryJournal().snapshotBeforeRemoveCompartment(compartment);
                     }
-                    compartment.getProject().removeCompartment(compartment);
+                    compartment.getRuntimeProject().removeCompartment(compartment);
                 } else {
                     canvasUI.getGraph().removeNode(ui.getNode(), true);
                 }

@@ -13,29 +13,32 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeCitation;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-@JIPipeDocumentation(name = "Bio-Formats exporter", description = "Deprecated. Please use the new node. Writes the OME images into an *.ome.tif file.")
+@JIPipeDocumentation(name = "Bio-Formats exporter", description = "Writes the OME images into an *.ome.tif file.")
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @JIPipeInputSlot(value = OMEImageData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Output", autoCreate = true)
@@ -43,63 +46,45 @@ import java.util.Set;
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter")
-@JIPipeHidden
-@Deprecated
-public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
-
-    private final Set<String> existingMetadata = new HashSet<>();
+public class BioFormatsExporter2 extends JIPipeSimpleIteratingAlgorithm {
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();
-    private JIPipeDataByMetadataExporter exporter;
-    private Path outputDirectory = Paths.get("exported-data");
+    private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
 
-    public BioFormatsExporter(JIPipeNodeInfo info) {
+    public BioFormatsExporter2(JIPipeNodeInfo info) {
         super(info);
         registerSubParameter(exporterSettings);
-        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
-        registerSubParameter(exporter);
     }
 
-    public BioFormatsExporter(BioFormatsExporter other) {
+    public BioFormatsExporter2(BioFormatsExporter2 other) {
         super(other);
         this.exporterSettings = new OMEExporterSettings(other.exporterSettings);
-        this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
-        this.outputDirectory = other.outputDirectory;
+        this.filePath = new DataExportExpressionParameter(other.filePath);
         registerSubParameter(exporterSettings);
-        registerSubParameter(exporter);
-    }
-
-    @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        existingMetadata.clear();
-        super.runParameterSet(progressInfo, parameterAnnotations);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path outputPath;
-        if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
-        } else {
-            outputPath = outputDirectory;
-        }
+        OMEImageData inputData = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
 
-        // Generate the path
-        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
-
-        // If absolute -> use the path, otherwise use output directory
-        if (generatedPath.isAbsolute()) {
-            outputPath = generatedPath;
-        } else {
-            outputPath = outputPath.resolve(generatedPath);
+        Map<String, Path> projectDataDirs;
+        if(getRuntimeProject() != null) {
+            projectDataDirs = getRuntimeProject().getDirectoryMap();
         }
+        else {
+            projectDataDirs = Collections.emptyMap();
+        }
+        Path outputPath = filePath.generatePath(getFirstOutputSlot().getSlotStoragePath(),
+                getProjectDirectory(),
+                projectDataDirs,
+                inputData.toString(),
+                dataBatch.getInputRow(getFirstInputSlot()),
+                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
 
         // Postprocess path
         outputPath = PathUtils.ensureExtension(outputPath, ".ome.tif", "ome.tiff");
         PathUtils.ensureParentDirectoriesExist(outputPath);
 
-
-        OMEImageData input = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
-        OMEImageData.OMEExport(input, outputPath, exporterSettings);
+        OMEImageData.OMEExport(inputData, outputPath, exporterSettings);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
     }
@@ -110,22 +95,14 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
         return exporterSettings;
     }
 
-    @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
-    @JIPipeParameter("exporter")
-    public JIPipeDataByMetadataExporter getExporter() {
-        return exporter;
+    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @JIPipeParameter("file-path")
+    public DataExportExpressionParameter getFilePath() {
+        return filePath;
     }
 
-    @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
-            "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
-    @JIPipeParameter("output-directory")
-    @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
-    public Path getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    @JIPipeParameter("output-directory")
-    public void setOutputDirectory(Path outputDirectory) {
-        this.outputDirectory = outputDirectory;
+    @JIPipeParameter("file-path")
+    public void setFilePath(DataExportExpressionParameter filePath) {
+        this.filePath = filePath;
     }
 }

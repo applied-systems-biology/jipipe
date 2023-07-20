@@ -339,7 +339,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
     public DocumentTabPane.DocumentTab getOrOpenPipelineEditorTab(JIPipeProjectCompartment compartment, boolean switchToTab) {
         List<JIPipePipelineGraphEditorUI> compartmentUIs = findOpenPipelineEditorTabs(compartment);
         if (compartmentUIs.isEmpty()) {
-            JIPipePipelineGraphEditorUI compartmentUI = new JIPipePipelineGraphEditorUI(this, compartment.getProject().getGraph(), compartment.getProjectCompartmentUUID());
+            JIPipePipelineGraphEditorUI compartmentUI = new JIPipePipelineGraphEditorUI(this, compartment.getRuntimeProject().getGraph(), compartment.getProjectCompartmentUUID());
             DocumentTabPane.DocumentTab documentTab = documentTabPane.addTab(compartment.getName(),
                     UIUtils.getIconFromResources("actions/graph-compartment.png"),
                     compartmentUI,

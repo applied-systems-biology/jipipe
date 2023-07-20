@@ -127,17 +127,17 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     /**
      * @return The project
      */
-    public JIPipeProject getProject() {
+    public JIPipeProject getRuntimeProject() {
         return project;
     }
 
     /**
      * Sets the project. Internal use only.
      *
-     * @param project The project
+     * @param runtimeProject The project
      */
-    public void setProject(JIPipeProject project) {
-        this.project = project;
+    public void setRuntimeProject(JIPipeProject runtimeProject) {
+        this.project = runtimeProject;
         updateExportedParameters();
     }
 

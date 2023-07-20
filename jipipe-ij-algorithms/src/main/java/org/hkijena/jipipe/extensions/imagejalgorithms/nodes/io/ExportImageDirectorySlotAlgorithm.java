@@ -3,11 +3,11 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -15,24 +15,20 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Export image", description = "Deprecated. Please use the new node. Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). " +
+@JIPipeDocumentation(name = "Export image (directory slot)", description = "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). " +
         "Please note support for input images depending on the file format: " +
         "<ul>" +
         "<li>PNG, JPEG, BMP: 2D images only</li>" +
@@ -40,39 +36,34 @@ import java.util.Set;
         "<li>TIFF: All images supported</li>" +
         "</ul>")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = FolderData.class, slotName = "Output directory", autoCreate = true, description = "Relative to the working directory of the current slot. Convert to absolute path to allow writing outside the output directory.")
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
-@Deprecated
-@JIPipeHidden
-public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
+public class ExportImageDirectorySlotAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
     private JIPipeDataByMetadataExporter exporter;
-    private Path outputDirectory = Paths.get("exported-data");
-    private FileFormat fileFormat = FileFormat.PNG;
+    private ExportImageAlgorithm.FileFormat fileFormat = ExportImageAlgorithm.FileFormat.PNG;
     private int movieFPS = 100;
     private HyperstackDimension movieAnimatedDimension = HyperstackDimension.Frame;
     private AVICompression aviCompression = AVICompression.PNG;
     private int jpegQuality = 100;
-    private boolean relativeToProjectDir = false;
 
-    public ExportImageAlgorithm(JIPipeNodeInfo info) {
+    public ExportImageDirectorySlotAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
         registerSubParameter(exporter);
     }
 
-    public ExportImageAlgorithm(ExportImageAlgorithm other) {
+    public ExportImageDirectorySlotAlgorithm(ExportImageDirectorySlotAlgorithm other) {
         super(other);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
-        this.outputDirectory = other.outputDirectory;
         this.fileFormat = other.fileFormat;
         this.movieFPS = other.movieFPS;
         this.movieAnimatedDimension = other.movieAnimatedDimension;
         this.aviCompression = other.aviCompression;
         this.jpegQuality = other.jpegQuality;
-        this.relativeToProjectDir = other.relativeToProjectDir;
         registerSubParameter(exporter);
     }
 
@@ -84,13 +75,12 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        JIPipeDataSlot imageSlot = getInputSlot("Input");
+
+        Path outputDirectory = dataBatch.getInputData("Output directory", FolderData.class, progressInfo).toPath();
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            if (relativeToProjectDir && getProjectDirectory() != null) {
-                outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
-            } else {
-                outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
-            }
+            outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
         } else {
             outputPath = outputDirectory;
         }
@@ -145,19 +135,6 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
-            "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
-    @JIPipeParameter("output-directory")
-    @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
-    public Path getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    @JIPipeParameter("output-directory")
-    public void setOutputDirectory(Path outputDirectory) {
-        this.outputDirectory = outputDirectory;
-    }
-
     @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
     @JIPipeParameter("exporter")
     public JIPipeDataByMetadataExporter getExporter() {
@@ -171,12 +148,12 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
             "<li>TIFF: All images supported</li>" +
             "</ul>")
     @JIPipeParameter(value = "file-format", uiOrder = -20)
-    public FileFormat getFileFormat() {
+    public ExportImageAlgorithm.FileFormat getFileFormat() {
         return fileFormat;
     }
 
     @JIPipeParameter("file-format")
-    public void setFileFormat(FileFormat fileFormat) {
+    public void setFileFormat(ExportImageAlgorithm.FileFormat fileFormat) {
         this.fileFormat = fileFormat;
         emitParameterUIChangedEvent();
     }
@@ -229,22 +206,9 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
-            "Otherwise, JIPipe will store the results in an automatically generated directory. " +
-            "Has no effect if an absolute path is provided.")
-    @JIPipeParameter("relative-to-project-dir")
-    public boolean isRelativeToProjectDir() {
-        return relativeToProjectDir;
-    }
-
-    @JIPipeParameter("relative-to-project-dir")
-    public void setRelativeToProjectDir(boolean relativeToProjectDir) {
-        this.relativeToProjectDir = relativeToProjectDir;
-    }
-
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if (fileFormat != FileFormat.AVI) {
+        if (fileFormat != ExportImageAlgorithm.FileFormat.AVI) {
             if ("movie-fps".equals(access.getKey())) {
                 return false;
             }
@@ -259,13 +223,5 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
         return super.isParameterUIVisible(tree, access);
-    }
-
-    public enum FileFormat {
-        PNG,
-        JPEG,
-        BMP,
-        AVI,
-        TIFF
     }
 }

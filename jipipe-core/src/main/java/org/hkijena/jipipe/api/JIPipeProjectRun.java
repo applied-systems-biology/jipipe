@@ -107,11 +107,12 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
     }
 
     private void initializeInternalStoragePaths() {
-        for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
-            JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInParentGraph());
-            algorithm.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInParentGraph()))
-                    .resolve(StringUtils.safeJsonify(copiedGraph.getAliasIdOf(algorithm))));
-            algorithm.setProjectDirectory(project.getWorkDirectory());
+        for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
+            JIPipeProjectCompartment compartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+            node.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInParentGraph()))
+                    .resolve(StringUtils.safeJsonify(copiedGraph.getAliasIdOf(node))));
+            node.setProjectDirectory(project.getWorkDirectory());
+            node.setRuntimeProject(project);
         }
     }
 

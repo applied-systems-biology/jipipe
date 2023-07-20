@@ -79,6 +79,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
     private String customName;
     private HTMLText customDescription;
     private JIPipeGraph parentGraph;
+    private JIPipeProject runtimeProject;
     private Path baseDirectory;
     private Path projectDirectory;
     private Path scratchBaseDirectory;
@@ -569,7 +570,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
      * Please do not override this method if absolutely necessary. Use onDeserialized() to add methods after deserialization
      *
      * @param node          The JSON data to load from
-     * @param context
+     * @param context the context
      * @param issues        issues during deserializing. these should be severe issues (missing parameters etc.). if you want to notify the user about potential issues that can be acted upon, use the notification inbox
      * @param notifications additional notifications for the user. these can be acted upon
      */
@@ -852,6 +853,22 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
     @JIPipeParameter("jipipe:node:description")
     public void setCustomDescription(HTMLText customDescription) {
         this.customDescription = customDescription;
+    }
+
+    /**
+     * Returns the current project associated with the current run
+     * @return the project
+     */
+    public JIPipeProject getRuntimeProject() {
+        return runtimeProject;
+    }
+
+    /**
+     * Sets the current project associated with the current run
+     * @param runtimeProject the project
+     */
+    public void setRuntimeProject(JIPipeProject runtimeProject) {
+        this.runtimeProject = runtimeProject;
     }
 
     /**

@@ -5,30 +5,28 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
-@JIPipeDocumentation(name = "Export image (directory slot)", description = "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). " +
+@JIPipeDocumentation(name = "Export image", description = "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). " +
         "Please note support for input images depending on the file format: " +
         "<ul>" +
         "<li>PNG, JPEG, BMP: 2D images only</li>" +
@@ -36,94 +34,84 @@ import java.util.Set;
         "<li>TIFF: All images supported</li>" +
         "</ul>")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeInputSlot(value = FolderData.class, slotName = "Output directory", autoCreate = true, description = "Relative to the working directory of the current slot. Convert to absolute path to allow writing outside the output directory.")
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
-
-    private final Set<String> existingMetadata = new HashSet<>();
-    private JIPipeDataByMetadataExporter exporter;
     private ExportImageAlgorithm.FileFormat fileFormat = ExportImageAlgorithm.FileFormat.PNG;
     private int movieFPS = 100;
     private HyperstackDimension movieAnimatedDimension = HyperstackDimension.Frame;
     private AVICompression aviCompression = AVICompression.PNG;
     private int jpegQuality = 100;
+    private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
 
     public ExportImage2Algorithm(JIPipeNodeInfo info) {
         super(info);
-        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
-        registerSubParameter(exporter);
     }
 
     public ExportImage2Algorithm(ExportImage2Algorithm other) {
         super(other);
-        this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.fileFormat = other.fileFormat;
         this.movieFPS = other.movieFPS;
         this.movieAnimatedDimension = other.movieAnimatedDimension;
         this.aviCompression = other.aviCompression;
         this.jpegQuality = other.jpegQuality;
-        registerSubParameter(exporter);
-    }
-
-    @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        existingMetadata.clear();
-        super.runParameterSet(progressInfo, parameterAnnotations);
+        this.filePath = new DataExportExpressionParameter(other.filePath);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot imageSlot = getInputSlot("Input");
 
-        Path outputDirectory = dataBatch.getInputData("Output directory", FolderData.class, progressInfo).toPath();
-        Path outputPath;
-        if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
-        } else {
-            outputPath = outputDirectory;
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+
+        Map<String, Path> projectDataDirs;
+        if(getRuntimeProject() != null) {
+            projectDataDirs = getRuntimeProject().getDirectoryMap();
         }
-
-        // Generate the path
-        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
-
-        // If absolute -> use the path, otherwise use output directory
-        if (generatedPath.isAbsolute()) {
-            outputPath = generatedPath;
-        } else {
-            outputPath = outputPath.resolve(generatedPath);
+        else {
+            projectDataDirs = Collections.emptyMap();
         }
+        Path outputPath = filePath.generatePath(getFirstOutputSlot().getSlotStoragePath(),
+                getProjectDirectory(),
+                projectDataDirs,
+                inputData.toString(),
+                dataBatch.getInputRow(getFirstInputSlot()),
+                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
 
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+        ImagePlus image = inputData.getImage();
         Path outputFile;
         switch (fileFormat) {
             case JPEG: {
                 outputFile = PathUtils.ensureExtension(outputPath, ".jpg", ".jpeg");
+                progressInfo.log("Saving to " + outputFile);
                 PathUtils.ensureParentDirectoriesExist(outputFile);
                 IJ.saveAs(image, "jpeg", outputFile.toString());
             }
             break;
             case PNG: {
                 outputFile = PathUtils.ensureExtension(outputPath, ".png");
+                progressInfo.log("Saving to " + outputFile);
                 PathUtils.ensureParentDirectoriesExist(outputFile);
                 IJ.saveAs(image, "png", outputFile.toString());
             }
             break;
             case TIFF: {
                 outputFile = PathUtils.ensureExtension(outputPath, ".tif", ".tiff");
+                progressInfo.log("Saving to " + outputFile);
                 PathUtils.ensureParentDirectoriesExist(outputFile);
                 IJ.saveAs(image, "tiff", outputFile.toString());
             }
             break;
             case BMP: {
                 outputFile = PathUtils.ensureExtension(outputPath, ".bmp");
+                progressInfo.log("Saving to " + outputFile);
                 PathUtils.ensureParentDirectoriesExist(outputFile);
                 IJ.saveAs(image, "bmp", outputFile.toString());
             }
             break;
             case AVI: {
                 outputFile = PathUtils.ensureExtension(outputPath, ".avi");
+                progressInfo.log("Saving to " + outputFile);
                 PathUtils.ensureParentDirectoriesExist(outputFile);
                 ImageJUtils.writeImageToMovie(image, movieAnimatedDimension, movieFPS, outputFile, aviCompression, jpegQuality, progressInfo.detachProgress());
             }
@@ -133,12 +121,6 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
-    }
-
-    @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
-    @JIPipeParameter("exporter")
-    public JIPipeDataByMetadataExporter getExporter() {
-        return exporter;
     }
 
     @JIPipeDocumentation(name = "File format", description = "The file format that should be used. " +
@@ -204,6 +186,17 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
             return false;
         this.jpegQuality = jpegQuality;
         return true;
+    }
+
+    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @JIPipeParameter("file-path")
+    public DataExportExpressionParameter getFilePath() {
+        return filePath;
+    }
+
+    @JIPipeParameter("file-path")
+    public void setFilePath(DataExportExpressionParameter filePath) {
+        this.filePath = filePath;
     }
 
     @Override

@@ -67,7 +67,7 @@ public class JIPipeExportedCompartment {
     }
 
     private void initializeGraphFromProject(JIPipeProjectCompartment compartment) {
-        JIPipeGraph sourceGraph = compartment.getProject().getGraph();
+        JIPipeGraph sourceGraph = compartment.getRuntimeProject().getGraph();
         Map<UUID, JIPipeGraphNode> copies = new HashMap<>();
         UUID compartmentId = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode algorithm : sourceGraph.getGraphNodes()) {

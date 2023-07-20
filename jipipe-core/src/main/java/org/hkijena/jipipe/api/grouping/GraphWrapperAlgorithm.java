@@ -19,6 +19,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -364,6 +365,16 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         if (wrappedGraph != null) {
             for (JIPipeGraphNode node : wrappedGraph.getGraphNodes()) {
                 node.setProjectDirectory(projectDirectory);
+            }
+        }
+    }
+
+    @Override
+    public void setRuntimeProject(JIPipeProject runtimeProject) {
+        super.setRuntimeProject(runtimeProject);
+        if (wrappedGraph != null) {
+            for (JIPipeGraphNode node : wrappedGraph.getGraphNodes()) {
+                node.setRuntimeProject(runtimeProject);
             }
         }
     }

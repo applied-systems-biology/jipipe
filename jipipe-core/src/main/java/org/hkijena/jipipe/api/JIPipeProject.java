@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.validation.*;
@@ -56,6 +57,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -132,7 +134,28 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         JIPipeProject project = new JIPipeProject();
         project.fromJson(jsonData, context, report, notifications);
         project.setWorkDirectory(fileName.getParent());
+        project.validateUserDirectories(notifications);
         return project;
+    }
+
+    /**
+     * Checks if the project metadata user directories are properly set up.
+     * Otherwise, generates a notification
+     * @param notifications the notifications
+     */
+    private void validateUserDirectories(JIPipeNotificationInbox notifications) {
+        if(workDirectory != null) {
+            Map<String, Path> directoryMap = metadata.getDirectoryMap(workDirectory);
+            for (Map.Entry<String, Path> entry : directoryMap.entrySet()) {
+                if(entry.getValue() == null || !Files.isDirectory(entry.getValue())) {
+                    JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:invalid-project-user-directory");
+                    notification.setHeading("Invalid project user directory!");
+                    notification.setDescription("This project defines a user-defined directory '" + entry.getKey() + "' pointing at '" + entry.getValue() + "', but the " +
+                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings) and ensure that the directory is correctly configured.");
+                    notifications.push(notification);
+                }
+            }
+        }
     }
 
     /**
@@ -263,7 +286,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      */
     public JIPipeProjectCompartment addCompartment(String name) {
         JIPipeProjectCompartment compartment = JIPipe.createNode("jipipe:project-compartment");
-        compartment.setProject(this);
+        compartment.setRuntimeProject(this);
         compartment.setCustomName(name);
         compartmentGraph.insertNode(compartment);
         return compartment;
@@ -277,7 +300,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * @return The compartment
      */
     public JIPipeProjectCompartment addCompartment(JIPipeProjectCompartment compartment, UUID uuid) {
-        compartment.setProject(this);
+        compartment.setRuntimeProject(this);
         compartmentGraph.insertNode(uuid == null ? UUID.randomUUID() : uuid, compartment, null);
         return compartment;
     }
@@ -294,7 +317,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     }
 
     private void initializeCompartment(JIPipeProjectCompartment compartment) {
-        compartment.setProject(this);
+        compartment.setRuntimeProject(this);
         JIPipeCompartmentOutput compartmentOutput = null;
         UUID compartmentUUID = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
@@ -524,9 +547,9 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         this.workDirectory = workDirectory;
 
         // Set this as base and project directory for the main nodes
-        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
-            algorithm.setBaseDirectory(workDirectory);
-            algorithm.setProjectDirectory(workDirectory);
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            node.setBaseDirectory(workDirectory);
+            node.setProjectDirectory(workDirectory);
         }
         baseDirectoryChangedEventEmitter.emit(new JIPipeGraphNode.BaseDirectoryChangedEvent(this, workDirectory));
     }
@@ -674,7 +697,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             for (JIPipeGraphNode node : compartmentGraph.getGraphNodes()) {
                 if (node instanceof JIPipeProjectCompartment) {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
-                    compartment.setProject(this);
+                    compartment.setRuntimeProject(this);
                     compartments.put(compartment.getProjectCompartmentUUID(), compartment);
                     initializeCompartment(compartment);
                 }
@@ -723,7 +746,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         for (JIPipeGraphNode node : compartmentGraph.getGraphNodes()) {
             if (node instanceof JIPipeProjectCompartment) {
                 JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) node;
-                compartment.setProject(this);
+                compartment.setRuntimeProject(this);
                 compartments.put(compartment.getProjectCompartmentUUID(), compartment);
                 initializeCompartment(compartment);
             }
@@ -858,6 +881,13 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         }
         result.sort(Comparator.comparing((JIPipeNodeExample example) -> example.getNodeTemplate().getName(), NaturalOrderComparator.INSTANCE));
         return result;
+    }
+
+    /**
+     * Gets a map of user-defined directories
+     */
+    public Map<String, Path> getDirectoryMap() {
+        return metadata.getDirectoryMap(getWorkDirectory());
     }
 
     /**

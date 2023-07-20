@@ -77,6 +77,7 @@ public class Scene3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("mask-to-3d-mesh", MaskTo3DMeshAlgorithm.class, UIUtils.getIconURLFromResources("actions/shape-cuboid.png"));
         registerNodeType("export-3d-scene-to-collada", ExportScene3DToColladaAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("export-3d-scene-to-collada-v2", ExportScene3DToColladaAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("group-scene-3d", GroupSceneAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
         registerNodeType("merge-scene-3d", MergeScenesAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
 

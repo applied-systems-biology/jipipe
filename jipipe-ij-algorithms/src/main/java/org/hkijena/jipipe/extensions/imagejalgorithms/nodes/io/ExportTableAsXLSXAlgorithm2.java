@@ -4,7 +4,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
@@ -14,6 +13,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -30,67 +30,45 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-@JIPipeDocumentation(name = "Export table as XLSX", description = "Deprecated. Please use the new node. Exports a results table to XLSX. Merge multiple tables into the same batch to create a multi-sheet table.")
+@JIPipeDocumentation(name = "Export table as XLSX", description = "Exports a results table to XLSX. Merge multiple tables into the same batch to create a multi-sheet table.")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
-@Deprecated
-@JIPipeHidden
-public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
-    private final JIPipeDataByMetadataExporter exporter;
-    private Path outputDirectory = Paths.get("exported-data");
-    private boolean relativeToProjectDir = false;
+public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
 
     private DefaultExpressionParameter sheetNameExpression = new DefaultExpressionParameter("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
-
     private DefaultExpressionParameter orderExpression = new DefaultExpressionParameter("SORT_ASCENDING(sheet_names)");
+    private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
 
-    public ExportTableAsXLSXAlgorithm(JIPipeNodeInfo info) {
+    public ExportTableAsXLSXAlgorithm2(JIPipeNodeInfo info) {
         super(info);
-        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
-        registerSubParameter(exporter);
     }
 
-    public ExportTableAsXLSXAlgorithm(ExportTableAsXLSXAlgorithm other) {
+    public ExportTableAsXLSXAlgorithm2(ExportTableAsXLSXAlgorithm2 other) {
         super(other);
-        this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
-        this.outputDirectory = other.outputDirectory;
-        this.relativeToProjectDir = other.relativeToProjectDir;
         this.orderExpression = new DefaultExpressionParameter(other.orderExpression);
         this.sheetNameExpression = new DefaultExpressionParameter(other.sheetNameExpression);
-        registerSubParameter(exporter);
+        this.filePath = new DataExportExpressionParameter(other.filePath);
     }
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        final Path outputPath;
-        if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            if (relativeToProjectDir && getProjectDirectory() != null) {
-                outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
-            } else {
-                outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
-            }
-        } else {
-            outputPath = outputDirectory;
-        }
 
-        // Generate output paths
-        Set<Path> outputPaths = new HashSet<>();
-        for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
-            // Generate the path
-            Path generatedPath = exporter.generatePath(getFirstInputSlot(), row, new HashSet<>());
-            Path rowPath;
-            // If absolute -> use the path, otherwise use output directory
-            if (generatedPath.isAbsolute()) {
-                rowPath = generatedPath;
-            } else {
-                rowPath = outputPath.resolve(generatedPath);
-            }
-            PathUtils.ensureParentDirectoriesExist(rowPath);
-            rowPath = PathUtils.ensureExtension(rowPath, ".xlsx");
-            outputPaths.add(rowPath);
+        Map<String, Path> projectDataDirs;
+        if(getRuntimeProject() != null) {
+            projectDataDirs = getRuntimeProject().getDirectoryMap();
         }
+        else {
+            projectDataDirs = Collections.emptyMap();
+        }
+        Path outputPath = filePath.generatePath(getFirstOutputSlot().getSlotStoragePath(),
+                getProjectDirectory(),
+                projectDataDirs,
+                null,
+                -1,
+                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+        outputPath = PathUtils.ensureExtension(outputPath, ".xlsx");
 
         // Generate excel workbook
         try (Workbook workbook = new XSSFWorkbook()) {
@@ -140,10 +118,8 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
             }
 
             // Save outputs
-            for (Path path : outputPaths) {
-                workbook.write(Files.newOutputStream(path));
-                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(path), progressInfo);
-            }
+            workbook.write(Files.newOutputStream(outputPath));
+            dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -151,37 +127,15 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
 
     }
 
-
-    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
-            "Otherwise, JIPipe will store the results in an automatically generated directory. " +
-            "Has no effect if an absolute path is provided.")
-    @JIPipeParameter("relative-to-project-dir")
-    public boolean isRelativeToProjectDir() {
-        return relativeToProjectDir;
+    @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
+    @JIPipeParameter("file-path")
+    public DataExportExpressionParameter getFilePath() {
+        return filePath;
     }
 
-    @JIPipeParameter("relative-to-project-dir")
-    public void setRelativeToProjectDir(boolean relativeToProjectDir) {
-        this.relativeToProjectDir = relativeToProjectDir;
-    }
-
-    @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
-            "If relative, it is relative to the output slot's output directory that is generated based on the current run's output path.")
-    @JIPipeParameter("output-directory")
-    @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
-    public Path getOutputDirectory() {
-        return outputDirectory;
-    }
-
-    @JIPipeParameter("output-directory")
-    public void setOutputDirectory(Path outputDirectory) {
-        this.outputDirectory = outputDirectory;
-    }
-
-    @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
-    @JIPipeParameter("exporter")
-    public JIPipeDataByMetadataExporter getExporter() {
-        return exporter;
+    @JIPipeParameter("file-path")
+    public void setFilePath(DataExportExpressionParameter filePath) {
+        this.filePath = filePath;
     }
 
     @JIPipeDocumentation(name = "Order function", description = "Expression that should return an ordered list of workbook sheets as array of strings. " +
