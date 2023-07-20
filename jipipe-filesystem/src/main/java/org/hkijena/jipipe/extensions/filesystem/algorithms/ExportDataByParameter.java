@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
@@ -33,7 +34,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-@JIPipeDocumentation(name = "Export data", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
+@JIPipeDocumentation(name = "Export data (old version)", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. " +
         "The output of this algorithm is the selected output directory. " +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
