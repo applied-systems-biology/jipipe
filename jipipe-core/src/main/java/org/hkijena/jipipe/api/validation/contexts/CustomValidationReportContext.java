@@ -32,16 +32,6 @@ public class CustomValidationReportContext extends JIPipeValidationReportContext
     }
 
     @Override
-    public boolean canNavigate(JIPipeWorkbench workbench) {
-        return false;
-    }
-
-    @Override
-    public void navigate(JIPipeWorkbench workbench) {
-
-    }
-
-    @Override
     public String renderName() {
         return name;
     }

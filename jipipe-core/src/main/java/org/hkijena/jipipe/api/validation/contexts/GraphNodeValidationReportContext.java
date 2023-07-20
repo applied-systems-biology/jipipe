@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.validation.contexts;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.NavigableJIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -12,7 +13,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.UUID;
 
-public class GraphNodeValidationReportContext extends JIPipeValidationReportContext {
+public class GraphNodeValidationReportContext extends NavigableJIPipeValidationReportContext {
 
     private final JIPipeGraphNode graphNode;
 

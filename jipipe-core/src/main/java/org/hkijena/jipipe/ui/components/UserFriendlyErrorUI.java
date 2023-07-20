@@ -201,14 +201,14 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
         }
 
         List<JIPipeValidationReportContext> contexts = new ArrayList<>();
-        JIPipeValidationReportContext navigationContext = null;
+        NavigableJIPipeValidationReportContext navigationContext = null;
         {
             JIPipeValidationReportContext context = entry.getContext();
             do {
                 if(!(context instanceof UnspecifiedValidationReportContext)) {
                     contexts.add(context);
-                    if(context.canNavigate(getWorkbench())) {
-                       navigationContext = context;
+                    if(context instanceof NavigableJIPipeValidationReportContext && ((NavigableJIPipeValidationReportContext)context).canNavigate(getWorkbench())) {
+                       navigationContext = (NavigableJIPipeValidationReportContext) context;
                     }
                     context = context.getParent();
                 }
@@ -265,7 +265,7 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
             if(navigationContext != null) {
                 JButton navigateButton = new JButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"));
                 navigateButton.setOpaque(false);
-                JIPipeValidationReportContext finalNavigationContext = navigationContext;
+                NavigableJIPipeValidationReportContext finalNavigationContext = navigationContext;
                 navigateButton.addActionListener(e -> {
                     if(finalNavigationContext.canNavigate(getWorkbench())) {
                         finalNavigationContext.navigate(getWorkbench());

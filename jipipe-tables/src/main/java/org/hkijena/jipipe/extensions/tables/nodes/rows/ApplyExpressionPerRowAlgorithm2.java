@@ -16,18 +16,19 @@ package org.hkijena.jipipe.extensions.tables.nodes.rows;
 
 import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
@@ -36,27 +37,25 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Apply expression per row", description = "Deprecated. Use the node with the same name. Applies an expression for each row. The column values are available as variables.")
+@JIPipeDocumentation(name = "Apply expression per row", description = "Applies an expression for each row. The column values are available as variables.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-@Deprecated
-@JIPipeHidden
-public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
-    private ExpressionTableColumnGeneratorProcessorParameterList expressionList = new ExpressionTableColumnGeneratorProcessorParameterList();
+    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
 
-    public ApplyExpressionPerRowAlgorithm(JIPipeNodeInfo info) {
+    public ApplyExpressionPerRowAlgorithm2(JIPipeNodeInfo info) {
         super(info);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
-        expressionList.addNewInstance();
+        entries.addNewInstance();
     }
 
-    public ApplyExpressionPerRowAlgorithm(ApplyExpressionPerRowAlgorithm other) {
+    public ApplyExpressionPerRowAlgorithm2(ApplyExpressionPerRowAlgorithm2 other) {
         super(other);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
-        this.expressionList = new ExpressionTableColumnGeneratorProcessorParameterList(other.expressionList);
+        this.entries = new ParameterCollectionList(other.entries);
     }
 
     @Override
@@ -75,20 +74,26 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
                 variableSet.set("all." + column.getLabel(), Arrays.asList(column.getDataAsString(column.getRows())));
             }
         }
-        for (ExpressionTableColumnGeneratorProcessor expression : expressionList) {
+        for (Entry entry : entries.mapToCollection(Entry.class)) {
             List<Object> generatedValues = new ArrayList<>();
             variableSet.set("num_cols", data.getColumnCount());
-            variableSet.set("column", data.getColumnIndex(expression.getValue()));
-            variableSet.set("column_name", expression.getValue());
+
+            // Create output column
+            String columnName = entry.getColumnName().evaluateToString(variableSet);
+            int columnIndex = data.getColumnIndex(columnName);
+
+            variableSet.set("column", columnIndex);
+            variableSet.set("column_name", columnName);
+
             for (int row = 0; row < data.getRowCount(); row++) {
                 variableSet.set("row", row);
                 for (int col = 0; col < data.getColumnCount(); col++) {
                     variableSet.set(data.getColumnName(col), data.getValueAt(row, col));
                 }
-                generatedValues.add(expression.getKey().evaluate(variableSet));
+                generatedValues.add(entry.getValue().evaluate(variableSet));
             }
             boolean numeric = generatedValues.stream().allMatch(o -> o instanceof Number);
-            int targetColumn = data.getOrCreateColumnIndex(expression.getValue(), !numeric);
+            int targetColumn = data.getOrCreateColumnIndex(columnName, !numeric);
             for (int row = 0; row < data.getRowCount(); row++) {
                 data.setValueAt(generatedValues.get(row), row, targetColumn);
             }
@@ -96,20 +101,15 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Expressions", description = "Each expression is applied for each row, with variables named according to the column values. " +
-            "New columns are created if needed. Existing values are overwritten. The operations are applied in order, meaning that you have access to the results of all previous operations.")
-    @JIPipeParameter("expression-list")
-    @PairParameterSettings(singleRow = false, keyLabel = "Expression", valueLabel = "Column name")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public ExpressionTableColumnGeneratorProcessorParameterList getExpressionList() {
-        return expressionList;
+    @JIPipeDocumentation(name = "Generated values", description = "List of expressions that describe how new values are generated")
+    @JIPipeParameter("entries")
+    public ParameterCollectionList getEntries() {
+        return entries;
     }
 
-    @JIPipeParameter("expression-list")
-    public void setExpressionList(ExpressionTableColumnGeneratorProcessorParameterList expressionList) {
-        this.expressionList = expressionList;
+    @JIPipeParameter("entries")
+    public void setEntries(ParameterCollectionList entries) {
+        this.entries = entries;
     }
 
     @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
@@ -136,6 +136,49 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
+        }
+    }
+
+    public static class Entry extends AbstractJIPipeParameterCollection {
+        private DefaultExpressionParameter columnName = new DefaultExpressionParameter("\"Output column name\"");
+        private DefaultExpressionParameter value = new DefaultExpressionParameter("row");
+
+        public Entry() {
+        }
+
+        public Entry(Entry other) {
+            this.columnName = new DefaultExpressionParameter(other.columnName);
+            this.value = new DefaultExpressionParameter(other.value);
+        }
+
+        @JIPipeDocumentation(name = "Column name", description = "The name of the column where the value will be written")
+        @JIPipeParameter("column-name")
+        @ExpressionParameterSettingsVariable(fromClass = VariableSource.class)
+        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+        @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+        public DefaultExpressionParameter getColumnName() {
+            return columnName;
+        }
+
+        @JIPipeParameter("column-name")
+        public void setColumnName(DefaultExpressionParameter columnName) {
+            this.columnName = columnName;
+        }
+
+        @JIPipeDocumentation(name = "Value", description = "The generated value")
+        @JIPipeParameter("value")
+        @ExpressionParameterSettingsVariable(fromClass = VariableSource.class)
+        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+        @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+        @ExpressionParameterSettingsVariable(name = "Column name", description = "The output column name", key = "column_name")
+        @ExpressionParameterSettingsVariable(name = "Column index", description = "The output column index", key = "column")
+        public DefaultExpressionParameter getValue() {
+            return value;
+        }
+
+        @JIPipeParameter("value")
+        public void setValue(DefaultExpressionParameter value) {
+            this.value = value;
         }
     }
 }

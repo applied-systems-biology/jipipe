@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -430,8 +431,6 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
         }
 
         if (!dataLoadedFromCache) {
-            JIPipeProjectCompartment nodeCompartment = getProject().getCompartments().get(node.getCompartmentUUIDInParentGraph());
-            String nodeCompartmentName = nodeCompartment != null ? nodeCompartment.getName() : "<Subgraph>";
             try {
                 if (node instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) node).setThreadPool(threadPool);
@@ -439,12 +438,14 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                 node.run(progressInfo);
             } catch (HeadlessException e) {
                 throw new JIPipeValidationRuntimeException(
+                        new GraphNodeValidationReportContext(node),
                         e,
                         "An error occurred during processing",
                         "The algorithm raised an error, as it is not compatible with a headless environment.",
                         "Please contact the plugin developers about this issue. If this happens in an ImageJ method, please contact the ImageJ developers.");
             } catch (Exception e) {
                 throw new JIPipeValidationRuntimeException(
+                        new GraphNodeValidationReportContext(node),
                         e,
                         "An error occurred during processing",
                         "Please refer to the other error messages.",

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 
 import java.nio.file.Paths;
 import java.util.*;
@@ -244,7 +245,9 @@ public class JIPipeGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.Sl
             try {
                 node.run(subProgress);
             } catch (Exception e) {
-                throw new JIPipeValidationRuntimeException(e,
+                throw new JIPipeValidationRuntimeException(
+                        new GraphNodeValidationReportContext(node),
+                        e,
                         "An error occurred during processing",
                         "On running the algorithm '" + node.getName() + "', within graph '" + algorithmGraph + "'",
                         "Please follow the instructions for the other error messages.");

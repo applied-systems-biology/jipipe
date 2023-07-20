@@ -16,16 +16,6 @@ public class APIErrorValidationReportContext extends JIPipeValidationReportConte
     }
 
     @Override
-    public boolean canNavigate(JIPipeWorkbench workbench) {
-        return false;
-    }
-
-    @Override
-    public void navigate(JIPipeWorkbench workbench) {
-
-    }
-
-    @Override
     public String renderName() {
         return "Internal error (report to developers)";
     }
