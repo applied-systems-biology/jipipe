@@ -279,10 +279,6 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         JPanel errorPanel = new JPanel(new BorderLayout());
         errorPanel.add(errorUI, BorderLayout.CENTER);
 
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.add(Box.createHorizontalGlue());
-
         JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("actions/show_log.png"));
         JPopupMenu openLogMenu = UIUtils.addPopupMenuToComponent(openLogButton);
 
@@ -294,12 +290,11 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         openLogInExternalEditorItem.addActionListener(e -> openLogInExternalEditor());
         openLogMenu.add(openLogInExternalEditorItem);
 
-        toolBar.add(openLogButton);
+        errorUI.getToolBar().add(openLogButton);
 
         JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> tryShowSelectionPanel());
-        toolBar.add(refreshButton);
-        errorPanel.add(toolBar, BorderLayout.NORTH);
+        errorUI.getToolBar().add(refreshButton);
 
         add(errorPanel, BorderLayout.CENTER);
 
