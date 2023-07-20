@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -38,6 +39,7 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
 
     private final JIPipeWorkbench workbench;
     private final JIPipeValidationReport report = new JIPipeValidationReport();
+    private final JToolBar toolBar = new JToolBar();
 
     /**
      * @param workbench    the workbench
@@ -47,6 +49,47 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
     public UserFriendlyErrorUI(JIPipeWorkbench workbench, MarkdownDocument helpDocument, int flags) {
         super(helpDocument, flags);
         this.workbench = workbench;
+        initialize();
+    }
+
+    private void initialize() {
+        add(toolBar, BorderLayout.NORTH);
+        toolBar.setFloatable(false);
+
+        toolBar.add(Box.createHorizontalGlue());
+
+        // Open in new window
+        JButton openInNewWindowButton = new JButton("Open in new window", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        openInNewWindowButton.addActionListener(e -> {
+            String title = "Unnamed";
+            if(getWorkbench().getWindow() instanceof JFrame) {
+                title = ((JFrame) getWorkbench().getWindow()).getTitle();
+            }
+           UIUtils.openValidityReportDialog(getWorkbench(), getWorkbench().getWindow(), report, title + " - Problems", null,
+                   false);
+        });
+        toolBar.add(openInNewWindowButton);
+
+        // Copy all
+        JButton copyAllButton = new JButton("Copy all", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        copyAllButton.addActionListener(e -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (JIPipeValidationReportEntry reportEntry : report) {
+                stringBuilder.append(reportEntry.toReport());
+            }
+            UIUtils.copyToClipboard(stringBuilder.toString());
+        });
+        toolBar.add(copyAllButton);
+    }
+
+    public JToolBar getToolBar() {
+        return toolBar;
+    }
+
+    @Override
+    public void clear() {
+        report.clear();
+        super.clear();
     }
 
     /**
@@ -157,8 +200,6 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
             formPanel.addWideToForm(textArea);
         }
 
-
-
         List<JIPipeValidationReportContext> contexts = new ArrayList<>();
         JIPipeValidationReportContext navigationContext = null;
         {
@@ -176,18 +217,19 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
         }
 
         {
-            JToolBar toolBar = new JToolBar();
-            toolBar.setOpaque(false);
-            toolBar.setFloatable(false);
-            toolBar.setBorder(BorderFactory.createEmptyBorder(16,0,0,0));
-            toolBar.add(Box.createHorizontalStrut(8));
-            formPanel.addWideToForm(toolBar);
+            JToolBar breadcrumb = new JToolBar();
+            breadcrumb.setOpaque(false);
+            breadcrumb.setFloatable(false);
+            breadcrumb.setBorder(BorderFactory.createEmptyBorder(16,0,0,0));
+            breadcrumb.add(Box.createHorizontalStrut(8));
+            formPanel.addWideToForm(breadcrumb);
 
             if(contexts.isEmpty()) {
                 JButton button = new JButton("Internal", UIUtils.getIconFromResources("actions/system-run.png"));
+                button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
                 button.setOpaque(false);
                 button.setBorder(null);
-                toolBar.add(button);
+                breadcrumb.add(button);
             }
             else {
                 for (int i = 0; i < contexts.size(); i++) {
@@ -197,51 +239,59 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
                         button.setToolTipText(context.renderName());
                         button.setOpaque(false);
                         button.setBorder(null);
-                        toolBar.add(button);
-                        toolBar.add(new JLabel(UIUtils.getIconFromResources("actions/draw-triangle2.png")));
+                        button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                        breadcrumb.add(button);
+                        breadcrumb.add(new JLabel(UIUtils.getIconFromResources("actions/draw-triangle2.png")));
                     }
                     else {
                         JButton button = new JButton(context.renderName(), context.renderIcon());
                         button.setToolTipText(context.renderName());
                         button.setOpaque(false);
                         button.setBorder(null);
-                        toolBar.add(button);
+                        breadcrumb.add(button);
                     }
                 }
             }
         }
 
         {
-            JToolBar toolBar = new JToolBar();
-            toolBar.setOpaque(false);
-            toolBar.setFloatable(false);
-            toolBar.setBorder(null);
-            toolBar.add(Box.createHorizontalStrut(6));
-            formPanel.addWideToForm(toolBar);
+            JToolBar actionBar = new JToolBar();
+            actionBar.setOpaque(false);
+            actionBar.setFloatable(false);
+            actionBar.setBorder(BorderFactory.createEmptyBorder(8,0,0,0));
+            actionBar.add(Box.createHorizontalStrut(6));
+            formPanel.addWideToForm(actionBar);
 
             if(navigationContext != null) {
                 JButton navigateButton = new JButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"));
                 navigateButton.setOpaque(false);
-                toolBar.add(navigateButton);
+                JIPipeValidationReportContext finalNavigationContext = navigationContext;
+                navigateButton.addActionListener(e -> {
+                    if(finalNavigationContext.canNavigate(getWorkbench())) {
+                        finalNavigationContext.navigate(getWorkbench());
+                    }
+                    else {
+                        JOptionPane.showMessageDialog(this, "Unable to navigate to '" + finalNavigationContext.renderName() + "'!",
+                                "Navigate",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+                actionBar.add(navigateButton);
             }
 
-            toolBar.add(Box.createHorizontalGlue());
+            actionBar.add(Box.createHorizontalGlue());
 
-            JButton copyAllButton = new JButton("Copy all", UIUtils.getIconFromResources("actions/edit-copy.png"));
-            copyAllButton.addActionListener(e -> {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (JIPipeValidationReportEntry reportEntry : report) {
-                    stringBuilder.append(reportEntry.toReport());
-                }
-                UIUtils.copyToClipboard(stringBuilder.toString());
+            JButton detailsButton = new JButton("Show details", UIUtils.getIconFromResources("actions/find.png"));
+            detailsButton.addActionListener(e -> {
+                MarkdownReader.showDialog(new MarkdownDocument(entry.toReport()), true, entry.getTitle(), this, false);
             });
-            copyAllButton.setOpaque(false);
-            toolBar.add(copyAllButton);
+            detailsButton.setOpaque(false);
+            actionBar.add(detailsButton);
 
             JButton copyButton = new JButton("Copy", UIUtils.getIconFromResources("actions/edit-copy.png"));
             copyButton.addActionListener(e -> UIUtils.copyToClipboard(entry.toReport()));
             copyButton.setOpaque(false);
-            toolBar.add(copyButton);
+            actionBar.add(copyButton);
         }
 
         addWideToForm(entryPanel);

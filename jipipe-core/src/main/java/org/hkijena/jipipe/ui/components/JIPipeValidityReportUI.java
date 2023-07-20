@@ -72,6 +72,10 @@ public class JIPipeValidityReportUI extends JIPipeWorkbenchPanel {
         }
     }
 
+    public JToolBar getErrorToolbar() {
+        return errorUI.getToolBar();
+    }
+
     private void switchToEverythingValid() {
         if (withHelp) {
             splitPane.setLeftComponent(everythingValidPanel);

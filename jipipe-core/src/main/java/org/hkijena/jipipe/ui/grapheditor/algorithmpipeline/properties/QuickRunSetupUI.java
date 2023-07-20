@@ -190,15 +190,9 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
                 validationReportUI);
         validationReportPanel.add(pane, BorderLayout.CENTER);
 
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.add(Box.createHorizontalGlue());
-
         JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> tryShowSelectionPanel());
-        toolBar.add(refreshButton);
-
-        validationReportPanel.add(toolBar, BorderLayout.NORTH);
+        validationReportUI.getErrorToolbar().add(refreshButton);
     }
 
     private void initializeSetupPanel() {

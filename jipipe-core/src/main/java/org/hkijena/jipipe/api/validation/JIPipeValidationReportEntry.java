@@ -74,25 +74,24 @@ public class JIPipeValidationReportEntry {
 
     public String toReport() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("- ").append(level.toString()).append(": ").append(StringUtils.orElse(title, "Unnamed")).append("\n");
-        stringBuilder.append("-----\n\n");
+        stringBuilder.append("# ").append(level.toString()).append(": ").append(StringUtils.orElse(title, "Unnamed")).append("\n\n");
 
         JIPipeValidationReportContext currentContext = context;
-        stringBuilder.append("-- Location:\n");
+        stringBuilder.append("## Location\n\n");
         while(currentContext != null) {
-            stringBuilder.append("--- ").append(currentContext.renderName()).append(" [").append(currentContext.getClass()).append("]").append("\n");
+            stringBuilder.append("* ").append(currentContext.renderName()).append(" [").append(currentContext.getClass()).append("]").append("\n");
             currentContext = currentContext.getParent();
         }
         stringBuilder.append("\n");
 
         if(!StringUtils.isNullOrEmpty(explanation)) {
-            stringBuilder.append("-- Explanation: ").append(explanation).append("\n\n");
+            stringBuilder.append("## Explanation\n\n").append(explanation).append("\n\n");
         }
         if(!StringUtils.isNullOrEmpty(solution)) {
-            stringBuilder.append("-- Solution: ").append(solution).append("\n\n");
+            stringBuilder.append("## Suggested solution\n\n").append(solution).append("\n\n");
         }
         if(!StringUtils.isNullOrEmpty(details)) {
-            stringBuilder.append("-- Details: ").append(details).append("\n\n");
+            stringBuilder.append("## Details\n\n```\n").append(details).append("\n```\n\n");
         }
 
         return stringBuilder.append("\n\n").toString();
