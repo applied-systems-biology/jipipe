@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
+import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -80,6 +81,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         IntegerRange limit = tableMergeSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
+            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (allowedIndices.contains(i)) {
@@ -87,6 +89,11 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
                 }
             }
             dataBatches = limitedBatches;
+        }
+        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            if(dataBatch.isIncomplete()) {
+                progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+            }
         }
         if (tableMergeSettings.isSkipIncompleteDataSets()) {
             dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);

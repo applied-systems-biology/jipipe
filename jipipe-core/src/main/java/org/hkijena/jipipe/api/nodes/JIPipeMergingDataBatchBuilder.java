@@ -32,8 +32,8 @@ public class JIPipeMergingDataBatchBuilder {
     private static final Set<String> REFERENCE_COLUMN_SPLIT_ALL = Sets.newHashSet("{{}}SPLIT_ALL");
 
     private JIPipeGraphNode node;
-    private List<JIPipeDataSlot> slotList = new ArrayList<>();
-    private Map<String, JIPipeDataSlot> slots = new HashMap<>();
+    private final List<JIPipeDataSlot> slotList = new ArrayList<>();
+    private final Map<String, JIPipeDataSlot> slots = new HashMap<>();
     private Set<String> referenceColumns = new HashSet<>();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;

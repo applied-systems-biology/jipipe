@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -477,5 +478,16 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
                 return c;
         }
         return 0;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getClass().getName()).append(": { ");
+        for (Map.Entry<JIPipeDataSlot, Integer> entry : inputSlotRows.entrySet()) {
+            stringBuilder.append(entry.getKey().getName()).append(" -> ").append(entry.getValue()).append(", ");
+        }
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
     }
 }

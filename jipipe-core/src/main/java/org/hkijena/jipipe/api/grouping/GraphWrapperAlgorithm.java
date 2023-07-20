@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.grouping;
 
+import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
@@ -313,6 +314,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
             if (withLimit) {
+                progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
                 List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < dataBatches.size(); i++) {
                     if (allowedIndices.contains(i)) {
@@ -321,8 +323,16 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 }
                 dataBatches = limitedBatches;
             }
-            if (batchGenerationSettings.isSkipIncompleteDataSets()) {
-                dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+            List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
+            for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+                if(dataBatch.isIncomplete()) {
+                    incomplete.add(dataBatch);
+                    progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+                }
+            }
+            if (!incomplete.isEmpty() && batchGenerationSettings.isSkipIncompleteDataSets()) {
+                progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
+                dataBatches.removeAll(incomplete);
             }
             return dataBatches;
         }
