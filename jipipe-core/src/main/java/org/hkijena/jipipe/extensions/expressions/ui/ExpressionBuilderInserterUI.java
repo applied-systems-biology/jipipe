@@ -67,7 +67,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             insertSimilarVariable.setToolTipText("Inserts a variable that has the same name as the constant.");
             insertSimilarVariable.addActionListener(e -> {
                 inserterCommitted = true;
-                expressionBuilderUI.insertAtCaret("$\"" + constantEntry.getConstant().getName() + "\"");
+                expressionBuilderUI.insertAtCaret("$\"" + constantEntry.getConstant().getName() + "\"", true);
             });
             inserterButtonPanel.add(insertSimilarVariable);
 
@@ -75,7 +75,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             insertButton.setToolTipText("Inserts the constant.");
             insertButton.addActionListener(e -> {
                 inserterCommitted = true;
-                expressionBuilderUI.insertAtCaret(constantEntry.getConstant().getName());
+                expressionBuilderUI.insertAtCaret(constantEntry.getConstant().getName(), true);
             });
             inserterButtonPanel.add(insertButton);
         } else if (insertedObject instanceof ExpressionOperatorEntry) {
@@ -110,7 +110,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             insertSymbolButton.setToolTipText("Inserts the operator symbol.");
             insertSymbolButton.addActionListener(e -> {
                 inserterCommitted = true;
-                expressionBuilderUI.insertAtCaret(operatorEntry.getOperator().getSymbol());
+                expressionBuilderUI.insertAtCaret(operatorEntry.getOperator().getSymbol(), true);
             });
             inserterButtonPanel.add(insertSymbolButton);
         } else if (insertedObject instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
@@ -190,7 +190,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
             insertSymbolButton.setToolTipText("Inserts the function symbol.");
             insertSymbolButton.addActionListener(e -> {
                 inserterCommitted = true;
-                expressionBuilderUI.insertAtCaret(function.getName());
+                expressionBuilderUI.insertAtCaret(function.getName(), true);
             });
             inserterButtonPanel.add(insertSymbolButton);
         } else {
