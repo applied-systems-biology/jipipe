@@ -126,6 +126,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("folder-temporary", TemporaryFolderDataSource.class);
         registerNodeType("folder-run-output", OutputFolderDataSource.class);
         registerNodeType("select-path-interactive", PathFromUserDataSource.class);
+        registerNodeType("project-user-directory", ProjectUserFolderDataSource.class);
 
         registerNodeType("path-extract-filename", ExtractFileName.class, UIUtils.getIconURLFromResources("data-types/files.png"));
         registerNodeType("path-extract-parent", ExtractParent.class, UIUtils.getIconURLFromResources("actions/go-parent-folder.png"));
@@ -161,6 +162,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("annotate-with-path-properties", AnnotateWithPathProperties.class, UIUtils.getIconURLFromResources("data-types/path.png"));
 
         registerNodeType("path-modify-with-expression", ModifyPathWithExpression.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("get-exported-path", ConvertToExportedPath.class, UIUtils.getIconURLFromResources("actions/reload.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }
