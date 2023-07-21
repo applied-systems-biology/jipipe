@@ -143,15 +143,15 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * Otherwise, generates a notification
      * @param notifications the notifications
      */
-    private void validateUserDirectories(JIPipeNotificationInbox notifications) {
+    public void validateUserDirectories(JIPipeNotificationInbox notifications) {
         if(workDirectory != null) {
-            Map<String, Path> directoryMap = metadata.getDirectoryMap(workDirectory);
+            Map<String, Path> directoryMap = metadata.getDirectories().getDirectoryMap(workDirectory);
             for (Map.Entry<String, Path> entry : directoryMap.entrySet()) {
                 if(entry.getValue() == null || !Files.isDirectory(entry.getValue())) {
                     JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:invalid-project-user-directory");
                     notification.setHeading("Invalid project user directory!");
                     notification.setDescription("This project defines a user-defined directory '" + entry.getKey() + "' pointing at '" + entry.getValue() + "', but the " +
-                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings) and ensure that the directory is correctly configured.");
+                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings > User directories) and ensure that the directory is correctly configured.");
                     notifications.push(notification);
                 }
             }
@@ -887,7 +887,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * Gets a map of user-defined directories
      */
     public Map<String, Path> getDirectoryMap() {
-        return metadata.getDirectoryMap(getWorkDirectory());
+        return metadata.getDirectories().getDirectoryMap(getWorkDirectory());
     }
 
     /**

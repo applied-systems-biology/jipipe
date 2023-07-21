@@ -345,6 +345,7 @@ public class JIPipeProjectWindow extends JFrame {
                 JIPipeProject project = new JIPipeProject();
                 project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications);
                 project.setWorkDirectory(path.getParent());
+                project.validateUserDirectories(notifications);
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open project", project, false, false);
                 if (window == null)
                     return;
@@ -353,7 +354,12 @@ public class JIPipeProjectWindow extends JFrame {
                 window.updateTitle();
                 ProjectsSettings.getInstance().addRecentProject(path);
                 if (!notifications.isEmpty()) {
-                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                    UIUtils.openNotificationsDialog(window.getProjectUI(),
+                            this,
+                            notifications,
+                            "Potential issues found",
+                            "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.",
+                            true);
                 }
                 FileChooserSettings.getInstance().setLastDirectoryBy(FileChooserSettings.LastDirectoryKey.Projects, path.getParent());
             } catch (IOException e) {

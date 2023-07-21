@@ -35,9 +35,9 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependencies = new JIPipeImageJUpdateSiteDependency.List();
     private String templateDescription = "";
     private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
+    private JIPipeProjectDirectories directories = new JIPipeProjectDirectories();
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
     private boolean restoreTabs = true;
-    private ParameterCollectionList directories = ParameterCollectionList.containingCollection(DirectoryEntry.class);
 
     @JIPipeDocumentation(name = "Restore tabs", description = "If enabled, all tabs are restored on loading the project. Otherwise, the Project overview and Compartments " +
             "tab are opened.")
@@ -95,6 +95,17 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
         this.permissions = permissions;
     }
 
+    @JIPipeParameter("user-directories")
+    @JIPipeDocumentation(name = "User directories", description = "User-defined directories")
+    @JsonGetter("user-directories")
+    public JIPipeProjectDirectories getDirectories() {
+        return directories;
+    }
+    @JsonGetter("user-directories")
+    public void setDirectories(JIPipeProjectDirectories directories) {
+        this.directories = directories;
+    }
+
     @JIPipeDocumentation(name = "Node templates", description = "A list of node templates that will be available for users who edit the project.")
     @JIPipeParameter("node-templates")
     @JsonGetter("node-templates")
@@ -108,69 +119,7 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
         this.nodeTemplates = nodeTemplates;
     }
 
-    @JIPipeDocumentation(name = "Directories", description = "A list of directories that can be used in various nodes")
-    @JIPipeParameter("directories")
-    public ParameterCollectionList getDirectories() {
-        return directories;
-    }
-    @JIPipeParameter("directories")
-    public void setDirectories(ParameterCollectionList directories) {
-        this.directories = directories;
-    }
 
-    /**
-     * Gets a map of user-defined directories
-     * @return the directories
-     */
-    public Map<String, Path> getDirectoryMap(Path projectDir) {
-        Map<String, Path> result = new HashMap<>();
-        for (DirectoryEntry directoryEntry : directories.mapToCollection(DirectoryEntry.class)) {
-            if(!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
-                Path path = directoryEntry.path;
-                if(path != null && !StringUtils.isNullOrEmpty(path.toString())) {
-                    if(projectDir != null && projectDir.isAbsolute() && !path.isAbsolute()) {
-                        path = projectDir.resolve(path);
-                    }
-                }
-                result.put(directoryEntry.key, path);
-            }
-        }
-        return result;
-    }
 
-    public static class DirectoryEntry extends AbstractJIPipeParameterCollection {
-        private String key;
-        private Path path;
 
-        public DirectoryEntry() {
-        }
-
-        public DirectoryEntry(DirectoryEntry other) {
-            this.key = other.key;
-            this.path = other.path;
-        }
-
-        @JIPipeDocumentation(name = "Key", description = "The key that will be used to access the directory. Cannot be empty.")
-        @JIPipeParameter(value = "key", uiOrder = -100)
-        public String getKey() {
-            return key;
-        }
-
-        @JIPipeParameter("key")
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        @JIPipeDocumentation(name = "Path", description = "The path that will be referenced")
-        @JIPipeParameter(value = "path", uiOrder = -90)
-        @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
-        public Path getPath() {
-            return path;
-        }
-
-        @JIPipeParameter("path")
-        public void setPath(Path path) {
-            this.path = path;
-        }
-    }
 }

@@ -57,6 +57,7 @@ public class JIPipeProjectSettingsUI extends JPanel implements JIPipeProjectWork
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
         rootNode.add(new SettingsCategoryNode("GENERAL", "General", UIUtils.getIconFromResources("actions/wrench.png")));
+        rootNode.add(new SettingsCategoryNode("DIRECTORIES", "User directories", UIUtils.getIconFromResources("actions/folder-open.png")));
         rootNode.add(new SettingsCategoryNode("PERMISSIONS", "Permissions", UIUtils.getIconFromResources("actions/lock.png")));
         rootNode.add(new SettingsCategoryNode("PARAMETERS", "Parameters", UIUtils.getIconFromResources("data-types/parameters.png")));
         rootNode.add(new SettingsCategoryNode("MISC", "Miscellaneous", UIUtils.getIconFromResources("actions/configure.png")));
@@ -90,6 +91,12 @@ public class JIPipeProjectSettingsUI extends JPanel implements JIPipeProjectWork
         } else if (id.equals("PERMISSIONS")) {
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                     new JIPipeParameterTree(getProject().getMetadata().getPermissions()),
+                    MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
+                    ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
+            splitPane.setRightComponent(parameterPanel);
+        } else if (id.equals("DIRECTORIES")) {
+            ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+                    new JIPipeParameterTree(getProject().getMetadata().getDirectories()),
                     MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
                     ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
             splitPane.setRightComponent(parameterPanel);
