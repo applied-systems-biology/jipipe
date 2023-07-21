@@ -58,7 +58,7 @@ public class JIPipeValidationReport extends ArrayList<JIPipeValidationReportEntr
             System.err.println(entry.toReport());
         }
     }
-        
+
     public boolean isValid() {
         return getNumberOf(JIPipeValidationReportEntryLevel.Error) == 0;
     }
