@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -31,11 +31,11 @@ import java.awt.*;
 public class ReloadableValidityChecker extends JIPipeWorkbenchPanel {
     private final JIPipeValidatable validatable;
     private final MarkdownDocument helpDocument;
-    private JIPipeValidityReportUI reportUI;
     private final JIPipeValidationReport report = new JIPipeValidationReport();
+    private JIPipeValidityReportUI reportUI;
 
     /**
-     * @param workbench the workbench
+     * @param workbench   the workbench
      * @param validatable the validated object
      */
     public ReloadableValidityChecker(JIPipeWorkbench workbench, JIPipeValidatable validatable) {
@@ -43,7 +43,7 @@ public class ReloadableValidityChecker extends JIPipeWorkbenchPanel {
     }
 
     /**
-     * @param workbench the workbench
+     * @param workbench    the workbench
      * @param validatable  the validated object
      * @param helpDocument custom documentation. Can be null
      */

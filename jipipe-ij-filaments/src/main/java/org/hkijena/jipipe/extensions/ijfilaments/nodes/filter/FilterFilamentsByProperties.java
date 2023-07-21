@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.ijfilaments.nodes.filter;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -15,7 +13,6 @@ import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentComponentVariableSource;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
@@ -67,7 +64,7 @@ public class FilterFilamentsByProperties extends JIPipeSimpleIteratingAlgorithm 
                 variables.set(measurements.getColumnName(col), measurements.getValueAt(0, col));
             }
 
-            if(!filter.test(variables)) {
+            if (!filter.test(variables)) {
                 toDelete.addAll(vertices);
             }
         }

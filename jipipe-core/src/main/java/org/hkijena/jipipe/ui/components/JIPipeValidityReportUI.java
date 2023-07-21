@@ -29,12 +29,12 @@ import java.util.HashMap;
  * UI for an {@link JIPipeValidationReport}
  */
 public class JIPipeValidityReportUI extends JIPipeWorkbenchPanel {
+    private final boolean withHelp;
+    private final MarkdownDocument helpDocument;
     private JSplitPane splitPane;
     private JIPipeValidationReport report;
     private UserFriendlyErrorUI errorUI;
-    private final boolean withHelp;
     private JPanel everythingValidPanel;
-    private final MarkdownDocument helpDocument;
 
     /**
      * @param workbench the workbench
@@ -45,7 +45,7 @@ public class JIPipeValidityReportUI extends JIPipeWorkbenchPanel {
     }
 
     /**
-     * @param workbench the workbench
+     * @param workbench    the workbench
      * @param withHelp     if a help panel should be shown
      * @param helpDocument a custom help document
      */

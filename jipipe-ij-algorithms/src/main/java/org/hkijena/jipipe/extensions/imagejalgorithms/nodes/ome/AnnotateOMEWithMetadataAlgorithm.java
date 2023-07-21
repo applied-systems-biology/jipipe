@@ -16,10 +16,7 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.OMEAccessorParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.extensions.strings.XMLData;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.xml.XmlUtils;
-import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +84,7 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
 
         public Entry() {
         }
+
         public Entry(Entry other) {
             this.accessor = new OMEAccessorParameter(other.accessor);
             this.annotationName = new DefaultExpressionParameter(other.annotationName);

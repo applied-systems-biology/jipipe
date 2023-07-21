@@ -227,7 +227,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
             return;
         }
         JIPipeNodeTemplate template = templateList.getSelectedValue();
-        if(template.isFromExtension()) {
+        if (template.isFromExtension()) {
             JOptionPane.showMessageDialog(this, "Extension-provided templates cannot be edited!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -383,7 +383,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         boolean triedModifyExtension = false;
         NodeTemplateSettings templateSettings = NodeTemplateSettings.getInstance();
         for (JIPipeNodeTemplate template : ImmutableList.copyOf(templateList.getSelectedValuesList())) {
-            if(template.isFromExtension()) {
+            if (template.isFromExtension()) {
                 triedModifyExtension = true;
                 continue;
             }
@@ -403,7 +403,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         if (modifiedProject || modifiedGlobal) {
             NodeTemplateSettings.triggerRefreshedEvent();
         }
-        if(triedModifyExtension) {
+        if (triedModifyExtension) {
             JOptionPane.showMessageDialog(this,
                     "Extension-provided templates cannot be deleted.",
                     "Delete templates",

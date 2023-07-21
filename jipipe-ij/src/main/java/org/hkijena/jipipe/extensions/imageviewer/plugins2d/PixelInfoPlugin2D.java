@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins2d;
 
-import com.google.common.eventbus.Subscribe;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;

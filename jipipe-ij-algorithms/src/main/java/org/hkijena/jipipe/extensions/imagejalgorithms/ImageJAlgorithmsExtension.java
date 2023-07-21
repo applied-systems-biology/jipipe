@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
-import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.MacroWrapperAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.analyze.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary.*;

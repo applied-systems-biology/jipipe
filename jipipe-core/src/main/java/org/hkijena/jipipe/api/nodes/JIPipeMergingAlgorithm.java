@@ -152,7 +152,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
         List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
         for (JIPipeMergingDataBatch dataBatch : dataBatches) {
-            if(dataBatch.isIncomplete()) {
+            if (dataBatch.isIncomplete()) {
                 incomplete.add(dataBatch);
                 progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
             }
@@ -216,7 +216,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         // Check for incomplete batches
         List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
         for (JIPipeMergingDataBatch dataBatch : dataBatches) {
-            if(dataBatch.isIncomplete()) {
+            if (dataBatch.isIncomplete()) {
                 incomplete.add(dataBatch);
                 progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
             }

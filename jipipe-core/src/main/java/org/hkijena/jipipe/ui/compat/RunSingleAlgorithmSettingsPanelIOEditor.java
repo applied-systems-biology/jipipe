@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.compat;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.compat.ImageJDataExportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;

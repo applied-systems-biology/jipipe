@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.NonSpatialPoint3d;
@@ -32,7 +31,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +69,7 @@ public class SkeletonToFilaments3DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 int height = ip.getHeight();
 
                 int newPercentage = (int) (0.5 * z / imp.getNSlices() * 100);
-                if(newPercentage != lastPercentage) {
+                if (newPercentage != lastPercentage) {
                     ctProgress.log(newPercentage + "%");
                     lastPercentage = newPercentage;
                 }
@@ -113,7 +111,7 @@ public class SkeletonToFilaments3DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 int height = ip.getHeight();
 
                 int newPercentage = (int) ((0.5 + (0.5 * z / imp.getNSlices())) * 100);
-                if(newPercentage != lastPercentage) {
+                if (newPercentage != lastPercentage) {
                     ctProgress.log(newPercentage + "%");
                     lastPercentage = newPercentage;
                 }

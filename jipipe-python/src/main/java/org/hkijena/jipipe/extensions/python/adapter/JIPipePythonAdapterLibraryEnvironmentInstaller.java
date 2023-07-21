@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstall
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -59,9 +58,9 @@ public class JIPipePythonAdapterLibraryEnvironmentInstaller extends EasyInstallE
         JIPipePythonAdapterLibraryEnvironment environment = new JIPipePythonAdapterLibraryEnvironment();
         environment.setProvidedByEnvironment(false);
         Path[] libDir = new Path[1];
-        try(Stream<Path> stream = Files.list(getAbsoluteInstallationPath())) {
+        try (Stream<Path> stream = Files.list(getAbsoluteInstallationPath())) {
             stream.forEach(path -> {
-                if(Files.isDirectory(path)) {
+                if (Files.isDirectory(path)) {
                     libDir[0] = path;
                 }
             });

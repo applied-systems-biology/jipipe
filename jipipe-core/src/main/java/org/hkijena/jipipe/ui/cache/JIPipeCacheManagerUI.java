@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearAllRun;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;

@@ -290,14 +290,14 @@ public class ParameterExplorerWindow extends JFrame implements JIPipeParameterCo
         formPanel.revalidate();
         formPanel.repaint();
     }
+
     @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if(event.getEmitter() == parameterCollection.getParameterChangedEventEmitter()) {
+        if (event.getEmitter() == parameterCollection.getParameterChangedEventEmitter()) {
             if (currentValue != null && Objects.equals(event.getKey(), currentValue.getKey())) {
                 updateCurrentValueJson();
             }
-        }
-        else if(event.getEmitter() == testerValue.getSource().getParameterChangedEventEmitter()) {
+        } else if (event.getEmitter() == testerValue.getSource().getParameterChangedEventEmitter()) {
             if (testerValue != null) {
                 updateTesterValueJson();
             }

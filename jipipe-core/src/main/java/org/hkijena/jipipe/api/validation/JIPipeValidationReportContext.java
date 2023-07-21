@@ -11,14 +11,14 @@ public abstract class JIPipeValidationReportContext {
     private final JIPipeValidationReportContext parent;
 
     public JIPipeValidationReportContext() {
-        if(getClass() != UnspecifiedValidationReportContext.class)
+        if (getClass() != UnspecifiedValidationReportContext.class)
             this.parent = new UnspecifiedValidationReportContext();
         else
             this.parent = null;
     }
 
     public JIPipeValidationReportContext(JIPipeValidationReportContext parent) {
-        if(getClass() != UnspecifiedValidationReportContext.class)
+        if (getClass() != UnspecifiedValidationReportContext.class)
             this.parent = parent != null ? parent : new UnspecifiedValidationReportContext();
         else
             this.parent = null;
@@ -46,7 +46,7 @@ public abstract class JIPipeValidationReportContext {
         List<NavigableJIPipeValidationReportContext> contexts = new ArrayList<>();
         JIPipeValidationReportContext currentContext = this;
         while (currentContext != null) {
-            if(currentContext instanceof NavigableJIPipeValidationReportContext) {
+            if (currentContext instanceof NavigableJIPipeValidationReportContext) {
                 contexts.add((NavigableJIPipeValidationReportContext) currentContext);
             }
             currentContext = currentContext.getParent();

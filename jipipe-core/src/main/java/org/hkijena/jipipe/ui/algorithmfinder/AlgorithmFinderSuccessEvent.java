@@ -24,7 +24,7 @@ public class AlgorithmFinderSuccessEvent extends AbstractJIPipeEvent {
     private JIPipeDataSlot inputSlot;
 
     /**
-     * @param source the event source
+     * @param source     the event source
      * @param outputSlot The output slot
      * @param inputSlot  The target slot
      */

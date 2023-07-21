@@ -79,6 +79,33 @@ public interface TableColumn extends JIPipeData {
     }
 
     /**
+     * Creates a new column from a collection.
+     * Returns a {@link DoubleArrayTableColumn} if the list only contains numbers.
+     * Otherwise, returns a {@link StringArrayTableColumn}.
+     *
+     * @param rows  the row vales
+     * @param label the label
+     * @return the column
+     */
+    static TableColumn fromList(Collection<?> rows, String label) {
+        if (rows.stream().allMatch(o -> o instanceof Number)) {
+            double[] arr = new double[rows.size()];
+            int i = 0;
+            for (Object row : rows) {
+                arr[i++] = ((Number) row).doubleValue();
+            }
+            return new DoubleArrayTableColumn(arr, label);
+        } else {
+            String[] arr = new String[rows.size()];
+            int i = 0;
+            for (Object row : rows) {
+                arr[i++] = StringUtils.nullToEmpty(row);
+            }
+            return new StringArrayTableColumn(arr, label);
+        }
+    }
+
+    /**
      * Returns as many data entries as rows
      *
      * @param rows the number of rows
@@ -161,32 +188,5 @@ public interface TableColumn extends JIPipeData {
             result.add(getRowAsObject(i));
         }
         return result;
-    }
-
-    /**
-     * Creates a new column from a collection.
-     * Returns a {@link DoubleArrayTableColumn} if the list only contains numbers.
-     * Otherwise, returns a {@link StringArrayTableColumn}.
-     * @param rows the row vales
-     * @param label the label
-     * @return the column
-     */
-    static TableColumn fromList(Collection<?> rows, String label) {
-        if(rows.stream().allMatch(o -> o instanceof Number)) {
-            double[] arr = new double[rows.size()];
-            int i = 0;
-            for (Object row : rows) {
-                arr[i++] = ((Number)row).doubleValue();
-            }
-            return new DoubleArrayTableColumn(arr, label);
-        }
-        else {
-            String[] arr = new String[rows.size()];
-            int i = 0;
-            for (Object row : rows) {
-                arr[i++] = StringUtils.nullToEmpty(row);
-            }
-            return new StringArrayTableColumn(arr, label);
-        }
     }
 }

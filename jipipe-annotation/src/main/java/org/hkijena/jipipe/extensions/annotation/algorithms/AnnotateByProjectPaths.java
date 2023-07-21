@@ -14,7 +14,6 @@ import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
@@ -53,10 +52,9 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
 
         Map<String, Path> projectDataDirs;
-        if(getRuntimeProject() != null) {
+        if (getRuntimeProject() != null) {
             projectDataDirs = getRuntimeProject().getDirectoryMap();
-        }
-        else {
+        } else {
             projectDataDirs = Collections.emptyMap();
         }
 

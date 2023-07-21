@@ -35,7 +35,7 @@ public class ForEachFunction extends ExpressionFunction {
             String assignment = (String) parameters.get(1);
             int separatorIndex = assignment.indexOf('=');
             if (separatorIndex < 0) {
-                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext("Expression" ),
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext("Expression"),
                         "Variable assignment '" + assignment + "' is invalid: Missing '='.",
                         "Invalid variable assignment expression!",
                         "You used an expression function that assigns variables. Variable assignments always have following format: [Variable name]=[Expression]. " +

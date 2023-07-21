@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
@@ -74,7 +73,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             firstPoint = getGraphCanvas().getViewMode().realLocationToGrid(e.getPoint(), getGraphCanvas().getZoom());
             e.consume();
         }
@@ -82,8 +81,8 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1) {
-            if(firstPoint != null && secondPoint != null && !Objects.equals(firstPoint, secondPoint)) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            if (firstPoint != null && secondPoint != null && !Objects.equals(firstPoint, secondPoint)) {
                 createNodeAtPoint();
             }
             deactivate();
@@ -106,7 +105,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
         T newNode = JIPipe.createNode(nodeClass);
         newNode.setGridWidth(w);
         newNode.setGridHeight(h);
-        newNode.setLocationWithin(getGraphEditor().getCompartment(), new Point(x,y), getGraphEditor().getCanvasUI().getViewMode().name());
+        newNode.setLocationWithin(getGraphEditor().getCompartment(), new Point(x, y), getGraphEditor().getCanvasUI().getViewMode().name());
         return newNode;
     }
 
@@ -128,7 +127,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(firstPoint != null) {
+        if (firstPoint != null) {
             secondPoint = getGraphCanvas().getViewMode().realLocationToGrid(e.getPoint(), getGraphCanvas().getZoom());
             getGraphCanvas().repaintLowLag();
             e.consume();
@@ -158,7 +157,7 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
 
     @Override
     public void paintAfterNodesAndEdges(Graphics2D graphics2D) {
-        if(firstPoint != null && secondPoint != null && !Objects.equals(firstPoint, secondPoint)) {
+        if (firstPoint != null && secondPoint != null && !Objects.equals(firstPoint, secondPoint)) {
             int gridWidth = getGraphCanvas().getViewMode().getGridWidth();
             int gridHeight = getGraphCanvas().getViewMode().getGridHeight();
             double zoom = getGraphCanvas().getZoom();

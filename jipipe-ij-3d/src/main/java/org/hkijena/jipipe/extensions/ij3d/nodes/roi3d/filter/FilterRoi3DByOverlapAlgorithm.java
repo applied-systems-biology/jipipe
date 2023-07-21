@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.eventbus.Subscribe;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import mcib3d.image3d.ImageHandler;

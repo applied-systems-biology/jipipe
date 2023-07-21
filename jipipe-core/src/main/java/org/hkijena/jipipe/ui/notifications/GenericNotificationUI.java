@@ -75,10 +75,10 @@ public class GenericNotificationUI extends JIPipeWorkbenchPanel {
             actionButton.setToolTipText(action.getTooltip());
             actionButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 4),
                     BorderFactory.createEmptyBorder(8, 8, 8, 8)));
-            if(action.getStyle().getBackground() != null) {
+            if (action.getStyle().getBackground() != null) {
                 actionButton.setBackground(action.getStyle().getBackground());
             }
-            if(action.getStyle().getText() != null) {
+            if (action.getStyle().getText() != null) {
                 actionButton.setForeground(action.getStyle().getText());
             }
             actionButton.setUI(new RoundedButtonUI(4, actionButton.getBackground().darker(), actionButton.getBackground().darker()));

@@ -19,7 +19,6 @@ import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -27,6 +26,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
@@ -62,17 +62,17 @@ import java.util.*;
  * User interface for displaying and creating plots
  */
 public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterCollection, JIPipeValidatable, JIPipeParameterCollection.ParameterChangedEventListener {
-    private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
-    private PlotData currentPlot;
-    private JSplitPane splitPane;
     private final BiMap<String, TableColumn> availableData = HashBiMap.create();
     private final List<JIPipePlotSeriesBuilder> seriesBuilders = new ArrayList<>();
-    private boolean isRebuilding = false;
-    private PlotReader plotReader;
     private final DocumentTabPane sideBar = new DocumentTabPane(false);
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
     private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
     private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
+    private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
+    private PlotData currentPlot;
+    private JSplitPane splitPane;
+    private boolean isRebuilding = false;
+    private PlotReader plotReader;
 
     /**
      * @param workbench the workbench
@@ -197,7 +197,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
 
     @Override
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if(getPlotType().getInfo() == null) {
+        if (getPlotType().getInfo() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "Plot type not selected!",

@@ -71,7 +71,7 @@ public class OMEAccessorParameterEditorUI extends JIPipeParameterEditorUI {
     private void showTemplateHelp() {
         OMEAccessorParameter parameter = getParameter(OMEAccessorParameter.class);
         OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(parameter.getAccessorId(), null);
-        if(template != null) {
+        if (template != null) {
             MarkdownReader.showDialog(new MarkdownDocument(template.getDescription()), true, template.getName(), this, false);
         }
     }
@@ -95,10 +95,9 @@ public class OMEAccessorParameterEditorUI extends JIPipeParameterEditorUI {
     public void reload() {
         OMEAccessorParameter parameter = getParameter(OMEAccessorParameter.class);
         OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(parameter.getAccessorId(), null);
-        if(template != null) {
+        if (template != null) {
             currentTemplateButton.setText(template.getName());
-        }
-        else {
+        } else {
             currentTemplateButton.setText(parameter.getAccessorId());
         }
         parameterPanel.setDisplayedParameters(parameter.getParameters());

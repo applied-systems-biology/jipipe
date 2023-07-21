@@ -305,11 +305,10 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 flushBufferToToken(buffer, tokens, resolveVariable);
                 resolveVariable.set(true);
                 tokens.add("" + c);
-            } else if(!isQuoted && c == '[') {
+            } else if (!isQuoted && c == '[') {
                 tokens.add("@"); // Resolve as @ operator
                 ++arrayAccessBracketDepth;
-            }
-            else if(!isQuoted && c == ']' && arrayAccessBracketDepth > 0) {
+            } else if (!isQuoted && c == ']' && arrayAccessBracketDepth > 0) {
                 --arrayAccessBracketDepth;
                 continue; // Ignore token
             } else {

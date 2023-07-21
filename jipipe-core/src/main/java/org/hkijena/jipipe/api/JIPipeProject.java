@@ -80,16 +80,14 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     private final BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
     private final JIPipeLocalProjectMemoryCache cache;
     private final JIPipeProjectHistoryJournal historyJournal;
+    private final CompartmentAddedEventEmitter compartmentAddedEventEmitter = new CompartmentAddedEventEmitter();
+    private final CompartmentRemovedEventEmitter compartmentRemovedEventEmitter = new CompartmentRemovedEventEmitter();
+    private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private Map<String, Object> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private boolean isCleaningUp;
     private boolean isLoading;
-
-    private final CompartmentAddedEventEmitter compartmentAddedEventEmitter = new CompartmentAddedEventEmitter();
-    private final CompartmentRemovedEventEmitter compartmentRemovedEventEmitter = new CompartmentRemovedEventEmitter();
-
-    private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
 
     /**
      * A JIPipe project
@@ -109,9 +107,9 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     /**
      * Loads a project from a file
      *
-     * @param fileName    JSON file
-     * @param context the context
-     * @param report      issue report
+     * @param fileName JSON file
+     * @param context  the context
+     * @param report   issue report
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
@@ -123,7 +121,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * Loads a project from a file
      *
      * @param fileName      JSON file
-     * @param context the context
+     * @param context       the context
      * @param report        issue report
      * @param notifications notifications for the user
      * @return Loaded project
@@ -136,27 +134,6 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         project.setWorkDirectory(fileName.getParent());
         project.validateUserDirectories(notifications);
         return project;
-    }
-
-    /**
-     * Checks if the project metadata user directories are properly set up.
-     * Otherwise, generates a notification
-     * @param notifications the notifications
-     */
-    public void validateUserDirectories(JIPipeNotificationInbox notifications) {
-        if(workDirectory != null) {
-            Map<String, Path> directoryMap = metadata.getDirectories().getDirectoryMap(workDirectory);
-            for (Map.Entry<String, Path> entry : directoryMap.entrySet()) {
-                if(entry.getValue() == null || !Files.isDirectory(entry.getValue())) {
-                    JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:invalid-project-user-directory");
-                    notification.setHeading("Invalid project user directory!");
-                    notification.setDescription("This project defines a user-defined directory '" + entry.getKey() + "' pointing at '" + entry.getValue() + "', but the " +
-                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings > User directories // Project > Project overview > User directories) " +
-                            "and ensure that the directory is correctly configured.");
-                    notifications.push(notification);
-                }
-            }
-        }
     }
 
     /**
@@ -199,6 +176,28 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             throw new JIPipeValidationRuntimeException(e, "Could not load metadata from JIPipe project",
                     "The JSON data that describes the project metadata is missing essential information",
                     "Open the file in a text editor and compare the metadata with a valid project.");
+        }
+    }
+
+    /**
+     * Checks if the project metadata user directories are properly set up.
+     * Otherwise, generates a notification
+     *
+     * @param notifications the notifications
+     */
+    public void validateUserDirectories(JIPipeNotificationInbox notifications) {
+        if (workDirectory != null) {
+            Map<String, Path> directoryMap = metadata.getDirectories().getDirectoryMap(workDirectory);
+            for (Map.Entry<String, Path> entry : directoryMap.entrySet()) {
+                if (entry.getValue() == null || !Files.isDirectory(entry.getValue())) {
+                    JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:invalid-project-user-directory");
+                    notification.setHeading("Invalid project user directory!");
+                    notification.setDescription("This project defines a user-defined directory '" + entry.getKey() + "' pointing at '" + entry.getValue() + "', but the " +
+                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings > User directories // Project > Project overview > User directories) " +
+                            "and ensure that the directory is correctly configured.");
+                    notifications.push(notification);
+                }
+            }
         }
     }
 
@@ -453,9 +452,9 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     /**
      * Reports the validity for the target node and its dependencies
      *
-     * @param context the context
-     * @param report      the report
-     * @param targetNode  the target node
+     * @param context    the context
+     * @param report     the report
+     * @param targetNode the target node
      */
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode) {
         graph.reportValidity(context, report, targetNode);
@@ -629,7 +628,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * Loads the project from JSON
      *
      * @param jsonNode      the node
-     * @param context the context
+     * @param context       the context
      * @param notifications notifications for the user
      */
     public void fromJson(JsonNode jsonNode, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
@@ -727,7 +726,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
                                 new GraphNodeValidationReportContext(compartmentNode),
                                 "Node has invalid compartment!",
-                        "The node '" + graphNode.getDisplayName() + "' is assigned to compartment '" + compartmentUUIDInGraph + "', but it does not exist!",
+                                "The node '" + graphNode.getDisplayName() + "' is assigned to compartment '" + compartmentUUIDInGraph + "', but it does not exist!",
                                 "This was repaired automatically by deleting the node. Please inform the JIPipe developers about this issue.",
                                 JsonUtils.toPrettyJsonString(graphNode)));
                         graph.removeNode(graphNode, false);
@@ -891,6 +890,14 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         return metadata.getDirectories().getDirectoryMap(getWorkDirectory());
     }
 
+    public interface CompartmentAddedEventListener {
+        void onProjectCompartmentAdded(CompartmentAddedEvent event);
+    }
+
+    public interface CompartmentRemovedEventListener {
+        void onProjectCompartmentRemoved(CompartmentRemovedEvent event);
+    }
+
     /**
      * Serializes a project
      */
@@ -934,10 +941,6 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         }
     }
 
-    public interface CompartmentAddedEventListener {
-        void onProjectCompartmentAdded(CompartmentAddedEvent event);
-    }
-
     public static class CompartmentAddedEventEmitter extends JIPipeEventEmitter<CompartmentAddedEvent, CompartmentAddedEventListener> {
         @Override
         protected void call(CompartmentAddedEventListener compartmentAddedEventListener, CompartmentAddedEvent event) {
@@ -969,10 +972,6 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         public UUID getCompartmentUUID() {
             return compartmentUUID;
         }
-    }
-
-    public interface CompartmentRemovedEventListener {
-        void onProjectCompartmentRemoved(CompartmentRemovedEvent event);
     }
 
     public static class CompartmentRemovedEventEmitter extends JIPipeEventEmitter<CompartmentRemovedEvent, CompartmentRemovedEventListener> {

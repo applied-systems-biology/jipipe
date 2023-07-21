@@ -27,15 +27,14 @@ public class GraphNodeValidationReportContext extends NavigableJIPipeValidationR
     }
 
     private JIPipeGraphNode findTargetNode(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeProjectWorkbench) {
+        if (workbench instanceof JIPipeProjectWorkbench) {
             JIPipeGraph parentGraph = graphNode.getParentGraph();
             if (parentGraph != null) {
                 UUID uuid = graphNode.getUUIDInParentGraph();
-                if(uuid != null) {
+                if (uuid != null) {
                     if (parentGraph.getProject() == ((JIPipeProjectWorkbench) workbench).getProject()) {
                         return graphNode;
-                    }
-                    else {
+                    } else {
                         return ((JIPipeProjectWorkbench) workbench).getProject().getGraph().getNodeByUUID(uuid);
                     }
                 }
@@ -52,9 +51,9 @@ public class GraphNodeValidationReportContext extends NavigableJIPipeValidationR
     @Override
     public void navigate(JIPipeWorkbench workbench) {
         JIPipeGraphNode targetNode = findTargetNode(workbench);
-        if(workbench instanceof JIPipeProjectWorkbench && targetNode != null) {
+        if (workbench instanceof JIPipeProjectWorkbench && targetNode != null) {
             SwingUtilities.invokeLater(() -> {
-                DocumentTabPane.DocumentTab pipelineEditorTab = ((JIPipeProjectWorkbench)workbench).getOrOpenPipelineEditorTab(graphNode.getProjectCompartment(), true);
+                DocumentTabPane.DocumentTab pipelineEditorTab = ((JIPipeProjectWorkbench) workbench).getOrOpenPipelineEditorTab(graphNode.getProjectCompartment(), true);
                 SwingUtilities.invokeLater(() -> {
                     JIPipePipelineGraphEditorUI ui = (JIPipePipelineGraphEditorUI) pipelineEditorTab.getContent();
                     ui.selectOnly(ui.getCanvasUI().getNodeUIs().get(targetNode));

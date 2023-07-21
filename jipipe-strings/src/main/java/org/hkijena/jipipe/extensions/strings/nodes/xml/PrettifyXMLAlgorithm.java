@@ -17,6 +17,7 @@ public class PrettifyXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int indent = 4;
     private boolean ignoreDeclaration = false;
+
     public PrettifyXMLAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }

@@ -3,25 +3,18 @@ package org.hkijena.jipipe.extensions.ij3d.nodes.roi3d;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Export 3D ROI", description = "Exports a 3D ROI list into one or multiple ROI files")
 @JIPipeInputSlot(value = ROI3DListData.class, slotName = "Input", autoCreate = true)
@@ -45,10 +38,9 @@ public class ExportROI3DAlgorithm2 extends JIPipeIteratingAlgorithm {
         ROI3DListData inputData = dataBatch.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
-        if(getRuntimeProject() != null) {
+        if (getRuntimeProject() != null) {
             projectDataDirs = getRuntimeProject().getDirectoryMap();
-        }
-        else {
+        } else {
             projectDataDirs = Collections.emptyMap();
         }
         Path outputPath = filePath.generatePath(getFirstOutputSlot().getSlotStoragePath(),

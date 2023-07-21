@@ -16,17 +16,7 @@ package org.hkijena.jipipe.api;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.StringUtils;
-
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Metadata for a {@link JIPipeProject}
@@ -101,6 +91,7 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     public JIPipeProjectDirectories getDirectories() {
         return directories;
     }
+
     @JsonGetter("user-directories")
     public void setDirectories(JIPipeProjectDirectories directories) {
         this.directories = directories;
@@ -118,8 +109,6 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     public void setNodeTemplates(JIPipeNodeTemplate.List nodeTemplates) {
         this.nodeTemplates = nodeTemplates;
     }
-
-
 
 
 }

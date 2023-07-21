@@ -33,8 +33,8 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
  */
 @JsonSerialize(using = JIPipeGraphNode.Serializer.class)
 public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection implements JIPipeValidatable, JIPipeFunctionallyComparable, JIPipeParameterCollection.ParameterChangedEventListener,
-JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeSlotConfiguration.SlotConfigurationChangedEventListener {
+        JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeSlotConfiguration.SlotConfigurationChangedEventListener {
 
     private final NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new NodeSlotsChangedEventEmitter();
 
@@ -304,6 +304,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
 
     /**
      * The current custom (user-defined) name
+     *
      * @return the custom name
      */
     public String getCustomName() {
@@ -444,7 +445,6 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
     }
 
 
-
     /**
      * Returns true if this node and the other node are functionally equal (i.e. they have the same functional parameters).
      * For non-functional nodes, this determines if the {@link JIPipeNodeInfo} is equal
@@ -570,7 +570,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
      * Please do not override this method if absolutely necessary. Use onDeserialized() to add methods after deserialization
      *
      * @param node          The JSON data to load from
-     * @param context the context
+     * @param context       the context
      * @param issues        issues during deserializing. these should be severe issues (missing parameters etc.). if you want to notify the user about potential issues that can be acted upon, use the notification inbox
      * @param notifications additional notifications for the user. these can be acted upon
      */
@@ -857,6 +857,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
 
     /**
      * Returns the current project associated with the current run
+     *
      * @return the project
      */
     public JIPipeProject getRuntimeProject() {
@@ -865,6 +866,7 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
 
     /**
      * Sets the current project associated with the current run
+     *
      * @param runtimeProject the project
      */
     public void setRuntimeProject(JIPipeProject runtimeProject) {
@@ -1243,6 +1245,10 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
         void onNodeSlotsChanged(NodeSlotsChangedEvent event);
     }
 
+    public interface BaseDirectoryChangedEventListener {
+        void onBaseDirectoryChanged(BaseDirectoryChangedEvent event);
+    }
+
     /**
      * Serializes an {@link JIPipeGraphNode} instance
      */
@@ -1270,10 +1276,6 @@ JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollec
         public Path getBaseDirectory() {
             return baseDirectory;
         }
-    }
-
-    public interface BaseDirectoryChangedEventListener  {
-        void onBaseDirectoryChanged(BaseDirectoryChangedEvent event);
     }
 
     public static class BaseDirectoryChangedEventEmitter extends JIPipeEventEmitter<BaseDirectoryChangedEvent, BaseDirectoryChangedEventListener> {

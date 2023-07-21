@@ -62,11 +62,11 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
         JButton openInNewWindowButton = new JButton("Open in new window", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
         openInNewWindowButton.addActionListener(e -> {
             String title = "Unnamed";
-            if(getWorkbench().getWindow() instanceof JFrame) {
+            if (getWorkbench().getWindow() instanceof JFrame) {
                 title = ((JFrame) getWorkbench().getWindow()).getTitle();
             }
-           UIUtils.openValidityReportDialog(getWorkbench(), getWorkbench().getWindow(), report, title + " - Problems", null,
-                   false);
+            UIUtils.openValidityReportDialog(getWorkbench(), getWorkbench().getWindow(), report, title + " - Problems", null,
+                    false);
         });
         toolBar.add(openInNewWindowButton);
 
@@ -151,30 +151,27 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
 
         switch (entry.getLevel()) {
             case Error:
-                if(UIUtils.DARK_THEME) {
+                if (UIUtils.DARK_THEME) {
                     fill = new Color(0x6F000B);
-                }
-                else {
+                } else {
                     fill = new Color(0xFDCDD1);
                 }
                 icon = UIUtils.getIcon32FromResources("actions/edit-clear-all.png");
                 border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
                 break;
             case Warning:
-                if(UIUtils.DARK_THEME) {
+                if (UIUtils.DARK_THEME) {
                     fill = new Color(0x734300);
-                }
-                else {
+                } else {
                     fill = new Color(0xFFEBCF);
                 }
                 icon = UIUtils.getIcon32FromResources("actions/dialog-warning.png");
                 border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
                 break;
             case Info:
-                if(UIUtils.DARK_THEME) {
+                if (UIUtils.DARK_THEME) {
                     fill = new Color(0x05254B);
-                }
-                else {
+                } else {
                     fill = new Color(0xBED0E6);
                 }
                 icon = UIUtils.getIcon32FromResources("actions/dialog-information.png");
@@ -189,14 +186,14 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
 
 
         JLabel titleLabel = new JLabel(entry.getTitle(), icon, JLabel.LEFT);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(4,0,8,4));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 8, 4));
         titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
         titleLabel.setOpaque(false);
         formPanel.addWideToForm(titleLabel);
 
-        if(!StringUtils.isNullOrEmpty(entry.getExplanation())) {
+        if (!StringUtils.isNullOrEmpty(entry.getExplanation())) {
             JTextArea textArea = UIUtils.makeReadonlyBorderlessTextArea(entry.getExplanation());
-            textArea.setBorder(BorderFactory.createEmptyBorder(0,8,0,0));
+            textArea.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
             formPanel.addWideToForm(textArea);
         }
 
@@ -205,36 +202,35 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
         {
             JIPipeValidationReportContext context = entry.getContext();
             do {
-                if(!(context instanceof UnspecifiedValidationReportContext)) {
+                if (!(context instanceof UnspecifiedValidationReportContext)) {
                     contexts.add(context);
-                    if(context instanceof NavigableJIPipeValidationReportContext && ((NavigableJIPipeValidationReportContext)context).canNavigate(getWorkbench())) {
-                       navigationContext = (NavigableJIPipeValidationReportContext) context;
+                    if (context instanceof NavigableJIPipeValidationReportContext && ((NavigableJIPipeValidationReportContext) context).canNavigate(getWorkbench())) {
+                        navigationContext = (NavigableJIPipeValidationReportContext) context;
                     }
                     context = context.getParent();
                 }
             }
-            while(!(context instanceof UnspecifiedValidationReportContext));
+            while (!(context instanceof UnspecifiedValidationReportContext));
         }
 
         {
             JToolBar breadcrumb = new JToolBar();
             breadcrumb.setOpaque(false);
             breadcrumb.setFloatable(false);
-            breadcrumb.setBorder(BorderFactory.createEmptyBorder(16,0,0,0));
+            breadcrumb.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
             breadcrumb.add(Box.createHorizontalStrut(8));
             formPanel.addWideToForm(breadcrumb);
 
-            if(contexts.isEmpty()) {
+            if (contexts.isEmpty()) {
                 JButton button = new JButton("Internal", UIUtils.getIconFromResources("actions/system-run.png"));
                 button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
                 button.setOpaque(false);
                 button.setBorder(null);
                 breadcrumb.add(button);
-            }
-            else {
+            } else {
                 for (int i = 0; i < contexts.size(); i++) {
                     JIPipeValidationReportContext context = contexts.get(i);
-                    if(i < contexts.size() - 1) {
+                    if (i < contexts.size() - 1) {
                         JButton button = new JButton(context.renderIcon());
                         button.setToolTipText(context.renderName());
                         button.setOpaque(false);
@@ -242,8 +238,7 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
                         button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
                         breadcrumb.add(button);
                         breadcrumb.add(new JLabel(UIUtils.getIconFromResources("actions/draw-triangle2.png")));
-                    }
-                    else {
+                    } else {
                         JButton button = new JButton(context.renderName(), context.renderIcon());
                         button.setToolTipText(context.renderName());
                         button.setOpaque(false);
@@ -258,19 +253,18 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
             JToolBar actionBar = new JToolBar();
             actionBar.setOpaque(false);
             actionBar.setFloatable(false);
-            actionBar.setBorder(BorderFactory.createEmptyBorder(8,0,0,0));
+            actionBar.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
             actionBar.add(Box.createHorizontalStrut(6));
             formPanel.addWideToForm(actionBar);
 
-            if(navigationContext != null) {
+            if (navigationContext != null) {
                 JButton navigateButton = new JButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"));
                 navigateButton.setOpaque(false);
                 NavigableJIPipeValidationReportContext finalNavigationContext = navigationContext;
                 navigateButton.addActionListener(e -> {
-                    if(finalNavigationContext.canNavigate(getWorkbench())) {
+                    if (finalNavigationContext.canNavigate(getWorkbench())) {
                         finalNavigationContext.navigate(getWorkbench());
-                    }
-                    else {
+                    } else {
                         JOptionPane.showMessageDialog(this, "Unable to navigate to '" + finalNavigationContext.renderName() + "'!",
                                 "Navigate",
                                 JOptionPane.ERROR_MESSAGE);

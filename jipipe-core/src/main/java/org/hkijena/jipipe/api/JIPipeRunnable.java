@@ -13,13 +13,9 @@
 
 package org.hkijena.jipipe.api;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.running.JIPipeRunWorker;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-
-import java.util.function.Consumer;
 
 /**
  * Runnable that can be scheduled, canceled, and reports progress
@@ -49,6 +45,7 @@ public interface JIPipeRunnable extends Runnable {
 
     /**
      * Called when this runnable finishes
+     *
      * @param event the event
      */
     default void onFinished(FinishedEvent event) {
@@ -57,10 +54,31 @@ public interface JIPipeRunnable extends Runnable {
 
     /**
      * Called when this runnable is interrupted
+     *
      * @param event the event
      */
     default void onInterrupted(InterruptedEvent event) {
 
+    }
+
+    interface StartedEventListener {
+        void onRunnableStarted(StartedEvent event);
+    }
+
+    interface FinishedEventListener {
+        void onRunnableFinished(FinishedEvent event);
+    }
+
+    interface EnqeuedEventListener {
+        void onRunnableEnqueued(EnqueuedEvent event);
+    }
+
+    interface InterruptedEventListener {
+        void onRunnableInterrupted(InterruptedEvent event);
+    }
+
+    interface ProgressEventListener {
+        void onRunnableProgress(ProgressEvent event);
     }
 
     /**
@@ -88,10 +106,6 @@ public interface JIPipeRunnable extends Runnable {
         public JIPipeRunnable getRun() {
             return run;
         }
-    }
-
-    interface StartedEventListener {
-        void onRunnableStarted(StartedEvent event);
     }
 
     class StartedEventEmitter extends JIPipeEventEmitter<StartedEvent, StartedEventListener> {
@@ -124,10 +138,6 @@ public interface JIPipeRunnable extends Runnable {
         public JIPipeRunnable getRun() {
             return worker.getRun();
         }
-    }
-
-    interface FinishedEventListener {
-        void onRunnableFinished(FinishedEvent event);
     }
 
     class FinishedEventEmitter extends JIPipeEventEmitter<FinishedEvent, FinishedEventListener> {
@@ -163,10 +173,6 @@ public interface JIPipeRunnable extends Runnable {
         public JIPipeRunnable getRun() {
             return run;
         }
-    }
-
-    interface EnqeuedEventListener {
-        void onRunnableEnqueued(EnqueuedEvent event);
     }
 
     class EnqueuedEventEmitter extends JIPipeEventEmitter<EnqueuedEvent, EnqeuedEventListener> {
@@ -208,10 +214,6 @@ public interface JIPipeRunnable extends Runnable {
         }
     }
 
-    interface InterruptedEventListener {
-        void onRunnableInterrupted(InterruptedEvent event);
-    }
-
     class InterruptedEventEmitter extends JIPipeEventEmitter<InterruptedEvent, InterruptedEventListener> {
 
         @Override
@@ -248,10 +250,6 @@ public interface JIPipeRunnable extends Runnable {
         public JIPipeProgressInfo.StatusUpdatedEvent getStatus() {
             return status;
         }
-    }
-
-    interface ProgressEventListener {
-        void onRunnableProgress(ProgressEvent event);
     }
 
     class ProgressEventEmitter extends JIPipeEventEmitter<ProgressEvent, ProgressEventListener> {

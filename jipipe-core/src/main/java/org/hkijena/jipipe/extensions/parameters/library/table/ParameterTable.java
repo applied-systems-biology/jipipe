@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
@@ -43,12 +42,11 @@ import java.util.function.Supplier;
 @JsonSerialize(using = ParameterTable.Serializer.class)
 @JsonDeserialize(using = ParameterTable.Deserializer.class)
 public class ParameterTable implements TableModel {
+    private final ModelChangedEventEmitter modelChangedEventEmitter = new ModelChangedEventEmitter();
     private List<ParameterColumn> columns = new ArrayList<>();
     private List<List<Object>> rows = new ArrayList<>();
     private List<TableModelListener> listeners = new ArrayList<>();
     private Supplier<List<Object>> rowGenerator;
-
-    private final ModelChangedEventEmitter modelChangedEventEmitter = new ModelChangedEventEmitter();
 
     /**
      * Creates a new table
@@ -257,6 +255,10 @@ public class ParameterTable implements TableModel {
         postTableModelChangedEvent();
     }
 
+    public interface ModelChangedEventListener {
+        void onParameterTableModelChangedEvent(ModelChangedEvent event);
+    }
+
     /**
      * Column in the parameter table
      */
@@ -421,10 +423,6 @@ public class ParameterTable implements TableModel {
         public TableModelEvent getTableModelEvent() {
             return tableModelEvent;
         }
-    }
-
-    public interface ModelChangedEventListener {
-        void onParameterTableModelChangedEvent(ModelChangedEvent event);
     }
 
     public static class ModelChangedEventEmitter extends JIPipeEventEmitter<ModelChangedEvent, ModelChangedEventListener> {

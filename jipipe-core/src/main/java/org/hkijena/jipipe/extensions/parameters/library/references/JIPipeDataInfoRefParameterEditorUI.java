@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.references;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;

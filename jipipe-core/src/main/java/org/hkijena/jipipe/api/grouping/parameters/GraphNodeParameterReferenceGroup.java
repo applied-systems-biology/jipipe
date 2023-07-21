@@ -31,11 +31,10 @@ import java.util.List;
  * A list of {@link GraphNodeParameterReference}.
  */
 public class GraphNodeParameterReferenceGroup extends AbstractJIPipeParameterCollection {
+    private final ParameterReferencesChangedEventEmitter parameterReferencesChangedEventEmitter = new ParameterReferencesChangedEventEmitter();
     private List<GraphNodeParameterReference> content = new ArrayList<>();
     private String name;
     private HTMLText description = new HTMLText();
-
-    private final ParameterReferencesChangedEventEmitter parameterReferencesChangedEventEmitter = new ParameterReferencesChangedEventEmitter();
 
     /**
      * Creates a new instance

@@ -11,7 +11,6 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DLineGeometry;
-import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DSphereGeometry;
 
 @JIPipeDocumentation(name = "Create 3D line mesh", description = "Generates a 3D scene containing a line mesh.")
 @JIPipeOutputSlot(value = Scene3DData.class, slotName = "Output", autoCreate = true)

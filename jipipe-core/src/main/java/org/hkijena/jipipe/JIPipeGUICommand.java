@@ -14,8 +14,8 @@
 package org.hkijena.jipipe;
 
 import net.imagej.ImageJ;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
@@ -117,8 +117,8 @@ public class JIPipeGUICommand implements Command {
                     true);
 
             // Show notifications
-            if(NotificationUISettings.getInstance().isShowNotificationsAfterFirstStart()) {
-                if(!JIPipeNotificationInbox.getInstance().isEmpty()) {
+            if (NotificationUISettings.getInstance().isShowNotificationsAfterFirstStart()) {
+                if (!JIPipeNotificationInbox.getInstance().isEmpty()) {
                     SwingUtilities.invokeLater(() -> {
                         WorkbenchNotificationInboxUI inboxUI = new WorkbenchNotificationInboxUI(window.getProjectUI());
                         JFrame frame = new JFrame();
@@ -130,13 +130,13 @@ public class JIPipeGUICommand implements Command {
                         panel.add(inboxUI, BorderLayout.CENTER);
 
                         JCheckBox showMessageCheckbox = new JCheckBox("Show notifications on JIPipe startup");
-                        showMessageCheckbox.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+                        showMessageCheckbox.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
                         showMessageCheckbox.setSelected(true);
                         showMessageCheckbox.addActionListener(e -> NotificationUISettings.getInstance().setShowNotificationsAfterFirstStart(showMessageCheckbox.isSelected()));
                         panel.add(showMessageCheckbox, BorderLayout.SOUTH);
 
                         JIPipeNotificationInbox.getInstance().getUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
-                            if(JIPipeNotificationInbox.getInstance().isEmpty()) {
+                            if (JIPipeNotificationInbox.getInstance().isEmpty()) {
                                 frame.setVisible(false);
                             }
                         });

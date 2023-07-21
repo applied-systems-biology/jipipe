@@ -54,6 +54,7 @@ public interface JIPipeSlotConfiguration {
 
     /**
      * Emits events when the slots change
+     *
      * @return the emitter
      */
     SlotConfigurationChangedEventEmitter getSlotConfigurationChangedEventEmitter();
@@ -114,6 +115,10 @@ public interface JIPipeSlotConfiguration {
         return getOutputSlots().containsKey(name);
     }
 
+    interface SlotConfigurationChangedEventListener {
+        void onSlotConfigurationChanged(SlotConfigurationChangedEvent event);
+    }
+
     /**
      * Serializes the configuration
      */
@@ -144,10 +149,6 @@ public interface JIPipeSlotConfiguration {
         public JIPipeSlotConfiguration getConfiguration() {
             return configuration;
         }
-    }
-
-    interface SlotConfigurationChangedEventListener {
-        void onSlotConfigurationChanged(SlotConfigurationChangedEvent event);
     }
 
     class SlotConfigurationChangedEventEmitter extends JIPipeEventEmitter<SlotConfigurationChangedEvent, SlotConfigurationChangedEventListener> {

@@ -23,14 +23,14 @@ public interface JIPipeValidatable {
      * Generates a validity report
      *
      * @param context
-     * @param report      the report to be added to
+     * @param report  the report to be added to
      */
     void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report);
 
     /**
      * Generates a report for this object
-     * @param context the
      *
+     * @param context the
      * @return the report
      */
     default JIPipeValidationReport generateValidityReport(JIPipeValidationReportContext context) {

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.nodes;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -61,7 +60,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
-        if(event.getSource() == parameterSlotAlgorithmSettings && "has-parameter-slot".equals(event.getKey())) {
+        if (event.getSource() == parameterSlotAlgorithmSettings && "has-parameter-slot".equals(event.getKey())) {
             updateParameterSlot();
         }
     }

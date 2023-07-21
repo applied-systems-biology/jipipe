@@ -14,6 +14,7 @@ public class StringFixFileNameFunction extends ExpressionFunction {
     public StringFixFileNameFunction() {
         super("STRING_FIX_FILE_NAME", 1);
     }
+
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         String fileName = StringUtils.nullToEmpty(parameters.get(0));

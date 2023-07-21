@@ -1360,6 +1360,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Gets a data annotation
+     *
      * @param row the row
      * @param col the data annotation column
      * @return the data annotation

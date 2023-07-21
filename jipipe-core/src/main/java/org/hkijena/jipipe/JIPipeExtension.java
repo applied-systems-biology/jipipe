@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe;
 
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 
 /**
  * Interface shared between all JIPipe extensions

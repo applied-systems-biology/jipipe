@@ -91,7 +91,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
             dataBatches = limitedBatches;
         }
         for (JIPipeMergingDataBatch dataBatch : dataBatches) {
-            if(dataBatch.isIncomplete()) {
+            if (dataBatch.isIncomplete()) {
                 progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
             }
         }

@@ -129,7 +129,7 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
 
     public DefaultExpressionParameter getAdaptiveParameter(String key) {
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getOverriddenParameters()) {
-            if(Objects.equals(key, overriddenParameter.getValue())) {
+            if (Objects.equals(key, overriddenParameter.getValue())) {
                 return overriddenParameter.getKey();
             }
         }
@@ -151,7 +151,7 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
     }
 
     public void addAdaptiveParameter(String key) {
-        if(getAdaptiveParameter(key) == null) {
+        if (getAdaptiveParameter(key) == null) {
             getOverriddenParameters().add(new StringQueryExpressionAndStringPairParameter("default", key));
             getParameterChangedEventEmitter().emit(new ParameterChangedEvent(this, "overridden-parameters"));
             getParameterUIChangedEventEmitter().emit(new ParameterUIChangedEvent(this));

@@ -44,9 +44,10 @@ public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
 
     /**
      * Applies the operation on a data table
-     * @param dataTable the data table
-     * @param row the model row
-     * @param workbench the workbench
+     *
+     * @param dataTable     the data table
+     * @param row           the model row
+     * @param workbench     the workbench
      * @param saveAsDefault saves the operation as new default
      */
     default void display(JIPipeDataTable dataTable, int row, JIPipeWorkbench workbench, boolean saveAsDefault) {
@@ -72,10 +73,11 @@ public interface JIPipeDataDisplayOperation extends JIPipeDataOperation {
 
     /**
      * Applies the operation on a data table
-     * @param dataTable the data table
-     * @param row the model row
+     *
+     * @param dataTable      the data table
+     * @param row            the model row
      * @param dataAnnotation the data annotation to show
-     * @param workbench the workbench
+     * @param workbench      the workbench
      */
     default void displayDataAnnotation(JIPipeDataTable dataTable, int row, JIPipeDataAnnotation dataAnnotation, JIPipeWorkbench workbench) {
         JIPipeData data = dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo());

@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
@@ -24,14 +23,8 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
@@ -48,6 +41,7 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
     public ExportDataByParameter2(JIPipeNodeInfo info) {
         super(info);
     }
+
     public ExportDataByParameter2(ExportDataByParameter2 other) {
         super(other);
         this.filePath = new DataExportExpressionParameter(other.filePath);
@@ -59,10 +53,9 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
         JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
-        if(getRuntimeProject() != null) {
+        if (getRuntimeProject() != null) {
             projectDataDirs = getRuntimeProject().getDirectoryMap();
-        }
-        else {
+        } else {
             projectDataDirs = Collections.emptyMap();
         }
         Path outputPath = filePath.generatePath(getFirstOutputSlot().getSlotStoragePath(),
@@ -72,11 +65,10 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
                 dataBatch.getInputRow(getFirstInputSlot()),
                 new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
 
-        if(forceName) {
+        if (forceName) {
             inputData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath.getParent()), outputPath.getFileName().toString(), true, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(outputPath.getParent()), progressInfo);
-        }
-        else {
+        } else {
             inputData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), "data", false, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(outputPath), progressInfo);
         }

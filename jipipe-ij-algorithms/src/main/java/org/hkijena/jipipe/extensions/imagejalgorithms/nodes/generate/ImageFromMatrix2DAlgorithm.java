@@ -18,7 +18,6 @@ import ij.ImagePlus;
 import ij.plugin.filter.Convolver;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -27,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -90,7 +90,7 @@ public class ImageFromMatrix2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (matrix.getRowCount() == 0 || matrix.getColumnCount() == 0) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new ParameterValidationReportContext(context, this, "Matrix", "matrix"),
+                    new ParameterValidationReportContext(context, this, "Matrix", "matrix"),
                     "No matrix provided!",
                     "The convolution matrix is empty.",
                     "Please add rows and columns to the matrix."));

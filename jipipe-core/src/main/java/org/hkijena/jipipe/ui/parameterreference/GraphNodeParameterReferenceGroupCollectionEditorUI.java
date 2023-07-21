@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.parameterreference;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;

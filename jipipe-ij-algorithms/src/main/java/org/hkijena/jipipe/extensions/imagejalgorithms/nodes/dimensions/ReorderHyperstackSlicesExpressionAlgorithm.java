@@ -72,26 +72,22 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
 
             Object result = newLocationExpression.evaluate(variables);
             ImageSliceIndex newIndex;
-            if(result instanceof Boolean) {
-                if(((Boolean) result).booleanValue()) {
+            if (result instanceof Boolean) {
+                if (((Boolean) result).booleanValue()) {
                     newIndex = entry.getKey();
-                }
-                else {
+                } else {
                     continue;
                 }
-            }
-            else if(result instanceof Collection) {
+            } else if (result instanceof Collection) {
                 ImmutableList<?> objects = ImmutableList.copyOf((Collection<?>) result);
-                if(objects.isEmpty()) {
+                if (objects.isEmpty()) {
                     continue;
-                }
-                else {
+                } else {
                     newIndex = new ImageSliceIndex((int) StringUtils.objectToDouble(objects.get(0)),
                             (int) StringUtils.objectToDouble(objects.get(1)),
                             (int) StringUtils.objectToDouble(objects.get(2)));
                 }
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unsupported expression result: " + result);
             }
 
@@ -109,7 +105,7 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
             "If the expression returns a boolen TRUE, the original location is preserved. If the expression returns a boolean FALSE or an empty array, " +
             "the slice is discarded. Locations do not need to be consecutive and positive (compensation by the algorithm). Duplicate locations are not supported and will be overwritten by one of the " +
             "affected images.")
-    @JIPipeParameter(value = "new-location-expression",important = true)
+    @JIPipeParameter(value = "new-location-expression", important = true)
     @ExpressionParameterSettings(hint = "per slice ARRAY(c, z, t)")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")

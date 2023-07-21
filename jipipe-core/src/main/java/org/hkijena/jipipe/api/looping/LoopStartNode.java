@@ -113,7 +113,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
             }
             List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
             for (JIPipeMergingDataBatch dataBatch : dataBatches) {
-                if(dataBatch.isIncomplete()) {
+                if (dataBatch.isIncomplete()) {
                     incomplete.add(dataBatch);
                     progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
                 }

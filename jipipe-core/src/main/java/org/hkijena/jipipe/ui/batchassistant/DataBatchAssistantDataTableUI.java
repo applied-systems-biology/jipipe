@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.batchassistant;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;

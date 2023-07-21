@@ -94,9 +94,8 @@ public class FormPanel extends JXPanel {
     private final JLabel parameterHelpDrillDown = new JLabel();
     private final boolean withDocumentation;
     private final boolean documentationHasUI;
-    private JPanel staticContentPanel;
-
     private final List<GroupHeaderPanel> groupHeaderPanels = new ArrayList<>();
+    private JPanel staticContentPanel;
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
@@ -479,7 +478,7 @@ public class FormPanel extends JXPanel {
     public void removeLastRow() {
         if (contentPanel.getComponentCount() > 0) {
             FormPanelEntry lastEntry = entries.get(entries.size() - 1);
-            if(lastEntry.getContent() instanceof GroupHeaderPanel) {
+            if (lastEntry.getContent() instanceof GroupHeaderPanel) {
                 groupHeaderPanels.remove(lastEntry.getContent());
             }
             entries.remove(entries.size() - 1);
@@ -570,6 +569,10 @@ public class FormPanel extends JXPanel {
         });
     }
 
+    public interface HoverHelpEventListener {
+        void onFormPanelHoverHelp(HoverHelpEvent event);
+    }
+
     public static class FormPanelEntry {
 
         private final int row;
@@ -646,23 +649,22 @@ public class FormPanel extends JXPanel {
     public static class GroupHeaderPanel extends JPanel {
         private final JLabel titleLabel;
         private final JTextPane descriptionArea;
-        private int columnCount = 0;
         private final int marginTop;
         private final Color backgroundColor;
-
         private final Color borderColor;
+        private int columnCount = 0;
 
         /**
          * @param text           the text
          * @param icon           the icon
-         * @param marginTop the margin to the top
+         * @param marginTop      the margin to the top
          * @param leftComponents Components added after the icon
          */
         public GroupHeaderPanel(String text, Icon icon, int marginTop, Component... leftComponents) {
             this.marginTop = marginTop;
 
-            this.backgroundColor = ColorUtils.mix(ModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1,1,0.98f), 0.92);
-            this.borderColor = ColorUtils.scaleHSV(backgroundColor, 1,1,0.8f);
+            this.backgroundColor = ColorUtils.mix(ModernMetalTheme.PRIMARY5, ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92);
+            this.borderColor = ColorUtils.scaleHSV(backgroundColor, 1, 1, 0.8f);
 
             setBorder(BorderFactory.createEmptyBorder(marginTop, 0, 8, 0));
             setLayout(new GridBagLayout());
@@ -673,7 +675,7 @@ public class FormPanel extends JXPanel {
 
             titleLabel = new JLabel(text, icon, JLabel.LEFT);
             titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
-            titleLabel.setBorder(BorderFactory.createEmptyBorder(4,8,4,4));
+            titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));
             add(titleLabel, new GridBagConstraints() {
                 {
                     gridx = columnCount;
@@ -698,7 +700,7 @@ public class FormPanel extends JXPanel {
             descriptionArea = UIUtils.makeBorderlessReadonlyTextPane("", true);
             descriptionArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
             descriptionArea.setOpaque(false);
-            descriptionArea.setBorder(BorderFactory.createEmptyBorder(4,8,4,4));
+            descriptionArea.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 4));
             descriptionArea.setVisible(false);
             add(descriptionArea, new GridBagConstraints() {
                 {
@@ -722,9 +724,9 @@ public class FormPanel extends JXPanel {
             int y = marginTop;
             int w = getWidth() - x - 1;
             int h = getHeight() - y - 1 - 8;
-            g2.fillRoundRect(x,y,w,h,4,4);
+            g2.fillRoundRect(x, y, w, h, 4, 4);
             g2.setColor(borderColor);
-            g2.drawRoundRect(x,y,w,h,4,4);
+            g2.drawRoundRect(x, y, w, h, 4, 4);
         }
 
         public JLabel getTitleLabel() {
@@ -788,10 +790,6 @@ public class FormPanel extends JXPanel {
         public MarkdownDocument getDocument() {
             return document;
         }
-    }
-
-    public interface HoverHelpEventListener {
-        void onFormPanelHoverHelp(HoverHelpEvent event);
     }
 
     public static class HoverHelpEventEmitter extends JIPipeEventEmitter<HoverHelpEvent, HoverHelpEventListener> {

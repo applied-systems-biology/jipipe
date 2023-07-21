@@ -3,26 +3,19 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Export table", description = "Exports a results table to CSV/XLSX")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
@@ -49,10 +42,9 @@ public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {
         ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
-        if(getRuntimeProject() != null) {
+        if (getRuntimeProject() != null) {
             projectDataDirs = getRuntimeProject().getDirectoryMap();
-        }
-        else {
+        } else {
             projectDataDirs = Collections.emptyMap();
         }
         Path outputPath = filePath.generatePath(getFirstOutputSlot().getSlotStoragePath(),

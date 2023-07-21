@@ -42,9 +42,9 @@ public class GraphCompartmentCopyNodeUIContextAction implements NodeUIContextAct
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
         List<JIPipeExportedCompartment> compartments = new ArrayList<>();
         for (JIPipeGraphNodeUI ui : selection) {
-            if(!(ui.getNode() instanceof JIPipeProjectCompartment))
+            if (!(ui.getNode() instanceof JIPipeProjectCompartment))
                 continue;
-            if(ui.getNode().isUiLocked())
+            if (ui.getNode().isUiLocked())
                 continue;
             JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
             JIPipeExportedCompartment exportedCompartment = new JIPipeExportedCompartment(compartment);

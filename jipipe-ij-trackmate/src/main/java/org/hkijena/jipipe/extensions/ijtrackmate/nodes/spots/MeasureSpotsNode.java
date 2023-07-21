@@ -30,7 +30,7 @@ public class MeasureSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         SpotsCollectionData spotsCollectionData = dataBatch.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         ResultsTableData tableData = new ResultsTableData();
-        if(spotsCollectionData instanceof TrackCollectionData) {
+        if (spotsCollectionData instanceof TrackCollectionData) {
             TrackCollectionData trackCollectionData = (TrackCollectionData) spotsCollectionData;
             // Compute features
             trackCollectionData.computeTrackFeatures(progressInfo.resolve("Compute features"));
@@ -49,8 +49,7 @@ public class MeasureSpotsNode extends JIPipeSimpleIteratingAlgorithm {
                     }
                 }
             }
-        }
-        else {
+        } else {
             for (Spot spot : spotsCollectionData.getSpots().iterable(true)) {
                 int row = tableData.addRow();
                 tableData.setValueAt(spot.getName(), row, "Name");

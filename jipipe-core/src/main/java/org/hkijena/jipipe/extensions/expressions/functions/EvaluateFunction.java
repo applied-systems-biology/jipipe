@@ -26,7 +26,7 @@ public class EvaluateFunction extends ExpressionFunction {
     public static void parseVariableAssignment(ExpressionVariables source, ExpressionVariables target, String assignment) {
         int separatorIndex = assignment.indexOf('=');
         if (separatorIndex < 0) {
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext("Expression" ),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext("Expression"),
                     "Variable assignment '" + assignment + "' is invalid: Missing '='.",
                     "Invalid variable assignment expression!",
                     "You used an expression function that assigns variables. Variable assignments always have following format: [Variable name]=[Expression]. " +

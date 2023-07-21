@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.strings.datasources;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -9,7 +8,6 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.strings.XMLData;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 
 import java.io.IOException;
@@ -37,7 +35,7 @@ public class ImportXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         try {
             String data = new String(Files.readAllBytes(fileData.toPath()));
-            if(validateXml) {
+            if (validateXml) {
                 XmlUtils.readFromString(data);
             }
             dataBatch.addOutputData(getFirstOutputSlot(), new XMLData(data), progressInfo);

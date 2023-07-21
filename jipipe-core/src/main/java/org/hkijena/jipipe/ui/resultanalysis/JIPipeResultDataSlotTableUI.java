@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;

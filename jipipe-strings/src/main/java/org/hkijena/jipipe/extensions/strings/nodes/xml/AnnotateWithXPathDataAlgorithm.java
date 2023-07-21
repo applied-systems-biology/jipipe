@@ -22,7 +22,10 @@ import org.hkijena.jipipe.extensions.strings.XMLData;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Annotate with XML values", description = "Extracts a value from the input text data (via XPath) and annotates the data with the result. " +
         "Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn about XPath.")
@@ -111,6 +114,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         public Entry() {
         }
+
         public Entry(Entry other) {
             this.xPath = new DefaultExpressionParameter(other.xPath);
             this.annotationName = new DefaultExpressionParameter(other.annotationName);

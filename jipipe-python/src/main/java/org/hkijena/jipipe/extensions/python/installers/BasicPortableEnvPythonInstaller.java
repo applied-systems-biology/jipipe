@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.python.installers;
 
-import com.google.common.eventbus.EventBus;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.lang3.SystemUtils;

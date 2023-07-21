@@ -42,10 +42,9 @@ public class WeakStore<T> implements Store<T> {
     @Override
     public int hashCode() {
         T t = reference.get();
-        if(t != null) {
+        if (t != null) {
             return t.hashCode();
-        }
-        else {
+        } else {
             return 0;
         }
     }

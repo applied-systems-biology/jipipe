@@ -14,8 +14,6 @@
 
 package org.hkijena.jipipe.api.environments;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -36,7 +34,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Environment installer that extracts a premade package of the environment and generates the appropriate environment
@@ -252,8 +252,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         try {
             Path metadataPath = absoluteInstallationPath.resolve("jipipe-easyinstall-package.json");
             JsonUtils.saveToFile(targetPackage, metadataPath);
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             progressInfo.log("Could not write package metadata!");
             progressInfo.log(e.toString());
         }
@@ -362,6 +361,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
     /**
      * The message shown after the operation is finished
+     *
      * @return the message
      */
     public abstract HTMLText getFinishedMessage();

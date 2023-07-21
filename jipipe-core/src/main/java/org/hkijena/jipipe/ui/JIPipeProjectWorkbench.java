@@ -17,7 +17,6 @@ import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.JIPipeService;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -25,6 +24,7 @@ import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
@@ -133,8 +133,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
 
         // Register modification state watchers
-        project.getGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) ->  setProjectModified(true));
-        project.getCompartmentGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) ->  setProjectModified(true));
+        project.getGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) -> setProjectModified(true));
+        project.getCompartmentGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) -> setProjectModified(true));
 
         // Install the run notifier
         JIPipeRunQueueNotifier.install();

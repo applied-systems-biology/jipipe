@@ -2,14 +2,10 @@ package org.hkijena.jipipe.extensions.ijfilaments.display;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
-import customnode.CustomMesh;
-import customnode.CustomMultiMesh;
-import customnode.CustomTriangleMesh;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import ij.IJ;
 import ij.ImagePlus;
-import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import ij3d.Content;
 import ij3d.ContentCreator;
@@ -19,19 +15,15 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
-import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
-import org.hkijena.jipipe.extensions.ij3d.imageviewer.*;
-import org.hkijena.jipipe.extensions.ij3d.utils.Roi3DDrawer;
+import org.hkijena.jipipe.extensions.ij3d.imageviewer.Measurement3DSettings;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsExtension;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.settings.ImageViewerUIFilamentDisplaySettings;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentsDrawer;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel3D;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin3D;
 import org.hkijena.jipipe.extensions.imageviewer.utils.viewer3d.Image3DRenderType;
@@ -188,8 +180,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
                     copy.mergeWith(data);
                 }
                 return copy;
-            }
-            else {
+            } else {
                 Filaments3DData copy = new Filaments3DData();
                 for (Filaments3DData data : filamentsListControl.getSelectedValuesList()) {
                     copy.mergeWith(data);
@@ -381,6 +372,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
     public String getCategory() {
         return "Filaments";
     }
+
     @Override
     public Icon getCategoryIcon() {
         return FilamentsExtension.RESOURCES.getIconFromResources("data-type-filaments.png");
@@ -607,7 +599,7 @@ public class FilamentsManagerPlugin3D extends JIPipeImageViewerPlugin3D implemen
             ImagePlus render = IJ.createHyperStack("render", referenceImage.getWidth(), referenceImage.getHeight(),
                     referenceImage.getNChannels(), referenceImage.getNSlices(), referenceImage.getNFrames(), 24);
 
-            if(getProgressInfo().isCancelled())
+            if (getProgressInfo().isCancelled())
                 return;
 
             ImageJUtils.forEachIndexedZCTSlice(render, (ip, index) -> {

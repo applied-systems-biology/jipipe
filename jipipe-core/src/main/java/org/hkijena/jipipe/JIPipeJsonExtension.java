@@ -24,13 +24,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
@@ -52,18 +52,16 @@ import java.util.stream.Collectors;
  */
 @JsonDeserialize(as = JIPipeJsonExtension.class, using = JIPipeJsonExtension.Deserializer.class)
 public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection implements JIPipeExtension, JIPipeValidatable {
+    private final JIPipeService.ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new JIPipeService.ExtensionContentAddedEventEmitter();
+    private final JIPipeService.ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new JIPipeService.ExtensionContentRemovedEventEmitter();
     private String id;
     private String version = "1.0.0";
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private Path jsonFilePath;
     private JIPipe registry;
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependenciesParameter = new JIPipeImageJUpdateSiteDependency.List();
-
     private Set<JsonNodeInfo> nodeInfos = new HashSet<>();
     private JsonNode serializedJson;
-
-    private final JIPipeService.ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new JIPipeService.ExtensionContentAddedEventEmitter();
-    private final JIPipeService.ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new JIPipeService.ExtensionContentRemovedEventEmitter();
 
     /**
      * Creates a new instance
@@ -89,14 +87,6 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         }
     }
 
-    public JIPipeService.ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
-        return extensionContentAddedEventEmitter;
-    }
-
-    public JIPipeService.ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
-        return extensionContentRemovedEventEmitter;
-    }
-
     /**
      * Loads an extension from a file
      *
@@ -113,6 +103,14 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
                     "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
                     "Try to update JIPipe. If this does not work, contact the plugin's author.");
         }
+    }
+
+    public JIPipeService.ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
+        return extensionContentAddedEventEmitter;
+    }
+
+    public JIPipeService.ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
+        return extensionContentRemovedEventEmitter;
     }
 
     @Override

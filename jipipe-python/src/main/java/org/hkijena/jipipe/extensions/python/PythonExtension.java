@@ -143,7 +143,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     public static void createMissingLibJIPipePythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
-        if(!PythonAdapterExtensionSettings.pythonSettingsAreValid()) {
+        if (!PythonAdapterExtensionSettings.pythonSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":missing-lib-jipipe-python");
             notification.setHeading("Missing Python adapter library");
             notification.setDescription("To make use of Python within JIPipe, you need to install the JIPipe Python adapter. " +
@@ -275,7 +275,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void postprocess(JIPipeProgressInfo progressInfo) {
         createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
         createMissingLibJIPipePythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
-        if(PythonAdapterExtensionSettings.getInstance().isCheckForUpdates()) {
+        if (PythonAdapterExtensionSettings.getInstance().isCheckForUpdates()) {
             JIPipeRunnerQueue.getInstance().enqueue(new JIPipePythonAdapterUpdateChecker());
         }
     }

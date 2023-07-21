@@ -25,7 +25,10 @@ import net.imagej.updater.util.Progress;
 import net.imagej.updater.util.UpdaterUtil;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.*;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -81,8 +84,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -117,27 +120,19 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeGraphEditorToolRegistry graphEditorToolRegistry;
 
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
+    private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
+    private final ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new ExtensionContentAddedEventEmitter();
+    private final ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new ExtensionContentRemovedEventEmitter();
+    private final ExtensionDiscoveredEventEmitter extensionDiscoveredEventEmitter = new ExtensionDiscoveredEventEmitter();
+    private final ExtensionRegisteredEventEmitter extensionRegisteredEventEmitter = new ExtensionRegisteredEventEmitter();
+    private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
+    private final NodeTemplatesRefreshedEventEmitter nodeTemplatesRefreshedEventEmitter = new NodeTemplatesRefreshedEventEmitter();
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
     @Parameter
     private LogService logService;
-
     @Parameter
     private PluginService pluginService;
-
-    private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
-
-    private final ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new ExtensionContentAddedEventEmitter();
-
-    private final ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new ExtensionContentRemovedEventEmitter();
-
-    private final ExtensionDiscoveredEventEmitter extensionDiscoveredEventEmitter = new ExtensionDiscoveredEventEmitter();
-
-    private final ExtensionRegisteredEventEmitter extensionRegisteredEventEmitter = new ExtensionRegisteredEventEmitter();
-
-    private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
-
-    private final NodeTemplatesRefreshedEventEmitter nodeTemplatesRefreshedEventEmitter = new NodeTemplatesRefreshedEventEmitter();
 
     public JIPipe() {
         nodeRegistry = new JIPipeNodeRegistry(this);
@@ -209,40 +204,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     public static JIPipeDatatypeRegistry getDataTypes() {
         return instance.datatypeRegistry;
-    }
-
-    public NodeTemplatesRefreshedEventEmitter getNodeTemplatesRefreshedEventEmitter() {
-        return nodeTemplatesRefreshedEventEmitter;
-    }
-
-    @Override
-    public DatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
-        return datatypeRegisteredEventEmitter;
-    }
-
-    @Override
-    public ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
-        return extensionContentAddedEventEmitter;
-    }
-
-    @Override
-    public ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
-        return extensionContentRemovedEventEmitter;
-    }
-
-    @Override
-    public ExtensionDiscoveredEventEmitter getExtensionDiscoveredEventEmitter() {
-        return extensionDiscoveredEventEmitter;
-    }
-
-    @Override
-    public ExtensionRegisteredEventEmitter getExtensionRegisteredEventEmitter() {
-        return extensionRegisteredEventEmitter;
-    }
-
-    @Override
-    public NodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter() {
-        return nodeInfoRegisteredEventEmitter;
     }
 
     /**
@@ -573,6 +534,40 @@ public class JIPipe extends AbstractService implements JIPipeService {
         return false;
     }
 
+    public NodeTemplatesRefreshedEventEmitter getNodeTemplatesRefreshedEventEmitter() {
+        return nodeTemplatesRefreshedEventEmitter;
+    }
+
+    @Override
+    public DatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
+        return datatypeRegisteredEventEmitter;
+    }
+
+    @Override
+    public ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
+        return extensionContentAddedEventEmitter;
+    }
+
+    @Override
+    public ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
+        return extensionContentRemovedEventEmitter;
+    }
+
+    @Override
+    public ExtensionDiscoveredEventEmitter getExtensionDiscoveredEventEmitter() {
+        return extensionDiscoveredEventEmitter;
+    }
+
+    @Override
+    public ExtensionRegisteredEventEmitter getExtensionRegisteredEventEmitter() {
+        return extensionRegisteredEventEmitter;
+    }
+
+    @Override
+    public NodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter() {
+        return nodeInfoRegisteredEventEmitter;
+    }
+
     public JIPipeExpressionRegistry getTableOperationRegistry() {
         return tableOperationRegistry;
     }
@@ -643,12 +638,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 if (!isValidExtensionId(extension.getDependencyId())) {
                     System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
                     progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
-                }
-                else {
-                    if(!allJavaExtensionsByID.containsKey(extension.getDependencyId())) {
+                } else {
+                    if (!allJavaExtensionsByID.containsKey(extension.getDependencyId())) {
                         allJavaExtensionsByID.put(extension.getDependencyId(), extension);
-                    }
-                    else {
+                    } else {
                         System.err.println("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder");
                         progressInfo.log("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder");
                     }
@@ -668,16 +661,16 @@ public class JIPipe extends AbstractService implements JIPipeService {
             impliedLoadedJavaExtensionsChanged = false;
             for (JIPipeJavaExtension extension : allJavaExtensionInstances) {
                 if (extension.isCoreExtension() || extensionRegistry.getStartupExtensions().contains(extension.getDependencyId()) || impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
-                    if(isValidExtensionId(extension.getDependencyId())) {
-                        if(!impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
+                    if (isValidExtensionId(extension.getDependencyId())) {
+                        if (!impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
                             progressInfo.log("-> Core/User: " + extension.getDependencyId());
                             impliedLoadedJavaExtensions.add(extension.getDependencyId());
                             impliedLoadedJavaExtensionsChanged = true;
                         }
                     }
                     for (JIPipeDependency dependency : extension.getDependencies()) {
-                        if(isValidExtensionId(dependency.getDependencyId())) {
-                            if(!impliedLoadedJavaExtensions.contains(dependency.getDependencyId())) {
+                        if (isValidExtensionId(dependency.getDependencyId())) {
+                            if (!impliedLoadedJavaExtensions.contains(dependency.getDependencyId())) {
                                 impliedLoadedJavaExtensions.add(dependency.getDependencyId());
                                 impliedLoadedJavaExtensionsChanged = true;
                                 progressInfo.log("-> Required by " + extension.getDependencyId() + ": " + dependency.getDependencyId());
@@ -717,7 +710,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                                 null));
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
                         loadedJavaExtensions.add(null);
-                        if(!StringUtils.isNullOrEmpty(extension.getDependencyId())) {
+                        if (!StringUtils.isNullOrEmpty(extension.getDependencyId())) {
                             progressInfo.log("Extension with ID " + extension.getDependencyId() + " was removed from the list of activated extensions");
                             extensionRegistry.getSettings().getActivatedExtensions().remove(extension.getDependencyId());
                             preActivationScheduledSave = true;
@@ -742,7 +735,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         }
 
         // Save extension settings
-        if(preActivationScheduledSave) {
+        if (preActivationScheduledSave) {
             extensionRegistry.save();
         }
 
@@ -853,12 +846,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
             long lastTime = System.currentTimeMillis();
             long maxDifference = Math.max(0, autoSaveSettings.getMaxBackupCheckTimeSeconds() * 1000);
             for (Path path : autoSaveSettings.getLastBackups()) {
-                if(!Files.exists(path)) {
+                if (!Files.exists(path)) {
                     invalidBackups.add(path);
                 }
                 long currentTime = System.currentTimeMillis();
                 long timeDifference = currentTime - lastTime;
-                if(maxDifference > 0 && timeDifference > maxDifference) {
+                if (maxDifference > 0 && timeDifference > maxDifference) {
 
                     progressInfo.log("Backup checking was cancelled. The time of " + (timeDifference / 1000.0) + " exceeded " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s");
 
@@ -868,7 +861,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     notification.setDescription("Checking the backups took " + (timeDifference / 1000.0) + "s, which is higher than the limit of " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s.\n\n" +
                             "You might want to clean your backups by cleaning duplicate backups. If this does not help, you can also open the backup directory manually.\n\n" +
                             "The limit can be changed by navigating to Project/Application settings/General/Backup/Maximum backup checking time (s)");
-                    notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the message", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {}));
+                    notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the message", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {
+                    }));
                     notification.getActions().add(new JIPipeNotificationAction("Remove duplicate backups", "Opens a tool to detect and remove duplicate backups", UIUtils.getIconFromResources("actions/clear-brush.png"),
                             workbench -> AutoSaveSettings.getInstance().removeDuplicateBackups(workbench)));
                     notification.getActions().add(new JIPipeNotificationAction("Open backup directory", "Opens the directory that contains the backups", UIUtils.getIconFromResources("actions/folder-open.png"),

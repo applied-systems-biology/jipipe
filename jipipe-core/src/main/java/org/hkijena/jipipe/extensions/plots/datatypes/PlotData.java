@@ -21,11 +21,16 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeCommonData;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorListParameter;
@@ -459,10 +464,10 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
 
     @Override
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if(exportWidth <= 0) {
+        if (exportWidth <= 0) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Export width is too small!", "The export width must be at least 1"));
         }
-        if(exportHeight <= 0) {
+        if (exportHeight <= 0) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Export height is too small!", "The export height must be at least 1"));
         }
     }

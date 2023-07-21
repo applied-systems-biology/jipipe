@@ -17,13 +17,13 @@ import com.google.common.collect.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeService;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -313,7 +313,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
      * @param nodeTemplate the node template that contains the node example
      */
     public void registerTemplate(JIPipeNodeTemplate nodeTemplate) {
-        if(nodeTemplate.getGraph() != null) {
+        if (nodeTemplate.getGraph() != null) {
             nodeTemplate.setSource(JIPipeNodeTemplate.SOURCE_EXTENSION);
             registeredTemplates.add(nodeTemplate);
             jiPipe.getProgressInfo().log("Registered extension-provided template '" + nodeTemplate.getName() + "'");

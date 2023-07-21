@@ -63,6 +63,7 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
     private final Ribbon ribbon = new Ribbon(3);
     private final List<MaskDrawer2DTool> registeredTools = new ArrayList<>();
     private final FormPanel toolSettingsPanel = new FormPanel(FormPanel.NONE);
+    private final MaskChangedEventEmitter maskChangedEventEmitter = new MaskChangedEventEmitter();
     private ImagePlus mask;
     private ImageProcessor currentMaskSlice;
     private BufferedImage currentMaskSlicePreview;
@@ -75,8 +76,6 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
     private Function<ImagePlus, ImagePlus> maskGenerator;
     private SmallButtonAction exportToRoiManagerAction;
     private boolean drawCurrentMaskSlicePreview;
-
-    private final MaskChangedEventEmitter maskChangedEventEmitter = new MaskChangedEventEmitter();
 
     public MaskDrawerPlugin2D(JIPipeImageViewer viewerPanel) {
         super(viewerPanel);
@@ -761,6 +760,10 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
         }
     }
 
+    public interface MaskChangedEventListener {
+        void onMaskDrawerPluginMaskChanged(MaskChangedEvent event);
+    }
+
     public static class MaskChangedEvent extends AbstractJIPipeEvent {
         private final MaskDrawerPlugin2D plugin;
 
@@ -772,10 +775,6 @@ public class MaskDrawerPlugin2D extends JIPipeImageViewerPlugin2D implements Ima
         public MaskDrawerPlugin2D getPlugin() {
             return plugin;
         }
-    }
-
-    public interface MaskChangedEventListener {
-        void onMaskDrawerPluginMaskChanged(MaskChangedEvent event);
     }
 
     public static class MaskChangedEventEmitter extends JIPipeEventEmitter<MaskChangedEvent, MaskChangedEventListener> {

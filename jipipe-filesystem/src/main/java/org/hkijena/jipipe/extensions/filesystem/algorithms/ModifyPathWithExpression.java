@@ -43,7 +43,7 @@ public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
         variables.set("path", StringUtils.nullToEmpty(path));
 
         Object result = expression.evaluate(variables);
-        if(result != null) {
+        if (result != null) {
             Path outputPath = Paths.get(StringUtils.nullToEmpty(result));
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(outputPath), progressInfo);
         }

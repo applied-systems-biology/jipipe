@@ -8,8 +8,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 
 public class JIPipeDataExporterRun extends AbstractJIPipeRunnable {
-    private JIPipeData data;
     private final Path outputDirectory;
+    private JIPipeData data;
     private String name;
 
     public JIPipeDataExporterRun(JIPipeData data, Path outputDirectory, String name) {
@@ -32,13 +32,12 @@ public class JIPipeDataExporterRun extends AbstractJIPipeRunnable {
     @Override
     public void run() {
         try {
-            if(StringUtils.isNullOrEmpty(name)) {
+            if (StringUtils.isNullOrEmpty(name)) {
                 name = "untitled";
             }
             getProgressInfo().log("Exporting " + data + " to " + outputDirectory + " as " + name);
             data.exportData(new JIPipeFileSystemWriteDataStorage(getProgressInfo(), outputDirectory), name, true, getProgressInfo());
-        }
-        finally {
+        } finally {
             data = null;
         }
     }

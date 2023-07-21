@@ -18,12 +18,15 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEnumParameter;
@@ -39,13 +42,13 @@ import java.util.*;
  * Info of a {@link GraphWrapperAlgorithm}
  */
 public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements JIPipeNodeInfo, JIPipeValidatable, JIPipeGraph.GraphChangedEventListener {
+    private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
+    private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
+    private final Map<JIPipeDataSlot, String> exportedSlotNames = new HashMap<>();
     private String id;
     private String name;
     private HTMLText description = new HTMLText();
-    private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
-    private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private JIPipeGraph graph = new JIPipeGraph();
-    private final Map<JIPipeDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringList menuPath = new StringList();
     private boolean hidden = false;
     private IconRef customIcon = new IconRef();

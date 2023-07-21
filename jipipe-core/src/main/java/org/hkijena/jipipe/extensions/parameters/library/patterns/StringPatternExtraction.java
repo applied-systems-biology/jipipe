@@ -127,7 +127,7 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         switch (mode) {
             case SplitAndPick:
-                if(StringUtils.isNullOrEmpty(splitCharacter)) {
+                if (StringUtils.isNullOrEmpty(splitCharacter)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                             new CustomValidationReportContext(context, "Split character"),
                             "Empty split character!",
@@ -135,13 +135,13 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
                 }
                 break;
             case SplitAndFind:
-                if(StringUtils.isNullOrEmpty(splitCharacter)) {
+                if (StringUtils.isNullOrEmpty(splitCharacter)) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                             new CustomValidationReportContext(context, "Split character"),
                             "Empty split character!",
                             "The split character cannot be empty!"));
                 }
-                if(splitPickedIndex < 0) {
+                if (splitPickedIndex < 0) {
                     report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                             new CustomValidationReportContext(context, "Selected index"),
                             "Negative selected index!",

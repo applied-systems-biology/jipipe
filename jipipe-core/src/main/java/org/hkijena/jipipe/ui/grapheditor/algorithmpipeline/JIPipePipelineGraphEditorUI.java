@@ -420,7 +420,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
     }
 
 
-
     @Override
     public void onDefaultNodeUIActionRequested(JIPipeGraphNodeUI.DefaultNodeUIActionRequestedEvent event) {
         if (event.getUi().getNode() instanceof NodeGroup) {

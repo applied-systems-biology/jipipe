@@ -17,7 +17,6 @@ import java.util.ArrayList;
 
 /**
  * Report about the validity of an object, usually a {@link JIPipeValidatable}
- *
  */
 public class JIPipeValidationReport extends ArrayList<JIPipeValidationReportEntry> {
 
@@ -43,7 +42,7 @@ public class JIPipeValidationReport extends ArrayList<JIPipeValidationReportEntr
     /**
      * Reports a {@link JIPipeValidatable} into this report
      *
-     * @param context the context
+     * @param context     the context
      * @param validatable the validatable
      */
     public void report(JIPipeValidationReportContext context, JIPipeValidatable validatable) {

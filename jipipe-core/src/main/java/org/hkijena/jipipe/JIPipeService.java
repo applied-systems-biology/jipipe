@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe;
 
-import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.registries.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.scijava.service.Service;
 
@@ -73,6 +73,30 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     NodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter();
 
+    public interface DatatypeRegisteredEventListener {
+        void onJIPipeDatatypeRegistered(DatatypeRegisteredEvent event);
+    }
+
+    public interface ExtensionContentAddedEventListener {
+        void onJIPipeExtensionContentAdded(ExtensionContentAddedEvent event);
+    }
+
+    public interface ExtensionContentRemovedEventListener {
+        void onJIPipeExtensionContentRemoved(ExtensionContentRemovedEvent event);
+    }
+
+    public interface ExtensionDiscoveredEventListener {
+        void onJIPipeExtensionDiscovered(ExtensionDiscoveredEvent event);
+    }
+
+    public interface ExtensionRegisteredEventListener {
+        void onJIPipeExtensionRegistered(ExtensionRegisteredEvent event);
+    }
+
+    public interface NodeInfoRegisteredEventListener {
+        void onJIPipeNodeInfoRegistered(NodeInfoRegisteredEvent event);
+    }
+
     /**
      * Triggered when a new data type is registered
      */
@@ -93,10 +117,6 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         public String getId() {
             return id;
         }
-    }
-
-    public interface DatatypeRegisteredEventListener {
-        void onJIPipeDatatypeRegistered(DatatypeRegisteredEvent event);
     }
 
     public static class DatatypeRegisteredEventEmitter extends JIPipeEventEmitter<DatatypeRegisteredEvent, DatatypeRegisteredEventListener> {
@@ -132,10 +152,6 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public interface ExtensionContentAddedEventListener {
-        void onJIPipeExtensionContentAdded(ExtensionContentAddedEvent event);
-    }
-
     public static class ExtensionContentAddedEventEmitter extends JIPipeEventEmitter<ExtensionContentAddedEvent, ExtensionContentAddedEventListener> {
         @Override
         protected void call(ExtensionContentAddedEventListener extensionContentAddedEventListener, ExtensionContentAddedEvent event) {
@@ -169,10 +185,6 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public interface ExtensionContentRemovedEventListener {
-        void onJIPipeExtensionContentRemoved(ExtensionContentRemovedEvent event);
-    }
-
     public static class ExtensionContentRemovedEventEmitter extends JIPipeEventEmitter<ExtensionContentRemovedEvent, ExtensionContentRemovedEventListener> {
 
         @Override
@@ -201,10 +213,6 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         public JIPipeDependency getExtension() {
             return extension;
         }
-    }
-
-    public interface ExtensionDiscoveredEventListener {
-        void onJIPipeExtensionDiscovered(ExtensionDiscoveredEvent event);
     }
 
     public static class ExtensionDiscoveredEventEmitter extends JIPipeEventEmitter<ExtensionDiscoveredEvent, ExtensionDiscoveredEventListener> {
@@ -241,10 +249,6 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         }
     }
 
-    public interface ExtensionRegisteredEventListener {
-        void onJIPipeExtensionRegistered(ExtensionRegisteredEvent event);
-    }
-
     public static class ExtensionRegisteredEventEmitter extends JIPipeEventEmitter<ExtensionRegisteredEvent, ExtensionRegisteredEventListener> {
 
         @Override
@@ -274,10 +278,6 @@ public interface JIPipeService extends Service, JIPipeValidatable {
         public JIPipeNodeInfo getNodeInfo() {
             return nodeInfo;
         }
-    }
-
-    public interface NodeInfoRegisteredEventListener {
-        void onJIPipeNodeInfoRegistered(NodeInfoRegisteredEvent event);
     }
 
     public static class NodeInfoRegisteredEventEmitter extends JIPipeEventEmitter<NodeInfoRegisteredEvent, NodeInfoRegisteredEventListener> {

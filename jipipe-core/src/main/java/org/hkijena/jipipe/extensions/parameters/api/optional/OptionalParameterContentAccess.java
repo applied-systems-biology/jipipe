@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.parameters.api.optional;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;

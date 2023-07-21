@@ -4,10 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
@@ -15,8 +12,6 @@ import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorPara
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalFloatParameter;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
-import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;
-import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DUnindexedMeshGeometry;
 
 import java.awt.*;
 import java.util.Set;
@@ -184,7 +179,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Filaments3DData inputData = dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo);
         Scene3DData scene3DData = new Scene3DData();
-        if(splitIntoConnectedComponents) {
+        if (splitIntoConnectedComponents) {
             for (Set<FilamentVertex> connectedSet : inputData.getConnectivityInspector().connectedSets()) {
                 Filaments3DData component = inputData.extractShallowCopy(connectedSet);
                 scene3DData.add(component.toScene3D(withVertices,
@@ -198,8 +193,7 @@ public class ConvertFilamentsTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgo
                         overrideEdgeColor.getContentOrDefault(null),
                         meshNamePrefix));
             }
-        }
-        else {
+        } else {
             scene3DData.add(inputData.toScene3D(withVertices,
                     withEdges,
                     physicalSizes,

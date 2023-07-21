@@ -24,6 +24,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
     public ParameterCollectionList getDirectories() {
         return directories;
     }
+
     @JIPipeParameter("user-directories")
     @JsonSetter("user-directories")
     public void setDirectories(ParameterCollectionList directories) {
@@ -32,15 +33,16 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
 
     /**
      * Gets a map of user-defined directories
+     *
      * @return the directories
      */
     public Map<String, Path> getDirectoryMap(Path projectDir) {
         Map<String, Path> result = new HashMap<>();
         for (DirectoryEntry directoryEntry : directories.mapToCollection(DirectoryEntry.class)) {
-            if(!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+            if (!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
                 Path path = directoryEntry.path;
-                if(path != null && !StringUtils.isNullOrEmpty(path.toString())) {
-                    if(projectDir != null && projectDir.isAbsolute() && !path.isAbsolute()) {
+                if (path != null && !StringUtils.isNullOrEmpty(path.toString())) {
+                    if (projectDir != null && projectDir.isAbsolute() && !path.isAbsolute()) {
                         path = projectDir.resolve(path);
                     }
                 }

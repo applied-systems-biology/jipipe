@@ -59,11 +59,6 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         allowedOutputSlotTypes = new HashSet<>(JIPipe.getDataTypes().getUnhiddenRegisteredDataTypes().values());
     }
 
-    @Override
-    public SlotConfigurationChangedEventEmitter getSlotConfigurationChangedEventEmitter() {
-        return slotConfigurationChangedEventEmitter;
-    }
-
     /**
      * Returns a collection of all unhidden slot data types
      *
@@ -78,6 +73,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
      */
     public static Builder builder() {
         return new Builder();
+    }
+
+    @Override
+    public SlotConfigurationChangedEventEmitter getSlotConfigurationChangedEventEmitter() {
+        return slotConfigurationChangedEventEmitter;
     }
 
     /**
@@ -120,32 +120,32 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
                         "The algorithm is configured to not accept this type of slot.",
                         "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Input && !allowInputSlots)
-                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot configuration does not allow input slots",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to add slot: slot configuration does not allow input slots",
                         "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Input && inputSlotsSealed)
-                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot configuration is sealed!",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to add slot: slot configuration is sealed!",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Input &&
                     inputSlotOrder.size() >= maxInputSlots)
-                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot already reached the limit of input slots!",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to add slot: slot already reached the limit of input slots!",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Output &&
                     !allowedOutputSlotTypes.contains(definition.getDataClass()))
-                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot type is not accepted by this configuration!",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to add slot: slot type is not accepted by this configuration!",
                         "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Output && !allowOutputSlots)
-                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot configuration does not allow output slots",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to add slot: slot configuration does not allow output slots",
                         "The algorithm is configured to not accept this type of slot.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Output && outputSlotsSealed)
-                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot configuration is sealed!",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to add slot: slot configuration is sealed!",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
             if (definition.getSlotType() == JIPipeSlotType.Output &&
                     outputSlotOrder.size() >= maxOutputSlots)
-                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot already reached the limit of output slots!",
+                throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to add slot: slot already reached the limit of output slots!",
                         "The algorithm is configured to not accept any more slots of this type.", "Contact the authors of the plugin that provides the algorithm.");
         }
         if ((definition.isInput() && hasInputSlot(name)) || (definition.isOutput() && hasOutputSlot(name)))
-            throw new JIPipeValidationRuntimeException(new IllegalArgumentException(),"Unable to add slot: slot already exists!",
+            throw new JIPipeValidationRuntimeException(new IllegalArgumentException(), "Unable to add slot: slot already exists!",
                     "There is already a slot with the same name.", "Slot names have to be unique across input and output slots. Please choose another name.");
 
 

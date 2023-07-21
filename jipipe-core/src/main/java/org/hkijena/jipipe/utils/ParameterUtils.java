@@ -15,13 +15,13 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonDeserializable;
@@ -42,10 +42,10 @@ public class ParameterUtils {
     /**
      * Deserializes parameters from JSON
      *
-     * @param target      the target object that contains the parameters
-     * @param node        the JSON node
+     * @param target  the target object that contains the parameters
+     * @param node    the JSON node
      * @param context the context
-     * @param issues      issues during deserialization
+     * @param issues  issues during deserialization
      */
     public static void deserializeParametersFromJson(JIPipeParameterCollection target, JsonNode node, JIPipeValidationReportContext context, JIPipeValidationReport issues) {
         AtomicBoolean changedStructure = new AtomicBoolean();

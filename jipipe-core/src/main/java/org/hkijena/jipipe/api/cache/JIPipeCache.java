@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.cache;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -52,6 +51,18 @@ public interface JIPipeCache {
 
     ModifiedEventEmitter getModifiedEventEmitter();
 
+    interface StoredEventListener {
+        void onCacheStoredEvent(StoredEvent event);
+    }
+
+    interface ClearedEventListener {
+        void onCacheClearedEvent(ClearedEvent event);
+    }
+
+    interface ModifiedEventListener {
+        void onCacheModified(ModifiedEvent event);
+    }
+
     class StoredEvent extends AbstractJIPipeEvent {
         private final JIPipeCache cache;
         private final UUID nodeUUID;
@@ -83,10 +94,6 @@ public interface JIPipeCache {
         }
     }
 
-    interface StoredEventListener {
-        void onCacheStoredEvent(StoredEvent event);
-    }
-
     class StoredEventEmitter extends JIPipeEventEmitter<StoredEvent, StoredEventListener> {
 
         @Override
@@ -114,10 +121,6 @@ public interface JIPipeCache {
         }
     }
 
-    interface ClearedEventListener {
-        void onCacheClearedEvent(ClearedEvent event);
-    }
-
     class ClearedEventEmitter extends JIPipeEventEmitter<ClearedEvent, ClearedEventListener> {
         @Override
         protected void call(ClearedEventListener clearedEventListener, ClearedEvent event) {
@@ -136,10 +139,6 @@ public interface JIPipeCache {
         public JIPipeCache getCache() {
             return cache;
         }
-    }
-
-    interface ModifiedEventListener {
-        void onCacheModified(ModifiedEvent event);
     }
 
     class ModifiedEventEmitter extends JIPipeEventEmitter<ModifiedEvent, ModifiedEventListener> {

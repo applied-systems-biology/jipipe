@@ -184,7 +184,7 @@ public class ExpressionBuilderUI extends JPanel {
         expressionEditor.setHighlightCurrentLine(false);
         JPanel expressionEditorPanel = new JPanel(new BorderLayout());
         expressionEditorPanel.setPreferredSize(new Dimension(256, 128));
-        expressionEditorPanel.setMinimumSize(new Dimension(256,128));
+        expressionEditorPanel.setMinimumSize(new Dimension(256, 128));
         expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
         expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
         contentPanel.add(expressionEditorPanel, BorderLayout.SOUTH);
@@ -233,7 +233,7 @@ public class ExpressionBuilderUI extends JPanel {
 
     private void insertPath() {
         Path path = FileChooserSettings.openPath(this, FileChooserSettings.LastDirectoryKey.Data, "Insert path");
-        if(path != null) {
+        if (path != null) {
             insertAtCaret(path.toString().replace('\\', '/'), false);
         }
     }

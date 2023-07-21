@@ -5,7 +5,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 /**
  * A {@link JIPipeValidationReportContext} that can navigate to an UI element
  */
-public abstract class NavigableJIPipeValidationReportContext extends JIPipeValidationReportContext{
+public abstract class NavigableJIPipeValidationReportContext extends JIPipeValidationReportContext {
 
     public NavigableJIPipeValidationReportContext() {
     }

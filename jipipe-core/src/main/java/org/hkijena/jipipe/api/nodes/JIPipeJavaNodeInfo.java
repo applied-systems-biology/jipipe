@@ -192,7 +192,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                  InvocationTargetException e) {
             throw new JIPipeValidationRuntimeException(e, "Unable to create a node instance!",
-                   "There is a programming error in an node's code.",
+                    "There is a programming error in an node's code.",
                     "Please contact the developer of the plugin that created the node.");
         }
     }

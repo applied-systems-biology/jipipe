@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.running;
 
-import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;

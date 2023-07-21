@@ -18,12 +18,12 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.APIErrorValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.ParameterUtils;
@@ -41,9 +41,8 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     private final JIPipeGraphNode algorithm;
     private final Map<String, ImageJDataImportOperation> inputSlotImporters = new HashMap<>();
     private final Map<String, ImageJDataExportOperation> outputSlotExporters = new HashMap<>();
-    private int numThreads = 1;
-
     private final JIPipeGraphNode.NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new JIPipeGraphNode.NodeSlotsChangedEventEmitter();
+    private int numThreads = 1;
 
     public SingleImageJAlgorithmRunConfiguration(String nodeId, String parameters, String inputs, String outputs, int threads) {
         this.algorithm = JIPipe.createNode(nodeId);

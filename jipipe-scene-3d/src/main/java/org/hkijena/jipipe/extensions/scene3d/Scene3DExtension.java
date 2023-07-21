@@ -1,30 +1,23 @@
 package org.hkijena.jipipe.extensions.clij2;
 
-import net.imagej.updater.UpdateSite;
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.*;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.nodes.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
-import org.scijava.plugin.PluginService;
 
-import javax.swing.*;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 @Plugin(type = JIPipeJavaExtension.class)
@@ -71,6 +64,7 @@ public class Scene3DExtension extends JIPipePrepackagedDefaultJavaExtension {
     public HTMLText getDescription() {
         return new HTMLText("Allows to create and export 3D scenes.");
     }
+
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("scene-3d", Scene3DData.class, RESOURCES.getIcon16URLFromResources("data-type-scene3d.png"));

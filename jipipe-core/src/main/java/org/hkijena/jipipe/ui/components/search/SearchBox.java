@@ -186,6 +186,10 @@ public class SearchBox<T> extends JPanel {
         this.dataToString = dataToString;
     }
 
+    public interface SelectedEventListener<T> {
+        void onSearchBoxSelectedEvent(SelectedEvent<T> event);
+    }
+
     /**
      * Model that implements filtering
      *
@@ -338,10 +342,6 @@ public class SearchBox<T> extends JPanel {
         public T getValue() {
             return value;
         }
-    }
-
-    public interface SelectedEventListener<T> {
-        void onSearchBoxSelectedEvent(SelectedEvent<T> event);
     }
 
     public static class SelectedEventEmitter<T> extends JIPipeEventEmitter<SelectedEvent<T>, SelectedEventListener<T>> {

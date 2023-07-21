@@ -16,8 +16,8 @@ package org.hkijena.jipipe.extensions.tables.parameters.enums;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.tables.ColumnContentType;
 
@@ -74,9 +74,9 @@ public class TableColumnGeneratorParameter implements JIPipeValidatable {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if(getGeneratorType().getInfo() == null) {
+        if (getGeneratorType().getInfo() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                   context,
+                    context,
                     "Generator not selected!",
                     "Please select a generator"));
         }

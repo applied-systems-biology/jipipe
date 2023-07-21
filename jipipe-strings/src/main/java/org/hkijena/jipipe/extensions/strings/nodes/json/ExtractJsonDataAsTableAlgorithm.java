@@ -8,7 +8,6 @@ import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -68,17 +67,15 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
             String columnName = entry.getColumnName().evaluateToString(variables);
             String columnValue = StringUtils.nullToEmpty(documentContext.read(path));
 
-            if(!StringUtils.isNullOrEmpty(columnValue)) {
+            if (!StringUtils.isNullOrEmpty(columnValue)) {
                 JsonNode jsonNode = JsonUtils.readFromString(columnValue, JsonNode.class);
-                if(jsonNode.isArray()) {
+                if (jsonNode.isArray()) {
                     List<String> values = ImmutableList.copyOf(jsonNode.elements()).stream().map(JsonUtils::toJsonString).collect(Collectors.toList());
                     columns.add(TableColumn.fromList(values, columnName));
-                }
-                else {
+                } else {
                     columns.add(TableColumn.fromList(Collections.singleton(columnValue), columnName));
                 }
-            }
-            else {
+            } else {
                 columns.add(new StringArrayTableColumn(new String[0], columnName));
             }
         }
@@ -117,6 +114,7 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
 
         public Entry() {
         }
+
         public Entry(Entry other) {
             this.jsonPath = new DefaultExpressionParameter(other.jsonPath);
             this.columnName = new DefaultExpressionParameter(other.columnName);

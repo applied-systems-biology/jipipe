@@ -12,8 +12,6 @@
 
 package org.hkijena.jipipe.utils;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.sun.jna.Pointer;
 import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
@@ -424,6 +422,10 @@ public class ProcessUtils {
             return cancelledEventEmitter;
         }
 
+        public interface CancelledEventListener {
+            void onCancelled(CancelledEvent event);
+        }
+
         public static class CancelledEvent extends AbstractJIPipeEvent {
             private final RunCancellationWatchdog watchdog;
 
@@ -435,10 +437,6 @@ public class ProcessUtils {
             public RunCancellationWatchdog getWatchdog() {
                 return watchdog;
             }
-        }
-
-        public interface CancelledEventListener {
-            void onCancelled(CancelledEvent event);
         }
 
         public static class CancelledEventEmitter extends JIPipeEventEmitter<CancelledEvent, CancelledEventListener> {

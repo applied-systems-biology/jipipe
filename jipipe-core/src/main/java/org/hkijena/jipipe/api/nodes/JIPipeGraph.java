@@ -25,7 +25,9 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
+import org.hkijena.jipipe.api.JIPipeGraphType;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -67,23 +69,21 @@ import java.util.stream.Collectors;
 @JsonDeserialize(using = JIPipeGraph.Deserializer.class)
 public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyComparable, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener {
 
-    private DefaultDirectedGraph<JIPipeDataSlot, JIPipeGraphEdge> graph = new DefaultDirectedGraph<>(JIPipeGraphEdge.class);
     private final BiMap<UUID, String> nodeAliasIds = HashBiMap.create();
     private final Map<UUID, UUID> nodeCompartmentUUIDs = new HashMap<>();
     private final Map<UUID, Set<UUID>> nodeVisibleCompartmentUUIDs = new HashMap<>();
     private final Map<UUID, String> nodeLegacyCompartmentIDs = new HashMap<>();
     private final BiMap<UUID, JIPipeGraphNode> nodeUUIDs = HashBiMap.create();
-    private List<JIPipeDataSlot> traversedSlots;
-    private List<JIPipeGraphNode> traversedAlgorithms;
-    private Map<Class<?>, Object> attachments = new HashMap<>();
-    private Map<String, Object> additionalMetadata = new HashMap<>();
-
     private final JIPipeParameterCollection.ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new JIPipeParameterCollection.ParameterStructureChangedEventEmitter();
     private final GraphChangedEventEmitter graphChangedEventEmitter = new GraphChangedEventEmitter();
     private final NodeConnectedEventEmitter nodeConnectedEventEmitter = new NodeConnectedEventEmitter();
     private final NodeDisconnectedEventEmitter nodeDisconnectedEventEmitter = new NodeDisconnectedEventEmitter();
     private final JIPipeGraphNode.NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new JIPipeGraphNode.NodeSlotsChangedEventEmitter();
-
+    private DefaultDirectedGraph<JIPipeDataSlot, JIPipeGraphEdge> graph = new DefaultDirectedGraph<>(JIPipeGraphEdge.class);
+    private List<JIPipeDataSlot> traversedSlots;
+    private List<JIPipeGraphNode> traversedAlgorithms;
+    private Map<Class<?>, Object> attachments = new HashMap<>();
+    private Map<String, Object> additionalMetadata = new HashMap<>();
     /**
      * If this value is greater than one, no events are triggered
      */
@@ -925,7 +925,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * Loads this graph from JSON
      *
      * @param jsonNode      JSON data
-     * @param context the context for the issue reporting
+     * @param context       the context for the issue reporting
      * @param issues        issues reported during deserializing
      * @param notifications notifications for the user
      */
@@ -1149,7 +1149,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      *
      * @param nodes        the nodes
      * @param withInternal also copy internal algorithms
-     * @param skipLocked skip locked nodes
+     * @param skipLocked   skip locked nodes
      * @return graph that only contains the selected algorithms, UUIDs are the same between the original and copies
      */
     public JIPipeGraph extract(Collection<JIPipeGraphNode> nodes, boolean withInternal, boolean skipLocked) {
@@ -1157,7 +1157,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         for (JIPipeGraphNode node : nodes) {
             if (!withInternal && !node.getCategory().canExtract())
                 continue;
-            if(node.isUiLocked() && skipLocked)
+            if (node.isUiLocked() && skipLocked)
                 continue;
             String compartment = StringUtils.nullToEmpty(getCompartmentUUIDOf(node));
             JIPipeGraphNode copy = node.getInfo().duplicate(node);
@@ -1446,9 +1446,9 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     /**
      * Reports the validity for the target node and its dependencies
      *
-     * @param context the context
-     * @param report      the report
-     * @param targetNode  the target node
+     * @param context    the context
+     * @param report     the report
+     * @param targetNode the target node
      */
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode) {
         reportValidity(context, report, targetNode, Collections.emptySet());
@@ -1457,10 +1457,10 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     /**
      * Reports the validity for the target node and its dependencies
      *
-     * @param context the context
-     * @param report      the report
-     * @param targetNode  the target node
-     * @param satisfied   all algorithms that are considered to have a satisfied input
+     * @param context    the context
+     * @param report     the report
+     * @param targetNode the target node
+     * @param satisfied  all algorithms that are considered to have a satisfied input
      */
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode, Set<JIPipeGraphNode> satisfied) {
         List<JIPipeGraphNode> predecessorAlgorithms = getPredecessorAlgorithms(targetNode, traverse());
@@ -1924,6 +1924,18 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         disconnect(connection.getSource(), connection.getTarget(), true);
     }
 
+    public interface GraphChangedEventListener {
+        void onGraphChanged(GraphChangedEvent event);
+    }
+
+    public interface NodeConnectedEventListener {
+        void onNodeConnected(NodeConnectedEvent event);
+    }
+
+    public interface NodeDisconnectedEventListener {
+        void onNodeDisconnected(NodeDisconnectedEvent event);
+    }
+
     /**
      * Serializes an {@link JIPipeGraph}
      */
@@ -2013,10 +2025,6 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         }
     }
 
-    public interface GraphChangedEventListener {
-        void onGraphChanged(GraphChangedEvent event);
-    }
-
     public static class GraphChangedEventEmitter extends JIPipeEventEmitter<GraphChangedEvent, GraphChangedEventListener> {
 
         @Override
@@ -2058,10 +2066,6 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         }
     }
 
-    public interface NodeConnectedEventListener {
-        void onNodeConnected(NodeConnectedEvent event);
-    }
-
     public static class NodeConnectedEventEmitter extends JIPipeEventEmitter<NodeConnectedEvent, NodeConnectedEventListener> {
         @Override
         protected void call(NodeConnectedEventListener nodeConnectedEventListener, NodeConnectedEvent event) {
@@ -2100,10 +2104,6 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         public JIPipeDataSlot getTarget() {
             return target;
         }
-    }
-
-    public interface NodeDisconnectedEventListener {
-        void onNodeDisconnected(NodeDisconnectedEvent event);
     }
 
     public static class NodeDisconnectedEventEmitter extends JIPipeEventEmitter<NodeDisconnectedEvent, NodeDisconnectedEventListener> {

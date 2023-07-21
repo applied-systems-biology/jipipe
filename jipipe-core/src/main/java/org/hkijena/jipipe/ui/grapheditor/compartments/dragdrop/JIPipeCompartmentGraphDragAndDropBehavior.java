@@ -38,7 +38,7 @@ public class JIPipeCompartmentGraphDragAndDropBehavior implements JIPipeGraphDra
     @Override
     public void dragOver(DropTargetDragEvent dtde) {
         Point mousePosition = dtde.getLocation();
-        if(mousePosition == null)
+        if (mousePosition == null)
             return;
         Point gridLocation = canvas.getViewMode().realLocationToGrid(mousePosition, canvas.getZoom());
         Point realLocation = canvas.getViewMode().gridToRealLocation(gridLocation, canvas.getZoom());

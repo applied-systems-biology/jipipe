@@ -19,13 +19,13 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -326,7 +326,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             }
             List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
             for (JIPipeMergingDataBatch dataBatch : dataBatches) {
-                if(dataBatch.isIncomplete()) {
+                if (dataBatch.isIncomplete()) {
                     incomplete.add(dataBatch);
                     progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
                 }

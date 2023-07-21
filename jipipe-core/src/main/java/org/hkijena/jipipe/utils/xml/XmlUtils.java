@@ -9,7 +9,10 @@ import org.xml.sax.InputSource;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
@@ -28,8 +31,7 @@ public class XmlUtils {
             DocumentBuilder builder = factory.newDocumentBuilder();
             InputSource is = new InputSource(new StringReader(xml));
             return builder.parse(is);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -64,7 +66,7 @@ public class XmlUtils {
             node.normalize();
             XPath xpath = XPathFactory.newInstance().newXPath();
             XPathExpression expr = xpath.compile("//text()[normalize-space()='']");
-            NodeList nodeList = (NodeList)expr.evaluate(node, XPathConstants.NODESET);
+            NodeList nodeList = (NodeList) expr.evaluate(node, XPathConstants.NODESET);
 
             for (int i = 0; i < nodeList.getLength(); ++i) {
                 Node nd = nodeList.item(i);
@@ -72,7 +74,7 @@ public class XmlUtils {
             }
 
             // Create and setup transformer
-            Transformer transformer =  TransformerFactory.newInstance().newTransformer();
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
 
             if (omitXmlDeclaration) {
@@ -100,13 +102,15 @@ public class XmlUtils {
             public Iterator<?> getPrefixes(String arg0) {
                 return null;
             }
+
             @Override
             public String getPrefix(String arg0) {
                 return null;
             }
+
             @Override
             public String getNamespaceURI(String arg0) {
-                if(arg0 != null) {
+                if (arg0 != null) {
                     return namespaceMap.getOrDefault(arg0, null);
                 }
                 return null;
@@ -115,7 +119,7 @@ public class XmlUtils {
         try {
             Object evaluationResult = xPathInstance.compile(xPath).evaluate(document, XPathConstants.NODESET);
             List<String> result = new ArrayList<>();
-            if(evaluationResult instanceof NodeList) {
+            if (evaluationResult instanceof NodeList) {
                 NodeList nodeList = (NodeList) evaluationResult;
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node item = nodeList.item(i);
@@ -135,13 +139,15 @@ public class XmlUtils {
             public Iterator<?> getPrefixes(String arg0) {
                 return null;
             }
+
             @Override
             public String getPrefix(String arg0) {
                 return null;
             }
+
             @Override
             public String getNamespaceURI(String arg0) {
-                if(arg0 != null) {
+                if (arg0 != null) {
                     return namespaceMap.getOrDefault(arg0, null);
                 }
                 return null;
@@ -150,7 +156,7 @@ public class XmlUtils {
         try {
             Object evaluationResult = xPathInstance.compile(xPath).evaluate(document, XPathConstants.NODESET);
             StringBuilder result = new StringBuilder();
-            if(evaluationResult instanceof NodeList) {
+            if (evaluationResult instanceof NodeList) {
                 NodeList nodeList = (NodeList) evaluationResult;
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     Node item = nodeList.item(i);

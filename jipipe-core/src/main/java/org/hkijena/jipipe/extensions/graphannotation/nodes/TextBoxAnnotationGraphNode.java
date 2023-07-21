@@ -39,14 +39,14 @@ public class TextBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphNo
     protected void paintShape(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom) {
         int nodeWidth = nodeUI.getWidth();
         int nodeHeight = nodeUI.getHeight();
-        if(shapeParameters.fillColor.isEnabled()) {
+        if (shapeParameters.fillColor.isEnabled()) {
             g2.setColor(shapeParameters.fillColor.getContent());
             g2.fillRect(0, 0, nodeWidth, nodeHeight);
         }
         int finalBorderThickness = (int) Math.max(1, shapeParameters.borderThickness * zoom);
         g2.setColor(shapeParameters.borderColor);
         g2.setStroke(new BasicStroke(finalBorderThickness));
-        g2.drawRect(finalBorderThickness / 2,finalBorderThickness / 2, nodeWidth - finalBorderThickness, nodeHeight - finalBorderThickness);
+        g2.drawRect(finalBorderThickness / 2, finalBorderThickness / 2, nodeWidth - finalBorderThickness, nodeHeight - finalBorderThickness);
     }
 
     @Override

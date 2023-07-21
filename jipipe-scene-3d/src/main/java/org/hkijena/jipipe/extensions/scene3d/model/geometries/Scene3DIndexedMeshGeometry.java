@@ -2,14 +2,11 @@ package org.hkijena.jipipe.extensions.scene3d.model.geometries;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
-import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 
 import java.awt.*;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
 public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
@@ -25,8 +22,8 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
      *
      * @param vertices      the vertices (indexed)
      * @param normals       the normals (indexed)
-     * @param verticesIndex  the vertex index
-     * @param normalsIndex the normals index
+     * @param verticesIndex the vertex index
+     * @param normalsIndex  the normals index
      */
     public Scene3DIndexedMeshGeometry(float[] vertices, float[] normals, int[] verticesIndex, int[] normalsIndex) {
         this.vertices = Objects.requireNonNull(vertices);
@@ -60,10 +57,20 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
         return vertices;
     }
 
+    @JsonSetter("vertices")
+    public void setVertices(float[] vertices) {
+        this.vertices = vertices;
+    }
+
     @JsonGetter("normals")
     @Override
     public float[] getNormals() {
         return normals;
+    }
+
+    @JsonSetter("normals")
+    public void setNormals(float[] normals) {
+        this.normals = normals;
     }
 
     @JsonGetter("vertices-index")
@@ -72,25 +79,15 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
         return verticesIndex;
     }
 
+    @JsonSetter("vertices-index")
+    public void setVerticesIndex(int[] verticesIndex) {
+        this.verticesIndex = verticesIndex;
+    }
+
     @JsonGetter("normals-index")
     @Override
     public int[] getNormalsIndex() {
         return normalsIndex;
-    }
-
-    @JsonSetter("vertices")
-    public void setVertices(float[] vertices) {
-        this.vertices = vertices;
-    }
-
-    @JsonSetter("normals")
-    public void setNormals(float[] normals) {
-        this.normals = normals;
-    }
-
-    @JsonSetter("vertices-index")
-    public void setVerticesIndex(int[] verticesIndex) {
-        this.verticesIndex = verticesIndex;
     }
 
     @JsonSetter("normals-index")
@@ -129,6 +126,6 @@ public class Scene3DIndexedMeshGeometry implements Scene3DMeshGeometry {
 
     @Override
     public String toString() {
-        return String.format("Indexed mesh (%d faces, %d MB)", getNumVertices(), ((vertices.length + normals.length + verticesIndex.length + normalsIndex.length) * 32L) / 1024 / 1024 );
+        return String.format("Indexed mesh (%d faces, %d MB)", getNumVertices(), ((vertices.length + normals.length + verticesIndex.length + normalsIndex.length) * 32L) / 1024 / 1024);
     }
 }

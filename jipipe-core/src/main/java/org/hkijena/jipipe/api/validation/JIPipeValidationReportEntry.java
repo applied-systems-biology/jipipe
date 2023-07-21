@@ -15,12 +15,12 @@ public class JIPipeValidationReportEntry {
     private final String details;
 
     /**
-     * @param level    the level of this entry
-     * @param context the object that caused the problem
-     * @param title explanation what happened
-     * @param explanation  explanation why it happened
-     * @param solution  explanation how to solve the issue
-     * @param details  optional details
+     * @param level       the level of this entry
+     * @param context     the object that caused the problem
+     * @param title       explanation what happened
+     * @param explanation explanation why it happened
+     * @param solution    explanation how to solve the issue
+     * @param details     optional details
      */
     public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation, String solution, String details) {
         this.level = level;
@@ -32,21 +32,21 @@ public class JIPipeValidationReportEntry {
     }
 
     /**
-     * @param level    the level of this entry
-     * @param context the object that caused the problem
-     * @param title explanation what happened
-     * @param explanation  explanation why it happened
-     * @param solution  explanation how to solve the issue
+     * @param level       the level of this entry
+     * @param context     the object that caused the problem
+     * @param title       explanation what happened
+     * @param explanation explanation why it happened
+     * @param solution    explanation how to solve the issue
      */
     public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation, String solution) {
-       this(level, context, title, explanation, solution, null);
+        this(level, context, title, explanation, solution, null);
     }
 
     /**
-     * @param level    the level of this entry
-     * @param context the object that caused the problem
-     * @param title explanation what happened
-     * @param explanation  explanation why it happened
+     * @param level       the level of this entry
+     * @param context     the object that caused the problem
+     * @param title       explanation what happened
+     * @param explanation explanation why it happened
      */
     public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation) {
         this(level, context, title, explanation, null, null);
@@ -78,19 +78,19 @@ public class JIPipeValidationReportEntry {
 
         JIPipeValidationReportContext currentContext = context;
         stringBuilder.append("## Location\n\n");
-        while(currentContext != null) {
+        while (currentContext != null) {
             stringBuilder.append("* ").append(currentContext.renderName()).append(" [").append(currentContext.getClass()).append("]").append("\n");
             currentContext = currentContext.getParent();
         }
         stringBuilder.append("\n");
 
-        if(!StringUtils.isNullOrEmpty(explanation)) {
+        if (!StringUtils.isNullOrEmpty(explanation)) {
             stringBuilder.append("## Explanation\n\n").append(explanation).append("\n\n");
         }
-        if(!StringUtils.isNullOrEmpty(solution)) {
+        if (!StringUtils.isNullOrEmpty(solution)) {
             stringBuilder.append("## Suggested solution\n\n").append(solution).append("\n\n");
         }
-        if(!StringUtils.isNullOrEmpty(details)) {
+        if (!StringUtils.isNullOrEmpty(details)) {
             stringBuilder.append("## Details\n\n```\n").append(details).append("\n```\n\n");
         }
 

@@ -15,7 +15,6 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSour
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Filter filament vertices", description = "Filters filament vertices by various properties")

@@ -125,7 +125,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         ROIListData rois = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Image", ImagePlusData.class, progressInfo));
 
-        if(reference == null) {
+        if (reference == null) {
             reference = rois.createBlankCanvas("empty", BitDepth.ColorRGB);
         }
 

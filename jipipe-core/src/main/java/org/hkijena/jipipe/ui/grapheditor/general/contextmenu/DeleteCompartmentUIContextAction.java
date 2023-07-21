@@ -42,7 +42,7 @@ public class DeleteCompartmentUIContextAction implements NodeUIContextAction {
                         selection.stream().map(JIPipeGraphNodeUI::getNode).filter(node -> !node.isUiLocked()).map(JIPipeGraphNode::getName).collect(Collectors.joining(", ")), "Delete compartments",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             for (JIPipeGraphNodeUI ui : ImmutableList.copyOf(selection)) {
-                if(ui.getNode().isUiLocked())
+                if (ui.getNode().isUiLocked())
                     continue;
                 if (ui.getNode() instanceof JIPipeProjectCompartment) {
                     JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();

@@ -219,13 +219,13 @@ public class IJ3DUtils {
                     lastPercentage = newPercentage;
                 }
 
-                if(!ignoreT) {
-                    if(roi1.getFrame() != roi2.getFrame()) {
+                if (!ignoreT) {
+                    if (roi1.getFrame() != roi2.getFrame()) {
                         continue;
                     }
                 }
-                if(!ignoreC) {
-                    if(roi1.getChannel() != roi2.getChannel()) {
+                if (!ignoreC) {
+                    if (roi1.getChannel() != roi2.getChannel()) {
                         continue;
                     }
                 }

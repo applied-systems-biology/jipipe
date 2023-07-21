@@ -2,13 +2,13 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.misc;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -63,13 +63,13 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         super.reportValidity(context, report);
-        if(previewWidth < 1) {
+        if (previewWidth < 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new ParameterValidationReportContext(context, this, "Preview width", "preview-width"),
                     "Preview width too small!",
                     "The preview width must be greater than zero!"));
         }
-        if(previewHeight < 1) {
+        if (previewHeight < 1) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new ParameterValidationReportContext(context, this, "Preview height", "preview-height"),
                     "Preview height too small!",

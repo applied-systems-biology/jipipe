@@ -13,13 +13,10 @@
 
 package org.hkijena.jipipe.extensions.python.adapter;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.extensions.python.PythonExtension;
 import org.hkijena.jipipe.extensions.python.PythonPackageLibraryEnvironment;
 
 import java.nio.file.Paths;
-import java.util.Map;
 
 /**
  * Environment that supplies the JIPipe Python adapter library

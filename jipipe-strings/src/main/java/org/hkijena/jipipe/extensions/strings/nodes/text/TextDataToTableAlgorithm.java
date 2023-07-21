@@ -1,14 +1,9 @@
 package org.hkijena.jipipe.extensions.strings.nodes.text;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -18,17 +13,14 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.strings.StringData;
-import org.hkijena.jipipe.extensions.strings.nodes.json.ExtractJsonDataAsTableAlgorithm;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,11 +59,10 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             String columnName = entry.getColumnName().evaluateToString(variables);
             Object columnValue = entry.preprocessor.evaluate(variables);
 
-            if(columnValue instanceof Collection) {
+            if (columnValue instanceof Collection) {
                 List<String> values = ((Collection<?>) columnValue).stream().map(StringUtils::nullToEmpty).collect(Collectors.toList());
                 columns.add(TableColumn.fromList(values, columnName));
-            }
-            else {
+            } else {
                 columns.add(new StringArrayTableColumn(new String[]{StringUtils.nullToEmpty(columnValue)}, columnName));
             }
         }
@@ -110,6 +101,7 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         public Entry() {
         }
+
         public Entry(Entry other) {
             this.preprocessor = new DefaultExpressionParameter(other.preprocessor);
             this.columnName = new DefaultExpressionParameter(other.columnName);

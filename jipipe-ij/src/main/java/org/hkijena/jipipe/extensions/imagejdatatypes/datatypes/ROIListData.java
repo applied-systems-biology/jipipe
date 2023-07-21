@@ -1425,7 +1425,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements, boolean addNameToTable, boolean measurePhysicalSizes) {
         ResultsTableData result = new ResultsTableData(new ResultsTable());
-        if(addNameToTable) {
+        if (addNameToTable) {
             result.addStringColumn("Name");
         }
         if (imp != null) {

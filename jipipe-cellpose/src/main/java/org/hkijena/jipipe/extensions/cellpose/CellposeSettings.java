@@ -2,10 +2,10 @@ package org.hkijena.jipipe.extensions.cellpose;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -56,7 +56,7 @@ public class CellposeSettings extends AbstractJIPipeParameterCollection {
     public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!pythonSettingsAreValid()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            context,
+                    context,
                     "Cellpose is not configured!",
                     "This node requires an installation of Python with Cellpose. You have to point JIPipe to a Cellpose installation.",
                     "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install Cellpose " +

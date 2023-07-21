@@ -20,13 +20,13 @@ import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -1010,7 +1010,7 @@ public class UIUtils {
 
         contentPanel.add(ui, BorderLayout.CENTER);
 
-        if(infoText != null) {
+        if (infoText != null) {
             JPanel messagePanel = new JPanel(new GridBagLayout());
             messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
             messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-error.png")),
@@ -1020,7 +1020,7 @@ public class UIUtils {
             contentPanel.add(messagePanel, BorderLayout.NORTH);
         }
 
-        if(modal) {
+        if (modal) {
             JDialog dialog = new JDialog();
             dialog.setTitle(title);
             dialog.setContentPane(contentPanel);
@@ -1034,8 +1034,7 @@ public class UIUtils {
             ui.getErrorToolbar().add(topToggle);
 
             dialog.setVisible(true);
-        }
-        else {
+        } else {
             JFrame frame = new JFrame();
             frame.setTitle(title);
             frame.setContentPane(contentPanel);

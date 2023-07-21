@@ -14,7 +14,6 @@
 
 package org.hkijena.jipipe.ui.datatable;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -29,9 +28,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ui.ExpressionBuilderUI;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
-import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
-import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -178,8 +174,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                     int[] selectedRows = table.getSelectedRows();
                     if (selectedRows.length > 0)
                         handleSlotRowDefaultAction(selectedRows[0], table.columnAtPoint(e.getPoint()));
-                }
-                else if(SwingUtilities.isRightMouseButton(e)) {
+                } else if (SwingUtilities.isRightMouseButton(e)) {
                     showContextMenu(e);
                 }
             }
@@ -203,7 +198,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
     private void showContextMenu(MouseEvent e) {
         int viewRow = table.rowAtPoint(e.getPoint());
         int viewCol = table.columnAtPoint(e.getPoint());
-        if(viewRow >= 0) {
+        if (viewRow >= 0) {
             int modelRow = table.convertRowIndexToModel(viewRow);
             table.setRowSelectionInterval(viewRow, viewRow);
             Object objectAtColumn;
@@ -213,11 +208,10 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
             Store<JIPipeDataTable> slotStore = multiSlotTable.getSlotStore(multiRow);
             if (slotStore.isPresent()) {
                 dataTable = slotStore.get();
-            }
-            else {
+            } else {
                 dataTable = null;
             }
-            if(viewCol >= 0) {
+            if (viewCol >= 0) {
                 int modelColumn = table.convertColumnIndexToModel(viewCol);
                 objectAtColumn = table.getModel().getValueAt(modelRow,
                         modelColumn);
@@ -236,7 +230,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
             JPopupMenu popupMenu = new JPopupMenu();
 
             // Show/open with for data
-            if(dataAnnotationColumn >= 0) {
+            if (dataAnnotationColumn >= 0) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Show data annotation", "Shows the data annotation '" + dataAnnotation.getName() + "'",
                         UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, viewCol)));
@@ -258,7 +252,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                 popupMenu.add(openWithMenu);
             }
 
-            if(dataAnnotationColumn >= 0) {
+            if (dataAnnotationColumn >= 0) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 JMenu openWithMenu = new JMenu();
                 openWithMenu.setText("Open " + dataAnnotation.getName() + " with ...");
@@ -273,14 +267,14 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
             }
 
             // String (preview)
-            if(objectAtColumn instanceof String) {
+            if (objectAtColumn instanceof String) {
                 popupMenu.addSeparator();
                 popupMenu.add(UIUtils.createMenuItem("Copy string representation", "Copies the string '" + objectAtColumn + "' into the clipboard",
                         UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(objectAtColumn))));
             }
 
             // Annotations
-            if(objectAtColumn instanceof JIPipeTextAnnotation) {
+            if (objectAtColumn instanceof JIPipeTextAnnotation) {
                 popupMenu.addSeparator();
                 String annotationName = ((JIPipeTextAnnotation) objectAtColumn).getName();
                 String annotationValue = ((JIPipeTextAnnotation) objectAtColumn).getValue();
@@ -301,7 +295,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
             popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
                     () -> {
                         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
-                        if(path != null) {
+                        if (path != null) {
                             Path directory = path.getParent();
                             String name = path.getFileName().toString();
                             JIPipeDataExporterRun run = new JIPipeDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
@@ -310,12 +304,12 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                         }
                     }));
 
-            if(dataAnnotationColumn >= 0) {
+            if (dataAnnotationColumn >= 0) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
                         () -> {
                             Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
-                            if(path != null) {
+                            if (path != null) {
                                 Path directory = path.getParent();
                                 String name = path.getFileName().toString();
                                 JIPipeDataExporterRun run = new JIPipeDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),

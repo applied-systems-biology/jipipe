@@ -9,7 +9,6 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.strings.JsonData;
-import org.hkijena.jipipe.extensions.strings.StringData;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -37,7 +36,7 @@ public class ImportJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         try {
             String data = new String(Files.readAllBytes(fileData.toPath()));
-            if(validateJson) {
+            if (validateJson) {
                 JsonUtils.readFromString(data, JsonNode.class);
             }
             dataBatch.addOutputData(getFirstOutputSlot(), new JsonData(data), progressInfo);

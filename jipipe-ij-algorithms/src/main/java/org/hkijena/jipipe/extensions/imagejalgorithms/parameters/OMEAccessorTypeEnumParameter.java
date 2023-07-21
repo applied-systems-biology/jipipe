@@ -9,7 +9,7 @@ public class OMEAccessorTypeEnumParameter extends DynamicStringEnumParameter {
         for (String id : ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().keySet()) {
             getAllowedValues().add(id);
         }
-        if(!getAllowedValues().isEmpty())
+        if (!getAllowedValues().isEmpty())
             setValue(getAllowedValues().get(0));
     }
 
@@ -20,10 +20,9 @@ public class OMEAccessorTypeEnumParameter extends DynamicStringEnumParameter {
     @Override
     public String renderLabel(String value) {
         OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(value, null);
-        if(template != null) {
+        if (template != null) {
             return template.getName();
-        }
-        else {
+        } else {
             return value;
         }
     }
@@ -31,10 +30,9 @@ public class OMEAccessorTypeEnumParameter extends DynamicStringEnumParameter {
     @Override
     public String renderTooltip(String value) {
         OMEAccessorTemplate template = ImageJAlgorithmsExtension.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(value, null);
-        if(template != null) {
+        if (template != null) {
             return template.getDescription();
-        }
-        else {
+        } else {
             return "";
         }
     }

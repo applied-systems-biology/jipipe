@@ -11,14 +11,13 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.SerializationUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class OMEAccessorStorage {
 
@@ -58,7 +57,7 @@ public class OMEAccessorStorage {
                     String parameterType = nodeEntry.getValue().get("type").textValue();
 
                     Class<?> parameterClass = typeNameMap.getOrDefault(parameterType, null);
-                    if(parameterClass == null) {
+                    if (parameterClass == null) {
                         methodProgress.log("Skipped, as parameter type " + parameterType + " is not supported!");
                         continue outer;
                     }
@@ -73,7 +72,7 @@ public class OMEAccessorStorage {
                     parameterClasses[parameterIndex] = parameterClass;
 
                     dynamicParameterCollection.addParameter(parameterId, parameterClass,
-                            WordUtils.capitalize(String.join(" ",  org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(parameterName))),
+                            WordUtils.capitalize(String.join(" ", org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(parameterName))),
                             parameterDescription);
                 }
 
@@ -83,8 +82,7 @@ public class OMEAccessorStorage {
                     methodProgress.log("Registered as '" + methodLabel + "' with " + dynamicParameterCollection.getParameters().size() + " parameters");
                     OMEAccessorTemplate template = new OMEAccessorTemplate(methodLabel, methodDescription, method, dynamicParameterCollection, Arrays.asList(parameterIds));
                     templateMap.put(methodName, template);
-                }
-                catch (NoSuchMethodException e) {
+                } catch (NoSuchMethodException e) {
                     methodProgress.log("Skipped, as the method does not exist!");
                 }
             }

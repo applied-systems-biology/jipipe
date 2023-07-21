@@ -16,13 +16,13 @@ package org.hkijena.jipipe.extensions.python;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 
@@ -47,7 +47,7 @@ public class PythonExtensionSettings extends AbstractJIPipeParameterCollection i
      * Checks if the Python settings are valid or reports an invalid state
      *
      * @param context the context
-     * @param report      the report
+     * @param report  the report
      */
     public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!pythonSettingsAreValid(context)) {

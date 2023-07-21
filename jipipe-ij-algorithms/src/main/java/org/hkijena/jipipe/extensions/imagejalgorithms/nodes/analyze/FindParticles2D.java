@@ -150,7 +150,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
             if (neighborhood == Neighborhood2D.FourConnected) {
                 options |= ParticleAnalyzer.FOUR_CONNECTED;
             }
-            if(compositeROI) {
+            if (compositeROI) {
                 options |= ParticleAnalyzer.COMPOSITE_ROIS;
             }
 

@@ -251,11 +251,12 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers a new annotation node type and associated {@link JIPipeGraphEditorTool}
-     * @param id the ID of the node type (must be unique)
-     * @param nodeClass the node class
+     *
+     * @param id             the ID of the node type (must be unique)
+     * @param nodeClass      the node class
      * @param graphToolClass the graph editor class
-     * @param icon the icon URL
-     * @param <T> the node class
+     * @param icon           the icon URL
+     * @param <T>            the node class
      */
     public <T extends JIPipeAnnotationGraphNode> void registerAnnotationNodeType(String id, Class<T> nodeClass, Class<? extends JIPipeAnnotationGraphNodeTool<T>> graphToolClass, URL icon) {
         registerNodeType(id, nodeClass, icon);

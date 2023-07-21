@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.components.pickers;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -262,6 +261,18 @@ public class JIPipeNodeInfoPicker extends JPanel {
         Multiple
     }
 
+    public interface SelectedInfosChangedEventListener {
+        void onNodeInfoPickerSelectedInfosChanged(SelectedInfosChangedEvent event);
+    }
+
+    public interface NodeInfoSelectedEventListener {
+        void onNodeInfoPickerNodeInfoSelectedEvent(NodeInfoSelectedEvent event);
+    }
+
+    public interface NodeInfoDeselectedEventListener {
+        void onNodeInfoPickerNodeInfoDeselectedEvent(NodeInfoDeselectedEvent event);
+    }
+
     /**
      * Renders the entries
      */
@@ -311,10 +322,6 @@ public class JIPipeNodeInfoPicker extends JPanel {
         }
     }
 
-    public interface SelectedInfosChangedEventListener {
-        void onNodeInfoPickerSelectedInfosChanged(SelectedInfosChangedEvent event);
-    }
-
     public static class SelectedInfosChangedEventEmitter extends JIPipeEventEmitter<SelectedInfosChangedEvent, SelectedInfosChangedEventListener> {
 
         @Override
@@ -349,10 +356,6 @@ public class JIPipeNodeInfoPicker extends JPanel {
         }
     }
 
-    public interface NodeInfoSelectedEventListener {
-        void onNodeInfoPickerNodeInfoSelectedEvent(NodeInfoSelectedEvent event);
-    }
-
     public static class NodeInfoSelectedEventEmitter extends JIPipeEventEmitter<NodeInfoSelectedEvent, NodeInfoSelectedEventListener> {
 
         @Override
@@ -385,10 +388,6 @@ public class JIPipeNodeInfoPicker extends JPanel {
         public JIPipeNodeInfo getInfo() {
             return info;
         }
-    }
-
-    public interface NodeInfoDeselectedEventListener {
-        void onNodeInfoPickerNodeInfoDeselectedEvent(NodeInfoDeselectedEvent event);
     }
 
     public static class NodeInfoDeselectedEventEmitter extends JIPipeEventEmitter<NodeInfoDeselectedEvent, NodeInfoDeselectedEventListener> {

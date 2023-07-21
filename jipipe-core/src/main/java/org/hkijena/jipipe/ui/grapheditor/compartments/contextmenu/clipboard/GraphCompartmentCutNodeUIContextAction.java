@@ -34,7 +34,7 @@ public class GraphCompartmentCutNodeUIContextAction extends GraphCompartmentCopy
             return;
         JIPipeProject project = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject();
         for (JIPipeGraphNodeUI ui : selection) {
-            if(ui.getNode().isUiLocked())
+            if (ui.getNode().isUiLocked())
                 continue;
             JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) ui.getNode();
             if (canvasUI.getHistoryJournal() != null) {

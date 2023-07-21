@@ -3,8 +3,6 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 
 import java.util.HashSet;
 import java.util.Set;

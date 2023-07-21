@@ -5,10 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.strings.StringData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,8 +34,7 @@ public class TableToCSVTextAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             String result = new String(Files.readAllBytes(tempFile));
             Files.delete(tempFile);
             dataBatch.addOutputData(getFirstOutputSlot(), new StringData(result), progressInfo);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.ui.running;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
@@ -74,6 +72,14 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
         pushToLog(event.getRun(), false);
     }
 
+    public interface LogClearedEventListener {
+        void onLogCleared(LogClearedEvent event);
+    }
+
+    public interface LogEntryAddedEventListener {
+        void onLogEntryAdded(LogEntryAddedEvent event);
+    }
+
     public static class LogClearedEvent extends AbstractJIPipeEvent {
         private final JIPipeLogs logs;
 
@@ -85,10 +91,6 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
         public JIPipeLogs getLogs() {
             return logs;
         }
-    }
-
-    public interface LogClearedEventListener {
-        void onLogCleared(LogClearedEvent event);
     }
 
     public static class LogClearedEventEmitter extends JIPipeEventEmitter<LogClearedEvent, LogClearedEventListener> {
@@ -116,10 +118,6 @@ public class JIPipeLogs implements JIPipeRunnable.FinishedEventListener, JIPipeR
         public LogEntry getEntry() {
             return entry;
         }
-    }
-
-    public interface LogEntryAddedEventListener {
-        void onLogEntryAdded(LogEntryAddedEvent event);
     }
 
     public static class LogEntryAddedEventEmitter extends JIPipeEventEmitter<LogEntryAddedEvent, LogEntryAddedEventListener> {

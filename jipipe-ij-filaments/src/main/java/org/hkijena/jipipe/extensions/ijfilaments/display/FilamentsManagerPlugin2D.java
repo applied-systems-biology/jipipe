@@ -181,8 +181,7 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
                     copy.mergeWith(data);
                 }
                 return copy;
-            }
-            else {
+            } else {
                 Filaments3DData copy = new Filaments3DData();
                 for (Filaments3DData data : filamentsListControl.getSelectedValuesList()) {
                     copy.mergeWith(data);
@@ -273,15 +272,14 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (displayFilamentsViewMenuItem.getState()) {
             List<Filaments3DData> selectedValuesList = filamentsListControl.getSelectedValuesList();
-            if(selectedValuesList.isEmpty()) {
+            if (selectedValuesList.isEmpty()) {
                 for (Filaments3DData data : filamentsList) {
                     filamentsDrawer.drawFilamentsOnGraphics(data, graphics2D, renderArea,
                             getViewerPanel2D().getCanvas().getZoom(), sliceIndex.getZ(), sliceIndex.getC(), sliceIndex.getT(), false);
                 }
-            }
-            else {
+            } else {
                 for (Filaments3DData data : filamentsList) {
-                    if(!selectedValuesList.contains(data)) {
+                    if (!selectedValuesList.contains(data)) {
                         filamentsDrawer.drawFilamentsOnGraphics(data, graphics2D, renderArea,
                                 getViewerPanel2D().getCanvas().getZoom(), sliceIndex.getZ(), sliceIndex.getC(), sliceIndex.getT(), true);
                     }

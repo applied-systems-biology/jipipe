@@ -224,7 +224,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData {
             Map<ROI3D, String> nameMap = new IdentityHashMap<>();
             for (ROI3D roi3D : this) {
 
-                if(progressInfo.isCancelled()) {
+                if (progressInfo.isCancelled()) {
                     return;
                 }
 

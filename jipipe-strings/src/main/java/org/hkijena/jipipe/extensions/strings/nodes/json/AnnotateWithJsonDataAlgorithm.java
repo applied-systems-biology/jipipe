@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.strings.nodes.json;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.hkijena.jipipe.api.JIPipeCitation;
@@ -20,7 +19,6 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.strings.JsonData;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +93,7 @@ public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorith
 
         public Entry() {
         }
+
         public Entry(Entry other) {
             this.jsonPath = new DefaultExpressionParameter(other.jsonPath);
             this.annotationName = new DefaultExpressionParameter(other.annotationName);

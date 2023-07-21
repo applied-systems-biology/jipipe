@@ -1,9 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.api.annotation.JIPipeAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -12,7 +10,6 @@ import java.nio.file.Paths;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -41,7 +38,7 @@ public class DataExportExpressionParameter extends DefaultExpressionParameter {
     }
 
     public Path generatePath(Path dataDir, Path projectDir, Map<String, Path> projectDataDirs, String dataString, int dataRow, java.util.List<JIPipeTextAnnotation> annotationList) {
-        if(StringUtils.isNullOrEmpty(projectDir)) {
+        if (StringUtils.isNullOrEmpty(projectDir)) {
             projectDir = dataDir;
         }
         ExpressionVariables variables = new ExpressionVariables();
@@ -55,11 +52,10 @@ public class DataExportExpressionParameter extends DefaultExpressionParameter {
         variables.set("project_dir", projectDir.toAbsolutePath().toString());
         Map<String, String> projectDataDirs_ = new HashMap<>();
         for (Map.Entry<String, Path> entry : projectDataDirs.entrySet()) {
-            if(!StringUtils.isNullOrEmpty(entry.getKey())) {
-                if(entry.getValue().isAbsolute()) {
+            if (!StringUtils.isNullOrEmpty(entry.getKey())) {
+                if (entry.getValue().isAbsolute()) {
                     projectDataDirs_.put(entry.getKey(), entry.getValue().toString());
-                }
-                else {
+                } else {
                     projectDataDirs_.put(entry.getKey(), projectDir.resolve(entry.getValue()).toString());
                 }
             }

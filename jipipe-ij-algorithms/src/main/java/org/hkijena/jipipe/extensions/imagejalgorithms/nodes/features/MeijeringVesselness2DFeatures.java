@@ -23,12 +23,12 @@ import imagescience.image.Aspects;
 import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -173,7 +173,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (scales.isEmpty()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                            new ParameterValidationReportContext(context, this, "Scales", "scales"),
+                    new ParameterValidationReportContext(context, this, "Scales", "scales"),
                     "No scales provided!",
                     "You have to provide a list of scales to test",
                     "Please add at least one entry."));
