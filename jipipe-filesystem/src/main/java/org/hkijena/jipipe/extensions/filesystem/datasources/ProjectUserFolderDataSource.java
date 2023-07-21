@@ -48,12 +48,12 @@ public class ProjectUserFolderDataSource extends JIPipeSimpleIteratingAlgorithm 
             throw new JIPipeValidationRuntimeException(new IndexOutOfBoundsException("Unable to find '" + key + "' in " + String.join(", ", projectDataDirs.keySet())),
                     "No project user directory '" + key + "'",
                     "You tried to return the project user directory with the key '" + key + "', but only the following keys are available: " + String.join(", ", projectDataDirs.keySet()),
-                    "Check if the key is correct or navigate to Project > Project settings > User directories and configure the directories");
+                    "Check if the key is correct or navigate to Project > Project settings > User directories (or alternatively to Project > Project overview > User directories) and configure the directories");
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(Objects.requireNonNull(projectDataDirs.get(key))), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Project user directory key", description = "The key of the project user directory. You can configure directories by navigating to Project > Project settings > User directories")
+    @JIPipeDocumentation(name = "Project user directory key", description = "The key of the project user directory. You can configure directories by navigating to Project > Project settings > User directories (or alternatively to Project > Project overview > User directories)")
     @JIPipeParameter(value = "key", important = true)
     @StringParameterSettings(monospace = true)
     public String getKey() {

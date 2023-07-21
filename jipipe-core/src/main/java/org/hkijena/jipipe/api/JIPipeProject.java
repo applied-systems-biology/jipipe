@@ -151,7 +151,8 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                     JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:invalid-project-user-directory");
                     notification.setHeading("Invalid project user directory!");
                     notification.setDescription("This project defines a user-defined directory '" + entry.getKey() + "' pointing at '" + entry.getValue() + "', but the " +
-                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings > User directories) and ensure that the directory is correctly configured.");
+                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings > User directories // Project > Project overview > User directories) " +
+                            "and ensure that the directory is correctly configured.");
                     notifications.push(notification);
                 }
             }
