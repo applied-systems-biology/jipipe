@@ -32,6 +32,8 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
             new Color(0x2372BE);
     public static final Color COLOR_PROJECT =
             new Color(0x6B40AA);
+    public static final Color COLOR_EXTENSION =
+            new Color(0x4098AA);
 
     private final Set<JIPipeNodeTemplate> projectTemplateList;
     private SolidColorIcon nodeColor;
@@ -106,33 +108,16 @@ public class JIPipeNodeTemplateListCellRenderer extends JPanel implements ListCe
 
         setFont(list.getFont());
 
-//        JIPipeGraph graph = template.getGraph();
-//        if (graph != null) {
-//            if (graph.getGraphNodes().size() == 1) {
-//                JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
-//                JIPipeNodeInfo info = node.getInfo();
-//                nodeColor.setFillColor(UIUtils.getFillColorFor(info));
-//                nodeNameLabel.setText((info.getCategory().getName() + "\n" + info.getMenuPath() + "\n" + info.getName()).replace("\n\n", "\n").replace("\n", " > "));
-//                nameLabel.setText(template.getName());
-//                nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
-//            } else {
-//                nodeColor.setFillColor(UIUtils.DARK_THEME ? MiscellaneousNodeTypeCategory.FILL_COLOR_DARK : MiscellaneousNodeTypeCategory.FILL_COLOR);
-//                nodeNameLabel.setText(graph.getGraphNodes().size() + " nodes");
-//                nameLabel.setText(template.getName());
-//                nodeIcon.setIcon(UIUtils.getIconFromResources("actions/distribute-graph.png"));
-//            }
-//        } else {
-//            nameLabel.setText(template.getName());
-//            nodeNameLabel.setText("<Invalid>");
-//        }
-
         nodeColor.setFillColor(template.getFillColor());
         nodeColor.setBorderColor(template.getBorderColor());
         nameLabel.setText(template.getName());
         nodeNameLabel.setText(("Templates\n" + String.join("\n", template.getMenuPath())).replace("\n\n", "\n").trim().replace("\n", " > "));
         nodeIcon.setIcon(UIUtils.getIconFromResources(StringUtils.orElse(template.getIcon().getIconName(), "actions/configure.png")));
 
-        if (projectTemplateList.contains(template)) {
+        if (template.isFromExtension()) {
+            storageLabel.setForeground(COLOR_EXTENSION);
+            storageLabel.setText("Extension");
+        } else if (projectTemplateList.contains(template)) {
             storageLabel.setForeground(COLOR_PROJECT);
             storageLabel.setText("Project storage");
         } else {

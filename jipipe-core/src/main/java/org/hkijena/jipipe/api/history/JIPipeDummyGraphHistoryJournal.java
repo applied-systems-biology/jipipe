@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.api.history;
 
-import com.google.common.eventbus.EventBus;
-
 import javax.swing.*;
 import java.util.Collections;
 import java.util.List;

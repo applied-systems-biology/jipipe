@@ -14,15 +14,20 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;
 
@@ -74,16 +79,9 @@ public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Renaming entries").report(renamingEntries);
-        for (int i = 0; i < renamingEntries.size(); i++) {
-            if (StringUtils.isNullOrEmpty(renamingEntries.get(i).getValue())) {
-                report.resolve("Item #" + (i + 1)).reportIsInvalid("Target cannot be empty!",
-                        "You cannot rename a column to an empty name!",
-                        "Please change the target to a unique non-empty name.",
-                        this);
-            }
-        }
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        report.report(new ParameterValidationReportContext(context, this, "Renaming entries", "renaming-entries"), renamingEntries);
     }
 
     @JIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")

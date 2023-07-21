@@ -17,16 +17,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.APIErrorValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -42,9 +41,8 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     private final JIPipeGraphNode algorithm;
     private final Map<String, ImageJDataImportOperation> inputSlotImporters = new HashMap<>();
     private final Map<String, ImageJDataExportOperation> outputSlotExporters = new HashMap<>();
-    private int numThreads = 1;
-
     private final JIPipeGraphNode.NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new JIPipeGraphNode.NodeSlotsChangedEventEmitter();
+    private int numThreads = 1;
 
     public SingleImageJAlgorithmRunConfiguration(String nodeId, String parameters, String inputs, String outputs, int threads) {
         this.algorithm = JIPipe.createNode(nodeId);
@@ -139,7 +137,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
 
     private void importParameterString(String parametersString) {
         JsonNode jsonNode = JsonUtils.readFromString(parametersString, JsonNode.class);
-        ParameterUtils.deserializeParametersFromJson(algorithm, jsonNode, new JIPipeIssueReport());
+        ParameterUtils.deserializeParametersFromJson(algorithm, jsonNode, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
     }
 
     public int getNumThreads() {
@@ -151,12 +149,14 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (algorithm == null) {
-            report.reportIsInvalid("No algorithm was provided!",
-                    "This is an programming error.",
-                    "Please contact the JIPipe author.",
-                    this);
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new APIErrorValidationReportContext(),
+                    "No algorithm was provided!",
+                    "This is an programming error. Please contact the JIPipe author.",
+                    null,
+                    null));
         }
     }
 

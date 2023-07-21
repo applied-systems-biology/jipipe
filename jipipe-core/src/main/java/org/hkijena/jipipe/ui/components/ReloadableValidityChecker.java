@@ -13,8 +13,11 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -25,24 +28,27 @@ import java.awt.*;
  * Panel that encapsulates a {@link JIPipeValidityReportUI} and an {@link JIPipeValidatable}.
  * Allows users to reevaluate the {@link JIPipeValidatable}
  */
-public class ReloadableValidityChecker extends JPanel {
-    private JIPipeValidatable validatable;
-    private MarkdownDocument helpDocument;
+public class ReloadableValidityChecker extends JIPipeWorkbenchPanel {
+    private final JIPipeValidatable validatable;
+    private final MarkdownDocument helpDocument;
+    private final JIPipeValidationReport report = new JIPipeValidationReport();
     private JIPipeValidityReportUI reportUI;
-    private JIPipeIssueReport report = new JIPipeIssueReport();
 
     /**
+     * @param workbench   the workbench
      * @param validatable the validated object
      */
-    public ReloadableValidityChecker(JIPipeValidatable validatable) {
-        this(validatable, null);
+    public ReloadableValidityChecker(JIPipeWorkbench workbench, JIPipeValidatable validatable) {
+        this(workbench, validatable, null);
     }
 
     /**
+     * @param workbench    the workbench
      * @param validatable  the validated object
      * @param helpDocument custom documentation. Can be null
      */
-    public ReloadableValidityChecker(JIPipeValidatable validatable, MarkdownDocument helpDocument) {
+    public ReloadableValidityChecker(JIPipeWorkbench workbench, JIPipeValidatable validatable, MarkdownDocument helpDocument) {
+        super(workbench);
         this.validatable = validatable;
         this.helpDocument = helpDocument;
         initialize();
@@ -50,7 +56,7 @@ public class ReloadableValidityChecker extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        reportUI = new JIPipeValidityReportUI(true, helpDocument);
+        reportUI = new JIPipeValidityReportUI(getWorkbench(), true, helpDocument);
         add(reportUI, BorderLayout.CENTER);
 
         JToolBar toolBar = new JToolBar();
@@ -69,12 +75,12 @@ public class ReloadableValidityChecker extends JPanel {
      * Revalidates the object
      */
     public void recheckValidity() {
-        report.clearAll();
-        validatable.reportValidity(report);
+        report.clear();
+        validatable.reportValidity(new UnspecifiedValidationReportContext(), report);
         reportUI.setReport(report);
     }
 
-    public JIPipeIssueReport getReport() {
+    public JIPipeValidationReport getReport() {
         return report;
     }
 }

@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -86,11 +85,6 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
                     getFirstInputSlot().getDataAnnotations(row),
                     JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
     }
 
     /**

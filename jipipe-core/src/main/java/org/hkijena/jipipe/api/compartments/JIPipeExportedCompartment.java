@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
@@ -31,6 +30,8 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
@@ -66,7 +67,7 @@ public class JIPipeExportedCompartment {
     }
 
     private void initializeGraphFromProject(JIPipeProjectCompartment compartment) {
-        JIPipeGraph sourceGraph = compartment.getProject().getGraph();
+        JIPipeGraph sourceGraph = compartment.getRuntimeProject().getGraph();
         Map<UUID, JIPipeGraphNode> copies = new HashMap<>();
         UUID compartmentId = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode algorithm : sourceGraph.getGraphNodes()) {
@@ -253,7 +254,7 @@ public class JIPipeExportedCompartment {
             JIPipeExportedCompartment exportedCompartment = new JIPipeExportedCompartment();
 
             JsonNode node = jsonParser.readValueAsTree();
-            exportedCompartment.outputGraph.fromJson(node.get("graph"), new JIPipeIssueReport(), new JIPipeNotificationInbox());
+            exportedCompartment.outputGraph.fromJson(node.get("graph"), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
             if (node.has("metadata"))
                 exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
 

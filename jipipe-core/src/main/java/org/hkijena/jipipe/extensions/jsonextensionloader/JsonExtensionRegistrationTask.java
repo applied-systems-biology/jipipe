@@ -16,9 +16,8 @@ package org.hkijena.jipipe.extensions.jsonextensionloader;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.*;
 
 import java.nio.file.Path;
 import java.util.Set;
@@ -30,9 +29,9 @@ import java.util.stream.Collectors;
 public class JsonExtensionRegistrationTask implements JIPipeValidatable {
 
     private final Set<String> dependencyIds;
-    private JIPipe registry;
-    private Path filePath;
-    private JsonNode jsonNode;
+    private final JIPipe registry;
+    private final Path filePath;
+    private final JsonNode jsonNode;
 
     /**
      * @param registry the registry
@@ -63,14 +62,15 @@ public class JsonExtensionRegistrationTask implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         for (String dependencyId : dependencyIds) {
             if (!registry.getRegisteredExtensionIds().contains(dependencyId)) {
-                report.reportIsInvalid("A dependency is missing!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        context,
+                        "A dependency is missing!",
                         "Dependency '" + dependencyId + "' is missing!",
                         "Please ensure that the matching extension is installed. Otherwise you can try to open the extension" +
-                                " '" + filePath + "' in the extension builder and save it to update dependencies.",
-                        this);
+                                " '" + filePath + "' in the extension builder and save it to update dependencies."));
             }
         }
 

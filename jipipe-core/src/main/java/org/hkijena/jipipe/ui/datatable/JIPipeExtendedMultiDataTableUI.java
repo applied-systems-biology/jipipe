@@ -14,19 +14,16 @@
 
 package org.hkijena.jipipe.ui.datatable;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
@@ -39,6 +36,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
+import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToZIPExporterRun;
@@ -56,12 +54,15 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeAnnotationTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeNodeTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeProjectCompartmentTableCellRenderer;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.OwningStore;
 import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -169,10 +170,12 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) {
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
                     int[] selectedRows = table.getSelectedRows();
                     if (selectedRows.length > 0)
                         handleSlotRowDefaultAction(selectedRows[0], table.columnAtPoint(e.getPoint()));
+                } else if (SwingUtilities.isRightMouseButton(e)) {
+                    showContextMenu(e);
                 }
             }
         });
@@ -190,6 +193,135 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
 
         // Search toolbar
         initializeToolbar(menuContainerPanel);
+    }
+
+    private void showContextMenu(MouseEvent e) {
+        int viewRow = table.rowAtPoint(e.getPoint());
+        int viewCol = table.columnAtPoint(e.getPoint());
+        if (viewRow >= 0) {
+            int modelRow = table.convertRowIndexToModel(viewRow);
+            table.setRowSelectionInterval(viewRow, viewRow);
+            Object objectAtColumn;
+            JIPipeDataTable dataTable;
+            int dataAnnotationColumn = -1;
+            int multiRow = table.getRowSorter().convertRowIndexToModel(viewRow);
+            Store<JIPipeDataTable> slotStore = multiSlotTable.getSlotStore(multiRow);
+            if (slotStore.isPresent()) {
+                dataTable = slotStore.get();
+            } else {
+                dataTable = null;
+            }
+            if (viewCol >= 0) {
+                int modelColumn = table.convertColumnIndexToModel(viewCol);
+                objectAtColumn = table.getModel().getValueAt(modelRow,
+                        modelColumn);
+                int multiDataAnnotationColumn = multiSlotTable.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(viewCol));
+                if (dataTable != null) {
+                    if (multiDataAnnotationColumn >= 0) {
+                        String name = multiSlotTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
+                        dataAnnotationColumn = dataTable.getDataAnnotationColumns().indexOf(name);
+                    }
+                }
+            } else {
+
+                objectAtColumn = null;
+            }
+
+            JPopupMenu popupMenu = new JPopupMenu();
+
+            // Show/open with for data
+            if (dataAnnotationColumn >= 0) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
+                popupMenu.add(UIUtils.createMenuItem("Show data annotation", "Shows the data annotation '" + dataAnnotation.getName() + "'",
+                        UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, viewCol)));
+            }
+
+            // Show/open with controls
+            popupMenu.add(UIUtils.createMenuItem("Show", "Shows the data", UIUtils.getIconFromResources("actions/search.png"), () -> handleSlotRowDefaultAction(viewRow, 0)));
+
+            {
+                JMenu openWithMenu = new JMenu();
+                openWithMenu.setText("Open with ...");
+
+                Class<? extends JIPipeData> dataClass = dataTable.getDataClass(modelRow);
+                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
+                for (JIPipeDataDisplayOperation displayOperation : JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId)) {
+                    openWithMenu.add(UIUtils.createMenuItem(displayOperation.getName(), displayOperation.getDescription(), displayOperation.getIcon(),
+                            () -> displayOperation.display(dataTable, modelRow, getWorkbench(), false)));
+                }
+                popupMenu.add(openWithMenu);
+            }
+
+            if (dataAnnotationColumn >= 0) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
+                JMenu openWithMenu = new JMenu();
+                openWithMenu.setText("Open " + dataAnnotation.getName() + " with ...");
+
+                Class<? extends JIPipeData> dataClass = dataAnnotation.getDataClass();
+                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
+                for (JIPipeDataDisplayOperation displayOperation : JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId)) {
+                    openWithMenu.add(UIUtils.createMenuItem(displayOperation.getName(), displayOperation.getDescription(), displayOperation.getIcon(),
+                            () -> displayOperation.displayDataAnnotation(dataTable, modelRow, dataAnnotation, getWorkbench())));
+                }
+                popupMenu.add(openWithMenu);
+            }
+
+            // String (preview)
+            if (objectAtColumn instanceof String) {
+                popupMenu.addSeparator();
+                popupMenu.add(UIUtils.createMenuItem("Copy string representation", "Copies the string '" + objectAtColumn + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(objectAtColumn))));
+            }
+
+            // Annotations
+            if (objectAtColumn instanceof JIPipeTextAnnotation) {
+                popupMenu.addSeparator();
+                String annotationName = ((JIPipeTextAnnotation) objectAtColumn).getName();
+                String annotationValue = ((JIPipeTextAnnotation) objectAtColumn).getValue();
+                String annotationNameAndValue = annotationName + "=" + annotationValue;
+                String filterExpression = annotationName + " == " + "\"" + MacroUtils.escapeString(annotationValue) + "\"";
+                popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name", "Copies the string '" + annotationName + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
+                popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " value", "Copies the string '" + annotationValue + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationValue))));
+                popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name and value", "Copies the string '" + annotationNameAndValue + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationNameAndValue))));
+                popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " as filter", "Copies the string '" + filterExpression + "' into the clipboard",
+                        UIUtils.getIconFromResources("actions/filter.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(filterExpression))));
+            }
+
+            popupMenu.addSeparator();
+
+            popupMenu.add(UIUtils.createMenuItem("Export", "Exports the data", UIUtils.getIconFromResources("actions/document-export.png"),
+                    () -> {
+                        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                        if (path != null) {
+                            Path directory = path.getParent();
+                            String name = path.getFileName().toString();
+                            JIPipeDataExporterRun run = new JIPipeDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
+                                    directory, name);
+                            JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnerQueue("Export"));
+                        }
+                    }));
+
+            if (dataAnnotationColumn >= 0) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
+                popupMenu.add(UIUtils.createMenuItem("Export " + dataAnnotation.getName(), "Exports the data annotation '" + dataAnnotation.getName() + "'", UIUtils.getIconFromResources("actions/document-export.png"),
+                        () -> {
+                            Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export row " + modelRow);
+                            if (path != null) {
+                                Path directory = path.getParent();
+                                String name = path.getFileName().toString();
+                                JIPipeDataExporterRun run = new JIPipeDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),
+                                        directory, name);
+                                JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnerQueue("Export"));
+                            }
+                        }));
+            }
+
+            popupMenu.show(table, e.getX(), e.getY());
+
+        }
     }
 
     private void initializeRibbon(JPanel menuContainerPanel) {

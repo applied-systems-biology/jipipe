@@ -16,10 +16,10 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 
 import java.io.FileNotFoundException;
@@ -124,17 +124,15 @@ public class CopyPath extends JIPipeIteratingAlgorithm {
                 Files.copy(input, destination);
             } else {
                 if (!skipInvalid)
-                    throw new UserFriendlyRuntimeException(new FileNotFoundException(input.toString()),
+                    throw new JIPipeValidationRuntimeException(new FileNotFoundException(input.toString()),
                             "Cannot find source path!",
-                            getName(),
                             "The path '" + input + "' does not exist.",
                             "Please check if the path is correct.");
             }
         } catch (IOException e) {
             if (!skipInvalid)
-                throw new UserFriendlyRuntimeException(e,
+                throw new JIPipeValidationRuntimeException(e,
                         "Error while copying.",
-                        getName(),
                         "Please refer to the technical details.",
                         "Please check if the paths is correct.");
         }

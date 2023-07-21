@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -69,11 +68,6 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
             dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, detailedDataString ? inputData.toDetailedString() : inputData.toString()), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
     }
 
     @JIPipeDocumentation(name = "Prefer detailed string", description = "If enabled, a more detailed string information (if available) is used instead of the string shown in the UI.")

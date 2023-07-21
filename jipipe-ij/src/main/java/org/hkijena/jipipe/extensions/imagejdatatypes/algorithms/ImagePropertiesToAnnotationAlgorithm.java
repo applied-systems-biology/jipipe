@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -101,31 +100,6 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         this.physicalDimensionZAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionZAnnotation);
         this.physicalDimensionTAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionTAnnotation);
         this.physicalDimensionValueAnnotation = new OptionalAnnotationNameParameter(other.physicalDimensionValueAnnotation);
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        if (getTitleAnnotation().isEnabled())
-            report.resolve("Annotate with title").checkNonEmpty(getTitleAnnotation().getContent(), this);
-        if (getWidthAnnotation().isEnabled())
-            report.resolve("Annotate with image width").checkNonEmpty(getWidthAnnotation().getContent(), this);
-        if (getHeightAnnotation().isEnabled())
-            report.resolve("Annotate with image height").checkNonEmpty(getHeightAnnotation().getContent(), this);
-        if (getStackSizeAnnotation().isEnabled())
-            report.resolve("Annotate with stack size (Z)").checkNonEmpty(getStackSizeAnnotation().getContent(), this);
-        if (getPlaneNumberAnnotation().isEnabled())
-            report.resolve("Annotate with number of planes").checkNonEmpty(getPlaneNumberAnnotation().getContent(), this);
-        if (getChannelSizeAnnotation().isEnabled())
-            report.resolve("Annotate with channel size (C)").checkNonEmpty(getChannelSizeAnnotation().getContent(), this);
-        if (getFramesSizeAnnotation().isEnabled())
-            report.resolve("Annotate with number of frames (T)").checkNonEmpty(getFramesSizeAnnotation().getContent(), this);
-        if (getImageTypeAnnotation().isEnabled())
-            report.resolve("Annotate with image type").checkNonEmpty(getImageTypeAnnotation().getContent(), this);
-        if (getBitDepthAnnotation().isEnabled())
-            report.resolve("Annotate with bit depth").checkNonEmpty(getBitDepthAnnotation().getContent(), this);
-        if (getBitDepthAnnotation().isEnabled())
-            report.resolve("Annotate with color space").checkNonEmpty(getColorSpaceAnnotation().getContent(), this);
     }
 
     @Override

@@ -18,8 +18,8 @@ import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.expressions.constants.*;
 import org.hkijena.jipipe.extensions.expressions.operators.*;
 
@@ -32,6 +32,7 @@ import java.util.stream.Collectors;
  */
 public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionConstant CONSTANT_NULL = new NullConstant();
+    public static final ExpressionConstant CONSTANT_NEWLINE = new NewLineConstant();
     public static final ExpressionConstant CONSTANT_TRUE = new BooleanTrueConstant();
     public static final ExpressionConstant CONSTANT_FALSE = new BooleanFalseConstant();
     public static final ExpressionConstant CONSTANT_PI = new NumericPiConstant();
@@ -95,6 +96,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         parameters.add(CONSTANT_NULL);
         parameters.add(CONSTANT_TRUE);
         parameters.add(CONSTANT_FALSE);
+        parameters.add(CONSTANT_NEWLINE);
         parameters.add(CONSTANT_E);
         parameters.add(CONSTANT_PI);
         parameters.add(CONSTANT_TAU);
@@ -303,11 +305,10 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 flushBufferToToken(buffer, tokens, resolveVariable);
                 resolveVariable.set(true);
                 tokens.add("" + c);
-            } else if(!isQuoted && c == '[') {
+            } else if (!isQuoted && c == '[') {
                 tokens.add("@"); // Resolve as @ operator
                 ++arrayAccessBracketDepth;
-            }
-            else if(!isQuoted && c == ']' && arrayAccessBracketDepth > 0) {
+            } else if (!isQuoted && c == ']' && arrayAccessBracketDepth > 0) {
                 --arrayAccessBracketDepth;
                 continue; // Ignore token
             } else {
@@ -375,9 +376,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 return true;
             return super.evaluate(expression, evaluationContext);
         } catch (Exception e) {
-            throw new UserFriendlyRuntimeException(e,
-                    "Error while evaluating expression",
-                    "Expression: " + expression,
+            throw new JIPipeValidationRuntimeException(e,
+                    "Error while evaluating expression " + expression,
                     "The expression could not be evaluated. Available variables are " + expressionVariables.entrySet().stream()
                             .map(kv -> kv.getKey() + "=" + kv.getValue()).collect(Collectors.joining(" ")),
                     "Please check if the expression is correct.");
@@ -472,8 +472,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         else {
             Object variable = variableSet.get(literal);
             if (variable == null) {
-                throw new UserFriendlyRuntimeException(new NullPointerException(), "Unable to find variable '" + literal + "' in expression",
-                        "Expression parser",
+                throw new JIPipeValidationRuntimeException(new NullPointerException(), "Unable to find variable '" + literal + "' in expression",
                         "Your expression has a variable '" + literal + "', but it does not exist",
                         "Check if the variable exists. If you intended to create a string, put double quotes around it.");
             }

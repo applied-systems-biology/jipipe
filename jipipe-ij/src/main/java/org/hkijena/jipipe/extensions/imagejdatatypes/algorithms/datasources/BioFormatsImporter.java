@@ -23,7 +23,10 @@ import loci.plugins.in.ImporterOptions;
 import loci.plugins.util.WindowTools;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeCitation;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
@@ -195,13 +198,6 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
         } catch (FormatException | IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        if (titleAnnotation.isEnabled())
-            report.resolve("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
     }
 
     @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +

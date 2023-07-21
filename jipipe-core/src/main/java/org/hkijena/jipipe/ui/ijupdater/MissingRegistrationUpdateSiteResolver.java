@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.ijupdater;
 
-import com.google.common.eventbus.Subscribe;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeRegistryIssues;

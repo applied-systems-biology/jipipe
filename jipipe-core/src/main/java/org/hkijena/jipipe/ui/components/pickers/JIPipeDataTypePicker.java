@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.components.pickers;
 
-import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -229,6 +228,18 @@ public class JIPipeDataTypePicker extends JPanel {
         Multiple
     }
 
+    public interface SelectedDataTypesChangedEventListener {
+        void onDataTypePickerSelectedDataTypesChanged(SelectedDataTypesChangedEvent event);
+    }
+
+    public interface DataTypeSelectedEventListener {
+        void onDataTypePickerDataTypeSelected(DataTypeSelectedEvent event);
+    }
+
+    public interface DataTypeDeselectedEventListener {
+        void onDataTypePickerDataTypeDeselected(DataTypeDeselectedEvent event);
+    }
+
     /**
      * Renders an item
      */
@@ -278,10 +289,6 @@ public class JIPipeDataTypePicker extends JPanel {
         }
     }
 
-    public interface SelectedDataTypesChangedEventListener {
-        void onDataTypePickerSelectedDataTypesChanged(SelectedDataTypesChangedEvent event);
-    }
-
     public static class SelectedDataTypesChangedEventEmitter extends JIPipeEventEmitter<SelectedDataTypesChangedEvent, SelectedDataTypesChangedEventListener> {
 
         @Override
@@ -316,10 +323,6 @@ public class JIPipeDataTypePicker extends JPanel {
         }
     }
 
-    public interface DataTypeSelectedEventListener {
-        void onDataTypePickerDataTypeSelected(DataTypeSelectedEvent event);
-    }
-
     public static class DataTypeSelectedEventEmitter extends JIPipeEventEmitter<DataTypeSelectedEvent, DataTypeSelectedEventListener> {
 
         @Override
@@ -352,10 +355,6 @@ public class JIPipeDataTypePicker extends JPanel {
         public JIPipeDataInfo getDataInfo() {
             return dataInfo;
         }
-    }
-
-    public interface DataTypeDeselectedEventListener {
-        void onDataTypePickerDataTypeDeselected(DataTypeDeselectedEvent event);
     }
 
     public static class DataTypeDeselectedEventEmitter extends JIPipeEventEmitter<DataTypeDeselectedEvent, DataTypeDeselectedEventListener> {

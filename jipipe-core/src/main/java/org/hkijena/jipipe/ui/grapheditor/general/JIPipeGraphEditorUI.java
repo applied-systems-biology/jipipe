@@ -99,7 +99,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     /**
      * @param workbenchUI    the workbench
-     * @param graph the algorithm graph
+     * @param graph          the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      * @param flags          additional flags
@@ -128,7 +128,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     /**
      * @param workbenchUI    the workbench
-     * @param graph the algorithm graph
+     * @param graph          the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
@@ -355,7 +355,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
             // Hotkeys
             KeyStroke keyBinding = tool.getKeyBinding();
-            if(keyBinding != null) {
+            if (keyBinding != null) {
                 registerKeyboardAction(e -> selectTool(tool),
                         keyBinding,
                         JComponent.WHEN_IN_FOCUSED_WINDOW);

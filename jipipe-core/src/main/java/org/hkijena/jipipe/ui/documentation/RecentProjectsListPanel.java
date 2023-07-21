@@ -1,8 +1,5 @@
 package org.hkijena.jipipe.ui.documentation;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -87,6 +84,10 @@ public class RecentProjectsListPanel extends JIPipeProjectWorkbenchPanel impleme
         return projectOpenedEventEmitter;
     }
 
+    public interface ProjectOpenedEventListener {
+        void onRecentProjectListProjectOpened(ProjectOpenedEvent event);
+    }
+
     public static class ProjectOpenedEvent extends AbstractJIPipeEvent {
         private final Path projectPath;
 
@@ -98,10 +99,6 @@ public class RecentProjectsListPanel extends JIPipeProjectWorkbenchPanel impleme
         public Path getProjectPath() {
             return projectPath;
         }
-    }
-
-    public interface ProjectOpenedEventListener {
-        void onRecentProjectListProjectOpened(ProjectOpenedEvent event);
     }
 
     public static class ProjectOpenedEventEmitter extends JIPipeEventEmitter<ProjectOpenedEvent, ProjectOpenedEventListener> {

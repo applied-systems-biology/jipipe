@@ -25,6 +25,7 @@ public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final FilamentsDrawer filamentsDrawer;
     private boolean drawOverReference = true;
+
     public ConvertFilamentsToRGBAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.filamentsDrawer = new FilamentsDrawer();
@@ -59,18 +60,15 @@ public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Filaments3DData filaments3DData = dataBatch.getInputData("Input", Filaments3DData.class, progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
-        if(reference == null) {
+        if (reference == null) {
             reference = filaments3DData.createBlankCanvas("Image", BitDepth.ColorRGB);
-        }
-        else if(!drawOverReference) {
+        } else if (!drawOverReference) {
             ImagePlus blank = IJ.createHyperStack("Image", reference.getWidth(), reference.getHeight(), reference.getNChannels(), reference.getNSlices(), reference.getNFrames(), 24);
             blank.copyScale(reference);
             reference = blank;
-        }
-        else if(reference.getType() == ImagePlus.COLOR_RGB) {
+        } else if (reference.getType() == ImagePlus.COLOR_RGB) {
             reference = ImageJUtils.duplicate(reference);
-        }
-        else {
+        } else {
             reference = ImageJUtils.convertToColorRGBIfNeeded(reference);
         }
         ImageJUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {

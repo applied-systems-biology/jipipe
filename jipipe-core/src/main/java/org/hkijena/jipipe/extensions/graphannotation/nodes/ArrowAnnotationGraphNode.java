@@ -87,32 +87,29 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
 
         // Fix the angle and shift
         int finalAngle = angle;
-        while(finalAngle < 0) {
+        while (finalAngle < 0) {
             finalAngle += 360;
         }
         finalAngle %= 360;
 
         boolean invert = finalAngle > 90 && finalAngle <= 270;
 
-        if(finalAngle == 0) {
+        if (finalAngle == 0) {
             x0 = 0;
             y0 = h / 2;
             x1 = w;
             y1 = h / 2;
-        }
-        else if(Math.abs(finalAngle) % 180 == 0) {
+        } else if (Math.abs(finalAngle) % 180 == 0) {
             x0 = 0;
             y0 = h / 2;
             x1 = w;
             y1 = h / 2;
-        }
-        else if(Math.abs(finalAngle) % 90 == 0) {
+        } else if (Math.abs(finalAngle) % 90 == 0) {
             x0 = w / 2;
             y0 = 0;
             x1 = w / 2;
             y1 = h;
-        }
-        else {
+        } else {
 
             double m = Math.tan(Math.toRadians(finalAngle));
             double n = (h / 2) - m * (w / 2);
@@ -120,19 +117,17 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
             double xz = -n / m;
             double xh = (h - n) / m;
 
-            if(n < h && n >= 0) {
+            if (n < h && n >= 0) {
                 x0 = 0;
                 y0 = n;
                 x1 = w;
                 y1 = m * x1 + n;
-            }
-            else if(n < h) {
+            } else if (n < h) {
                 x0 = xz;
                 y0 = xz * m + n;
                 x1 = xh;
                 y1 = xh * m + n;
-            }
-            else {
+            } else {
                 x0 = xh;
                 y0 = xh * m + n;
                 x1 = xz;
@@ -140,7 +135,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
             }
         }
 
-        if(invert) {
+        if (invert) {
             double sx = x0;
             double sy = y0;
             x0 = x1;
@@ -149,7 +144,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
             y1 = sy;
         }
 
-        return new double[] {x0, y0, x1, y1};
+        return new double[]{x0, y0, x1, y1};
     }
 
     @Override
@@ -169,7 +164,7 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
         g2.setColor(color);
         g2.drawLine(x0, y0, x1, y1);
 
-        if(finalArrowSize > 0) {
+        if (finalArrowSize > 0) {
             // Draw arrowhead
             double angle = Math.atan2(y1 - y0, x1 - x0);
             int ax1 = (int) (x1 - arrowSize * Math.cos(angle - Math.PI / 6));
@@ -188,16 +183,16 @@ public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
         int y0 = (int) lineCoordinates[1];
         int x1 = (int) lineCoordinates[2];
         int y1 = (int) lineCoordinates[3];
-        graphics2D.drawLine(x + x0, y + y0,x +  x1,y + y1);
-        if(arrowSize > 0) {
+        graphics2D.drawLine(x + x0, y + y0, x + x1, y + y1);
+        if (arrowSize > 0) {
             int finalArrowSize = 5;
             double angle = Math.atan2(y1 - y0, x1 - x0);
             int ax1 = (int) (x1 - finalArrowSize * Math.cos(angle - Math.PI / 6));
             int ay1 = (int) (y1 - finalArrowSize * Math.sin(angle - Math.PI / 6));
             int ax2 = (int) (x1 - finalArrowSize * Math.cos(angle + Math.PI / 6));
             int ay2 = (int) (y1 - finalArrowSize * Math.sin(angle + Math.PI / 6));
-            graphics2D.drawLine(x + x1, y + y1,x + ax1,y+ ay1);
-            graphics2D.drawLine(x + x1, y + y1, x+ ax2, y + ay2);
+            graphics2D.drawLine(x + x1, y + y1, x + ax1, y + ay1);
+            graphics2D.drawLine(x + x1, y + y1, x + ax2, y + ay2);
         }
     }
 }

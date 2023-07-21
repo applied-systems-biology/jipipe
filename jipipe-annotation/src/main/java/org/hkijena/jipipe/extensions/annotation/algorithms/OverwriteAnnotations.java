@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Overwrite annotations", description = "Copies annotations from the source data into the target data.")
+@JIPipeDocumentation(name = "Copy/overwrite annotations", description = "Copies annotations from the source data into the target data.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Target", autoCreate = true, description = "The target data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Source", autoCreate = true, description = "The data where the annotations are sourced from")
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Target", autoCreate = true, inheritedSlot = "Target", description = "Annotated target")

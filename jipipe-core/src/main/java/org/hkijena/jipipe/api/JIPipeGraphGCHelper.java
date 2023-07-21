@@ -2,7 +2,6 @@ package org.hkijena.jipipe.api;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -170,6 +169,10 @@ public class JIPipeGraphGCHelper {
         return "Graph GC [" + gcGraph.vertexSet().size() + " vertices, " + gcGraph.edgeSet().size() + " edges]";
     }
 
+    public interface SlotCompletedEventListener {
+        void onGCSlotCompletedEvent(SlotCompletedEvent event);
+    }
+
     public static class SlotCompletedEvent extends AbstractJIPipeEvent {
         private final JIPipeDataSlot slot;
 
@@ -181,10 +184,6 @@ public class JIPipeGraphGCHelper {
         public JIPipeDataSlot getSlot() {
             return slot;
         }
-    }
-
-    public interface SlotCompletedEventListener {
-        void onGCSlotCompletedEvent(SlotCompletedEvent event);
     }
 
     public static class SlotCompletedEventEmitter extends JIPipeEventEmitter<SlotCompletedEvent, SlotCompletedEventListener> {

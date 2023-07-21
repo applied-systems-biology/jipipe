@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.tables.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -23,6 +22,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableCellExpressionParameterVariableSource;
@@ -89,10 +91,10 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Columns").report(columns);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        report.report(new ParameterValidationReportContext(context, this, "Columns", "columns"), columns);
     }
-
 
     @JIPipeDocumentation(name = "Columns", description = "Columns to be generated")
     @JIPipeParameter("columns")

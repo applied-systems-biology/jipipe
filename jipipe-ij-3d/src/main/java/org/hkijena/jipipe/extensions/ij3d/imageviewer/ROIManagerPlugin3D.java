@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.ij3d.imageviewer;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import customnode.CustomMesh;
 import customnode.CustomMultiMesh;
@@ -22,7 +21,7 @@ import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.Roi3DDrawer;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin3D;

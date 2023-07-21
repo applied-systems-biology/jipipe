@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.ijweka.parameters.collections;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.BorderMode;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.BorderMode;
 
 public class WekaTiling2DSettings extends AbstractJIPipeParameterCollection {
     private boolean applyTiling = true;

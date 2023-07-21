@@ -96,6 +96,18 @@ public class JIPipeNotificationInbox {
         inbox.dismissedEventEmitter.subscribeLambda((emitter, event) -> inbox.dismiss(event.notification.getId()));
     }
 
+    public interface PushedEventListener {
+        void onNotificationPushed(PushedEvent event);
+    }
+
+    public interface DismissedEventListener {
+        void onNotificationDismissed(DismissedEvent event);
+    }
+
+    public interface UpdatedEventListener {
+        void onNotificationInboxUpdated(UpdatedEvent event);
+    }
+
     public static class PushedEvent extends AbstractJIPipeEvent {
         private final JIPipeNotificationInbox inbox;
         private final JIPipeNotification notification;
@@ -113,10 +125,6 @@ public class JIPipeNotificationInbox {
         public JIPipeNotification getNotification() {
             return notification;
         }
-    }
-
-    public interface PushedEventListener {
-        void onNotificationPushed(PushedEvent event);
     }
 
     public static class PushedEventEmitter extends JIPipeEventEmitter<PushedEvent, PushedEventListener> {
@@ -146,10 +154,6 @@ public class JIPipeNotificationInbox {
         }
     }
 
-    public interface DismissedEventListener {
-        void onNotificationDismissed(DismissedEvent event);
-    }
-
     public static class DismissedEventEmitter extends JIPipeEventEmitter<DismissedEvent, DismissedEventListener> {
 
         @Override
@@ -172,10 +176,6 @@ public class JIPipeNotificationInbox {
         public JIPipeNotificationInbox getInbox() {
             return inbox;
         }
-    }
-
-    public interface UpdatedEventListener {
-        void onNotificationInboxUpdated(UpdatedEvent event);
     }
 
     public static class UpdatedEventEmitter extends JIPipeEventEmitter<UpdatedEvent, UpdatedEventListener> {

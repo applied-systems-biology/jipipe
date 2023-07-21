@@ -3,22 +3,16 @@ package org.hkijena.jipipe.extensions.scene3d.model.geometries;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import gnu.trove.impl.Constants;
-import gnu.trove.list.TFloatList;
-import gnu.trove.map.TFloatIntMap;
 import gnu.trove.map.TObjectIntMap;
-import gnu.trove.map.hash.TFloatIntHashMap;
 import gnu.trove.map.hash.TObjectIntHashMap;
-import gnu.trove.set.TFloatSet;
-import gnu.trove.set.hash.TFloatHashSet;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 import org.joml.Vector3f;
 
 import java.awt.*;
-import java.util.*;
-import java.util.List;
+import java.util.Arrays;
+import java.util.Objects;
 
 public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
 
@@ -30,8 +24,9 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
 
     /**
      * Creates a mesh object
+     *
      * @param vertices the vertices (unindexed, 9 values per vertex)
-     * @param normals the normals (9 values per vertex)
+     * @param normals  the normals (9 values per vertex)
      */
     public Scene3DUnindexedMeshGeometry(float[] vertices, float[] normals) {
         this.vertices = Objects.requireNonNull(vertices);
@@ -63,10 +58,20 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
         return vertices;
     }
 
+    @JsonSetter("vertices")
+    public void setVertices(float[] vertices) {
+        this.vertices = vertices;
+    }
+
     @JsonGetter("normals")
     @Override
     public float[] getNormals() {
         return normals;
+    }
+
+    @JsonSetter("normals")
+    public void setNormals(float[] normals) {
+        this.normals = normals;
     }
 
     @Override
@@ -75,18 +80,8 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
         return index;
     }
 
-    @JsonSetter("vertices")
-    public void setVertices(float[] vertices) {
-        this.vertices = vertices;
-    }
-
-    @JsonSetter("normals")
-    public void setNormals(float[] normals) {
-        this.normals = normals;
-    }
-
     private void ensureIndex() {
-        if(index == null) {
+        if (index == null) {
             index = new int[getNumVertices() * 3];
             for (int i = 0; i < getNumVertices() * 3; i++) {
                 index[i] = i;
@@ -131,6 +126,7 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
 
     /**
      * Converts this unindexed mesh geometry into an optimized, indexed mesh geometry
+     *
      * @param progressInfo the progress info
      * @return the indexed geometry
      */
@@ -145,11 +141,11 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
 
         for (int i = 0; i < vertices.length / 3; i++) {
 
-            int nextPercentage = (int)(100.0 * i / (vertices.length / 3));
+            int nextPercentage = (int) (100.0 * i / (vertices.length / 3));
 
-            if(nextPercentage != lastPercentage) {
+            if (nextPercentage != lastPercentage) {
 
-                if(progressInfo.isCancelled()) {
+                if (progressInfo.isCancelled()) {
                     return null;
                 }
 
@@ -163,11 +159,11 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
             int vertexIndex = uniqueVertices.get(vertex);
             int normalIndex = uniqueNormals.get(normal);
 
-            if(vertexIndex < 0) {
+            if (vertexIndex < 0) {
                 vertexIndex = uniqueVertices.size();
                 uniqueVertices.put(vertex, vertexIndex);
             }
-            if(normalIndex < 0) {
+            if (normalIndex < 0) {
                 normalIndex = uniqueNormals.size();
                 uniqueNormals.put(normal, normalIndex);
             }
@@ -176,7 +172,7 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
             normalsIndex[i] = normalIndex;
         }
 
-        if(progressInfo.isCancelled()) {
+        if (progressInfo.isCancelled()) {
             return null;
         }
 
@@ -204,6 +200,6 @@ public class Scene3DUnindexedMeshGeometry implements Scene3DMeshGeometry {
 
     @Override
     public String toString() {
-        return String.format("Unindexed mesh (%d faces, %d MB)", getNumVertices(), ((vertices.length + normals.length) * 32L) / 1024 / 1024 );
+        return String.format("Unindexed mesh (%d faces, %d MB)", getNumVertices(), ((vertices.length + normals.length) * 32L) / 1024 / 1024);
     }
 }

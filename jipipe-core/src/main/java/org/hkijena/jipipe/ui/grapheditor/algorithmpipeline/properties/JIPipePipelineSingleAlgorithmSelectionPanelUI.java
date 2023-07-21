@@ -34,7 +34,6 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeAdvancedParameterEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeSlotEditorUI;
 import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -47,7 +46,6 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -87,6 +85,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 this::createParametersPanel, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
+
             JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
             tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                     () -> slotEditorUI,
@@ -148,7 +147,6 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         add(tabbedPane, BorderLayout.CENTER);
 
 
-
         // Lazy content
         tabbedPane.getTabbedPane().addChangeListener(e -> activateLazyContent(tabbedPane));
         restoreTabState();
@@ -168,10 +166,10 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         panel.add(parametersUI, BorderLayout.CENTER);
 
         // Advanced parameters
-        if((node instanceof JIPipeParameterSlotAlgorithm) || (node instanceof JIPipeAdaptiveParametersAlgorithm)) {
+        if ((node instanceof JIPipeParameterSlotAlgorithm) || (node instanceof JIPipeAdaptiveParametersAlgorithm)) {
             MessagePanel messagePanel = new MessagePanel();
             panel.add(messagePanel, BorderLayout.NORTH);
-            if(node instanceof JIPipeParameterSlotAlgorithm) {
+            if (node instanceof JIPipeParameterSlotAlgorithm) {
                 JButton configureButton = new JButton("Configure", UIUtils.getIconFromResources("actions/configure.png"));
                 configureButton.addActionListener(e -> {
                     ParameterPanel.showDialog(getWorkbench(),
@@ -191,9 +189,9 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 helpButton.addActionListener(e -> MarkdownReader.showDialog(MarkdownDocument.fromPluginResource("documentation/multi-parameters.md", Collections.emptyMap()), true, "About external parameters", this, false));
                 UIUtils.makeFlat(helpButton);
 
-                messagePanel.addMessage(MessagePanel.MessageType.Gray, "External parameters are supported", false, false,configureButton, toggleButton, helpButton);
+                messagePanel.addMessage(MessagePanel.MessageType.Gray, "External parameters are supported", false, false, configureButton, toggleButton, helpButton);
             }
-            if(node instanceof JIPipeAdaptiveParametersAlgorithm) {
+            if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
                 JButton configureButton = new JButton("Configure", UIUtils.getIconFromResources("actions/configure.png"));
                 JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
                 helpButton.addActionListener(e -> MarkdownReader.showDialog(MarkdownDocument.fromPluginResource("documentation/adaptive-parameters.md", Collections.emptyMap()), true, "About external parameters", this, false));
@@ -208,13 +206,13 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                     node.getParameterUIChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterUIChangedEvent(node));
                 });
 
-                messagePanel.addMessage(MessagePanel.MessageType.Gray, "Adaptive parameters are supported", false, false,configureButton, helpButton);
+                messagePanel.addMessage(MessagePanel.MessageType.Gray, "Adaptive parameters are supported", false, false, configureButton, helpButton);
             }
 
         }
 
         // Additional tabs for the help panel
-        parametersUI.getDocumentationTabPane().addTab("Available nodes", UIUtils.getIconFromResources("actions/configuration.png"),
+        parametersUI.getDocumentationTabPane().addTab("Available nodes", UIUtils.getIconFromResources("actions/graph-node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         parametersUI.getDocumentationTabPane().addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),

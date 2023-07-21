@@ -16,15 +16,11 @@ import java.util.function.BiConsumer;
  */
 public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> implements Disposable {
 
-    private boolean disposed = false;
-
     private final List<Subscriber<Event, Listener>> subscribers = new ArrayList<>();
-
     private final Map<Listener, Subscriber<Event, Listener>> listenerSubscriberMap = new IdentityHashMap<>();
-
     private final AtomicInteger emittingDepth = new AtomicInteger(0);
-
     private final AtomicBoolean copyOnWriteActive = new AtomicBoolean();
+    private boolean disposed = false;
 
     private void addSubscriber(Subscriber<Event, Listener> subscriber) {
         if (disposed) {
@@ -87,11 +83,10 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
                         if (subscriber.isPresent()) {
                             try {
                                 subscriber.call(this, event);
-                            }
-                            catch (Throwable e) {
+                            } catch (Throwable e) {
                                 e.printStackTrace();
                             }
-                            if(subscriber.requestGCImmediatelyAfterCall()) {
+                            if (subscriber.requestGCImmediatelyAfterCall()) {
                                 needsGC = true;
                             }
                         } else {

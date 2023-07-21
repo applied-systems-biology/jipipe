@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.extensions.ijfilaments.util.Point3d;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.AnalyzeSkeleton2D3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.analyze.AnalyzeSkeleton2D3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;

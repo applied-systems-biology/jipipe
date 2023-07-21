@@ -13,14 +13,16 @@
 
 package org.hkijena.jipipe;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.app.StatusService;
@@ -71,24 +73,31 @@ public class JIPipeRunCommand implements Command {
             JIPipe.getInstance().initialize(extensionSettings, issues);
         }
         if (!extensionSettings.isSilent()) {
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            issues.reportValidity(report);
-            if (!report.isValid()) {
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            issues.reportValidity(new UnspecifiedValidationReportContext(), report);
+            if (!report.isEmpty()) {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(null, report, "Errors while initializing JIPipe", "There were some issues while initializing JIPipe. Please run the JIPipe GUI for more information.", false);
+                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                            null,
+                            report,
+                            "Errors while initializing JIPipe",
+                            "There were some issues while initializing JIPipe. Please run the JIPipe GUI for more information.",
+                            false);
                 }
             }
         }
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile.toPath(), new JIPipeIssueReport(), new JIPipeNotificationInbox());
+            project = JIPipeProject.loadProject(projectFile.toPath(), new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
             project.setWorkDirectory(projectFile.toPath().getParent());
 
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load project from '" + projectFile.toString() + "'!",
-                    "Run JIPipe project", "Either the provided parameter file does not exist or is inaccessible, or it was corrupted.",
+            throw new JIPipeValidationRuntimeException(
+                    e,
+                    "Could not load project from '" + projectFile.toString() + "'!",
+                    "Either the provided parameter file does not exist or is inaccessible, or it was corrupted.",
                     "Try to load the parameter file in the JIPipe GUI.");
         }
 

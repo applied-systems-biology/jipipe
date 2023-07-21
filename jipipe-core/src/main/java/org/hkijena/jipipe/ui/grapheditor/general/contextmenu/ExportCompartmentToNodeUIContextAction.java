@@ -13,12 +13,13 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
@@ -42,14 +43,19 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
         JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) canvasUI.getWorkbench();
         JIPipeProject project = projectWorkbench.getProject();
         final UUID compartmentId = compartment.getProjectCompartmentUUID();
-        JIPipeIssueReport report = new JIPipeIssueReport();
+        JIPipeValidationReport report = new JIPipeValidationReport();
         for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
             if (Objects.equals(node.getCompartmentUUIDInParentGraph(), compartmentId)) {
-                report.resolve(node.getDisplayName()).report(node);
+                report.report(new GraphNodeValidationReportContext(node), node);
             }
         }
-        if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(canvasUI, report, "Issues with nodes", "The following issues were found with the contained nodes. Retry after resolving the problems.", false);
+        if (!report.isEmpty()) {
+            UIUtils.openValidityReportDialog(canvasUI.getWorkbench(),
+                    canvasUI,
+                    report,
+                    "Issues with nodes",
+                    "The following issues were found with the contained nodes. Retry after resolving the problems.",
+                    false);
             return;
         }
 

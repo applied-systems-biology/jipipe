@@ -1,23 +1,15 @@
 package org.hkijena.jipipe.extensions.scene3d.nodes;
 
-import ij.IJ;
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DToColladaExporter;
@@ -37,6 +29,8 @@ import java.util.Set;
 @JIPipeInputSlot(value = Scene3DData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "3D scenes")
+@Deprecated
+@JIPipeHidden
 public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();

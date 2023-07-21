@@ -15,6 +15,8 @@ public class NotificationUISettings extends AbstractJIPipeParameterCollection {
     private StringList blockedNotifications = new StringList();
     private boolean enableNotifications = true;
 
+    private boolean showNotificationsAfterFirstStart = true;
+
     public static NotificationUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, NotificationUISettings.class);
     }
@@ -88,4 +90,14 @@ public class NotificationUISettings extends AbstractJIPipeParameterCollection {
         this.enableNotifications = enableNotifications;
     }
 
+    @JIPipeDocumentation(name = "Show action notifications on first start", description = "If enabled, show the list of action notifications on the first start of JIPipe")
+    @JIPipeParameter("show-notifications-after-first-start")
+    public boolean isShowNotificationsAfterFirstStart() {
+        return showNotificationsAfterFirstStart;
+    }
+
+    @JIPipeParameter("show-notifications-after-first-start")
+    public void setShowNotificationsAfterFirstStart(boolean showNotificationsAfterFirstStart) {
+        this.showNotificationsAfterFirstStart = showNotificationsAfterFirstStart;
+    }
 }

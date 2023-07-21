@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.compartments.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
@@ -25,6 +24,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -126,17 +127,17 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     /**
      * @return The project
      */
-    public JIPipeProject getProject() {
+    public JIPipeProject getRuntimeProject() {
         return project;
     }
 
     /**
      * Sets the project. Internal use only.
      *
-     * @param project The project
+     * @param runtimeProject The project
      */
-    public void setProject(JIPipeProject project) {
-        this.project = project;
+    public void setRuntimeProject(JIPipeProject runtimeProject) {
+        this.project = runtimeProject;
         updateExportedParameters();
     }
 
@@ -157,7 +158,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
 
     }
 

@@ -13,18 +13,21 @@
 
 package org.hkijena.jipipe.api.grouping;
 
-import com.google.common.eventbus.Subscribe;
+import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
@@ -251,9 +254,10 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        report.resolve("Wrapped graph").report(wrappedGraph);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+
+        report.report(new ParameterValidationReportContext(context, this, "Wrapped graph", "wrapped-graph"), wrappedGraph);
     }
 
     @Override
@@ -311,6 +315,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
             if (withLimit) {
+                progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
                 List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < dataBatches.size(); i++) {
                     if (allowedIndices.contains(i)) {
@@ -319,8 +324,16 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 }
                 dataBatches = limitedBatches;
             }
-            if (batchGenerationSettings.isSkipIncompleteDataSets()) {
-                dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+            List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
+            for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+                if (dataBatch.isIncomplete()) {
+                    incomplete.add(dataBatch);
+                    progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+                }
+            }
+            if (!incomplete.isEmpty() && batchGenerationSettings.isSkipIncompleteDataSets()) {
+                progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
+                dataBatches.removeAll(incomplete);
             }
             return dataBatches;
         }
@@ -352,6 +365,16 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         if (wrappedGraph != null) {
             for (JIPipeGraphNode node : wrappedGraph.getGraphNodes()) {
                 node.setProjectDirectory(projectDirectory);
+            }
+        }
+    }
+
+    @Override
+    public void setRuntimeProject(JIPipeProject runtimeProject) {
+        super.setRuntimeProject(runtimeProject);
+        if (wrappedGraph != null) {
+            for (JIPipeGraphNode node : wrappedGraph.getGraphNodes()) {
+                node.setRuntimeProject(runtimeProject);
             }
         }
     }

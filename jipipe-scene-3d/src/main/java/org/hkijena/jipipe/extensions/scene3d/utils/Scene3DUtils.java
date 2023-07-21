@@ -14,7 +14,7 @@ public class Scene3DUtils {
     }
 
     public static void checkUnindexedPolygonArray(float[] vertices) {
-        if(vertices.length % 9 != 0) {
+        if (vertices.length % 9 != 0) {
             throw new IllegalArgumentException("Invalid vertex array: length not divisable by 3");
         }
     }
@@ -72,12 +72,12 @@ public class Scene3DUtils {
         for (int i = 0; i < vertices.length / 9; i++) {
             boolean invalid = false;
             for (int j = i * 9; j < (i + 1) * 9; j++) {
-                if(Float.isNaN(normals[j])) {
+                if (Float.isNaN(normals[j])) {
                     invalid = true;
                     break;
                 }
             }
-            if(invalid) {
+            if (invalid) {
                 for (int j = i * 9; j < (i + 1) * 9; j++) {
                     mask[j] = true;
                 }
@@ -89,7 +89,7 @@ public class Scene3DUtils {
     public static float[] filterArray(float[] arr, boolean[] mask, boolean maskToKeep) {
         TFloatArrayList masked = new TFloatArrayList(arr.length);
         for (int i = 0; i < arr.length; i++) {
-            if(mask[i] == maskToKeep) {
+            if (mask[i] == maskToKeep) {
                 masked.add(arr[i]);
             }
         }
@@ -97,10 +97,10 @@ public class Scene3DUtils {
     }
 
     public static void checkUnindexedNormalsArray(float[] vertices, float[] normals) {
-        if(vertices.length % 9 != 0) {
+        if (vertices.length % 9 != 0) {
             throw new IllegalArgumentException("Invalid vertex array: length not divisable by 3");
         }
-        if(vertices.length != normals.length) {
+        if (vertices.length != normals.length) {
             throw new IllegalArgumentException("Invalid normals array: length not the same as number of vertex data!");
         }
     }
@@ -109,8 +109,8 @@ public class Scene3DUtils {
         int nPoints = (int) Math.max(1, Math.max(radius1, radius2) * Math.PI * 2 * subDiv);
 
         // The coordinate zero vector
-        Vector3f start = new Vector3f(x1,y1,z1);
-        Vector3f end = new Vector3f(x2,y2,z2);
+        Vector3f start = new Vector3f(x1, y1, z1);
+        Vector3f end = new Vector3f(x2, y2, z2);
         // The normal vector (the new Z)
         Vector3f newZ = new Vector3f(x2 - x1, y2 - y1, z2 - z1);
         // The perpendicular vectors (the new X and Y)
@@ -180,7 +180,7 @@ public class Scene3DUtils {
 
         double circXY = Math.PI * (radiusX + radiusY);
         int numDivisionsLatitude = (int) Math.max(radiusZ * subDiv, 1);
-        int numDivisionsLongtitude = (int)Math.max(circXY * subDiv, 1);
+        int numDivisionsLongtitude = (int) Math.max(circXY * subDiv, 1);
 
         double latitudeStep = Math.PI / numDivisionsLatitude; // North-South
         double longitudeStep = 2 * Math.PI / numDivisionsLongtitude; // East-West

@@ -14,11 +14,16 @@
 package org.hkijena.jipipe;
 
 import net.imagej.ImageJ;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
+import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.ui.ijupdater.MissingRegistrationUpdateSiteResolver;
+import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.command.Command;
@@ -27,6 +32,7 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -83,7 +89,7 @@ public class JIPipeGUICommand implements Command {
         } catch (Exception e) {
             e.printStackTrace();
             if (!extensionSettings.isSilent())
-                UIUtils.openErrorDialog(null, e);
+                UIUtils.openErrorDialog(new JIPipeDummyWorkbench(), null, e);
             return;
         }
 
@@ -92,10 +98,10 @@ public class JIPipeGUICommand implements Command {
             resolveMissingImageJDependencies(issues);
 
             {
-                JIPipeIssueReport report = new JIPipeIssueReport();
-                issues.reportValidity(report);
+                JIPipeValidationReport report = new JIPipeValidationReport();
+                issues.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(null, report, "JIPipe extension registy", "Issues were detected during the initialization of certain extensions. " +
+                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(), null, report, "JIPipe extension registry", "Issues were detected during the initialization of certain extensions. " +
                             "Please review the following items. Close the window to ignore the messages and load JIPipe.", true);
                 }
             }
@@ -109,6 +115,41 @@ public class JIPipeGUICommand implements Command {
                     JIPipeProjectWindow.getDefaultTemplateProject(),
                     true,
                     true);
+
+            // Show notifications
+            if (NotificationUISettings.getInstance().isShowNotificationsAfterFirstStart()) {
+                if (!JIPipeNotificationInbox.getInstance().isEmpty()) {
+                    SwingUtilities.invokeLater(() -> {
+                        WorkbenchNotificationInboxUI inboxUI = new WorkbenchNotificationInboxUI(window.getProjectUI());
+                        JFrame frame = new JFrame();
+                        frame.setTitle("JIPipe - Notifications");
+                        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+
+
+                        JPanel panel = new JPanel(new BorderLayout());
+                        panel.add(inboxUI, BorderLayout.CENTER);
+
+                        JCheckBox showMessageCheckbox = new JCheckBox("Show notifications on JIPipe startup");
+                        showMessageCheckbox.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+                        showMessageCheckbox.setSelected(true);
+                        showMessageCheckbox.addActionListener(e -> NotificationUISettings.getInstance().setShowNotificationsAfterFirstStart(showMessageCheckbox.isSelected()));
+                        panel.add(showMessageCheckbox, BorderLayout.SOUTH);
+
+                        JIPipeNotificationInbox.getInstance().getUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+                            if (JIPipeNotificationInbox.getInstance().isEmpty()) {
+                                frame.setVisible(false);
+                            }
+                        });
+
+                        frame.setContentPane(panel);
+
+                        frame.pack();
+                        frame.setSize(new Dimension(1024, 768));
+                        frame.setLocationRelativeTo(null);
+                        frame.setVisible(true);
+                    });
+                }
+            }
         });
     }
 

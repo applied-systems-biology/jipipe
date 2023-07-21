@@ -30,7 +30,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
@@ -41,6 +40,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.*;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventEmitter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
@@ -82,8 +84,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -118,27 +120,19 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeGraphEditorToolRegistry graphEditorToolRegistry;
 
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
+    private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
+    private final ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new ExtensionContentAddedEventEmitter();
+    private final ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new ExtensionContentRemovedEventEmitter();
+    private final ExtensionDiscoveredEventEmitter extensionDiscoveredEventEmitter = new ExtensionDiscoveredEventEmitter();
+    private final ExtensionRegisteredEventEmitter extensionRegisteredEventEmitter = new ExtensionRegisteredEventEmitter();
+    private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
+    private final NodeTemplatesRefreshedEventEmitter nodeTemplatesRefreshedEventEmitter = new NodeTemplatesRefreshedEventEmitter();
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
     @Parameter
     private LogService logService;
-
     @Parameter
     private PluginService pluginService;
-
-    private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
-
-    private final ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new ExtensionContentAddedEventEmitter();
-
-    private final ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new ExtensionContentRemovedEventEmitter();
-
-    private final ExtensionDiscoveredEventEmitter extensionDiscoveredEventEmitter = new ExtensionDiscoveredEventEmitter();
-
-    private final ExtensionRegisteredEventEmitter extensionRegisteredEventEmitter = new ExtensionRegisteredEventEmitter();
-
-    private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
-
-    private final NodeTemplatesRefreshedEventEmitter nodeTemplatesRefreshedEventEmitter = new NodeTemplatesRefreshedEventEmitter();
 
     public JIPipe() {
         nodeRegistry = new JIPipeNodeRegistry(this);
@@ -210,40 +204,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
     public static JIPipeDatatypeRegistry getDataTypes() {
         return instance.datatypeRegistry;
-    }
-
-    public NodeTemplatesRefreshedEventEmitter getNodeTemplatesRefreshedEventEmitter() {
-        return nodeTemplatesRefreshedEventEmitter;
-    }
-
-    @Override
-    public DatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
-        return datatypeRegisteredEventEmitter;
-    }
-
-    @Override
-    public ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
-        return extensionContentAddedEventEmitter;
-    }
-
-    @Override
-    public ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
-        return extensionContentRemovedEventEmitter;
-    }
-
-    @Override
-    public ExtensionDiscoveredEventEmitter getExtensionDiscoveredEventEmitter() {
-        return extensionDiscoveredEventEmitter;
-    }
-
-    @Override
-    public ExtensionRegisteredEventEmitter getExtensionRegisteredEventEmitter() {
-        return extensionRegisteredEventEmitter;
-    }
-
-    @Override
-    public NodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter() {
-        return nodeInfoRegisteredEventEmitter;
     }
 
     /**
@@ -344,7 +304,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
     public static JIPipeProject loadProject(Path fileName) throws IOException {
-        return loadProject(fileName, new JIPipeIssueReport(), new JIPipeNotificationInbox());
+        return loadProject(fileName, new JIPipeValidationReport(), new JIPipeNotificationInbox());
     }
 
     /**
@@ -356,7 +316,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
     public static JIPipeProject loadProject(Path fileName, JIPipeNotificationInbox notifications) throws IOException {
-        return loadProject(fileName, new JIPipeIssueReport(), notifications);
+        return loadProject(fileName, new JIPipeValidationReport(), notifications);
     }
 
     /**
@@ -368,8 +328,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
-        return JIPipeProject.loadProject(fileName, report, notifications);
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
+        return JIPipeProject.loadProject(fileName, new UnspecifiedValidationReportContext(), report, notifications);
     }
 
     /**
@@ -380,8 +340,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
-        return JIPipeProject.loadProject(fileName, report, new JIPipeNotificationInbox());
+    public static JIPipeProject loadProject(Path fileName, JIPipeValidationReport report) throws IOException {
+        return JIPipeProject.loadProject(fileName, new UnspecifiedValidationReportContext(), report, new JIPipeNotificationInbox());
     }
 
     /**
@@ -529,7 +489,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             return ConstructorUtils.invokeConstructor(klass, constructorParameters);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
                  InstantiationException e) {
-            throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
+            throw new JIPipeValidationRuntimeException(e, "Cannot create data instance!", "There is an error in the code that provides the annotation type.",
                     "Please contact the author of the plugin that provides the annotation type " + klass);
         }
     }
@@ -572,6 +532,40 @@ public class JIPipe extends AbstractService implements JIPipeService {
             return true;
         }
         return false;
+    }
+
+    public NodeTemplatesRefreshedEventEmitter getNodeTemplatesRefreshedEventEmitter() {
+        return nodeTemplatesRefreshedEventEmitter;
+    }
+
+    @Override
+    public DatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
+        return datatypeRegisteredEventEmitter;
+    }
+
+    @Override
+    public ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
+        return extensionContentAddedEventEmitter;
+    }
+
+    @Override
+    public ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
+        return extensionContentRemovedEventEmitter;
+    }
+
+    @Override
+    public ExtensionDiscoveredEventEmitter getExtensionDiscoveredEventEmitter() {
+        return extensionDiscoveredEventEmitter;
+    }
+
+    @Override
+    public ExtensionRegisteredEventEmitter getExtensionRegisteredEventEmitter() {
+        return extensionRegisteredEventEmitter;
+    }
+
+    @Override
+    public NodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter() {
+        return nodeInfoRegisteredEventEmitter;
     }
 
     public JIPipeExpressionRegistry getTableOperationRegistry() {
@@ -644,12 +638,10 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 if (!isValidExtensionId(extension.getDependencyId())) {
                     System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
                     progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
-                }
-                else {
-                    if(!allJavaExtensionsByID.containsKey(extension.getDependencyId())) {
+                } else {
+                    if (!allJavaExtensionsByID.containsKey(extension.getDependencyId())) {
                         allJavaExtensionsByID.put(extension.getDependencyId(), extension);
-                    }
-                    else {
+                    } else {
                         System.err.println("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder");
                         progressInfo.log("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder");
                     }
@@ -669,16 +661,16 @@ public class JIPipe extends AbstractService implements JIPipeService {
             impliedLoadedJavaExtensionsChanged = false;
             for (JIPipeJavaExtension extension : allJavaExtensionInstances) {
                 if (extension.isCoreExtension() || extensionRegistry.getStartupExtensions().contains(extension.getDependencyId()) || impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
-                    if(isValidExtensionId(extension.getDependencyId())) {
-                        if(!impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
+                    if (isValidExtensionId(extension.getDependencyId())) {
+                        if (!impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
                             progressInfo.log("-> Core/User: " + extension.getDependencyId());
                             impliedLoadedJavaExtensions.add(extension.getDependencyId());
                             impliedLoadedJavaExtensionsChanged = true;
                         }
                     }
                     for (JIPipeDependency dependency : extension.getDependencies()) {
-                        if(isValidExtensionId(dependency.getDependencyId())) {
-                            if(!impliedLoadedJavaExtensions.contains(dependency.getDependencyId())) {
+                        if (isValidExtensionId(dependency.getDependencyId())) {
+                            if (!impliedLoadedJavaExtensions.contains(dependency.getDependencyId())) {
                                 impliedLoadedJavaExtensions.add(dependency.getDependencyId());
                                 impliedLoadedJavaExtensionsChanged = true;
                                 progressInfo.log("-> Required by " + extension.getDependencyId() + ": " + dependency.getDependencyId());
@@ -706,17 +698,19 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 }
 
                 // Extension self-check
-                JIPipeIssueReport preActivationIssues = new JIPipeIssueReport();
+                JIPipeValidationReport preActivationIssues = new JIPipeValidationReport();
                 issues.getPreActivationIssues().put(extension.getDependencyId(), preActivationIssues);
                 if (!extension.canActivate(preActivationIssues, progressInfo.resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
                     if (!extensionSettings.isIgnorePreActivationChecks()) {
-                        preActivationIssues.resolve("Registry").reportIsInvalid("Extension '" + extension.getMetadata().getName() + "' refuses to activate!",
-                                "The extension's pre-activation check failed. It will not be activated.",
-                                "Please refer to the other items if available.",
-                                extension);
+                        preActivationIssues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                                new JavaExtensionValidationReportContext(extension),
+                                "Extension '" + extension.getMetadata().getName() + "' refuses to activate!",
+                                "The extension's pre-activation check failed. It will not be activated. Please refer to the other items if available.",
+                                null,
+                                null));
                         progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
                         loadedJavaExtensions.add(null);
-                        if(!StringUtils.isNullOrEmpty(extension.getDependencyId())) {
+                        if (!StringUtils.isNullOrEmpty(extension.getDependencyId())) {
                             progressInfo.log("Extension with ID " + extension.getDependencyId() + " was removed from the list of activated extensions");
                             extensionRegistry.getSettings().getActivatedExtensions().remove(extension.getDependencyId());
                             preActivationScheduledSave = true;
@@ -741,7 +735,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         }
 
         // Save extension settings
-        if(preActivationScheduledSave) {
+        if (preActivationScheduledSave) {
             extensionRegistry.save();
         }
 
@@ -827,8 +821,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 ((JIPipeJavaExtension) extension).postprocess(postprocessingProgress);
             }
         }
+        postprocessingProgress.log("Converting display operations to import operations ...");
         datatypeRegistry.convertDisplayOperationsToImportOperations();
+        postprocessingProgress.log("Registering examples ...");
         nodeRegistry.executeScheduledRegisterExamples();
+        postprocessingProgress.log("Registering extension-provided templates ...");
+        nodeRegistry.executeScheduledRegisterTemplates();
 
         // Check recent projects and backups
         progressInfo.setProgress(6);
@@ -848,12 +846,12 @@ public class JIPipe extends AbstractService implements JIPipeService {
             long lastTime = System.currentTimeMillis();
             long maxDifference = Math.max(0, autoSaveSettings.getMaxBackupCheckTimeSeconds() * 1000);
             for (Path path : autoSaveSettings.getLastBackups()) {
-                if(!Files.exists(path)) {
+                if (!Files.exists(path)) {
                     invalidBackups.add(path);
                 }
                 long currentTime = System.currentTimeMillis();
                 long timeDifference = currentTime - lastTime;
-                if(maxDifference > 0 && timeDifference > maxDifference) {
+                if (maxDifference > 0 && timeDifference > maxDifference) {
 
                     progressInfo.log("Backup checking was cancelled. The time of " + (timeDifference / 1000.0) + " exceeded " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s");
 
@@ -863,7 +861,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     notification.setDescription("Checking the backups took " + (timeDifference / 1000.0) + "s, which is higher than the limit of " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s.\n\n" +
                             "You might want to clean your backups by cleaning duplicate backups. If this does not help, you can also open the backup directory manually.\n\n" +
                             "The limit can be changed by navigating to Project/Application settings/General/Backup/Maximum backup checking time (s)");
-                    notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the message", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {}));
+                    notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the message", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {
+                    }));
                     notification.getActions().add(new JIPipeNotificationAction("Remove duplicate backups", "Opens a tool to detect and remove duplicate backups", UIUtils.getIconFromResources("actions/clear-brush.png"),
                             workbench -> AutoSaveSettings.getInstance().removeDuplicateBackups(workbench)));
                     notification.getActions().add(new JIPipeNotificationAction("Open backup directory", "Opens the directory that contains the backups", UIUtils.getIconFromResources("actions/folder-open.png"),
@@ -880,7 +879,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
             }
         }
 
-        autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
+//        autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
         if (!invalidBackups.isEmpty()) {
             autoSaveSettings.getLastBackups().removeAll(invalidBackups);
         }
@@ -910,10 +909,14 @@ public class JIPipe extends AbstractService implements JIPipeService {
             notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the newly available extensions. You will not be warned again about them.", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {
                 extensionRegistry.dismissNewExtensions();
             }));
-            notification.getActions().add(new JIPipeNotificationAction("Open in extension manager", "Opens the extension manager. You will not be warned again about the new extensions.", UIUtils.getIconFromResources("actions/plugins.png"), workbench -> {
-                extensionRegistry.dismissNewExtensions();
-                workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_PLUGIN_MANAGER);
-            }));
+            notification.getActions().add(new JIPipeNotificationAction("Open in extension manager",
+                    "Opens the extension manager. You will not be warned again about the new extensions.",
+                    UIUtils.getIconInvertedFromResources("actions/plugins.png"),
+                    JIPipeNotificationAction.Style.Success,
+                    workbench -> {
+                        extensionRegistry.dismissNewExtensions();
+                        workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_PLUGIN_MANAGER);
+                    }));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
 
@@ -1033,12 +1036,13 @@ public class JIPipe extends AbstractService implements JIPipeService {
                 JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
                     if (JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
-                        throw new UserFriendlyRuntimeException("Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
-                                + algorithm + " -> " + entry.getKey(),
+                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                new UnspecifiedValidationReportContext(),
                                 "A plugin is invalid!",
-                                "JIPipe plugin checker",
+                                "Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
+                                        + algorithm + " -> " + entry.getKey(),
                                 "There is an error in the plugin's code that makes it use an unsupported parameter type.",
-                                "Please contact the plugin author for further help.");
+                                "Please contact the plugin author for further help."));
                     }
                 }
 
@@ -1047,9 +1051,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     algorithm.duplicate();
                 } catch (Exception e1) {
                     e1.printStackTrace();
-                    throw new UserFriendlyRuntimeException(e1,
+                    throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
-                            "JIPipe plugin checker",
                             "There is an error in the plugin's code that prevents the copying of a node.",
                             "Please contact the plugin author for further help.");
                 }
@@ -1059,9 +1062,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     JsonUtils.toJsonString(algorithm);
                 } catch (Exception e1) {
                     e1.printStackTrace();
-                    throw new UserFriendlyRuntimeException(e1,
+                    throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
-                            "JIPipe plugin checker",
                             "There is an error in the plugin's code that prevents the saving of a node.",
                             "Please contact the plugin author for further help.");
                 }
@@ -1073,9 +1075,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
                     }
                 } catch (Exception e1) {
                     e1.printStackTrace();
-                    throw new UserFriendlyRuntimeException(e1,
+                    throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
-                            "JIPipe plugin checker",
                             "There is an error in the plugin's code that prevents the cache state generation of a node.",
                             "Please contact the plugin author for further help.");
                 }
@@ -1317,18 +1318,20 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Nodes").report(nodeRegistry);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        report.report(context, nodeRegistry);
         for (JIPipeDependency extension : failedExtensions) {
             if (extension != null) {
-                report.resolve("Extensions").resolve(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
-                        "There was an error while loading the extension. Please refer to the message that you get on restarting JIPipe.",
-                        "Please refer to the message that you get on restarting JIPipe.",
-                        failedExtensions);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new JavaExtensionValidationReportContext(extension),
+                        "Error during loading the extension!",
+                        "There was an error while loading the extension. Please refer to the message that you get on restarting JIPipe. Please refer to the message that you get on restarting JIPipe.",
+                        null,
+                        null));
             }
         }
         for (JIPipeDependency extension : registeredExtensions) {
-            report.resolve("Extensions").resolve(extension.getDependencyId()).report(extension);
+            report.report(context, extension);
         }
     }
 

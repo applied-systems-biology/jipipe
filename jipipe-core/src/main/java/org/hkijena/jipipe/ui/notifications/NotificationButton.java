@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.notifications;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
@@ -36,9 +35,9 @@ public class NotificationButton extends JButton implements JIPipeNotificationInb
 
     private final JIPipeWorkbench workbench;
     private final Timer timer;
+    private final Set<JIPipeNotification> notificationSet = new TreeSet<>();
+    private final List<String> headings = new ArrayList<>();
     private AnimatedIcon warningIcon;
-    private Set<JIPipeNotification> notificationSet = new TreeSet<>();
-    private List<String> headings = new ArrayList<>();
     private int currentHeading;
 
     /**

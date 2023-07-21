@@ -17,7 +17,6 @@ import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.JIPipeService;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -25,6 +24,8 @@ import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -132,8 +133,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
             documentTabPane.selectSingletonTab(TAB_INTRODUCTION);
 
         // Register modification state watchers
-        project.getGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) ->  setProjectModified(true));
-        project.getCompartmentGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) ->  setProjectModified(true));
+        project.getGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) -> setProjectModified(true));
+        project.getCompartmentGraph().getGraphChangedEventEmitter().subscribeLambda((emitter, event) -> setProjectModified(true));
 
         // Install the run notifier
         JIPipeRunQueueNotifier.install();
@@ -233,13 +234,13 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 () -> new JIPipeModernPluginManagerUI(this),
                 DocumentTabPane.SingletonTabMode.Hidden);
-        validityCheckerPanel = new ReloadableValidityChecker(project);
+        validityCheckerPanel = new ReloadableValidityChecker(this, project);
         documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,
                 "Project validation",
                 UIUtils.getIconFromResources("actions/checkmark.png"),
                 () -> validityCheckerPanel,
                 DocumentTabPane.SingletonTabMode.Hidden);
-        pluginValidityCheckerPanel = new JIPipePluginValidityCheckerPanel();
+        pluginValidityCheckerPanel = new JIPipePluginValidityCheckerPanel(this);
         documentTabPane.registerSingletonTab(TAB_PLUGIN_VALIDITY_CHECK,
                 "Plugin validation",
                 UIUtils.getIconFromResources("actions/plugins.png"),
@@ -338,7 +339,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
     public DocumentTabPane.DocumentTab getOrOpenPipelineEditorTab(JIPipeProjectCompartment compartment, boolean switchToTab) {
         List<JIPipePipelineGraphEditorUI> compartmentUIs = findOpenPipelineEditorTabs(compartment);
         if (compartmentUIs.isEmpty()) {
-            JIPipePipelineGraphEditorUI compartmentUI = new JIPipePipelineGraphEditorUI(this, compartment.getProject().getGraph(), compartment.getProjectCompartmentUUID());
+            JIPipePipelineGraphEditorUI compartmentUI = new JIPipePipelineGraphEditorUI(this, compartment.getRuntimeProject().getGraph(), compartment.getProjectCompartmentUUID());
             DocumentTabPane.DocumentTab documentTab = documentTabPane.addTab(compartment.getName(),
                     UIUtils.getIconFromResources("actions/graph-compartment.png"),
                     compartmentUI,
@@ -842,10 +843,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
      * Exports the whole graph as pipeline
      */
     private void exportProjectAsAlgorithm() {
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        report.report(getProject().getGraph());
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        report.report(new UnspecifiedValidationReportContext(), getProject().getGraph());
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, "Error while exporting", "There seem to be various issues with the project. Please resolve these and try to export the project again.", false);
+            UIUtils.openValidityReportDialog(this,
+                    this,
+                    report,
+                    "Error while exporting",
+                    "There seem to be various issues with the project. Please resolve these and try to export the project again.",
+                    false);
             return;
         }
         NodeGroup nodeGroup = new NodeGroup(new JIPipeGraph(getProject().getGraph()), true, false, true);
@@ -862,7 +868,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
     /**
      * Validates the project
      *
-     * @param avoidSwitching Do no switch to the validity checker tab if the project is OK
+     * @param avoidSwitching Do not switch to the validity checker tab if the project is OK
      */
     public void validateProject(boolean avoidSwitching) {
         validityCheckerPanel.recheckValidity();

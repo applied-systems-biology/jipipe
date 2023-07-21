@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "last index of substring", description = "Finds the last index of a substring in the string. " +
+@JIPipeDocumentation(name = "Last index of substring", description = "Finds the last index of a substring in the string. " +
         "Returns -1 if the substring is not contained in the string.")
 public class StringLastIndexOfFunction extends ExpressionFunction {
 

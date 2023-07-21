@@ -19,7 +19,6 @@ import omero.gateway.model.FileAnnotationData;
 import omero.gateway.model.ImageData;
 import omero.gateway.model.TableData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -97,15 +96,6 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeParameter("credentials")
     public OMEROCredentials getCredentials() {
         return credentials;
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        if (tagAnnotation.isEnabled())
-            report.resolve("Tag annotation").checkNonEmpty(getTagAnnotation().getContent(), null);
-        if (fileNameAnnotation.isEnabled())
-            report.resolve("Annotate with file name").checkNonEmpty(getFileNameAnnotation().getContent(), null);
     }
 
     @JIPipeDocumentation(name = "Annotate with tags", description = "Creates an annotation with given key and writes the tags into them in JSON format.")

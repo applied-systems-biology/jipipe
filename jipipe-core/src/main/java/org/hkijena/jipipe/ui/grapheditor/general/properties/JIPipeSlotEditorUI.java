@@ -45,8 +45,8 @@ public class JIPipeSlotEditorUI extends JPanel implements JIPipeGraphNode.NodeSl
     private JTree slotTree;
 
     /**
-     * @param editorUI  the editor that shows the slot editor
-     * @param node The algorithm
+     * @param editorUI the editor that shows the slot editor
+     * @param node     The algorithm
      */
     public JIPipeSlotEditorUI(JIPipeGraphEditorUI editorUI, JIPipeGraphNode node) {
         this.editorUI = editorUI;

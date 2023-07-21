@@ -7,7 +7,7 @@ public enum SizeFitMode {
     Fit,
     FitWidth,
     FitHeight;
-    
+
     public Dimension fitSize(int availableWidth, int availableHeight, int imageWidth, int imageHeight, double scaleFactor) {
         int newWidth, newHeight;
         double factorH = 1.0 * availableHeight / imageHeight;

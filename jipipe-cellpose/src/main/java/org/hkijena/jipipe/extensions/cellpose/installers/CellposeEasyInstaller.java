@@ -66,6 +66,11 @@ public class CellposeEasyInstaller extends EasyInstallExternalEnvironmentInstall
     }
 
     @Override
+    public HTMLText getFinishedMessage() {
+        return new HTMLText("Cellpose was successfully installed. You can close this window.");
+    }
+
+    @Override
     protected void writeEnvironmentToParameters(PythonEnvironment environment, JIPipeParameterAccess parameterAccess) {
         if (OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
             parameterAccess.set(new OptionalPythonEnvironment(environment));

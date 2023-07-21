@@ -14,13 +14,18 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -61,14 +66,6 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
         Path slotPath = outputData.toPath().resolve(compartmentId).resolve(nodeId).resolve(slotName);
         dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(slotPath), progressInfo);
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        report.resolve("Node ID").checkNonEmpty(nodeId, this);
-        report.resolve("Slot name").checkNonEmpty(slotName, this);
-        report.resolve("Compartment ID").checkNonEmpty(compartmentId, this);
     }
 
     @JIPipeDocumentation(name = "Node alias ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +
@@ -116,7 +113,7 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
-                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeIssueReport(), new JIPipeNotificationInbox());
+                JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
                 JIPipeProjectOutputTreePanel panel = new JIPipeProjectOutputTreePanel(project);
                 panel.setBorder(BorderFactory.createEtchedBorder());
                 int result = JOptionPane.showOptionDialog(

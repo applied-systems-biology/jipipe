@@ -4,13 +4,13 @@ import org.apache.commons.lang.StringUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -42,7 +42,10 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
         for (String urlString : urls) {
             try {
                 if (urlString.isEmpty()) {
-                    throw new UserFriendlyRuntimeException(new NullPointerException(), "Invalid URL!", "Algoritmh '" + getName() + "'", "You provided a URL '" + urlString + "', but it is invalid.", "Please fix the URL.");
+                    throw new JIPipeValidationRuntimeException(new NullPointerException(),
+                            "Invalid URL!",
+                            "You provided a URL '" + urlString + "', but it is invalid.",
+                            "Please fix the URL.");
                 }
                 URL url = new URL(urlString);
                 String s = StringUtils.stripEnd(urlString, " /\\");
@@ -53,7 +56,10 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
 
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(targetFile), progressInfo);
             } catch (MalformedURLException e) {
-                throw new UserFriendlyRuntimeException(e, "Invalid URL!", "Algorithm '" + getName() + "'", "You provided a URL '" + urlString + "', but it is invalid.", "Please fix the URL.");
+                throw new JIPipeValidationRuntimeException(e,
+                        "Invalid URL!",
+                        "You provided a URL '" + urlString + "', but it is invalid.",
+                        "Please fix the URL.");
             }
         }
     }

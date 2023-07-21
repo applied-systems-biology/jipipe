@@ -14,8 +14,8 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import java.awt.*;
 
 public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
-    private OptionalColorParameter overrideVertexColor = new OptionalColorParameter(Color.RED,false);
-    private OptionalColorParameter overrideEdgeColor = new OptionalColorParameter(Color.BLUE,false);
+    private OptionalColorParameter overrideVertexColor = new OptionalColorParameter(Color.RED, false);
+    private OptionalColorParameter overrideEdgeColor = new OptionalColorParameter(Color.BLUE, false);
     private OptionalIntegerParameter overrideVertexRadius = new OptionalIntegerParameter(false, 1);
     private OptionalIntegerParameter overrideEdgeThickness = new OptionalIntegerParameter(false, 1);
     private boolean drawVertices = true;
@@ -184,7 +184,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
     }
 
     public void drawFilamentsOnProcessor(Filaments3DData graph, ColorProcessor processor, int z, int c, int t) {
-        if(drawEdges) {
+        if (drawEdges) {
             for (FilamentEdge edge : graph.edgeSet()) {
                 FilamentVertex source = graph.getEdgeSource(edge);
                 FilamentVertex target = graph.getEdgeTarget(edge);
@@ -200,11 +200,11 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
 
                 int sourceRadius = (int) source.getRadius();
                 int targetRadius = (int) target.getRadius();
-                if(overrideVertexRadius.isEnabled()) {
+                if (overrideVertexRadius.isEnabled()) {
                     sourceRadius = overrideVertexRadius.getContent();
                     targetRadius = overrideVertexRadius.getContent();
                 }
-                if(overrideEdgeThickness.isEnabled()) {
+                if (overrideEdgeThickness.isEnabled()) {
                     sourceRadius = overrideEdgeThickness.getContent();
                     targetRadius = overrideEdgeThickness.getContent();
                 }
@@ -218,7 +218,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                         z);
             }
         }
-        if(drawVertices) {
+        if (drawVertices) {
             for (FilamentVertex vertex : graph.vertexSet()) {
 //            if(vertex.getSpatialLocation().getZ() != z && !ignoreZ)
 //                continue;
@@ -257,35 +257,32 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
         int rgb = color.getRGB();
         int imageWidth = processor.getWidth();
         int imageHeight = processor.getHeight();
-        if(radius <= 0) {
-            if(targetZ == imageZ) {
-                if(opacity >= 1 && blendMode == ImageBlendMode.Normal) {
+        if (radius <= 0) {
+            if (targetZ == imageZ) {
+                if (opacity >= 1 && blendMode == ImageBlendMode.Normal) {
                     processor.set(targetX, targetY, blendMode.blend(processor.get(targetX, targetY), rgb, opacity));
-                }
-                else {
+                } else {
                     processor.set(targetX, targetY, rgb);
                 }
             }
-        }
-        else if(Math.abs(imageZ - targetZ) <= radius) {
+        } else if (Math.abs(imageZ - targetZ) <= radius) {
             int[] pixels = (int[]) processor.getPixels();
             for (int y = targetY - radius; y < targetY + radius; y++) {
-                if(y < 0 || y >= imageHeight)
+                if (y < 0 || y >= imageHeight)
                     continue;
                 for (int x = targetX - radius; x < targetX + radius; x++) {
-                    if(x < 0 || x >= imageWidth)
+                    if (x < 0 || x >= imageWidth)
                         continue;
                     double k = Math.pow(x - targetX, 2) + Math.pow(y - targetY, 2) + Math.pow(imageZ - targetZ, 2);
-                    if(k > radius * radius) {
+                    if (k > radius * radius) {
                         continue;
                     }
-                    if(hollow && k < Math.pow(radius - 1, 2)) {
+                    if (hollow && k < Math.pow(radius - 1, 2)) {
                         continue;
                     }
-                    if(opacity >= 1 && blendMode == ImageBlendMode.Normal) {
+                    if (opacity >= 1 && blendMode == ImageBlendMode.Normal) {
                         pixels[x + y * imageWidth] = rgb;
-                    }
-                    else {
+                    } else {
                         pixels[x + y * imageWidth] = blendMode.blend(pixels[x + y * imageWidth], rgb, opacity);
                     }
                 }
@@ -294,7 +291,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
     }
 
     public void drawFilamentsOnGraphics(Filaments3DData graph, Graphics2D graphics2D, Rectangle renderArea, double magnification, int z, int c, int t, boolean drawMuted) {
-        if(drawEdges) {
+        if (drawEdges) {
             for (FilamentEdge edge : graph.edgeSet()) {
                 FilamentVertex source = graph.getEdgeSource(edge);
                 FilamentVertex target = graph.getEdgeTarget(edge);
@@ -310,11 +307,11 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
 
                 int sourceRadius = (int) source.getRadius();
                 int targetRadius = (int) target.getRadius();
-                if(overrideVertexRadius.isEnabled()) {
+                if (overrideVertexRadius.isEnabled()) {
                     sourceRadius = overrideVertexRadius.getContent();
                     targetRadius = overrideVertexRadius.getContent();
                 }
-                if(overrideEdgeThickness.isEnabled()) {
+                if (overrideEdgeThickness.isEnabled()) {
                     sourceRadius = overrideEdgeThickness.getContent();
                     targetRadius = overrideEdgeThickness.getContent();
                 }
@@ -331,7 +328,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                         drawMuted);
             }
         }
-        if(drawVertices) {
+        if (drawVertices) {
             for (FilamentVertex vertex : graph.vertexSet()) {
 //            if(vertex.getSpatialLocation().getZ() != z && !ignoreZ)
 //                continue;
@@ -368,39 +365,36 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
     }
 
     private void drawBallOnGraphics(int targetX, int targetY, int targetZ, Color color, int radius, boolean hollow, Graphics2D graphics2D, int imageZ, Rectangle renderArea, double magnification, boolean drawMuted) {
-        if(drawMuted) {
+        if (drawMuted) {
             color = ColorUtils.scaleHSV(color, 0.8f, 1, 0.5f);
         }
-        if(opacity < 1) {
+        if (opacity < 1) {
             color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (color.getAlpha() * opacity));
         }
         graphics2D.setColor(color);
         int renderWidth = renderArea.width;
         int renderHeight = renderArea.height;
-        int magTargetX = (int)(targetX * magnification);
-        int magTargetY = (int)(targetY * magnification);
-        int magTargetZ = (int)(targetZ * magnification);
+        int magTargetX = (int) (targetX * magnification);
+        int magTargetY = (int) (targetY * magnification);
+        int magTargetZ = (int) (targetZ * magnification);
         double magRadius = radius * magnification;
 
-        if(radius <= 0) {
-            if(targetZ == imageZ) {
-                graphics2D.drawRect(magTargetX + renderArea.x, magTargetY + renderArea.y, Math.max(1, (int)magnification), Math.max(1, (int)magnification));
+        if (radius <= 0) {
+            if (targetZ == imageZ) {
+                graphics2D.drawRect(magTargetX + renderArea.x, magTargetY + renderArea.y, Math.max(1, (int) magnification), Math.max(1, (int) magnification));
             }
-        }
-        else if(Math.abs(imageZ - targetZ) <= radius) {
+        } else if (Math.abs(imageZ - targetZ) <= radius) {
             double radiusAtZ = Math.cos(Math.abs(imageZ - targetZ)) * magRadius;
-            int radiusAtZ_ = (int)radiusAtZ;
+            int radiusAtZ_ = (int) radiusAtZ;
 
-            if(radiusAtZ_ <= 0) {
-                if(targetZ == imageZ) {
-                    graphics2D.drawRect(magTargetX + renderArea.x, magTargetY + renderArea.y, Math.max(1, (int)magnification), Math.max(1, (int)magnification));
+            if (radiusAtZ_ <= 0) {
+                if (targetZ == imageZ) {
+                    graphics2D.drawRect(magTargetX + renderArea.x, magTargetY + renderArea.y, Math.max(1, (int) magnification), Math.max(1, (int) magnification));
                 }
-            }
-            else {
-                if(hollow) {
+            } else {
+                if (hollow) {
                     graphics2D.drawOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
-                }
-                else {
+                } else {
                     graphics2D.fillOval((int) (magTargetX - radiusAtZ + renderArea.x), (int) (magTargetY - radiusAtZ + renderArea.y), (int) (radiusAtZ * 2), (int) (radiusAtZ * 2));
                 }
             }

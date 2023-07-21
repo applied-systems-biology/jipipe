@@ -42,7 +42,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
     protected void paintShape(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom) {
         int nodeWidth = nodeUI.getWidth();
         int nodeHeight = nodeUI.getHeight();
-        if(imageParameters.backgroundColor.isEnabled()) {
+        if (imageParameters.backgroundColor.isEnabled()) {
             g2.setColor(imageParameters.backgroundColor.getContent());
             g2.fillRect(0, 0, nodeWidth, nodeHeight);
         }
@@ -50,7 +50,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
 
         // Image
         BufferedImage image = imageParameters.getImage().getImage();
-        if(image != null) {
+        if (image != null) {
             Dimension fitted = imageParameters.getFitMode().fitSize(nodeWidth, nodeHeight, image.getWidth(), image.getHeight(), 1);
             int fittedWidth = (int) (fitted.width * Math.max(0.01, imageParameters.scaleX));
             int fittedHeight = (int) (fitted.height * Math.max(0.01, imageParameters.scaleY));
@@ -94,7 +94,7 @@ public class ImageBoxAnnotationGraphNode extends AbstractTextBoxAnnotationGraphN
         // Border
         g2.setColor(imageParameters.borderColor);
         g2.setStroke(new BasicStroke(finalBorderThickness));
-        g2.drawRect(finalBorderThickness / 2,finalBorderThickness / 2, nodeWidth - finalBorderThickness, nodeHeight - finalBorderThickness);
+        g2.drawRect(finalBorderThickness / 2, finalBorderThickness / 2, nodeWidth - finalBorderThickness, nodeHeight - finalBorderThickness);
     }
 
     @Override

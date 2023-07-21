@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.grapheditor.general;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;

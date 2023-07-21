@@ -15,10 +15,11 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 /**
  * Supplies additional validation only for projects
@@ -36,15 +37,16 @@ public class JIPipeJsonExtensionProjectValidation implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        extension.reportValidity(report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        extension.reportValidity(context, report);
         for (JsonNodeInfo info : extension.getNodeInfos()) {
             if (!StringUtils.isNullOrEmpty(info.getId())) {
                 if (JIPipe.getNodes().hasNodeInfoWithId(info.getId())) {
-                    report.resolve("Algorithms").resolve(info.getName()).reportIsInvalid("Already registered: " + info.getId(),
+                    report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, new JsonNodeInfoValidationReportContext(info),
+                            "Already registered: " + info.getId(),
                             "Currently there is already an algorithm with the same ID.",
-                            "If this is intenional, you do not need to do something. If not, please assign an unique identifier.",
-                            info);
+                            "If this is intentional, you do not need to do something. If not, please assign an unique identifier.",
+                            JsonUtils.toPrettyJsonString(info)));
                 }
             }
         }

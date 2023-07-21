@@ -6,17 +6,20 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
@@ -24,10 +27,10 @@ import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeGPUSettings;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary.ConnectedComponentsLabeling3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
@@ -425,11 +428,11 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         if (pretrainedModel == CellposePretrainedModel.Custom) {
             Set<Integer> pretrainedModelRows = dataBatch.getInputRows("Pretrained model");
             if (pretrainedModelRows.size() != 1) {
-                throw new UserFriendlyRuntimeException("Only one pretrained model is allowed",
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
                         "Only one pretrained model is allowed",
-                        getDisplayName(),
                         "You can only provide one pretrained model per data batch for training.",
-                        "Ensure that only one pretrained model is in a data batch.");
+                        "Ensure that only one pretrained model is in a data batch."));
             }
             CellposeModelData modelData = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo).get(0);
             customModelPath = workDirectory.resolve(modelData.getName());
@@ -638,7 +641,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
     }
 
     @Override
-    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
         CellposeExtension.createMissingPythonNotificationIfNeeded(notifications);
     }

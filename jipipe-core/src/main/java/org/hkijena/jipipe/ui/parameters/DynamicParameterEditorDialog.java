@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.parameters;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.*;

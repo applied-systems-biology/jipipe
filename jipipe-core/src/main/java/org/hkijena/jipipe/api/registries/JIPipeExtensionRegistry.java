@@ -60,12 +60,10 @@ public class JIPipeExtensionRegistry {
     private final Set<String> scheduledActivateExtensions = new HashSet<>();
     private final Set<String> scheduledDeactivateExtensions = new HashSet<>();
     private final Set<String> newExtensions = new HashSet<>();
+    private final ScheduledDeactivateExtensionEventEmitter scheduledDeactivateExtensionEventEmitter = new ScheduledDeactivateExtensionEventEmitter();
+    private final ScheduledActivateExtensionEventEmitter scheduledActivateExtensionEventEmitter = new ScheduledActivateExtensionEventEmitter();
     private Settings settings = new Settings();
     private DefaultDirectedGraph<JIPipeDependency, DefaultEdge> dependencyGraph;
-
-    private final ScheduledDeactivateExtensionEventEmitter scheduledDeactivateExtensionEventEmitter = new ScheduledDeactivateExtensionEventEmitter();
-
-    private final ScheduledActivateExtensionEventEmitter scheduledActivateExtensionEventEmitter = new ScheduledActivateExtensionEventEmitter();
 
 
     public JIPipeExtensionRegistry(JIPipe jiPipe) {
@@ -414,6 +412,14 @@ public class JIPipeExtensionRegistry {
         return jiPipe;
     }
 
+    public interface ScheduledActivateExtensionEventListener {
+        void onScheduledActivateExtension(ScheduledActivateExtensionEvent event);
+    }
+
+    public interface ScheduledDeactivateExtensionEventListener {
+        void onScheduledDeactivateExtension(ScheduledDeactivateExtensionEvent event);
+    }
+
     /**
      * Triggered by {@link JIPipeExtensionRegistry} when an extension is scheduled to be activated
      */
@@ -428,10 +434,6 @@ public class JIPipeExtensionRegistry {
         public String getExtensionId() {
             return extensionId;
         }
-    }
-
-    public interface ScheduledActivateExtensionEventListener {
-        void onScheduledActivateExtension(ScheduledActivateExtensionEvent event);
     }
 
     public static class ScheduledActivateExtensionEventEmitter extends JIPipeEventEmitter<ScheduledActivateExtensionEvent, ScheduledActivateExtensionEventListener> {
@@ -456,10 +458,6 @@ public class JIPipeExtensionRegistry {
         public String getExtensionId() {
             return extensionId;
         }
-    }
-
-    public interface ScheduledDeactivateExtensionEventListener {
-        void onScheduledDeactivateExtension(ScheduledDeactivateExtensionEvent event);
     }
 
     public static class ScheduledDeactivateExtensionEventEmitter extends JIPipeEventEmitter<ScheduledDeactivateExtensionEvent, ScheduledDeactivateExtensionEventListener> {

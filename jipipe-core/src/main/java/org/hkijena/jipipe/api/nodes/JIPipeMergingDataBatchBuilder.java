@@ -30,10 +30,9 @@ public class JIPipeMergingDataBatchBuilder {
 
     private static final Set<String> REFERENCE_COLUMN_MERGE_ALL = Sets.newHashSet("{{}}MERGE_ALL");
     private static final Set<String> REFERENCE_COLUMN_SPLIT_ALL = Sets.newHashSet("{{}}SPLIT_ALL");
-
+    private final List<JIPipeDataSlot> slotList = new ArrayList<>();
+    private final Map<String, JIPipeDataSlot> slots = new HashMap<>();
     private JIPipeGraphNode node;
-    private List<JIPipeDataSlot> slotList = new ArrayList<>();
-    private Map<String, JIPipeDataSlot> slots = new HashMap<>();
     private Set<String> referenceColumns = new HashSet<>();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
@@ -618,10 +617,9 @@ public class JIPipeMergingDataBatchBuilder {
 
         public boolean isCompatibleTo(RowNode otherNode, JIPipeTextAnnotationMatchingMethod annotationMatchingMethod, DefaultExpressionParameter customAnnotationMatching, boolean forceNAIsAny) {
             boolean exactMatchResults;
-            if(forceNAIsAny && annotations.containsKey("")) {
+            if (forceNAIsAny && annotations.containsKey("")) {
                 exactMatchResults = true;
-            }
-            else {
+            } else {
                 Set<String> annotationsToTest = new HashSet<>(annotations.keySet());
                 annotationsToTest.retainAll(otherNode.annotations.keySet());
                 exactMatchResults = true;

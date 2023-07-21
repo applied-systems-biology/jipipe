@@ -13,22 +13,17 @@
 
 package org.hkijena.jipipe.extensions.ijfilaments.display;
 
-import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerCacheDataViewerWindow;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Map;
 

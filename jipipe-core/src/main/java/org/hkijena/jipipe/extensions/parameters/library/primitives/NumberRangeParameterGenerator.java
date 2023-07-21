@@ -14,10 +14,14 @@
 package org.hkijena.jipipe.extensions.parameters.library.primitives;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -36,20 +40,20 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
     private double stepSize = 1;
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (minNumber <= maxNumber) {
             if (stepSize <= 0) {
-                report.reportIsInvalid("Invalid step size!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Invalid step size!",
                         "The step size cannot be zero or negative.",
                         "Please ensure that the step size is greater than zero.",
-                        this);
+                        JsonUtils.toPrettyJsonString(this)));
             }
         } else {
             if (stepSize >= 0) {
-                report.reportIsInvalid("Invalid step size!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Invalid step size!",
                         "The step size cannot be zero or negative.",
                         "Please ensure that the step size is greater than zero.",
-                        this);
+                        JsonUtils.toPrettyJsonString(this)));
             }
         }
     }

@@ -5,9 +5,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
-import ij.gui.ShapeRoi;
 import ij.measure.Calibration;
-import ij.measure.ResultsTable;
 import ij.plugin.filter.Analyzer;
 import ij.process.*;
 import inra.ijpb.binary.BinaryImages;
@@ -19,8 +17,9 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ROI2DRelationMeasurement;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.ROI2DRelationMeasurement;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -29,11 +28,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.vecmath.Point2d;
-
-import java.util.Map;
 
 public class ImageJAlgorithmUtils {
 
@@ -405,7 +401,7 @@ public class ImageJAlgorithmUtils {
         }
     }
 
-    public static void measureROIRelation(ImagePlus referenceImage, ROIListData roi1List, ROIListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization, 
+    public static void measureROIRelation(ImagePlus referenceImage, ROIListData roi1List, ROIListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization,
                                           boolean preciseColocalization, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
         int maxItems = roi1List.size() * roi2List.size();
         int currentItems = 0;
@@ -457,7 +453,7 @@ public class ImageJAlgorithmUtils {
                 ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PercentageColocalization)) {
 
             Roi intersection = ImageJUtils.intersectROI(roi1, roi2);
-            if(intersection != null) {
+            if (intersection != null) {
                 double intersectionArea = ImageJUtils.measureROI(intersection, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
                 if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Colocalization)) {
                     target.setValueAt(intersectionArea, row, columnPrefix + "Colocalization");
@@ -465,12 +461,11 @@ public class ImageJAlgorithmUtils {
                 if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PercentageColocalization)) {
                     double roi1Area = ImageJUtils.measureROI(roi1, reference, physicalUnits, Measurement.Area).getValueAsDouble(0, "Area");
                     double percentage = roi1Area / intersectionArea * 100;
-                    if(!Double.isFinite(percentage))
+                    if (!Double.isFinite(percentage))
                         percentage = 0;
                     target.setValueAt(percentage, row, columnPrefix + "PercentageColocalization");
                 }
-            }
-            else {
+            } else {
                 if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.Colocalization)) {
                     target.setValueAt(0, row, columnPrefix + "Colocalization");
                 }
@@ -500,7 +495,7 @@ public class ImageJAlgorithmUtils {
             double[] contourCentroid2 = roi2.getContourCentroid();
             Point2d roi1Center = new Point2d(contourCentroid1[0], contourCentroid1[1]);
             Point2d roi2Center = new Point2d(contourCentroid2[0], contourCentroid2[1]);
-            if(physicalUnits && reference != null) {
+            if (physicalUnits && reference != null) {
                 roi1Center.x /= reference.getCalibration().pixelWidth;
                 roi1Center.y /= reference.getCalibration().pixelHeight;
             }

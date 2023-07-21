@@ -24,15 +24,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
-import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -52,18 +52,16 @@ import java.util.stream.Collectors;
  */
 @JsonDeserialize(as = JIPipeJsonExtension.class, using = JIPipeJsonExtension.Deserializer.class)
 public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection implements JIPipeExtension, JIPipeValidatable {
+    private final JIPipeService.ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new JIPipeService.ExtensionContentAddedEventEmitter();
+    private final JIPipeService.ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new JIPipeService.ExtensionContentRemovedEventEmitter();
     private String id;
     private String version = "1.0.0";
     private JIPipeMetadata metadata = new JIPipeMetadata();
     private Path jsonFilePath;
     private JIPipe registry;
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependenciesParameter = new JIPipeImageJUpdateSiteDependency.List();
-
     private Set<JsonNodeInfo> nodeInfos = new HashSet<>();
     private JsonNode serializedJson;
-
-    private final JIPipeService.ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new JIPipeService.ExtensionContentAddedEventEmitter();
-    private final JIPipeService.ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new JIPipeService.ExtensionContentRemovedEventEmitter();
 
     /**
      * Creates a new instance
@@ -82,18 +80,11 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
         try {
             return JsonUtils.getObjectMapper().readerFor(JIPipeJsonExtension.class).readValue(jsonData);
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
+            throw new JIPipeValidationRuntimeException(e,
+                    "Could not load JSON plugin.",
+                    "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
                     "Try to update JIPipe. If this does not work, contact the plugin's author.");
         }
-    }
-
-    public JIPipeService.ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
-        return extensionContentAddedEventEmitter;
-    }
-
-    public JIPipeService.ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
-        return extensionContentRemovedEventEmitter;
     }
 
     /**
@@ -107,10 +98,19 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
             JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
             return loadProject(jsonData);
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not load JSON plugin.",
-                    "JIPipe JSON extension loader", "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
+            throw new JIPipeValidationRuntimeException(e,
+                    "Could not load JSON plugin.",
+                    "The plugin file was corrupted, so JIPipe does not know how to load some essential information. Or you are using an older JIPipe version.",
                     "Try to update JIPipe. If this does not work, contact the plugin's author.");
         }
+    }
+
+    public JIPipeService.ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
+        return extensionContentAddedEventEmitter;
+    }
+
+    public JIPipeService.ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
+        return extensionContentRemovedEventEmitter;
     }
 
     @Override
@@ -309,40 +309,50 @@ public class JIPipeJsonExtension extends AbstractJIPipeParameterCollection imple
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(getDependencyId())) {
-            report.resolve("ID").reportIsInvalid("The ID is empty!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new ParameterValidationReportContext(context, this, "Extension ID", "dependency-id"),
+                    "The ID is empty!",
                     "A JSON extension must be identified with a unique ID to allow JIPipe to find dependencies.",
-                    " Please provide a valid ID.",
-                    this);
+                    "Please provide a valid ID.",
+                    JsonUtils.toPrettyJsonString(this)));
         } else if (!getDependencyId().contains(":")) {
-            report.resolve("ID").reportIsInvalid("Malformed ID!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new ParameterValidationReportContext(context, this, "Extension ID", "dependency-id"),
+                    "Malformed ID!",
                     "The ID should contain some information about the plugin author (organization, ...) to prevent future collisions.",
                     "The ID must have following structure: <Organization>:<Name> e.g. org.hkijena.jipipe:my-plugin",
-                    this);
+                    JsonUtils.toPrettyJsonString(this)));
         }
         if (StringUtils.isNullOrEmpty(getDependencyVersion())) {
-            report.resolve("Version").reportIsInvalid("The version is empty!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new ParameterValidationReportContext(context, this, "Extension version", "version"),
+                    "The version is empty!",
                     "This allows users of your extension to better get help if issues arise.",
                     "Please provide a valid version number. It has usually following format x.y.z.w",
-                    this);
+                    JsonUtils.toPrettyJsonString(this)));
         }
         if (StringUtils.isNullOrEmpty(getMetadata().getName()) || "New project".equals(getMetadata().getName())) {
-            report.resolve("Name").reportIsInvalid("Invalid name!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new ParameterValidationReportContext(context, this, "Name", "name"),
+                    "Invalid name!",
                     "Your plugin should have a short and meaningful name.",
                     "Please provide a meaningful name for your plugin.",
-                    this);
+                    JsonUtils.toPrettyJsonString(this)));
         }
         if (nodeInfos == null)
             deserializeNodeInfos();
         for (JsonNodeInfo info : nodeInfos) {
-            report.resolve("Algorithms").resolve(info.getName()).report(info);
+            report.report(new JsonNodeInfoValidationReportContext(context, info), info);
         }
         if (nodeInfos.size() != nodeInfos.stream().map(JsonNodeInfo::getId).collect(Collectors.toSet()).size()) {
-            report.resolve("Algorithms").reportIsInvalid("Duplicate IDs found!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "Duplicate IDs found!",
                     "Algorithm IDs must be unique",
                     "Please make sure that IDs are unique.",
-                    this);
+                    JsonUtils.toPrettyJsonString(this)));
         }
     }
 

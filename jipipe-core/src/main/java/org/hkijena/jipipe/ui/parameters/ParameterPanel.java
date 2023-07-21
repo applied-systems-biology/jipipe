@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.collect.Sets;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -200,9 +199,9 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
         markdownString.append(HtmlEscapers.htmlEscaper().escape(tree != null ? tree.getUniqueKey(access) : access.getKey())).append("</code></td></tr>\n\n");
 
         // Node full unique identifier
-        if(access.getSource() instanceof JIPipeGraphNode) {
+        if (access.getSource() instanceof JIPipeGraphNode) {
             JIPipeGraphNode node = (JIPipeGraphNode) access.getSource();
-            if(node.getParentGraph() != null && node.getParentGraph().getProject() != null) {
+            if (node.getParentGraph() != null && node.getParentGraph().getProject() != null) {
                 markdownString.append("<tr><td><img src=\"").append(ResourceUtils.getPluginResource("icons/actions/dialog-xml-editor.png")).append("\" /></td>");
                 markdownString.append("<td><strong>Global parameter identifier</strong>: <code>");
                 String parameterId = tree != null ? tree.getUniqueKey(access) : access.getKey();
@@ -399,7 +398,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
                         groupIcon = UIUtils.getIconFromResources("actions/configure.png");
                     }
                 }
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader(tree.getSourceDocumentationName(parameterCollection), groupIcon);
+                GroupHeaderPanel groupHeaderPanel = addGroupHeader(StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "General"), groupIcon);
                 for (Component leftComponent : leftComponents) {
                     groupHeaderPanel.addColumn(leftComponent);
                 }

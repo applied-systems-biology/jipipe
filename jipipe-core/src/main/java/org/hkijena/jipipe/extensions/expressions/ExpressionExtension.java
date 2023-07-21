@@ -145,6 +145,10 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 DataRowQueryExpression.class,
                 "Data row query",
                 "");
+        registerParameterType("data-export-expression",
+                DataExportExpressionParameter.class,
+                "Data export expression",
+                "Used for exporting data");
         registerExpressionFunction(new ContainsStringPredicateFunction());
         registerExpressionFunction(new EqualsStringPredicateFunction());
         registerExpressionFunction(new GlobStringPredicateFunction());
@@ -278,6 +282,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new VectorNormalizeFunction());
         registerExpressionFunction(new VectorScalarProductFunction());
         registerExpressionFunction(new VectorSubtractFunction());
+        registerExpressionFunction(new StringFixFileNameFunction());
     }
 
     @Override

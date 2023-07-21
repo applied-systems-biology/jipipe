@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.parameters;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -42,7 +41,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
     /**
      * Creates new instance
      *
-     * @param workbench       the workbech
+     * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
     public JIPipeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {

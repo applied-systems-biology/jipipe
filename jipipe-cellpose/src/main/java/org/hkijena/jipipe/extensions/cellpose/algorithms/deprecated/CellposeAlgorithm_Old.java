@@ -5,20 +5,20 @@ import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
@@ -172,13 +172,13 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.resolve("Override Python environment").report(overrideEnvironment.getContent());
+                report.report(context, overrideEnvironment.getContent());
             } else {
-                CellposeSettings.checkPythonSettings(report.resolve("Python"));
+                CellposeSettings.checkPythonSettings(context, report);
             }
         }
     }
@@ -207,11 +207,11 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
             List<CellposeSizeModelData> sizeModels = dataBatch.getInputData("Size model", CellposeSizeModelData.class, progressInfo);
             if (sizeModels.size() > 1) {
-                throw new UserFriendlyRuntimeException("Only 1 size model supported!",
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
                         "Only one size model is supported!",
-                        getDisplayName(),
                         "Currently, the node supports only one size model.",
-                        "Remove or modify inputs so that there is only one size model.");
+                        "Remove or modify inputs so that there is only one size model."));
             }
             if (!sizeModels.isEmpty()) {
                 CellposeSizeModelData sizeModelData = sizeModels.get(0);
@@ -559,7 +559,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
         CellposeExtension.createMissingPythonNotificationIfNeeded(notifications);
     }

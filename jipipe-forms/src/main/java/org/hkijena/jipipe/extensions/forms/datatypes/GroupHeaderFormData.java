@@ -1,11 +1,12 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -27,7 +28,7 @@ public class GroupHeaderFormData extends ParameterFormData {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
 
     }
 
@@ -38,7 +39,7 @@ public class GroupHeaderFormData extends ParameterFormData {
 
     @Override
     public Component getEditor(JIPipeWorkbench workbench) {
-        FormPanel.GroupHeaderPanel panel = new FormPanel.GroupHeaderPanel(getName(), UIUtils.getIconFromResources("actions/configure.png"));
+        FormPanel.GroupHeaderPanel panel = new FormPanel.GroupHeaderPanel(getName(), UIUtils.getIconFromResources("actions/configure.png"), 8);
         panel.setDescription(getDescription().getHtml());
         return panel;
     }

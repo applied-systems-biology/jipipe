@@ -18,7 +18,6 @@ import omero.gateway.SecurityContext;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -139,20 +138,6 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     @JIPipeParameter("credentials")
     public OMEROCredentials getCredentials() {
         return credentials;
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        if (datasetNameAnnotation.isEnabled()) {
-            report.resolve("Annotate with dataset name").checkNonEmpty(datasetNameAnnotation.getContent(), this);
-        }
-        if (projectNameAnnotation.isEnabled()) {
-            report.resolve("Annotate with project name").checkNonEmpty(projectNameAnnotation.getContent(), this);
-        }
-        if (tagAnnotation.isEnabled()) {
-            report.resolve("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
-        }
     }
 
     @JIPipeDocumentation(name = "Annotate with dataset name", description = "Creates an annotation with the dataset name")

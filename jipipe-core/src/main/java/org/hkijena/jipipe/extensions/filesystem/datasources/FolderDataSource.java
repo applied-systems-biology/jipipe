@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 
 import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -24,6 +23,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -161,12 +164,14 @@ public class FolderDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (needsToExist && (folderPath == null || !Files.isDirectory(getAbsoluteFolderPath())))
-            report.reportIsInvalid("Input folder path does not exist!",
-                    "The path '" + getAbsoluteFolderPath() + "' does not exist.",
-                    "Please provide a valid input file.",
-                    this);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (needsToExist && (folderPath == null || !Files.isDirectory(getAbsoluteFolderPath()))) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
+                    context,
+                    "Input folder does not exist!",
+                    "The folder '" + getAbsoluteFolderPath() + "' does not exist.",
+                    "Please provide a valid input folder."));
+        }
     }
 
     @Override

@@ -20,8 +20,10 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -36,9 +38,9 @@ import java.util.Objects;
 @JsonSerialize(using = FunctionParameter.Serializer.class)
 @JsonDeserialize(using = FunctionParameter.Deserializer.class)
 public abstract class FunctionParameter<I, P, O> implements JIPipeValidatable {
-    private Class<I> inputClass;
-    private Class<P> parameterClass;
-    private Class<O> outputClass;
+    private final Class<I> inputClass;
+    private final Class<P> parameterClass;
+    private final Class<O> outputClass;
     private I input;
     private P parameter;
     private O output;
@@ -68,13 +70,16 @@ public abstract class FunctionParameter<I, P, O> implements JIPipeValidatable {
 
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (input instanceof JIPipeValidatable)
-            report.resolve("Input").report((JIPipeValidatable) input);
-        if (parameter instanceof JIPipeValidatable)
-            report.resolve("Parameter").report((JIPipeValidatable) parameter);
-        if (output instanceof JIPipeValidatable)
-            report.resolve("Output").report((JIPipeValidatable) output);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (input instanceof JIPipeValidatable) {
+            report.report(new CustomValidationReportContext(context, "Input"), (JIPipeValidatable) input);
+        }
+        if (parameter instanceof JIPipeValidatable) {
+            report.report(new CustomValidationReportContext(context, "Parameter"), (JIPipeValidatable) parameter);
+        }
+        if (output instanceof JIPipeValidatable) {
+            report.report(new CustomValidationReportContext(context, "Output"), (JIPipeValidatable) output);
+        }
     }
 
     public I getInput() {

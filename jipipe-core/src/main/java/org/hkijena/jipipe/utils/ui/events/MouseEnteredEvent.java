@@ -7,7 +7,8 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 
 public class MouseEnteredEvent extends MouseEvent implements JIPipeEvent {
-    private JIPipeEventEmitter<?,?> emitter;
+    private JIPipeEventEmitter<?, ?> emitter;
+
     public MouseEnteredEvent(Component source, int id, long when, int modifiers, int x, int y, int clickCount, boolean popupTrigger, int button) {
         super(source, id, when, modifiers, x, y, clickCount, popupTrigger, button);
     }

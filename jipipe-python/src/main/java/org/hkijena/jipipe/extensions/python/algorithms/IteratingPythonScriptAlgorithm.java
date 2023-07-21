@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.python.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -28,6 +27,9 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtension;
@@ -103,14 +105,14 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, report.resolve("Script parameters"));
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(context, this, "Script parameters", "script-parameters"), report);
         if (!isPassThrough()) {
             if (overrideEnvironment.isEnabled()) {
-                report.resolve("Override Python environment").report(overrideEnvironment.getContent());
+                report.report(new ParameterValidationReportContext(context, this, "Override Python environment", "override-python-environment"), overrideEnvironment.getContent());
             } else {
-                PythonExtensionSettings.checkPythonSettings(report.resolve("Python"));
+                PythonExtensionSettings.checkPythonSettings(context, report);
             }
         }
     }
@@ -201,9 +203,9 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+    protected void onDeserialized(JsonNode node, JIPipeValidationReport issues, JIPipeNotificationInbox notifications) {
         super.onDeserialized(node, issues, notifications);
         PythonExtension.createMissingPythonNotificationIfNeeded(notifications);
-        PythonExtension.createOldLibJIPipePythonNotificationIfNeeded(notifications);
+        PythonExtension.createMissingLibJIPipePythonNotificationIfNeeded(notifications);
     }
 }

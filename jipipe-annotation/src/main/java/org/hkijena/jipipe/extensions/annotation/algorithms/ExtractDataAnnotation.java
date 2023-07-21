@@ -6,10 +6,13 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
@@ -45,12 +48,12 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         if (targetedAnnotationName == null) {
             if (ignoreMissingAnnotations)
                 return;
-            throw new UserFriendlyRuntimeException("Could not find data annotation matching '" + annotationNameQuery.getExpression() + "'",
-                    "Could not find data annotation!",
-                    getDisplayName(),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
+                    "Could not find data annotation matching '" + annotationNameQuery.getExpression() + "'",
                     "The node tried to find a data annotation that matches the expression '" + annotationNameQuery.getExpression() + "', but none did match. Following were available: " +
                             String.join(", ", dataBatch.getMergedTextAnnotations().keySet()),
-                    "Check if the expression is correct or enable 'Ignore missing annotations'");
+                    "Check if the expression is correct or enable 'Ignore missing annotations'"));
         }
         JIPipeDataAnnotation dataAnnotation = dataBatch.getMergedDataAnnotation(targetedAnnotationName);
         if (!keepOtherDataAnnotations) {

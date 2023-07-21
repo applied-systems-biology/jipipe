@@ -13,16 +13,18 @@
 
 package org.hkijena.jipipe;
 
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -35,7 +37,6 @@ import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 
 /**
  * This {@link Command} allows to run a specified {@link JIPipeNodeInfo} from within ImageJ.
@@ -92,13 +93,18 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
             SwingUtilities.invokeLater(() -> SplashScreen.getInstance().hideSplash());
         }
         if (!extensionSettings.isSilent()) {
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            issues.reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            issues.reportValidity(new UnspecifiedValidationReportContext(), report);
             if (!report.isValid()) {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(null, report, "Errors while initializing JIPipe", "There were some issues while initializing JIPipe. Please run the JIPipe GUI for more information.", false);
+                    UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                            null,
+                            report,
+                            "Errors while initializing JIPipe",
+                            "There were some issues while initializing JIPipe. Please run the JIPipe GUI for more information.",
+                            false);
                 }
             }
         }
@@ -122,13 +128,13 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
             initializeRegistry(false);
             settings = new SingleImageJAlgorithmRunConfiguration(nodeId, parameters, inputs, outputs, threads);
             algorithm = settings.getAlgorithm();
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            settings.reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            settings.reportValidity(new UnspecifiedValidationReportContext(), report);
             if (!report.isValid()) {
                 StringBuilder message = new StringBuilder();
                 message.append("The provided algorithm options are invalid:\n\n");
-                for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
-                    message.append(entry.getKey()).append("\t").append(entry.getValue());
+                for (JIPipeValidationReportEntry entry : report) {
+                    message.append(entry.toString()).append(", ");
                 }
                 cancel(message.toString());
                 return;

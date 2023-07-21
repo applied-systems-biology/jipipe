@@ -9,6 +9,7 @@ public interface Scene3DGeometry extends Scene3DNode {
 
     /**
      * Returns a mesh equivalent of this geometry
+     *
      * @param progressInfo the progress info
      * @return the mesh geometry
      */
@@ -16,12 +17,14 @@ public interface Scene3DGeometry extends Scene3DNode {
 
     /**
      * Gets the color of this geometry
+     *
      * @return the color
      */
     Color getColor();
 
     /**
      * Sets the color of this geometry
+     *
      * @param color the color
      */
     void setColor(Color color);
@@ -29,7 +32,7 @@ public interface Scene3DGeometry extends Scene3DNode {
     @Override
     default void copyMetadataFrom(Scene3DNode other) {
         Scene3DNode.super.copyMetadataFrom(other);
-        if(other instanceof Scene3DGeometry) {
+        if (other instanceof Scene3DGeometry) {
             setColor(((Scene3DGeometry) other).getColor());
         }
     }

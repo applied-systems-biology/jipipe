@@ -20,9 +20,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
+import org.hkijena.jipipe.api.validation.*;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -64,12 +63,14 @@ public class ImageJDataImporterRef implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (id == null)
-            report.reportIsInvalid("No operation is selected!",
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (id == null) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "No operation is selected!",
                     "You have to select an operation.",
-                    "Please select an operation.",
-                    this);
+                    "Please select an operation."));
+        }
     }
 
     @Override

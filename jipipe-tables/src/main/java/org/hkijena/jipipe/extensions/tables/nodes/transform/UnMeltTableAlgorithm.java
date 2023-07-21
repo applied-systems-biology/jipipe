@@ -28,7 +28,10 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @JIPipeDocumentation(name = "Pivot table", description = "Moves values located in a value column into separate columns according to a set of categorization columns. Also known as dcast in R.")
@@ -73,7 +76,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         List<String> categoryColumnNames = new ArrayList<>();
         for (String columnName : input.getColumnNames()) {
-            if(categoryColumns.test(columnName, variables)) {
+            if (categoryColumns.test(columnName, variables)) {
                 categoryColumnNames.add(columnName);
             }
         }
@@ -94,10 +97,10 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             variables.set("category_columns", categoryColumnNames);
 
             String category = newColumnName.evaluateToString(variables);
-            if(StringUtils.isNullOrEmpty(category))
+            if (StringUtils.isNullOrEmpty(category))
                 continue;
             List<Object> values = categorizedValues.getOrDefault(category, null);
-            if(values == null) {
+            if (values == null) {
                 values = new ArrayList<>();
                 categorizedValues.put(category, values);
             }
@@ -107,17 +110,16 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         List<TableColumn> unNormalizedColumns = new ArrayList<>();
         for (Map.Entry<String, List<Object>> entry : categorizedValues.entrySet()) {
             List<Object> values = entry.getValue();
-            if(values.stream().anyMatch(o -> !(o instanceof Number))) {
+            if (values.stream().anyMatch(o -> !(o instanceof Number))) {
                 String[] array = new String[values.size()];
                 for (int i = 0; i < values.size(); i++) {
                     array[i] = StringUtils.nullToEmpty(values.get(i));
                 }
                 unNormalizedColumns.add(new StringArrayTableColumn(array, entry.getKey()));
-            }
-            else {
+            } else {
                 double[] array = new double[values.size()];
                 for (int i = 0; i < values.size(); i++) {
-                    array[i] = ((Number)values.get(i)).doubleValue();
+                    array[i] = ((Number) values.get(i)).doubleValue();
                 }
                 unNormalizedColumns.add(new DoubleArrayTableColumn(array, entry.getKey()));
             }

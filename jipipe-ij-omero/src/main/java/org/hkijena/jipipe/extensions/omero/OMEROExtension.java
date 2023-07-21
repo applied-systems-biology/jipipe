@@ -19,8 +19,11 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
@@ -80,7 +83,7 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public boolean canActivate(JIPipeIssueReport report, JIPipeProgressInfo progressInfo) {
+    public boolean canActivate(JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
 
         String[] classes = new String[]{
                 "ome.xml.meta.OMEXMLMetadata",
@@ -103,10 +106,12 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
         }
 
         if (!result) {
-            report.resolve("Check OMERO installation").reportIsInvalid("No working OMERO detected!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new UnspecifiedValidationReportContext(),
+                    "No working OMERO detected!",
                     "The JIPipe OMERO extension requires a working OMERO installation. Preliminary checks determined that there is none.",
                     "Please install OMERO from the official OMERO website or install the appropriate OMERO plugins via the ImageJ updater.",
-                    "At least one of the following classes were not found: " + String.join(", ", classes));
+                    "At least one of the following classes were not found: " + String.join(", ", classes)));
         }
 
         return result;

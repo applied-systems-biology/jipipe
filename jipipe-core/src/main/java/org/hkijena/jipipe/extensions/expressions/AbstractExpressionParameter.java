@@ -99,15 +99,15 @@ public abstract class AbstractExpressionParameter {
 
     /**
      * Runs the expression and returns the numeric result. If no number is returned, return the default value.
-     * @param variables the variables
+     *
+     * @param variables    the variables
      * @param defaultValue the default value
      * @return the result
      */
     public int evaluateToIntegerSafe(ExpressionVariables variables, int defaultValue) {
         try {
             return evaluateToInteger(variables);
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             return defaultValue;
         }
     }

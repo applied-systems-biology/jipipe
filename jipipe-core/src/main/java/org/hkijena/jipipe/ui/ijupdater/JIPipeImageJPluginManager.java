@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.ijupdater;
 
-import com.google.common.eventbus.Subscribe;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import net.imagej.updater.Conflicts;
 import net.imagej.updater.FilesCollection;
@@ -314,7 +313,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel implements J
             currentFilesCollection.removeUpdateSite(updateSite.getName());
             showCurrentFilesCollection();
         } catch (Exception e) {
-            UIUtils.openErrorDialog(this, e);
+            UIUtils.openErrorDialog(getWorkbench(), this, e);
         }
     }
 
@@ -325,7 +324,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel implements J
             currentFilesCollection.deactivateUpdateSite(updateSite);
             showCurrentFilesCollection();
         } catch (Exception e) {
-            UIUtils.openErrorDialog(this, e);
+            UIUtils.openErrorDialog(getWorkbench(), this, e);
         }
     }
 
@@ -333,7 +332,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel implements J
         try {
             currentFilesCollection.addUpdateSite(updateSite);
         } catch (Exception e) {
-            UIUtils.openErrorDialog(this, e);
+            UIUtils.openErrorDialog(getWorkbench(), this, e);
         }
     }
 }

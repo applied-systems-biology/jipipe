@@ -12,12 +12,15 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
@@ -143,11 +146,10 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
 
             if (cancelled.get()) {
                 progressInfo.log("User input was cancelled!");
-                throw new UserFriendlyRuntimeException("User input was cancelled!",
-                        "User input was cancelled!",
-                        "Node '" + getName() + "'",
-                        "You had to provide input to allow the pipeline to continue. Instead, you cancelled the input.",
-                        "");
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
+                        "Operation cancelled by user",
+                        "You clicked 'Cancel'"));
             }
 
             // Apply the form workloads

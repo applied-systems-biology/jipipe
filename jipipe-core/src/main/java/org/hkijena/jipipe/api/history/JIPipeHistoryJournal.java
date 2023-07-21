@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.history;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -342,6 +341,10 @@ public interface JIPipeHistoryJournal {
      */
     void clear();
 
+    interface HistoryChangedEventListener {
+        void onHistoryChangedEvent(HistoryChangedEvent event);
+    }
+
     /**
      * Event when the history log was changed
      */
@@ -356,10 +359,6 @@ public interface JIPipeHistoryJournal {
         public JIPipeHistoryJournal getHistoryJournal() {
             return historyJournal;
         }
-    }
-
-    interface HistoryChangedEventListener {
-        void onHistoryChangedEvent(HistoryChangedEvent event);
     }
 
     class HistoryChangedEventEmitter extends JIPipeEventEmitter<HistoryChangedEvent, HistoryChangedEventListener> {

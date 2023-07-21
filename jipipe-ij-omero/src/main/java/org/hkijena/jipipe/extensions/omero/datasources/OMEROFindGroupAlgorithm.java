@@ -18,7 +18,6 @@ import omero.gateway.LoginCredentials;
 import omero.gateway.model.ExperimenterData;
 import omero.gateway.model.GroupData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -99,15 +98,6 @@ public class OMEROFindGroupAlgorithm extends JIPipeParameterSlotAlgorithm {
     @JIPipeParameter("credentials")
     public OMEROCredentials getCredentials() {
         return credentials;
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        if (groupNameAnnotation.isEnabled()) {
-            report.resolve("Annotate with name").checkNonEmpty(groupNameAnnotation.getContent(), this);
-        }
     }
 
     @JIPipeDocumentation(name = "Annotate with group name", description = "Creates an annotation with the project name")

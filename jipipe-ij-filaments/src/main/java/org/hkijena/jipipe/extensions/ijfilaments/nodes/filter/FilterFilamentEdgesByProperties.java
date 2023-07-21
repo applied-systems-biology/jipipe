@@ -15,7 +15,6 @@ import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentEdgeVariableSource
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Filter filament edges", description = "Filters filament edges by various properties")

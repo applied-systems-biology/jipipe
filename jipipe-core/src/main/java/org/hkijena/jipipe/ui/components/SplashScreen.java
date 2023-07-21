@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeService;

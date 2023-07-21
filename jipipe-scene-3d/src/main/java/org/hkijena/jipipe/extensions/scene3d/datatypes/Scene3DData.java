@@ -3,19 +3,15 @@ package org.hkijena.jipipe.extensions.scene3d.datatypes;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DToColladaExporter;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.strings.JsonData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
 
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Path;
@@ -37,18 +33,18 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
         }
     }
 
+    public static Scene3DData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JIPipeSerializedJsonObjectData.importData(storage, Scene3DData.class);
+    }
+
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         Path outputFile = FileChooserSettings.saveFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Data, "Export Collada (*.dae)", new FileNameExtensionFilter("Collada 1.4 (*.dae)", "dae"));
-        if(outputFile != null) {
+        if (outputFile != null) {
             JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Collada export");
             Scene3DToColladaExporter exporter = new Scene3DToColladaExporter(this, outputFile);
             JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), exporter, queue);
         }
-    }
-
-    public static Scene3DData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return JIPipeSerializedJsonObjectData.importData(storage, Scene3DData.class);
     }
 
     @Override
@@ -70,21 +66,22 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
     public boolean contains(Object o) {
         return nodes.contains(o);
     }
-    
+
     @Override
     public Iterator<Scene3DNode> iterator() {
         return nodes.iterator();
     }
-    
+
     @Override
     public Object[] toArray() {
         return nodes.toArray();
     }
-    
+
     @Override
-    public <T> T[] toArray( T[] a) {
+    public <T> T[] toArray(T[] a) {
         return nodes.toArray(a);
     }
+
     @Override
     public boolean add(Scene3DNode scene3DNode) {
         return nodes.add(scene3DNode);
@@ -96,27 +93,27 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
     }
 
     @Override
-    public boolean containsAll( Collection<?> c) {
+    public boolean containsAll(Collection<?> c) {
         return nodes.containsAll(c);
     }
 
     @Override
-    public boolean addAll( Collection<? extends Scene3DNode> c) {
+    public boolean addAll(Collection<? extends Scene3DNode> c) {
         return nodes.addAll(c);
     }
 
     @Override
-    public boolean addAll(int index,  Collection<? extends Scene3DNode> c) {
+    public boolean addAll(int index, Collection<? extends Scene3DNode> c) {
         return nodes.addAll(index, c);
     }
 
     @Override
-    public boolean removeAll( Collection<?> c) {
+    public boolean removeAll(Collection<?> c) {
         return nodes.removeAll(c);
     }
 
     @Override
-    public boolean retainAll( Collection<?> c) {
+    public boolean retainAll(Collection<?> c) {
         return nodes.retainAll(c);
     }
 
@@ -155,19 +152,19 @@ public class Scene3DData extends JIPipeSerializedJsonObjectData implements List<
         return nodes.lastIndexOf(o);
     }
 
-    
+
     @Override
     public ListIterator<Scene3DNode> listIterator() {
         return nodes.listIterator();
     }
 
-    
+
     @Override
     public ListIterator<Scene3DNode> listIterator(int index) {
         return nodes.listIterator(index);
     }
 
-    
+
     @Override
     public List<Scene3DNode> subList(int fromIndex, int toIndex) {
         return nodes.subList(fromIndex, toIndex);

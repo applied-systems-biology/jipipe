@@ -18,7 +18,6 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -139,18 +138,6 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("credentials")
     public OMEROCredentials getCredentials() {
         return credentials;
-    }
-
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        if (projectNameAnnotation.isEnabled()) {
-            report.resolve("Annotate with name").checkNonEmpty(projectNameAnnotation.getContent(), this);
-        }
-        if (tagAnnotation.isEnabled()) {
-            report.resolve("Annotate with tags").checkNonEmpty(tagAnnotation.getContent(), this);
-        }
     }
 
     @JIPipeDocumentation(name = "Annotate with project name", description = "Creates an annotation with the project name")

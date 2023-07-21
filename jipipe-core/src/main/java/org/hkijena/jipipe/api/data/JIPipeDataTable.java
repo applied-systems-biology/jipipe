@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.data;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -11,8 +10,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.IntegerAndIntegerPairParameter;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -1004,8 +1003,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             dataTableMetadata.saveAsJson(storage.getFileSystemPath().resolve("data-table.json"));
             dataTableMetadata.saveAsCSV(storage.getFileSystemPath().resolve("data-table.csv"));
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to save data table!",
-                    "Data slot '" + getDisplayName() + "'", "JIPipe tried to write files into '" + storage + "'.",
+            throw new JIPipeValidationRuntimeException(e,
+                    "Unable to save data table!",
+                    "JIPipe tried to write files into '" + storage + "'.",
                     "Check if you have permissions to write into the path, and if there is enough disk space.");
         }
     }
@@ -1356,5 +1356,16 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public String getLocation(String key, String defaultValue) {
         return defaultValue;
+    }
+
+    /**
+     * Gets a data annotation
+     *
+     * @param row the row
+     * @param col the data annotation column
+     * @return the data annotation
+     */
+    public JIPipeDataAnnotation getDataAnnotation(int row, int col) {
+        return getDataAnnotation(row, getDataAnnotationColumns().get(col));
     }
 }

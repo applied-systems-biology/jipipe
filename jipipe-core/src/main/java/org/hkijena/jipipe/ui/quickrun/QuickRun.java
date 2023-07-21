@@ -18,6 +18,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 
 import java.util.*;
@@ -218,8 +221,8 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        targetNodeCopy.reportValidity(report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        targetNodeCopy.reportValidity(context, report);
     }
 
     @Override

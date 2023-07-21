@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -75,13 +74,6 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         variableSet.set("num_rows", getFirstInputSlot().getRowCount());
         String name = StringUtils.nullToEmpty(annotationName.generate(variableSet));
         String value = StringUtils.nullToEmpty(annotationValue.generate(variableSet));
-        if (StringUtils.isNullOrEmpty(name)) {
-            throw new UserFriendlyRuntimeException("Generated annotation name is empty!",
-                    "Generated annotation name is empty!",
-                    getName(),
-                    "You wanted to set the name of an annotation, but the expression generated an empty name. This is not allowed.",
-                    "Check if the expression is correct.");
-        }
         dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(name, value), annotationMergeStrategy);
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }

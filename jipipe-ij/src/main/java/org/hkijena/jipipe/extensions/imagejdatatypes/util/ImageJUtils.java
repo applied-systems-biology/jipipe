@@ -32,7 +32,7 @@ import ij.plugin.filter.AVI_Writer;
 import ij.plugin.filter.Convolver;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -78,7 +78,7 @@ public class ImageJUtils {
 
     public static ResultsTableData measureROI(Roi roi, ImagePlus reference, boolean physicalUnits, Measurement... statistics) {
         ImageStatisticsSetParameter statisticsSetParameter = new ImageStatisticsSetParameter();
-        if(statistics.length > 0) {
+        if (statistics.length > 0) {
             statisticsSetParameter.getValues().clear();
             for (Measurement statistic : statistics) {
                 statisticsSetParameter.getValues().add(statistic);
@@ -94,10 +94,9 @@ public class ImageJUtils {
         dummy.add(roi1);
         dummy.add(roi2);
         dummy.logicalAnd();
-        if(!dummy.isEmpty()) {
+        if (!dummy.isEmpty()) {
             return dummy.get(0);
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -998,7 +997,7 @@ public class ImageJUtils {
         List<Integer> distinctZ = slices.keySet().stream().map(ImageSliceIndex::getZ).sorted().distinct().collect(Collectors.toList());
         List<Integer> distinctC = slices.keySet().stream().map(ImageSliceIndex::getC).sorted().distinct().collect(Collectors.toList());
 
-        if(slices.size() != distinctZ.size() * distinctC.size() * distinctT.size()) {
+        if (slices.size() != distinctZ.size() * distinctC.size() * distinctT.size()) {
             throw new IllegalArgumentException(slices.size() + " slices cannot be distributed into an hyperstack with size ZCT "
                     + distinctZ.size() + " x " + distinctC.size() + " x " + distinctT.size() + "!");
         }
@@ -1130,7 +1129,7 @@ public class ImageJUtils {
         }
 
         for (int i = 0; i < outputImageStack.size(); i++) {
-            if(outputImageStack.getProcessor(i + 1) == null) {
+            if (outputImageStack.getProcessor(i + 1) == null) {
                 throw new NullPointerException("Not all slices set! Missing index: " + i);
             }
         }
@@ -2039,9 +2038,8 @@ public class ImageJUtils {
 
     public static void assertImageDimensions(ImagePlus image, int maxDimensions) {
         if (image.getNDimensions() > maxDimensions) {
-            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + maxDimensions + "D data!"),
+            throw new JIPipeValidationRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + maxDimensions + "D data!"),
                     "Trying to fit higher-dimensional data into " + maxDimensions + "D data!",
-                    "ImageJ integration internals",
                     image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + maxDimensions + "D data. " +
                             "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
                             " from N-dimensional data into data with a defined dimensionality.",
@@ -2301,7 +2299,7 @@ public class ImageJUtils {
         for (int c = 0; c < image.getNChannels(); c++) {
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int t = 0; t < image.getNFrames(); t++) {
-                    result.put(new ImageSliceIndex(c,z,t), getSliceZero(image, c,z,t));
+                    result.put(new ImageSliceIndex(c, z, t), getSliceZero(image, c, z, t));
                 }
             }
         }
@@ -2311,7 +2309,7 @@ public class ImageJUtils {
     public static Map<ImageSliceIndex, ImageProcessor> deduplicateSliceMappingByOverwriting(Map<ImageProcessor, ImageSliceIndex> sliceMappings, boolean silentlyOverwriteDuplicates) {
         Map<ImageSliceIndex, ImageProcessor> result = new HashMap<>();
         for (Map.Entry<ImageProcessor, ImageSliceIndex> entry : sliceMappings.entrySet()) {
-            if(!silentlyOverwriteDuplicates && result.containsKey(entry.getValue())) {
+            if (!silentlyOverwriteDuplicates && result.containsKey(entry.getValue())) {
                 throw new UnsupportedOperationException("Duplicate image index: " + entry.getValue());
             }
             result.put(entry.getValue(), entry.getKey());

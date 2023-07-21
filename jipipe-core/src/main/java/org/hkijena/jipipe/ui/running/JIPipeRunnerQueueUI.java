@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.running;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;

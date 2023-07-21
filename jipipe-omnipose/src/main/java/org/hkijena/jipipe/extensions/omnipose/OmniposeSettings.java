@@ -2,10 +2,14 @@ package org.hkijena.jipipe.extensions.omnipose;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -36,8 +40,8 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
             OmniposeSettings instance = getInstance();
-            JIPipeIssueReport report = new JIPipeIssueReport();
-            instance.getPythonEnvironment().reportValidity(report);
+            JIPipeValidationReport report = new JIPipeValidationReport();
+            instance.getPythonEnvironment().reportValidity(new UnspecifiedValidationReportContext(), report);
             return report.isValid();
         }
         return false;
@@ -46,17 +50,17 @@ public class OmniposeSettings extends AbstractJIPipeParameterCollection {
     /**
      * Checks if the Python settings are valid or reports an invalid state
      *
-     * @param report the report
+     * @param context the context
+     * @param report  the report
      */
-    public static void checkPythonSettings(JIPipeIssueReport report) {
+    public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!pythonSettingsAreValid()) {
-            report.reportIsInvalid("Python is not configured!",
-                    "Project > Application settings > Extensions > Omnipose",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Omnipose is not configured!",
                     "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
                     "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install Omnipose " +
                             "according to the documentation https://cellpose.readthedocs.io/en/latest/installation.html\n" +
                             "Then go to Project > Application settings > Extensions > Omnipose and choose the correct environment. " +
-                            "Alternatively, the settings page will provide you with means to install Omnipose automatically.");
+                            "Alternatively, the settings page will provide you with means to install Omnipose automatically."));
         }
     }
 

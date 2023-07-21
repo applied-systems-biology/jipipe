@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -95,8 +94,8 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
     private int currentImageContentsResamplingFactor;
     private ImageStatistics imageStatistics;
     private boolean isUpdatingSliders = false;
-    private FormPanel bottomPanel;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;
+    private FormPanel bottomPanel;
+    private UpdateLutAndCalibrationRun currentUpdateCalibrationRun;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     public ImageViewerPanel3D(JIPipeImageViewer imageViewer) {
         this.imageViewer = imageViewer;
         if (JIPipe.getInstance() != null) {

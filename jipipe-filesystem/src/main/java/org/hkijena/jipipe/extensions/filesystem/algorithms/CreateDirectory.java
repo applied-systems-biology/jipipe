@@ -16,10 +16,10 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 
@@ -70,8 +70,7 @@ public class CreateDirectory extends JIPipeSimpleIteratingAlgorithm {
                     Files.createDirectories(inputFolder.toPath());
                 }
             } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Could not create directory!",
-                        getName(),
+                throw new JIPipeValidationRuntimeException(e, "Could not create directory!",
                         "There was an error creating the directory '" + inputFolder.getPath() + "'.",
                         "Please check if the path is correct and you have sufficient rights to create such path.");
             }

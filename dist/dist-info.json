@@ -42,6 +42,7 @@
     "poi-ooxml-lite-5.2.0.jar": "https://repo1.maven.org/maven2/org/apache/poi/poi-ooxml-lite/5.2.0/poi-ooxml-lite-5.2.0.jar",
     "xmlbeans-5.0.3.jar": "https://maven.scijava.org/service/local/repositories/sonatype/content/org/apache/xmlbeans/xmlbeans/5.0.3/xmlbeans-5.0.3.jar",
     "log4j-api-2.17.1.jar": "https://maven.scijava.org/service/local/repositories/central/content/org/apache/logging/log4j/log4j-api/2.17.1/log4j-api-2.17.1.jar",
+    "json-path-2.7.0.jar": "https://maven.scijava.org/service/local/repositories/central/content/com/jayway/jsonpath/json-path/2.7.0/json-path-2.7.0.jar",
     "LICENSE_Javaluator.html": "https://opensource.org/licenses/lgpl-3.0.html",
     "LICENSE_JGraphT.txt": "https://raw.githubusercontent.com/jgrapht/jgrapht/master/license-EPL.txt",
     "LICENSE_OpenHTMLToPDF.txt": "https://raw.githubusercontent.com/danfickle/openhtmltopdf/open-dev-v1/LICENSE",

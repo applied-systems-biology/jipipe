@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.components.icons.ColorIcon;
@@ -27,12 +26,11 @@ import java.awt.event.ActionListener;
 import java.util.Objects;
 
 public class ColorChooserButton extends JButton implements ActionListener {
+    private final ColorChosenEventEmitter colorChosenEventEmitter = new ColorChosenEventEmitter();
     private ColorIcon icon = new SolidColorIcon(16, 16);
     private Color selectedColor = Color.RED;
     private String selectColorPrompt = "Select color";
     private boolean updateWithHexCode = false;
-
-    private final ColorChosenEventEmitter colorChosenEventEmitter = new ColorChosenEventEmitter();
 
     public ColorChooserButton() {
         super();
@@ -99,6 +97,10 @@ public class ColorChooserButton extends JButton implements ActionListener {
         this.updateWithHexCode = updateWithHexCode;
     }
 
+    public interface ColorChosenEventListener {
+        void onColorButtonColorChosen(ColorChosenEvent event);
+    }
+
     public static class ColorChosenEvent extends AbstractJIPipeEvent {
         private final ColorChooserButton button;
         private final Color color;
@@ -116,10 +118,6 @@ public class ColorChooserButton extends JButton implements ActionListener {
         public Color getColor() {
             return color;
         }
-    }
-
-    public interface ColorChosenEventListener {
-        void onColorButtonColorChosen(ColorChosenEvent event);
     }
 
     public static class ColorChosenEventEmitter extends JIPipeEventEmitter<ColorChosenEvent, ColorChosenEventListener> {

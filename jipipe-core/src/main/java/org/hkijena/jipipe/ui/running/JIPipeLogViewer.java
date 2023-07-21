@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.running;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;

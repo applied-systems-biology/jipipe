@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.tables.nodes.rows;
 
 import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -35,10 +36,12 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
 
-@JIPipeDocumentation(name = "Apply expression per row", description = "Applies an expression for each row. The column values are available as variables.")
+@JIPipeDocumentation(name = "Apply expression per row", description = "Deprecated. Use the node with the same name. Applies an expression for each row. The column values are available as variables.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
+@Deprecated
+@JIPipeHidden
 public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;

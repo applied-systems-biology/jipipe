@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
@@ -64,12 +63,6 @@ public class ExtractParent extends JIPipeSimpleIteratingAlgorithm {
             result = result.getParent();
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(result), progressInfo);
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        report.resolve("Order").checkIfWithin(this, order, 0, Double.POSITIVE_INFINITY, true, false);
     }
 
     @JIPipeDocumentation(name = "Select N-th parent", description = "Determines which N-th parent is chosen. For example the 2nd parent of /a/b/c is 'a'. " +

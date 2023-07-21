@@ -15,19 +15,20 @@ package org.hkijena.jipipe.api.grouping;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.collect.Sets;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.JsonNodeInfoValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -41,13 +42,13 @@ import java.util.*;
  * Info of a {@link GraphWrapperAlgorithm}
  */
 public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements JIPipeNodeInfo, JIPipeValidatable, JIPipeGraph.GraphChangedEventListener {
+    private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
+    private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
+    private final Map<JIPipeDataSlot, String> exportedSlotNames = new HashMap<>();
     private String id;
     private String name;
     private HTMLText description = new HTMLText();
-    private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
-    private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private JIPipeGraph graph = new JIPipeGraph();
-    private Map<JIPipeDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringList menuPath = new StringList();
     private boolean hidden = false;
     private IconRef customIcon = new IconRef();
@@ -337,23 +338,25 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (id == null || id.isEmpty()) {
-            report.reportIsInvalid("ID is null or empty!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new JsonNodeInfoValidationReportContext(this),
+                    "ID is null or empty!",
                     "Algorithms must have a unique and non-empty ID.",
-                    "Please provide a valid algorithm ID.",
-                    this);
+                    "Please provide a valid algorithm ID."));
         }
         if (!getCategory().userCanCreate() || !getCategory().userCanDelete()) {
-            report.reportIsInvalid("The selected category is reserved for internal usage!",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new JsonNodeInfoValidationReportContext(this),
+                    "The selected category is reserved for internal usage!",
                     "This is reserved for algorithm nodes used by JIPipe to control program flow.",
-                    "Please choose another algorithm category.",
-                    this);
+                    "Please choose another algorithm category."));
         }
-        report.resolve("Exported parameters").report(exportedParameters);
+        report.report(new ParameterValidationReportContext(this, "Exported parameters", "exported-parameters"), exportedParameters);
 
         // Only check if the graph creates a valid group output
-        getGraph().reportValidity(report.resolve("Wrapped graph"), getGroupOutput(), Sets.newHashSet(getGroupInput()));
+        report.report(new ParameterValidationReportContext(this, "Wrapped graph", "wrapped-graph"), getGraph());
     }
 
     @Override

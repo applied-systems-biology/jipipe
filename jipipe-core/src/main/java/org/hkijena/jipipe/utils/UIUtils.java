@@ -14,21 +14,19 @@
 package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import ij.IJ;
 import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -37,6 +35,7 @@ import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
@@ -938,13 +937,14 @@ public class UIUtils {
     /**
      * Opens a dialog showing an exception
      *
+     * @param workbench the workbench
      * @param parent    the parent component
      * @param exception the exception
      */
-    public static void openErrorDialog(Component parent, Exception exception) {
+    public static void openErrorDialog(JIPipeWorkbench workbench, Component parent, Exception exception) {
         JDialog dialog = new JDialog();
         dialog.setTitle("Error");
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(workbench, null, UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
         dialog.setContentPane(errorUI);
@@ -995,35 +995,59 @@ public class UIUtils {
     /**
      * Opens a dialog showing a validity report
      *
-     * @param parent   the parent component
-     * @param report   the report
-     * @param title    the title
-     * @param infoText the info text
-     * @param modal    make the dialog modal
+     * @param workbench the workbench
+     * @param parent    the parent component
+     * @param report    the report
+     * @param title     the title
+     * @param infoText  the info text
+     * @param modal     make the dialog modal
      */
-    public static void openValidityReportDialog(Component parent, JIPipeIssueReport report, String title, String infoText, boolean modal) {
+    public static void openValidityReportDialog(JIPipeWorkbench workbench, Component parent, JIPipeValidationReport report, String title, String infoText, boolean modal) {
         JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
-        JIPipeValidityReportUI ui = new JIPipeValidityReportUI(false);
+        JIPipeValidityReportUI ui = new JIPipeValidityReportUI(workbench, false);
         ui.setReport(report);
+
         contentPanel.add(ui, BorderLayout.CENTER);
 
-        JPanel messagePanel = new JPanel(new GridBagLayout());
-        messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
-        messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-error.png")),
-                new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
-        messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
-                new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
-        contentPanel.add(messagePanel, BorderLayout.NORTH);
+        if (infoText != null) {
+            JPanel messagePanel = new JPanel(new GridBagLayout());
+            messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
+            messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-error.png")),
+                    new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
+            messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
+                    new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
+            contentPanel.add(messagePanel, BorderLayout.NORTH);
+        }
 
-        JDialog dialog = new JDialog();
-        dialog.setTitle(title);
-        dialog.setContentPane(contentPanel);
-        dialog.setModal(modal);
-        dialog.pack();
-        dialog.setSize(new Dimension(800, 600));
-        dialog.setLocationRelativeTo(parent);
-        dialog.setVisible(true);
+        if (modal) {
+            JDialog dialog = new JDialog();
+            dialog.setTitle(title);
+            dialog.setContentPane(contentPanel);
+            dialog.setModal(modal);
+            dialog.pack();
+            dialog.setSize(new Dimension(800, 600));
+            dialog.setLocationRelativeTo(parent);
+            dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+
+            AlwaysOnTopToggle topToggle = new AlwaysOnTopToggle(dialog);
+            ui.getErrorToolbar().add(topToggle);
+
+            dialog.setVisible(true);
+        } else {
+            JFrame frame = new JFrame();
+            frame.setTitle(title);
+            frame.setContentPane(contentPanel);
+            frame.pack();
+            frame.setSize(new Dimension(800, 600));
+            frame.setLocationRelativeTo(parent);
+            frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+
+            AlwaysOnTopToggle topToggle = new AlwaysOnTopToggle(frame);
+            ui.getErrorToolbar().add(topToggle);
+
+            frame.setVisible(true);
+        }
     }
 
     /**

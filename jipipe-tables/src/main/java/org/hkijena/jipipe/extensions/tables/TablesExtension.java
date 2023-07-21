@@ -43,6 +43,7 @@ import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeTableColumnsSupplem
 import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeTableRowsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.rows.AddMissingRowsInSeriesAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.rows.ApplyExpressionPerRowAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.rows.ApplyExpressionPerRowAlgorithm2;
 import org.hkijena.jipipe.extensions.tables.nodes.rows.SortTableRowsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.split.SplitTableByColumnsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.split.SplitTableIntoColumnsAlgorithm;
@@ -172,6 +173,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-integrate-columns", IntegrateColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("table-convert-columns", ConvertColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/formula.png"));
         registerNodeType("table-apply-expression-per-row", ApplyExpressionPerRowAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("table-apply-expression-per-row-v2", ApplyExpressionPerRowAlgorithm2.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-split-into-columns", SplitTableIntoColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-split-into-rows", SplitTableIntoRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-merge-from-columns", MergeColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));

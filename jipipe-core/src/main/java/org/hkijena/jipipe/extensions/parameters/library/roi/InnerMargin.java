@@ -18,13 +18,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
-
-import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Related to {@link Margin}, but with fixed-size objects

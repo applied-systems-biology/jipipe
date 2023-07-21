@@ -40,27 +40,6 @@ public class Quantity {
             "ns", "µs", "ms", "s", "min", "h", "d"
     };
 
-    /**
-     * Enum of image dimension units
-     */
-    public enum LengthUnit {
-        pixel,
-        nm,
-        µm,
-        microns,
-        mm,
-        cm,
-        dm,
-        m,
-        km,
-        inch,
-        in,
-        footr,
-        ft,
-        yard,
-        yd
-    }
-
     static {
         // Length
         UNITS_FACTORS.put("nm", 1e-9);
@@ -111,7 +90,6 @@ public class Quantity {
 
     private double value;
     private String unit;
-
     public Quantity() {
     }
 
@@ -225,5 +203,26 @@ public class Quantity {
             Quantity converted = convertTo(pixelSize.getUnit());
             return converted.convertToPixels(pixelSize);
         }
+    }
+
+    /**
+     * Enum of image dimension units
+     */
+    public enum LengthUnit {
+        pixel,
+        nm,
+        µm,
+        microns,
+        mm,
+        cm,
+        dm,
+        m,
+        km,
+        inch,
+        in,
+        footr,
+        ft,
+        yard,
+        yd
     }
 }

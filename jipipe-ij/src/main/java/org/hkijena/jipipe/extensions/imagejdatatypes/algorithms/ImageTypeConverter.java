@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -83,33 +82,6 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
             ImagePlusData data = inputSlot.getData(i, ImagePlusData.class, progressInfo);
             JIPipeData converted = JIPipe.createData(outputType.getInfo().getDataClass(), data.getImage());
             outputSlot.addData(converted, outputSlot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        }
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (getInputSlots().isEmpty()) {
-            report.reportIsInvalid("No input slot!",
-                    "Please add an input slot that provides the data that should be converted.",
-                    "Please provide an input image slot.",
-                    this);
-        }
-        if (getOutputSlots().isEmpty()) {
-            report.reportIsInvalid("No output slot!",
-                    "The converted image is stored into the output slot.",
-                    "Please provide an output image slot.",
-                    this);
-        }
-        if (!getInputSlots().isEmpty() && !getOutputSlots().isEmpty()) {
-            int inputDimensionality = ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) getFirstInputSlot().getAcceptedDataType());
-            int outputDimensionality = ImagePlusData.getDimensionalityOf((Class<? extends ImagePlusData>) getFirstOutputSlot().getAcceptedDataType());
-            if (inputDimensionality != -1 && outputDimensionality != -1) {
-                if (outputDimensionality < inputDimensionality) {
-                    report.reportIsInvalid("Invalid conversion", "Non-trivial conversion between image dimensions: From " + inputDimensionality + "D to "
-                                    + outputDimensionality + "D!", "Update the slots, so inter-dimensional conversion is trivial.",
-                            this);
-                }
-            }
         }
     }
 }

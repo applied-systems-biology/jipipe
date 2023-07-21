@@ -35,7 +35,7 @@ public class JIPipeAnnotationGraphNodeUI extends JIPipeGraphNodeUI {
 
         // Update the real size of the control
         Dimension gridSize = new Dimension(Math.max(1, annotationGraphNode.getGridWidth()), Math.max(1, annotationGraphNode.getGridHeight()));
-        Dimension realSize =  getViewMode().gridToRealSize(gridSize, getGraphCanvasUI().getZoom());
+        Dimension realSize = getViewMode().gridToRealSize(gridSize, getGraphCanvasUI().getZoom());
         setSize(realSize);
         revalidate();
 

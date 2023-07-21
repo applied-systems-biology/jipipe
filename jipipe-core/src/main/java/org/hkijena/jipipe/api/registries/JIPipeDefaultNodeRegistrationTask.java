@@ -14,8 +14,12 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -97,27 +101,27 @@ public abstract class JIPipeDefaultNodeRegistrationTask implements JIPipeNodeReg
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         for (String id : dependencyAlgorithmIds) {
             if (!JIPipe.getNodes().hasNodeInfoWithId(id))
-                report.resolve("Dependency Algorithms").reportIsInvalid("A dependency is missing!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext(context, "Dependency algorithms"),
+                        "A dependency is missing!",
                         "Dependency algorithm '" + id + "' is missing!",
-                        "Please make sure to install dependency plugins.",
-                        this);
+                        "Please make sure to install dependency plugins."));
         }
         for (String id : dependencyDatatypeIds) {
             if (!JIPipe.getDataTypes().hasDatatypeWithId(id))
-                report.resolve("Dependency Data types").reportIsInvalid("A dependency is missing!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext(context, "Dependency data types"),
+                        "A dependency is missing!",
                         "Dependency data type '" + id + "' is missing!",
-                        "Please make sure to install dependency plugins.",
-                        this);
+                        "Please make sure to install dependency plugins."));
         }
         for (Class<? extends JIPipeData> dataClass : dependencyDatatypeClasses) {
             if (!JIPipe.getDataTypes().hasDataType(dataClass))
-                report.resolve("Dependency Data types").reportIsInvalid("A dependency is missing!",
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext(context, "Dependency data types"),
+                        "A dependency is missing!",
                         "Dependency data type '" + dataClass.getCanonicalName() + "' is missing!",
-                        "Please make sure to install dependency plugins.",
-                        this);
+                        "Please make sure to install dependency plugins."));
         }
     }
 }

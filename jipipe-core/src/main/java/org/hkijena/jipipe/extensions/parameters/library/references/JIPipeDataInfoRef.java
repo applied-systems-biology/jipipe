@@ -19,10 +19,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.validation.*;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -83,12 +82,14 @@ public class JIPipeDataInfoRef implements JIPipeValidatable {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (info == null)
-            report.reportIsInvalid("No data type is selected!",
-                    "You have to select an data type.",
-                    "Please select an data type.",
-                    this);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (info == null) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "No data type is selected!",
+                    "You have to select a data type.",
+                    "Please select a data type."));
+        }
     }
 
     @Override

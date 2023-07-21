@@ -33,8 +33,16 @@ import java.awt.image.BufferedImageOp;
 
 public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, MouseMotionListener {
     private final ImageViewerPanel2D imageViewerPanel;
+    private final ToolChangedEventEmitter toolChangedEventEmitter = new ToolChangedEventEmitter();
+    private final PixelHoverEventEmitter pixelHoverEventEmitter = new PixelHoverEventEmitter();
+    private final MouseClickedEventEmitter mouseClickedEventEmitter = new MouseClickedEventEmitter();
+    private final MouseDraggedEventEmitter mouseDraggedEventEmitter = new MouseDraggedEventEmitter();
+    private final MouseEnteredEventEmitter mouseEnteredEventEmitter = new MouseEnteredEventEmitter();
+    private final MouseExitedEventEmitter mouseExitedEventEmitter = new MouseExitedEventEmitter();
+    private final MouseMovedEventEmitter mouseMovedEventEmitter = new MouseMovedEventEmitter();
+    private final MousePressedEventEmitter mousePressedEventEmitter = new MousePressedEventEmitter();
+    private final MouseReleasedEventEmitter mouseReleasedEventEmitter = new MouseReleasedEventEmitter();
     private BufferedImage image;
-
     private Image scaledImage;
     private ImageSliceIndex imageSliceIndex;
     private double zoom = 1.0;
@@ -44,19 +52,8 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
     private JScrollPane scrollPane;
     private Component error = null;
     private BufferedImage renderedError = null;
-
     private ImageViewerPanelCanvas2DTool tool;
 
-    private final ToolChangedEventEmitter toolChangedEventEmitter = new ToolChangedEventEmitter();
-    private final PixelHoverEventEmitter pixelHoverEventEmitter = new PixelHoverEventEmitter();
-
-    private final MouseClickedEventEmitter mouseClickedEventEmitter = new MouseClickedEventEmitter();
-    private final MouseDraggedEventEmitter mouseDraggedEventEmitter = new MouseDraggedEventEmitter();
-    private final MouseEnteredEventEmitter mouseEnteredEventEmitter = new MouseEnteredEventEmitter();
-    private final MouseExitedEventEmitter mouseExitedEventEmitter = new MouseExitedEventEmitter();
-    private final MouseMovedEventEmitter mouseMovedEventEmitter = new MouseMovedEventEmitter();
-    private final MousePressedEventEmitter mousePressedEventEmitter = new MousePressedEventEmitter();
-    private final MouseReleasedEventEmitter mouseReleasedEventEmitter = new MouseReleasedEventEmitter();
     public ImageViewerPanelCanvas2D(ImageViewerPanel2D imageViewerPanel) {
         this.imageViewerPanel = imageViewerPanel;
         setLayout(null);
@@ -609,6 +606,14 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
         toolChangedEventEmitter.emit(new ToolChangedEvent(this, oldTool, tool));
     }
 
+    public interface PixelHoverEventListener {
+        void onImageViewerCanvasPixelHover(PixelHoverEvent event);
+    }
+
+    public interface ToolChangedEventListener {
+        void onImageViewerCanvasToolChanged(ToolChangedEvent toolChangedEvent);
+    }
+
     public static class PixelHoverEvent extends AbstractJIPipeEvent {
         private final ImageViewerPanelCanvas2D canvas2D;
         private final Point pixelCoordinate;
@@ -628,10 +633,6 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
         public MouseEvent getMouseEvent() {
             return mouseEvent;
         }
-    }
-
-    public interface PixelHoverEventListener {
-        void onImageViewerCanvasPixelHover(PixelHoverEvent event);
     }
 
     public static class PixelHoverEventEmitter extends JIPipeEventEmitter<PixelHoverEvent, PixelHoverEventListener> {
@@ -665,10 +666,6 @@ public class ImageViewerPanelCanvas2D extends JPanel implements MouseListener, M
         public ImageViewerPanelCanvas2D getCanvas() {
             return canvas;
         }
-    }
-
-    public interface ToolChangedEventListener {
-        void onImageViewerCanvasToolChanged(ToolChangedEvent toolChangedEvent);
     }
 
     public static class ToolChangedEventEmitter extends JIPipeEventEmitter<ToolChangedEvent, ToolChangedEventListener> {

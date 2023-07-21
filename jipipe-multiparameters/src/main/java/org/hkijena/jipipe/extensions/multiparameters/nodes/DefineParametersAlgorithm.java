@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -24,6 +23,9 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 
 import java.util.Map;
@@ -71,8 +73,9 @@ public class DefineParametersAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Parameters").report(parameters);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        report.report(new ParameterValidationReportContext(context, this, "Parameters", "parameters"), parameters);
     }
 
     @JIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")

@@ -14,15 +14,12 @@
 
 package org.hkijena.jipipe.extensions.ijfilaments.display;
 
-import ij.measure.Calibration;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.text.DecimalFormat;
 
 public class FilamentListCellRenderer extends JPanel implements ListCellRenderer<Filaments3DData> {
 

@@ -184,19 +184,17 @@ public class FilamentVertex {
     }
 
     public double getZMin(boolean useThickness) {
-        if(is2D()) {
+        if (is2D()) {
             return getSpatialLocation().getZ();
-        }
-        else {
+        } else {
             return useThickness ? getSpatialLocation().getZ() - radius : getSpatialLocation().getZ();
         }
     }
 
     public double getZMax(boolean useThickness) {
-        if(is2D()) {
+        if (is2D()) {
             return getSpatialLocation().getZ();
-        }
-        else {
+        } else {
             return useThickness ? getSpatialLocation().getZ() + radius : getSpatialLocation().getZ();
         }
     }
@@ -212,14 +210,13 @@ public class FilamentVertex {
      * @return the consensus unit
      */
     public String getConsensusPhysicalSizeUnit() {
-        if(is2D()) {
+        if (is2D()) {
             if (Objects.equals(physicalVoxelSizeX.getUnit(), physicalVoxelSizeY.getUnit())) {
                 return physicalVoxelSizeX.getUnit();
             } else {
                 return Quantity.UNIT_PIXELS;
             }
-        }
-        else {
+        } else {
             if (Objects.equals(physicalVoxelSizeX.getUnit(), physicalVoxelSizeY.getUnit())
                     && Objects.equals(physicalVoxelSizeY.getUnit(), physicalVoxelSizeZ.getUnit())) {
                 return physicalVoxelSizeX.getUnit();
@@ -240,12 +237,11 @@ public class FilamentVertex {
      * @return the maximum value
      */
     public double getMaxRadiusInUnit(String unit) {
-        if(is2D()) {
+        if (is2D()) {
             double rx = physicalVoxelSizeX.convertTo(unit).getValue() * radius;
             double ry = physicalVoxelSizeY.convertTo(unit).getValue() * radius;
             return Math.max(rx, ry);
-        }
-        else {
+        } else {
             double rx = physicalVoxelSizeX.convertTo(unit).getValue() * radius;
             double ry = physicalVoxelSizeY.convertTo(unit).getValue() * radius;
             double rz = physicalVoxelSizeZ.convertTo(unit).getValue() * radius;

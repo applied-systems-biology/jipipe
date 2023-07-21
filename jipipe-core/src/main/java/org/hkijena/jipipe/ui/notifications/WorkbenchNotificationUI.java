@@ -4,8 +4,10 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.RoundedButtonUI;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,12 +85,23 @@ public class WorkbenchNotificationUI extends JIPipeWorkbenchPanel {
         actionPanel.add(Box.createHorizontalGlue());
         for (JIPipeNotificationAction action : notification.getActions()) {
             JButton actionButton = new JButton(action.getLabel(), action.getIcon());
+            actionButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
             actionButton.setToolTipText(action.getTooltip());
+            actionButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 4),
+                    BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+            if (action.getStyle().getBackground() != null) {
+                actionButton.setBackground(action.getStyle().getBackground());
+            }
+            if (action.getStyle().getText() != null) {
+                actionButton.setForeground(action.getStyle().getText());
+            }
+            actionButton.setUI(new RoundedButtonUI(4, actionButton.getBackground().darker(), actionButton.getBackground().darker()));
             actionButton.addActionListener(e -> {
                 action.getAction().accept(getWorkbench());
                 if (action.isDismiss())
                     notification.dismiss();
             });
+            actionPanel.add(Box.createHorizontalStrut(4));
             actionPanel.add(actionButton);
         }
 

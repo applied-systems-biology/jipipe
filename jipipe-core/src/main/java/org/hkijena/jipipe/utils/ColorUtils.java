@@ -289,7 +289,10 @@ public class ColorUtils {
     }
 
     public static Color mix(Color first, Color second, double percentage) {
-        return new Color((first.getRed() + second.getRed()) / 2, (first.getGreen() + second.getGreen()) / 2, (first.getBlue() + second.getBlue()) / 2);
+        int newR = (int) (first.getRed() + percentage * (second.getRed() - first.getRed()));
+        int newG = (int) (first.getGreen() + percentage * (second.getGreen() - first.getGreen()));
+        int newB = (int) (first.getBlue() + percentage * (second.getBlue() - first.getBlue()));
+        return new Color(newR, newG, newB);
     }
 
     public static Color toGreyscale(Color color) {
@@ -297,8 +300,15 @@ public class ColorUtils {
         return new Color(v, v, v);
     }
 
-    public static Color invert(Color color) {
+    public static Color invertRGBA(Color color) {
         return new Color(~color.getRGB());
+    }
+
+    public static Color invertRGB(Color color) {
+        return new Color(255 - color.getRed(),
+                255 - color.getGreen(),
+                255 - color.getBlue(),
+                color.getAlpha());
     }
 
     public static class GradientStop implements Comparable<GradientStop> {

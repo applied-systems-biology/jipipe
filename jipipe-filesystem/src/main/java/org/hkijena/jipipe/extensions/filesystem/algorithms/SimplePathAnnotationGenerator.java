@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.filesystem.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -99,11 +98,6 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
             return fileName;
         else
             return fileName.substring(0, dotIndex);
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
     }
 
     @JIPipeDocumentation(name = "Generated annotation", description = "Select which annotation type is generated for each path")

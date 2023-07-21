@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.forms.algorithms;
 
+import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -12,12 +13,15 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.ui.FormsDialog;
@@ -134,11 +138,10 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
 
             if (cancelled.get()) {
                 progressInfo.log("User input was cancelled!");
-                throw new UserFriendlyRuntimeException("User input was cancelled!",
-                        "User input was cancelled!",
-                        "Node '" + getName() + "'",
-                        "You had to provide input to allow the pipeline to continue. Instead, you cancelled the input.",
-                        "");
+                throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        new GraphNodeValidationReportContext(this),
+                        "Operation cancelled by user",
+                        "You clicked 'Cancel'"));
             }
 
             // Apply the form workloads
@@ -238,6 +241,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
+            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (allowedIndices.contains(i)) {
@@ -246,8 +250,16 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             }
             dataBatches = limitedBatches;
         }
-        if (dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
-            dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+        List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
+        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            if (dataBatch.isIncomplete()) {
+                incomplete.add(dataBatch);
+                progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+            }
+        }
+        if (!incomplete.isEmpty() && dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+            progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
+            dataBatches.removeAll(incomplete);
         }
         return dataBatches;
     }

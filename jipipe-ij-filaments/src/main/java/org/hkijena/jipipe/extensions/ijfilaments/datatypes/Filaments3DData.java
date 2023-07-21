@@ -100,6 +100,20 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         }
     }
 
+    private static Vector3d getFinalVertexLocationFor3DExport(boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, String consensusUnit, FilamentVertex vertex) {
+        Vector3d finalLocation;
+        if (physicalSizes) {
+            if (forceMeshLengthUnit) {
+                finalLocation = vertex.getSpatialLocationInUnit(meshLengthUnit.name());
+            } else {
+                finalLocation = vertex.getSpatialLocationInUnit(consensusUnit);
+            }
+        } else {
+            finalLocation = vertex.getSpatialLocation().toVector3d();
+        }
+        return finalLocation;
+    }
+
     public void mergeWithCopy(Filaments3DData other) {
         Map<FilamentVertex, FilamentVertex> copyMap = new IdentityHashMap<>();
         for (FilamentVertex vertex : other.vertexSet()) {
@@ -692,8 +706,6 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return copy;
     }
 
-
-
     public ConnectivityInspector<FilamentVertex, FilamentEdge> getConnectivityInspector() {
         return new ConnectivityInspector<>(this);
     }
@@ -1027,9 +1039,9 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             g += vertex.getColor().getGreen();
             b += vertex.getColor().getBlue();
         }
-        return new Color((int)(r / vertexSet().size()),
-                (int)(g / vertexSet().size()),
-                (int)(b / vertexSet().size()));
+        return new Color((int) (r / vertexSet().size()),
+                (int) (g / vertexSet().size()),
+                (int) (b / vertexSet().size()));
     }
 
     public Color getAverageEdgeColor() {
@@ -1041,9 +1053,9 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             g += edge.getColor().getGreen();
             b += edge.getColor().getBlue();
         }
-        return new Color((int)(r / edgeSet().size()),
-                (int)(g / edgeSet().size()),
-                (int)(b / edgeSet().size()));
+        return new Color((int) (r / edgeSet().size()),
+                (int) (g / edgeSet().size()),
+                (int) (b / edgeSet().size()));
     }
 
     public Scene3DGroupNode toScene3D(boolean withVertices, boolean withEdges, boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, float overrideVertexRadius, float overrideEdgeRadius, Color overrideVertexColor, Color overrideEdgeColor, String name) {
@@ -1052,7 +1064,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
         String consensusUnit = getConsensusPhysicalSizeUnit();
 
-        if(withVertices) {
+        if (withVertices) {
             Scene3DGroupNode verticesGroup = new Scene3DGroupNode();
             verticesGroup.setName("Vertices");
             componentGroup.addChild(verticesGroup);
@@ -1072,7 +1084,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
             }
 
         }
-        if(withEdges) {
+        if (withEdges) {
             Scene3DGroupNode edgesGroup = new Scene3DGroupNode();
             edgesGroup.setName("Edges");
 
@@ -1113,33 +1125,15 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 
     private float getFinalVertexRadiusFor3DExport(boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, String consensusUnit, float radius, Quantity voxelSize) {
         float finalRadius;
-        if(physicalSizes) {
-            if(forceMeshLengthUnit) {
+        if (physicalSizes) {
+            if (forceMeshLengthUnit) {
                 finalRadius = (float) (voxelSize.convertTo(consensusUnit).convertTo(meshLengthUnit.name()).getValue() * radius);
-            }
-            else {
+            } else {
                 finalRadius = (float) (voxelSize.convertTo(consensusUnit).getValue() * radius);
             }
-        }
-        else {
+        } else {
             finalRadius = radius;
         }
         return finalRadius;
-    }
-
-    private static Vector3d getFinalVertexLocationFor3DExport(boolean physicalSizes, Quantity.LengthUnit meshLengthUnit, boolean forceMeshLengthUnit, String consensusUnit, FilamentVertex vertex) {
-        Vector3d finalLocation;
-        if(physicalSizes) {
-            if(forceMeshLengthUnit) {
-                finalLocation = vertex.getSpatialLocationInUnit(meshLengthUnit.name());
-            }
-            else {
-                finalLocation = vertex.getSpatialLocationInUnit(consensusUnit);
-            }
-        }
-        else {
-            finalLocation = vertex.getSpatialLocation().toVector3d();
-        }
-        return finalLocation;
     }
 }

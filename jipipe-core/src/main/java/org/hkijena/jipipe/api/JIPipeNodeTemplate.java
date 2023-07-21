@@ -22,6 +22,7 @@ import java.util.*;
  */
 public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     public static final String SOURCE_USER = "User";
+    public static final String SOURCE_EXTENSION = "Extension";
     private String name = "Unnamed template";
     private HTMLText description = new HTMLText();
     private StringList menuPath = new StringList();
@@ -30,7 +31,6 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     private JIPipeGraph graph;
     private Color fillColor = MiscellaneousNodeTypeCategory.FILL_COLOR;
     private Color borderColor = MiscellaneousNodeTypeCategory.BORDER_COLOR;
-
     private String source = SOURCE_USER;
 
     public JIPipeNodeTemplate() {
@@ -69,6 +69,10 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.fillColor = other.fillColor;
         this.borderColor = other.borderColor;
         this.source = other.source;
+    }
+
+    public boolean isFromExtension() {
+        return SOURCE_EXTENSION.equals(source);
     }
 
     @JIPipeDocumentation(name = "Name", description = "Name of the template")

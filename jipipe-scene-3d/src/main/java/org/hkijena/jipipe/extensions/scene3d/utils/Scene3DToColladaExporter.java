@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.scene3d.utils;
 
-import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -8,13 +7,12 @@ import org.hkijena.jipipe.extensions.clij2.Scene3DExtension;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;
+import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DMeshGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DUnindexedMeshGeometry;
-import org.hkijena.jipipe.extensions.scene3d.model.Scene3DNode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -28,7 +26,8 @@ import java.io.FileOutputStream;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
 
@@ -85,7 +84,7 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
             createSceneLibrary(doc, rootElement, effectsListElement, materialsListElement, geometryListElement, visualScenesListElement);
 
             // Write XML file
-            try(FileOutputStream outputStream = new FileOutputStream(outputFile.toString())) {
+            try (FileOutputStream outputStream = new FileOutputStream(outputFile.toString())) {
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
                 Transformer transformer = transformerFactory.newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -132,12 +131,12 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
         nodeElement.setAttribute("type", "NODE");
         targetElement.appendChild(nodeElement);
 
-        if(scene3DNode instanceof Scene3DGeometry) {
+        if (scene3DNode instanceof Scene3DGeometry) {
 
             JIPipeProgressInfo processingProgress = getProgressInfo().resolveAndLog("Processing geometry " + scene3DNode + " ...");
 
             // Create the material and effect
-            Element effectElement = createEffect(doc, "effect-" + id, (Scene3DGeometry)scene3DNode);
+            Element effectElement = createEffect(doc, "effect-" + id, (Scene3DGeometry) scene3DNode);
             effectsListElement.appendChild(effectElement);
 
             Element materialElement = doc.createElement("material");
@@ -150,7 +149,7 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
 
             // Create a new geometry element
             Scene3DMeshGeometry meshGeometry = ((Scene3DGeometry) scene3DNode).toMeshGeometry(processingProgress);
-            if(indexMeshes && meshGeometry instanceof Scene3DUnindexedMeshGeometry) {
+            if (indexMeshes && meshGeometry instanceof Scene3DUnindexedMeshGeometry) {
                 meshGeometry = ((Scene3DUnindexedMeshGeometry) meshGeometry).toIndexedMeshGeometry(processingProgress.resolveAndLog("Mesh indexing"));
             }
 
@@ -176,13 +175,11 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
             techniqueCommonElement.appendChild(instanceMaterialElement);
             instanceMaterialElement.setAttribute("symbol", "material-" + id);
             instanceMaterialElement.setAttribute("target", "#material-" + id);
-        }
-        else if(scene3DNode instanceof Scene3DGroupNode) {
+        } else if (scene3DNode instanceof Scene3DGroupNode) {
             for (Scene3DNode child : ((Scene3DGroupNode) scene3DNode).getChildren()) {
                 createNode(doc, child, nodeIds, effectsListElement, materialsListElement, geometryListElement, nodeElement);
             }
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException();
         }
     }
@@ -203,7 +200,7 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
 
         Element emissionElement = doc.createElement("emission");
         lambertElement.appendChild(emissionElement);
-        emissionElement.appendChild(createColor(doc, "emission", new Color(0,0,0, 255)));
+        emissionElement.appendChild(createColor(doc, "emission", new Color(0, 0, 0, 255)));
 
         Element diffuseElement = doc.createElement("diffuse");
         lambertElement.appendChild(diffuseElement);
@@ -257,7 +254,7 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
         int[] verticesIndex = meshObject.getVerticesIndex();
         int[] normalsIndex = meshObject.getNormalsIndex();
 
-        if(verticesIndex.length != normalsIndex.length) {
+        if (verticesIndex.length != normalsIndex.length) {
             throw new IllegalArgumentException("Index arrays have different lengths!");
         }
 
@@ -292,7 +289,7 @@ public class Scene3DToColladaExporter extends AbstractJIPipeRunnable {
         floatArrayElement.setAttribute("count", String.valueOf(values.length));
         StringBuilder textContentBuilder = new StringBuilder();
         for (int i = 0; i < values.length / 3; i++) {
-            if(i > 0) {
+            if (i > 0) {
                 textContentBuilder.append(" ");
             }
             float x = values[i * 3];

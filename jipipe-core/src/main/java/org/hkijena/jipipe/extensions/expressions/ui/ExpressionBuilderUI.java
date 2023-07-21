@@ -21,6 +21,7 @@ import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -36,6 +37,7 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -181,27 +183,37 @@ public class ExpressionBuilderUI extends JPanel {
         expressionEditor.setLineWrap(true);
         expressionEditor.setHighlightCurrentLine(false);
         JPanel expressionEditorPanel = new JPanel(new BorderLayout());
+        expressionEditorPanel.setPreferredSize(new Dimension(256, 128));
+        expressionEditorPanel.setMinimumSize(new Dimension(256, 128));
         expressionEditorPanel.setBorder(BorderFactory.createEtchedBorder());
         expressionEditorPanel.add(expressionEditor, BorderLayout.CENTER);
         contentPanel.add(expressionEditorPanel, BorderLayout.SOUTH);
         contentPanel.add(tabPane, BorderLayout.CENTER);
 
         // Additional buttons for expression editor
-        JPanel expressionAdditionalButtonsPanel = new JPanel();
-        expressionAdditionalButtonsPanel.setLayout(new BoxLayout(expressionAdditionalButtonsPanel, BoxLayout.Y_AXIS));
+        JToolBar expressionAdditionalButtonsPanel = new JToolBar();
+        expressionAdditionalButtonsPanel.setFloatable(false);
 
-        JButton insertBracketsButton = new JButton("()");
-        insertBracketsButton.addActionListener(e -> insertBrackets());
-        UIUtils.makeFlat25x25(insertBracketsButton);
-        expressionAdditionalButtonsPanel.add(insertBracketsButton);
-
-        JButton insertVariableButton = new JButton(UIUtils.getIconFromResources("actions/variable.png"));
+        JButton insertVariableButton = new JButton("Insert variable", UIUtils.getIconFromResources("actions/variable.png"));
+        UIUtils.makeFlat(insertVariableButton);
         insertVariableButton.addActionListener(e -> insertCustomVariable());
         insertVariableButton.setToolTipText("Inserts a custom variable");
-        UIUtils.makeFlat25x25(insertVariableButton);
         expressionAdditionalButtonsPanel.add(insertVariableButton);
 
-        expressionEditorPanel.add(expressionAdditionalButtonsPanel, BorderLayout.WEST);
+        JButton insertPathButton = new JButton("Insert path", UIUtils.getIconFromResources("actions/fileopen.png"));
+        UIUtils.makeFlat(insertPathButton);
+        insertPathButton.addActionListener(e -> insertPath());
+        insertPathButton.setToolTipText("Inserts a path as raw string");
+        expressionAdditionalButtonsPanel.add(insertPathButton);
+
+        expressionAdditionalButtonsPanel.add(Box.createHorizontalGlue());
+
+        JButton insertBracketsButton = new JButton("Bracket selection", UIUtils.getIconFromResources("actions/object-group.png"));
+        UIUtils.makeFlat(insertBracketsButton);
+        insertBracketsButton.addActionListener(e -> insertBrackets());
+        expressionAdditionalButtonsPanel.add(insertBracketsButton);
+
+        expressionEditorPanel.add(expressionAdditionalButtonsPanel, BorderLayout.NORTH);
 
         // Command panel
         JPanel commandPanel = new JPanel(new BorderLayout());
@@ -217,6 +229,13 @@ public class ExpressionBuilderUI extends JPanel {
         // Main panel
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, contentPanel, commandPanel, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    private void insertPath() {
+        Path path = FileChooserSettings.openPath(this, FileChooserSettings.LastDirectoryKey.Data, "Insert path");
+        if (path != null) {
+            insertAtCaret(path.toString().replace('\\', '/'), false);
+        }
     }
 
     private void createInserter() {
@@ -295,7 +314,7 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     public void insertVariableAtCaret(String variableName) {
-        insertAtCaret(DefaultExpressionEvaluator.escapeVariable(variableName));
+        insertAtCaret(DefaultExpressionEvaluator.escapeVariable(variableName), true);
         expressionEditor.requestFocusInWindow();
     }
 
@@ -320,7 +339,7 @@ public class ExpressionBuilderUI extends JPanel {
             result.append(parameterUI.getCurrentExpressionValue());
         }
         result.append(")");
-        insertAtCaret(result.toString());
+        insertAtCaret(result.toString(), true);
         expressionEditor.requestFocusInWindow();
     }
 
@@ -329,34 +348,36 @@ public class ExpressionBuilderUI extends JPanel {
             if (operatorEntry.getOperator().getAssociativity() == Operator.Associativity.LEFT) {
                 boolean symbolic = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
                 if (symbolic)
-                    insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + operatorEntry.getOperator().getSymbol());
+                    insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + operatorEntry.getOperator().getSymbol(), true);
                 else
-                    insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol());
+                    insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol(), true);
             } else {
                 boolean symbolic = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
                 if (symbolic)
-                    insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue());
+                    insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue(), true);
                 else
-                    insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue());
+                    insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue(), true);
             }
         } else {
-            insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol() + " " + parameterEditorUIList.get(1).getCurrentExpressionValue());
+            insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol() + " " + parameterEditorUIList.get(1).getCurrentExpressionValue(), true);
         }
         expressionEditor.requestFocusInWindow();
     }
 
-    public void insertAtCaret(String text) {
+    public void insertAtCaret(String text, boolean spacing) {
         int caret = expressionEditor.getCaretPosition();
         if (caret > 0) {
             try {
-                if (!Objects.equals(expressionEditor.getText(caret - 1, 1), " "))
+                if (spacing && !Objects.equals(expressionEditor.getText(caret - 1, 1), " ")) {
                     text = " " + text;
+                }
             } catch (BadLocationException e) {
             }
         }
         try {
-            if (!Objects.equals(expressionEditor.getText(caret, 1), " "))
+            if (spacing && !Objects.equals(expressionEditor.getText(caret, 1), " ")) {
                 text = text + " ";
+            }
         } catch (BadLocationException e) {
         }
         expressionEditor.insert(text, expressionEditor.getCaretPosition());
@@ -375,11 +396,11 @@ public class ExpressionBuilderUI extends JPanel {
                 if (currentlyInsertedObject instanceof ExpressionParameterVariable) {
                     ExpressionParameterVariable variable = (ExpressionParameterVariable) currentlyInsertedObject;
                     if (!StringUtils.isNullOrEmpty(variable.getKey())) {
-                        insertAtCaret(variable.getKey());
+                        insertAtCaret(variable.getKey(), true);
                     }
                 } else if (currentlyInsertedObject instanceof ExpressionConstantEntry) {
                     ExpressionConstantEntry constantEntry = (ExpressionConstantEntry) currentlyInsertedObject;
-                    insertAtCaret(constantEntry.getConstant().getName());
+                    insertAtCaret(constantEntry.getConstant().getName(), true);
                 } else if (currentlyInsertedObject instanceof ExpressionOperatorEntry) {
                     insertOperator((ExpressionOperatorEntry) currentlyInsertedObject, inserterUI.getInserterParameterEditorUIList());
                 } else if (currentlyInsertedObject instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {

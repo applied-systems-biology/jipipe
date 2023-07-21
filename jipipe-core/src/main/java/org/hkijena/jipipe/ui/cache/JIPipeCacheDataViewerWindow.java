@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;

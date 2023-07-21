@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;

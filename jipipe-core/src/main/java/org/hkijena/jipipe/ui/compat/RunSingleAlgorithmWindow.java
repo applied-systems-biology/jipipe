@@ -15,12 +15,14 @@ package org.hkijena.jipipe.ui.compat;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeRunAlgorithmCommand;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -383,10 +385,15 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
     }
 
     private void copyCommand() {
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        currentRunSettingsPanel.getRun().reportValidity(report);
-        if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
+        if (!report.isEmpty()) {
+            UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                    this,
+                    report,
+                    "Issues with the run",
+                    "The following issues have been detected:",
+                    false);
             return;
         }
         String parameters = getRun().getParametersString();
@@ -404,10 +411,15 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
     }
 
     private void runNow() {
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        currentRunSettingsPanel.getRun().reportValidity(report);
-        if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, "Issues with the run", "The following issues have been detected:", false);
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        currentRunSettingsPanel.getRun().reportValidity(new UnspecifiedValidationReportContext(), report);
+        if (!report.isEmpty()) {
+            UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(),
+                    this,
+                    report,
+                    "Issues with the run",
+                    "The following issues have been detected:",
+                    false);
             return;
         }
         if (!keepWindowToggle.isSelected())

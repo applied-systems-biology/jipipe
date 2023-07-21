@@ -13,13 +13,16 @@
 
 package org.hkijena.jipipe.ui.components;
 
-import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyException;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,22 +30,66 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Displays exceptions in a user-friendly way.
- * Can handle {@link org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException} and {@link JIPipeIssueReport}
+ * Can handle {@link JIPipeValidationRuntimeException} and {@link JIPipeValidationReport}
  */
-public class UserFriendlyErrorUI extends FormPanel {
+public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAccess {
 
-    private List<ErrorEntry> entries = new ArrayList<>();
+    private final JIPipeWorkbench workbench;
+    private final JIPipeValidationReport report = new JIPipeValidationReport();
+    private final JToolBar toolBar = new JToolBar();
 
     /**
+     * @param workbench    the workbench
      * @param helpDocument the help document to be displayed. If null, no help is displayed
      * @param flags        FormPanel flags
      */
-    public UserFriendlyErrorUI(MarkdownDocument helpDocument, int flags) {
+    public UserFriendlyErrorUI(JIPipeWorkbench workbench, MarkdownDocument helpDocument, int flags) {
         super(helpDocument, flags);
+        this.workbench = workbench;
+        initialize();
+    }
+
+    private void initialize() {
+        add(toolBar, BorderLayout.NORTH);
+        toolBar.setFloatable(false);
+
+        toolBar.add(Box.createHorizontalGlue());
+
+        // Open in new window
+        JButton openInNewWindowButton = new JButton("Open in new window", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        openInNewWindowButton.addActionListener(e -> {
+            String title = "Unnamed";
+            if (getWorkbench().getWindow() instanceof JFrame) {
+                title = ((JFrame) getWorkbench().getWindow()).getTitle();
+            }
+            UIUtils.openValidityReportDialog(getWorkbench(), getWorkbench().getWindow(), report, title + " - Problems", null,
+                    false);
+        });
+        toolBar.add(openInNewWindowButton);
+
+        // Copy all
+        JButton copyAllButton = new JButton("Copy all", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        copyAllButton.addActionListener(e -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (JIPipeValidationReportEntry reportEntry : report) {
+                stringBuilder.append(reportEntry.toReport());
+            }
+            UIUtils.copyToClipboard(stringBuilder.toString());
+        });
+        toolBar.add(copyAllButton);
+    }
+
+    public JToolBar getToolBar() {
+        return toolBar;
+    }
+
+    @Override
+    public void clear() {
+        report.clear();
+        super.clear();
     }
 
     /**
@@ -52,28 +99,25 @@ public class UserFriendlyErrorUI extends FormPanel {
      * @param e the exception
      */
     public void displayErrors(Throwable e) {
-        if (e instanceof UserFriendlyException) {
+        if (e instanceof JIPipeValidationRuntimeException) {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
-            UserFriendlyException exception = (UserFriendlyException) e;
-            addEntry(new ErrorEntry(exception.getUserWhat(),
-                    exception.getUserWhere(),
-                    exception.getUserWhy(),
-                    exception.getUserHow(),
-                    writer.toString()));
+            JIPipeValidationRuntimeException exception = (JIPipeValidationRuntimeException) e;
+            for (JIPipeValidationReportEntry entry : exception.getReport()) {
+                addEntry(entry);
+            }
         } else {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
-            addEntry(new ErrorEntry("Internal error",
-                    "Internal plugin, JIPipe, or ImageJ code.",
-                    "Cannot be determined. But the response was: " + e.getMessage(),
-                    "Please check if your input data has the right format and is not corrupted. " +
-                            "Try to use the quick run on input algorithms and check if the generated data satisfies the problematic algorithm's assumptions." +
-                            "If you cannot solve the issue yourself, contact the JIPipe or the algorithm/plugin developer.",
+            addEntry(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new UnspecifiedValidationReportContext(),
+                    "Internal error",
+                    "An internal error was encountered. The message is: " + e.getMessage(),
+                    null,
                     writer.toString()));
         }
         if (e.getCause() instanceof Exception) {
-            displayErrors((Exception) e.getCause());
+            displayErrors(e.getCause());
         }
     }
 
@@ -83,15 +127,9 @@ public class UserFriendlyErrorUI extends FormPanel {
      *
      * @param report the report
      */
-    public void displayErrors(JIPipeIssueReport report) {
-        for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
-            String key = entry.getKey();
-            JIPipeIssueReport.Issue issue = entry.getValue();
-            addEntry(new ErrorEntry(issue.getUserWhat(),
-                    key,
-                    issue.getUserWhy(),
-                    issue.getUserHow(),
-                    issue.getDetails()));
+    public void displayErrors(JIPipeValidationReport report) {
+        for (JIPipeValidationReportEntry issue : report) {
+            addEntry(issue);
         }
     }
 
@@ -100,111 +138,161 @@ public class UserFriendlyErrorUI extends FormPanel {
      *
      * @param entry the entry
      */
-    public void addEntry(ErrorEntry entry) {
-        entries.add(entry);
-        addWideToForm(new EntryUI(entry), null);
-    }
+    public void addEntry(JIPipeValidationReportEntry entry) {
+        report.add(entry);
 
-    /**
-     * Entry to be displayed
-     */
-    public static class ErrorEntry {
-        private final String userWhat;
-        private final String userWhere;
-        private final String userWhy;
-        private final String userHow;
-        private final String details;
+        JPanel entryPanel = new JPanel(new BorderLayout());
+        FormPanel formPanel = new FormPanel(FormPanel.TRANSPARENT_BACKGROUND);
+        entryPanel.add(formPanel, BorderLayout.CENTER);
 
-        /**
-         * @param userWhat  what happened
-         * @param userWhere where it happened
-         * @param userWhy   why it happened
-         * @param userHow   how to solve the issue
-         * @param details   optional details. Can be null.
-         */
-        public ErrorEntry(String userWhat, String userWhere, String userWhy, String userHow, String details) {
-            this.userWhat = userWhat;
-            this.userWhere = userWhere;
-            this.userWhy = userWhy;
-            this.userHow = userHow;
-            this.details = details;
+        Color fill;
+        Color border;
+        Icon icon;
+
+        switch (entry.getLevel()) {
+            case Error:
+                if (UIUtils.DARK_THEME) {
+                    fill = new Color(0x6F000B);
+                } else {
+                    fill = new Color(0xFDCDD1);
+                }
+                icon = UIUtils.getIcon32FromResources("actions/edit-clear-all.png");
+                border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
+                break;
+            case Warning:
+                if (UIUtils.DARK_THEME) {
+                    fill = new Color(0x734300);
+                } else {
+                    fill = new Color(0xFFEBCF);
+                }
+                icon = UIUtils.getIcon32FromResources("actions/dialog-warning.png");
+                border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
+                break;
+            case Info:
+                if (UIUtils.DARK_THEME) {
+                    fill = new Color(0x05254B);
+                } else {
+                    fill = new Color(0xBED0E6);
+                }
+                icon = UIUtils.getIcon32FromResources("actions/dialog-information.png");
+                border = ColorUtils.scaleHSV(fill, 1, 0.8f, 0.8f);
+                break;
+            default:
+                throw new UnsupportedOperationException();
         }
 
-        public String getUserWhat() {
-            return userWhat;
+        entryPanel.setBackground(fill);
+        entryPanel.setBorder(new RoundedLineBorder(border, 1, 4));
+
+
+        JLabel titleLabel = new JLabel(entry.getTitle(), icon, JLabel.LEFT);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(4, 0, 8, 4));
+        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 14));
+        titleLabel.setOpaque(false);
+        formPanel.addWideToForm(titleLabel);
+
+        if (!StringUtils.isNullOrEmpty(entry.getExplanation())) {
+            JTextArea textArea = UIUtils.makeReadonlyBorderlessTextArea(entry.getExplanation());
+            textArea.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
+            formPanel.addWideToForm(textArea);
         }
 
-        public String getUserWhere() {
-            return userWhere;
+        List<JIPipeValidationReportContext> contexts = new ArrayList<>();
+        NavigableJIPipeValidationReportContext navigationContext = null;
+        {
+            JIPipeValidationReportContext context = entry.getContext();
+            do {
+                if (!(context instanceof UnspecifiedValidationReportContext)) {
+                    contexts.add(context);
+                    if (context instanceof NavigableJIPipeValidationReportContext && ((NavigableJIPipeValidationReportContext) context).canNavigate(getWorkbench())) {
+                        navigationContext = (NavigableJIPipeValidationReportContext) context;
+                    }
+                    context = context.getParent();
+                }
+            }
+            while (!(context instanceof UnspecifiedValidationReportContext));
         }
 
-        public String getUserWhy() {
-            return userWhy;
-        }
+        {
+            JToolBar breadcrumb = new JToolBar();
+            breadcrumb.setOpaque(false);
+            breadcrumb.setFloatable(false);
+            breadcrumb.setBorder(BorderFactory.createEmptyBorder(16, 0, 0, 0));
+            breadcrumb.add(Box.createHorizontalStrut(8));
+            formPanel.addWideToForm(breadcrumb);
 
-        public String getUserHow() {
-            return userHow;
-        }
-
-        public String getDetails() {
-            return details;
-        }
-    }
-
-    /**
-     * UI for {@link ErrorEntry}
-     */
-    public static class EntryUI extends FormPanel {
-
-        public static final String[] CSS_RULES = {"body { font-family: \"Sans-serif\"; }",
-                "pre { background-color: #f5f2f0; border: 3px #f5f2f0 solid; }",
-                "code { background-color: #f5f2f0; }",
-                "h1 { font-size: 20px; }",
-                "h2 { padding-top: 30px; }",
-                "h3 { padding-top: 30px; }",
-                "th { border-bottom: 1px solid #c8c8c8; }",
-                ".toc-list { list-style: none; }"};
-
-        private final ErrorEntry entry;
-
-        /**
-         * @param entry the entry
-         */
-        public EntryUI(ErrorEntry entry) {
-            super(null, NONE);
-            this.entry = entry;
-            initialize();
-        }
-
-        private void initialize() {
-            setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4),
-                    BorderFactory.createLineBorder(Color.DARK_GRAY, 1, true)));
-
-            String markdown = "<table><tr><td><img src=\"" + ResourceUtils.getPluginResource("icons-32/error.png") +
-                    "\" /></td><td><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getUserWhat()) + "</strong></td></tr></table>" +
-                    "<table>" +
-                    "<tr><td><span style=\"color: blue\">Where?</span></td><td>" +
-                    StringUtils.wordWrappedHTMLElement(entry.getUserWhere(), 70) + "</td></tr>" +
-                    "<tr><td><span style=\"color: blue\">Why?</span></td><td>" +
-                    StringUtils.wordWrappedHTMLElement(entry.getUserWhy(), 70) + "</td></tr>" +
-                    "<tr><td><span style=\"color: green\">Solution?</span></td><td>" +
-                    StringUtils.wordWrappedHTMLElement(entry.getUserHow(), 70) + "</td></tr>" +
-                    "</table>";
-            JTextPane mainMessageReader = UIUtils.makeMarkdownReader(new MarkdownDocument(markdown), CSS_RULES);
-            mainMessageReader.setEditable(false);
-            mainMessageReader.setOpaque(false);
-
-            addWideToForm(mainMessageReader, null);
-
-            if (!StringUtils.isNullOrEmpty(entry.getDetails())) {
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader("Please provide these technical details on contacting a developer", UIUtils.getIconFromResources("actions/help-info.png"));
-                JToggleButton showDetailsButton = new JToggleButton("Show details");
-                groupHeaderPanel.addColumn(showDetailsButton);
-                JTextArea details = UIUtils.makeReadonlyTextArea(entry.getDetails());
-                addWideToForm(details, null);
-                details.setVisible(false);
-                showDetailsButton.addActionListener(e -> details.setVisible(showDetailsButton.isSelected()));
+            if (contexts.isEmpty()) {
+                JButton button = new JButton("Internal", UIUtils.getIconFromResources("actions/system-run.png"));
+                button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                button.setOpaque(false);
+                button.setBorder(null);
+                breadcrumb.add(button);
+            } else {
+                for (int i = 0; i < contexts.size(); i++) {
+                    JIPipeValidationReportContext context = contexts.get(i);
+                    if (i < contexts.size() - 1) {
+                        JButton button = new JButton(context.renderIcon());
+                        button.setToolTipText(context.renderName());
+                        button.setOpaque(false);
+                        button.setBorder(null);
+                        button.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                        breadcrumb.add(button);
+                        breadcrumb.add(new JLabel(UIUtils.getIconFromResources("actions/draw-triangle2.png")));
+                    } else {
+                        JButton button = new JButton(context.renderName(), context.renderIcon());
+                        button.setToolTipText(context.renderName());
+                        button.setOpaque(false);
+                        button.setBorder(null);
+                        breadcrumb.add(button);
+                    }
+                }
             }
         }
+
+        {
+            JToolBar actionBar = new JToolBar();
+            actionBar.setOpaque(false);
+            actionBar.setFloatable(false);
+            actionBar.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
+            actionBar.add(Box.createHorizontalStrut(6));
+            formPanel.addWideToForm(actionBar);
+
+            if (navigationContext != null) {
+                JButton navigateButton = new JButton("Go to", UIUtils.getIconFromResources("actions/go-jump.png"));
+                navigateButton.setOpaque(false);
+                NavigableJIPipeValidationReportContext finalNavigationContext = navigationContext;
+                navigateButton.addActionListener(e -> {
+                    if (finalNavigationContext.canNavigate(getWorkbench())) {
+                        finalNavigationContext.navigate(getWorkbench());
+                    } else {
+                        JOptionPane.showMessageDialog(this, "Unable to navigate to '" + finalNavigationContext.renderName() + "'!",
+                                "Navigate",
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+                actionBar.add(navigateButton);
+            }
+
+            actionBar.add(Box.createHorizontalGlue());
+
+            JButton detailsButton = new JButton("Show details", UIUtils.getIconFromResources("actions/find.png"));
+            detailsButton.addActionListener(e -> {
+                MarkdownReader.showDialog(new MarkdownDocument(entry.toReport()), true, entry.getTitle(), this, false);
+            });
+            detailsButton.setOpaque(false);
+            actionBar.add(detailsButton);
+
+            JButton copyButton = new JButton("Copy", UIUtils.getIconFromResources("actions/edit-copy.png"));
+            copyButton.addActionListener(e -> UIUtils.copyToClipboard(entry.toReport()));
+            copyButton.setOpaque(false);
+            actionBar.add(copyButton);
+        }
+
+        addWideToForm(entryPanel);
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 }

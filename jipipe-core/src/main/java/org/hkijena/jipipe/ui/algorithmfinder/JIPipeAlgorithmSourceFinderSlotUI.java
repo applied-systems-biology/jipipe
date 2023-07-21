@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.algorithmfinder;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;

@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -64,6 +64,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         if (nodeClass.getAnnotation(JIPipeHidden.class) != null) {
             setHidden(true);
         }
+        setRunnable(JIPipeAlgorithm.class.isAssignableFrom(nodeClass));
         // Load additional citations
         for (JIPipeCitation citation : nodeClass.getAnnotationsByType(JIPipeCitation.class)) {
             getAdditionalCitations().add(citation.value());
@@ -173,9 +174,9 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         try {
             return ConstructorUtils.getMatchingAccessibleConstructor(getInstanceClass(), algorithm.getClass()).newInstance(algorithm);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to copy algorithm '" + algorithm.getName() + "'!",
-                    "Undefined", "There is a programming error in the algorithm's code.",
-                    "Please contact the developer of the plugin that created the algorithm.");
+            throw new JIPipeValidationRuntimeException(e, "Unable to copy node '" + algorithm.getName() + "'!",
+                    "There is a programming error in the node's code.",
+                    "Please contact the developer of the plugin that created the node.");
         }
     }
 
@@ -190,9 +191,9 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
             return getInstanceClass().getConstructor(JIPipeNodeInfo.class).newInstance(this);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
                  InvocationTargetException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
-                    "Undefined", "There is a programming error in an algorithm's code.",
-                    "Please contact the developer of the plugin that created the algorithm.");
+            throw new JIPipeValidationRuntimeException(e, "Unable to create a node instance!",
+                    "There is a programming error in an node's code.",
+                    "Please contact the developer of the plugin that created the node.");
         }
     }
 

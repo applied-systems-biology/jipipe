@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -689,5 +690,14 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
         inputSlotRows.putIfAbsent(slot, new HashSet<>());
     }
 
-
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getClass().getName()).append(": { ");
+        for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
+            stringBuilder.append(entry.getKey().getName()).append(" -> [").append(Ints.join(", ", Ints.toArray(entry.getValue()))).append("], ");
+        }
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.api.cache;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.*;
@@ -34,17 +33,12 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
      * For each node the set of expected parents
      */
     private final Map<UUID, Set<UUID>> currentNodeStateInputs = new HashMap<>();
-    private DefaultDirectedGraph<UUID, DefaultEdge> currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
-
-    private int currentSize = 0;
-
-    private boolean ignoreNodeFunctionalEquals = false;
-
     private final StoredEventEmitter storedEventEmitter = new StoredEventEmitter();
-
     private final ClearedEventEmitter clearedEventEmitter = new ClearedEventEmitter();
-
     private final ModifiedEventEmitter modifiedEventEmitter = new ModifiedEventEmitter();
+    private DefaultDirectedGraph<UUID, DefaultEdge> currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+    private int currentSize = 0;
+    private boolean ignoreNodeFunctionalEquals = false;
 
     public JIPipeLocalProjectMemoryCache(JIPipeProject project) {
         this.project = project;

@@ -40,6 +40,7 @@ import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.RemoveOverlay3DAlgorithm
 import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.RenderOverlay3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.overlay.SetOverlay3DAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.ExportROI3DAlgorithm;
+import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.ExportROI3DAlgorithm2;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.convert.*;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.nodes.roi3d.filter.FilterRoi3DByStatisticsAlgorithm;
@@ -65,7 +66,6 @@ import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.extensions.multiparameters.MultiParameterAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.scene3d.nodes.MaskTo3DMeshAlgorithm;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -147,6 +147,7 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
         registerNodeType("import-roi-3d", ImportROI3DAlgorithm.class);
         registerNodeType("export-roi-3d", ExportROI3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("export-roi-3d-v2", ExportROI3DAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
 
         registerNodeType("ij3d-analyze-find-particles", FindParticles3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));
         registerNodeType("ij3d-labels-to-roi", Roi3DFromLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/tool_elliptical_selection.png"));

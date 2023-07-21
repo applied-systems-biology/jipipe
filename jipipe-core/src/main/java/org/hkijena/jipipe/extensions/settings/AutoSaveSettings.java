@@ -45,10 +45,10 @@ import java.util.stream.Collectors;
 public class AutoSaveSettings extends AbstractJIPipeParameterCollection {
     public static final String ID = "auto-save";
     private final Timer autoSaveTimer;
+    private final Set<String> savedBackupHashes = new HashSet<>();
     private boolean enableAutoSave = true;
     private int autoSaveDelay = 3;
     private OptionalPathParameter customSavePath = new OptionalPathParameter();
-    private final Set<String> savedBackupHashes = new HashSet<>();
     private int maxBackupCheckTimeSeconds = 20;
 
     public AutoSaveSettings() {

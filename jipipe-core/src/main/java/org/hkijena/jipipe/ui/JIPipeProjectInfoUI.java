@@ -40,7 +40,9 @@ import java.util.HashMap;
 public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JTextPane descriptionReader;
-    private final ParameterPanel parameterPanel;
+    private final ParameterPanel projectParametersPanel;
+
+    private final ParameterPanel projectDirectoriesPanel;
     private final JScrollPane descriptionReaderScrollPane;
     private JTextField licenseInfo;
     private JTextField projectName;
@@ -66,9 +68,15 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         descriptionReader.setEditable(false);
         UIUtils.registerHyperlinkHandler(descriptionReader);
         descriptionReaderScrollPane = new JScrollPane(descriptionReader);
-        parameterPanel = new ParameterPanel(getWorkbench(),
+        projectParametersPanel = new ParameterPanel(getWorkbench(),
                 getProject().getPipelineParameters(),
                 MarkdownDocument.fromPluginResource("documentation/project-info-parameters.md", new HashMap<>()),
+                ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING
+                        | ParameterPanel.NO_EMPTY_GROUP_HEADERS | ParameterPanel.WITH_DOCUMENTATION |
+                        ParameterPanel.DOCUMENTATION_BELOW);
+        projectDirectoriesPanel = new ParameterPanel(getWorkbench(),
+                getProject().getMetadata().getDirectories(),
+                MarkdownDocument.fromPluginResource("documentation/project-info-directories.md", new HashMap<>()),
                 ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING
                         | ParameterPanel.NO_EMPTY_GROUP_HEADERS | ParameterPanel.WITH_DOCUMENTATION |
                         ParameterPanel.DOCUMENTATION_BELOW);
@@ -155,7 +163,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         initializeHeaderPanel();
 
         descriptionReaderScrollPane.setBorder(null);
-        parameterPanel.getScrollPane().setBorder(null);
+        projectParametersPanel.getScrollPane().setBorder(null);
 
         DocumentTabPane tabPane = new DocumentTabPane(true);
         tabPane.addTab("Bookmarks",
@@ -165,7 +173,12 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
                 false);
         tabPane.addTab("Parameters",
                 UIUtils.getIconFromResources("actions/wrench.png"),
-                parameterPanel,
+                projectParametersPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        tabPane.addTab("User directories",
+                UIUtils.getIconFromResources("actions/stock_folder-copy.png"),
+                projectDirectoriesPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 

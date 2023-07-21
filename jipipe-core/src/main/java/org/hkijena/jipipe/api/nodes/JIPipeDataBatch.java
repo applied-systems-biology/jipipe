@@ -478,4 +478,15 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         }
         return 0;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(getClass().getName()).append(": { ");
+        for (Map.Entry<JIPipeDataSlot, Integer> entry : inputSlotRows.entrySet()) {
+            stringBuilder.append(entry.getKey().getName()).append(" -> ").append(entry.getValue()).append(", ");
+        }
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

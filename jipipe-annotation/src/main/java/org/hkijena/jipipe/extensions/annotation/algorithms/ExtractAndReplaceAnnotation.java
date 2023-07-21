@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -72,16 +71,6 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
             dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(function.getOutput(), newValue), annotationMergeStrategy);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Functions").report(functions);
-        for (int i = 0; i < functions.size(); i++) {
-            JIPipeIssueReport subReport = report.resolve("Functions").resolve("Item #" + (i + 1));
-            subReport.resolve("Input").checkNonEmpty(functions.get(i).getInput(), this);
-            subReport.resolve("Output").checkNonEmpty(functions.get(i).getOutput(), this);
-        }
     }
 
     @JIPipeDocumentation(name = "Functions", description = "The functions that allow you to extract and replace annotation values. " +

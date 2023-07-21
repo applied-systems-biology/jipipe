@@ -23,11 +23,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.*;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.utils.json.JsonDeserializable;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -42,16 +44,14 @@ import java.util.function.Function;
 @JsonDeserialize(using = JIPipeDynamicParameterCollection.Deserializer.class)
 public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCollection, JIPipeValidatable, JsonDeserializable {
     private final BiMap<String, JIPipeMutableParameterAccess> dynamicParameters = HashBiMap.create();
+    private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
+    private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
+    private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
+    private final BeforeAddParameterEventEmitter beforeAddParameterEventEmitter = new BeforeAddParameterEventEmitter();
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private Function<UserParameterDefinition, JIPipeMutableParameterAccess> instanceGenerator;
     private boolean allowUserModification = false;
     private boolean delayEvents = false;
-
-    private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
-    private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
-    private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
-
-    private final BeforeAddParameterEventEmitter beforeAddParameterEventEmitter = new BeforeAddParameterEventEmitter();
 
     public JIPipeDynamicParameterCollection() {
 
@@ -280,7 +280,8 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
                 parameterAccess.setSource(this);
                 dynamicParameters.put(entry.getKey(), parameterAccess);
             } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to read parameter from JSON!", "User-modifiable parameters", "There is essential information missing in the JSON data.",
+                throw new JIPipeValidationRuntimeException(e, "Unable to read parameter from JSON!",
+                        "There is essential information missing in the JSON data.",
                         "Please check if the JSON data is valid.");
             }
         }
@@ -360,11 +361,11 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         for (Map.Entry<String, JIPipeMutableParameterAccess> entry : dynamicParameters.entrySet()) {
             Object o = entry.getValue().get(Object.class);
             if (o instanceof JIPipeValidatable) {
-                report.resolve(entry.getKey()).report((JIPipeValidatable) o);
+                report.report(new ParameterValidationReportContext(context, this, entry.getValue().getName(), entry.getKey()), (JIPipeValidatable) o);
             }
         }
     }
@@ -396,6 +397,10 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         return addParameter(parameterAccess);
     }
 
+
+    public interface BeforeAddParameterEventListener {
+        void onDynamicParameterCollectionBeforeAddParameter(BeforeAddParameterEvent event);
+    }
 
     /**
      * Parameter definition by a user
@@ -455,10 +460,6 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         public void setCancelled(boolean cancelled) {
             this.cancelled = cancelled;
         }
-    }
-
-    public interface BeforeAddParameterEventListener {
-        void onDynamicParameterCollectionBeforeAddParameter(BeforeAddParameterEvent event);
     }
 
     public static class BeforeAddParameterEventEmitter extends JIPipeEventEmitter<BeforeAddParameterEvent, BeforeAddParameterEventListener> {

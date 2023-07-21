@@ -94,10 +94,11 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
             if (SystemUtils.IS_OS_WINDOWS) {
                 notification.getActions().add(new JIPipeNotificationAction("Install R",
                         "Installs a prepackaged version of R",
-                        UIUtils.getIconFromResources("actions/browser-download.png"),
+                        UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                        JIPipeNotificationAction.Style.Success,
                         RExtension::easyInstallR));
             }
-            notification.getActions().add(new JIPipeNotificationAction("Configure R",
+            notification.getActions().add(new JIPipeNotificationAction("Open settings",
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
                     RExtension::configureR));

@@ -4,10 +4,13 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
@@ -155,14 +158,12 @@ public class ProcessEnvironment extends ExternalEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (StringUtils.isNullOrEmpty(getAbsoluteExecutablePath()) || !Files.isRegularFile(getAbsoluteExecutablePath())) {
-            report.resolve("Executable").reportIsInvalid(
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context,
                     "Executable does not exist",
                     "You need to provide a Python executable",
-                    "Provide a Python executable",
-                    "Python environment"
-            );
+                    "Provide an executable"));
         }
     }
 

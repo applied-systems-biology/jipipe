@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -25,11 +26,14 @@ import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ParameterUtils;
@@ -112,6 +116,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
+            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (allowedIndices.contains(i)) {
@@ -153,12 +158,10 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
         }
 
         if (dataBatches == null) {
-            throw new UserFriendlyRuntimeException("Unable to split data into batches!",
-                    "Unable to split data into batches!",
-                    "Algorithm '" + getName() + "'",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this), "Unable to split data into batches!",
                     "The algorithm needs to assign input a unique data set via annotations, but there are either missing elements or multiple data per slot.",
                     "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                            "Try to switch to the 'Data batches' tab to preview how data is split into batches.");
+                            "Try to switch to the 'Data batches' tab to preview how data is split into batches."));
         }
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {

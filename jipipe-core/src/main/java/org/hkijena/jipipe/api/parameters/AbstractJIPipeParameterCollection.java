@@ -1,8 +1,5 @@
 package org.hkijena.jipipe.api.parameters;
 
-import com.google.common.eventbus.EventBus;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-
 /**
  * {@link JIPipeParameterCollection} that implements the {@link com.google.common.eventbus.EventBus}
  */

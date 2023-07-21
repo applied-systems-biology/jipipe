@@ -13,10 +13,13 @@
 
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -34,6 +37,7 @@ import org.hkijena.jipipe.ui.running.JIPipeLogViewer;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -69,7 +73,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         this.algorithm = algorithm;
 
         setLayout(new BorderLayout());
-        this.validationReportUI = new JIPipeValidityReportUI(false);
+        this.validationReportUI = new JIPipeValidityReportUI(workbenchUI, false);
 
         initializeValidationReportUI();
         initializeSelectionPanel();
@@ -180,21 +184,15 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
     private void initializeValidationReportUI() {
         validationReportPanel = new JPanel();
         validationReportPanel.setLayout(new BorderLayout());
-        validationReportUI = new JIPipeValidityReportUI(false);
+        validationReportUI = new JIPipeValidityReportUI(getWorkbench(), false);
         DocumentedComponent pane = new DocumentedComponent(true,
                 MarkdownDocument.fromPluginResource("documentation/testbench.md", new HashMap<>()),
                 validationReportUI);
         validationReportPanel.add(pane, BorderLayout.CENTER);
 
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.add(Box.createHorizontalGlue());
-
         JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> tryShowSelectionPanel());
-        toolBar.add(refreshButton);
-
-        validationReportPanel.add(toolBar, BorderLayout.NORTH);
+        validationReportUI.getErrorToolbar().add(refreshButton);
     }
 
     private void initializeSetupPanel() {
@@ -228,20 +226,20 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
     }
 
     private boolean validateOrShowError() {
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        getProject().reportValidity(report, algorithm);
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, algorithm);
 
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms(true);
         if (algorithmsWithMissingInput.contains(algorithm)) {
-            report.resolve("Test Bench").reportIsInvalid(
-                    "Selected algorithm is deactivated or missing inputs!",
-                    "The selected algorithm would not be executed, as it is deactivated or missing input data. " +
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(algorithm),
+                    "Selected node is deactivated or missing inputs!",
+                    "The selected node would not be executed, as it is deactivated or missing input data. " +
                             "You have to ensure that all input slots are assigned for the selected algorithm and its dependencies.",
                     "Please check if the parameter 'Enabled' is checked. Please check if all input slots are assigned. Also check all dependency algorithms.",
-                    algorithm
-            );
+                    JsonUtils.toPrettyJsonString(algorithm)));
         }
-        if (report.isValid())
+        if (report.isEmpty())
             return true;
 
         // Replace by error UI
@@ -274,16 +272,12 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
     private void openError(Throwable exception) {
         removeAll();
 
-        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+        UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(getWorkbench(), null, UserFriendlyErrorUI.WITH_SCROLLING);
         errorUI.displayErrors(exception);
         errorUI.addVerticalGlue();
 
         JPanel errorPanel = new JPanel(new BorderLayout());
         errorPanel.add(errorUI, BorderLayout.CENTER);
-
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.add(Box.createHorizontalGlue());
 
         JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("actions/show_log.png"));
         JPopupMenu openLogMenu = UIUtils.addPopupMenuToComponent(openLogButton);
@@ -296,12 +290,11 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         openLogInExternalEditorItem.addActionListener(e -> openLogInExternalEditor());
         openLogMenu.add(openLogInExternalEditorItem);
 
-        toolBar.add(openLogButton);
+        errorUI.getToolBar().add(openLogButton);
 
         JButton refreshButton = new JButton("Retry", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> tryShowSelectionPanel());
-        toolBar.add(refreshButton);
-        errorPanel.add(toolBar, BorderLayout.NORTH);
+        errorUI.getToolBar().add(refreshButton);
 
         add(errorPanel, BorderLayout.CENTER);
 
@@ -334,9 +327,9 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
 
     private void generateQuickRun(boolean showResults) {
 
-        JIPipeIssueReport report = new JIPipeIssueReport();
-        getProject().reportValidity(report, algorithm);
-        if (!report.isValid()) {
+        JIPipeValidationReport report = new JIPipeValidationReport();
+        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, algorithm);
+        if (!report.isEmpty()) {
             tryShowSelectionPanel();
             return;
         }

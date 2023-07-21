@@ -15,10 +15,12 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.DoubleArrayTableColumn;
@@ -141,17 +143,11 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
                 return new StringArrayTableColumn(data, "Generated");
             }
         }
-        throw new UserFriendlyRuntimeException("Could not find column!",
+        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(), "Could not find column!",
                 "Could not find or generate column!",
-                "Table column source parameter",
                 "A node requested from you to specify a table column. You entered the expression '" + getValue().getExpression() + "', but it did not yield in a column.",
                 "Check if the expression is correct. If you want an existing column, it should return a string. If you want to search for one, it should return a boolean value. " +
-                        "If you want to generate one, it can return a number or string.");
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.checkNonEmpty(getValue().getExpression(), this);
+                        "If you want to generate one, it can return a number or string."));
     }
 
     @Override

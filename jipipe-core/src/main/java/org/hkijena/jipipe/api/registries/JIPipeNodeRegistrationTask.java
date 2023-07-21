@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.registries;
 
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 
 /**
  * A task for algorithm registration that can handle algorithm dependencies

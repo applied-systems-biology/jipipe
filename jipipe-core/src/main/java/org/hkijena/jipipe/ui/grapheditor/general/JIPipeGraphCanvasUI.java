@@ -16,6 +16,8 @@ package org.hkijena.jipipe.ui.grapheditor.general;
 import com.google.common.collect.*;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.*;
@@ -88,10 +90,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             true);
 
     public static final Font GRAPH_TOOL_CURSOR_FONT = new Font("Dialog", Font.PLAIN, 12);
-
-    private static final int RESIZE_HANDLE_DISTANCE = 12;
-
-    private static final int RESIZE_HANDLE_SIZE = 10;
     public static final Color COLOR_HIGHLIGHT_GREEN = new Color(0, 128, 0);
     public static final Stroke STROKE_UNIT = new BasicStroke(1);
     public static final Stroke STROKE_UNIT_COMMENT = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
@@ -103,10 +101,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public static final Stroke STROKE_COMMENT = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
     public static final Stroke STROKE_COMMENT_HIGHLIGHT = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{8}, 0);
     public static final Stroke STROKE_SMART_EDGE = new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
-    private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
-
     public static final Color COLOR_RESIZE_HANDLE_FILL = new Color(0x22A02D);
     public static final Color COLOR_RESIZE_HANDLE_BORDER = new Color(0x22A02D).darker();
+    private static final int RESIZE_HANDLE_DISTANCE = 12;
+    private static final int RESIZE_HANDLE_SIZE = 10;
+    private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
     private final JIPipeWorkbench workbench;
     private final JIPipeGraphEditorUI graphEditorUI;
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
@@ -124,6 +123,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final ImageIcon lockIcon = UIUtils.getIconInvertedFromResources("actions/lock.png");
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private final Map<?, ?> desktopRenderingHints = UIUtils.getDesktopRenderingHints();
+    private final ZoomChangedEventEmitter zoomChangedEventEmitter = new ZoomChangedEventEmitter();
+    private final GraphCanvasUpdatedEventEmitter graphCanvasUpdatedEventEmitter = new GraphCanvasUpdatedEventEmitter();
+    private final NodeSelectionChangedEventEmitter nodeSelectionChangedEventEmitter = new NodeSelectionChangedEventEmitter();
+    private final NodeUISelectedEventEmitter nodeUISelectedEventEmitter = new NodeUISelectedEventEmitter();
+    private final JIPipeGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter defaultNodeUIActionRequestedEventEmitter = new JIPipeGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter();
+    private final JIPipeGraphNodeUI.NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new JIPipeGraphNodeUI.NodeUIActionRequestedEventEmitter();
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
     private Point graphEditCursor;
     private Point selectionFirst;
@@ -137,8 +142,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
     private boolean hasDragSnapshot = false;
     private int currentNodeLayer = 0;
-
-    private int currentAnnotationLayer = Integer.MIN_VALUE;
     private boolean renderCursor = true;
     private boolean renderOutsideEdges = true;
     /**
@@ -152,20 +155,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private Font smartEdgeTooltipNodeFont;
     private List<DisplayedSlotEdge> lastDisplayedMainEdges;
     private JIPipeToggleableGraphEditorTool currentTool;
-
     private boolean autoHideEdges;
-
     private boolean autoHideDrawLabels;
     private Point lastMousePosition;
-
     private JIPipeAnnotationGraphNodeUI currentResizeTarget;
-
-    private final ZoomChangedEventEmitter zoomChangedEventEmitter = new ZoomChangedEventEmitter();
-    private final GraphCanvasUpdatedEventEmitter graphCanvasUpdatedEventEmitter = new GraphCanvasUpdatedEventEmitter();
-    private final NodeSelectionChangedEventEmitter nodeSelectionChangedEventEmitter = new NodeSelectionChangedEventEmitter();
-    private final NodeUISelectedEventEmitter nodeUISelectedEventEmitter = new NodeUISelectedEventEmitter();
-    private final JIPipeGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter defaultNodeUIActionRequestedEventEmitter = new JIPipeGraphNodeUI.DefaultNodeUIActionRequestedEventEmitter();
-    private final JIPipeGraphNodeUI.NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new JIPipeGraphNodeUI.NodeUIActionRequestedEventEmitter();
     private Rectangle currentResizeOperationStartProperties;
     private Anchor currentResizeOperationAnchor;
     private boolean mouseIsEntered;
@@ -195,7 +188,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
         initialize();
-        addNewNodes(false);
+        addNewNodes(true);
 
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
         graph.getNodeConnectedEventEmitter().subscribeWeak(this);
@@ -421,12 +414,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if (nodeUIs.containsKey(algorithm))
                 continue;
 
-            if(algorithm instanceof JIPipeAnnotationGraphNode) {
+            if (algorithm instanceof JIPipeAnnotationGraphNode) {
                 ui = new JIPipeAnnotationGraphNodeUI(getWorkbench(), this, (JIPipeAnnotationGraphNode) algorithm);
                 registerNodeUIEvents(ui);
-                add(ui, new Integer(currentAnnotationLayer++)); // Layered pane
-            }
-            else {
+                add(ui, new Integer(Integer.MIN_VALUE)); // Layered pane (initial value)
+            } else {
                 ui = new JIPipeGraphNodeUI(getWorkbench(), this, algorithm);
                 registerNodeUIEvents(ui);
                 add(ui, new Integer(currentNodeLayer++)); // Layered pane
@@ -439,6 +431,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
         }
 
+        updateAnnotationNodeLayers();
+
         revalidate();
         repaint();
 
@@ -446,7 +440,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             autoLayoutAll();
         }
         if (newlyPlacedAlgorithms.size() > 0) {
-           graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+            graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
         }
         if (scheduledSelection != null && !scheduledSelection.isEmpty()) {
             if (scheduledSelection.equals(getSelectedNodes()))
@@ -460,6 +454,190 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
             scheduledSelection.clear();
         }
+    }
+
+    public void updateAnnotationNodeLayers() {
+        // Collect all annotations
+        List<JIPipeAnnotationGraphNode> annotationGraphNodes = new ArrayList<>();
+        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            if (graphNode instanceof JIPipeAnnotationGraphNode) {
+                JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) graphNode;
+                annotationGraphNodes.add(annotationGraphNode);
+                JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+                if (nodeUI != null) {
+                    if (selection.contains(nodeUI)) {
+                        selectedAnnotationGraphNodes.add(annotationGraphNode);
+                    }
+                }
+            }
+        }
+        if (annotationGraphNodes.isEmpty())
+            return;
+
+        // Sort by Z-order (so we can do a rank transformation)
+        // Rank transformation into negative space to fix z-order
+        annotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder));
+        int nextZOrder = 0;
+        for (int i = annotationGraphNodes.size() - 1; i >= 0; i--) {
+            JIPipeAnnotationGraphNode annotationGraphNode = annotationGraphNodes.get(i);
+            annotationGraphNode.setzOrder(nextZOrder--);
+        }
+
+        // Determine the displayed Z-order: selected nodes need to be at the front of the other annotations
+        for (JIPipeAnnotationGraphNode annotationGraphNode : annotationGraphNodes) {
+            JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+            if (nodeUI != null) {
+                setLayer(nodeUI, annotationGraphNode.getzOrder() - selectedAnnotationGraphNodes.size());
+            }
+        }
+//        for (int i = 0; i < selectedAnnotationGraphNodes.size(); i++) {
+//            JIPipeAnnotationGraphNode annotationGraphNode = selectedAnnotationGraphNodes.get(i);
+//            JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+//            if(nodeUI != null) {
+//                setLayer(nodeUI, -i);
+//            }
+//        }
+    }
+
+    public void sendSelectionToForeground(Set<JIPipeGraphNodeUI> selection) {
+        boolean updated = false;
+        for (JIPipeGraphNodeUI nodeUI : selection) {
+            if (nodeUI.getNode().isUiLocked())
+                continue;
+            if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
+
+                if (!updated) {
+                    getHistoryJournal().snapshot("Send selected nodes to foreground",
+                            "Sent a selection of graph annotations to the foreground",
+                            getCompartment(),
+                            UIUtils.getIconFromResources("actions/object-order-front.png"));
+                }
+
+                ((JIPipeAnnotationGraphNode) nodeUI.getNode()).setzOrder(Integer.MAX_VALUE);
+                updated = true;
+            }
+        }
+        if (updated)
+            updateAnnotationNodeLayers();
+    }
+
+    public void sendSelectionToBackground(Set<JIPipeGraphNodeUI> selection) {
+        boolean updated = false;
+        for (JIPipeGraphNodeUI nodeUI : selection) {
+            if (nodeUI.getNode().isUiLocked())
+                continue;
+            if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
+
+                if (!updated) {
+                    getHistoryJournal().snapshot("Send selected nodes to background",
+                            "Sent a selection of graph annotations to the background",
+                            getCompartment(),
+                            UIUtils.getIconFromResources("actions/object-order-back.png"));
+                }
+
+                ((JIPipeAnnotationGraphNode) nodeUI.getNode()).setzOrder(Integer.MIN_VALUE);
+                updated = true;
+            }
+        }
+        if (updated)
+            updateAnnotationNodeLayers();
+    }
+
+    public void raiseSelection(Set<JIPipeGraphNodeUI> selection) {
+        TIntObjectMap<JIPipeAnnotationGraphNode> zOrderAnnotations = new TIntObjectHashMap<>();
+        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            if (graphNode instanceof JIPipeAnnotationGraphNode) {
+                JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) graphNode;
+                zOrderAnnotations.put(annotationGraphNode.getzOrder(), annotationGraphNode);
+                JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+                if (nodeUI != null) {
+                    if (selection.contains(nodeUI)) {
+                        selectedAnnotationGraphNodes.add(annotationGraphNode);
+                    }
+                }
+            }
+        }
+
+        if (!selectedAnnotationGraphNodes.isEmpty()) {
+            getHistoryJournal().snapshot("Raise selected nodes",
+                    "Raised a selection of graph annotations",
+                    getCompartment(),
+                    UIUtils.getIconFromResources("actions/object-order-raise.png"));
+        } else {
+            return;
+        }
+
+        // Iterate from hi to low
+        selectedAnnotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder).reversed());
+        boolean updated = false;
+        for (JIPipeAnnotationGraphNode annotationGraphNode : selectedAnnotationGraphNodes) {
+            if (annotationGraphNode.isUiLocked())
+                continue;
+            int oldZ = annotationGraphNode.getzOrder();
+            int newZ = annotationGraphNode.getzOrder() + 1;
+            JIPipeAnnotationGraphNode existing = zOrderAnnotations.get(newZ);
+            if (existing != null) {
+                // Swap
+                existing.setzOrder(oldZ);
+                zOrderAnnotations.put(oldZ, existing);
+            }
+            annotationGraphNode.setzOrder(newZ);
+            zOrderAnnotations.put(newZ, annotationGraphNode);
+            updated = true;
+        }
+
+        if (updated)
+            updateAnnotationNodeLayers();
+    }
+
+    public void lowerSelection(Set<JIPipeGraphNodeUI> selection) {
+        TIntObjectMap<JIPipeAnnotationGraphNode> zOrderAnnotations = new TIntObjectHashMap<>();
+        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
+            if (graphNode instanceof JIPipeAnnotationGraphNode) {
+                JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) graphNode;
+                zOrderAnnotations.put(annotationGraphNode.getzOrder(), annotationGraphNode);
+                JIPipeGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
+                if (nodeUI != null) {
+                    if (selection.contains(nodeUI)) {
+                        selectedAnnotationGraphNodes.add(annotationGraphNode);
+                    }
+                }
+            }
+        }
+
+        if (!selectedAnnotationGraphNodes.isEmpty()) {
+            getHistoryJournal().snapshot("Lowered selected nodes",
+                    "Lowered a selection of graph annotations",
+                    getCompartment(),
+                    UIUtils.getIconFromResources("actions/object-order-lower.png"));
+        } else {
+            return;
+        }
+
+        // Iterate from low to hi
+        selectedAnnotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder));
+        boolean updated = false;
+        for (JIPipeAnnotationGraphNode annotationGraphNode : selectedAnnotationGraphNodes) {
+            if (annotationGraphNode.isUiLocked())
+                continue;
+            int oldZ = annotationGraphNode.getzOrder();
+            int newZ = annotationGraphNode.getzOrder() - 1;
+            JIPipeAnnotationGraphNode existing = zOrderAnnotations.get(newZ);
+            if (existing != null) {
+                // Swap
+                existing.setzOrder(oldZ);
+                zOrderAnnotations.put(oldZ, existing);
+            }
+            annotationGraphNode.setzOrder(newZ);
+            zOrderAnnotations.put(newZ, annotationGraphNode);
+            updated = true;
+        }
+
+        if (updated)
+            updateAnnotationNodeLayers();
     }
 
     private void registerNodeUIEvents(JIPipeGraphNodeUI ui) {
@@ -687,7 +865,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Resize dragging
-        if(currentResizeTarget != null && currentResizeOperationAnchor != null && currentResizeOperationStartProperties != null) {
+        if (currentResizeTarget != null && currentResizeOperationAnchor != null && currentResizeOperationStartProperties != null) {
             mouseDraggedResizing(mouseEvent);
         }
 
@@ -720,7 +898,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 int dGridWidth = -dX;
                 int newX = startGridX + dX;
                 int newWidth = currentResizeOperationStartProperties.width + dGridWidth;
-                if((dX != 0 || dY != 0) && newWidth > 0 && newHeight > 0) {
+                if ((dX != 0 || dY != 0) && newWidth > 0 && newHeight > 0) {
                     currentResizeTarget.moveToGridLocation(new Point(newX, newY), true, true);
                     currentResizeTarget.setNodeGridSize(newWidth, newHeight);
                 }
@@ -731,7 +909,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 int dGridHeight = -dY;
                 int newY = startGridY + dY;
                 int newHeight = currentResizeOperationStartProperties.height + dGridHeight;
-                if(dY != 0 && newHeight > 0) {
+                if (dY != 0 && newHeight > 0) {
                     currentResizeTarget.moveToGridLocation(new Point(startGridX, newY), true, true);
                     currentResizeTarget.setNodeGridSize(currentResizeOperationStartProperties.width, newHeight);
                 }
@@ -744,7 +922,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 int newY = startGridY + dY;
                 int newHeight = currentResizeOperationStartProperties.height + dGridHeight;
                 int newWidth = currentResizeOperationStartProperties.width + dGridWidth;
-                if(newWidth > 0 && newHeight > 0) {
+                if (newWidth > 0 && newHeight > 0) {
                     currentResizeTarget.moveToGridLocation(new Point(startGridX, newY), true, true);
                     currentResizeTarget.setNodeGridSize(newWidth, newHeight);
                 }
@@ -755,38 +933,38 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 int dGridWidth = -dX;
                 int newX = startGridX + dX;
                 int newWidth = currentResizeOperationStartProperties.width + dGridWidth;
-                if(dX != 0 && newWidth > 0) {
+                if (dX != 0 && newWidth > 0) {
                     currentResizeTarget.moveToGridLocation(new Point(newX, startGridY), true, true);
                     currentResizeTarget.setNodeGridSize(newWidth, currentResizeOperationStartProperties.height);
                 }
             }
             break;
             case CenterRight: {
-                int dGridWidth =  mouseInGrid.x - endGridX;
+                int dGridWidth = mouseInGrid.x - endGridX;
                 currentResizeTarget.setNodeGridSize(currentResizeOperationStartProperties.width + dGridWidth, currentResizeOperationStartProperties.height);
             }
             break;
             case BottomLeft: {
                 int dX = mouseInGrid.x - startGridX;
                 int dGridWidth = -dX;
-                int dGridHeight =  mouseInGrid.y - endGridY;
+                int dGridHeight = mouseInGrid.y - endGridY;
                 int newX = startGridX + dX;
                 int newWidth = currentResizeOperationStartProperties.width + dGridWidth;
                 int newHeight = currentResizeOperationStartProperties.height + dGridHeight;
-                if(newWidth > 0 && newHeight > 0) {
+                if (newWidth > 0 && newHeight > 0) {
                     currentResizeTarget.moveToGridLocation(new Point(newX, startGridY), true, true);
                     currentResizeTarget.setNodeGridSize(newWidth, newHeight);
                 }
             }
             break;
             case BottomCenter: {
-                int dGridHeight =  mouseInGrid.y - endGridY;
+                int dGridHeight = mouseInGrid.y - endGridY;
                 currentResizeTarget.setNodeGridSize(currentResizeOperationStartProperties.width, currentResizeOperationStartProperties.height + dGridHeight);
             }
             break;
             case BottomRight: {
-                int dGridWidth =  mouseInGrid.x - endGridX;
-                int dGridHeight =  mouseInGrid.y - endGridY;
+                int dGridWidth = mouseInGrid.x - endGridX;
+                int dGridHeight = mouseInGrid.y - endGridY;
                 currentResizeTarget.setNodeGridSize(currentResizeOperationStartProperties.width + dGridWidth, currentResizeOperationStartProperties.height + dGridHeight);
             }
             break;
@@ -1079,11 +1257,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Resize handler
-        if(currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
+        if (currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
             for (Anchor anchor : Anchor.values()) {
                 Rectangle rectangle = getCurrentResizeTargetAnchorArea(anchor);
-                if(rectangle != null) {
-                    if(rectangle.contains(mouseEvent.getPoint())) {
+                if (rectangle != null) {
+                    if (rectangle.contains(mouseEvent.getPoint())) {
                         switch (anchor) {
                             case TopLeft:
                                 setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
@@ -1115,13 +1293,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         }
                         return;
                     }
-                }
-                else {
+                } else {
                     setCursor(defaultCursor);
                 }
             }
-        }
-        else {
+        } else {
             setCursor(defaultCursor);
         }
 
@@ -1145,7 +1321,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (currentlyMouseEnteredNode != null) {
             currentlyMouseEnteredNode.mouseMoved(mouseEvent);
         }
-        if(currentTool != null && settings.isShowToolInfo() && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
+        if (currentTool != null && settings.isShowToolInfo() && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
             changed = true;
         }
         if (changed && settings.isDrawLabelsOnHover()) {
@@ -1253,11 +1429,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
 
             // Resize handling
-            if(currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
+            if (currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
                 for (Anchor anchor : Anchor.values()) {
                     Rectangle rectangle = getCurrentResizeTargetAnchorArea(anchor);
-                    if(rectangle != null) {
-                        if(rectangle.contains(mouseEvent.getPoint())) {
+                    if (rectangle != null) {
+                        if (rectangle.contains(mouseEvent.getPoint())) {
                             JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) currentResizeTarget.getNode();
                             Point gridLocation = node.getLocationWithin(StringUtils.nullToEmpty(getCompartment()), viewMode.name());
                             currentResizeOperationStartProperties = new Rectangle(gridLocation.x, gridLocation.y, node.getGridWidth(), node.getGridHeight());
@@ -1322,7 +1498,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             this.hasDragSnapshot = false;
             this.currentConnectionDragSourceDragged = false;
             for (JIPipeGraphNodeUI nodeUI : selection) {
-                if(nodeUI.getNode().isUiLocked())
+                if (nodeUI.getNode().isUiLocked())
                     continue;
                 Point offset = new Point();
                 offset.x = nodeUI.getX() - mouseEvent.getX();
@@ -1353,7 +1529,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         lastMousePosition = new Point(mouseEvent.getX(), mouseEvent.getY());
 
         // End resize operation
-        if(currentResizeOperationStartProperties != null) {
+        if (currentResizeOperationStartProperties != null) {
             stopAllResizing();
             return;
         }
@@ -1694,7 +1870,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         for (int i = getComponentCount() - 1; i >= 0; i--) {
             Component component = getComponent(i);
 
-            if(component instanceof JIPipeGraphNodeUI) {
+            if (component instanceof JIPipeGraphNodeUI) {
                 JIPipeGraphNodeUI ui = (JIPipeGraphNodeUI) component;
 
                 // Draw shadow
@@ -1704,7 +1880,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
                     g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 
-                    if(ui.isDrawShadow()) {
+                    if (ui.isDrawShadow()) {
                         DROP_SHADOW_BORDER.paint(g, ui.getX() - 3, ui.getY() - 3, ui.getWidth() + 8, ui.getHeight() + 8);
                     }
                     if (ui.getNode().isBookmarked()) {
@@ -1713,7 +1889,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
 
                 // Draw annotation
-                if(component instanceof JIPipeAnnotationGraphNodeUI) {
+                if (component instanceof JIPipeAnnotationGraphNodeUI) {
 
                     // Set render settings (HQ)
                     g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -1982,9 +2158,26 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
             // Lock icon
-            if(ui.getNode().isUiLocked()) {
+            if (ui.getNode().isUiLocked()) {
                 g.fillRect(bounds.x - 1, bounds.y - 1, 22, 22);
                 graphics2D.drawImage(lockIcon.getImage(), bounds.x + 2, bounds.y + 2, 16, 16, null);
+            }
+
+            // Layer Z (annotations)
+            if (ui.getNode() instanceof JIPipeAnnotationGraphNode) {
+                int zLayer = ((JIPipeAnnotationGraphNode) ui.getNode()).getzOrder();
+                g.setFont(GRAPH_TOOL_CURSOR_FONT);
+                FontMetrics fontMetrics = g.getFontMetrics();
+                String text = "z " + zLayer;
+                int rawStringWidth = fontMetrics.stringWidth(text);
+                int indicatorWidth = rawStringWidth + 8;
+                int xStart = bounds.x + bounds.width + 4 - indicatorWidth - 1 - 8 - 4;
+                int yStart = bounds.y + bounds.height - 22 - 8;
+
+                g.fillRoundRect(xStart, yStart, indicatorWidth, 22, 4, 4);
+                g.setColor(Color.WHITE);
+
+                g.drawString(text, xStart + indicatorWidth / 2 - rawStringWidth / 2, yStart + (fontMetrics.getAscent() - fontMetrics.getLeading()) + 22 / 2 - fontMetrics.getHeight() / 2);
             }
         }
 
@@ -2022,7 +2215,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Draw resize handles
-        if(currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
+        if (currentResizeTarget != null && !currentResizeTarget.getNode().isUiLocked()) {
             g.setColor(Color.GRAY);
             graphics2D.setStroke(STROKE_MARQUEE);
             g.drawRect(currentResizeTarget.getX() - RESIZE_HANDLE_DISTANCE, currentResizeTarget.getY() - RESIZE_HANDLE_DISTANCE, currentResizeTarget.getWidth() + RESIZE_HANDLE_DISTANCE * 2, currentResizeTarget.getHeight() + RESIZE_HANDLE_DISTANCE * 2);
@@ -2030,7 +2223,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
             for (Anchor anchor : Anchor.values()) {
                 Rectangle rectangle = getCurrentResizeTargetAnchorArea(anchor);
-                if(rectangle != null) {
+                if (rectangle != null) {
                     g.setColor(COLOR_RESIZE_HANDLE_FILL);
                     g.fillOval(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                     g.setColor(COLOR_RESIZE_HANDLE_BORDER);
@@ -2040,13 +2233,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Draw cursor info
-        if(mouseIsEntered && lastMousePosition != null && currentTool != null && settings.isShowToolInfo() && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
+        if (mouseIsEntered && lastMousePosition != null && currentTool != null && settings.isShowToolInfo() && !(currentTool instanceof JIPipeDefaultGraphEditorTool)) {
             currentTool.paintMouse(this, lastMousePosition, settings.getToolInfoDistance(), graphics2D);
         }
     }
 
     private Rectangle getCurrentResizeTargetAnchorArea(Anchor anchor) {
-        if(currentResizeTarget != null) {
+        if (currentResizeTarget != null) {
             switch (anchor) {
                 case TopLeft:
                     return new Rectangle(currentResizeTarget.getX() - RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, currentResizeTarget.getY() - RESIZE_HANDLE_DISTANCE - RESIZE_HANDLE_SIZE / 2, RESIZE_HANDLE_SIZE, RESIZE_HANDLE_SIZE);
@@ -2067,8 +2260,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 default:
                     return null;
             }
-        }
-        else {
+        } else {
             return null;
         }
     }
@@ -2706,21 +2898,20 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     private void updateSelection() {
+        updateAnnotationNodeLayers();
         repaint();
         requestFocusInWindow();
         nodeSelectionChangedEventEmitter.emit(new NodeSelectionChangedEvent(this));
 
         // Update resize handles
-        if(selection.size() == 1) {
+        if (selection.size() == 1) {
             JIPipeGraphNodeUI nodeUI = selection.iterator().next();
-            if(nodeUI instanceof JIPipeAnnotationGraphNodeUI) {
+            if (nodeUI instanceof JIPipeAnnotationGraphNodeUI) {
                 currentResizeTarget = (JIPipeAnnotationGraphNodeUI) nodeUI;
-            }
-            else {
+            } else {
                 currentResizeTarget = null;
             }
-        }
-        else {
+        } else {
             currentResizeTarget = null;
         }
     }
@@ -2767,12 +2958,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      */
     public void addToSelection(JIPipeGraphNodeUI ui) {
         selection.add(ui);
-        if(ui instanceof JIPipeAnnotationGraphNodeUI) {
-            if (getLayer(ui) < currentAnnotationLayer) {
-                setLayer(ui, ++currentAnnotationLayer);
-            }
-        }
-        else {
+        if (!(ui instanceof JIPipeAnnotationGraphNodeUI)) {
             if (getLayer(ui) < currentNodeLayer) {
                 setLayer(ui, ++currentNodeLayer);
             }
@@ -3046,14 +3232,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     public void moveSelection(int gridDx, int gridDy, boolean force) {
 
-        if(selection.isEmpty())
+        if (selection.isEmpty())
             return;
 
         int negativeDx = 0;
         int negativeDy = 0;
         for (JIPipeGraphNodeUI nodeUI : selection) {
 
-            if(force || nodeUI.getNode().isUiLocked())
+            if (force || nodeUI.getNode().isUiLocked())
                 continue;
 
             Point newGridLocation = new Point(nodeUI.getStoredGridLocation().x + gridDx, nodeUI.getStoredGridLocation().y + gridDy);
@@ -3077,7 +3263,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         for (JIPipeGraphNodeUI nodeUI : selection) {
 
-            if(force || nodeUI.getNode().isUiLocked())
+            if (force || nodeUI.getNode().isUiLocked())
                 continue;
 
 
@@ -3097,6 +3283,18 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (getParent() != null)
             getParent().revalidate();
         graphCanvasUpdatedEventEmitter.emit(new GraphCanvasUpdatedEvent(this));
+    }
+
+    public interface NodeUISelectedEventListener {
+        void onNodeUISelected(NodeUISelectedEvent event);
+    }
+
+    public interface NodeSelectionChangedEventListener {
+        void onGraphCanvasNodeSelectionChanged(NodeSelectionChangedEvent event);
+    }
+
+    public interface GraphCanvasUpdatedEventListener {
+        void onGraphCanvasUpdated(GraphCanvasUpdatedEvent event);
     }
 
     public static class DisplayedSlotEdge implements Comparable<DisplayedSlotEdge> {
@@ -3239,7 +3437,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         private boolean addToSelection;
 
         /**
-         * @param nodeUI             the algorithm UI
+         * @param nodeUI         the algorithm UI
          * @param addToSelection if the algorithm should be added to the selection
          */
         public NodeUISelectedEvent(JIPipeGraphNodeUI nodeUI, boolean addToSelection) {
@@ -3255,10 +3453,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         public boolean isAddToSelection() {
             return addToSelection;
         }
-    }
-
-    public interface NodeUISelectedEventListener {
-        void onNodeUISelected(NodeUISelectedEvent event);
     }
 
     public static class NodeUISelectedEventEmitter extends JIPipeEventEmitter<NodeUISelectedEvent, NodeUISelectedEventListener> {
@@ -3287,10 +3481,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    public interface NodeSelectionChangedEventListener {
-        void onGraphCanvasNodeSelectionChanged(NodeSelectionChangedEvent event);
-    }
-
     public static class NodeSelectionChangedEventEmitter extends JIPipeEventEmitter<NodeSelectionChangedEvent, NodeSelectionChangedEventListener> {
 
         @Override
@@ -3313,10 +3503,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         public JIPipeGraphCanvasUI getGraphCanvasUI() {
             return graphCanvasUI;
         }
-    }
-
-    public interface GraphCanvasUpdatedEventListener {
-        void onGraphCanvasUpdated(GraphCanvasUpdatedEvent event);
     }
 
     public static class GraphCanvasUpdatedEventEmitter extends JIPipeEventEmitter<GraphCanvasUpdatedEvent, GraphCanvasUpdatedEventListener> {

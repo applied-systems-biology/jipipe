@@ -331,6 +331,11 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 new DisableVirtualOutputNodeUIContextAction(),
                 new DeleteNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
+                new SendToForegroundUIContextAction(),
+                new RaiseUIContextAction(),
+                new LowerUIContextAction(),
+                new SendToBackgroundUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new SelectAndMoveNodeHereNodeUIContextAction(),
                 new LockNodeLocationSizeUIContextAction(),
                 new UnlockNodeLocationSizeUIContextAction()
@@ -372,7 +377,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/algorithm-graph.md", new HashMap<>()));
         bottomPanel.addTab("Quick guide", UIUtils.getIconFromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
 
-        bottomPanel.addTab("Available nodes", UIUtils.getIconFromResources("actions/configuration.png"),
+        bottomPanel.addTab("Available nodes", UIUtils.getIconFromResources("actions/graph-node-add.png"),
                 new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
@@ -413,7 +418,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                     getSelection().stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet())), true);
         }
     }
-
 
 
     @Override

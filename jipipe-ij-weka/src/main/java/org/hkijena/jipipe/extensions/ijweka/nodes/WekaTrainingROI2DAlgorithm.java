@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.ijweka.nodes;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -13,6 +12,10 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameter;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierSettings;
@@ -143,11 +146,13 @@ public class WekaTrainingROI2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
         if (getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count() < 2) {
-            report.reportIsInvalid("Weka requires at least two classes!", "The Weka algorithm cannot be trained if you do not have at least two classes",
-                    "Add at least two ROI List inputs", getDisplayName());
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "Weka requires at least two classes!", "The Weka algorithm cannot be trained if you do not have at least two classes",
+                    "Add at least two ROI List inputs"));
         }
     }
 

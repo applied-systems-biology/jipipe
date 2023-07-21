@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
@@ -35,14 +33,13 @@ public class JIPipeRunnerQueue implements JIPipeRunnable.FinishedEventListener, 
     private final String name;
     private final Queue<JIPipeRunWorker> queue = new ArrayDeque<>();
     private final Map<JIPipeRunnable, JIPipeRunWorker> assignedWorkers = new HashMap<>();
-    private JIPipeRunWorker currentlyRunningWorker = null;
-    private boolean silent;
-
     private final JIPipeRunnable.EnqueuedEventEmitter enqueuedEventEmitter = new JIPipeRunnable.EnqueuedEventEmitter();
     private final JIPipeRunnable.FinishedEventEmitter finishedEventEmitter = new JIPipeRunnable.FinishedEventEmitter();
     private final JIPipeRunnable.InterruptedEventEmitter interruptedEventEmitter = new JIPipeRunnable.InterruptedEventEmitter();
     private final JIPipeRunnable.ProgressEventEmitter progressEventEmitter = new JIPipeRunnable.ProgressEventEmitter();
     private final JIPipeRunnable.StartedEventEmitter startedEventEmitter = new JIPipeRunnable.StartedEventEmitter();
+    private JIPipeRunWorker currentlyRunningWorker = null;
+    private boolean silent;
 
     public JIPipeRunnerQueue(String name) {
         this.name = name;

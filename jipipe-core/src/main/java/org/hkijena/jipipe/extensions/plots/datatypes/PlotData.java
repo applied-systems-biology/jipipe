@@ -19,15 +19,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.eventbus.EventBus;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeCommonData;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.plots.CachedPlotViewerWindow;
@@ -123,7 +128,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
             String dataTypeId = node.get("plot-data-type").textValue();
             Class<? extends JIPipeData> klass = JIPipe.getDataTypes().getById(dataTypeId);
             PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
-            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
+            ParameterUtils.deserializeParametersFromJson(plotData, node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {
@@ -140,7 +145,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
             Path storageFilePath = storage.getFileSystemPath();
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
             PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
-            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
+            ParameterUtils.deserializeParametersFromJson(plotData, node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
             List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
                     .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
             for (Path seriesFile : seriesFiles) {
@@ -212,8 +217,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
                 JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storage.getFileSystemPath().resolve(name + "_plot-metadata.json").toFile(), this);
             }
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
-                    "Internal plot-export function",
+            throw new JIPipeValidationRuntimeException(e, "Unable to export plot!",
                     "A plot should be saved to '" + storage + "'. There was an error during this export.",
                     "Please check if you can write to the output folder. Please check if the algorithm inputs are valid. " +
                             "If you cannot solve the issue, please contact the plugin author.");
@@ -245,8 +249,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
             SVGUtils.writeToSVG(storage.getFileSystemPath().resolve(name + ".svg").toFile(), g2.getSVGElement());
 
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
-                    "Internal plot-export function",
+            throw new JIPipeValidationRuntimeException(e, "Unable to export plot!",
                     "A plot should be saved to '" + storage + "'. There was an error during this export.",
                     "Please check if you can write to the output folder. Please check if the algorithm inputs are valid. " +
                             "If you cannot solve the issue, please contact the plugin author.");
@@ -460,9 +463,13 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Export width").checkIfWithin(this, exportWidth, 0, Double.POSITIVE_INFINITY, false, true);
-        report.resolve("Export height").checkIfWithin(this, exportHeight, 0, Double.POSITIVE_INFINITY, false, true);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        if (exportWidth <= 0) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Export width is too small!", "The export width must be at least 1"));
+        }
+        if (exportHeight <= 0) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Export height is too small!", "The export height must be at least 1"));
+        }
     }
 
     public List<PlotDataSeries> getSeries() {
@@ -508,7 +515,7 @@ public abstract class PlotData extends AbstractJIPipeParameterCollection impleme
      * @param node JSON node
      */
     public void fromJson(JsonNode node) {
-        ParameterUtils.deserializeParametersFromJson(this, node, new JIPipeIssueReport());
+        ParameterUtils.deserializeParametersFromJson(this, node, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
     }
 
     /**

@@ -23,7 +23,21 @@ import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImport
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.strings.datasources.ImportJsonAlgorithm;
+import org.hkijena.jipipe.extensions.strings.datasources.ImportStringAlgorithm;
+import org.hkijena.jipipe.extensions.strings.datasources.ImportXMLAlgorithm;
 import org.hkijena.jipipe.extensions.strings.datasources.StringDefinitionDataSource;
+import org.hkijena.jipipe.extensions.strings.nodes.json.AnnotateWithJsonDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.json.ExtractJsonDataAsTableAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.json.ExtractTextFromJsonAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.text.AnnotateWithTextDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.text.ProcessTextDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.text.TableToCSVTextAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.text.TextDataToTableAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.xml.AnnotateWithXPathDataAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.xml.ExtractTextFromXMLAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.xml.ExtractXPathDataAsTableAlgorithm;
+import org.hkijena.jipipe.extensions.strings.nodes.xml.PrettifyXMLAlgorithm;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -72,6 +86,23 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeConversion(new StringDataConverter(JsonData.class));
 
         registerNodeType("define-string", StringDefinitionDataSource.class);
+        registerNodeType("import-string-from-file", ImportStringAlgorithm.class);
+        registerNodeType("import-xml-from-file", ImportXMLAlgorithm.class);
+        registerNodeType("import-json-from-file", ImportJsonAlgorithm.class);
+
+        registerNodeType("json-annotate-with-json-data", AnnotateWithJsonDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("json-extract-data-as-table-json-path", ExtractJsonDataAsTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("json-extract-text-from-json-path", ExtractTextFromJsonAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+
+        registerNodeType("json-annotate-with-text-data", AnnotateWithTextDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("text-process-expression", ProcessTextDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("table-to-csv-text", TableToCSVTextAlgorithm.class, UIUtils.getIconURLFromResources("actions/reload.png"));
+        registerNodeType("text-to-table-expression", TextDataToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+
+        registerNodeType("xml-annotate-with-xml-data", AnnotateWithXPathDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("xml-extract-text-from-xpath", ExtractTextFromXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("xml-extract-data-as-table-xpath", ExtractXPathDataAsTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("xml-prettify", PrettifyXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/format-justify-left.png"));
     }
 
     @Override

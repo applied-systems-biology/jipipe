@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe;
 
-import com.google.common.eventbus.Subscribe;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;

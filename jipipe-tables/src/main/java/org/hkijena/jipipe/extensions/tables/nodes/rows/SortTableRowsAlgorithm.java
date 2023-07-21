@@ -15,13 +15,14 @@
 package org.hkijena.jipipe.extensions.tables.nodes.rows;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndSortOrderPairParameter;
@@ -127,13 +128,13 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
         }
         if (result == null) {
-            throw new UserFriendlyRuntimeException("Could not find column that matches '" + expression.toString() + "'!",
-                    "Could not find column!",
-                    "Algorithm '" + getName() + "'",
-                    "A plot generator algorithm was instructed to extract a column matching the rule '" + expression.toString() + "' for plotting. The column could note be found. " +
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
+                    "Could not find column that matches '" + expression.toString() + "'!",
+                    "A plot generator algorithm was instructed to extract a column matching the rule '" + expression + "' for plotting. The column could note be found. " +
                             "The table contains only following columns: " + String.join(", ", input.getColumnNames()),
                     "Please check if your input columns are set up with valid filters. Please check the input of the plot generator " +
-                            "via the quick run to see if the input data is correct. You can also select a generator instead of picking a column.");
+                            "via the quick run to see if the input data is correct. You can also select a generator instead of picking a column."));
         }
         return result;
     }
@@ -150,9 +151,9 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        report.resolve("Filters").report(sortOrderList);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        report.report(new ParameterValidationReportContext(this, "Filters", "sort-order"), sortOrderList);
     }
 
     @JIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +

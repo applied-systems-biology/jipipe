@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imageviewer.utils.viewer2d;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import javax.swing.*;

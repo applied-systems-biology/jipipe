@@ -1,13 +1,10 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.nodes.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontStyleParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -35,6 +32,8 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
     private String renderedTitleRaw;
     private String renderedContentRaw;
     private double renderedZoom;
+    private int renderedGridWidth;
+    private int renderedGridHeight;
 
     public AbstractTextBoxAnnotationGraphNode(JIPipeNodeInfo info) {
         super(info);
@@ -129,7 +128,7 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
 
         int nodeWidth = nodeUI.getWidth();
         int nodeHeight = nodeUI.getHeight();
-        int finalBorderThickness = (int)(getBorderThickness() * zoom);
+        int finalBorderThickness = (int) (getBorderThickness() * zoom);
 
         paintShape(g2, nodeUI, zoom);
 
@@ -142,12 +141,12 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
 
         switch (textLocation.anchor) {
             case TopLeft: {
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, finalMarginLeft + finalBorderThickness, g2.getFontMetrics().getAscent() + finalMarginTop + finalBorderThickness);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
@@ -158,12 +157,12 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             }
             break;
             case TopCenter: {
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, nodeWidth / 2 - finalTextWidth / 2, g2.getFontMetrics().getAscent() + finalMarginTop + finalBorderThickness);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
@@ -175,12 +174,12 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             break;
             case TopRight: {
 
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, nodeWidth - finalTextWidth - finalBorderThickness - finalMarginRight, g2.getFontMetrics().getAscent() + finalMarginTop + finalBorderThickness);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
@@ -191,12 +190,12 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             }
             break;
             case CenterLeft: {
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, finalMarginLeft + finalBorderThickness, nodeHeight / 2 - finalTextHeight / 2 + g2.getFontMetrics().getAscent() + finalMarginTop);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
@@ -207,12 +206,12 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             }
             break;
             case CenterCenter: {
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, nodeWidth / 2 - finalTextWidth / 2, nodeHeight / 2 - finalTextHeight / 2 + g2.getFontMetrics().getAscent() + finalMarginTop);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
@@ -223,12 +222,12 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             }
             break;
             case CenterRight: {
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, nodeWidth - finalTextWidth - finalBorderThickness - finalMarginRight, nodeHeight / 2 - finalTextHeight / 2 + g2.getFontMetrics().getAscent() + finalMarginTop);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
@@ -239,49 +238,49 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             }
             break;
             case BottomLeft: {
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, finalMarginLeft + finalBorderThickness, nodeHeight - finalTextHeight + g2.getFontMetrics().getAscent() - finalMarginBottom - finalBorderThickness);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
                     for (int i = 0; i < renderedContent.length; i++) {
-                        g2.drawString(renderedContent[i], finalMarginLeft + finalBorderThickness, nodeHeight - finalTextHeight + renderedTitleHeight + i * lineHeight + g2.getFontMetrics().getAscent()- finalMarginBottom - finalBorderThickness);
+                        g2.drawString(renderedContent[i], finalMarginLeft + finalBorderThickness, nodeHeight - finalTextHeight + renderedTitleHeight + i * lineHeight + g2.getFontMetrics().getAscent() - finalMarginBottom - finalBorderThickness);
                     }
                 }
             }
             break;
             case BottomCenter: {
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, nodeWidth / 2 - finalTextWidth / 2, nodeHeight - finalTextHeight + g2.getFontMetrics().getAscent() - finalMarginBottom - finalBorderThickness);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
                     for (int i = 0; i < renderedContent.length; i++) {
-                        g2.drawString(renderedContent[i], nodeWidth / 2 - finalTextWidth / 2, nodeHeight - finalTextHeight + renderedTitleHeight + i * lineHeight + g2.getFontMetrics().getAscent()- finalMarginBottom - finalBorderThickness);
+                        g2.drawString(renderedContent[i], nodeWidth / 2 - finalTextWidth / 2, nodeHeight - finalTextHeight + renderedTitleHeight + i * lineHeight + g2.getFontMetrics().getAscent() - finalMarginBottom - finalBorderThickness);
                     }
                 }
             }
             break;
             case BottomRight: {
-                if(!StringUtils.isNullOrEmpty(renderedTitle)) {
+                if (!StringUtils.isNullOrEmpty(renderedTitle)) {
                     g2.setColor(titleStyle.getColor());
                     g2.setFont(titleFont);
                     g2.drawString(renderedTitle, nodeWidth - finalTextWidth - finalBorderThickness - finalMarginRight, nodeHeight - finalTextHeight + g2.getFontMetrics().getAscent() - finalMarginBottom - finalBorderThickness);
                 }
-                if(renderedContent != null && renderedContent.length > 0) {
+                if (renderedContent != null && renderedContent.length > 0) {
                     g2.setFont(contentFont);
                     g2.setColor(contentStyle.getColor());
                     int lineHeight = g2.getFontMetrics().getHeight();
                     for (int i = 0; i < renderedContent.length; i++) {
-                        g2.drawString(renderedContent[i], nodeWidth - finalTextWidth - finalBorderThickness - finalMarginRight, nodeHeight - finalTextHeight + renderedTitleHeight + i * lineHeight + g2.getFontMetrics().getAscent()- finalMarginBottom - finalBorderThickness);
+                        g2.drawString(renderedContent[i], nodeWidth - finalTextWidth - finalBorderThickness - finalMarginRight, nodeHeight - finalTextHeight + renderedTitleHeight + i * lineHeight + g2.getFontMetrics().getAscent() - finalMarginBottom - finalBorderThickness);
                     }
                 }
             }
@@ -292,8 +291,8 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
 
     protected abstract void paintShape(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom);
 
-    private void updateAssetsIfNeeded(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom)  {
-        if(!Objects.equals(renderedContentRaw, textContent) || !Objects.equals(renderedTitleRaw, textTitle) || renderedZoom != zoom) {
+    private void updateAssetsIfNeeded(Graphics2D g2, JIPipeAnnotationGraphNodeUI nodeUI, double zoom) {
+        if (!Objects.equals(renderedContentRaw, textContent) || !Objects.equals(renderedTitleRaw, textTitle) || renderedZoom != zoom || renderedGridWidth != getGridWidth() || renderedGridHeight != getGridHeight()) {
 
             int finalBorderThickness = (int) Math.max(1, getBorderThickness() * zoom);
             int finalMarginLeft = (int) (textLocation.marginLeft * zoom);
@@ -307,19 +306,20 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             renderedTextWidth = 0;
             renderedTitleHeight = 0;
             renderedContentHeight = 0;
+            renderedGridWidth = 0;
+            renderedGridHeight = 0;
 
-            if(!StringUtils.isNullOrEmpty(textTitle)) {
+            if (!StringUtils.isNullOrEmpty(textTitle)) {
                 titleFont = new Font(this.titleStyle.fontFamily.getValue(), this.titleStyle.fontStyle.getNativeValue(), (int) Math.max(1, this.titleStyle.fontSize * zoom));
                 FontMetrics fontMetrics = g2.getFontMetrics(titleFont);
                 renderedTitle = StringUtils.limitWithEllipsis(textTitle, availableWidth, fontMetrics);
                 renderedTextWidth = Math.max(renderedTextWidth, fontMetrics.stringWidth(renderedTitle));
                 renderedTitleHeight = fontMetrics.getHeight();
-            }
-            else {
+            } else {
                 renderedTitle = "";
             }
 
-            if(!StringUtils.isNullOrEmpty(textContent)) {
+            if (!StringUtils.isNullOrEmpty(textContent)) {
                 contentFont = new Font(this.contentStyle.fontFamily.getValue(), this.contentStyle.fontStyle.getNativeValue(), (int) Math.max(1, this.contentStyle.fontSize * zoom));
                 FontMetrics fontMetrics = g2.getFontMetrics(contentFont);
                 renderedContent = textContent.split("\n");
@@ -328,14 +328,15 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
                     renderedTextWidth = Math.max(renderedTextWidth, fontMetrics.stringWidth(renderedContent[i]));
                     renderedContentHeight += fontMetrics.getHeight();
                 }
-            }
-            else {
+            } else {
                 renderedContent = null;
             }
 
             renderedContentRaw = textContent;
             renderedTitleRaw = textTitle;
             renderedZoom = zoom;
+            renderedGridWidth = getGridWidth();
+            renderedGridHeight = getGridHeight();
         }
     }
 
@@ -414,7 +415,6 @@ public abstract class AbstractTextBoxAnnotationGraphNode extends JIPipeAnnotatio
             this.marginBottom = marginBottom;
         }
     }
-
 
 
     public static class TextRenderParameters extends AbstractJIPipeParameterCollection {

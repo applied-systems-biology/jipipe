@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -10,6 +9,10 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -48,14 +51,22 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
         for (Column column : columns.mapToCollection(Column.class)) {
             if (StringUtils.isNullOrEmpty(column.key)) {
-                report.reportIsInvalid("Column key cannot be empty!", "You cannot have empty parameter keys!", "Provide an appropriate parameter key.", column);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        context,
+                        "Column key cannot be empty!",
+                        "You cannot have empty parameter keys!",
+                        "Provide an appropriate parameter key."));
             }
             if (column.type.getInfo() == null) {
-                report.reportIsInvalid("Column type cannot be empty!", "You cannot have empty parameter type!", "Provide an appropriate parameter type.", column);
+                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        context,
+                        "Column type cannot be empty!",
+                        "You cannot have empty parameter type!",
+                        "Provide an appropriate parameter type."));
             }
         }
     }

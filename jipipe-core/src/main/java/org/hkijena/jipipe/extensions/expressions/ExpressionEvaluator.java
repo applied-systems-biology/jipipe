@@ -15,7 +15,10 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import com.fathzer.soft.javaluator.AbstractEvaluator;
 import com.fathzer.soft.javaluator.Parameters;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 
 /**
  * The base class for an evaluator
@@ -43,11 +46,11 @@ public abstract class ExpressionEvaluator extends AbstractEvaluator<Object> {
         if (result instanceof Boolean) {
             return (boolean) result;
         } else {
-            throw new UserFriendlyRuntimeException("Expression does not return a boolean value: " + expression,
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(),
+                    "Expression does not return a boolean value: " + expression,
                     "Expression does not return a boolean!",
-                    "Expression evaluator",
                     "You tried to evaluate the expression '" + expression + "', which did not return a boolean value (TRUE or FALSE).",
-                    "Please check if you apply testing like for equality or if a value matches another value.");
+                    "Please check if you apply testing like for equality or if a value matches another value."));
         }
     }
 }

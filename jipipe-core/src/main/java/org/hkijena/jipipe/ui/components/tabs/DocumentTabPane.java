@@ -17,7 +17,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
@@ -704,6 +703,10 @@ public class DocumentTabPane extends JPanel implements Disposable {
         Selected
     }
 
+    public interface TabRenamedEventListener {
+        void onDocumentTabRenamed(TabRenamedEvent event);
+    }
+
     /**
      * Encapsulates a singleton tab
      */
@@ -819,9 +822,8 @@ public class DocumentTabPane extends JPanel implements Disposable {
         private final Component content;
         private final CloseMode closeMode;
         private final JPopupMenu popupMenu;
-        private String title;
-
         private final TabRenamedEventEmitter tabRenamedEventEmitter = new TabRenamedEventEmitter();
+        private String title;
 
         private DocumentTab(DocumentTabPane documentTabPane, String title, Icon icon, DocumentTabComponent tabComponent, Component content, CloseMode closeMode, JPopupMenu popupMenu) {
             this.documentTabPane = documentTabPane;
@@ -890,10 +892,6 @@ public class DocumentTabPane extends JPanel implements Disposable {
         public DocumentTab getTab() {
             return tab;
         }
-    }
-
-    public interface TabRenamedEventListener {
-        void onDocumentTabRenamed(TabRenamedEvent event);
     }
 
     public static class TabRenamedEventEmitter extends JIPipeEventEmitter<TabRenamedEvent, TabRenamedEventListener> {

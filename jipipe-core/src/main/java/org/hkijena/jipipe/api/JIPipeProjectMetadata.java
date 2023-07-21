@@ -25,6 +25,7 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     private JIPipeImageJUpdateSiteDependency.List updateSiteDependencies = new JIPipeImageJUpdateSiteDependency.List();
     private String templateDescription = "";
     private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
+    private JIPipeProjectDirectories directories = new JIPipeProjectDirectories();
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
     private boolean restoreTabs = true;
 
@@ -84,6 +85,18 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
         this.permissions = permissions;
     }
 
+    @JIPipeParameter("user-directories")
+    @JIPipeDocumentation(name = "User directories", description = "User-defined directories")
+    @JsonGetter("user-directories")
+    public JIPipeProjectDirectories getDirectories() {
+        return directories;
+    }
+
+    @JsonGetter("user-directories")
+    public void setDirectories(JIPipeProjectDirectories directories) {
+        this.directories = directories;
+    }
+
     @JIPipeDocumentation(name = "Node templates", description = "A list of node templates that will be available for users who edit the project.")
     @JIPipeParameter("node-templates")
     @JsonGetter("node-templates")
@@ -96,4 +109,6 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     public void setNodeTemplates(JIPipeNodeTemplate.List nodeTemplates) {
         this.nodeTemplates = nodeTemplates;
     }
+
+
 }

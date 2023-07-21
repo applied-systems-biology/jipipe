@@ -7,12 +7,12 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -77,8 +77,7 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
                         if (ignoreInvalidValues) {
                             progressInfo.log("Cannot load parameter of type " + entry.getValue().getFieldClass().getCanonicalName() + " from " + annotation.getValue());
                         } else {
-                            throw new UserFriendlyRuntimeException(e, "Cannot convert value to parameter!",
-                                    getName(),
+                            throw new JIPipeValidationRuntimeException(e, "Cannot convert value to parameter!",
                                     String.format("The node attempted to load a parameter from an annotation '%s' with value '%s', but this value is not valid.", entry.getKey(), annotation.getValue()),
                                     String.format("Check if the parameter type of the unique key '%s' is correct.", entry.getKey()));
                         }

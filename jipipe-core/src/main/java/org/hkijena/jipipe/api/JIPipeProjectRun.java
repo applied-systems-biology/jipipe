@@ -15,14 +15,12 @@ package org.hkijena.jipipe.api;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.BiMap;
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.looping.LoopGroup;
@@ -31,6 +29,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -77,9 +79,9 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
      * @return The loaded run
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
-    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
+    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeValidationReport report, JIPipeNotificationInbox notifications) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
-        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report, notifications);
+        JIPipeProject project = JIPipeProject.loadProject(parameterFile, new UnspecifiedValidationReportContext(), report, notifications);
         JIPipeRunSettings configuration = new JIPipeRunSettings();
         configuration.setOutputPath(folder);
         JIPipeProjectRun run = new JIPipeProjectRun(project, configuration);
@@ -105,11 +107,12 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
     }
 
     private void initializeInternalStoragePaths() {
-        for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
-            JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInParentGraph());
-            algorithm.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInParentGraph()))
-                    .resolve(StringUtils.safeJsonify(copiedGraph.getAliasIdOf(algorithm))));
-            algorithm.setProjectDirectory(project.getWorkDirectory());
+        for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
+            JIPipeProjectCompartment compartment = project.getCompartments().get(node.getCompartmentUUIDInParentGraph());
+            node.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInParentGraph()))
+                    .resolve(StringUtils.safeJsonify(copiedGraph.getAliasIdOf(node))));
+            node.setProjectDirectory(project.getWorkDirectory());
+            node.setRuntimeProject(project);
         }
     }
 
@@ -136,8 +139,9 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                 try {
                     Files.createDirectories(configuration.getOutputPath());
                 } catch (IOException e) {
-                    throw new UserFriendlyRuntimeException(e, "Could not create necessary directory '" + configuration.getOutputPath() + "'!",
-                            "Pipeline run", "Either the path is invalid, or you do not have permissions to create the directory",
+                    throw new JIPipeValidationRuntimeException(e,
+                            "Could not create necessary directory '" + configuration.getOutputPath() + "'!",
+                            "Either the path is invalid, or you do not have permissions to create the directory",
                             "Check if the path is valid and the parent directories are writeable by your current user");
                 }
             }
@@ -149,8 +153,9 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
                     try {
                         Files.createDirectories(slot.getSlotStoragePath());
                     } catch (IOException e) {
-                        throw new UserFriendlyRuntimeException(e, "Could not create necessary directory '" + slot.getSlotStoragePath() + "'!",
-                                "Pipeline run", "Either the path is invalid, or you do not have permissions to create the directory",
+                        throw new JIPipeValidationRuntimeException(e,
+                                "Could not create necessary directory '" + slot.getSlotStoragePath() + "'!",
+                                "Either the path is invalid, or you do not have permissions to create the directory",
                                 "Check if the path is valid and the parent directories are writeable by your current user");
                     }
                 }
@@ -199,8 +204,9 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
             if (configuration.getOutputPath() != null && configuration.isSaveToDisk())
                 project.saveProject(configuration.getOutputPath().resolve("project.jip"));
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
-                    "Pipeline run", "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+            throw new JIPipeValidationRuntimeException(e,
+                    "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
+                    "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
                     "Check if you can write to the output directory.");
         }
 
@@ -211,8 +217,9 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
             if (configuration.getOutputPath() != null)
                 Files.write(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString().getBytes(Charsets.UTF_8));
         } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
-                    "Pipeline run", "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
+            throw new JIPipeValidationRuntimeException(e,
+                    "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
+                    "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
                     "Check if you can write to the output directory.");
         }
     }
@@ -267,10 +274,10 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
         progressInfo.setMaxProgress(traversedSlots.size());
         for (int index = 0; index < traversedSlots.size(); ++index) {
             if (progressInfo.isCancelled())
-                throw new UserFriendlyRuntimeException("Execution was cancelled",
+                throw new JIPipeValidationRuntimeException(new InterruptedException(),
+                        "Execution was cancelled",
                         "You cancelled the execution of the algorithm pipeline.",
-                        "Pipeline run", "You clicked 'Cancel'.",
-                        "Do not click 'Cancel' if you do not want to cancel the execution.");
+                        null);
             JIPipeDataSlot slot = traversedSlots.get(index);
             progressInfo.setProgress(index + preprocessorNodes.size(), traversedSlots.size());
             if (!unExecutableAlgorithms.contains(slot.getNode())) {
@@ -425,25 +432,23 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
         }
 
         if (!dataLoadedFromCache) {
-            JIPipeProjectCompartment nodeCompartment = getProject().getCompartments().get(node.getCompartmentUUIDInParentGraph());
-            String nodeCompartmentName = nodeCompartment != null ? nodeCompartment.getName() : "<Subgraph>";
             try {
                 if (node instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) node).setThreadPool(threadPool);
                 }
                 node.run(progressInfo);
             } catch (HeadlessException e) {
-                throw new UserFriendlyRuntimeException("Algorithm " + node + " does not work in a headless environment!",
+                throw new JIPipeValidationRuntimeException(
+                        new GraphNodeValidationReportContext(node),
                         e,
                         "An error occurred during processing",
-                        "On running the algorithm '" + node.getName() + "', within compartment '" + nodeCompartmentName + "'",
                         "The algorithm raised an error, as it is not compatible with a headless environment.",
                         "Please contact the plugin developers about this issue. If this happens in an ImageJ method, please contact the ImageJ developers.");
             } catch (Exception e) {
-                throw new UserFriendlyRuntimeException("Algorithm " + node + " raised an exception!",
+                throw new JIPipeValidationRuntimeException(
+                        new GraphNodeValidationReportContext(node),
                         e,
                         "An error occurred during processing",
-                        "On running the algorithm '" + node.getName() + "', within compartment '" + nodeCompartmentName + "'",
                         "Please refer to the other error messages.",
                         "Please follow the instructions for the other error messages.");
             } finally {

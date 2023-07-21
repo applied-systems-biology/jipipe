@@ -43,7 +43,7 @@ public class MarchingCubes {
             0xe90, 0xf99, 0xc93, 0xd9a, 0xa96, 0xb9f, 0x895, 0x99c,
             0x69c, 0x795, 0x49f, 0x596, 0x29a, 0x393, 0x99, 0x190,
             0xf00, 0xe09, 0xd03, 0xc0a, 0xb06, 0xa0f, 0x905, 0x80c,
-            0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0 };
+            0x70c, 0x605, 0x50f, 0x406, 0x30a, 0x203, 0x109, 0x0};
 
     private static int[] MC_TRI_TABLE = {
             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -301,9 +301,9 @@ public class MarchingCubes {
             1, 3, 8, 9, 1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             0, 9, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
             0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
-            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-    
-    private static float[] lerp(float[] vec1, float[] vec2, float alpha){
+            -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+
+    private static float[] lerp(float[] vec1, float[] vec2, float alpha) {
         return new float[]{vec1[0] + (vec2[0] - vec1[0]) * alpha, vec1[1] + (vec2[1] - vec1[1]) * alpha, vec1[2] + (vec2[2] - vec1[2]) * alpha};
     }
 
@@ -436,7 +436,7 @@ public class MarchingCubes {
                     }
                     if ((bits & 1024) != 0) {
                         mu = (isoLevel - value3) / (value7 - value3);
-                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1]+ voxDim[1], position[2] + voxDim[2]}, mu);
+                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2] + voxDim[2]}, mu);
                     }
                     if ((bits & 2048) != 0) {
                         mu = (isoLevel - value2) / (value6 - value2);
@@ -454,7 +454,7 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
+                        vertices.add(new float[]{vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
                                 vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f,
                                 vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
@@ -587,7 +587,7 @@ public class MarchingCubes {
                     }
                     if ((bits & 1024) != 0) {
                         mu = (isoLevel - value3) / (value7 - value3);
-                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1]+ voxDim[1], position[2] + voxDim[2]}, mu);
+                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2] + voxDim[2]}, mu);
                     }
                     if ((bits & 2048) != 0) {
                         mu = (isoLevel - value2) / (value6 - value2);
@@ -605,9 +605,9 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f});
-                        vertices.add(new float[] {vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
+                        vertices.add(new float[]{vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f});
+                        vertices.add(new float[]{vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f});
+                        vertices.add(new float[]{vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
                         i += 3;
                     }
@@ -738,7 +738,7 @@ public class MarchingCubes {
                     }
                     if ((bits & 1024) != 0) {
                         mu = (isoLevel - value3) / (value7 - value3);
-                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1]+ voxDim[1], position[2] + voxDim[2]}, mu);
+                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2] + voxDim[2]}, mu);
                     }
                     if ((bits & 2048) != 0) {
                         mu = (isoLevel - value2) / (value6 - value2);
@@ -756,7 +756,7 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
+                        vertices.add(new float[]{vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
                                 vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f,
                                 vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
@@ -890,7 +890,7 @@ public class MarchingCubes {
                     }
                     if ((bits & 1024) != 0) {
                         mu = (float) ((isoLevel - value3) / (value7 - value3));
-                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1]+ voxDim[1], position[2] + voxDim[2]}, mu);
+                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2] + voxDim[2]}, mu);
                     }
                     if ((bits & 2048) != 0) {
                         mu = (float) ((isoLevel - value2) / (value6 - value2));
@@ -908,7 +908,7 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
+                        vertices.add(new float[]{vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
                                 vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f,
                                 vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
@@ -1042,7 +1042,7 @@ public class MarchingCubes {
                     }
                     if ((bits & 1024) != 0) {
                         mu = (float) ((isoLevel - value3) / (value7 - value3));
-                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1]+ voxDim[1], position[2] + voxDim[2]}, mu);
+                        vertList[10] = lerp(new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2]}, new float[]{position[0] + voxDim[0], position[1] + voxDim[1], position[2] + voxDim[2]}, mu);
                     }
                     if ((bits & 2048) != 0) {
                         mu = (float) ((isoLevel - value2) / (value6 - value2));
@@ -1060,7 +1060,7 @@ public class MarchingCubes {
                         int index3 = MC_TRI_TABLE[cubeindex + i + 2];
 
                         // Add triangles vertices normalized with the maximal possible value
-                        vertices.add(new float[] {vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
+                        vertices.add(new float[]{vertList[index3][0] / maxAxisVal - 0.5f, vertList[index3][1] / maxAxisVal - 0.5f, vertList[index3][2] / maxAxisVal - 0.5f,
                                 vertList[index2][0] / maxAxisVal - 0.5f, vertList[index2][1] / maxAxisVal - 0.5f, vertList[index2][2] / maxAxisVal - 0.5f,
                                 vertList[index1][0] / maxAxisVal - 0.5f, vertList[index1][1] / maxAxisVal - 0.5f, vertList[index1][2] / maxAxisVal - 0.5f});
 
@@ -1079,11 +1079,11 @@ public class MarchingCubes {
         float voxDimY = 1;
         float voxDimZ = 1;
 
-        if(physicalSizes) {
+        if (physicalSizes) {
             voxDimX = (float) img.getCalibration().pixelWidth;
             voxDimY = (float) img.getCalibration().pixelHeight;
             voxDimZ = (float) img.getCalibration().pixelDepth;
-            if(forceMeshLengthUnit) {
+            if (forceMeshLengthUnit) {
                 Quantity inputQuantity = new Quantity(1, img.getCalibration().getUnits());
                 Quantity outputQuantity = inputQuantity.convertTo(meshLengthUnit.toString());
                 voxDimX *= outputQuantity.getValue();
@@ -1092,9 +1092,9 @@ public class MarchingCubes {
             }
         }
 
-        int[] volDim = new int[] { img.getWidth(), img.getHeight(), img.getNSlices()};
-        float[] voxDim = new float[] {voxDimX, voxDimY, voxDimZ};
-        if(img.getType() == ImagePlus.GRAY8) {
+        int[] volDim = new int[]{img.getWidth(), img.getHeight(), img.getNSlices()};
+        float[] voxDim = new float[]{voxDimX, voxDimY, voxDimZ};
+        if (img.getType() == ImagePlus.GRAY8) {
             byte[] pixels = new byte[img.getWidth() * img.getHeight() * img.getNSlices()];
             int sz = img.getWidth() * img.getHeight();
 
@@ -1107,8 +1107,7 @@ public class MarchingCubes {
             }
 
             return marchingCubesByte(pixels, volDim, volDim[2], voxDim, (char) isoLevel, offset);
-        }
-        else if(img.getType() == ImagePlus.GRAY16) {
+        } else if (img.getType() == ImagePlus.GRAY16) {
             short[] pixels = new short[img.getWidth() * img.getHeight() * img.getNSlices()];
 
             int sz = img.getWidth() * img.getHeight();
@@ -1122,8 +1121,7 @@ public class MarchingCubes {
             }
 
             return marchingCubesShort(pixels, volDim, volDim[2], voxDim, (short) isoLevel, offset);
-        }
-        else if(img.getType() == ImagePlus.GRAY32) {
+        } else if (img.getType() == ImagePlus.GRAY32) {
             float[] pixels = new float[img.getWidth() * img.getHeight() * img.getNSlices()];
 
             int sz = img.getWidth() * img.getHeight();
@@ -1137,8 +1135,7 @@ public class MarchingCubes {
             }
 
             return marchingCubesFloat(pixels, volDim, volDim[2], voxDim, (float) isoLevel, offset);
-        }
-        else {
+        } else {
             throw new UnsupportedOperationException("Unsupported image type!");
         }
     }

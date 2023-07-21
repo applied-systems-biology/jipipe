@@ -124,7 +124,7 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
     /**
      * Renders items in enum parameters
      */
-    public static class Renderer extends JLabel implements ListCellRenderer<Object> {
+    public static class Renderer<T> extends JLabel implements ListCellRenderer<T> {
 
         private final DynamicEnumParameter<Object> parameter;
 
@@ -136,7 +136,7 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
         }
 
         @Override
-        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<? extends T> list, T value, int index, boolean isSelected, boolean cellHasFocus) {
             setIcon(parameter.renderIcon(value));
             setText(parameter.renderLabel(value));
             setToolTipText(parameter.renderTooltip(value));

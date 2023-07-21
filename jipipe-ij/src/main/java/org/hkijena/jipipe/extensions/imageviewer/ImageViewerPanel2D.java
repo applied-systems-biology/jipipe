@@ -88,12 +88,9 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private Component currentContentPanel;
-
-    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private boolean isUpdatingSliders = false;
+    private boolean isUpdatingSliders = false;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JScrollPane canvasScrollPane;
     private boolean composite;
-
     /**
      * Initializes a new image viewer
      *
@@ -137,6 +134,10 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         return settings;
     }
 
+    public List<CompositeLayer> getOrderedCompositeBlendLayers() {
+        return Collections.unmodifiableList(orderedCompositeBlendLayers);
+    }
+
 
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
@@ -147,10 +148,6 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 //            refreshSlice();
 //        }
 //    }
-
-    public List<CompositeLayer> getOrderedCompositeBlendLayers() {
-        return Collections.unmodifiableList(orderedCompositeBlendLayers);
-    }
 
     public Map<Integer, CompositeLayer> getCompositeBlendLayers() {
         return Collections.unmodifiableMap(compositeBlendLayers);
@@ -232,7 +229,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
 
         // Export
         exportDisplayedScaleToggle.addActionListener(e -> {
-            if(settings != null) {
+            if (settings != null) {
                 settings.setExportAsDisplayed(exportDisplayedScaleToggle.getState());
                 JIPipe.getSettings().save();
             }
@@ -942,7 +939,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         for (JIPipeImageViewerPlugin2D plugin : imageViewer.getPlugins2D()) {
             try {
                 plugin.onImageChanged();
-            }catch (Throwable e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }
@@ -1026,6 +1023,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
             return channel;
         }
     }
+
 
 
 

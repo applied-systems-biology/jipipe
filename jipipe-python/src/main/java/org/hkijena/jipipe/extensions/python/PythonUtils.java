@@ -22,6 +22,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.DoubleLi
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.extensions.python.adapter.PythonAdapterExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
@@ -136,7 +137,7 @@ public class PythonUtils {
     }
 
     public static void installAdapterCodeIfNeeded(StringBuilder pythonCode) {
-        PythonExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().generateCode(pythonCode, new JIPipeProgressInfo());
+        PythonAdapterExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment().generateCode(pythonCode, new JIPipeProgressInfo());
         pythonCode.append("import jipipe.data_slot\n");
     }
 

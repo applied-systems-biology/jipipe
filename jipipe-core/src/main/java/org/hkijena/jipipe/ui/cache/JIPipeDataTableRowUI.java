@@ -23,9 +23,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
-import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -247,7 +245,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                     JIPipeRunnable runnable = new ExportAsFolderRun(row, dataTable, path);
                     JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), runnable);
                 } catch (Exception e) {
-                    UIUtils.openErrorDialog(getWorkbench().getWindow(), e);
+                    UIUtils.openErrorDialog(getWorkbench(), getWorkbench().getWindow(), e);
                 }
             }
         }
@@ -289,24 +287,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
             try (BusyCursor cursor = new BusyCursor(this)) {
-                JIPipeData data = dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());
-                String displayName;
-                String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
-                String slotName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
-                if (!StringUtils.isNullOrEmpty(nodeName))
-                    displayName = nodeName + "/" + slotName + "/" + row;
-                else
-                    displayName = slotName + "/" + row;
-                operation.display(data, displayName, getWorkbench(), new JIPipeDataTableDataSource(dataTable, row));
-                if (GeneralDataSettings.getInstance().isAutoSaveLastDisplay()) {
-                    String dataTypeId = JIPipe.getDataTypes().getIdOf(dataTable.getAcceptedDataType());
-                    DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
-                    if (parameter != null && !Objects.equals(operation.getId(), parameter.getValue())) {
-                        parameter.setValue(operation.getId());
-                        DefaultResultImporterSettings.getInstance().setValue(dataTypeId, parameter);
-                        JIPipe.getSettings().save();
-                    }
-                }
+                operation.display(dataTable, row, getWorkbench(), true);
             }
         }
     }

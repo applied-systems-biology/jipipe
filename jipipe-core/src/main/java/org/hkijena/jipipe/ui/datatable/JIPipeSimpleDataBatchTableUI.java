@@ -14,7 +14,6 @@
 
 package org.hkijena.jipipe.ui.datatable;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;

@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.ui.components.icons;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 
@@ -35,6 +34,7 @@ public class JIPipeRunnerQueueThrobberIcon extends NewThrobberIcon implements JI
             start();
         }
     }
+
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (JIPipeRunnerQueue.getInstance().isEmpty()) {

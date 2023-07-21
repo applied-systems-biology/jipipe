@@ -46,6 +46,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     public KeyStroke getKeyBinding() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
     }
+
     @Override
     public JIPipeGraphEditorUI getGraphEditor() {
         return graphEditorUI;

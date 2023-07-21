@@ -15,13 +15,15 @@
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringQueryPairParameter;
@@ -70,18 +72,16 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
             if (oldName == null) {
                 if (ignoreMissingColumns)
                     continue;
-                throw new UserFriendlyNullPointerException("Could not find column matching '" + renamingEntry.getKey() + "'",
-                        "Could not find column!",
-                        "Algorithm " + getName(),
+                throw new JIPipeValidationRuntimeException(new NullPointerException("Could not find column matching '" + renamingEntry.getKey() + "'"),
+                        "Could not find column matching '" + renamingEntry.getKey() + "'",
                         "You tried to rename a column '" + renamingEntry.getKey() + "', but it was not found.",
                         "Please check if the table '" + input + "' contains the column.");
             }
             if (newName == null) {
                 if (ignoreMissingAnnotations)
                     continue;
-                throw new UserFriendlyNullPointerException("Could not find annotation matching '" + renamingEntry.getValue() + "'",
-                        "Could not find annotation!",
-                        "Algorithm " + getName(),
+                throw new JIPipeValidationRuntimeException(new NullPointerException("Could not find annotation matching '" + renamingEntry.getValue() + "'"),
+                        "Could not find annotation matching '" + renamingEntry.getValue() + "'",
                         "You tried to rename a column '" + renamingEntry.getKey() + "' to the value of annotation '" + renamingEntry.getValue()
                                 + "', but the annotation was not found.",
                         "Please check if there is a matching annotation.");
@@ -93,8 +93,9 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Renaming entries").report(renamingEntries);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        report.report(new ParameterValidationReportContext(context, this, "Renaming entries", "renaming-entries"), renamingEntries);
     }
 
     @JIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")

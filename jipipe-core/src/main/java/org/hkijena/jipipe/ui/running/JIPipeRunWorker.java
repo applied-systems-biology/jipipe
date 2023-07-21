@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.ui.running;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -46,6 +44,7 @@ public class JIPipeRunWorker extends SwingWorker<Throwable, Object> implements J
         this.silent = silent;
         this.run.getProgressInfo().getStatusUpdatedEventEmitter().subscribe(this);
     }
+
     @Override
     protected Throwable doInBackground() {
         startTime.set(System.currentTimeMillis());

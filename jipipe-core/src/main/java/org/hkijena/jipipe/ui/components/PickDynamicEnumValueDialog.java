@@ -32,32 +32,32 @@ import java.util.stream.Collectors;
 /**
  * UI that adds slots to an algorithm
  */
-public class PickDynamicEnumValueDialog extends JDialog {
-    private final DynamicEnumParameter<Object> dynamicEnumParameter;
-    private List<Object> availableItems;
+public class PickDynamicEnumValueDialog<T> extends JDialog {
+    private final DynamicEnumParameter<T> dynamicEnumParameter;
+    private List<T> availableItems;
     private SearchTextField searchField;
     private JList<Object> itemJList;
-    private Object selectedItem;
+    private T selectedItem;
     private JButton confirmButton;
 
     private JScrollPane scrollPane;
     private boolean canceled = true;
 
-    public PickDynamicEnumValueDialog(Window parent, DynamicEnumParameter<Object> dynamicEnumParameter, Object preSelected) {
+    public PickDynamicEnumValueDialog(Window parent, DynamicEnumParameter<T> dynamicEnumParameter, T preSelected) {
         super(parent);
         this.dynamicEnumParameter = dynamicEnumParameter;
         this.availableItems = dynamicEnumParameter.getAllowedValues();
         initialize();
         reloadItemList();
         if (preSelected == null) {
-            preSelected = itemJList.getSelectedValue();
+            preSelected = (T) itemJList.getSelectedValue();
         }
         setSelectedItem(preSelected);
         itemJList.setSelectedValue(preSelected, true);
     }
 
-    public static Object showDialog(Component parent, DynamicEnumParameter<Object> dynamicEnumParameter, Object preSelected, String title) {
-        PickDynamicEnumValueDialog dialog = new PickDynamicEnumValueDialog(SwingUtilities.getWindowAncestor(parent), dynamicEnumParameter, preSelected);
+    public static <T> T showDialog(Component parent, DynamicEnumParameter<T> dynamicEnumParameter, Object preSelected, String title) {
+        PickDynamicEnumValueDialog<T> dialog = new PickDynamicEnumValueDialog(SwingUtilities.getWindowAncestor(parent), dynamicEnumParameter, preSelected);
         dialog.setTitle(title);
         dialog.setModal(true);
         dialog.pack();
@@ -66,7 +66,7 @@ public class PickDynamicEnumValueDialog extends JDialog {
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
         if (!dialog.canceled)
-            return dialog.getSelectedItem();
+            return (T) dialog.getSelectedItem();
         else
             return null;
     }
@@ -79,7 +79,7 @@ public class PickDynamicEnumValueDialog extends JDialog {
         itemJList.setCellRenderer(new DynamicEnumParameterEditorUI.Renderer(dynamicEnumParameter));
         itemJList.addListSelectionListener(e -> {
             if (itemJList.getSelectedValue() != null) {
-                setSelectedItem(itemJList.getSelectedValue());
+                setSelectedItem((T) itemJList.getSelectedValue());
             }
         });
         itemJList.addMouseListener(new MouseAdapter() {
@@ -145,14 +145,14 @@ public class PickDynamicEnumValueDialog extends JDialog {
         add(toolBar, BorderLayout.NORTH);
     }
 
-    private List<Object> getFilteredAndSortedInfos() {
-        Predicate<Object> filterFunction = info -> searchField.test(dynamicEnumParameter.getSearchString(info));
+    private List<T> getFilteredAndSortedInfos() {
+        Predicate<T> filterFunction = info -> searchField.test(dynamicEnumParameter.getSearchString(info));
         return availableItems.stream().filter(filterFunction).sorted(Comparator.comparing(dynamicEnumParameter::renderLabel)).collect(Collectors.toList());
     }
 
     private void reloadItemList() {
         setSelectedItem(null);
-        List<Object> available = getFilteredAndSortedInfos();
+        List<T> available = getFilteredAndSortedInfos();
         DefaultListModel<Object> listModel = new DefaultListModel<>();
         int selectedIndex = -1;
         int index = 0;
@@ -173,11 +173,11 @@ public class PickDynamicEnumValueDialog extends JDialog {
         UIUtils.invokeScrollToTop(scrollPane);
     }
 
-    public Object getSelectedItem() {
+    public T getSelectedItem() {
         return selectedItem;
     }
 
-    public void setSelectedItem(Object selectedItem) {
+    public void setSelectedItem(T selectedItem) {
         this.selectedItem = selectedItem;
     }
 }

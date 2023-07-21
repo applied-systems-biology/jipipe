@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.api;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventEmitter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Cancelable;
 
@@ -404,6 +402,10 @@ public class JIPipeProgressInfo implements Cancelable {
         return new JIPipePercentageProgressInfo(resolve(text));
     }
 
+    public interface StatusUpdatedEventListener {
+        void onProgressStatusUpdated(StatusUpdatedEvent event);
+    }
+
     public static class StatusUpdatedEvent extends AbstractJIPipeEvent {
         private final JIPipeProgressInfo progressInfo;
         private final int progress;
@@ -437,10 +439,6 @@ public class JIPipeProgressInfo implements Cancelable {
         public String render() {
             return (progressInfo.detachedProgress ? "SUB " : "") + "[" + progress + "/" + maxProgress + "] " + message;
         }
-    }
-
-    public interface StatusUpdatedEventListener {
-        void onProgressStatusUpdated(StatusUpdatedEvent event);
     }
 
     public static class StatusUpdatedEventEmitter extends JIPipeEventEmitter<StatusUpdatedEvent, StatusUpdatedEventListener> {

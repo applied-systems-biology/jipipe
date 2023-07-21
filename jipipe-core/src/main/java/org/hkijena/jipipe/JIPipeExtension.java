@@ -14,8 +14,8 @@
 
 package org.hkijena.jipipe;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 
 /**
  * Interface shared between all JIPipe extensions
@@ -31,7 +31,7 @@ public interface JIPipeExtension extends JIPipeDependency {
      * @param progressInfo allows to write information into the startup log
      * @return if the extension can be activated
      */
-    default boolean canActivate(JIPipeIssueReport report, JIPipeProgressInfo progressInfo) {
+    default boolean canActivate(JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         return true;
     }
 

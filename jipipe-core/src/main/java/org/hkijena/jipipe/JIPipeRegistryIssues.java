@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.scijava.plugin.PluginInfo;
 
 import java.util.HashMap;
@@ -34,55 +34,59 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
     private Set<Class<? extends JIPipeData>> erroneousDataTypes = new HashSet<>();
     private Set<JIPipeParameterTypeInfo> erroneousParameterTypes = new HashSet<>();
     private Set<JIPipeNodeInfo> erroneousNodes = new HashSet<>();
-    private Map<String, JIPipeIssueReport> preActivationIssues = new HashMap<>();
+    private Map<String, JIPipeValidationReport> preActivationIssues = new HashMap<>();
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        for (Map.Entry<String, JIPipeIssueReport> entry : preActivationIssues.entrySet()) {
-            if (!entry.getValue().isValid()) {
-                report.resolve("Extension checks").resolve(entry.getKey()).mergeWith(entry.getValue());
-            }
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        for (Map.Entry<String, JIPipeValidationReport> entry : preActivationIssues.entrySet()) {
+            report.addAll(entry.getValue());
         }
         for (JIPipeImageJUpdateSiteDependency site : missingImageJSites) {
-            report.resolve("ImageJ dependencies").resolve("Sites").resolve(site.getName()).reportIsInvalid("Missing ImageJ site: " + site.getName(),
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new CustomValidationReportContext(context, "ImageJ update site checker"),
+                    "Missing ImageJ site: " + site.getName(),
                     String.format("An extension requests following ImageJ site to be activated: '%s' (%s)", site.getName(), site.getUrl()),
-                    "Please activate the site in the update manager.",
-                    this);
+                    "Please activate the site in the update manager."));
         }
         for (PluginInfo<JIPipeJavaExtension> plugin : erroneousPlugins) {
-            report.resolve("Java Extensions").resolve(plugin.getIdentifier()).reportIsInvalid("Could not load extension '" + plugin.getIdentifier() + "'",
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new CustomValidationReportContext(context, "Extension initialization"),
+                    "Could not load extension '" + plugin.getIdentifier() + "'",
                     "There was an error while loading an extension.",
                     "Please install necessary dependencies via ImageJ. Then restart  ImageJ.",
-                    plugin);
+                    plugin.toString()));
         }
         for (JIPipeNodeInfo info : erroneousNodes) {
-            report.resolve("Node types").resolve(info.getId())
-                    .reportIsInvalid("Invalid node type '" + info.getName() + "'",
-                            "There was an error while loading a node type.",
-                            "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
-                            info);
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new CustomValidationReportContext(context, "Node initialization"),
+                    "Invalid node type '" + info.getName() + "'",
+                    "There was an error while loading a node type.",
+                    "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
+                    info.toString()));
         }
         for (Class<? extends JIPipeData> dataType : erroneousDataTypes) {
-            report.resolve("Data types").resolve(dataType.getCanonicalName())
-                    .reportIsInvalid("Invalid data type '" + dataType + "'",
-                            "There was an error while loading a data type.",
-                            "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
-                            dataType.getCanonicalName());
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new CustomValidationReportContext(context, "Data type initialization"),
+                    "Invalid data type '" + dataType + "'",
+                    "There was an error while loading a data type.",
+                    "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
+                    dataType.getCanonicalName()));
         }
         for (JIPipeParameterTypeInfo parameterType : erroneousParameterTypes) {
-            report.resolve("Parameter types").resolve(parameterType.getFieldClass().getCanonicalName())
-                    .reportIsInvalid("Invalid parameter type '" + parameterType.getId() + "'",
-                            "There was an error while loading a parameter type.",
-                            "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
-                            parameterType.getFieldClass().getCanonicalName());
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new CustomValidationReportContext(context, "Parameter type initialization"),
+                    "Invalid parameter type '" + parameterType.getId() + "'",
+                    "There was an error while loading a parameter type.",
+                    "Please install necessary dependencies via ImageJ. Then restart ImageJ.",
+                    parameterType.getFieldClass().getCanonicalName()));
         }
     }
 
-    public Map<String, JIPipeIssueReport> getPreActivationIssues() {
+    public Map<String, JIPipeValidationReport> getPreActivationIssues() {
         return preActivationIssues;
     }
 
-    public void setPreActivationIssues(Map<String, JIPipeIssueReport> preActivationIssues) {
+    public void setPreActivationIssues(Map<String, JIPipeValidationReport> preActivationIssues) {
         this.preActivationIssues = preActivationIssues;
     }
 

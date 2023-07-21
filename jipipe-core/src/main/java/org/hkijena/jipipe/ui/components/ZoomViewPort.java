@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.components;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
@@ -9,6 +8,10 @@ public interface ZoomViewPort {
     ZoomChangedEventEmitter getZoomChangedEventEmitter();
 
     double getZoom();
+
+    interface ZoomChangedEventListener {
+        void onViewPortZoomChanged(ZoomChangedEvent event);
+    }
 
     /**
      * Triggered by {@link ZoomViewPort} when the zoom was changed
@@ -24,10 +27,6 @@ public interface ZoomViewPort {
         public ZoomViewPort getViewPort() {
             return viewPort;
         }
-    }
-
-    interface ZoomChangedEventListener {
-        void onViewPortZoomChanged(ZoomChangedEvent event);
     }
 
     class ZoomChangedEventEmitter extends JIPipeEventEmitter<ZoomChangedEvent, ZoomChangedEventListener> {

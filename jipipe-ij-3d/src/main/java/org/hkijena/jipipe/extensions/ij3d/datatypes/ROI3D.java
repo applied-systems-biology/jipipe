@@ -7,7 +7,6 @@ import mcib3d.geom.Object3DSurface;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
-import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.model.geometries.Scene3DUnindexedMeshGeometry;
 import org.hkijena.jipipe.extensions.scene3d.utils.Scene3DUtils;
 import org.scijava.vecmath.Point3f;
@@ -119,10 +118,10 @@ public class ROI3D {
         float voxDimXY = 1;
         float voxDimZ = 1;
 
-        if(physicalSizes) {
+        if (physicalSizes) {
             voxDimXY = (float) object3D.getResXY();
             voxDimZ = (float) object3D.getResZ();
-            if(forceMeshLengthUnit) {
+            if (forceMeshLengthUnit) {
                 Quantity inputQuantity = new Quantity(1, object3D.getUnits());
                 Quantity outputQuantity = inputQuantity.convertTo(meshLengthUnit.toString());
                 voxDimXY *= outputQuantity.getValue();

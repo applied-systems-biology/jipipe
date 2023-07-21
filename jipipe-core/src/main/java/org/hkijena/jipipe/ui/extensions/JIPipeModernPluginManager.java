@@ -15,8 +15,6 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import net.imagej.updater.Conflicts;
 import net.imagej.updater.FilesCollection;
@@ -382,6 +380,14 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         }
     }
 
+    public interface UpdateSitesReadyEventListener {
+        void onPluginManagerUpdateSitesReady(UpdateSitesReadyEvent event);
+    }
+
+    public interface UpdateSitesFailedEventListener {
+        void onPluginManagerUpdateSitesFailed(UpdateSitesFailedEvent event);
+    }
+
     public static class UpdateSitesReadyEvent extends AbstractJIPipeEvent {
         private final JIPipeModernPluginManager pluginManager;
 
@@ -393,10 +399,6 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         public JIPipeModernPluginManager getPluginManager() {
             return pluginManager;
         }
-    }
-
-    public interface UpdateSitesReadyEventListener {
-        void onPluginManagerUpdateSitesReady(UpdateSitesReadyEvent event);
     }
 
     public static class UpdateSitesReadyEventEmitter extends JIPipeEventEmitter<UpdateSitesReadyEvent, UpdateSitesReadyEventListener> {
@@ -417,10 +419,6 @@ public class JIPipeModernPluginManager implements JIPipeExtensionRegistry.Schedu
         public JIPipeModernPluginManager getPluginManager() {
             return pluginManager;
         }
-    }
-
-    public interface UpdateSitesFailedEventListener {
-        void onPluginManagerUpdateSitesFailed(UpdateSitesFailedEvent event);
     }
 
     public static class UpdateSitesFailedEventEmitter extends JIPipeEventEmitter<UpdateSitesFailedEvent, UpdateSitesFailedEventListener> {

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -65,13 +64,6 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
         this.annotations = new NamedTextAnnotationGeneratorExpression.List(other.annotations);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        for (int i = 0; i < annotations.size(); i++) {
-            report.resolve("Annotations").resolve("Item #" + (i + 1)).resolve("Name").checkNonEmpty(annotations.get(i).getValue(), this);
-        }
     }
 
     @Override

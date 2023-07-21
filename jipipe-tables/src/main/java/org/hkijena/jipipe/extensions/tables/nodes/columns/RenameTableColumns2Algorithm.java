@@ -15,21 +15,21 @@
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;
 
@@ -73,11 +73,10 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
                 String oldName = table.getColumnName(col);
 
                 String newName;
-                if( renamingEntry.getSourceColumn().test(oldName, variables)) {
+                if (renamingEntry.getSourceColumn().test(oldName, variables)) {
                     variables.set("current_name", oldName);
                     newName = renamingEntry.getNewName().evaluateToString(variables);
-                }
-                else {
+                } else {
                     newName = oldName;
                 }
                 if (!Objects.equals(oldName, newName)) {

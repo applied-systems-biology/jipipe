@@ -16,7 +16,10 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources;
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeCitation;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
@@ -162,13 +165,6 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("title-annotation")
     public void setTitleAnnotation(OptionalAnnotationNameParameter titleAnnotation) {
         this.titleAnnotation = titleAnnotation;
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        if (titleAnnotation.isEnabled()) {
-            report.resolve("Title annotation").checkNonEmpty(titleAnnotation.getContent(), this);
-        }
     }
 
     @JIPipeDocumentation(name = "Generated image type", description = "The image type that is generated.")

@@ -29,102 +29,104 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.colocalization.Coloc2Node;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.HistogramContrastEnhancerAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByImage2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByParameter2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources.ImageStackFromFolder;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources.OMEImageFromImagePlus;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.CannyEdgeDetectorAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.LaplacianEdgeDetectorAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DSwapQuadrants;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms.DrawMaskAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms.DrawROIAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.filter.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.ChangeImageMetadataFromExpressionsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.ExtractImageMetadataAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.RemoveImageMetadataAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.SetImageMetadataFromTableAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.RenderJIPipeProjectAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddSaltAndPepperNoise2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.DespeckleFilter2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.RemoveOutliersFilter2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEBlockFlowAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.MSEGaussianFlowAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow.PMCCBlockFlowAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.ExtractOverlayAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.RemoveOverlayAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.RenderOverlayAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.overlay.SetOverlayAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.assemble.AssembleExtractedROIAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.assemble.ExtractFromROIAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.convert.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawOvalRoiAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawRectangleRoiAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawScaleBarRoiAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawTextRoiAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.generate.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.CountROIAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.ExtractRoi2DRelationStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.AddRoiListsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.MergeRoiListsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.ExtractROIMetadataAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.RemoveROIMetadataAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetROIMetadataFromTableAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetRoiMetadataByStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm2;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortRoiListByExpressionsAndMeasurementsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.split.ExplodeRoiAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.split.SplitRoiAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.ClassicWatershedSegmentationAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.RidgeDetector2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.SeededWatershedSegmentationAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ColorThresholdExpression2D;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualHSBThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualLABThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ManualRGBThreshold2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.iterative.IterativeThresholdByROIStatistics2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.local.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatistics;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SourceWrapMode;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.MacroWrapperAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.analyze.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.background.RollingBallBackgroundEstimator2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.blur.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.calibration.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.colocalization.Coloc2Node;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.color.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.contrast.CLAHEContrastEnhancer;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.contrast.HistogramContrastEnhancerAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.contrast.IlluminationCorrection2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.convert.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.convolve.ConvolveByImage2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.convolve.ConvolveByParameter2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.datasources.ImageStackFromFolder;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.datasources.OMEImageFromImagePlus;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.edge.CannyEdgeDetectorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.edge.LaplacianEdgeDetectorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.edge.SobelEdgeDetectorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.features.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.fft.FFT2DForwardTransform;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.fft.FFT2DInverseTransform;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.fft.FFT2DSwapQuadrants;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.forms.DrawMaskAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.forms.DrawROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.generate.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels.filter.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.lut.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math.distancemap.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.math.local.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.metadata.ChangeImageMetadataFromExpressionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.metadata.ExtractImageMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.metadata.RemoveImageMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.metadata.SetImageMetadataFromTableAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.misc.DataToPreviewAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.misc.RenderJIPipeProjectAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.morphology.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.noise.AddNoise2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.noise.AddSaltAndPepperNoise2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.noise.DespeckleFilter2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.noise.RemoveOutliersFilter2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.ome.AnnotateOMEWithMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.ome.ExtractOMEROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.ome.ExtractOMEXMLAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.ome.OMEMetadataToTableAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.opticalflow.MSEBlockFlowAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.opticalflow.MSEGaussianFlowAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.opticalflow.PMCCBlockFlowAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.overlay.ExtractOverlayAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.overlay.RemoveOverlayAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.overlay.RenderOverlayAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.overlay.SetOverlayAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.assemble.AssembleExtractedROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.assemble.ExtractFromROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.convert.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.draw.DrawOvalRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.draw.DrawRectangleRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.draw.DrawScaleBarRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.draw.DrawTextRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.filter.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.generate.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure.CountROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure.ExtractRoi2DRelationStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.merge.AddRoiListsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.merge.MergeRoiListsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.modify.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.properties.ExtractROIMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.properties.RemoveROIMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.properties.SetROIMetadataFromTableAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.properties.SetRoiMetadataByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.sort.SortAndExtractRoiByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.sort.SortAndExtractRoiByStatisticsAlgorithm2;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.sort.SortRoiListByExpressionsAndMeasurementsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.split.ExplodeRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.split.SplitRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.segment.ClassicWatershedSegmentationAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.segment.RidgeDetector2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.segment.SeededWatershedSegmentationAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.sharpen.LaplacianSharpen2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.statistics.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.color.ColorThresholdExpression2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.color.ManualHSBThreshold2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.color.ManualLABThreshold2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.color.ManualRGBThreshold2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.iterative.IterativeThresholdByROIStatistics2DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.local.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OMEAccessorStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
@@ -168,6 +170,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:imagej-algorithms",
             JIPipe.getJIPipeVersion(),
             "ImageJ algorithms");
+
+    /**
+     * Contains registered OME accessors
+     */
+    public static final OMEAccessorStorage OME_ACCESSOR_STORAGE = new OMEAccessorStorage();
 
     public ImageJAlgorithmsExtension() {
     }
@@ -556,6 +563,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerEnumParameterType("ij1-export-table:file-format", ExportTableAlgorithm.FileFormat.class, "File format", "Exported file format.");
+        registerParameterType("ome-accessor-type", OMEAccessorTypeEnumParameter.class, "OME metadata key", "Metadata from OME");
+        registerParameterType("ome-accessor", OMEAccessorParameter.class, "OME metadata query", "Queries metadata from OME", OMEAccessorParameterEditorUI.class);
 
         registerIOAlgorithms();
         registerBlurAlgorithms();
@@ -596,18 +605,26 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
         registerNodeType("ome-image-from-image-plus", OMEImageFromImagePlus.class);
 
+        registerNodeType("ome-annotate-with-metadata", AnnotateOMEWithMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("ome-extract-metadata-as-table", OMEMetadataToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+
         // Register enum parameters
         registerGlobalEnums();
 
         // Register other parameters
         registerGlobalParameters();
 
-//        registerIJ2Algorithms();
-
-
-        //// Register examples
+        // Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
         registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    @Override
+    public void postprocess(JIPipeProgressInfo progressInfo) {
+        super.postprocess(progressInfo);
+
+        // Init the OME accessors (needs parameter types)
+        OME_ACCESSOR_STORAGE.initialize(progressInfo.resolve("Initializing OME data access storage"));
     }
 
     private void registerMetadataAlgorithms() {
@@ -685,6 +702,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-convert-matrix-to-image", MatrixToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-table-column-to-image", TableColumnToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-image-to-table-column", ImageToTableColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-extract-ome-image-xml", ExtractOMEXMLAlgorithm.class, UIUtils.getIconURLFromResources("actions/dialog-xml-editor.png"));
+        registerNodeType("ij1-extract-ome-image-roi", ExtractOMEROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
     }
 
     private void registerFormAlgorithms() {
@@ -708,10 +727,14 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij-import-stack", ImageStackFromFolder.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
 
         registerNodeType("iji-export-image-to-web", ExportImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-image-to-web:directory-slot", ExportImage2Algorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-image-v2", ExportImage2Algorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-image-to-web:directory-slot", ExportImageDirectorySlotAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-roi-list-v2", ExportROIAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-table", ExportTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-table-v2", ExportTableAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-table-as-xlsx", ExportTableAsXLSXAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-table-as-xlsx-v2", ExportTableAsXLSXAlgorithm2.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
 
         registerNodeType("ij-import-from-imagej", RunImageJImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
         registerNodeType("ij-export-to-imagej", RunImageJExporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));

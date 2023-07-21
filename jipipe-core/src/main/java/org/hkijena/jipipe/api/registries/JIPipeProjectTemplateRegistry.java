@@ -56,7 +56,7 @@ public class JIPipeProjectTemplateRegistry {
                 JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
                 JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, file, file);
                 register(template);
-               templatesUpdatedEventEmitter.emit(new TemplatesUpdatedEvent(this));
+                templatesUpdatedEventEmitter.emit(new TemplatesUpdatedEvent(this));
             }
         } else {
             JsonNode node = JsonUtils.readFromFile(file, JsonNode.class);
@@ -76,6 +76,10 @@ public class JIPipeProjectTemplateRegistry {
         return Collections.unmodifiableSet(blockedTemplateNames);
     }
 
+    public interface TemplatesUpdatedEventListener {
+        void onJIPipeTemplatesUpdated(TemplatesUpdatedEvent event);
+    }
+
     public static class TemplatesUpdatedEvent extends AbstractJIPipeEvent {
         private final JIPipeProjectTemplateRegistry registry;
 
@@ -87,10 +91,6 @@ public class JIPipeProjectTemplateRegistry {
         public JIPipeProjectTemplateRegistry getRegistry() {
             return registry;
         }
-    }
-
-    public interface TemplatesUpdatedEventListener {
-        void onJIPipeTemplatesUpdated(TemplatesUpdatedEvent event);
     }
 
     public static class TemplatesUpdatedEventEmitter extends JIPipeEventEmitter<TemplatesUpdatedEvent, TemplatesUpdatedEventListener> {

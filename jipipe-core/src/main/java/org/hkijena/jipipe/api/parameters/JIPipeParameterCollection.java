@@ -13,14 +13,16 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Interfaced for a parameterized object
@@ -128,18 +130,21 @@ public interface JIPipeParameterCollection {
 
     /**
      * Emitter for changes in the parameter
+     *
      * @return the emitter
      */
     ParameterChangedEventEmitter getParameterChangedEventEmitter();
 
     /**
      * Emitter for changes in the structure of parameters
+     *
      * @return the emitter
      */
     ParameterStructureChangedEventEmitter getParameterStructureChangedEventEmitter();
 
     /**
      * Emitter for changes in the parameter user interface
+     *
      * @return the emitter
      */
     ParameterUIChangedEventEmitter getParameterUIChangedEventEmitter();
@@ -167,6 +172,27 @@ public interface JIPipeParameterCollection {
      */
     default JComponent installUIOverrideParameterEditor(ParameterPanel parameterPanel, JIPipeParameterEditorUI parameterEditorUI) {
         return parameterEditorUI;
+    }
+
+    /**
+     * Listener for {@link ParameterChangedEvent}
+     */
+    interface ParameterChangedEventListener {
+        void onParameterChanged(ParameterChangedEvent event);
+    }
+
+    /**
+     * Listener for {@link ParameterStructureChangedEvent}
+     */
+    interface ParameterStructureChangedEventListener {
+        void onParameterStructureChanged(ParameterStructureChangedEvent event);
+    }
+
+    /**
+     * Listener for {@link ParameterUIChangedEvent}
+     */
+    interface ParameterUIChangedEventListener {
+        void onParameterUIChanged(ParameterUIChangedEvent event);
     }
 
     /**
@@ -205,13 +231,6 @@ public interface JIPipeParameterCollection {
     }
 
     /**
-     * Listener for {@link ParameterChangedEvent}
-     */
-    interface ParameterChangedEventListener {
-        void onParameterChanged(ParameterChangedEvent event);
-    }
-
-    /**
      * Triggered by an {@link JIPipeParameterCollection} if the list of available parameters is changed.
      * Please be very careful with this event, as it can trigger infinite loops while loading data from parameters.
      * If possible, use {@link ParameterUIChangedEvent}, if you only want the UI to update.
@@ -229,13 +248,6 @@ public interface JIPipeParameterCollection {
         public Set<Object> getVisitors() {
             return visitors;
         }
-    }
-
-    /**
-     * Listener for {@link ParameterStructureChangedEvent}
-     */
-    interface ParameterStructureChangedEventListener {
-        void onParameterStructureChanged(ParameterStructureChangedEvent event);
     }
 
     /**
@@ -265,13 +277,6 @@ public interface JIPipeParameterCollection {
         public Set<Object> getVisitors() {
             return visitors;
         }
-    }
-
-    /**
-     * Listener for {@link ParameterUIChangedEvent}
-     */
-    interface ParameterUIChangedEventListener {
-        void onParameterUIChanged(ParameterUIChangedEvent event);
     }
 
     /**

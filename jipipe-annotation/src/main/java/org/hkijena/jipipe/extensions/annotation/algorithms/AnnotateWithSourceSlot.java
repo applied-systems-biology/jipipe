@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -85,11 +84,6 @@ public class AnnotateWithSourceSlot extends JIPipeSimpleIteratingAlgorithm {
             dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, annotationValue), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Generated annotation").checkNonEmpty(generatedAnnotation, this);
     }
 
     /**

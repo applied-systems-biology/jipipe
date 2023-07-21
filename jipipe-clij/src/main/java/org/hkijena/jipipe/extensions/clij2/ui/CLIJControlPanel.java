@@ -10,8 +10,8 @@ import org.hkijena.jipipe.ui.components.ImageFrame;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.SizeFitMode;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -174,7 +174,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
             CLIJSettings.initializeCLIJ(getWorkbench().getContext(), true);
             getWorkbench().sendStatusBarText("Re-initialized GPU.");
         } catch (Exception e) {
-            UIUtils.openErrorDialog(this, e);
+            UIUtils.openErrorDialog(getWorkbench(), this, e);
         } finally {
             refresh();
         }

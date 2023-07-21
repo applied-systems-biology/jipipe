@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.clij2.ui;
 
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
@@ -39,10 +39,9 @@ public class CLIJControlPanelJIPipeMenuExtension extends JIPipeMenuExtension {
                     false);
             getWorkbench().getDocumentTabPane().switchToLastTab();
         } catch (Exception e) {
-            UIUtils.openErrorDialog(this, new UserFriendlyRuntimeException(
+            UIUtils.openErrorDialog(getWorkbench(), this, new JIPipeValidationRuntimeException(
                     e,
                     "Could not open CLIJ2 control panel!",
-                    "CLIJ2 control panel",
                     "This might indicate that your system is missing an essential library.",
                     "Please update your graphics card drivers. On Linux, CLIJ2 makes use of libOpencv.so. On Ubuntu, this library must be manually installed via the ocl-icd-opencl-dev package. Check if it is installed."
             ));

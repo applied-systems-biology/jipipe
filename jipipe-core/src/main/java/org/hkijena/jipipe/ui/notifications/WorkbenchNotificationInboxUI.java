@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.notifications;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.NotificationUISettings;

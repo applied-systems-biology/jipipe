@@ -1,13 +1,14 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,7 +45,7 @@ public abstract class ArchiveProjectRun implements JIPipeRunnable {
         project.saveProject(tempFile);
 
         // Load the project again
-        JIPipeProject copyProject = JIPipeProject.loadProject(tempFile, new JIPipeIssueReport(), new JIPipeNotificationInbox());
+        JIPipeProject copyProject = JIPipeProject.loadProject(tempFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
         ImmutableList<JIPipeGraphNode> graphNodes = ImmutableList.copyOf(copyProject.getGraph().getGraphNodes());
         progressInfo.setProgress(0, graphNodes.size());
         JIPipeProgressInfo archivingProgress = progressInfo.resolve("Archiving data");

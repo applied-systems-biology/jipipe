@@ -15,8 +15,8 @@ public class JIPipeDedicatedGraphHistoryJournal implements JIPipeHistoryJournal 
     private final List<Snapshot> undoStack = new ArrayList<>();
     private final List<Snapshot> redoStack = new ArrayList<>();
     private final JIPipeGraph graph;
-    private Snapshot currentSnapshot;
     private final HistoryChangedEventEmitter historyChangedEventEmitter = new HistoryChangedEventEmitter();
+    private Snapshot currentSnapshot;
 
     public JIPipeDedicatedGraphHistoryJournal(JIPipeGraph graph) {
         this.graph = graph;

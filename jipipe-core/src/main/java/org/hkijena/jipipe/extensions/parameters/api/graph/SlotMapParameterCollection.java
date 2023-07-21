@@ -35,7 +35,7 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
      * Creates a new instance
      *
      * @param dataClass            the data type of the parameter assigned to each slot
-     * @param node            the algorithm that contains the slots
+     * @param node                 the algorithm that contains the slots
      * @param newInstanceGenerator optional method that generated new instances. Can be null
      * @param initialize           If true, update the slots on creation
      */

@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
@@ -38,7 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@JIPipeDocumentation(name = "Bio-Formats exporter", description = "Writes the OME images into an *.ome.tif file.")
+@JIPipeDocumentation(name = "Bio-Formats exporter", description = "Deprecated. Please use the new node. Writes the OME images into an *.ome.tif file.")
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @JIPipeInputSlot(value = OMEImageData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Output", autoCreate = true)
@@ -46,6 +43,8 @@ import java.util.Set;
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter")
+@JIPipeHidden
+@Deprecated
 public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();

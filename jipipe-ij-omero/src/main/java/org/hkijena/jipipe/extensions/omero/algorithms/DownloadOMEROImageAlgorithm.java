@@ -24,7 +24,6 @@ import ome.xml.model.enums.DimensionOrder;
 import omero.gateway.LoginCredentials;
 import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -254,15 +253,6 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeParameter("credentials")
     public OMEROCredentials getCredentials() {
         return credentials;
-    }
-
-    @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
-        if (titleAnnotation.isEnabled())
-            report.resolve("Title annotation").checkNonEmpty(getTitleAnnotation().getContent(), null);
-        if (tagAnnotation.isEnabled())
-            report.resolve("Tag annotation").checkNonEmpty(getTagAnnotation().getContent(), null);
     }
 
     @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +

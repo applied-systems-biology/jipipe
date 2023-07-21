@@ -14,14 +14,15 @@
 package org.hkijena.jipipe.extensions.jsonextensionloader;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.eventbus.Subscribe;
 import ij.Menus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.JIPipeService;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -192,10 +193,10 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     }
 
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
-        super.reportValidity(report);
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
         for (JsonExtensionRegistrationTask task : registrationTasks) {
-            report.resolve("Unregistered JSON extensions").report(task);
+            report.report(new CustomValidationReportContext(context, "Unregistered JSON extensions"), task);
         }
     }
 

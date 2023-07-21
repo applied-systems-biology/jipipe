@@ -1,11 +1,12 @@
 package org.hkijena.jipipe.extensions.forms.ui;
 
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
@@ -112,7 +113,7 @@ public class FormsDialog extends JFrame {
             return true;
         }
         JIPipeProgressInfo info = new JIPipeProgressInfo();
-        JIPipeIssueReport report = getReportForDataBatch(row, info);
+        JIPipeValidationReport report = getReportForDataBatch(row, info);
         if (!report.isValid()) {
             int result = JOptionPane.showOptionDialog(this,
                     "The current batch has settings that are not fully valid. Do you want to continue, anyways?",
@@ -216,9 +217,9 @@ public class FormsDialog extends JFrame {
         // If invalid, create report
         if (wasVisitedBefore) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            JIPipeIssueReport report = getReportForDataBatch(selectedRow, progressInfo);
+            JIPipeValidationReport report = getReportForDataBatch(selectedRow, progressInfo);
             if (!report.isValid()) {
-                UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(null, UserFriendlyErrorUI.WITH_SCROLLING);
+                UserFriendlyErrorUI errorUI = new UserFriendlyErrorUI(workbench, null, UserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);
                 errorUI.addVerticalGlue();
                 tabPane.addTab(TAB_ISSUES_DETECTED,
@@ -288,8 +289,8 @@ public class FormsDialog extends JFrame {
                 .ifPresent(documentTab -> tabPane.switchToContent(documentTab.getContent()));
     }
 
-    private JIPipeIssueReport getReportForDataBatch(int selectedRow, JIPipeProgressInfo progressInfo) {
-        JIPipeIssueReport report = new JIPipeIssueReport();
+    private JIPipeValidationReport getReportForDataBatch(int selectedRow, JIPipeProgressInfo progressInfo) {
+        JIPipeValidationReport report = new JIPipeValidationReport();
         JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
             FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
@@ -298,7 +299,7 @@ public class FormsDialog extends JFrame {
             if (formData instanceof ParameterFormData) {
                 name = ((ParameterFormData) formData).getName();
             }
-            formData.reportValidity(report.resolve(tab).resolve(name + " (#" + row + ")"));
+            formData.reportValidity(new CustomValidationReportContext(tab + " -> " + name + " (#" + row + ")"), report);
         }
         return report;
     }
@@ -307,10 +308,10 @@ public class FormsDialog extends JFrame {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         for (int i = 0; i < dataBatchList.size(); i++) {
             if (dataBatchStatuses.get(i) == DataBatchStatus.Visited) {
-                JIPipeIssueReport report = new JIPipeIssueReport();
+                JIPipeValidationReport report = new JIPipeValidationReport();
                 for (int row = 0; row < dataBatchForms.get(i).getRowCount(); row++) {
                     FormData formData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
-                    formData.reportValidity(report.resolve("Form " + row));
+                    formData.reportValidity(new CustomValidationReportContext("Form " + row), report);
                     if (!report.isValid()) {
                         dataBatchStatuses.set(i, DataBatchStatus.Invalid);
                         break;
@@ -544,7 +545,7 @@ public class FormsDialog extends JFrame {
         }
 
         boolean encounteredImmutable = false;
-        JIPipeIssueReport report = new JIPipeIssueReport();
+        JIPipeValidationReport report = new JIPipeValidationReport();
 
         JIPipeDataSlot forms = dataBatchForms.get(selectedRow);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -561,7 +562,7 @@ public class FormsDialog extends JFrame {
                 FormData targetData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
                 if (!targetData.isImmutable()) {
                     if (targetData.isUsingCustomCopy())
-                        targetData.customCopy(srcData, report.resolve("Item " + (i + 1)));
+                        targetData.customCopy(srcData, new CustomValidationReportContext("Item " + (i + 1)), report);
                     else
                         targetData = (FormData) srcData.duplicate(progressInfo);
                 } else {
@@ -583,7 +584,7 @@ public class FormsDialog extends JFrame {
                     "they are marked immutable.", "Copy settings", JOptionPane.WARNING_MESSAGE);
         }
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, "Errors while copying settings", "The following issues were detected while copying the data:", true);
+            UIUtils.openValidityReportDialog(workbench, this, report, "Errors while copying settings", "The following issues were detected while copying the data:", true);
         }
     }
 

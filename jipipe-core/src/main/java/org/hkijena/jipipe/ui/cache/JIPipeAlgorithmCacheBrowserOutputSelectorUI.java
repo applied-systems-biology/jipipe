@@ -14,7 +14,6 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
@@ -37,9 +36,8 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
 
     private final Map<String, JToggleButton> buttonMap = new HashMap<>();
     private final List<String> outputOrder = new ArrayList<>();
-    private String selectedOutput;
-
     private final OutputSelectedEventEmitter outputSelectedEventEmitter = new OutputSelectedEventEmitter();
+    private String selectedOutput;
 
     public JIPipeAlgorithmCacheBrowserOutputSelectorUI(JIPipeGraphNode graphNode) {
         this.graphNode = graphNode;
@@ -121,6 +119,10 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
         selectOutput(outputOrder.get((i + 1) % outputOrder.size()));
     }
 
+    public interface OutputSelectedEventListener {
+        void onAlgorithmCacheOutputSelectedEvent(OutputSelectedEvent event);
+    }
+
     public static class OutputSelectedEvent extends AbstractJIPipeEvent {
         private final JIPipeAlgorithmCacheBrowserOutputSelectorUI selectorUI;
         private final String name;
@@ -140,11 +142,7 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
         }
     }
 
-    public interface OutputSelectedEventListener {
-        void onAlgorithmCacheOutputSelectedEvent(OutputSelectedEvent event);
-    }
-
-    public static  class OutputSelectedEventEmitter extends JIPipeEventEmitter<OutputSelectedEvent, OutputSelectedEventListener> {
+    public static class OutputSelectedEventEmitter extends JIPipeEventEmitter<OutputSelectedEvent, OutputSelectedEventListener> {
 
         @Override
         protected void call(OutputSelectedEventListener outputSelectedEventListener, OutputSelectedEvent event) {

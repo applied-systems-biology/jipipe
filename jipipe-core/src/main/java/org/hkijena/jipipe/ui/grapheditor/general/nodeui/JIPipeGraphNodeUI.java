@@ -46,7 +46,10 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
@@ -77,9 +80,8 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
             NodeUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
-
+    protected final List<JIPipeNodeUIActiveArea> activeAreas = new ArrayList<>();
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
-
     private final JIPipeGraphCanvasUI graphCanvasUI;
     private final JIPipeGraphNode node;
     private final Color nodeFillColor;
@@ -89,7 +91,6 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     private final LinearGradientPaint nodePassThroughPaint;
     private final Color slotFillColor;
     private final Color buttonFillColor;
-
     private final Color buttonFillColorDarker;
     private final boolean slotsInputsEditable;
     private final boolean slotsOutputsEditable;
@@ -101,9 +102,9 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     private final Font nativeSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, 11);
     private final Color mainTextColor;
     private final Color secondaryTextColor;
-    protected final List<JIPipeNodeUIActiveArea> activeAreas = new ArrayList<>();
     private final boolean showInputs;
     private final boolean showOutputs;
+    private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
     private JIPipeNodeUIAddSlotButtonActiveArea addInputSlotArea;
     private JIPipeNodeUIAddSlotButtonActiveArea addOutputSlotArea;
     private boolean mouseIsEntered = false;
@@ -114,10 +115,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     private JIPipeNodeUIActiveArea currentActiveArea;
     private BufferedImage nodeBuffer;
     private boolean nodeBufferInvalid = true;
-
     private boolean buffered = true;
-
-    private final NodeUIActionRequestedEventEmitter nodeUIActionRequestedEventEmitter = new NodeUIActionRequestedEventEmitter();
 
     /**
      * Creates a new UI
@@ -429,8 +427,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
             invalidateAndRepaint(true, false);
         } else if (event.getSource() == node && "jipipe:node:bookmarked".equals(event.getKey())) {
             invalidateAndRepaint(false, true);
-        }
-        else if(event.getSource() instanceof JIPipeDataSlotInfo) {
+        } else if (event.getSource() instanceof JIPipeDataSlotInfo) {
             updateView(false, true, true);
         }
     }
@@ -520,7 +517,6 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     public JIPipeGraphViewMode getViewMode() {
         return viewMode;
     }
-
 
 
     private void scaleSlotsNativeWidth(Map<String, JIPipeNodeUISlotActiveArea> slotStateMap, JIPipeNodeUIAddSlotButtonActiveArea addSlotActiveArea, double nodeWidth, double sumWidth, boolean hasButton) {
@@ -658,7 +654,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
         super.paintComponent(g);
 
-        if(buffered) {
+        if (buffered) {
             if (nodeBufferInvalid || nodeBuffer == null || nodeBuffer.getWidth() != getWidth() || nodeBuffer.getHeight() != getHeight()) {
                 if (nodeBuffer == null || nodeBuffer.getWidth() != getWidth() || nodeBuffer.getHeight() != getHeight()) {
                     nodeBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
@@ -674,8 +670,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
             }
 
             g2.drawImage(nodeBuffer, 0, 0, getWidth(), getHeight(), null);
-        }
-        else {
+        } else {
             paintNode(g2);
         }
 

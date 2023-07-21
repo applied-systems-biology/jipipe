@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -25,6 +24,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTable;
@@ -58,7 +59,7 @@ public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgor
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
-                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeIssueReport(), new JIPipeNotificationInbox());
+                JIPipeProject project = JIPipeProject.loadProject(projectFile, new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), new JIPipeNotificationInbox());
                 JIPipeProjectInfoParameters infoParameters = project.getPipelineParameters();
                 getParameterTable().clear();
                 JIPipeParameterTree tree = new JIPipeParameterTree(infoParameters);

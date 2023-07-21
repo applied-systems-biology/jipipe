@@ -28,7 +28,7 @@ import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DMeasurement;
 import org.hkijena.jipipe.extensions.ij3d.utils.ROI3DRelationMeasurement;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -219,13 +219,13 @@ public class IJ3DUtils {
                     lastPercentage = newPercentage;
                 }
 
-                if(!ignoreT) {
-                    if(roi1.getFrame() != roi2.getFrame()) {
+                if (!ignoreT) {
+                    if (roi1.getFrame() != roi2.getFrame()) {
                         continue;
                     }
                 }
-                if(!ignoreC) {
-                    if(roi1.getChannel() != roi2.getChannel()) {
+                if (!ignoreC) {
+                    if (roi1.getChannel() != roi2.getChannel()) {
                         continue;
                     }
                 }

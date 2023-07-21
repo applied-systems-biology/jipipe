@@ -1,10 +1,11 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeAnnotationGraphNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
@@ -20,6 +21,7 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
 
     private int gridWidth = 4;
     private int gridHeight = 3;
+    private int zOrder = 1; // default value pushes the node in front of all others
 
     public JIPipeAnnotationGraphNode(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().seal().build());
@@ -53,8 +55,19 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
         this.gridHeight = gridHeight;
     }
 
+    @JIPipeDocumentation(name = "Z-Order", description = "Determines the Z order of this annotation. This is an internal value and will be updated automatically.")
+    @JIPipeParameter(value = "z-order", hidden = true)
+    public int getzOrder() {
+        return zOrder;
+    }
+
+    @JIPipeParameter("z-order")
+    public void setzOrder(int zOrder) {
+        this.zOrder = zOrder;
+    }
+
     @Override
-    public void reportValidity(JIPipeIssueReport report) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
 
     }
 
@@ -72,6 +85,6 @@ public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
     public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeGraphNodeUI> selection) {
         graphics2D.setColor(Color.GRAY);
         graphics2D.setStroke(JIPipeGraphCanvasUI.STROKE_MARQUEE);
-        graphics2D.drawRect(x,y,width, height);
+        graphics2D.drawRect(x, y, width, height);
     }
 }

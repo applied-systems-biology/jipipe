@@ -14,8 +14,7 @@
 
 package org.hkijena.jipipe.api.environments;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -35,7 +34,9 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Environment installer that extracts a premade package of the environment and generates the appropriate environment
@@ -113,6 +114,8 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
             }
         }
         progressInfo.setProgress(5);
+        JIPipe.getSettings().save();
+        SwingUtilities.invokeLater(this::showFinishedDialog);
     }
 
     /**
@@ -245,6 +248,15 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
             }
         }
 
+        // Write metadata
+        try {
+            Path metadataPath = absoluteInstallationPath.resolve("jipipe-easyinstall-package.json");
+            JsonUtils.saveToFile(targetPackage, metadataPath);
+        } catch (Throwable e) {
+            progressInfo.log("Could not write package metadata!");
+            progressInfo.log(e.toString());
+        }
+
         try {
             Files.delete(outputFile);
         } catch (IOException e) {
@@ -293,77 +305,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         if (getRepositories().isEmpty()) {
             throw new UnsupportedOperationException("No repositories set! Cancelling.");
         }
-        progressInfo.log("Following repositories will be contacted:");
-        List<String> repositories = getRepositories();
-        for (int i = 0; i < repositories.size(); i++) {
-            String repository = repositories.get(i);
-            progressInfo.log(" - [Repository " + i + "] " + repository);
-        }
-        for (int i = 0; i < repositories.size(); i++) {
-            String repository = repositories.get(i);
-            JIPipeProgressInfo repositoryProgress = progressInfo.resolve("Repository " + i);
-            Path outputFile = RuntimeSettings.generateTempFile("repository", ".json");
-            try {
-                WebUtils.download(new URL(repository), outputFile, "Download repository", repositoryProgress);
-            } catch (MalformedURLException e) {
-                repositoryProgress.log(e.toString());
-                repositoryProgress.log(e.getMessage());
-                repositoryProgress.log("-> Skipping repository " + repository + ". Please check the URL!");
-            }
-
-            // Import the repository
-            JsonNode rootNode = JsonUtils.readFromFile(outputFile, JsonNode.class);
-            for (JsonNode packageNodeEntry : ImmutableList.copyOf(rootNode.get("files").elements())) {
-                EasyInstallExternalEnvironmentInstallerPackage availablePackage = new EasyInstallExternalEnvironmentInstallerPackage();
-                availablePackage.setName(packageNodeEntry.get("name").textValue());
-                availablePackage.setDescription(packageNodeEntry.get("description").textValue());
-                availablePackage.setInstallDir(packageNodeEntry.get("install-dir").textValue());
-
-                availablePackage.setAdditionalData(packageNodeEntry);
-
-                // Read URL
-                JsonNode urlNode = packageNodeEntry.path("url");
-                if (!urlNode.isMissingNode()) {
-                    availablePackage.setUrl(urlNode.textValue());
-                }
-
-                // Multipart URL
-                JsonNode urlMultiPartNode = packageNodeEntry.path("url-multipart");
-                if (!urlMultiPartNode.isMissingNode()) {
-                    availablePackage.setUrlMultiPart(new ArrayList<>());
-                    for (JsonNode node : ImmutableList.copyOf(urlMultiPartNode.elements())) {
-                        availablePackage.getUrlMultiPart().add(node.textValue());
-                    }
-                    availablePackage.setMultiPartOutputName(packageNodeEntry.get("multipart-output-name").textValue());
-                }
-
-                // Read operating system
-                JsonNode operatingSystemsNode = packageNodeEntry.path("operating-systems");
-                if (operatingSystemsNode.isMissingNode()) {
-                    availablePackage.setSupportsLinux(true);
-                    availablePackage.setSupportsMacOS(true);
-                    availablePackage.setSupportsWindows(true);
-                } else {
-                    Set<String> supported = new HashSet<>();
-                    for (JsonNode element : ImmutableList.copyOf(operatingSystemsNode.elements())) {
-                        supported.add(element.textValue().toLowerCase());
-                    }
-                    availablePackage.setSupportsLinux(supported.contains("linux"));
-                    availablePackage.setSupportsMacOS(supported.contains("macos") || supported.contains("osx"));
-                    availablePackage.setSupportsWindows(supported.contains("windows") || supported.contains("win"));
-                }
-                repositoryProgress.log("Detected package " + availablePackage);
-                availablePackages.add(availablePackage);
-            }
-
-            try {
-                Files.delete(outputFile);
-            } catch (IOException e) {
-                repositoryProgress.log("Could not clean up temporary file " + outputFile);
-                repositoryProgress.log(e.toString());
-            }
-
-        }
+        availablePackages = EasyInstallExternalEnvironmentInstallerPackage.loadFromURLs(getRepositories(), progressInfo);
     }
 
     private void runSetupDialog() {
@@ -383,11 +325,16 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         absoluteInstallationPath = PathUtils.relativeToImageJToAbsolute(Paths.get("jipipe").resolve(targetPackage.getInstallDir()));
         if (Files.exists(absoluteInstallationPath)) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + absoluteInstallationPath
-                    + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                    + " already exists. Do you want to overwrite it?\n\n" +
+                    "If you are unsure, click 'Yes'.", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                 getProgressInfo().log("Cancelled by user.");
                 return;
             }
         }
+    }
+
+    private void showFinishedDialog() {
+        JOptionPane.showMessageDialog(getWorkbench().getWindow(), getFinishedMessage().getHtml(), getTaskLabel(), JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**
@@ -411,5 +358,12 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
      * @return the description
      */
     public abstract HTMLText getDialogDescription();
+
+    /**
+     * The message shown after the operation is finished
+     *
+     * @return the message
+     */
+    public abstract HTMLText getFinishedMessage();
 
 }

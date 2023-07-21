@@ -23,10 +23,13 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 
 import java.nio.file.Files;
@@ -70,11 +73,11 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
             dataBatch.setMergedDataAnnotations(new HashMap<>());
         Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
-            throw new UserFriendlyRuntimeException("Missing data-table.json!",
-                    "Wrong input folder!",
-                    "Algorithm " + getName(),
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new GraphNodeValidationReportContext(this),
+                    "Missing data-table.json!",
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". JIPipe has a very specific format to store such folders. The directory seems to not conform to this format.",
-                    "Check if the folder contains many numeric subfolders and a data-table.json file.");
+                    "Check if the folder contains many numeric subfolders and a data-table.json file."));
         }
 
         JIPipeDataTable dataTable = JIPipeDataTable.importData(new JIPipeFileSystemReadDataStorage(progressInfo, dataFolder), progressInfo);

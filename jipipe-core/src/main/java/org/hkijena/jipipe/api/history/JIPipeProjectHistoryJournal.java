@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.history;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.extensions.settings.HistoryJournalSettings;

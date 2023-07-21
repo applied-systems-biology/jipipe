@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -25,11 +26,14 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
@@ -124,6 +128,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
+            progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
             List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (allowedIndices.contains(i)) {
@@ -132,8 +137,16 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
             dataBatches = limitedBatches;
         }
-        if (dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
-            dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+        List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
+        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            if (dataBatch.isIncomplete()) {
+                incomplete.add(dataBatch);
+                progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+            }
+        }
+        if (!incomplete.isEmpty() && dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+            progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
+            dataBatches.removeAll(incomplete);
         }
         return dataBatches;
     }
@@ -230,20 +243,29 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(getNonParameterInputSlots(), progressInfo);
 
             // Check for incomplete batches
+            List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
+            for (JIPipeMergingDataBatch dataBatch : mergingDataBatches) {
+                if (dataBatch.isIncomplete()) {
+                    incomplete.add(dataBatch);
+                    progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+                }
+            }
             if (dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
-                mergingDataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+                if (!incomplete.isEmpty() && dataBatchGenerationSettings.isSkipIncompleteDataSets()) {
+                    progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
+                    mergingDataBatches.removeAll(incomplete);
+                }
             } else {
                 for (JIPipeMergingDataBatch batch : mergingDataBatches) {
                     if (progressInfo.isCancelled())
                         break;
                     if (batch.isIncomplete()) {
-                        throw new UserFriendlyRuntimeException("Incomplete data set found!",
-                                "An incomplete data set was found!",
-                                "Algorithm '" + getName() + "'",
+                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
+                                "Incomplete data set found!",
                                 "The algorithm needs to assign input a unique data set via annotations, but there is " +
                                         "not a data set for each input slot.",
                                 "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                                        "You can also choose to skip incomplete data sets, although you might lose data in those cases.");
+                                        "You can also choose to skip incomplete data sets, although you might lose data in those cases."));
                     }
                 }
             }
@@ -268,12 +290,11 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         }
 
         if (dataBatches == null) {
-            throw new UserFriendlyRuntimeException("Unable to split data into batches!",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                     "Unable to split data into batches!",
-                    "Algorithm '" + getName() + "'",
                     "The algorithm needs to assign input a unique data set via annotations, but there are either missing elements or multiple data per slot.",
                     "Please check the input of the algorithm by running the quick run on each input algorithm. " +
-                            "Try to switch to the 'Data batches' tab to preview how data is split into batches.");
+                            "Try to switch to the 'Data batches' tab to preview how data is split into batches."));
         }
 
         // Execute the workload
