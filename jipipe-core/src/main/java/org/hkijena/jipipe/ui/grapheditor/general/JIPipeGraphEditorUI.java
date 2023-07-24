@@ -737,6 +737,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public void scrollToAlgorithm(JIPipeGraphNodeUI ui) {
         if (scrollPane == null)
             return;
+        if(ui == null)
+            return;
         int minViewX = scrollPane.getHorizontalScrollBar().getValue();
         int maxViewX = minViewX + scrollPane.getHorizontalScrollBar().getVisibleAmount();
         int minViewY = scrollPane.getVerticalScrollBar().getValue();
