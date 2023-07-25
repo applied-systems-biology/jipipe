@@ -283,6 +283,9 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new VectorScalarProductFunction());
         registerExpressionFunction(new VectorSubtractFunction());
         registerExpressionFunction(new StringFixFileNameFunction());
+        registerExpressionFunction(new IsNaNFunction());
+        registerExpressionFunction(new IsFiniteFunction());
+        registerExpressionFunction(new IsInfiniteFunction());
     }
 
     @Override
