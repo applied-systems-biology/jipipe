@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
@@ -431,10 +433,39 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         } else if (event.getUi().getNode() instanceof JIPipeCompartmentOutput) {
             // Open the compartment
             if (!Objects.equals(getCompartment(), event.getUi().getNode().getCompartmentUUIDInParentGraph()) && getWorkbench() instanceof JIPipeProjectWorkbench) {
+                // This is an input
                 JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) getWorkbench();
                 UUID uuid = event.getUi().getNode().getCompartmentUUIDInParentGraph();
                 JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
                 projectWorkbench.getOrOpenPipelineEditorTab(projectCompartment, true);
+            }
+            else if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+                JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) getWorkbench();
+                UUID uuid = event.getUi().getNode().getCompartmentUUIDInParentGraph();
+                JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
+                JIPipeOutputDataSlot outputSlot = projectCompartment.getFirstOutputSlot();
+                JIPipeGraph compartmentGraph = projectWorkbench.getProject().getCompartmentGraph();
+                List<JIPipeProjectCompartment> targets = new ArrayList<>();
+                for (JIPipeGraphEdge edge : compartmentGraph.getGraph().edgesOf(outputSlot)) {
+                    JIPipeGraphNode edgeTarget = compartmentGraph.getGraph().getEdgeTarget(edge).getNode();
+                    if(edgeTarget instanceof JIPipeProjectCompartment && edgeTarget != projectCompartment) {
+                        targets.add((JIPipeProjectCompartment) edgeTarget);
+                    }
+                }
+                if(targets.size() > 1) {
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    for (JIPipeProjectCompartment target : targets) {
+                        popupMenu.add(UIUtils.createMenuItem("Go to '" + target.getName() + "'", "Open the '" + target.getName() + "' compartment", UIUtils.getIconFromResources("actions/graph-compartment.png"), () -> {
+                            projectWorkbench.getOrOpenPipelineEditorTab(target, true);
+                        }));
+                    }
+                    popupMenu.show(event.getUi().getGraphCanvasUI(),
+                            event.getUi().getGraphCanvasUI().getLastMousePosition().x,
+                            event.getUi().getGraphCanvasUI().getLastMousePosition().y);
+                }
+                else if(targets.size() == 1) {
+                    projectWorkbench.getOrOpenPipelineEditorTab(targets.get(0), true);
+                }
             }
         }
     }
