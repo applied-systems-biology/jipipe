@@ -57,7 +57,7 @@ public class RUtils {
     public static void textAnnotationsToR(StringBuilder code, Collection<JIPipeTextAnnotation> annotations) {
         code.append("JIPipe.TextAnnotations <- list()\n");
         for (JIPipeTextAnnotation annotation : annotations) {
-            code.append(String.format("TextAnnotations$\"%s\" <- \"%s\"\n", MacroUtils.escapeString(annotation.getName()),
+            code.append(String.format("JIPipe.TextAnnotations$\"%s\" <- \"%s\"\n", MacroUtils.escapeString(annotation.getName()),
                     MacroUtils.escapeString(annotation.getValue())));
         }
     }
