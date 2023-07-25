@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions;
 
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -24,6 +25,16 @@ import java.util.stream.Collectors;
 @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
 @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
 @ExpressionParameterSettingsVariable(name = "Automatically generated name", description = "A file name that was automatically generated based on annotations", key = "auto_file_name")
+@JIPipeDocumentationDescription(description = "This function should return a valid file path string, which can be either hardcoded or built using string or <code>PATH_COMBINE</code> operations.\n\n" +
+        "Hard-cording file paths: Just type the path into quotes as shown below " +
+        "<pre>" +
+        "\"C:/MyData/Outputs/Output_file\"" +
+        "</pre>\n\n" +
+        "Using path combination: You can combine combine variables provided from annotations and expression variables to, for example, save create a path relative to the project directory or to a project user directory" +
+        "<pre>PATH_COMBINE(project_dir, \"Outputs\", \"Output_file\")</pre>" +
+        "<pre>PATH_COMBINE(project_data_dirs [\"outputs\"], \"Outputs\", \"Output_file\")</pre>\n\n" +
+        "Using expression functions: You can also use the standard string concatenation function to generate paths" +
+        "<pre>project_dir + \"/Outputs/Output_file\"</pre>")
 public class DataExportExpressionParameter extends DefaultExpressionParameter {
     public DataExportExpressionParameter() {
         super("PATH_COMBINE(data_dir, auto_file_name)");
