@@ -1470,11 +1470,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         if (slotState != null) {
                             startDragSlot(slotState);
                         } else {
-                            startDragCurrentNodeSelection(mouseEvent);
+                            if(!startDragCurrentNodeSelection(mouseEvent)) {
+                                selectionFirst = mouseEvent.getPoint();
+                            }
                         }
                     } else {
                         // Dragging slots disabled by tools
-                        startDragCurrentNodeSelection(mouseEvent);
+                        if(!startDragCurrentNodeSelection(mouseEvent)) {
+                            selectionFirst = mouseEvent.getPoint();
+                        }
                     }
                 } else {
                     selectionFirst = mouseEvent.getPoint();
@@ -1493,7 +1497,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private void startDragCurrentNodeSelection(MouseEvent mouseEvent) {
+    private boolean startDragCurrentNodeSelection(MouseEvent mouseEvent) {
         if (currentToolAllowsNodeDragging()) {
             this.hasDragSnapshot = false;
             this.currentConnectionDragSourceDragged = false;
@@ -1505,9 +1509,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 offset.y = nodeUI.getY() - mouseEvent.getY();
                 currentlyDraggedOffsets.put(nodeUI, offset);
             }
+            return !currentlyDraggedOffsets.isEmpty();
         } else {
             stopAllDragging();
         }
+        return false;
     }
 
     public JIPipeGraphNodeUI pickNodeUI(MouseEvent mouseEvent) {
