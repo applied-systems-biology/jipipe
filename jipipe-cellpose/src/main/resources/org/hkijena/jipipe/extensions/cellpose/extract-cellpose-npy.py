@@ -9,6 +9,7 @@ from cellpose import utils, io
 parser = argparse.ArgumentParser(description="Extracts data from a Cellpose *.npy file for the use in JIPipe.")
 parser.add_argument("input_files", help="The *.npy file or a directory that contains the *.npy files")
 parser.add_argument("output_dir", help="Directory where the outputs will be stored")
+parser.add_argument("--skip-roi", help="Skips the extraction of ROI", action="store_true")
 
 args = parser.parse_args()
 
@@ -72,7 +73,7 @@ def process_additional_info(npy_data, npy_base_output_path):
     with open(npy_base_output_path + "_info.json", "w") as f:
         json.dump(json_data, f, indent=4)
 
-def process_npy_file(npy_file):
+def process_npy_file(npy_file, skip_roi=False):
     npy_base_output_path = output_dir + "/" + os.path.basename(npy_file)[:-4]
 
     print("Loading " + npy_file)
@@ -86,10 +87,14 @@ def process_npy_file(npy_file):
     process_flows_z(npy_data, npy_base_output_path)
     process_flows_dz_dy_dx(npy_data, npy_base_output_path)
     process_labels(npy_data, npy_base_output_path)
-    process_roi(npy_data, npy_base_output_path)
+    if not skip_roi:
+        process_roi(npy_data, npy_base_output_path)
+    else:
+        print(" - Extracting ROI ... skipped")
     process_additional_info(npy_data, npy_base_output_path)
 
 def main():
+    skip_roi = args.skip_roi
     if os.path.isfile(args.input_files):
         npy_files.append(args.input_files)
     else:
@@ -101,6 +106,6 @@ def main():
         print(" - " + f)
 
     for npy_file in npy_files:
-        process_npy_file(npy_file)
+        process_npy_file(npy_file, skip_roi=skip_roi)
 
 main()

@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.api.client.util.Lists;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -265,11 +266,23 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
         CellposeExtension.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
-            PythonUtils.runPython(new String[]{npyExtractorScript.toString(), io2DPath.toString(), io2DPath.toString()}, overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
+            List<String> arguments = new ArrayList<>();
+            arguments.add(npyExtractorScript.toString());
+            if(!segmentationOutputSettings.isOutputROI())
+                arguments.add("--skip-roi");
+            arguments.add(io2DPath.toString());
+            arguments.add(io2DPath.toString());
+            PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
                     CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo.resolve("Extract Cellpose results (2D)"));
         }
         if (!runWith3D.isEmpty()) {
-            PythonUtils.runPython(new String[]{npyExtractorScript.toString(), io3DPath.toString(), io3DPath.toString()}, overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
+            List<String> arguments = new ArrayList<>();
+            arguments.add(npyExtractorScript.toString());
+            if(!segmentationOutputSettings.isOutputROI())
+                arguments.add("--skip-roi");
+            arguments.add(io3DPath.toString());
+            arguments.add(io3DPath.toString());
+            PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
                     CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo.resolve("Extract Cellpose results (3D)"));
         }
 

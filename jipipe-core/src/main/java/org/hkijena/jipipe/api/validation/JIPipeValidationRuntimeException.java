@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.validation;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.InternalErrorValidationReportContext;
 
 public class JIPipeValidationRuntimeException extends RuntimeException {
     private final JIPipeValidationReport report;
@@ -17,9 +18,22 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
 
     public JIPipeValidationRuntimeException(Throwable e, String title, String explanation, String solution) {
         this.report = new JIPipeValidationReport();
-        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new CustomValidationReportContext(e.toString()), title, explanation, solution, ExceptionUtils.getStackTrace(e)));
+        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                new CustomValidationReportContext(e.toString()),
+                title,
+                explanation,
+                solution,
+                ExceptionUtils.getStackTrace(e)));
         if (e instanceof JIPipeValidationRuntimeException) {
             mergeReport(((JIPipeValidationRuntimeException) e).report, null);
+        }
+        else {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new InternalErrorValidationReportContext(),
+                    e.toString(),
+                    e.getMessage(),
+                    null,
+                    ExceptionUtils.getStackTrace(e)));
         }
     }
 
@@ -28,6 +42,14 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, title, explanation, solution, ExceptionUtils.getStackTrace(e)));
         if (e instanceof JIPipeValidationRuntimeException) {
             mergeReport(((JIPipeValidationRuntimeException) e).report, context);
+        }
+        else {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    e.toString(),
+                    e.getMessage(),
+                    null,
+                    ExceptionUtils.getStackTrace(e)));
         }
     }
 

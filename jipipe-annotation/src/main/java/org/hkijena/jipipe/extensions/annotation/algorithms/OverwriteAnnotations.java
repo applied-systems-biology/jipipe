@@ -45,7 +45,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeData source = dataBatch.getInputData("Source", JIPipeData.class, progressInfo);
+        JIPipeData target = dataBatch.getInputData("Target", JIPipeData.class, progressInfo);
 
         ExpressionVariables variables = new ExpressionVariables();
         customVariables.writeToVariables(variables, true, "custom.", true, "custom");
@@ -73,7 +73,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), source, annotations, mergeMode, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), target, annotations, mergeMode, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Remove existing annotations", description = "Expression that determines whether an existing annotation is removed. Set to <code>false</code> to not remove existing annotations.")

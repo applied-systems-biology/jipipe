@@ -365,15 +365,18 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
 
         JIPipeParameterTree.Node node = tree.getSourceNode(parameterCollection);
 
-        JCheckBox collapseButton = new JCheckBox();
+        JCheckBox collapseButton = new JCheckBox("Hide content");
         collapseButton.setToolTipText("Collapse/Show this category");
         collapseButton.setOpaque(false);
         collapseButton.setIcon(UIUtils.getIconFromResources("actions/arrow-right.png"));
         collapseButton.setSelectedIcon(UIUtils.getIconFromResources("actions/arrow-down.png"));
         collapseButton.setSelected(!node.isCollapsed());
+        collapseButton.setText(collapseButton.isSelected() ? "Hide content" : "Show content");
+        collapseButton.addActionListener(e -> collapseButton.setText(collapseButton.isSelected() ? "Hide content" : "Show content"));
         if (!collapseButton.isSelected()) {
-            if (!GeneralUISettings.getInstance().isAllowDefaultCollapsedParameters())
+            if (!GeneralUISettings.getInstance().isAllowDefaultCollapsedParameters()) {
                 collapseButton.setSelected(true);
+            }
         }
 
         if (!noGroupHeaders) {

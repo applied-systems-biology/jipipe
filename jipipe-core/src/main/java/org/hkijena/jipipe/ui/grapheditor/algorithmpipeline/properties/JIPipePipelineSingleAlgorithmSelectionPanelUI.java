@@ -381,7 +381,11 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         settings.setStoreIntermediateResults(storeIntermediateOutputs);
         boolean success = testBenchSetupUI.tryAutoRun(showResults, settings, testBench -> {
             if (showCache) {
-                SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));
+                try {
+                    SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));
+                }
+                catch (IllegalArgumentException ignored) {
+                }
             } else if (showBatchAssistant) {
                 if (node instanceof JIPipeDataBatchAlgorithm) {
                     SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(batchAssistantTabContent));
