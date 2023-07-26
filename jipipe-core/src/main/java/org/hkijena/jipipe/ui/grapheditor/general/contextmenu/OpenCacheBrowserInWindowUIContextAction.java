@@ -42,7 +42,7 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
             frame.setAlwaysOnTop(GeneralUISettings.getInstance().isOpenUtilityWindowsAlwaysOnTop());
             frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.setContentPane(browserUI);
-            frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+            frame.setIconImage(UIUtils.getJIPipeIcon128());
             frame.pack();
             frame.setSize(640, 480);
             frame.setLocationRelativeTo(null);

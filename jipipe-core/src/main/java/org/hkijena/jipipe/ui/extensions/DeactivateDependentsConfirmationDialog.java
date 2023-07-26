@@ -43,7 +43,7 @@ public class DeactivateDependentsConfirmationDialog extends JDialog {
     }
 
     private void initialize() {
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         setTitle("Deactivate " + extension.getMetadata().getName());
 
         getContentPane().setLayout(new BorderLayout());

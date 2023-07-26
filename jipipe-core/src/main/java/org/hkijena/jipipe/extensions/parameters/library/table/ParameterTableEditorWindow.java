@@ -44,7 +44,7 @@ public class ParameterTableEditorWindow extends JFrame {
         this.workbench = workbench;
         this.parameterAccess = parameterAccess;
         this.parameterTable = parameterTable;
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override

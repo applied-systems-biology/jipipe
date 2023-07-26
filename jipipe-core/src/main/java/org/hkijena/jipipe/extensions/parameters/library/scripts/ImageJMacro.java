@@ -39,6 +39,11 @@ public class ImageJMacro extends ScriptParameter {
     }
 
     @Override
+    public String getExtension() {
+        return ".ijm";
+    }
+
+    @Override
     public ScriptLanguage getLanguage() {
         return null;
     }

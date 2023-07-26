@@ -46,7 +46,7 @@ public class RewireConnectionsToolUI extends JDialog {
 
     private void initialize() {
         UIUtils.addEscapeListener(this);
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         setContentPane(new JPanel(new BorderLayout()));
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 

@@ -67,7 +67,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame implements JIPi
         this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         this.displayName = displayName;
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         initialize();
 
         if (dataSource.getDataTable() instanceof JIPipeDataSlot) {

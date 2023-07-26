@@ -1296,7 +1296,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         JIPipeExtendedDataTableUI tableUI = new JIPipeExtendedDataTableUI(workbench, new WeakStore<>(this), true);
         JFrame frame = new JFrame(displayName);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setIconImage(UIUtils.getJIPipeIcon128());
         frame.setContentPane(tableUI);
         frame.pack();
         frame.setSize(800, 600);

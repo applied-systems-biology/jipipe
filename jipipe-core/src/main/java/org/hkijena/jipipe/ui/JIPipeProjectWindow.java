@@ -156,7 +156,7 @@ public class JIPipeProjectWindow extends JFrame {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(8, 8));
         updateTitle();
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         UIUtils.setToAskOnClose(this, () -> {
             if (projectUI != null && projectUI.isProjectModified()) {
                 return "Do you really want to close JIPipe?\nThere are some unsaved changes.";

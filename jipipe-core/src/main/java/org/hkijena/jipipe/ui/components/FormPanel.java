@@ -388,7 +388,7 @@ public class FormPanel extends JXPanel {
                 // Just popup the documentation
                 MarkdownReader reader = new MarkdownReader(false, documentation);
                 JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this));
-                dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+                dialog.setIconImage(UIUtils.getJIPipeIcon128());
                 JPanel panel = new JPanel(new BorderLayout(8, 8));
                 panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
                 panel.add(reader, BorderLayout.CENTER);

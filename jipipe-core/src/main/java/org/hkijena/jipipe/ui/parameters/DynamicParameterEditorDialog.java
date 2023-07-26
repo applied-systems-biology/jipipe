@@ -58,7 +58,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
     private void initialize() {
         setModal(true);
         setTitle("Edit custom parameters");
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         getContentPane().setLayout(new BorderLayout());
 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, AutoResizeSplitPane.RATIO_1_TO_3);

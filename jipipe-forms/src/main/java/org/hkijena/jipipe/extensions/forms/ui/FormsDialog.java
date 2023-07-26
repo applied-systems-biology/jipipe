@@ -49,7 +49,7 @@ public class FormsDialog extends JFrame {
 
     public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot originalForms, String tabAnnotation) {
         this.originalForms = originalForms;
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         this.workbench = workbench;
         this.dataBatchList = dataBatchList;
         this.tabAnnotation = tabAnnotation;

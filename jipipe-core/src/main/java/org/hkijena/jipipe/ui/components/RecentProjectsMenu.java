@@ -69,7 +69,7 @@ public class RecentProjectsMenu extends JMenu implements JIPipeParameterCollecti
         });
         dialog.setContentPane(panel);
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
         dialog.pack();
         dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(workbenchWindow);

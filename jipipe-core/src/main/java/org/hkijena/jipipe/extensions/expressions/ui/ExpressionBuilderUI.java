@@ -75,7 +75,7 @@ public class ExpressionBuilderUI extends JPanel {
 
     public static String showDialog(Component parent, String expression, Set<ExpressionParameterVariable> variables) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
 
         ExpressionBuilderUI expressionBuilderUI = new ExpressionBuilderUI(expression, variables);
         JPanel contentPanel = new JPanel(new BorderLayout(4, 4));

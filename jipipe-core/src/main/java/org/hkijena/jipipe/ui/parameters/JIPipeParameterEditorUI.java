@@ -56,7 +56,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      *
      * @return object that holds the parameter
      */
-    public JIPipeParameterCollection getParameterHolder() {
+    public JIPipeParameterCollection getParameterCollection() {
         return parameterAccess.getSource();
     }
 

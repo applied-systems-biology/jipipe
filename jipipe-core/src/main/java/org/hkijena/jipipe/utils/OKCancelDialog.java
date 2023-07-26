@@ -43,7 +43,7 @@ public class OKCancelDialog extends JDialog {
     private void initialize() {
         setTitle(title);
         setModal(true);
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         UIUtils.addEscapeListener(this);
 
         getContentPane().setLayout(new BorderLayout());

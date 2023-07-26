@@ -14,39 +14,50 @@
 package org.hkijena.jipipe.extensions.parameters.api.scripts;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.LargeScriptParameterEditorUI;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.CustomEditorPane;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.nio.file.Path;
+import java.lang.ref.WeakReference;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.ArrayList;
 import java.util.Objects;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Parameter editor for {@link ScriptParameter}
  */
 public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
+    private static final List<ExternalEditor> OPENED_EXTERNAL_EDITORS = new ArrayList<>();
     private CustomEditorPane textArea;
     private JLabel collapseInfoLabel;
     private boolean isCollapsed;
-    private JToggleButton externalCodeToggle;
     private Component pathEditorComponent;
+    private  JButton closeExternalEditorsButton;
 
     /**
      * @param workbench       workbench
@@ -92,7 +103,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        externalCodeToggle = new JToggleButton("External", UIUtils.getIconFromResources("actions/edit-link.png"));
+        JToggleButton externalCodeToggle = new JToggleButton("Use external file", UIUtils.getIconFromResources("actions/edit-link.png"));
         externalCodeToggle.setToolTipText("If enabled, the code is extracted from an external file.");
         externalCodeToggle.addActionListener(e -> toggleExternalCode());
         toolBar.add(externalCodeToggle);
@@ -102,16 +113,57 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         collapseButton.addActionListener(e -> toggleCollapse());
         toolBar.add(collapseButton);
 
-        JButton openIdeButton = new JButton("Large editor", UIUtils.getIconFromResources("actions/window_new.png"));
-        openIdeButton.addActionListener(e -> openIDE());
+        JButton openIdeButton = new JButton("Open in ...", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+        JPopupMenu popupMenu = UIUtils.addPopupMenuToComponent(openIdeButton);
+        popupMenu.add(UIUtils.createMenuItem("New tab", "Opens the editor in a new tab", UIUtils.getIconFromResources("actions/tab-new.png"), this::openIDEInTab));
+        popupMenu.add(UIUtils.createMenuItem("New window", "Opens the editor in a new window", UIUtils.getIconFromResources("actions/window_new.png"), this::openIdeInNewWindow));
+        popupMenu.add(UIUtils.createMenuItem("External editor", "Opens the editor in an external application", UIUtils.getIconFromResources("actions/edit.png"), this::openExternalIde));
         toolBar.add(openIdeButton);
 
         add(toolBar, BorderLayout.NORTH);
 
         setBorder(BorderFactory.createEtchedBorder());
+
+        closeExternalEditorsButton = new JButton("<html><strong>External editors are currently open</strong><br>Click this button to re-enable editing",
+                UIUtils.getIconFromResources("actions/unlock.png"));
+        closeExternalEditorsButton.addActionListener(e -> closeExistingExternalEditors());
+    }
+
+
+
+    private void closeExistingExternalEditors() {
+        for (ExternalEditor editor : getExternalEditors()) {
+            editor.close();
+        }
+        reload();
+    }
+
+    private List<ExternalEditor> getExternalEditors() {
+        return OPENED_EXTERNAL_EDITORS.stream().filter(editor -> editor.accessEquals(getParameterAccess())).collect(Collectors.toList());
+    }
+
+    private void openExternalIde() {
+        closeExistingExternalEditors();
+        ExternalFileExternalEditor externalEditor = new ExternalFileExternalEditor(getWorkbench(),
+                new WeakReference<>(getParameterCollection()),
+                getParameterAccess().getKey(),
+                getParameterAccess());
+        OPENED_EXTERNAL_EDITORS.add(externalEditor);
+        reload();
+    }
+
+    private void openIdeInNewWindow() {
+        closeExistingExternalEditors();
+        WindowExternalEditor externalEditor = new WindowExternalEditor(getWorkbench(),
+                new WeakReference<>(getParameterCollection()),
+                getParameterAccess().getKey(),
+                getParameterAccess());
+        OPENED_EXTERNAL_EDITORS.add(externalEditor);
+        reload();
     }
 
     private void toggleExternalCode() {
+        closeExistingExternalEditors();
         ScriptParameter code = getParameter(ScriptParameter.class);
         code.getExternalScriptFile().setEnabled(!code.getExternalScriptFile().isEnabled());
         setParameter(code, true);
@@ -123,21 +175,14 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         setParameter(code, true);
     }
 
-    private void openIDE() {
-        for (DocumentTabPane.DocumentTab documentTab : getWorkbench().getDocumentTabPane().getTabsContaining(LargeScriptParameterEditorUI.class)) {
-            LargeScriptParameterEditorUI editorUI = (LargeScriptParameterEditorUI) documentTab.getContent();
-            if (editorUI.getParameterAccess() == getParameterAccess()) {
-                getWorkbench().getDocumentTabPane().switchToContent(editorUI);
-                return;
-            }
-        }
-        ScriptParameter code = getParameter(ScriptParameter.class);
-        getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName() + " (" + code.getLanguageName() + ")",
-                UIUtils.getIconFromResources("actions/dialog-xml-editor.png"),
-                new LargeScriptParameterEditorUI(getWorkbench(), getParameterAccess()),
-                DocumentTabPane.CloseMode.withSilentCloseButton,
-                true);
-        getWorkbench().getDocumentTabPane().switchToLastTab();
+    private void openIDEInTab() {
+        closeExistingExternalEditors();
+        TabExternalEditor externalEditor = new TabExternalEditor(getWorkbench(),
+                new WeakReference<>(getParameterCollection()),
+                getParameterAccess().getKey(),
+                getParameterAccess());
+        OPENED_EXTERNAL_EDITORS.add(externalEditor);
+        reload();
     }
 
     @Override
@@ -151,6 +196,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         if (!code.isCollapsed() || !isCollapsed) {
             remove(textArea);
             remove(collapseInfoLabel);
+            remove(closeExternalEditorsButton);
             if (pathEditorComponent != null)
                 remove(pathEditorComponent);
             if (code.isCollapsed()) {
@@ -194,7 +240,12 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                     add(formPanel, BorderLayout.CENTER);
                     pathEditorComponent = formPanel;
                 } else {
-                    add(textArea, BorderLayout.CENTER);
+                    if(getExternalEditors().isEmpty()) {
+                        add(textArea, BorderLayout.CENTER);
+                    }
+                    else {
+                        add(closeExternalEditorsButton, BorderLayout.CENTER);
+                    }
                 }
             }
             isCollapsed = code.isCollapsed();
@@ -202,6 +253,196 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                 textArea.setText(code.getCode());
             revalidate();
             repaint();
+        }
+    }
+
+    public abstract static class ExternalEditor implements JIPipeWorkbenchAccess {
+
+        private final JIPipeWorkbench workbench;
+        private final WeakReference<JIPipeParameterCollection> parameterCollection;
+        private final String parameterKey;
+        private JIPipeParameterAccess parameterAccess;
+
+        public ExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterAccess parameterAccess) {
+            this.workbench = workbench;
+            this.parameterCollection = parameterCollection;
+            this.parameterKey = parameterKey;
+            this.parameterAccess = parameterAccess;
+        }
+
+        public WeakReference<JIPipeParameterCollection> getParameterCollection() {
+            return parameterCollection;
+        }
+
+        public String getParameterKey() {
+            return parameterKey;
+        }
+
+        public JIPipeParameterAccess getParameterAccess() {
+            return parameterAccess;
+        }
+
+        public boolean accessEquals(JIPipeParameterAccess access) {
+            return this.parameterAccess == access || (access.getSource() == parameterCollection.get() && Objects.equals(access.getKey(), parameterKey));
+        }
+
+        public <T> T getParameter(Class<T> klass) {
+            return parameterAccess.get(klass);
+        }
+
+        @Override
+        public JIPipeWorkbench getWorkbench() {
+            return workbench;
+        }
+
+        public void close() {
+            OPENED_EXTERNAL_EDITORS.remove(this);
+            parameterAccess = null;
+        }
+    }
+
+    public static class TabExternalEditor extends ExternalEditor {
+        private  LargeScriptParameterEditorUI editorUI;
+
+        public TabExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterAccess access) {
+            super(workbench, parameterCollection, parameterKey, access);
+            initialize();
+        }
+
+        private void initialize() {
+            editorUI = new LargeScriptParameterEditorUI(getWorkbench(), getParameterAccess());
+            ScriptParameter code = getParameter(ScriptParameter.class);
+            getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName() + " (" + code.getLanguageName() + ")",
+                    UIUtils.getIconFromResources("actions/dialog-xml-editor.png"),
+                    editorUI,
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    true);
+            getWorkbench().getDocumentTabPane().switchToLastTab();
+        }
+
+        @Override
+        public void close() {
+            super.close();
+            DocumentTabPane.DocumentTab tab = getWorkbench().getDocumentTabPane().getTabContainingContent(editorUI);
+            if(tab != null) {
+                getWorkbench().getDocumentTabPane().closeTab(tab);
+            }
+            editorUI = null;
+        }
+    }
+
+    public static class WindowExternalEditor extends ExternalEditor {
+
+        private JFrame frame;
+
+        public WindowExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterAccess access) {
+            super(workbench, parameterCollection, parameterKey, access);
+            initialize();
+        }
+
+        private void initialize() {
+            LargeScriptParameterEditorUI editorUI = new LargeScriptParameterEditorUI(getWorkbench(), getParameterAccess());
+            ScriptParameter code = getParameter(ScriptParameter.class);
+            frame = new JFrame();
+            frame.setTitle("JIPipe - " + getParameterAccess().getKey() + " (" + code.getLanguageName() + ")");
+            frame.setContentPane(editorUI);
+            frame.setIconImage(UIUtils.getJIPipeIcon128());
+            frame.pack();
+            frame.setSize(1024,768);
+            frame.setLocationRelativeTo(getWorkbench().getWindow());
+            frame.setVisible(true);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    WindowExternalEditor.super.close();
+                }
+            });
+        }
+
+        @Override
+        public void close() {
+            super.close();
+            frame.setVisible(false);
+            frame = null;
+        }
+    }
+
+    public static class ExternalFileExternalEditor extends ExternalEditor {
+
+        private Path targetDirectory;
+        private Path targetFile;
+        private WatchService watchService;
+
+        private Timer timer;
+
+        public ExternalFileExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterAccess parameterAccess) {
+            super(workbench, parameterCollection, parameterKey, parameterAccess);
+            initialize();
+        }
+
+        private void initialize() {
+            ScriptParameter parameter = getParameter(ScriptParameter.class);
+            targetDirectory = RuntimeSettings.generateTempDirectory("script-editor");
+            targetFile = targetDirectory.resolve("script" + parameter.getExtension());
+            try {
+                Files.write(targetFile, StringUtils.nullToEmpty(parameter.getCode()).getBytes(StandardCharsets.UTF_8));
+                watchService = FileSystems.getDefault().newWatchService();
+                targetDirectory.register(watchService, StandardWatchEventKinds.ENTRY_MODIFY);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            timer = new Timer(1000, e -> updateWatchService());
+            timer.setRepeats(true);
+            timer.start();
+
+            // Open the standard editor
+            try {
+                Desktop.getDesktop().open(targetFile.toFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        private void updateWatchService() {
+            WatchKey key = watchService.poll();
+            if (key != null) {
+                boolean changed = false;
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    WatchEvent.Kind<?> kind = event.kind();
+                    if(kind == StandardWatchEventKinds.ENTRY_MODIFY) {
+                        changed = true;
+                    }
+                }
+                key.reset();
+                if(changed) {
+                    updateScriptFromFile();
+                }
+            }
+        }
+
+        private void updateScriptFromFile() {
+            try {
+                String code = new String(Files.readAllBytes(targetFile), StandardCharsets.UTF_8);
+                ScriptParameter parameter = getParameter(ScriptParameter.class);
+                parameter.setCode(code);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void close() {
+            try {
+                timer.stop();
+                watchService.close();
+                updateScriptFromFile();
+                SwingUtilities.invokeLater(() -> PathUtils.deleteDirectoryRecursively(targetDirectory, new JIPipeProgressInfo()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            super.close();
         }
     }
 }

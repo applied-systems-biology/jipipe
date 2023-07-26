@@ -39,6 +39,11 @@ public class PythonScript extends ScriptParameter {
     }
 
     @Override
+    public String getExtension() {
+        return ".py";
+    }
+
+    @Override
     public ScriptLanguage getLanguage() {
         return null;
     }

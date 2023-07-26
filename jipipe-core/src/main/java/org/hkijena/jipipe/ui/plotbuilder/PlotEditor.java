@@ -95,7 +95,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     public static PlotEditor openWindow(JIPipeWorkbench workbench, String title) {
         JFrame window = new JFrame(title);
         window.getContentPane().setLayout(new BorderLayout());
-        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        window.setIconImage(UIUtils.getJIPipeIcon128());
         PlotEditor editor = new PlotEditor(workbench);
         window.getContentPane().add(editor, BorderLayout.CENTER);
         window.setSize(1024, 768);

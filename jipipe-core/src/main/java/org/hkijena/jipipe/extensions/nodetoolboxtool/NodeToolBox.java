@@ -44,7 +44,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         window.setAlwaysOnTop(true);
         window.setTitle("Available nodes");
-        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        window.setIconImage(UIUtils.getJIPipeIcon128());
         window.setContentPane(toolBox);
         window.pack();
         window.setSize(300, 700);

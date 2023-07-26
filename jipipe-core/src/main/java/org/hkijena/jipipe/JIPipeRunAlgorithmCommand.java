@@ -117,7 +117,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             initializeRegistry(true);
             RunSingleAlgorithmWindow dialog = new RunSingleAlgorithmWindow(getContext());
             dialog.setTitle("Run JIPipe algorithm");
-            dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+            dialog.setIconImage(UIUtils.getJIPipeIcon128());
             dialog.pack();
             dialog.setSize(new Dimension(1024, 768));
             dialog.setLocationRelativeTo(null);

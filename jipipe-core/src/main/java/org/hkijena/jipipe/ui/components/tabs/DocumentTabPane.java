@@ -392,7 +392,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
     public JFrame detachTab(JComponent parent, DocumentTab tab, boolean reattachAfterClose) {
         forceCloseTab(tab);
         JFrame frame = new JFrame(UIUtils.getAWTWindowTitle(SwingUtilities.getWindowAncestor(this)) + ": Tab <" + tab.getTitle() + ">");
-        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setIconImage(UIUtils.getJIPipeIcon128());
         frame.setSize(getSize());
         frame.setLocationRelativeTo(parent);
 

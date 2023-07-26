@@ -40,7 +40,7 @@ public class JIPipeImageViewerWindow extends JFrame implements WindowListener, J
 
     private void initialize() {
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         setContentPane(viewerPanel);
         pack();
         setSize(1024, 768);

@@ -127,6 +127,12 @@ public abstract class ScriptParameter {
      */
     public abstract String getLanguageName();
 
+    /**
+     * Returns the default extension for this script
+     * @return the default extension (including the dot)
+     */
+    public abstract String getExtension();
+
     @JsonGetter("collapsed")
     public boolean isCollapsed() {
         return collapsed;

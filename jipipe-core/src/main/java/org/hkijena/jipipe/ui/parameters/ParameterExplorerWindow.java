@@ -59,7 +59,7 @@ public class ParameterExplorerWindow extends JFrame implements JIPipeParameterCo
     }
 
     private void initialize() {
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         setTitle((parameterCollection instanceof JIPipeGraphNode) ? "Parameter explorer: " + ((JIPipeGraphNode) parameterCollection).getName() : "Parameter explorer");
 
         getContentPane().setLayout(new BorderLayout(8, 8));

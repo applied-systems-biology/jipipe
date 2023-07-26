@@ -108,7 +108,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
 //        DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);
         JFrame frame = new JFrame("Data batch contents");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setIconImage(UIUtils.getJIPipeIcon128());
         frame.setContentPane(tableUI);
         frame.pack();
         frame.setSize(800, 600);

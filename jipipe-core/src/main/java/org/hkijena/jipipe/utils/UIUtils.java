@@ -143,6 +143,10 @@ public class UIUtils {
         });
     }
 
+    public static Image getJIPipeIcon128() {
+        return UIUtils.getIcon128FromResources("jipipe.png").getImage();
+    }
+
     public static void sendTrayNotification(String caption, String message, TrayIcon.MessageType messageType) {
         if (SystemUtils.IS_OS_LINUX) {
             // SystemTray does not work well on Linux
@@ -1028,7 +1032,7 @@ public class UIUtils {
             dialog.pack();
             dialog.setSize(new Dimension(800, 600));
             dialog.setLocationRelativeTo(parent);
-            dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+            dialog.setIconImage(UIUtils.getJIPipeIcon128());
 
             AlwaysOnTopToggle topToggle = new AlwaysOnTopToggle(dialog);
             ui.getErrorToolbar().add(topToggle);
@@ -1041,7 +1045,7 @@ public class UIUtils {
             frame.pack();
             frame.setSize(new Dimension(800, 600));
             frame.setLocationRelativeTo(parent);
-            frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+            frame.setIconImage(UIUtils.getJIPipeIcon128());
 
             AlwaysOnTopToggle topToggle = new AlwaysOnTopToggle(frame);
             ui.getErrorToolbar().add(topToggle);
@@ -1108,7 +1112,7 @@ public class UIUtils {
      */
     public static boolean showOKCancelDialog(Component parent, Component component, String title) {
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
 
         JPanel panel = new JPanel(new BorderLayout(8, 8));
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

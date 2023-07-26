@@ -65,7 +65,7 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         formPanel.addVerticalGlue(tablePanel, null);
 
         JFrame frame = new JFrame();
-        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        frame.setIconImage(UIUtils.getJIPipeIcon128());
         frame.setContentPane(formPanel);
         frame.setTitle("Data batch status");
         frame.pack();

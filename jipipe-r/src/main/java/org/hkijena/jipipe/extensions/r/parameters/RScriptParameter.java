@@ -27,6 +27,11 @@ public class RScriptParameter extends ScriptParameter {
     }
 
     @Override
+    public String getExtension() {
+        return ".R";
+    }
+
+    @Override
     public ScriptLanguage getLanguage() {
         return null;
     }

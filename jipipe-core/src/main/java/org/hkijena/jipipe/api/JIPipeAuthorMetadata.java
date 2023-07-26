@@ -132,7 +132,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
             }
         }
         JFrame dialog = new JFrame();
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
         dialog.setContentPane(tabPane);
         dialog.setTitle("Author information");
         dialog.pack();

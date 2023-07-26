@@ -86,7 +86,7 @@ public class MarkdownReader extends JPanel {
         MarkdownReader reader = new MarkdownReader(withToolbar, document);
         Window owner = parent != null ? SwingUtilities.getWindowAncestor(parent) : null;
         JDialog dialog = new JDialog(owner);
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
         JPanel panel = new JPanel(new BorderLayout(8, 8));
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         panel.add(reader, BorderLayout.CENTER);

@@ -123,7 +123,7 @@ public class JIPipeGUICommand implements Command {
                         WorkbenchNotificationInboxUI inboxUI = new WorkbenchNotificationInboxUI(window.getProjectUI());
                         JFrame frame = new JFrame();
                         frame.setTitle("JIPipe - Notifications");
-                        frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+                        frame.setIconImage(UIUtils.getJIPipeIcon128());
 
 
                         JPanel panel = new JPanel(new BorderLayout());

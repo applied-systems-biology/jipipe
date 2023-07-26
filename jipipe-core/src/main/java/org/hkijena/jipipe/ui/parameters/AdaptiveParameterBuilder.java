@@ -71,7 +71,7 @@ public class AdaptiveParameterBuilder extends JDialog {
     }
 
     private void initialize() {
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         setTitle((parameterCollection instanceof JIPipeGraphNode) ? "Add adaptive parameter: " + ((JIPipeGraphNode) parameterCollection).getName() : "Add adaptive parameter");
 
         getContentPane().setLayout(new BorderLayout(8, 8));

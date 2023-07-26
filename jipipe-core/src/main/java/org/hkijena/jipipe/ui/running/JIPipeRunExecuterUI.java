@@ -57,7 +57,7 @@ public class JIPipeRunExecuterUI extends JPanel implements JIPipeRunnable.Starte
     public static void runInDialog(Component parent, JIPipeRunnable run, JIPipeRunnerQueue queue) {
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
         JIPipeRunExecuterUI ui = new JIPipeRunExecuterUI(run, queue);
         ui.setDialog(dialog);
         dialog.setContentPane(ui);

@@ -47,6 +47,11 @@ public class OpenCLKernelScript extends ScriptParameter {
     }
 
     @Override
+    public String getExtension() {
+        return ".cl";
+    }
+
+    @Override
     public ScriptLanguage getLanguage() {
         return null;
     }

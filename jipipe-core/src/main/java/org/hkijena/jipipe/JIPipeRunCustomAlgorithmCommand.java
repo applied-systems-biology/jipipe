@@ -119,7 +119,7 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
             initializeRegistry(true);
             RunSingleAlgorithmWindow dialog = new RunSingleAlgorithmWindow(getContext(), JIPipe.getNodes().getInfoById(nodeId));
             dialog.setTitle(windowTitle);
-            dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+            dialog.setIconImage(UIUtils.getJIPipeIcon128());
             dialog.pack();
             dialog.setSize(new Dimension(1024, 768));
             dialog.setVisible(true);

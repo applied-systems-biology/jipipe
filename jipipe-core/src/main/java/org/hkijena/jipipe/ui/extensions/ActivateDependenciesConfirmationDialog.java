@@ -52,7 +52,7 @@ public class ActivateDependenciesConfirmationDialog extends JDialog {
     }
 
     private void initialize() {
-        setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        setIconImage(UIUtils.getJIPipeIcon128());
         setTitle("Activate " + extension.getMetadata().getName());
 
         getContentPane().setLayout(new BorderLayout());
