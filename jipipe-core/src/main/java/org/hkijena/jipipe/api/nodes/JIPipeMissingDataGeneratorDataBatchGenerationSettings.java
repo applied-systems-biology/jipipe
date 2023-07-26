@@ -67,7 +67,7 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings extends Abstr
             "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
-    @JIPipeParameter(value = "column-matching", uiOrder = 999, important = true)
+    @JIPipeParameter(value = "column-matching", uiOrder = -100, important = true, pinned = true)
     public JIPipeColumMatching getDataSetMatching() {
         return dataSetMatching;
     }
@@ -80,7 +80,7 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings extends Abstr
 
     @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
             "Determines which annotation columns are referred to group data sets. ")
-    @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999)
+    @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999, pinned = true)
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public StringQueryExpression getCustomColumns() {
         if (customColumns == null)

@@ -98,7 +98,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings extends Abstrac
             "to data sets. This allows you to determine how interesting data annotation columns are extracted from the incoming data. " +
             "Union matches using the union of annotation columns. Intersection intersects the sets of available columns. You can also" +
             " customize which columns should be included or excluded.")
-    @JIPipeParameter(value = "column-matching", uiOrder = 999, important = true)
+    @JIPipeParameter(value = "column-matching", uiOrder = -100, important = true, pinned = true)
     public JIPipeColumMatching getColumnMatching() {
         return columnMatching;
     }
@@ -126,7 +126,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings extends Abstrac
 
     @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
             "Determines which annotation columns are referred to group data sets. ")
-    @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999)
+    @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999, pinned = true)
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public StringQueryExpression getCustomColumns() {
         if (customColumns == null)
@@ -141,7 +141,7 @@ public class JIPipeIteratingAlgorithmDataBatchGenerationSettings extends Abstrac
 
     @JIPipeDocumentation(name = "Skip incomplete data sets", description = "If enabled, incomplete data sets are silently skipped. " +
             "Otherwise an error is displayed if such a configuration is detected.")
-    @JIPipeParameter(value = "skip-incomplete")
+    @JIPipeParameter(value = "skip-incomplete", pinned = true)
     public boolean isSkipIncompleteDataSets() {
         return skipIncompleteDataSets;
     }

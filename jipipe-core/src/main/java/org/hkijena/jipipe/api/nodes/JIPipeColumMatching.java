@@ -1,8 +1,11 @@
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
+
 /**
  * Strategies that determine how to detect the columns that should be used for matching
  */
+@EnumParameterSettings(itemInfo = JIPipeColumnMatchingEnumInfo.class)
 public enum JIPipeColumMatching {
     Union,
     Intersection,
