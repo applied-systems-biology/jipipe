@@ -45,6 +45,7 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.RectangleList;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -174,15 +175,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
                     annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), title));
                 }
                 if (seriesAnnotation.isEnabled()) {
-                    int idx = title.lastIndexOf('#');
-                    if (idx != -1 && !(idx == title.length() - 1)) {
-                        String numericString = title.substring(idx + 1);
-                        try {
-                            int series = Integer.parseInt(numericString);
-                            seriesAnnotation.addAnnotationIfEnabled(annotations, "" + series);
-                        } catch (NumberFormatException e) {
-                            seriesAnnotation.addAnnotationIfEnabled(annotations, "1");
-                        }
+                    if (image.getProperties().containsKey("Series")) {
+                        seriesAnnotation.addAnnotationIfEnabled(annotations, StringUtils.orElse(((Number)image.getProperties().get("Series")).intValue() + 1, "1"));
                     } else {
                         seriesAnnotation.addAnnotationIfEnabled(annotations, "1");
                     }
