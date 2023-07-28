@@ -46,7 +46,8 @@ public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
                         getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.Merge,
                         getFirstInputSlot().getDataAnnotations(row),
-                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        progressInfo);
             }
         }
     }

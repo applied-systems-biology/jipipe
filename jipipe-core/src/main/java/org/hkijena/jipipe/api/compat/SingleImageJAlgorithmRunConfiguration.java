@@ -214,7 +214,8 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
                         dataTable.getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         dataTable.getDataAnnotations(row),
-                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        new JIPipeProgressInfo());
             }
         }
     }

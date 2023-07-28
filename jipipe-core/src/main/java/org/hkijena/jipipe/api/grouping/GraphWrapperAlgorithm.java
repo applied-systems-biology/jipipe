@@ -173,7 +173,8 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                             inputSlot.getTextAnnotations(row),
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             inputSlot.getDataAnnotations(row),
-                            JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                            batchProgress);
                 }
             }
 

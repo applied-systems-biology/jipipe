@@ -83,7 +83,8 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
                     annotations,
                     annotationMergeStrategy,
                     getFirstInputSlot().getDataAnnotations(row),
-                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    progressInfo);
         }
     }
 

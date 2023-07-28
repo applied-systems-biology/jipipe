@@ -61,7 +61,8 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
                         annotations,
                         mergeStrategy,
                         dataTable.getDataAnnotations(row2),
-                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        progressInfo);
             }
 
         }

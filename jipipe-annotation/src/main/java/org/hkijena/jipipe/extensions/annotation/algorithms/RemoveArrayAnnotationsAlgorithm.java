@@ -76,7 +76,8 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
                         annotations,
                         JIPipeTextAnnotationMergeMode.Merge,
                         getFirstInputSlot().getDataAnnotations(row),
-                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        progressInfo);
             }
         }
     }

@@ -410,7 +410,8 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                             slot.getTextAnnotations(row),
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             slot.getDataAnnotations(row),
-                            JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                            new JIPipeProgressInfo());
                 } else {
                     throw new RuntimeException("Data table was already cleared!");
                 }

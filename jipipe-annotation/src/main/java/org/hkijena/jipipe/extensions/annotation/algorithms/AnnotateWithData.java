@@ -63,7 +63,8 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
                 annotationList,
                 annotationMergeStrategy,
                 dataAnnotationList,
-                dataAnnotationMergeMode);
+                dataAnnotationMergeMode,
+                progressInfo);
     }
 
     @JIPipeDocumentation(name = "Generated annotation", description = "The name of the generated data annotation")

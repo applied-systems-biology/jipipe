@@ -172,7 +172,8 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                         new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         new ArrayList<>(dataBatch.getMergedDataAnnotations().values()),
-                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        progressInfo);
 
                 // Copy user-modified forms
                 for (int row = 0; row < forms.getRowCount(); row++) {
@@ -182,7 +183,8 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                             annotations,
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             forms.getDataAnnotations(row),
-                            JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                            progressInfo);
                 }
             }
         }

@@ -269,7 +269,8 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                                 annotations,
                                 JIPipeTextAnnotationMergeMode.OverwriteExisting,
                                 inputSlot.getDataAnnotations(row),
-                                JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                                JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                                slotProgress);
                     }
                 } else {
                     for (int row : rows) {

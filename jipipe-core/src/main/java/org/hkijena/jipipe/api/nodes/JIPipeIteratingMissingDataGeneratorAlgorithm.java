@@ -280,7 +280,8 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                                 annotations,
                                 JIPipeTextAnnotationMergeMode.OverwriteExisting,
                                 inputSlot.getDataAnnotations(row),
-                                JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                                JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                                slotProgress);
                     }
                 } else {
                     for (int row : rows) {
