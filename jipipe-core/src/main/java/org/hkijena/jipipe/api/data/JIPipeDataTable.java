@@ -77,7 +77,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     other.getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     dataAnnotations,
-                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    rowProgress);
         }
     }
 
@@ -139,7 +140,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     dataAnnotations,
-                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    rowProgress);
         }
         return result;
     }
@@ -916,8 +918,13 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public synchronized void addDataFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
         for (int row = 0; row < table.getRowCount(); row++) {
-            progressInfo.resolveAndLog("Add data from table", row, table.getRowCount());
-            addData(table.getDataItemStore(row), table.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, table.getDataAnnotations(row), JIPipeDataAnnotationMergeMode.OverwriteExisting);
+            JIPipeProgressInfo addDataProgress = progressInfo.resolveAndLog("Add data from table", row, table.getRowCount());
+            addData(table.getDataItemStore(row),
+                    table.getTextAnnotations(row),
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                    table.getDataAnnotations(row),
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    addDataProgress);
         }
     }
 
@@ -1064,7 +1071,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         String text = "Copying data from " + sourceSlot.getDisplayName() + " to " + getDisplayName();
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
             progressInfo.resolveAndLog(text, row, sourceSlot.getRowCount());
-            addData(sourceSlot.getDataItemStore(row), sourceSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
+            addData(sourceSlot.getDataItemStore(row), sourceSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
 
             // Copy data annotations
             for (Map.Entry<String, JIPipeDataItemStore> entry : sourceSlot.getDataAnnotationItemStoreMap(row).entrySet()) {
@@ -1079,8 +1086,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param virtualData   the virtual data
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
+     * @param progressInfo the progress info
      */
-    public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy) {
+    public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
         if (!accepts(virtualData.getDataClass()))
             throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts "
                     + acceptedDataType + ". A converter could not be found.");
@@ -1181,7 +1189,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public JIPipeDataTable slice(Collection<Integer> rows) {
         JIPipeDataTable result = new JIPipeDataTable(getAcceptedDataType());
         for (Integer row : rows) {
-            result.addData(getDataItemStore(row), getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+            result.addData(getDataItemStore(row), getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
             for (Map.Entry<String, JIPipeDataItemStore> entry : getDataAnnotationItemStoreMap(row).entrySet()) {
                 result.setDataAnnotationItemStore(result.getRowCount() - 1, entry.getKey(), entry.getValue());
             }
@@ -1220,9 +1228,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param virtualData   the virtual data
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
+     * @param progressInfo  the progress info
      */
     public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
-                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
+                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         if (!accepts(virtualData.getDataClass()))
             throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts "
                     + acceptedDataType + ". A converter could not be found.");
@@ -1246,9 +1255,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param data          the data
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
+     * @param progressInfo the progress info
      */
     public void addData(JIPipeData data, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
-                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
+                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         if (!accepts(data))
             throw new IllegalArgumentException("Tried to add data of type " + data.getClass() + ", but slot only accepts "
                     + acceptedDataType + ". A converter could not be found.");

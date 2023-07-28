@@ -150,7 +150,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeInputDataSlot dummy = (JIPipeInputDataSlot) dataBatch.toDummySlot(slot.getInfo(), this, slot);
+            JIPipeInputDataSlot dummy = (JIPipeInputDataSlot) dataBatch.toDummySlot(slot.getInfo(), this, slot, progressInfo);
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
             dummySlots.add(dummy);

@@ -70,7 +70,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
                 throw new RuntimeException(e);
             }
         }
-        JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output", ""), this, getInputSlot("Data"));
+        JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output", ""), this, getInputSlot("Data"), progressInfo);
         exporter.writeToFolder(batchSlot, outputDirectory, progressInfo);
         dataBatch.addOutputData("Path", new PathData(outputDirectory), progressInfo);
     }

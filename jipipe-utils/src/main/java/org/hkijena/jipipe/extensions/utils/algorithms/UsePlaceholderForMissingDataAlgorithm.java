@@ -36,7 +36,7 @@ public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGene
             return;
         JIPipeDataSlot placeholderSlot = getInputSlot("Placeholder");
         for (int row = 0; row < placeholderSlot.getRowCount(); row++) {
-            dataBatch.addOutputData(outputSlot, placeholderSlot.getDataItemStore(row), placeholderSlot.getTextAnnotations(row), placeholderAnnotationMergeStrategy);
+            dataBatch.addOutputData(outputSlot, placeholderSlot.getDataItemStore(row), placeholderSlot.getTextAnnotations(row), placeholderAnnotationMergeStrategy, progressInfo);
         }
     }
 

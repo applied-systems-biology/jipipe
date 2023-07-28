@@ -72,7 +72,7 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
                 throw new RuntimeException(e);
             }
         }
-        JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output", ""), this, getInputSlot("Data"));
+        JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output", ""), this, getInputSlot("Data"), progressInfo);
         batchSlot.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), progressInfo);
         dataBatch.addOutputData("Path", new PathData(outputPath), progressInfo);
     }

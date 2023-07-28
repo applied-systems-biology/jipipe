@@ -226,7 +226,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
                     textAnnotations,
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     dataAnnotations,
-                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
 
         batchTable.setDataTable(dataTable);

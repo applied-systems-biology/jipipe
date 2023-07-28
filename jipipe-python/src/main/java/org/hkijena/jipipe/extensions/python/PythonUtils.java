@@ -182,7 +182,7 @@ public class PythonUtils {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot);
+            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot, progressInfo);
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
@@ -217,7 +217,7 @@ public class PythonUtils {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot);
+            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot, progressInfo);
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }

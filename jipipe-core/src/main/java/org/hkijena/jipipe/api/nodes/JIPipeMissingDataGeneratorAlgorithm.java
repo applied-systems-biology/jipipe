@@ -274,7 +274,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                 } else {
                     for (int row : rows) {
                         JIPipeDataItemStore virtualData = inputSlot.getDataItemStore(row);
-                        dataBatch.addOutputData(outputSlot, virtualData);
+                        dataBatch.addOutputData(outputSlot, virtualData, progressInfo);
                     }
                 }
             }
