@@ -76,6 +76,16 @@ import java.util.stream.Collectors;
  */
 public class ImageJUtils {
 
+    public static ImageProcessor extractFromProcessor(ImageProcessor processor, Rectangle source) {
+        try {
+            processor.setRoi(source);
+            return processor.crop();
+        }
+        finally {
+            processor.setRoi((Roi) null);
+        }
+    }
+
     public static ResultsTableData measureROI(Roi roi, ImagePlus reference, boolean physicalUnits, Measurement... statistics) {
         ImageStatisticsSetParameter statisticsSetParameter = new ImageStatisticsSetParameter();
         if (statistics.length > 0) {
