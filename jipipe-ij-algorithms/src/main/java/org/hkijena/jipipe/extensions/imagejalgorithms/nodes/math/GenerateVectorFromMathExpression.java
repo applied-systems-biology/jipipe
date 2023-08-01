@@ -19,15 +19,15 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -43,6 +43,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Generate vector field from math expression", description = "Generates a vector field by utilizing a math expression. " +
         "The expression must return an array of numbers (or scalar if there are only 1 components).")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", autoCreate = true, optional = true, description = "Optional annotations that can be referenced in the expression")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgorithm {
 
@@ -88,6 +89,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 32);
         ExpressionVariables variableSet = new ExpressionVariables();
+        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
         variableSet.set("width", width);
         variableSet.set("height", height);
         variableSet.set("num_z", sizeZ);
@@ -204,7 +206,9 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     @JIPipeDocumentation(name = "Function", description = "Generates a vector. Must return an array of numbers with the required vector components. " +
             "If the vector has one component, it can also return a number.")
     @JIPipeParameter("function")
-    @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class, hint = "per pixel")
+    @ExpressionParameterSettings(hint = "per pixel")
+    @ExpressionParameterSettingsVariable(fromClass = PixelCoordinate5DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFunction() {
         return function;
     }

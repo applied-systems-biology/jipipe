@@ -18,15 +18,15 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariableSource;
@@ -37,6 +37,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
  */
 @JIPipeDocumentation(name = "Generate image from math expression", description = "Applies a mathematical operation to each pixel. The value is written into the image.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", autoCreate = true, optional = true, description = "Optional annotations that can be referenced in the expression")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
@@ -80,6 +81,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 32);
         ExpressionVariables variableSet = new ExpressionVariables();
+        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
         variableSet.set("width", width);
         variableSet.set("height", height);
         variableSet.set("num_z", sizeZ);
@@ -107,7 +109,9 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("function")
-    @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class, hint = "per pixel")
+    @ExpressionParameterSettings(hint = "per pixel")
+    @ExpressionParameterSettingsVariable(fromClass = PixelCoordinate5DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFunction() {
         return function;
     }
