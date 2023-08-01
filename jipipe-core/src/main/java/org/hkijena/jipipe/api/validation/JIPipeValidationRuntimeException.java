@@ -39,6 +39,7 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
     }
 
     public JIPipeValidationRuntimeException(JIPipeValidationReportContext context, Throwable e, String title, String explanation, String solution) {
+        super(e);
         this.report = new JIPipeValidationReport();
         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, title, explanation, solution, ExceptionUtils.getStackTrace(e)));
         if (e instanceof JIPipeValidationRuntimeException) {
