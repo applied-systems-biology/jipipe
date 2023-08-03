@@ -56,23 +56,27 @@ public class JIPipeNodeDatabase {
         return updater;
     }
 
-    public double queryTextRanking(JIPipeNodeDatabaseEntry entry, String text) {
-        if(StringUtils.isNullOrEmpty(text))
+    public double queryTextRanking(JIPipeNodeDatabaseEntry entry, List<String> textTokens) {
+        if(textTokens.isEmpty())
             return Double.POSITIVE_INFINITY;
-        text = text.toLowerCase();
         boolean match = false;
         double rank = 0;
-        List<String> tokens = entry.getTokens();
-        for (int i = 0; i < tokens.size(); i++) {
-            String token = StringUtils.nullToEmpty(tokens.get(i)).toLowerCase();
-            int index = token.indexOf(text);
-            double tokenWeight = 1.0 - (1.0 * i / (tokens.size() - 1)); // Weight earlier tokens heigher
-            if(index >= 0) {
-                match = true;
-                double indexWeight = 1.0 - (1.0 * index / token.length());
-                rank -= indexWeight * tokenWeight;
+        for (int i = 0; i < textTokens.size(); i++) {
+            String textToken = textTokens.get(i);
+            double textTokenWeight = 1.0 - (1.0 * i / (textTokens.size() - 1));
+            List<String> tokens = entry.getTokens();
+            for (int j = 0; j < tokens.size(); j++) {
+                String token = StringUtils.nullToEmpty(tokens.get(j)).toLowerCase();
+                int index = token.indexOf(textToken);
+                double tokenWeight = 1.0 - (1.0 * j / (tokens.size() - 1)); // Weight earlier tokens heigher
+                if(index >= 0) {
+                    match = true;
+                    double indexWeight = 1.0 - (1.0 * index / token.length());
+                    rank -= textTokenWeight * indexWeight * tokenWeight;
+                }
             }
         }
+
         if(match) {
             return rank;
         }
@@ -81,7 +85,26 @@ public class JIPipeNodeDatabase {
         }
     }
 
+    public List<String> buildTextTokens(String text) {
+        List<String> result = new ArrayList<>();
+        if(!StringUtils.isNullOrEmpty(text)) {
+            text = text.toLowerCase().trim().replace("\n", " ");
+            while(text.contains("  ")) {
+                text = text.replace("  ", " ");
+            }
+            result.add(text);
+            for (String s : text.split(" ")) {
+                String s1 = s.trim();
+                if(!StringUtils.isNullOrEmpty(s1)) {
+                    result.add(s1);
+                }
+            }
+        }
+        return result;
+    }
+
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabaseRole role, boolean allowExisting, boolean allowNew) {
+        List<String> textTokens = buildTextTokens(text);
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
         for (JIPipeNodeDatabaseEntry entry : entries) {
@@ -92,7 +115,7 @@ public class JIPipeNodeDatabase {
             if(!entry.exists() && !allowNew)
                 continue;
             result.add(entry);
-            rankMap.put(entry, queryTextRanking(entry, text));
+            rankMap.put(entry, queryTextRanking(entry, textTokens));
         }
         result.sort(Comparator.comparing(rankMap::get));
         return result;
