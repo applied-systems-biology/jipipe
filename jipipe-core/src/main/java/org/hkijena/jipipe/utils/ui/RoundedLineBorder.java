@@ -8,9 +8,9 @@ import java.awt.*;
  * <a href="https://stackoverflow.com/questions/52759203/rounded-lineborder-not-all-corners-are-rounded">...</a>
  */
 public class RoundedLineBorder extends AbstractBorder {
-    int lineSize, cornerSize;
-    Paint fill;
-    Stroke stroke;
+    private int lineSize, cornerSize;
+    private Paint fill;
+    private Stroke stroke;
     private Object aaHint;
 
     public RoundedLineBorder(Paint fill, int lineSize, int cornerSize) {
@@ -53,5 +53,30 @@ public class RoundedLineBorder extends AbstractBorder {
             g2d.setStroke(oldStroke);
             if (aaHint != null) g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
         }
+    }
+
+    public int getLineSize() {
+        return lineSize;
+    }
+
+    public void setLineSize(int lineSize) {
+        this.lineSize = lineSize;
+        this.stroke = new BasicStroke(lineSize);
+    }
+
+    public int getCornerSize() {
+        return cornerSize;
+    }
+
+    public void setCornerSize(int cornerSize) {
+        this.cornerSize = cornerSize;
+    }
+
+    public Paint getFill() {
+        return fill;
+    }
+
+    public void setFill(Paint fill) {
+        this.fill = fill;
     }
 }

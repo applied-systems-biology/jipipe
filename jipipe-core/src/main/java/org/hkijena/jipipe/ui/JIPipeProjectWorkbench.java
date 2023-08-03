@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -107,6 +108,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
     private ReloadableValidityChecker validityCheckerPanel;
     private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
+    private final JIPipeNodeDatabase nodeDatabase;
 
     /**
      * @param window           Parent window
@@ -120,6 +122,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         this.project = project;
         this.context = context;
         this.memoryOptionsControl = new MemoryOptionsControl(this);
+        this.nodeDatabase = new JIPipeNodeDatabase(project);
         initialize(showIntroduction, isNewProject);
         project.getCompartmentRemovedEventEmitter().subscribe(this);
         JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeWeak(this);
@@ -138,6 +141,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
 
         // Install the run notifier
         JIPipeRunQueueNotifier.install();
+    }
+
+    public JIPipeNodeDatabase getNodeDatabase() {
+        return nodeDatabase;
     }
 
     public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {

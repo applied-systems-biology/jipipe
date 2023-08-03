@@ -39,6 +39,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
+import org.hkijena.jipipe.ui.grapheditor.nodefinder.JIPipeNodeFinderDialogUI;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
@@ -1132,23 +1133,45 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea || currentActiveArea instanceof JIPipeNodeUISlotActiveArea && SwingUtilities.isRightMouseButton(e)) {
-            JIPipeNodeUISlotActiveArea slotState;
-            if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea) {
-                slotState = ((JIPipeNodeUISlotButtonActiveArea) currentActiveArea).getUISlot();
-            } else if (currentActiveArea instanceof JIPipeNodeUISlotActiveArea) {
-                slotState = (JIPipeNodeUISlotActiveArea) currentActiveArea;
-            } else {
-                return;
+        if(e.getClickCount() == 1) {
+            if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea || currentActiveArea instanceof JIPipeNodeUISlotActiveArea && SwingUtilities.isRightMouseButton(e)) {
+                JIPipeNodeUISlotActiveArea slotState;
+                if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea) {
+                    slotState = ((JIPipeNodeUISlotButtonActiveArea) currentActiveArea).getUISlot();
+                } else if (currentActiveArea instanceof JIPipeNodeUISlotActiveArea) {
+                    slotState = (JIPipeNodeUISlotActiveArea) currentActiveArea;
+                } else {
+                    return;
+                }
+                openSlotMenu(slotState, e);
+                e.consume();
+            } else if (currentActiveArea instanceof JIPipeNodeUIAddSlotButtonActiveArea) {
+                openAddSlotDialog(((JIPipeNodeUIAddSlotButtonActiveArea) currentActiveArea).getSlotType());
+                e.consume();
+            } else if (currentActiveArea instanceof JIPipeNodeUIRunNodeActiveArea) {
+                openRunNodeMenu(e);
+                e.consume();
             }
-            openSlotMenu(slotState, e);
-            e.consume();
-        } else if (currentActiveArea instanceof JIPipeNodeUIAddSlotButtonActiveArea) {
-            openAddSlotDialog(((JIPipeNodeUIAddSlotButtonActiveArea) currentActiveArea).getSlotType());
-            e.consume();
-        } else if (currentActiveArea instanceof JIPipeNodeUIRunNodeActiveArea) {
-            openRunNodeMenu(e);
-            e.consume();
+        }
+        else {
+            if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea || currentActiveArea instanceof JIPipeNodeUISlotActiveArea && SwingUtilities.isLeftMouseButton(e)) {
+                JIPipeNodeUISlotActiveArea slotState;
+                if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea) {
+                    slotState = ((JIPipeNodeUISlotButtonActiveArea) currentActiveArea).getUISlot();
+                } else if (currentActiveArea instanceof JIPipeNodeUISlotActiveArea) {
+                    slotState = (JIPipeNodeUISlotActiveArea) currentActiveArea;
+                } else {
+                    return;
+                }
+                if(slotState.isInput()) {
+                    e.consume();
+                    openInputAlgorithmFinder(slotState.getSlot());
+                }
+                else {
+                    e.consume();
+                    openOutputAlgorithmFinder(slotState.getSlot());
+                }
+            }
         }
     }
 
@@ -1922,55 +1945,59 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     }
 
     private void openOutputAlgorithmFinder(JIPipeDataSlot slot) {
-        JIPipeAlgorithmTargetFinderUI algorithmFinderUI = new JIPipeAlgorithmTargetFinderUI(getGraphCanvasUI(), slot);
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
-        UIUtils.addEscapeListener(dialog);
-        dialog.setModal(true);
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setContentPane(algorithmFinderUI);
-        dialog.pack();
-        dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(this);
-
-        algorithmFinderUI.getAlgorithmFinderSuccessEventEmitter().subscribeLambda((emitter, event) -> dialog.dispose());
-
-        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
-        if (layoutHelperEnabled) {
-            Point cursorLocation = new Point();
-            Point slotLocation = getSlotLocation(slot).min;
-            cursorLocation.x = getX() + slotLocation.x;
-            cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
-            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
-            invalidateAndRepaint(false, true);
-        }
-
-        dialog.setVisible(true);
+//        JIPipeAlgorithmTargetFinderUI algorithmFinderUI = new JIPipeAlgorithmTargetFinderUI(getGraphCanvasUI(), slot);
+//        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
+//        UIUtils.addEscapeListener(dialog);
+//        dialog.setModal(true);
+//        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//        dialog.setContentPane(algorithmFinderUI);
+//        dialog.pack();
+//        dialog.setSize(800, 600);
+//        dialog.setLocationRelativeTo(this);
+//
+//        algorithmFinderUI.getAlgorithmFinderSuccessEventEmitter().subscribeLambda((emitter, event) -> dialog.dispose());
+//
+//        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
+//        if (layoutHelperEnabled) {
+//            Point cursorLocation = new Point();
+//            Point slotLocation = getSlotLocation(slot).min;
+//            cursorLocation.x = getX() + slotLocation.x;
+//            cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
+//            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+//            invalidateAndRepaint(false, true);
+//        }
+//
+//        dialog.setVisible(true);
+        JIPipeNodeFinderDialogUI dialogUI = new JIPipeNodeFinderDialogUI(getGraphCanvasUI(), slot);
+        dialogUI.setVisible(true);
     }
 
     private void openInputAlgorithmFinder(JIPipeDataSlot slot) {
-        JIPipeAlgorithmSourceFinderUI algorithmFinderUI = new JIPipeAlgorithmSourceFinderUI(getGraphCanvasUI(), slot);
-        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
-        UIUtils.addEscapeListener(dialog);
-        dialog.setModal(true);
-        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        dialog.setContentPane(algorithmFinderUI);
-        dialog.pack();
-        dialog.setSize(800, 600);
-        dialog.setLocationRelativeTo(this);
-
-        algorithmFinderUI.getAlgorithmFinderSuccessEventEmitter().subscribeLambda((emitter, event) -> dialog.dispose());
-
-        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
-        if (layoutHelperEnabled) {
-            Point cursorLocation = new Point();
-            Point slotLocation = getSlotLocation(slot).min;
-            cursorLocation.x = getX() + slotLocation.x;
-            cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
-            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
-            invalidateAndRepaint(false, true);
-        }
-
-        dialog.setVisible(true);
+//        JIPipeAlgorithmSourceFinderUI algorithmFinderUI = new JIPipeAlgorithmSourceFinderUI(getGraphCanvasUI(), slot);
+//        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
+//        UIUtils.addEscapeListener(dialog);
+//        dialog.setModal(true);
+//        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+//        dialog.setContentPane(algorithmFinderUI);
+//        dialog.pack();
+//        dialog.setSize(800, 600);
+//        dialog.setLocationRelativeTo(this);
+//
+//        algorithmFinderUI.getAlgorithmFinderSuccessEventEmitter().subscribeLambda((emitter, event) -> dialog.dispose());
+//
+//        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
+//        if (layoutHelperEnabled) {
+//            Point cursorLocation = new Point();
+//            Point slotLocation = getSlotLocation(slot).min;
+//            cursorLocation.x = getX() + slotLocation.x;
+//            cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
+//            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+//            invalidateAndRepaint(false, true);
+//        }
+//
+//        dialog.setVisible(true);
+        JIPipeNodeFinderDialogUI dialogUI = new JIPipeNodeFinderDialogUI(getGraphCanvasUI(), slot);
+        dialogUI.setVisible(true);
     }
 
     private void openAddSlotDialog(JIPipeSlotType slotType) {
