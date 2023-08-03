@@ -76,6 +76,9 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     private final BiMap<UUID, JIPipeGraphNode> nodeUUIDs = HashBiMap.create();
     private final JIPipeParameterCollection.ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new JIPipeParameterCollection.ParameterStructureChangedEventEmitter();
     private final GraphChangedEventEmitter graphChangedEventEmitter = new GraphChangedEventEmitter();
+
+    private final NodeAddedEventEmitter nodeAddedEventEmitter = new NodeAddedEventEmitter();
+    private final NodeRemovedEventEmitter nodeRemovedEventEmitter = new NodeRemovedEventEmitter();
     private final NodeConnectedEventEmitter nodeConnectedEventEmitter = new NodeConnectedEventEmitter();
     private final NodeDisconnectedEventEmitter nodeDisconnectedEventEmitter = new NodeDisconnectedEventEmitter();
     private final JIPipeGraphNode.NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new JIPipeGraphNode.NodeSlotsChangedEventEmitter();
@@ -128,6 +131,14 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             JIPipeGraphEdge originalEdge = other.graph.getEdge(edge.getKey(), edge.getValue());
             copyEdge.setMetadataFrom(originalEdge);
         }
+    }
+
+    public NodeAddedEventEmitter getNodeAddedEventEmitter() {
+        return nodeAddedEventEmitter;
+    }
+
+    public NodeRemovedEventEmitter getNodeRemovedEventEmitter() {
+        return nodeRemovedEventEmitter;
     }
 
     public GraphChangedEventEmitter getGraphChangedEventEmitter() {
@@ -325,6 +336,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
         // Sometimes we have algorithms with no slots, so trigger manually
         postChangedEvent();
+        nodeAddedEventEmitter.emit(new NodeAddedEvent(this, node));
 
         return uuid;
     }
@@ -543,6 +555,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         node.setParentGraph(null);
         --preventTriggerEvents;
         postChangedEvent();
+        nodeRemovedEventEmitter.emit(new NodeRemovedEvent(this, node));
     }
 
     /**
@@ -1936,6 +1949,14 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         void onNodeDisconnected(NodeDisconnectedEvent event);
     }
 
+    public interface NodeAddedEventListener {
+        void onNodeAdded(NodeAddedEvent event);
+    }
+
+    public interface NodeRemovedEventListener {
+        void onNodeRemoved(NodeRemovedEvent event);
+    }
+
     /**
      * Serializes an {@link JIPipeGraph}
      */
@@ -2111,6 +2132,59 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         @Override
         protected void call(NodeDisconnectedEventListener nodeDisconnectedEventListener, NodeDisconnectedEvent event) {
             nodeDisconnectedEventListener.onNodeDisconnected(event);
+        }
+    }
+
+    public static class NodeAddedEvent extends AbstractJIPipeEvent {
+        private final JIPipeGraph graph;
+        private final JIPipeGraphNode node;
+
+        public NodeAddedEvent(JIPipeGraph graph, JIPipeGraphNode node) {
+            super(graph);
+            this.graph = graph;
+            this.node = node;
+        }
+
+        public JIPipeGraph getGraph() {
+            return graph;
+        }
+
+        public JIPipeGraphNode getNode() {
+            return node;
+        }
+    }
+
+    public static class NodeAddedEventEmitter extends JIPipeEventEmitter<NodeAddedEvent, NodeAddedEventListener> {
+        @Override
+        protected void call(NodeAddedEventListener nodeAddedEventListener, NodeAddedEvent event) {
+            nodeAddedEventListener.onNodeAdded(event);
+        }
+    }
+
+    public static class NodeRemovedEvent extends AbstractJIPipeEvent {
+        private final JIPipeGraph graph;
+        private final JIPipeGraphNode node;
+
+        public NodeRemovedEvent(JIPipeGraph graph, JIPipeGraphNode node) {
+            super(graph);
+            this.graph = graph;
+            this.node = node;
+        }
+
+        public JIPipeGraph getGraph() {
+            return graph;
+        }
+
+        public JIPipeGraphNode getNode() {
+            return node;
+        }
+    }
+
+    public static class NodeRemovedEventEmitter extends JIPipeEventEmitter<NodeRemovedEvent, NodeRemovedEventListener> {
+
+        @Override
+        protected void call(NodeRemovedEventListener nodeRemovedEventListener, NodeRemovedEvent event) {
+            nodeRemovedEventListener.onNodeRemoved(event);
         }
     }
 
