@@ -2,10 +2,7 @@ package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -131,7 +128,11 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
 
     @Override
     public void addToGraph(JIPipeGraphCanvasUI canvasUI) {
-        canvasUI.getGraph().insertNode(nodeInfo.newInstance(), canvasUI.getCompartment());
+        JIPipeGraphNode node = nodeInfo.newInstance();
+        if (canvasUI.getHistoryJournal() != null) {
+            canvasUI.getHistoryJournal().snapshotBeforeAddNode(node, canvasUI.getCompartment());
+        }
+        canvasUI.getGraph().insertNode(node, canvasUI.getCompartment());
     }
 
     @Override
