@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.UUID;
 
 public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
+
+    private static List<JIPipeNodeDatabaseEntry> CACHED_GLOBAL_ENTRIES;
     private final JIPipeNodeDatabase database;
 
     public JIPipeNodeDatabaseBuilderRun(JIPipeNodeDatabase database) {
@@ -30,16 +32,27 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
         JIPipeNodeRegistry nodeRegistry = JIPipe.getNodes();
         List<JIPipeNodeDatabaseEntry> newEntries = new ArrayList<>();
 
-        // Add creation of nodes by info
-        for (Map.Entry<String, JIPipeNodeInfo> entry : nodeRegistry.getRegisteredNodeInfos().entrySet()) {
-            newEntries.add(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + entry.getKey(), entry.getValue()));
-
-            // Add node example creation
-            ArrayList<JIPipeNodeExample> examples = new ArrayList<>(nodeRegistry.getNodeExamples(entry.getKey()));
-            for (int i = 0; i < examples.size(); i++) {
-                JIPipeNodeExample example = examples.get(i);
-                newEntries.add(new CreateNewNodeByExampleDatabaseEntry("create-node-by-example:" + entry.getKey() + ":[" + i + "]", example));
+        if(CACHED_GLOBAL_ENTRIES == null) {
+            CACHED_GLOBAL_ENTRIES = new ArrayList<>();
+            // Add creation of nodes by info
+            for (Map.Entry<String, JIPipeNodeInfo> entry : nodeRegistry.getRegisteredNodeInfos().entrySet()) {
+                {
+                    CreateNewNodeByInfoDatabaseEntry newEntry = new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + entry.getKey(), entry.getValue());
+                    newEntries.add(newEntry);
+                    CACHED_GLOBAL_ENTRIES.add(newEntry);
+                }
+                // Add node example creation
+                ArrayList<JIPipeNodeExample> examples = new ArrayList<>(nodeRegistry.getNodeExamples(entry.getKey()));
+                for (int i = 0; i < examples.size(); i++) {
+                    JIPipeNodeExample example = examples.get(i);
+                    CreateNewNodeByExampleDatabaseEntry newEntry = new CreateNewNodeByExampleDatabaseEntry("create-node-by-example:" + entry.getKey() + ":[" + i + "]", example);
+                    newEntries.add(newEntry);
+                    CACHED_GLOBAL_ENTRIES.add(newEntry);
+                }
             }
+        }
+        else {
+            newEntries.addAll(CACHED_GLOBAL_ENTRIES);
         }
 
         if(database.getProject() != null) {

@@ -11,7 +11,6 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.components.icons.JIPipeRunnerQueueThrobberIcon;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -28,7 +27,6 @@ import java.util.UUID;
 public class JIPipeNodeFinderDialogUI extends JDialog {
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot querySlot;
-    private final JIPipeGraphNode queryNode;
     private final JIPipeGraph queryGraph;
     private final UUID queryCompartment;
     private final JToggleButton findExistingNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/find.png"));
@@ -41,7 +39,6 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         this.canvasUI = canvasUI;
         this.queryCompartment = canvasUI.getCompartment();
         this.querySlot = querySlot;
-        this.queryNode = querySlot.getNode();
         this.queryGraph = canvasUI.getGraph();
         initialize();
         reloadList();
@@ -69,8 +66,16 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     }
 
     private void initializeList() {
+        JIPipeNodeDatabase nodeDatabase;
+        if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
+            nodeDatabase = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getNodeDatabase();
+        }
+        else {
+            nodeDatabase = JIPipeNodeDatabase.getInstance();
+        }
+
         nodeList.setOpaque(false);
-        nodeList.setCellRenderer(new NodeFinderDatasetListCellRenderer());
+        nodeList.setCellRenderer(new NodeFinderDatasetListCellRenderer(nodeDatabase));
         getContentPane().add(new JScrollPane(nodeList), BorderLayout.CENTER);
 
         nodeList.addMouseListener(new MouseAdapter() {
@@ -130,7 +135,8 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     }
 
     private void addEntryToGraph(JIPipeNodeDatabaseEntry entry) {
-
+        entry.addToGraph(canvasUI);
+        setVisible(false);
     }
 
     private void initializeToolBar() {
@@ -140,6 +146,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
 
         // Info toolbar
         if(querySlot != null) {
+            JIPipeGraphNode queryNode = querySlot.getNode();
             JToolBar infoToolbar = new JToolBar();
             infoToolbar.setFloatable(false);
             infoToolbar.add(new JLabel("Selected slot"));
@@ -181,8 +188,8 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
             });
             mainToolBar.add(findExistingNodesToggle);
             mainToolBar.add(createNodesToggle);
-            mainToolBar.add(Box.createHorizontalStrut(8));
         }
+        mainToolBar.add(Box.createHorizontalStrut(8));
 
         toolbarPanel.add(mainToolBar);
 

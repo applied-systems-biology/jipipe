@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.jsoup.Jsoup;
 
 import javax.swing.*;
@@ -18,7 +19,7 @@ import java.util.Map;
 public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry{
     private final String id;
     private final JIPipeProjectCompartment compartment;
-    private final List<String> tokens = new ArrayList<>();
+    private final WeightedTokens tokens = new WeightedTokens();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final String descriptionPlain;
@@ -63,12 +64,12 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     private void initializeTokens() {
-        tokens.add(compartment.getName());
-        tokens.add(compartment.getCustomDescription().getBody());
+        tokens.add(compartment.getName(), WeightedTokens.WEIGHT_NAME);
+        tokens.add(compartment.getCustomDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
     }
 
     @Override
-    public List<String> getTokens() {
+    public WeightedTokens getTokens() {
         return tokens;
     }
 
@@ -109,6 +110,11 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     @Override
     public Color getBorderColor() {
         return Color.LIGHT_GRAY;
+    }
+
+    @Override
+    public void addToGraph(JIPipeGraphCanvasUI canvasUI) {
+
     }
 
     @Override

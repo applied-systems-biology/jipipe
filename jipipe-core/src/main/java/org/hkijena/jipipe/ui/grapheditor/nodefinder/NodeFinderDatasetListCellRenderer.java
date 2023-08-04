@@ -1,19 +1,18 @@
 package org.hkijena.jipipe.ui.grapheditor.nodefinder;
 
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.ui.components.RoundedButtonUI;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
-import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 
 public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
-
+    private final JIPipeNodeDatabase database;
     private final JLabel iconLabel = new JLabel();
     private final JLabel nameLabel = new JLabel();
     private final JLabel categoryLabel = new JLabel();
@@ -25,7 +24,8 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
     private final JPanel indicator = new JPanel();
     private final RoundedLineBorder indicatorBorder = new RoundedLineBorder(Color.GRAY, 2, 1);
 
-    public NodeFinderDatasetListCellRenderer() {
+    public NodeFinderDatasetListCellRenderer(JIPipeNodeDatabase database) {
+        this.database = database;
         initialize();
     }
 
@@ -44,7 +44,7 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
         add(iconLabel, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,insets,0,0));
         add(nameLabel, new GridBagConstraints(2,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
         add(categoryLabel, new GridBagConstraints(2,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
-        add(descriptionLabel, new GridBagConstraints(2,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
+        add(descriptionLabel, new GridBagConstraints(2,2,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
@@ -68,10 +68,11 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
 
     @Override
     public Component getListCellRendererComponent(JList<? extends JIPipeNodeDatabaseEntry> list, JIPipeNodeDatabaseEntry value, int index, boolean isSelected, boolean cellHasFocus) {
+        setPreferredSize(new Dimension(list.getWidth() - 16, 128));
         iconLabel.setIcon(value.getIcon());
         nameLabel.setText(value.getName());
         categoryLabel.setText(value.getCategory().trim().replace("\n", " > "));
-        descriptionLabel.setText(StringUtils.limitWithEllipsis(value.getDescriptionPlain(), Math.max(128, list.getWidth() - 80), list.getFontMetrics(list.getFont())));
+        descriptionLabel.setText(value.getDescriptionPlain());
 
         if(value.exists()) {
             indicator.setBackground(value.getFillColor());

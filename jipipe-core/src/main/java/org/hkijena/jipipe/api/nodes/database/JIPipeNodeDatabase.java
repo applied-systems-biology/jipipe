@@ -2,11 +2,13 @@ package org.hkijena.jipipe.api.nodes.database;
 
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
+import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -29,6 +31,26 @@ public class JIPipeNodeDatabase {
         this.project = project;
         this.updater = new JIPipeNodeDatabaseUpdater(this);
         rebuildImmediately();
+    }
+
+    /**
+     * Converts a list of texts into word tokens
+     * @param texts the texts
+     * @return the tokens
+     */
+    public static List<String> buildTokens(List<String> texts) {
+        List<String> tokens = new ArrayList<>();
+        for (String text_ : texts) {
+            if(StringUtils.isNullOrEmpty(text_))
+                continue;
+            String text = text_.toLowerCase().replace('\n', ' ');
+            for (String s : text.split(" ")) {
+                if(!StringUtils.isNullOrEmpty(s)) {
+                    tokens.add(s);
+                }
+            }
+        }
+        return tokens;
     }
 
     public void rebuildImmediately() {
@@ -56,55 +78,42 @@ public class JIPipeNodeDatabase {
         return updater;
     }
 
+    public double weight(double x, double xMax) {
+        return Math.exp(-Math.pow(x/xMax, 2));
+    }
+
     public double queryTextRanking(JIPipeNodeDatabaseEntry entry, List<String> textTokens) {
         if(textTokens.isEmpty())
             return Double.POSITIVE_INFINITY;
-        boolean match = false;
         double rank = 0;
         for (int i = 0; i < textTokens.size(); i++) {
             String textToken = textTokens.get(i);
-            double textTokenWeight = 1.0 - (1.0 * i / (textTokens.size() - 1));
-            List<String> tokens = entry.getTokens();
+            double textTokenWeight = weight(i, textTokens.size());
+            WeightedTokens tokens = entry.getTokens();
+
+            double bestDistanceTokenWeight = 0;
+
             for (int j = 0; j < tokens.size(); j++) {
-                String token = StringUtils.nullToEmpty(tokens.get(j)).toLowerCase();
-                int index = token.indexOf(textToken);
-                double tokenWeight = 1.0 - (1.0 * j / (tokens.size() - 1)); // Weight earlier tokens heigher
-                if(index >= 0) {
-                    match = true;
-                    double indexWeight = 1.0 - (1.0 * index / token.length());
-                    rank -= textTokenWeight * indexWeight * tokenWeight;
+                String token = tokens.getToken(j);
+                int distance = LevenshteinDistance.getDefaultInstance().apply(textToken, token);
+                double tokenWeight = tokens.getWeight(j) - j / 100.0;
+                if(distance >= 0) {
+                    double distanceWeight = 1.0 - (1.0 * distance / Math.max(token.length(), textToken.length()));
+                    double distanceTokenWeight = distanceWeight * tokenWeight;
+                    if(distanceTokenWeight > bestDistanceTokenWeight) {
+                        bestDistanceTokenWeight = distanceTokenWeight;
+                    }
                 }
             }
-        }
 
-        if(match) {
-            return rank;
-        }
-        else {
-            return Double.POSITIVE_INFINITY;
-        }
-    }
 
-    public List<String> buildTextTokens(String text) {
-        List<String> result = new ArrayList<>();
-        if(!StringUtils.isNullOrEmpty(text)) {
-            text = text.toLowerCase().trim().replace("\n", " ");
-            while(text.contains("  ")) {
-                text = text.replace("  ", " ");
-            }
-            result.add(text);
-            for (String s : text.split(" ")) {
-                String s1 = s.trim();
-                if(!StringUtils.isNullOrEmpty(s1)) {
-                    result.add(s1);
-                }
-            }
+            rank -= textTokenWeight * bestDistanceTokenWeight;
         }
-        return result;
+        return rank;
     }
 
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabaseRole role, boolean allowExisting, boolean allowNew) {
-        List<String> textTokens = buildTextTokens(text);
+        List<String> textTokens = buildTokens(Collections.singletonList(text));
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
         for (JIPipeNodeDatabaseEntry entry : entries) {

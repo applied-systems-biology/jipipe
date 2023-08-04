@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jsoup.Jsoup;
 
@@ -21,7 +22,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
 
     private final String id;
     private final JIPipeNodeInfo nodeInfo;
-    private final List<String> tokens = new ArrayList<>();
+    private final WeightedTokens tokens = new WeightedTokens();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final String descriptionPlain;
@@ -54,15 +55,15 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     private void initializeTokens() {
-        tokens.add(nodeInfo.getName());
+        tokens.add(nodeInfo.getName(), WeightedTokens.WEIGHT_NAME);
         for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
-            tokens.add(alias.getAlternativeName());
+            tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_NAME);
         }
-        tokens.add(nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath());
+        tokens.add(nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath(), WeightedTokens.WEIGHT_MENU);
         for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
-            tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath());
+            tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
         }
-        tokens.add(nodeInfo.getDescription().getBody());
+        tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
     }
 
     @Override
@@ -86,7 +87,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public List<String> getTokens() {
+    public WeightedTokens getTokens() {
         return tokens;
     }
 
@@ -126,6 +127,11 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     @Override
     public Color getBorderColor() {
         return nodeInfo.getCategory().getBorderColor();
+    }
+
+    @Override
+    public void addToGraph(JIPipeGraphCanvasUI canvasUI) {
+        canvasUI.getGraph().insertNode(nodeInfo.newInstance(), canvasUI.getCompartment());
     }
 
     @Override

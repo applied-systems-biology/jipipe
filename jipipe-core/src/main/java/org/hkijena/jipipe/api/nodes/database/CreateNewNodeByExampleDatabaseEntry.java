@@ -3,24 +3,24 @@ package org.hkijena.jipipe.api.nodes.database;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
     private final JIPipeNodeExample example;
-    private final List<String> tokens = new ArrayList<>();
+    private final WeightedTokens tokens = new WeightedTokens();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final String descriptionPlain;
@@ -44,17 +44,17 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     }
 
     private void initializeTokens() {
-        tokens.add(example.getNodeTemplate().getName());
-        tokens.add(example.getNodeInfo().getName());
+        tokens.add(example.getNodeTemplate().getName(), WeightedTokens.WEIGHT_NAME);
+        tokens.add(example.getNodeInfo().getName(), WeightedTokens.WEIGHT_NAME);
         for (JIPipeNodeMenuLocation alias : example.getNodeInfo().getAliases()) {
-            tokens.add(alias.getAlternativeName());
+            tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_NAME);
         }
-        tokens.add(example.getNodeInfo().getCategory().getName() + "\n" + example.getNodeInfo().getMenuPath());
+        tokens.add(example.getNodeInfo().getCategory().getName() + "\n" + example.getNodeInfo().getMenuPath(), WeightedTokens.WEIGHT_MENU);
         for (JIPipeNodeMenuLocation alias : example.getNodeInfo().getAliases()) {
-            tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath());
+            tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
         }
-        tokens.add(example.getNodeTemplate().getDescription().getBody());
-        tokens.add(example.getNodeInfo().getDescription().getBody());
+        tokens.add(example.getNodeTemplate().getDescription().getBody(),WeightedTokens.WEIGHT_DESCRIPTION);
+        tokens.add(example.getNodeInfo().getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     }
 
     @Override
-    public List<String> getTokens() {
+    public WeightedTokens getTokens() {
         return tokens;
     }
 
@@ -124,6 +124,16 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     @Override
     public Color getBorderColor() {
         return example.getNodeInfo().getCategory().getBorderColor();
+    }
+
+    @Override
+    public void addToGraph(JIPipeGraphCanvasUI canvasUI) {
+        JIPipeGraph graph = new JIPipeGraph(example.getNodeTemplate().getGraph());
+        for (UUID uuid : graph.getGraphNodeUUIDs()) {
+            graph.setCompartment(uuid, canvasUI.getCompartment());
+        }
+
+        canvasUI.getGraph().mergeWith(graph);
     }
 
     @Override

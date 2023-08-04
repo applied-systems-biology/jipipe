@@ -59,6 +59,8 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
         // Set D&D and Copy&Paste behavior
         getCanvasUI().setDragAndDropBehavior(new JIPipeCreateNodesFromDraggedDataDragAndDropBehavior());
         getCanvasUI().setContextActions(Arrays.asList(
+                new AddNewNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
                 new AddBookmarkNodeUIContextAction(),
