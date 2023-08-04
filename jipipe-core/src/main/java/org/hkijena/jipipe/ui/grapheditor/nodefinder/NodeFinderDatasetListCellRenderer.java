@@ -19,10 +19,11 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
     private final JLabel categoryLabel = new JLabel();
     private final JLabel descriptionLabel = new JLabel();
     private final JButton addButton = new JButton();
-
     private final Color borderColorDefault = UIManager.getColor("Button.borderColor");
     private final Color borderColorSelected = JIPipeNotificationAction.Style.Success.getBackground();
     private final RoundedLineBorder border = new RoundedLineBorder(borderColorDefault, 1, 3);
+    private final JPanel indicator = new JPanel();
+    private final RoundedLineBorder indicatorBorder = new RoundedLineBorder(Color.GRAY, 2, 1);
 
     public NodeFinderDatasetListCellRenderer() {
         initialize();
@@ -36,11 +37,14 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
         categoryLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         categoryLabel.setForeground(Color.GRAY);
 
+        indicator.setBorder(indicatorBorder);
+
         Insets insets = new Insets(2,2,2,2);
-        add(iconLabel, new GridBagConstraints(0,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,insets,0,0));
-        add(nameLabel, new GridBagConstraints(1,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
-        add(categoryLabel, new GridBagConstraints(1,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
-        add(descriptionLabel, new GridBagConstraints(1,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
+        add(indicator, new GridBagConstraints(0,0,1,4,0,0,GridBagConstraints.NORTHWEST,GridBagConstraints.VERTICAL,insets,0,0));
+        add(iconLabel, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,insets,0,0));
+        add(nameLabel, new GridBagConstraints(2,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
+        add(categoryLabel, new GridBagConstraints(2,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
+        add(descriptionLabel, new GridBagConstraints(2,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
@@ -48,7 +52,7 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
         bottomPanel.add(addButton);
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(8,0,0,0));
-        add(bottomPanel, new GridBagConstraints(0,3,2,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,insets,0,0));
+        add(bottomPanel, new GridBagConstraints(1,3,2,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,insets,0,0));
 
         addButton.setOpaque(true);
         addButton.setUI(new RoundedButtonUI(3, JIPipeNotificationAction.Style.Success.getBackground().brighter(), JIPipeNotificationAction.Style.Success.getBackground().darker()));
@@ -67,11 +71,17 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
         iconLabel.setIcon(value.getIcon());
         nameLabel.setText(value.getName());
         categoryLabel.setText(value.getCategory().trim().replace("\n", " > "));
-        descriptionLabel.setText(StringUtils.limitWithEllipsis(Jsoup.parse(value.getDescription().getHtml()).text(), Math.max(128, list.getWidth() - 80), list.getFontMetrics(list.getFont())));
+        descriptionLabel.setText(StringUtils.limitWithEllipsis(value.getDescriptionPlain(), Math.max(128, list.getWidth() - 80), list.getFontMetrics(list.getFont())));
+
         if(value.exists()) {
+            indicator.setBackground(value.getFillColor());
+            indicatorBorder.setFill(value.getBorderColor());
+            indicator.setOpaque(true);
             addButton.setText("Connect");
         }
         else {
+            indicatorBorder.setFill(value.getFillColor());
+            indicator.setOpaque(false);
             addButton.setText("Add");
         }
         if (isSelected) {

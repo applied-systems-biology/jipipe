@@ -1,19 +1,20 @@
 package org.hkijena.jipipe.ui.grapheditor.nodefinder;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.database.ExistingPipelineNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.components.icons.JIPipeRunnerQueueThrobberIcon;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -33,7 +34,8 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     private final JToggleButton findExistingNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/find.png"));
     private final JToggleButton createNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/add.png"));
     private SearchTextField searchField;
-    private JList<JIPipeNodeDatabaseEntry> nodeList = new JList<>();
+    private final JList<JIPipeNodeDatabaseEntry> nodeList = new JList<>();
+    private final JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Node finder");
 
     public JIPipeNodeFinderDialogUI(JIPipeGraphCanvasUI canvasUI, JIPipeDataSlot querySlot) {
         this.canvasUI = canvasUI;
@@ -188,38 +190,60 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     }
 
     private void reloadList() {
-        DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
-        JIPipeNodeDatabase nodeDatabase;
-        if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
-            nodeDatabase = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getNodeDatabase();
+        queue.cancelAll();
+        queue.enqueue(new ReloadListRun(this));
+    }
+
+    public static class ReloadListRun extends AbstractJIPipeRunnable {
+
+        private final JIPipeNodeFinderDialogUI dialogUI;
+
+        public ReloadListRun(JIPipeNodeFinderDialogUI dialogUI) {
+            this.dialogUI = dialogUI;
         }
-        else {
-            nodeDatabase = JIPipeNodeDatabase.getInstance();
+
+        @Override
+        public String getTaskLabel() {
+            return "Reload list";
         }
-        JIPipeNodeDatabaseRole role;
-        if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
-            if(canvasUI.getGraph() == ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject().getCompartmentGraph()) {
-                role = JIPipeNodeDatabaseRole.CompartmentNode;
+
+        @Override
+        public void run() {
+            JIPipeGraphCanvasUI canvasUI = dialogUI.canvasUI;
+            JIPipeDataSlot querySlot = dialogUI.querySlot;
+            DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
+            JIPipeNodeDatabase nodeDatabase;
+            if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
+                nodeDatabase = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getNodeDatabase();
+            }
+            else {
+                nodeDatabase = JIPipeNodeDatabase.getInstance();
+            }
+            JIPipeNodeDatabaseRole role;
+            if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
+                if(canvasUI.getGraph() == ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getProject().getCompartmentGraph()) {
+                    role = JIPipeNodeDatabaseRole.CompartmentNode;
+                }
+                else {
+                    role = JIPipeNodeDatabaseRole.PipelineNode;
+                }
             }
             else {
                 role = JIPipeNodeDatabaseRole.PipelineNode;
             }
+            boolean allowExisting, allowNew;
+            if(querySlot != null) {
+                allowExisting = dialogUI.findExistingNodesToggle.isSelected();
+                allowNew = dialogUI.createNodesToggle.isSelected();
+            }
+            else {
+                allowExisting = false;
+                allowNew = true;
+            }
+            for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew)) {
+                model.addElement(entry);
+            }
+            dialogUI.nodeList.setModel(model);
         }
-        else {
-            role = JIPipeNodeDatabaseRole.PipelineNode;
-        }
-        boolean allowExisting, allowNew;
-        if(querySlot != null) {
-            allowExisting = findExistingNodesToggle.isSelected();
-            allowNew = createNodesToggle.isSelected();
-        }
-        else {
-            allowExisting = false;
-            allowNew = true;
-        }
-        for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(searchField.getText(), role, allowExisting, allowNew)) {
-            model.addElement(entry);
-        }
-        nodeList.setModel(model);
     }
 }

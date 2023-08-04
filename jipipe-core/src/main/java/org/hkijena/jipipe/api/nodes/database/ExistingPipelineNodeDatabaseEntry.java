@@ -8,9 +8,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.jsoup.Jsoup;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntry{
     private final String id;
@@ -18,10 +21,12 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     private final List<String> tokens = new ArrayList<>();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
+    private final String descriptionPlain;
 
     public ExistingPipelineNodeDatabaseEntry(String id, JIPipeGraphNode graphNode) {
         this.id = id;
         this.graphNode = graphNode;
+        this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
     }
@@ -105,6 +110,16 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     }
 
     @Override
+    public Color getFillColor() {
+        return graphNode.getInfo().getCategory().getFillColor();
+    }
+
+    @Override
+    public Color getBorderColor() {
+        return graphNode.getInfo().getCategory().getBorderColor();
+    }
+
+    @Override
     public String getCategory() {
         UUID uuid = graphNode.getCompartmentUUIDInParentGraph();
         if(uuid == null) {
@@ -113,5 +128,10 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
         else {
             return "Compartments\n" + graphNode.getCompartmentDisplayName();
         }
+    }
+
+    @Override
+    public String getDescriptionPlain() {
+        return descriptionPlain;
     }
 }

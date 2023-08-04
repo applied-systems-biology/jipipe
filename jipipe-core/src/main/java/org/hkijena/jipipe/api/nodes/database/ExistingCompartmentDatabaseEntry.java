@@ -6,8 +6,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.jsoup.Jsoup;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,10 +21,12 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     private final List<String> tokens = new ArrayList<>();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
+    private final String descriptionPlain;
 
     public ExistingCompartmentDatabaseEntry(String id, JIPipeProjectCompartment compartment) {
         this.id = id;
         this.compartment = compartment;
+        this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
     }
@@ -95,5 +99,20 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     @Override
     public Map<String, JIPipeDataSlotInfo> getOutputSlots() {
         return outputSlots;
+    }
+
+    @Override
+    public Color getFillColor() {
+        return Color.WHITE;
+    }
+
+    @Override
+    public Color getBorderColor() {
+        return Color.LIGHT_GRAY;
+    }
+
+    @Override
+    public String getDescriptionPlain() {
+        return descriptionPlain;
     }
 }

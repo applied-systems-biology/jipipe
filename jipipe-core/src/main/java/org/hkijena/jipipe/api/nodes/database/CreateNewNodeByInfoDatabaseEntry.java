@@ -8,8 +8,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.jsoup.Jsoup;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +24,12 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     private final List<String> tokens = new ArrayList<>();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
+    private final String descriptionPlain;
 
     public CreateNewNodeByInfoDatabaseEntry(String id, JIPipeNodeInfo nodeInfo) {
         this.id = id;
         this.nodeInfo = nodeInfo;
+        this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
     }
@@ -112,5 +116,20 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     @Override
     public Map<String, JIPipeDataSlotInfo> getOutputSlots() {
         return outputSlots;
+    }
+
+    @Override
+    public Color getFillColor() {
+        return nodeInfo.getCategory().getFillColor();
+    }
+
+    @Override
+    public Color getBorderColor() {
+        return nodeInfo.getCategory().getBorderColor();
+    }
+
+    @Override
+    public String getDescriptionPlain() {
+        return descriptionPlain;
     }
 }
