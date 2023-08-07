@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -55,6 +56,11 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
                 outputsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
         setPropertyPanel(propertyPanel, true);
+    }
+
+    @Override
+    public JIPipeNodeDatabaseRole getNodeDatabaseRole() {
+        return JIPipeNodeDatabaseRole.PipelineNode;
     }
 
     public RunSingleAlgorithmSettingsPanel getSettingsPanel() {

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateMenu;
@@ -404,7 +405,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         getAddableAlgorithms().clear();
         initializeAddNodesMenus(this, getMenuBar(), getAddableAlgorithms());
         initializeCommonActions();
-        updateNavigation();
     }
 
     @Override
@@ -506,5 +506,10 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                     ((UpdateCacheAction) event.getAction()).isOnlyPredecessors());
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
+    }
+
+    @Override
+    public JIPipeNodeDatabaseRole getNodeDatabaseRole() {
+        return JIPipeNodeDatabaseRole.PipelineNode;
     }
 }

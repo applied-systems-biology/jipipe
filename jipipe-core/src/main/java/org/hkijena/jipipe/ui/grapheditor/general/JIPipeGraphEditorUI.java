@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.database.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -30,10 +31,10 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.VerticalToolBar;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.ui.components.search.SearchBox;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.search.NodeDatabaseSearchBox;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -53,15 +54,17 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A panel around {@link JIPipeGraphCanvasUI} that comes with scrolling/panning, properties panel,
  * and a menu bar
  */
 public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener, Disposable, JIPipeGraph.GraphChangedEventListener,
-        JIPipeService.NodeInfoRegisteredEventListener, SearchBox.SelectedEventListener<Object>,
-        JIPipeGraphCanvasUI.NodeSelectionChangedEventListener, JIPipeGraphCanvasUI.NodeUISelectedEventListener, JIPipeGraphNodeUI.DefaultNodeUIActionRequestedEventListener, JIPipeGraphNodeUI.NodeUIActionRequestedEventListener {
+        JIPipeService.NodeInfoRegisteredEventListener,
+        JIPipeGraphCanvasUI.NodeSelectionChangedEventListener,
+        JIPipeGraphCanvasUI.NodeUISelectedEventListener,
+        JIPipeGraphNodeUI.DefaultNodeUIActionRequestedEventListener,
+        JIPipeGraphNodeUI.NodeUIActionRequestedEventListener, NodeDatabaseSearchBox.SelectedEventListener {
 
     public static final int FLAGS_NONE = 0;
     public static final int FLAGS_SPLIT_PANE_VERTICAL = 1;
@@ -80,7 +83,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private final GraphEditorUISettings graphUISettings;
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeGraph graph;
-    private final SearchBox<Object> navigator = new SearchBox<>();
+    private NodeDatabaseSearchBox nodeDatabaseSearchBox;
     private final JIPipeHistoryJournal historyJournal;
     private final int flags;
     private final JMenu graphMenu = new JMenu("Graph");
@@ -116,7 +119,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         JIPipe.getInstance().getNodeInfoRegisteredEventEmitter().subscribeWeak(this);
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
 
-        updateNavigation();
         initializeHotkeys();
         SwingUtilities.invokeLater(() -> {
             canvasUI.crop(true);
@@ -132,78 +134,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
         this(workbenchUI, graph, compartment, historyJournal, GraphEditorUISettings.getInstance(), JIPipeGraphEditorUI.FLAGS_NONE);
-    }
-
-    private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
-        if (searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String menuHayStack;
-        String descriptionHayStack;
-        if (value instanceof JIPipeGraphNodeUI) {
-            JIPipeGraphNode node = ((JIPipeGraphNodeUI) value).getNode();
-            nameHayStack = node.getName();
-            menuHayStack = node.getInfo().getCategory().getName() + "\n" + node.getInfo().getMenuPath();
-            for (JIPipeNodeMenuLocation location : node.getInfo().getAliases()) {
-                if (!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
-                    nameHayStack += location.getAlternativeName().toLowerCase();
-                }
-                menuHayStack += location.getMenuPath();
-            }
-            descriptionHayStack = StringUtils.orElse(node.getCustomDescription().getBody(), node.getInfo().getDescription().getBody());
-        } else if (value instanceof JIPipeNodeInfo) {
-            JIPipeNodeInfo info = (JIPipeNodeInfo) value;
-            if (info.isHidden())
-                return null;
-            nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-            menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                if (!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
-                    nameHayStack += location.getAlternativeName().toLowerCase();
-                }
-                menuHayStack += location.getMenuPath();
-            }
-            descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
-        } else if (value instanceof JIPipeNodeExample) {
-            JIPipeNodeExample example = (JIPipeNodeExample) value;
-            JIPipeNodeInfo info = example.getNodeInfo();
-            if (info.isHidden())
-                return null;
-            nameHayStack = StringUtils.orElse(example.getNodeTemplate().getName() + info.getName(), "").toLowerCase();
-            menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                if (!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
-                    nameHayStack += location.getAlternativeName().toLowerCase();
-                }
-                menuHayStack += location.getMenuPath();
-            }
-            descriptionHayStack = StringUtils.orElse(example.getNodeTemplate().getDescription().getBody() + info.getDescription().getBody(), "").toLowerCase();
-        } else {
-            return null;
-        }
-
-        nameHayStack = nameHayStack.toLowerCase();
-        menuHayStack = menuHayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[3];
-
-        for (int i = 0; i < searchStrings.length; i++) {
-            String string = searchStrings[i];
-            if (nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
-                ranks[0] -= 2;
-            if (menuHayStack.contains(string.toLowerCase()))
-                --ranks[1];
-            if (descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[2];
-        }
-
-        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
-            return null;
-
-        return ranks;
     }
 
     public static void installContextActionsInto(JToolBar toolBar, Set<JIPipeGraphNodeUI> selection, List<NodeUIContextAction> actionList, JIPipeGraphCanvasUI canvasUI) {
@@ -314,21 +244,19 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
 //        menuBar.setLayout(new BoxLayout(menuBar, BoxLayout.X_AXIS));
         add(menuBar, BorderLayout.NORTH);
-        navigator.setModel(new DefaultComboBoxModel<>());
-        navigator.setDataToString(o -> {
-            if (o instanceof JIPipeNodeInfo) {
-                return ((JIPipeNodeInfo) o).getName();
-            } else if (o instanceof JIPipeGraphNodeUI) {
-                return ((JIPipeGraphNodeUI) o).getNode().getName();
-            } else if (o instanceof JIPipeNodeExample) {
-                return ((JIPipeNodeExample) o).getNodeTemplate().getName() + ((JIPipeNodeExample) o).getNodeInfo().getName();
-            } else {
-                return String.valueOf(o);
-            }
-        });
-        navigator.setRenderer(new NavigationRenderer());
-        navigator.getSelectedEventEmitter().subscribe(this);
-        navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
+
+        // Init search box
+        JIPipeNodeDatabase database;
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            database = ((JIPipeProjectWorkbench) getWorkbench()).getNodeDatabase();
+        }
+        else {
+            database = JIPipeNodeDatabase.getInstance();
+        }
+        nodeDatabaseSearchBox = new NodeDatabaseSearchBox(getWorkbench(), canvasUI, getNodeDatabaseRole(), database);
+        nodeDatabaseSearchBox.setAllowNew(graphUISettings.getSearchSettings().isSearchFindNewNodes());
+        nodeDatabaseSearchBox.setAllowExisting(graphUISettings.getSearchSettings().isSearchFindExistingNodes());
+        nodeDatabaseSearchBox.getSelectedEventEmitter().subscribe(this);
 
         initializeEditingToolbar();
     }
@@ -444,8 +372,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(Box.createHorizontalGlue());
         menuBar.add(Box.createHorizontalStrut(8));
 
-        menuBar.add(navigator);
-        navigator.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
+        menuBar.add(nodeDatabaseSearchBox);
+        nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
         menuBar.add(Box.createHorizontalStrut(8));
 
         List<GraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
@@ -560,7 +488,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         searchEnabledItem.addActionListener(e -> {
             graphUISettings.getSearchSettings().setEnableSearch(searchEnabledItem.isSelected());
             JIPipe.getInstance().getSettingsRegistry().save();
-            navigator.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
+            nodeDatabaseSearchBox.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
             menuBar.revalidate();
         });
         searchMenu.add(searchEnabledItem);
@@ -570,7 +498,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         searchFindNewNodes.addActionListener(e -> {
             graphUISettings.getSearchSettings().setSearchFindNewNodes(searchFindNewNodes.isSelected());
             JIPipe.getInstance().getSettingsRegistry().save();
-            updateNavigation();
+            nodeDatabaseSearchBox.setAllowNew(searchFindNewNodes.isSelected());
         });
         searchMenu.add(searchFindNewNodes);
 
@@ -579,7 +507,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         searchFindExistingNodes.addActionListener(e -> {
             graphUISettings.getSearchSettings().setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
             JIPipe.getInstance().getSettingsRegistry().save();
-            updateNavigation();
+            nodeDatabaseSearchBox.setAllowExisting(searchFindExistingNodes.isSelected());
         });
         searchMenu.add(searchFindExistingNodes);
     }
@@ -922,38 +850,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     public void setAddableAlgorithms(Set<JIPipeNodeInfo> addableAlgorithms) {
         this.addableAlgorithms = addableAlgorithms;
-        updateNavigation();
-    }
-
-    /**
-     * Updates the navigation list
-     */
-    public void updateNavigation() {
-        boolean canCreateNewNodes = graphUISettings.getSearchSettings().isSearchFindNewNodes();
-        if (canCreateNewNodes) {
-            if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                canCreateNewNodes = !((JIPipeProjectWorkbench) getWorkbench()).getProject().getMetadata().getPermissions().isPreventAddingDeletingNodes();
-            }
-        }
-        DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
-        model.removeAllElements();
-        if (graphUISettings.getSearchSettings().isSearchFindExistingNodes()) {
-            for (JIPipeGraphNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
-                model.addElement(ui);
-            }
-        }
-        if (canCreateNewNodes) {
-            for (JIPipeNodeInfo info : addableAlgorithms.stream()
-                    .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList())) {
-                model.addElement(info);
-                if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                    for (JIPipeNodeExample example : ((JIPipeProjectWorkbench) getWorkbench()).getProject().getNodeExamples(info.getId())) {
-                        model.addElement(example);
-                    }
-                }
-            }
-        }
-        navigator.setModel(model);
+//        updateNavigation();
     }
 
     public JIPipeHistoryJournal getHistoryJournal() {
@@ -962,49 +859,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
-        updateNavigation();
+//        updateNavigation();
     }
 
     @Override
     public void onJIPipeNodeInfoRegistered(JIPipeService.NodeInfoRegisteredEvent event) {
         reloadMenuBar();
         getWorkbench().sendStatusBarText("Plugins were updated");
-    }
-
-    @Override
-    public void onSearchBoxSelectedEvent(SearchBox.SelectedEvent<Object> event) {
-        if (event.getValue() instanceof JIPipeGraphNodeUI) {
-            selectOnly((JIPipeGraphNodeUI) event.getValue());
-            navigator.setSelectedItem(null);
-        } else if (event.getValue() instanceof JIPipeNodeInfo) {
-            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
-                return;
-            JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
-            JIPipeGraphNode node = info.newInstance();
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
-            }
-            canvasUI.getScheduledSelection().clear();
-            canvasUI.getScheduledSelection().add(node);
-            graph.insertNode(node, getCompartment());
-            navigator.setSelectedItem(null);
-        } else if (event.getValue() instanceof JIPipeNodeExample) {
-            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
-                return;
-            JIPipeNodeExample example = (JIPipeNodeExample) event.getValue();
-            JIPipeNodeInfo info = example.getNodeInfo();
-            JIPipeGraphNode node = info.newInstance();
-            if (node instanceof JIPipeAlgorithm) {
-                ((JIPipeAlgorithm) node).loadExample(example);
-            }
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
-            }
-            canvasUI.getScheduledSelection().clear();
-            canvasUI.getScheduledSelection().add(node);
-            graph.insertNode(node, getCompartment());
-            navigator.setSelectedItem(null);
-        }
     }
 
     @Override
@@ -1037,6 +898,55 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     @Override
     public void onNodeUIActionRequested(JIPipeGraphNodeUI.NodeUIActionRequestedEvent event) {
 
+    }
+
+    public abstract JIPipeNodeDatabaseRole getNodeDatabaseRole();
+
+    @Override
+    public void onSearchBoxSelectedEvent(NodeDatabaseSearchBox.SelectedEvent event) {
+        JIPipeNodeDatabaseEntry entry = event.getValue();
+
+        if(entry instanceof CreateNewNodeByInfoDatabaseEntry) {
+
+            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
+                return;
+            JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo();
+            JIPipeGraphNode node = info.newInstance();
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
+            }
+            canvasUI.getScheduledSelection().clear();
+            canvasUI.getScheduledSelection().add(node);
+            graph.insertNode(node, getCompartment());
+            nodeDatabaseSearchBox.setSelectedItem(null);
+        }
+        else if(entry instanceof CreateNewNodeByExampleDatabaseEntry) {
+            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
+                return;
+            JIPipeNodeExample example = ((CreateNewNodeByExampleDatabaseEntry) entry).getExample();
+            JIPipeNodeInfo info = example.getNodeInfo();
+            JIPipeGraphNode node = info.newInstance();
+            if (node instanceof JIPipeAlgorithm) {
+                ((JIPipeAlgorithm) node).loadExample(example);
+            }
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
+            }
+            canvasUI.getScheduledSelection().clear();
+            canvasUI.getScheduledSelection().add(node);
+            graph.insertNode(node, getCompartment());
+            nodeDatabaseSearchBox.setSelectedItem(null);
+        }
+        else if(entry instanceof ExistingPipelineNodeDatabaseEntry) {
+            JIPipeGraphNode graphNode = ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode();
+            selectOnly(canvasUI.getNodeUIs().get(graphNode));
+            nodeDatabaseSearchBox.setSelectedItem(null);
+        }
+        else if(entry instanceof ExistingCompartmentDatabaseEntry) {
+            JIPipeGraphNode graphNode = ((ExistingCompartmentDatabaseEntry) entry).getCompartment();
+            selectOnly(canvasUI.getNodeUIs().get(graphNode));
+            nodeDatabaseSearchBox.setSelectedItem(null);
+        }
     }
 
     /**

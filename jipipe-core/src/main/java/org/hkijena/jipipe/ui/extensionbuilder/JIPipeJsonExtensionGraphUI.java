@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
@@ -119,7 +120,6 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
         getAddableAlgorithms().clear();
         JIPipePipelineGraphEditorUI.initializeAddNodesMenus(this, menuBar, getAddableAlgorithms());
         initializeCommonActions();
-        updateNavigation();
     }
 
 //    @Override
@@ -148,5 +148,10 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
             setPropertyPanel(new JIPipeJsonExtensionMultiAlgorithmSelectionPanelUI((JIPipeJsonExtensionWorkbench) getWorkbench(), getCanvasUI(),
                     getSelection().stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet())), true);
         }
+    }
+
+    @Override
+    public JIPipeNodeDatabaseRole getNodeDatabaseRole() {
+        return JIPipeNodeDatabaseRole.PipelineNode;
     }
 }

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.compartments.JIPipeExportedCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -322,5 +323,10 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
                     ((UpdateCacheAction) event.getAction()).isOnlyPredecessors());
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
+    }
+
+    @Override
+    public JIPipeNodeDatabaseRole getNodeDatabaseRole() {
+        return JIPipeNodeDatabaseRole.CompartmentNode;
     }
 }

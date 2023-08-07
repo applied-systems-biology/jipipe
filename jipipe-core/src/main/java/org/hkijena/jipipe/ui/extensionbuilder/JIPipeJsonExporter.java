@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -167,6 +168,11 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
                     getCanvasUI(),
                     getSelection().stream().map(JIPipeGraphNodeUI::getNode).collect(Collectors.toSet())), true);
         }
+    }
+
+    @Override
+    public JIPipeNodeDatabaseRole getNodeDatabaseRole() {
+        return JIPipeNodeDatabaseRole.PipelineNode;
     }
 
     /**
