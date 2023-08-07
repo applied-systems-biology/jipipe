@@ -3,10 +3,10 @@ package org.hkijena.jipipe.api.nodes.database;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.util.Map;
 
 public interface JIPipeNodeDatabaseEntry {
@@ -24,5 +24,7 @@ public interface JIPipeNodeDatabaseEntry {
     Map<String, JIPipeDataSlotInfo> getOutputSlots();
     Color getFillColor();
     Color getBorderColor();
-    void addToGraph(JIPipeGraphCanvasUI canvasUI);
+    JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI);
+    boolean canAddInputSlots();
+    boolean canAddOutputSlots();
 }

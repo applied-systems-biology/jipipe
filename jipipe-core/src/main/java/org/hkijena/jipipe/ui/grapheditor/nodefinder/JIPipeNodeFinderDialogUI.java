@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
@@ -11,8 +12,10 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -25,6 +28,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class JIPipeNodeFinderDialogUI extends JDialog {
+    private static String LAST_SEARCH = "";
     private final JIPipeGraphCanvasUI canvasUI;
     private final JIPipeDataSlot querySlot;
     private final JIPipeGraph queryGraph;
@@ -104,7 +108,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         }
         if(querySlot != null) {
             if(querySlot.isInput()) {
-                if(!entry.getInputSlots().isEmpty() && menu.getComponentCount() > 0) {
+                if((!entry.getInputSlots().isEmpty() || entry.canAddOutputSlots()) && menu.getComponentCount() > 0) {
                     menu.addSeparator();
                 }
                 for (Map.Entry<String, JIPipeDataSlotInfo> infoEntry : entry.getOutputSlots().entrySet()) {
@@ -113,9 +117,16 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                             JIPipe.getDataTypes().getIconFor(infoEntry.getValue().getDataClass()),
                             () -> addAndConnectEntry(entry, infoEntry.getValue())));
                 }
+                if(entry.canAddOutputSlots()) {
+                    menu.addSeparator();
+                    menu.add(UIUtils.createMenuItem("Connect to new slot",
+                            "Connect to a new slot. Add the node if required.",
+                            UIUtils.getIconFromResources("actions/add.png"),
+                            () -> addAndConnectEntry(entry, null)));
+                }
             }
             else {
-                if(!entry.getInputSlots().isEmpty() && menu.getComponentCount() > 0) {
+                if((!entry.getInputSlots().isEmpty() || entry.canAddInputSlots()) && menu.getComponentCount() > 0) {
                     menu.addSeparator();
                 }
                 for (Map.Entry<String, JIPipeDataSlotInfo> infoEntry : entry.getInputSlots().entrySet()) {
@@ -124,6 +135,13 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                             JIPipe.getDataTypes().getIconFor(infoEntry.getValue().getDataClass()),
                             () -> addAndConnectEntry(entry, infoEntry.getValue())));
                 }
+                if(entry.canAddInputSlots()) {
+                    menu.addSeparator();
+                    menu.add(UIUtils.createMenuItem("Connect to new slot",
+                            "Connect to a new slot. Add the node if required.",
+                            UIUtils.getIconFromResources("actions/add.png"),
+                            () -> addAndConnectEntry(entry, null)));
+                }
             }
 
         }
@@ -131,11 +149,51 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     }
 
     private void addAndConnectEntry(JIPipeNodeDatabaseEntry entry, JIPipeDataSlotInfo slotInfo) {
-
+        JIPipeGraphNodeUI nodeUI = entry.addToGraph(canvasUI);
+        JIPipeGraphNode node = nodeUI.getNode();
+        if(querySlot != null) {
+            if(querySlot.isInput()) {
+                if(slotInfo != null) {
+                    JIPipeDataSlot targetSlot = node.getOutputSlot(slotInfo.getName());
+                    if(targetSlot != null) {
+                        canvasUI.getGraph().connect(targetSlot, querySlot);
+                    }
+                }
+                else {
+                    AddAlgorithmSlotPanel panel = AddAlgorithmSlotPanel.showDialog(SwingUtilities.getWindowAncestor(canvasUI),
+                            canvasUI.getHistoryJournal(),
+                            node,
+                            JIPipeSlotType.Output);
+                    if(!panel.getAddedSlots().isEmpty()) {
+                        canvasUI.getGraph().connect(panel.getAddedSlots().get(0), querySlot);
+                    }
+                }
+            }
+            else {
+                if(slotInfo != null) {
+                    JIPipeDataSlot targetSlot = node.getInputSlot(slotInfo.getName());
+                    if(targetSlot != null) {
+                        canvasUI.getGraph().connect(querySlot, targetSlot);
+                    }
+                }
+                else {
+                    AddAlgorithmSlotPanel panel = AddAlgorithmSlotPanel.showDialog(SwingUtilities.getWindowAncestor(canvasUI),
+                            canvasUI.getHistoryJournal(),
+                            node,
+                            JIPipeSlotType.Input);
+                    if(!panel.getAddedSlots().isEmpty()) {
+                        canvasUI.getGraph().connect(querySlot, panel.getAddedSlots().get(0));
+                    }
+                }
+            }
+        }
+        LAST_SEARCH = searchField.getText();
+        setVisible(false);
     }
 
     private void addEntryToGraph(JIPipeNodeDatabaseEntry entry) {
         entry.addToGraph(canvasUI);
+        LAST_SEARCH = searchField.getText();
         setVisible(false);
     }
 
@@ -168,7 +226,9 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         mainToolBar.add(Box.createHorizontalStrut(8));
 
         searchField = new SearchTextField();
+        searchField.setText(LAST_SEARCH);
         searchField.addActionListener(e -> reloadList());
+        searchField.getTextField().selectAll();
         mainToolBar.add(searchField);
 
         if(querySlot != null) {

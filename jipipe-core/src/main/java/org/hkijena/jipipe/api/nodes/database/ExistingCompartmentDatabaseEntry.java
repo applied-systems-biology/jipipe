@@ -7,13 +7,12 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry{
@@ -113,12 +112,22 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public void addToGraph(JIPipeGraphCanvasUI canvasUI) {
-
+    public JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI) {
+        return canvasUI.getNodeUIs().get(compartment);
     }
 
     @Override
     public String getDescriptionPlain() {
         return descriptionPlain;
+    }
+
+    @Override
+    public boolean canAddInputSlots() {
+        return false;
+    }
+
+    @Override
+    public boolean canAddOutputSlots() {
+        return false;
     }
 }

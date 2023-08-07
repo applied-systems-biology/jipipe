@@ -1957,15 +1957,15 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 //
 //        algorithmFinderUI.getAlgorithmFinderSuccessEventEmitter().subscribeLambda((emitter, event) -> dialog.dispose());
 //
-//        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
-//        if (layoutHelperEnabled) {
-//            Point cursorLocation = new Point();
-//            Point slotLocation = getSlotLocation(slot).min;
-//            cursorLocation.x = getX() + slotLocation.x;
-//            cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
-//            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
-//            invalidateAndRepaint(false, true);
-//        }
+        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
+        if (layoutHelperEnabled) {
+            Point cursorLocation = new Point();
+            Point slotLocation = getSlotLocation(slot).min;
+            cursorLocation.x = getX() + slotLocation.x;
+            cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
+            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+            invalidateAndRepaint(false, true);
+        }
 //
 //        dialog.setVisible(true);
         JIPipeNodeFinderDialogUI dialogUI = new JIPipeNodeFinderDialogUI(getGraphCanvasUI(), slot);
@@ -1985,15 +1985,15 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 //
 //        algorithmFinderUI.getAlgorithmFinderSuccessEventEmitter().subscribeLambda((emitter, event) -> dialog.dispose());
 //
-//        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
-//        if (layoutHelperEnabled) {
-//            Point cursorLocation = new Point();
-//            Point slotLocation = getSlotLocation(slot).min;
-//            cursorLocation.x = getX() + slotLocation.x;
-//            cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
-//            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
-//            invalidateAndRepaint(false, true);
-//        }
+        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
+        if (layoutHelperEnabled) {
+            Point cursorLocation = new Point();
+            Point slotLocation = getSlotLocation(slot).min;
+            cursorLocation.x = getX() + slotLocation.x;
+            cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
+            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+            invalidateAndRepaint(false, true);
+        }
 //
 //        dialog.setVisible(true);
         JIPipeNodeFinderDialogUI dialogUI = new JIPipeNodeFinderDialogUI(getGraphCanvasUI(), slot);

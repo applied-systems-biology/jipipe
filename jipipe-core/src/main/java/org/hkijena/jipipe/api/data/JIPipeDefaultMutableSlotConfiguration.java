@@ -37,8 +37,8 @@ import java.util.stream.Collectors;
 public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotConfiguration {
 
     private final SlotConfigurationChangedEventEmitter slotConfigurationChangedEventEmitter = new SlotConfigurationChangedEventEmitter();
-    private Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
-    private Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
+    private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
+    private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private List<String> inputSlotOrder = new ArrayList<>();
     private List<String> outputSlotOrder = new ArrayList<>();
 

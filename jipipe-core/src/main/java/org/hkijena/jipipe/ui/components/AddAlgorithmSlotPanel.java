@@ -91,8 +91,9 @@ public class AddAlgorithmSlotPanel extends JPanel {
      * @param historyJournal the graph history
      * @param algorithm      target algorithm
      * @param slotType       slot type to be created
+     * @return the panel
      */
-    public static void showDialog(Component parent, JIPipeHistoryJournal historyJournal, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
+    public static AddAlgorithmSlotPanel showDialog(Component parent, JIPipeHistoryJournal historyJournal, JIPipeGraphNode algorithm, JIPipeSlotType slotType) {
         JDialog dialog = new JDialog();
         AddAlgorithmSlotPanel panel = new AddAlgorithmSlotPanel(algorithm, slotType, historyJournal);
         panel.setDialog(dialog);
@@ -104,6 +105,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         dialog.setLocationRelativeTo(parent);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
+        return panel;
     }
 
     public JList<JIPipeDataInfo> getDatatypeList() {

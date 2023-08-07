@@ -2,20 +2,20 @@ package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeGraphNodeUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jsoup.Jsoup;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.List;
 
 public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEntry {
     private final String id;
@@ -24,21 +24,22 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final String descriptionPlain;
+    private final JIPipeGraphNode exampleNode;
 
     public CreateNewNodeByExampleDatabaseEntry(String id, JIPipeNodeExample example) {
         this.id = id;
         this.example = example;
+        this.exampleNode = example.getNodeTemplate().getGraph().getGraphNodes().iterator().next();
         this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
     }
 
     private void initializeSlots() {
-        JIPipeGraphNode node = example.getNodeTemplate().getGraph().getGraphNodes().iterator().next();
-        for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+        for (JIPipeInputDataSlot inputSlot : exampleNode.getInputSlots()) {
             inputSlots.put(inputSlot.getName(), inputSlot.getInfo());
         }
-        for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
+        for (JIPipeOutputDataSlot outputSlot : exampleNode.getOutputSlots()) {
             outputSlots.put(outputSlot.getName(), outputSlot.getInfo());
         }
     }
@@ -127,16 +128,29 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     }
 
     @Override
-    public void addToGraph(JIPipeGraphCanvasUI canvasUI) {
+    public JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI) {
         JIPipeGraphNode copy = example.getNodeTemplate().getGraph().getGraphNodes().iterator().next().duplicate();
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeAddNode(copy, canvasUI.getCompartment());
         }
         canvasUI.getGraph().insertNode(copy, canvasUI.getCompartment());
+        return canvasUI.getNodeUIs().get(copy);
     }
 
     @Override
     public String getDescriptionPlain() {
         return descriptionPlain;
+    }
+
+    @Override
+    public boolean canAddInputSlots() {
+        return exampleNode.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration &&
+                ((JIPipeMutableSlotConfiguration) exampleNode.getSlotConfiguration()).canAddInputSlot();
+    }
+
+    @Override
+    public boolean canAddOutputSlots() {
+        return exampleNode.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration &&
+                ((JIPipeMutableSlotConfiguration) exampleNode.getSlotConfiguration()).canAddOutputSlot();
     }
 }

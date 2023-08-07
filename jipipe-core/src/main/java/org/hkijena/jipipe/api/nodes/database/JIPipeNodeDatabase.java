@@ -78,7 +78,7 @@ public class JIPipeNodeDatabase {
         return updater;
     }
 
-    public double weight(double x, double xMax) {
+    public static double weight(double x, double xMax) {
         return Math.exp(-Math.pow(x/xMax, 2));
     }
 
