@@ -1,6 +1,9 @@
 package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByExampleDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.CreateNewNodeByInfoDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -19,12 +22,13 @@ public class NodeToolBoxTransferHandler extends TransferHandler {
     protected Transferable createTransferable(JComponent c) {
         if (c instanceof JList) {
             JIPipeGraph graph = new JIPipeGraph();
-            for (Object obj : ((JList<?>) c).getSelectedValuesList()) {
-                if (obj instanceof JIPipeNodeInfo) {
-                    JIPipeNodeInfo info = (JIPipeNodeInfo) obj;
+            for (JIPipeNodeDatabaseEntry obj : ((JList<JIPipeNodeDatabaseEntry>) c).getSelectedValuesList()) {
+                if(obj instanceof CreateNewNodeByInfoDatabaseEntry) {
+                    JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
                     graph.insertNode(info.newInstance());
-                } else if (obj instanceof JIPipeNodeExample) {
-                    JIPipeNodeExample example = (JIPipeNodeExample) obj;
+                }
+                else if(obj instanceof CreateNewNodeByExampleDatabaseEntry) {
+                    JIPipeNodeExample example = ((CreateNewNodeByExampleDatabaseEntry) obj).getExample();
                     JIPipeNodeInfo info = example.getNodeInfo();
                     JIPipeGraphNode node = info.newInstance();
                     if (node instanceof JIPipeAlgorithm) {

@@ -1,9 +1,7 @@
 package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
@@ -34,14 +32,12 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
     }
 
     private void initializeSlots() {
-        inputSlots.put("Input", new JIPipeDataSlotInfo(JIPipeCompartmentOutputData.class,
-                JIPipeSlotType.Input,
-                "Input",
-                null));
-        outputSlots.put("Output", new JIPipeDataSlotInfo(JIPipeCompartmentOutputData.class,
-                JIPipeSlotType.Output,
-                "Output",
-                null));
+        for (JIPipeInputDataSlot inputSlot : graphNode.getInputSlots()) {
+            inputSlots.put(inputSlot.getName(), inputSlot.getInfo());
+        }
+        for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
+            outputSlots.put(outputSlot.getName(), outputSlot.getInfo());
+        }
     }
 
     private void initializeTokens() {

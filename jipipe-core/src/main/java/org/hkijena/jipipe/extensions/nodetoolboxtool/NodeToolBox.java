@@ -2,39 +2,50 @@ package org.hkijena.jipipe.extensions.nodetoolboxtool;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.database.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoOrExamplesListCellRenderer;
+import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeDatabaseEntryListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.search.RankedData;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 public class NodeToolBox extends JIPipeWorkbenchPanel {
 
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
-    private JList<Object> algorithmList;
+    private JList<JIPipeNodeDatabaseEntry> algorithmList;
     private SearchTextField searchField;
+    private final JIPipeNodeDatabase database;
+    private final JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Node toolbox");
 
     public NodeToolBox(JIPipeWorkbench workbench, boolean isDocked) {
         super(workbench);
         this.isDocked = isDocked;
+        this.database = workbench instanceof JIPipeProjectWorkbench ?
+                ((JIPipeProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
         initialize();
         reloadAlgorithmList();
+    }
+
+    private void reloadAlgorithmList() {
+        queue.cancelAll();
+        queue.enqueue(new ReloadListRun(this));
     }
 
     public static void openNewToolBoxWindow(JIPipeWorkbench workbench, Component parent) {
@@ -50,49 +61,6 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         window.setSize(300, 700);
         window.setLocationRelativeTo(parent);
         window.setVisible(true);
-    }
-
-    private static int[] rankNavigationEntry(JIPipeNodeInfo info, String[] searchStrings) {
-        if (searchStrings == null || searchStrings.length == 0)
-            return new int[0];
-        String nameHayStack;
-        String menuHayStack;
-        String descriptionHayStack;
-        if (info.isHidden())
-            return null;
-        nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
-        menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
-        descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
-
-        for (JIPipeNodeMenuLocation location : info.getAliases()) {
-            if (!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
-                nameHayStack += location.getAlternativeName().toLowerCase();
-            }
-            menuHayStack += location.getMenuPath();
-        }
-
-        nameHayStack = nameHayStack.toLowerCase();
-        menuHayStack = menuHayStack.toLowerCase();
-        descriptionHayStack = descriptionHayStack.toLowerCase();
-
-        int[] ranks = new int[3];
-
-        for (int i = 0; i < searchStrings.length; i++) {
-            String string = searchStrings[i];
-            if (nameHayStack.contains(string.toLowerCase()))
-                --ranks[0];
-            if (i == 0 && nameHayStack.startsWith(string.toLowerCase()))
-                ranks[0] -= 2;
-            if (menuHayStack.contains(string.toLowerCase()))
-                --ranks[1];
-            if (descriptionHayStack.contains(string.toLowerCase()))
-                --ranks[2];
-        }
-
-        if (ranks[0] == 0 && ranks[1] == 0 && ranks[2] == 0)
-            return null;
-
-        return ranks;
     }
 
     public JToolBar getToolBar() {
@@ -119,13 +87,13 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         algorithmList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         algorithmList.setBorder(BorderFactory.createEtchedBorder());
-        algorithmList.setCellRenderer(new JIPipeNodeInfoOrExamplesListCellRenderer());
+        algorithmList.setCellRenderer(new JIPipeNodeDatabaseEntryListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> {
-            if (algorithmList.getSelectedValue() instanceof JIPipeNodeInfo) {
-                selectNodeInfo((JIPipeNodeInfo) algorithmList.getSelectedValue());
-            } else if (algorithmList.getSelectedValue() instanceof JIPipeNodeExample) {
-                selectNodeExample((JIPipeNodeExample) algorithmList.getSelectedValue());
+            if (algorithmList.getSelectedValue() instanceof CreateNewNodeByInfoDatabaseEntry) {
+                selectNodeInfo(((CreateNewNodeByInfoDatabaseEntry) algorithmList.getSelectedValue()).getNodeInfo());
+            } else if (algorithmList.getSelectedValue() instanceof CreateNewNodeByExampleDatabaseEntry) {
+                selectNodeExample(((CreateNewNodeByExampleDatabaseEntry) algorithmList.getSelectedValue()).getExample());
             }
         });
         algorithmList.setDragEnabled(true);
@@ -134,28 +102,6 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, scrollPane, documentationReader, AutoResizeSplitPane.RATIO_3_TO_1);
         add(splitPane, BorderLayout.CENTER);
-    }
-
-    private void reloadAlgorithmList() {
-        List<JIPipeNodeInfo> infos = getFilteredAndSortedInfos();
-        DefaultListModel<Object> model = new DefaultListModel<>();
-        for (JIPipeNodeInfo info : infos) {
-            if (info.isHidden() || info.getCategory() == null || info.getCategory() instanceof InternalNodeTypeCategory) {
-                continue;
-            }
-            model.addElement(info);
-            if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                for (JIPipeNodeExample example : ((JIPipeProjectWorkbench) getWorkbench()).getProject().getNodeExamples(info.getId())) {
-                    model.addElement(example);
-                }
-            }
-        }
-        algorithmList.setModel(model);
-
-        if (!model.isEmpty())
-            algorithmList.setSelectedIndex(0);
-        else
-            selectNodeInfo(null);
     }
 
     private void selectNodeExample(JIPipeNodeExample example) {
@@ -234,10 +180,34 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         }
     }
 
-    private List<JIPipeNodeInfo> getFilteredAndSortedInfos() {
-        return RankedData.getSortedAndFilteredData(JIPipe.getNodes().getRegisteredNodeInfos().values(),
-                JIPipeNodeInfo::getName,
-                NodeToolBox::rankNavigationEntry,
-                searchField.getSearchStrings());
+    public static class ReloadListRun extends AbstractJIPipeRunnable {
+
+        private final NodeToolBox toolBox;
+
+        public ReloadListRun(NodeToolBox toolBox) {
+            this.toolBox = toolBox;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Reload list";
+        }
+
+        @Override
+        public void run() {
+            DefaultListModel<JIPipeNodeDatabaseEntry> model = new DefaultListModel<>();
+            for (JIPipeNodeDatabaseEntry entry : toolBox.database.query(toolBox.searchField.getText(),
+                    JIPipeNodeDatabaseRole.PipelineNode,
+                    false,
+                    true)) {
+                model.addElement(entry);
+            }
+            toolBox.algorithmList.setModel(model);
+
+            if (!model.isEmpty())
+                toolBox.algorithmList.setSelectedIndex(0);
+            else
+                toolBox.selectNodeInfo(null);
+        }
     }
 }

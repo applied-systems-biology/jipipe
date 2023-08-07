@@ -96,15 +96,15 @@ public class JIPipeNodeDatabase {
         }
     }
 
-    public double queryTextRanking(JIPipeNodeDatabaseEntry entry, List<String> textTokens) {
+    public double queryTextRanking(JIPipeNodeDatabaseEntry entry, String text, List<String> textTokens) {
         if(textTokens.isEmpty())
             return Double.POSITIVE_INFINITY;
         double rank = 0;
+        WeightedTokens tokens = entry.getTokens();
+
         for (int i = 0; i < textTokens.size(); i++) {
             String textToken = textTokens.get(i);
             double textTokenWeight = weight(i, textTokens.size());
-            WeightedTokens tokens = entry.getTokens();
-
             double bestDistanceTokenWeight = 0;
 
             for (int j = 0; j < tokens.size(); j++) {
@@ -119,10 +119,14 @@ public class JIPipeNodeDatabase {
                     }
                 }
             }
-
-
             rank -= textTokenWeight * bestDistanceTokenWeight;
         }
+
+        // rank exact name matching
+        if(entry.getName().toLowerCase().startsWith(text.toLowerCase())) {
+            rank *= 1.2 + text.length() / 10.0;
+        }
+
         return rank;
     }
 
@@ -140,7 +144,7 @@ public class JIPipeNodeDatabase {
             result.add(entry);
 
 
-            double ranking = queryTextRanking(entry, textTokens);
+            double ranking = queryTextRanking(entry, text, textTokens);
             if(entry.isDeprecated()) {
                 ranking *= 0.8;
             }
@@ -185,7 +189,7 @@ public class JIPipeNodeDatabase {
                 continue;
             }
 
-            double textRanking = queryTextRanking(entry, textTokens);
+            double textRanking = queryTextRanking(entry, text, textTokens);
             double dataTypeRanking = -weight(bestConversionDistance, 5);
             double ranking = textTokens.isEmpty() ? dataTypeRanking : textRanking;
             if(entry.isDeprecated()) {

@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.database.ExistingPipelineNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
@@ -325,6 +326,9 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                         allowNew,
                         querySlot.getSlotType(),
                         querySlot.getInfo().getDataClass())) {
+                    if(entry instanceof ExistingPipelineNodeDatabaseEntry && ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode() == querySlot.getNode()) {
+                        continue;
+                    }
                     model.addElement(entry);
                 }
             }
