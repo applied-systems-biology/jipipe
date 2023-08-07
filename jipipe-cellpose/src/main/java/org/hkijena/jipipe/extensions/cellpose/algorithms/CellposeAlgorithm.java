@@ -50,7 +50,7 @@ import java.util.*;
 /**
  * Improved version of {@link CellposeAlgorithm_Old} that utilizes the Cellpose CLI
  */
-@JIPipeDocumentation(name = "Cellpose (2.x)", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
+@JIPipeDocumentation(name = "Cellpose prediction (2.x)", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
         "Cellpose for each 2D image plane. " +
         "This node can generate a multitude of outputs, although only ROI is activated by default. " +
         "Go to the 'Outputs' parameter section to enable the other outputs." +

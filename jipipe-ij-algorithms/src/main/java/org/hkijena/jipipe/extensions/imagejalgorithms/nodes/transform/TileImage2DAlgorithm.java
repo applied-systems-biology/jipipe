@@ -34,7 +34,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Tile image", description = "This node is deprecated. Re-add 'Tile image'.\n\n" +
+@JIPipeDocumentation(name = "Tile image", description =
         "Splits the image into tiles of a predefined size. If the image is not perfectly tileable, it is resized.")
 @JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)

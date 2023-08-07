@@ -37,6 +37,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private Class<? extends JIPipeData> dataSourceMenuLocation = JIPipeEmptyData.class;
     private boolean hidden = false;
     private boolean runnable = true;
+    private boolean deprecated = false;
     private List<String> additionalCitations = new ArrayList<>();
 
     private List<JIPipeNodeMenuLocation> aliases = new ArrayList<>();
@@ -197,5 +198,14 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setAliases(List<JIPipeNodeMenuLocation> aliases) {
         this.aliases = aliases;
+    }
+
+    @Override
+    public boolean isDeprecated() {
+        return deprecated;
+    }
+
+    public void setDeprecated(boolean deprecated) {
+        this.deprecated = deprecated;
     }
 }

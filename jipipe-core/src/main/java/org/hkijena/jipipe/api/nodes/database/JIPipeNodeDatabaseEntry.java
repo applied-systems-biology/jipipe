@@ -27,4 +27,5 @@ public interface JIPipeNodeDatabaseEntry {
     JIPipeGraphNodeUI addToGraph(JIPipeGraphCanvasUI canvasUI);
     boolean canAddInputSlots();
     boolean canAddOutputSlots();
+    boolean isDeprecated();
 }

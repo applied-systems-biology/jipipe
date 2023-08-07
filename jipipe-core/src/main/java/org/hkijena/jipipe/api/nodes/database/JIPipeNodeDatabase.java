@@ -3,14 +3,16 @@ package org.hkijena.jipipe.api.nodes.database;
 import gnu.trove.map.TObjectDoubleMap;
 import gnu.trove.map.hash.TObjectDoubleHashMap;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Allows to query nodes
@@ -82,6 +84,18 @@ public class JIPipeNodeDatabase {
         return Math.exp(-Math.pow(x/xMax, 2));
     }
 
+    public static int dataTypeDistance(Class<? extends JIPipeData> from, Class<? extends JIPipeData> to) {
+        if(from == to) {
+            return 0;
+        }
+        else if(to.isAssignableFrom(from)) {
+            return ReflectionUtils.getClassDistance(to, from);
+        }
+        else {
+            return JIPipe.getDataTypes().getConversionDistance(from, to) * 5; // Weight these higher
+        }
+    }
+
     public double queryTextRanking(JIPipeNodeDatabaseEntry entry, List<String> textTokens) {
         if(textTokens.isEmpty())
             return Double.POSITIVE_INFINITY;
@@ -124,7 +138,62 @@ public class JIPipeNodeDatabase {
             if(!entry.exists() && !allowNew)
                 continue;
             result.add(entry);
-            rankMap.put(entry, queryTextRanking(entry, textTokens));
+
+
+            double ranking = queryTextRanking(entry, textTokens);
+            if(entry.isDeprecated()) {
+                ranking *= 0.8;
+            }
+
+            rankMap.put(entry, ranking);
+        }
+        result.sort(Comparator.comparing(rankMap::get));
+        return result;
+    }
+
+    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabaseRole role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
+        List<String> textTokens = buildTokens(Collections.singletonList(text));
+        List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
+        TObjectDoubleMap<JIPipeNodeDatabaseEntry> rankMap = new TObjectDoubleHashMap<>();
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            if(entry.getRole() != role)
+                continue;
+            if(entry.exists() && !allowExisting)
+                continue;
+            if(!entry.exists() && !allowNew)
+                continue;
+
+            int bestConversionDistance = Integer.MAX_VALUE;
+            if(targetSlotType == JIPipeSlotType.Input) {
+                for (Map.Entry<String, JIPipeDataSlotInfo> slotInfoEntry : entry.getOutputSlots().entrySet()) {
+                    int conversionDistance = dataTypeDistance(slotInfoEntry.getValue().getDataClass(), targetDataType);
+                    if(conversionDistance >= 0 && conversionDistance < bestConversionDistance) {
+                        bestConversionDistance = conversionDistance;
+                    }
+                }
+            }
+            else {
+                for (Map.Entry<String, JIPipeDataSlotInfo> slotInfoEntry : entry.getInputSlots().entrySet()) {
+                    int conversionDistance = dataTypeDistance(targetDataType, slotInfoEntry.getValue().getDataClass());
+                    if(conversionDistance >= 0 && conversionDistance < bestConversionDistance) {
+                        bestConversionDistance = conversionDistance;
+                    }
+                }
+            }
+
+            if(bestConversionDistance == Integer.MAX_VALUE) {
+                continue;
+            }
+
+            double textRanking = queryTextRanking(entry, textTokens);
+            double dataTypeRanking = -weight(bestConversionDistance, 5);
+            double ranking = textTokens.isEmpty() ? dataTypeRanking : textRanking;
+            if(entry.isDeprecated()) {
+                ranking *= 0.8;
+            }
+
+            result.add(entry);
+            rankMap.put(entry, ranking);
         }
         result.sort(Comparator.comparing(rankMap::get));
         return result;

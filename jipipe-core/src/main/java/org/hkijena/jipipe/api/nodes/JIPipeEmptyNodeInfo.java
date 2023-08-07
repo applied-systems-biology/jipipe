@@ -94,6 +94,11 @@ public class JIPipeEmptyNodeInfo implements JIPipeNodeInfo {
         return true;
     }
 
+    @Override
+    public boolean isDeprecated() {
+        return false;
+    }
+
     /**
      * Serializes the empty algorithm info
      */

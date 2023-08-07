@@ -130,4 +130,9 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     public boolean canAddOutputSlots() {
         return false;
     }
+
+    @Override
+    public boolean isDeprecated() {
+        return false;
+    }
 }

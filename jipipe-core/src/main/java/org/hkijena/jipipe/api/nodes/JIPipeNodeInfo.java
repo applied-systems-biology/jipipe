@@ -203,6 +203,14 @@ public interface JIPipeNodeInfo {
     boolean isHidden();
 
     /**
+     * Returns true if this node is deprecated
+     * @return if the node is deprecated
+     */
+    default boolean isDeprecated() {
+        return false;
+    }
+
+    /**
      * Indicates that the node should carry a workload. Defaults to true.
      *
      * @return if the node carries a workload

@@ -229,6 +229,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         searchField.setText(LAST_SEARCH);
         searchField.addActionListener(e -> reloadList());
         searchField.getTextField().selectAll();
+        searchField.getTextField().addActionListener(e -> openFirstEntryMenu());
         mainToolBar.add(searchField);
 
         if(querySlot != null) {
@@ -254,6 +255,16 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         toolbarPanel.add(mainToolBar);
 
         getContentPane().add(toolbarPanel, BorderLayout.NORTH);
+    }
+
+    private void openFirstEntryMenu() {
+        if(nodeList.getModel().getSize() > 0) {
+            nodeList.setSelectedIndex(0);
+            Point point = nodeList.indexToLocation(0);
+            point.x += nodeList.getWidth() - 64;
+            point.y += 100;
+            openEntryMenu(nodeList.getModel().getElementAt(0), point);
+        }
     }
 
     private void reloadList() {
@@ -307,9 +318,22 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                 allowExisting = false;
                 allowNew = true;
             }
-            for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew)) {
-                model.addElement(entry);
+            if(querySlot != null) {
+                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(),
+                        role,
+                        allowExisting,
+                        allowNew,
+                        querySlot.getSlotType(),
+                        querySlot.getInfo().getDataClass())) {
+                    model.addElement(entry);
+                }
             }
+            else {
+                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew)) {
+                    model.addElement(entry);
+                }
+            }
+
             dialogUI.nodeList.setModel(model);
         }
     }

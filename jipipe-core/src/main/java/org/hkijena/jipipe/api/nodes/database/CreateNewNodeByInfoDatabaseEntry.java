@@ -156,4 +156,9 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     public boolean canAddOutputSlots() {
         return canAddOutputSlots;
     }
+
+    @Override
+    public boolean isDeprecated() {
+        return nodeInfo.isDeprecated();
+    }
 }

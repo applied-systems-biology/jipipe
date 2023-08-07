@@ -64,6 +64,9 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         if (nodeClass.getAnnotation(JIPipeHidden.class) != null) {
             setHidden(true);
         }
+        if(nodeClass.getAnnotation(Deprecated.class) != null) {
+            setDeprecated(true);
+        }
         setRunnable(JIPipeAlgorithm.class.isAssignableFrom(nodeClass));
         // Load additional citations
         for (JIPipeCitation citation : nodeClass.getAnnotationsByType(JIPipeCitation.class)) {

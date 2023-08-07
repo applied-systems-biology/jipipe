@@ -153,4 +153,9 @@ public class ExistingPipelineNodeDatabaseEntry implements JIPipeNodeDatabaseEntr
         return graphNode.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration &&
                 ((JIPipeMutableSlotConfiguration) graphNode.getSlotConfiguration()).canAddOutputSlot();
     }
+
+    @Override
+    public boolean isDeprecated() {
+        return false;
+    }
 }

@@ -153,4 +153,9 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
         return exampleNode.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration &&
                 ((JIPipeMutableSlotConfiguration) exampleNode.getSlotConfiguration()).canAddOutputSlot();
     }
+
+    @Override
+    public boolean isDeprecated() {
+        return exampleNode.getInfo().isDeprecated();
+    }
 }

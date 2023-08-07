@@ -48,7 +48,7 @@ import java.util.*;
  * Wrapper around {@link ChannelSplitter}
  */
 @JIPipeDocumentation(name = "Split channels (deprecated)", description = "Splits multichannel images into multiple greyscale images. " +
-        "This operation is applied for each 2D image slice. <strong>This node is deprecated. Please use the new 'Split channels' node</strong>")
+        "This operation is applied for each 2D image slice.")
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class)

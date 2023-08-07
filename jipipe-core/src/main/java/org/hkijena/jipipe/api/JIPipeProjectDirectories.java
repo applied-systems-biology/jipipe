@@ -21,6 +21,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
     @JIPipeDocumentation(name = "User directories", description = "A list of directories that can be used in various nodes")
     @JIPipeParameter("user-directories")
     @JsonGetter("user-directories")
+    @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
     public ParameterCollectionList getDirectories() {
         return directories;
     }

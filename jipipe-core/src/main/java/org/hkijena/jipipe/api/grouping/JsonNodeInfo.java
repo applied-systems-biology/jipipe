@@ -51,6 +51,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     private JIPipeGraph graph = new JIPipeGraph();
     private StringList menuPath = new StringList();
     private boolean hidden = false;
+    private boolean deprecated =false;
     private IconRef customIcon = new IconRef();
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
@@ -412,5 +413,19 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     public void setCustomIcon(IconRef customIcon) {
         this.customIcon = customIcon;
 
+    }
+
+    @JIPipeDocumentation(name = "Deprecated", description = "Marks the node as deprecated")
+    @JIPipeParameter("deprecated")
+    @JsonGetter("deprecated")
+    @Override
+    public boolean isDeprecated() {
+        return deprecated;
+    }
+
+    @JIPipeParameter("deprecated")
+    @JsonSetter("deprecated")
+    public void setDeprecated(boolean deprecated) {
+        this.deprecated = deprecated;
     }
 }

@@ -77,6 +77,10 @@ public class TooltipUtils {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
+        if(info.isDeprecated()) {
+            builder.append("**This node is deprecated**\n\n");
+        }
+
         if (!info.getAliases().isEmpty()) {
             builder.append("<p>");
             for (JIPipeNodeMenuLocation location : info.getAliases()) {
@@ -147,6 +151,10 @@ public class TooltipUtils {
         JIPipeNodeInfo info = node.getInfo();
         StringBuilder builder = new StringBuilder();
         builder.append("<h1>").append(info.getName()).append("</h1>\n\n");
+
+        if(node.getInfo().isDeprecated()) {
+            builder.append("**This node is deprecated**\n\n");
+        }
 
         if (!info.getAliases().isEmpty()) {
             builder.append("<p>");
@@ -235,6 +243,8 @@ public class TooltipUtils {
         builder.append("<html>");
         if (withTitle)
             builder.append("<u><strong>").append(info.getName()).append("</strong></u><br/>");
+        if(info.isDeprecated())
+            builder.append("<u><i>This node is deprecated</i></u><br/>");
 
         if (!info.getAliases().isEmpty()) {
             builder.append("<p>");
@@ -354,6 +364,8 @@ public class TooltipUtils {
         builder.append("<html>");
         if (withTitle)
             builder.append("<p style=\"margin-bottom:10px;\"><u><strong>").append(node.getName()).append("</strong></u></p><br/><br/>");
+        if(node.getInfo().isDeprecated())
+            builder.append("<u><i>This node is deprecated</i></u><br/>");
 
         // Write description
         String description = node.getCustomDescription().wrap(50).getBody();

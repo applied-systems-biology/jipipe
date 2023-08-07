@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 /**
  * @deprecated New implementation will be CellposeAlgorithm2 that is based around the Cellpose CLI
  */
-@JIPipeDocumentation(name = "Cellpose (Deprecated)", description = "<strong>This node is deprecated. Please replace it with a new instance of the Cellpose segmentation node</strong><br/><br/>" +
+@JIPipeDocumentation(name = "Cellpose (Deprecated)", description =
         "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
         "Cellpose for each 2D image plane. " +
         "This node can generate a multitude of outputs, although only ROI is activated by default. " +
