@@ -85,7 +85,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private final int flags;
     private final JMenu graphMenu = new JMenu("Graph");
     private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
-
     private final Map<Class<? extends JIPipeGraphEditorTool>, JIPipeGraphEditorTool> toolMap = new HashMap<>();
     private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
     protected JMenuBar menuBar = new JMenuBar();
@@ -111,7 +110,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         this.flags = flags;
         this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), this, graph, compartment, historyJournal);
         this.graphUISettings = settings;
-
 
         initialize();
         reloadMenuBar();
