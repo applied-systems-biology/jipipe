@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -13,6 +14,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection {
 
@@ -51,6 +53,20 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
             }
         }
         return result;
+    }
+
+    public void setUserDirectory(String key, Path value) {
+        for (JIPipeDynamicParameterCollection parameterCollection : directories) {
+            String currentKey = parameterCollection.get("key").get(String.class);
+            if(Objects.equals(key, currentKey)) {
+                parameterCollection.setParameter("path", value);
+                return;
+            }
+        }
+
+        JIPipeDynamicParameterCollection parameterCollection = directories.addNewInstance();
+        parameterCollection.setParameter("key", key);
+        parameterCollection.setParameter("path", value);
     }
 
     public static class DirectoryEntry extends AbstractJIPipeParameterCollection {

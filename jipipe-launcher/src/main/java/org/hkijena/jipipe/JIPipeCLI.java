@@ -36,7 +36,6 @@ public class JIPipeCLI {
         }
 
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
-        int firstArgIndex = 0;
 
         if (argsList.contains("help")) {
             showHelp();
@@ -62,6 +61,8 @@ public class JIPipeCLI {
         boolean saveToDisk = true;
         boolean saveToDiskOnlyCompartments = false;
         Map<String, String> parameterOverrides = new HashMap<>();
+        Map<String, Path> userDirectoryOverrides = new HashMap<>();
+
         for (int i = 0; i < argsList.size(); i += 2) {
             String arg = argsList.get(i);
             String value = argsList.get(i + 1);
@@ -80,24 +81,41 @@ public class JIPipeCLI {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+            } else if (arg.equals("--overwrite-user-directories")) {
+                try {
+                    JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(new File(value));
+                    for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.fields())) {
+                        userDirectoryOverrides.put(entry.getKey(), Paths.get(JsonUtils.toJsonString(entry.getValue())));
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             } else if (arg.equals("--output-results")) {
-                if (value.equals("all")) {
-                    saveToDisk = true;
-                    saveToDiskOnlyCompartments = false;
-                } else if (value.equals("none")) {
-                    saveToDisk = false;
-                    saveToDiskOnlyCompartments = false;
-                } else if (value.equals("only-compartment-outputs")) {
-                    saveToDisk = true;
-                    saveToDiskOnlyCompartments = true;
-                } else {
-                    System.err.println("Unknown disk saving setting: " + value);
-                    showHelp();
-                    return;
+                switch (value) {
+                    case "all":
+                        saveToDisk = true;
+                        saveToDiskOnlyCompartments = false;
+                        break;
+                    case "none":
+                        saveToDisk = false;
+                        saveToDiskOnlyCompartments = false;
+                        break;
+                    case "only-compartment-outputs":
+                        saveToDisk = true;
+                        saveToDiskOnlyCompartments = true;
+                        break;
+                    default:
+                        System.err.println("Unknown disk saving setting: " + value);
+                        showHelp();
+                        return;
                 }
             } else if (arg.startsWith("--P")) {
                 parameterOverrides.put(arg.substring(3), value);
-            } else {
+            }
+            else if(arg.startsWith("--U")) {
+                userDirectoryOverrides.put(arg.substring(3), Paths.get(value));
+            }
+            else {
                 System.err.println("Unknown argument: " + arg);
                 showHelp();
                 return;
@@ -163,6 +181,12 @@ public class JIPipeCLI {
             access.set(value);
         }
 
+        // Overwrite user directories
+        for (Map.Entry<String, Path> entry : userDirectoryOverrides.entrySet()) {
+            System.out.println("Setting user directory " + entry.getKey() + "=" + entry.getValue());
+            project.getMetadata().getDirectories().setUserDirectory(entry.getKey(), entry.getValue());
+        }
+
         project.reportValidity(new UnspecifiedValidationReportContext(), projectIssues);
         projectIssues.print();
 
@@ -216,6 +240,8 @@ public class JIPipeCLI {
         System.out.println("--num-threads <N=1,2,...>");
         System.out.println("--overwrite-parameters <JSON file>");
         System.out.println("--P<Node ID>/<Parameter ID> <Parameter Value (JSON)>");
+        System.out.println("--overwrite-user-directories <JSON file>");
+        System.out.println("--U<User directory key> <User directory value>");
         System.out.println("--output-results <all/none/only-compartment-outputs> (default: all)");
         System.out.println("To run this tool, execute following command:");
         System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI");
