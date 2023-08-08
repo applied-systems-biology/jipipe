@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.ui.grapheditor.nodefinder;
 
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.ui.components.RoundedButtonUI;
@@ -9,10 +8,9 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
 
 public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
-    private final JIPipeNodeDatabase database;
+    private final JIPipeNodeFinderDialogUI parent;
     private final JLabel iconLabel = new JLabel();
     private final JLabel nameLabel = new JLabel();
     private final JLabel categoryLabel = new JLabel();
@@ -22,10 +20,10 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
     private final Color borderColorSelected = JIPipeNotificationAction.Style.Success.getBackground();
     private final RoundedLineBorder border = new RoundedLineBorder(borderColorDefault, 1, 3);
     private final JPanel indicator = new JPanel();
-    private final RoundedLineBorder indicatorBorder = new RoundedLineBorder(Color.GRAY, 2, 1);
+    private final RoundedLineBorder indicatorBorder = new RoundedLineBorder(Color.GRAY, 1, 0);
 
-    public NodeFinderDatasetListCellRenderer(JIPipeNodeDatabase database) {
-        this.database = database;
+    public NodeFinderDatasetListCellRenderer(JIPipeNodeFinderDialogUI parent) {
+        this.parent = parent;
         initialize();
     }
 
@@ -74,17 +72,26 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
         categoryLabel.setText(value.getCategory().trim().replace("\n", " > "));
         descriptionLabel.setText(value.getDescriptionPlain());
 
-        if(value.exists()) {
+        if(parent.getQuerySlot() != null) {
+            if(value.exists()) {
+                indicator.setBackground(value.getFillColor());
+                indicatorBorder.setFill(value.getBorderColor());
+                indicator.setOpaque(true);
+                addButton.setText("Connect");
+            }
+            else {
+                indicatorBorder.setFill(value.getFillColor());
+                indicator.setOpaque(false);
+                addButton.setText("Add");
+            }
+        }
+        else {
             indicator.setBackground(value.getFillColor());
             indicatorBorder.setFill(value.getBorderColor());
             indicator.setOpaque(true);
-            addButton.setText("Connect");
-        }
-        else {
-            indicatorBorder.setFill(value.getFillColor());
-            indicator.setOpaque(false);
             addButton.setText("Add");
         }
+
         if (isSelected) {
             border.setFill(borderColorSelected);
         } else {

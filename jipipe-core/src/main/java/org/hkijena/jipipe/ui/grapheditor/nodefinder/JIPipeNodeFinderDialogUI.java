@@ -80,7 +80,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         }
 
         nodeList.setOpaque(false);
-        nodeList.setCellRenderer(new NodeFinderDatasetListCellRenderer(nodeDatabase));
+        nodeList.setCellRenderer(new NodeFinderDatasetListCellRenderer(this));
         getContentPane().add(new JScrollPane(nodeList), BorderLayout.CENTER);
 
         nodeList.addMouseListener(new MouseAdapter() {
@@ -91,6 +91,10 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                 }
             }
         });
+    }
+
+    public JIPipeDataSlot getQuerySlot() {
+        return querySlot;
     }
 
     private void onItemClicked(MouseEvent e) {
