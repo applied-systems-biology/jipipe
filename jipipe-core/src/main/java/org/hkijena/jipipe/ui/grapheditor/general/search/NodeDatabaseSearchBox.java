@@ -32,6 +32,8 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -39,7 +41,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * A {@link JComboBox} that implements a search behavior
  */
 public class NodeDatabaseSearchBox extends JIPipeWorkbenchPanel {
-    private final JIPipeGraphCanvasUI canvasUI;
     private final SelectedEventEmitter selectedEventEmitter = new SelectedEventEmitter();
     private final JComboBox<JIPipeNodeDatabaseEntry> comboBox = new JComboBox<>();
     private final JIPipeNodeDatabaseRole databaseRole;
@@ -47,13 +48,13 @@ public class NodeDatabaseSearchBox extends JIPipeWorkbenchPanel {
     private boolean allowExisting = true;
     private boolean allowNew = true;
     private final AtomicBoolean isReloading = new AtomicBoolean(false);
+    private RankedDataModel rankedDataModel;
 
     /**
      * Creates a new instance
      */
     public NodeDatabaseSearchBox(JIPipeWorkbench workbench, JIPipeGraphCanvasUI canvasUI, JIPipeNodeDatabaseRole databaseRole, JIPipeNodeDatabase database) {
         super(workbench);
-        this.canvasUI = canvasUI;
         this.databaseRole = databaseRole;
         this.database = database;
         initialize();
@@ -139,6 +140,9 @@ public class NodeDatabaseSearchBox extends JIPipeWorkbenchPanel {
                 comboBox.setPopupVisible(true);
             }
         });
+
+        this.rankedDataModel = new RankedDataModel(this);
+        comboBox.setModel(rankedDataModel);
     }
 
     public JIPipeNodeDatabase getDatabase() {
@@ -164,27 +168,7 @@ public class NodeDatabaseSearchBox extends JIPipeWorkbenchPanel {
     }
 
     private void reloadModel() {
-        try {
-            if(isReloading.getAndSet(true)) {
-                return;
-            }
-            JXTextField textField = (JXTextField) comboBox.getEditor().getEditorComponent();
-            DefaultComboBoxModel<JIPipeNodeDatabaseEntry> model = new DefaultComboBoxModel<>();
-            for (JIPipeNodeDatabaseEntry entry : database.query(textField.getText(), databaseRole, allowExisting, allowNew)) {
-                if (entry instanceof ExistingPipelineNodeDatabaseEntry) {
-                    // Filter out from other compartments
-                    JIPipeGraphNode graphNode = ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode();
-                    if (canvasUI.getCompartment() != null && !Objects.equals(canvasUI.getCompartment(), graphNode.getCompartmentUUIDInParentGraph())) {
-                        continue;
-                    }
-                }
-                model.addElement(entry);
-            }
-            comboBox.setModel(model);
-        }
-        finally {
-            isReloading.set(false);
-        }
+        rankedDataModel.updateRankedEntries();
     }
 
     private void postItemSelectedEvent() {
@@ -258,6 +242,55 @@ public class NodeDatabaseSearchBox extends JIPipeWorkbenchPanel {
         public JIPipeNodeDatabaseEntry getValue() {
             return value;
         }
+    }
+
+    private static class RankedDataModel extends AbstractListModel<JIPipeNodeDatabaseEntry> implements ComboBoxModel<JIPipeNodeDatabaseEntry> {
+        private final NodeDatabaseSearchBox parent;
+        private Object selectedItem;
+        private boolean isLoading = false;
+        private List<JIPipeNodeDatabaseEntry> rankedEntries = new ArrayList<>();
+
+        public RankedDataModel(NodeDatabaseSearchBox parent) {
+            this.parent = parent;
+            updateRankedEntries();
+        }
+
+        public void updateRankedEntries() {
+            isLoading = true;
+
+            JXTextField textField = (JXTextField) parent.comboBox.getEditor().getEditorComponent();
+            rankedEntries = parent.database.query(textField.getText(), parent.databaseRole, parent.allowExisting, parent.allowNew);
+
+            if (selectedItem != null && !rankedEntries.contains(selectedItem)) {
+                selectedItem = null;
+            }
+            isLoading = false;
+            fireContentsChanged(this, -1, -1);
+        }
+
+        @Override
+        public Object getSelectedItem() {
+            return selectedItem;
+        }
+
+        @Override
+        public void setSelectedItem(Object anItem) {
+            if (isLoading)
+                return;
+            selectedItem = anItem;
+            fireContentsChanged(this, -1, -1);
+        }
+
+        @Override
+        public int getSize() {
+            return rankedEntries.size();
+        }
+
+        @Override
+        public JIPipeNodeDatabaseEntry getElementAt(int index) {
+            return rankedEntries.get(index);
+        }
+
     }
 
     public static class SelectedEventEmitter extends JIPipeEventEmitter<SelectedEvent, SelectedEventListener> {
