@@ -15,6 +15,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Modify path (expression)", description = "Processes each incoming path with an expression")
 @JIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "Modify")
@@ -39,7 +42,7 @@ public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-        variables.set("project_dir", StringUtils.nullToEmpty(getProjectDirectory()));
+        variables.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
         variables.set("path", StringUtils.nullToEmpty(path));
 
         Object result = expression.evaluate(variables);
@@ -53,7 +56,8 @@ public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("expression")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Input path", key = "path", description = "The input path")
-    @ExpressionParameterSettingsVariable(name = "Project directory", key = "project_dir", description = "The current project directory")
+    @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
+    @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
     public DefaultExpressionParameter getExpression() {
         return expression;
     }

@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.variables.PathFilterExpressionParameterVariableSource;
@@ -15,6 +16,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @JIPipeDocumentation(name = "Modify path", description = "Uses an expression to modify a path.")
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
@@ -38,14 +42,16 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PathData input = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
-        ExpressionVariables variableSet = new ExpressionVariables();
+        ExpressionVariables variables = new ExpressionVariables();
         if (accessAnnotations) {
             for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
-                variableSet.set(annotation.getName(), annotation.getValue());
+                variables.set(annotation.getName(), annotation.getValue());
             }
         }
-        PathFilterExpressionParameterVariableSource.buildFor(input.toPath(), variableSet);
-        Object result = expression.evaluate(variableSet);
+        variables.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
+
+        PathFilterExpressionParameterVariableSource.buildFor(input.toPath(), variables);
+        Object result = expression.evaluate(variables);
         if (result instanceof String) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.nullToEmpty(result))), progressInfo);
         } else if (result instanceof Path) {
@@ -60,6 +66,8 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
             "Additionally, annotations are available as variables if enabled.\n\nIf the expression returns a non-string value, the path data will be skipped.\n\n" +
             "To improve compatibility between operating systems, we recommend to use '/' as path separator.")
     @JIPipeParameter("expression")
+    @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
+    @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
     public PathQueryExpression getExpression() {
         return expression;
     }

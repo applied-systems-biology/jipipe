@@ -1230,6 +1230,20 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     /**
+     * Returns the currently accessible project data directories
+     * @return the project data directory map. empty map if the node is not associated to a project
+     */
+    public Map<String, Path> getProjectDataDirs() {
+        Map<String, Path> projectDataDirs;
+        if (getRuntimeProject() != null) {
+            projectDataDirs = getRuntimeProject().getDirectoryMap();
+        } else {
+            projectDataDirs = Collections.emptyMap();
+        }
+        return projectDataDirs;
+    }
+
+    /**
      * Size of the icon returned by getUIInputSlotIcon
      * Should be at most 16x16
      * Defaults to 12x12
