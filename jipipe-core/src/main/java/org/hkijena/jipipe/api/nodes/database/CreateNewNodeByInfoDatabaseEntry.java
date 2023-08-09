@@ -110,7 +110,7 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
     @Override
     public String getCategory() {
-        return nodeInfo.getCategory().getName() + "\n" +nodeInfo.getMenuPath();
+        return (nodeInfo.getCategory().getName() + "\n" +nodeInfo.getMenuPath()).trim();
     }
 
     @Override

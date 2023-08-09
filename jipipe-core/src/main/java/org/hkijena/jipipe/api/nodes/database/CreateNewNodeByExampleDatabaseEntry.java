@@ -95,7 +95,7 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
 
     @Override
     public String getCategory() {
-        return example.getNodeInfo().getCategory().getName() + "\n" + example.getNodeInfo().getMenuPath();
+        return (example.getNodeInfo().getCategory().getName() + "\n" + example.getNodeInfo().getMenuPath()).trim();
     }
 
     @Override
