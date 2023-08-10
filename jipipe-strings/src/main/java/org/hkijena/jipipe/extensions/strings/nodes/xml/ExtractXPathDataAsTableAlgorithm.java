@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Extact XML values as table", description = "Extracts a value from the input text data (via XPath) and writes the results into a table. " +
+@JIPipeDocumentation(name = "Extract XML values as table", description = "Extracts a value from the input text data (via XPath) and writes the results into a table. " +
         "Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn about XPath.")
 @JIPipeCitation("XPath: https://www.w3schools.com/xml/xpath_intro.asp")
 @JIPipeNode(menuPath = "XML", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
