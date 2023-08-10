@@ -32,11 +32,7 @@ public class GraphNodeValidationReportContext extends NavigableJIPipeValidationR
             if (parentGraph != null) {
                 UUID uuid = graphNode.getUUIDInParentGraph();
                 if (uuid != null) {
-                    if (parentGraph.getProject() == ((JIPipeProjectWorkbench) workbench).getProject()) {
-                        return graphNode;
-                    } else {
-                        return ((JIPipeProjectWorkbench) workbench).getProject().getGraph().getNodeByUUID(uuid);
-                    }
+                    return ((JIPipeProjectWorkbench) workbench).getProject().getGraph().getNodeByUUID(uuid);
                 }
             }
         }
