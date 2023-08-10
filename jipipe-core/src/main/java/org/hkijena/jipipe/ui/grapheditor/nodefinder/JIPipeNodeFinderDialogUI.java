@@ -7,10 +7,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.database.ExistingPipelineNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseRole;
+import org.hkijena.jipipe.api.nodes.database.*;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
@@ -330,7 +327,14 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                         allowNew,
                         querySlot.getSlotType(),
                         querySlot.getInfo().getDataClass())) {
-                    if(entry instanceof ExistingPipelineNodeDatabaseEntry && ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode() == querySlot.getNode()) {
+                    JIPipeGraphNode existingNode = null;
+                    if(entry instanceof ExistingPipelineNodeDatabaseEntry) {
+                        existingNode = ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode();
+                    }
+                    if(entry instanceof ExistingCompartmentDatabaseEntry) {
+                        existingNode = ((ExistingCompartmentDatabaseEntry) entry).getCompartment();
+                    }
+                    if(existingNode == querySlot.getNode()) {
                         continue;
                     }
                     model.addElement(entry);
