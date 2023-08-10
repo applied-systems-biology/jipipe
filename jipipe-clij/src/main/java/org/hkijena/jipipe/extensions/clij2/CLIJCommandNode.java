@@ -27,8 +27,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
 
     private final JIPipeDynamicParameterCollection clijParameters;
     private CLIJMacroPlugin pluginInstance;
-
-    private boolean avoidGPUMemory = false;
+    private boolean avoidGPUMemory = true;
 
     public CLIJCommandNode(JIPipeNodeInfo info) {
         super(info);

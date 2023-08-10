@@ -69,6 +69,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
@@ -712,6 +713,41 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerNodeExamplesFromResources(JIPipeResourceManager resourceManager, String subDirectory) {
         registerNodeExamplesFromResources(resourceManager.getResourceClass(), JIPipeResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
+    }
+
+    /**
+     * Registers a node as node example based on a node instance
+     * The configurator function is run prior to the registration
+     * Must be run within postprocess()
+     * @param nodeClass the node class
+     * @param name the name of the example
+     * @param configurator executed on an instance of the node
+     * @param <T> the node type
+     */
+    public <T extends JIPipeGraphNode> void registerNodeExample(Class<T> nodeClass, String name, Consumer<T> configurator) {
+        JIPipeGraph graph = new JIPipeGraph();
+        T node = JIPipe.createNode(nodeClass);
+        configurator.accept(node);
+        graph.insertNode(node);
+        JIPipeNodeTemplate template = new JIPipeNodeTemplate();
+        template.setName(name);
+        template.setData(JsonUtils.toJsonString(graph));
+        registerNodeExample(template);
+    }
+
+    /**
+     * Registers a node example based on the node instance
+     * The name of the example is taken from the node custom name
+     * Must be run within postprocess()
+     * @param node the example node
+     */
+    public void registerNodeExample(JIPipeGraphNode node) {
+        JIPipeGraph graph = new JIPipeGraph();
+        graph.insertNode(node.duplicate());
+        JIPipeNodeTemplate template = new JIPipeNodeTemplate();
+        template.setName(node.getName());
+        template.setData(JsonUtils.toJsonString(graph));
+        registerNodeExample(template);
     }
 
     /**

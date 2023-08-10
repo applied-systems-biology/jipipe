@@ -623,6 +623,28 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     public void postprocess(JIPipeProgressInfo progressInfo) {
         super.postprocess(progressInfo);
 
+        // Register examples
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Add images", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Add));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Subtract images", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Subtract));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Multiply images", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Multiply));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Divide images", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Divide));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Image difference", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Difference));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise min", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Min));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise max", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Max));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise average", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.Average));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise AND", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.AND));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise OR", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.OR));
+        registerNodeExample(ImageCalculator2DAlgorithm.class, "Pixel-wise XOR", node -> node.setOperation(ImageCalculator2DAlgorithm.Operation.XOR));
+
+        registerNodeExample(SetToValueAlgorithm.class, "Inside mask", node -> node.setTargetArea(ImageROITargetArea.InsideMask));
+        registerNodeExample(SetToValueAlgorithm.class, "Outside mask", node -> node.setTargetArea(ImageROITargetArea.OutsideMask));
+        registerNodeExample(SetToValueAlgorithm.class, "Inside ROI", node -> node.setTargetArea(ImageROITargetArea.InsideRoi));
+        registerNodeExample(SetToValueAlgorithm.class, "Outside ROI", node -> node.setTargetArea(ImageROITargetArea.OutsideRoi));
+        registerNodeExample(SetToColorAlgorithm.class, "Inside mask", node -> node.setTargetArea(ImageROITargetArea.InsideMask));
+        registerNodeExample(SetToColorAlgorithm.class, "Outside mask", node -> node.setTargetArea(ImageROITargetArea.OutsideMask));
+        registerNodeExample(SetToColorAlgorithm.class, "Inside ROI", node -> node.setTargetArea(ImageROITargetArea.InsideRoi));
+        registerNodeExample(SetToColorAlgorithm.class, "Outside ROI", node -> node.setTargetArea(ImageROITargetArea.OutsideRoi));
+
         // Init the OME accessors (needs parameter types)
         OME_ACCESSOR_STORAGE.initialize(progressInfo.resolve("Initializing OME data access storage"));
     }
