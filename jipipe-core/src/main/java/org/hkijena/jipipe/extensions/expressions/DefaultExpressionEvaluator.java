@@ -306,6 +306,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 resolveVariable.set(true);
                 tokens.add("" + c);
             } else if (!isQuoted && c == '[') {
+                flushBufferToToken(buffer, tokens, resolveVariable);
                 tokens.add("@"); // Resolve as @ operator
                 ++arrayAccessBracketDepth;
             } else if (!isQuoted && c == ']' && arrayAccessBracketDepth > 0) {
@@ -423,6 +424,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         int bracketsStack = 0;
         boolean canLiteral = true;
         List<String> tokens = tokenize(expression, true, true);
+//        System.out.println(String.join(" | ", tokens));
         for (String token : tokens) {
             switch (token) {
                 case "(":
