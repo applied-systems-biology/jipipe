@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
 
 import java.util.ArrayList;
@@ -36,8 +37,12 @@ public class JIPipeNodeDatabaseBuilderRun extends AbstractJIPipeRunnable {
             CACHED_GLOBAL_ENTRIES = new ArrayList<>();
             // Add creation of nodes by info
             for (Map.Entry<String, JIPipeNodeInfo> entry : nodeRegistry.getRegisteredNodeInfos().entrySet()) {
+                JIPipeNodeInfo nodeInfo = entry.getValue();
+                if(nodeInfo.isHidden() || nodeInfo.getCategory() instanceof InternalNodeTypeCategory) {
+                    continue;
+                }
                 {
-                    CreateNewNodeByInfoDatabaseEntry newEntry = new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + entry.getKey(), entry.getValue());
+                    CreateNewNodeByInfoDatabaseEntry newEntry = new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + entry.getKey(), nodeInfo);
                     newEntries.add(newEntry);
                     CACHED_GLOBAL_ENTRIES.add(newEntry);
                 }
