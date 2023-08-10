@@ -266,8 +266,8 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
         if(nodeList.getModel().getSize() > 0) {
             nodeList.setSelectedIndex(0);
             Point point = nodeList.indexToLocation(0);
-            point.x += nodeList.getWidth() - 64;
-            point.y += 100;
+            point.x += nodeList.getWidth() - 32;
+            point.y += 80;
             openEntryMenu(nodeList.getModel().getElementAt(0), point);
         }
     }
