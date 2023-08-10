@@ -285,7 +285,7 @@ public class DocumentTabPane extends JPanel implements Disposable {
         popupMenu.add(detachItem);
 
         if (closeMode != CloseMode.withoutCloseButton) {
-            JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+            JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/tab-close-2.png"));
             closeButton.setToolTipText("Close tab");
             closeButton.setBorder(null);
             closeButton.setBackground(UIManager.getColor("TextArea.background"));
