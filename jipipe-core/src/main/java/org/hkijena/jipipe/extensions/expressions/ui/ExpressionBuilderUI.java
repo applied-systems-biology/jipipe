@@ -54,12 +54,12 @@ public class ExpressionBuilderUI extends JPanel {
     private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
     private final SearchTextField searchField = new SearchTextField();
     private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
-    private Set<ExpressionParameterVariable> variables;
-    private JList<Object> commandPaletteList = new JList<>();
-    private List<ExpressionOperatorEntry> operatorEntryList;
-    private List<ExpressionConstantEntry> constantEntryList;
+    private final Set<ExpressionParameterVariable> variables;
+    private final JList<Object> commandPaletteList = new JList<>();
+    private final List<ExpressionOperatorEntry> operatorEntryList;
+    private final List<ExpressionConstantEntry> constantEntryList;
     private RSyntaxTextArea expressionEditor;
-    private DocumentTabPane tabPane = new DocumentTabPane(true);
+    private final DocumentTabPane tabPane = new DocumentTabPane(true);
     private ExpressionBuilderInserterUI lastVariableInserter;
 
     public ExpressionBuilderUI(String expression, Set<ExpressionParameterVariable> variables) {

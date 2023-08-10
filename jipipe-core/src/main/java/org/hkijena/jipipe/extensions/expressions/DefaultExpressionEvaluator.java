@@ -420,6 +420,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public Exception checkSyntax(String expression) {
         int quoteStack = 0;
         int paraStack = 0;
+        int bracketsStack = 0;
         boolean canLiteral = true;
         List<String> tokens = tokenize(expression, true, true);
         for (String token : tokens) {
@@ -432,6 +433,15 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                     if (paraStack <= 0)
                         return new IllegalArgumentException("Unmatched parentheses!");
                     --paraStack;
+                    break;
+                case "[":
+                    ++bracketsStack;
+                    canLiteral = true;
+                    break;
+                case "]":
+                    if (bracketsStack <= 0)
+                        return new IllegalArgumentException("Unmatched brackets!");
+                    --bracketsStack;
                     break;
                 case ",":
                     canLiteral = true;
@@ -459,6 +469,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             return new IllegalArgumentException("Unmatched double quotes!");
         if (paraStack != 0)
             return new IllegalArgumentException("Unmatched parentheses!");
+        if (bracketsStack != 0)
+            return new IllegalArgumentException("Unmatched brackets!");
         return null;
     }
 

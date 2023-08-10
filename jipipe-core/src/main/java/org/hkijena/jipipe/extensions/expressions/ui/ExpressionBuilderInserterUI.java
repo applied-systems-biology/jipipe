@@ -40,7 +40,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
 
         if (insertedObject instanceof ExpressionParameterVariable) {
             ExpressionParameterVariable variable = (ExpressionParameterVariable) insertedObject;
-            FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #ffdc53; \">Variable</i> %s (<code><strong>%s</strong></code>)</html>",
+            FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #ffaf0a; \">Variable</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(variable.getName()),
                     HtmlEscapers.htmlEscaper().escape(variable.getKey())), UIUtils.getIconFromResources("actions/insert-function.png"));
             groupHeader.setDescription(variable.getDescription());
@@ -116,7 +116,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
         } else if (insertedObject instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
             JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) insertedObject;
             ExpressionFunction function = functionEntry.getFunction();
-            FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #b38814; \">Function</i> %s (<code><strong>%s</strong></code>)</html>",
+            FormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #14A0B3; \">Function</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(functionEntry.getName()),
                     HtmlEscapers.htmlEscaper().escape(function.getSignature())), UIUtils.getIconFromResources("actions/insert-function.png"));
 

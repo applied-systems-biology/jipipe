@@ -25,6 +25,8 @@ import java.awt.event.MouseEvent;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.hkijena.jipipe.ui.grapheditor.nodefinder.NodeFinderDatasetListCellRenderer.CELL_HEIGHT;
+
 public class JIPipeNodeFinderDialogUI extends JDialog {
     private static String LAST_SEARCH = "";
     private final JIPipeGraphCanvasUI canvasUI;
@@ -68,16 +70,9 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
     }
 
     private void initializeList() {
-        JIPipeNodeDatabase nodeDatabase;
-        if(canvasUI.getWorkbench() instanceof JIPipeProjectWorkbench) {
-            nodeDatabase = ((JIPipeProjectWorkbench) canvasUI.getWorkbench()).getNodeDatabase();
-        }
-        else {
-            nodeDatabase = JIPipeNodeDatabase.getInstance();
-        }
-
         nodeList.setOpaque(false);
         nodeList.setCellRenderer(new NodeFinderDatasetListCellRenderer(this));
+        nodeList.setFixedCellHeight(CELL_HEIGHT);
         getContentPane().add(new JScrollPane(nodeList), BorderLayout.CENTER);
 
         nodeList.addMouseListener(new MouseAdapter() {
@@ -264,7 +259,7 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
             nodeList.setSelectedIndex(0);
             Point point = nodeList.indexToLocation(0);
             point.x += nodeList.getWidth() - 32;
-            point.y += 80;
+            point.y += CELL_HEIGHT;
             openEntryMenu(nodeList.getModel().getElementAt(0), point);
         }
     }

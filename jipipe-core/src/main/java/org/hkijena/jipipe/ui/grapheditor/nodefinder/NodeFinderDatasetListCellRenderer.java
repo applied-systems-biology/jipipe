@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
+    public static final int CELL_HEIGHT = 100;
     private final JIPipeNodeFinderDialogUI parent;
     private final JLabel iconLabel = new JLabel();
     private final JLabel nameLabel = new JLabel();
@@ -62,7 +63,7 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
 
     @Override
     public Component getListCellRendererComponent(JList<? extends JIPipeNodeDatabaseEntry> list, JIPipeNodeDatabaseEntry value, int index, boolean isSelected, boolean cellHasFocus) {
-        setPreferredSize(new Dimension(list.getWidth() - 16, 90));
+        setPreferredSize(new Dimension(list.getWidth() - 16, CELL_HEIGHT));
         iconLabel.setIcon(value.getIcon());
         nameLabel.setText(value.getName());
         categoryLabel.setText(value.getCategory().trim().replace("\n", " > "));
