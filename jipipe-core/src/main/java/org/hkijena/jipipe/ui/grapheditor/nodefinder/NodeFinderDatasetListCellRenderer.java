@@ -3,6 +3,7 @@ package org.hkijena.jipipe.ui.grapheditor.nodefinder;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.ui.components.RoundedButtonUI;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -17,7 +18,7 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
     private final JLabel descriptionLabel = new JLabel();
     private final JButton addButton = new JButton();
     private final Color borderColorDefault = UIManager.getColor("Button.borderColor");
-    private final Color borderColorSelected = JIPipeNotificationAction.Style.Success.getBackground();
+    private final Color borderColorSelected = Color.GRAY;
     private final RoundedLineBorder border = new RoundedLineBorder(borderColorDefault, 1, 3);
     private final JPanel indicator = new JPanel();
     private final RoundedLineBorder indicatorBorder = new RoundedLineBorder(Color.GRAY, 1, 0);
@@ -44,20 +45,15 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
         add(categoryLabel, new GridBagConstraints(2,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
         add(descriptionLabel, new GridBagConstraints(2,2,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,insets,0,0));
 
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.setLayout(new BoxLayout(bottomPanel, BoxLayout.X_AXIS));
-        bottomPanel.add(Box.createHorizontalGlue());
-        bottomPanel.add(addButton);
-        bottomPanel.setOpaque(false);
-        bottomPanel.setBorder(BorderFactory.createEmptyBorder(8,0,0,0));
-        add(bottomPanel, new GridBagConstraints(1,3,2,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,insets,0,0));
-
-        addButton.setOpaque(true);
+        addButton.setOpaque(false);
         addButton.setUI(new RoundedButtonUI(3, JIPipeNotificationAction.Style.Success.getBackground().brighter(), JIPipeNotificationAction.Style.Success.getBackground().darker()));
-        addButton.setIcon(UIUtils.getIconInvertedFromResources("actions/add.png"));
+        addButton.setIcon(UIUtils.getIconFromResources("actions/add.png"));
         addButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
-        addButton.setBackground(JIPipeNotificationAction.Style.Success.getBackground());
-        addButton.setForeground(JIPipeNotificationAction.Style.Success.getText());
+//        addButton.setBackground(JIPipeNotificationAction.Style.Success.getBackground());
+//        addButton.setForeground(JIPipeNotificationAction.Style.Success.getText());
+        addButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0x5CB85C), 1, 3),
+                BorderFactory.createEmptyBorder(3,3,3,3)));
+        add(addButton, new GridBagConstraints(3,2,1,1,0,0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(2,16,2,2),0,0));
 
         setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4,4,4,4),
                 BorderFactory.createCompoundBorder(border,
@@ -66,7 +62,7 @@ public class NodeFinderDatasetListCellRenderer extends JPanel implements ListCel
 
     @Override
     public Component getListCellRendererComponent(JList<? extends JIPipeNodeDatabaseEntry> list, JIPipeNodeDatabaseEntry value, int index, boolean isSelected, boolean cellHasFocus) {
-        setPreferredSize(new Dimension(list.getWidth() - 16, 128));
+        setPreferredSize(new Dimension(list.getWidth() - 16, 90));
         iconLabel.setIcon(value.getIcon());
         nameLabel.setText(value.getName());
         categoryLabel.setText(value.getCategory().trim().replace("\n", " > "));
