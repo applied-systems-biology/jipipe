@@ -68,6 +68,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
+        variableSet.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
         variableSet.set("data_string", getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
         variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
         variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
@@ -81,6 +82,8 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. ")
     @JIPipeParameter("annotation-value")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
+    @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
     public StringQueryExpression getAnnotationValue() {
         return annotationValue;
     }

@@ -71,6 +71,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         for (NamedTextAnnotationGeneratorExpression expression : annotations) {
             ExpressionVariables variableSet = new ExpressionVariables();
             variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variableSet.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
             customVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
             variableSet.set("data_string", getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
             variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
@@ -90,6 +91,8 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
+    @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
     public NamedTextAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;
     }
