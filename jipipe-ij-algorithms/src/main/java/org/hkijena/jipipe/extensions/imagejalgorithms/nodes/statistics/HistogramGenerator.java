@@ -39,7 +39,7 @@ import java.util.Collections;
 /**
  * Algorithm that generates {@link ResultsTableData} as histogram
  */
-@JIPipeDocumentation(name = "Histogram", description = "Generates a histogram of the input image. " +
+@JIPipeDocumentation(name = "Image to pixel value/count histogram", description = "Generates a histogram of the input image. " +
         "It generates following output columns: <code>value</code>, <code>count</code>.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
