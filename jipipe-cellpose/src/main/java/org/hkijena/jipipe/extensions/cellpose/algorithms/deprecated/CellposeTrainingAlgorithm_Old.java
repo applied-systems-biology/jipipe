@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -145,6 +146,17 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output), false);
             }
+        }
+    }
+
+    @Override
+    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+        super.getExternalEnvironments(target);
+        if(overrideEnvironment.isEnabled()) {
+            target.add(overrideEnvironment.getContent());
+        }
+        else {
+            target.add(CellposeSettings.getInstance().getPythonEnvironment());
         }
     }
 

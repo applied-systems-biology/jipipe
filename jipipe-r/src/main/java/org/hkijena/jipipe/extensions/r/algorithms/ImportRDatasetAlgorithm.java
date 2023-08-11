@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;
+import java.util.List;
 
 @JIPipeDocumentation(name = "R data set", description = "Imports a standard R data set (datasets package) as table.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
@@ -58,6 +60,17 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             } else {
                 RExtensionSettings.checkRSettings(context, report);
             }
+        }
+    }
+
+    @Override
+    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+        super.getExternalEnvironments(target);
+        if(overrideEnvironment.isEnabled()) {
+            target.add(overrideEnvironment.getContent());
+        }
+        else {
+            target.add(RExtensionSettings.getInstance().getEnvironment());
         }
     }
 

@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -82,6 +83,17 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.overrideEnvironment = new OptionalREnvironment(other.overrideEnvironment);
         registerSubParameter(variables);
+    }
+
+    @Override
+    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+        super.getExternalEnvironments(target);
+        if(overrideEnvironment.isEnabled()) {
+            target.add(overrideEnvironment.getContent());
+        }
+        else {
+            target.add(RExtensionSettings.getInstance().getEnvironment());
+        }
     }
 
     @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +

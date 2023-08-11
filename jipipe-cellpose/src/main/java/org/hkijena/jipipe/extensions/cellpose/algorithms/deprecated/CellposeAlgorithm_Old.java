@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -34,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -180,6 +182,16 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
             } else {
                 CellposeSettings.checkPythonSettings(context, report);
             }
+        }
+    }
+    @Override
+    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+        super.getExternalEnvironments(target);
+        if(overrideEnvironment.isEnabled()) {
+            target.add(overrideEnvironment.getContent());
+        }
+        else {
+            target.add(CellposeSettings.getInstance().getPythonEnvironment());
         }
     }
 

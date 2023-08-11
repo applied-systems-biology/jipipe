@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtension;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
+import org.hkijena.jipipe.extensions.python.adapter.PythonAdapterExtensionSettings;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
@@ -106,6 +108,17 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
+    @Override
+    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+        super.getExternalEnvironments(target);
+        if(overrideEnvironment.isEnabled()) {
+            target.add(overrideEnvironment.getContent());
+        }
+        else {
+            target.add(PythonExtensionSettings.getInstance().getPythonEnvironment());
+        }
+        target.add(PythonAdapterExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment());
+    }
     @Override
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         super.reportValidity(context, report);

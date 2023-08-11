@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -35,10 +36,12 @@ import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtension;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
+import org.hkijena.jipipe.extensions.python.adapter.PythonAdapterExtensionSettings;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -115,6 +118,18 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
                 PythonExtensionSettings.checkPythonSettings(context, report);
             }
         }
+    }
+
+    @Override
+    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+        super.getExternalEnvironments(target);
+        if(overrideEnvironment.isEnabled()) {
+            target.add(overrideEnvironment.getContent());
+        }
+        else {
+            target.add(PythonExtensionSettings.getInstance().getPythonEnvironment());
+        }
+        target.add(PythonAdapterExtensionSettings.getInstance().getPythonAdapterLibraryEnvironment());
     }
 
     @Override

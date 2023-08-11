@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -113,6 +114,17 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private void updateSlots() {
         toggleSlot(INPUT_PRETRAINED_MODEL, pretrainedModel == OmniposePretrainedModel.Custom);
         toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
+    }
+
+    @Override
+    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+        super.getExternalEnvironments(target);
+        if(overrideEnvironment.isEnabled()) {
+            target.add(overrideEnvironment.getContent());
+        }
+        else {
+            target.add(OmniposeSettings.getInstance().getPythonEnvironment());
+        }
     }
 
     @JIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
