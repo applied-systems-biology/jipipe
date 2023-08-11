@@ -33,7 +33,7 @@ import java.awt.*;
 @JIPipeDocumentation(name = "Make images equal 2D", description = "Makes all images within a data batch have the same size by padding with the predefined background color according to the largest image dimensions.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (multiple images 2D)")
 public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm {
 

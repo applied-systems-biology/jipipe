@@ -21,7 +21,7 @@ import org.hkijena.jipipe.utils.StringUtils;
         "to utilize expressions that have access to annotations and image properties.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nProperties")
 public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

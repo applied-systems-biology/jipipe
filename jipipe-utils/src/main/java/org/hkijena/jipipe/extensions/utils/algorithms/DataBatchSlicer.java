@@ -19,7 +19,7 @@ import java.util.HashSet;
         "the items according to the index range. You can use this to remove duplicates. Annotations are not modified (merged annotations are not copied into " +
         "the output).")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
 public class DataBatchSlicer extends JIPipeMergingAlgorithm {
 

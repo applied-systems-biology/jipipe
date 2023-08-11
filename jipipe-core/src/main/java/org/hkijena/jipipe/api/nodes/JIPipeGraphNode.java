@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -1149,6 +1150,14 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public String getCompartmentUUIDInGraphAsString() {
         return StringUtils.nullToEmpty(getCompartmentUUIDInParentGraph());
+    }
+
+    /**
+     * Gathers all known external environments
+     * @param target the list where the external environments will be gathered
+     */
+    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+
     }
 
     /**

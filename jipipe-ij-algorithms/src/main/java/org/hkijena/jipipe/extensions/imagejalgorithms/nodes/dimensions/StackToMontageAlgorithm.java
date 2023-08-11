@@ -42,7 +42,7 @@ import java.awt.*;
 @JIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage... (of stacks)")
 public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
 

@@ -27,7 +27,7 @@ import java.util.Collection;
 @JIPipeDocumentation(name = "Add border 2D", description = "Adds a border around the image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (advanced)")
 public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

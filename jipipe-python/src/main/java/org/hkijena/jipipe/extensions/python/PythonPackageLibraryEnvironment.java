@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.ExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -39,7 +39,7 @@ import java.nio.file.Paths;
 /**
  * An environment-like type that points to a package
  */
-public abstract class PythonPackageLibraryEnvironment extends ExternalEnvironment {
+public abstract class PythonPackageLibraryEnvironment extends JIPipeExternalEnvironment {
 
     private Path libraryDirectory = Paths.get("library");
     private boolean providedByEnvironment = false;

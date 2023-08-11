@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.environments.ExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
@@ -912,13 +912,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param <T>              environment class
      * @param <U>              list of environment class
      */
-    public <T extends ExternalEnvironment, U extends ListParameter<T>> void registerEnvironment(Class<T> environmentClass,
-                                                                                                Class<U> listClass,
-                                                                                                ExternalEnvironmentSettings settings,
-                                                                                                String id,
-                                                                                                String name,
-                                                                                                String description,
-                                                                                                Icon icon) {
+    public <T extends JIPipeExternalEnvironment, U extends ListParameter<T>> void registerEnvironment(Class<T> environmentClass,
+                                                                                                      Class<U> listClass,
+                                                                                                      ExternalEnvironmentSettings settings,
+                                                                                                      String id,
+                                                                                                      String name,
+                                                                                                      String description,
+                                                                                                      Icon icon) {
         registerParameterType(id, environmentClass, listClass, null, null, name, description, ExternalEnvironmentParameterEditorUI.class);
         registry.getExternalEnvironmentRegistry().registerEnvironment(environmentClass, settings);
     }
@@ -930,7 +930,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param installerClass   the installer class
      * @param icon             icon for the installer
      */
-    public void registerEnvironmentInstaller(Class<? extends ExternalEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
+    public void registerEnvironmentInstaller(Class<? extends JIPipeExternalEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
         registry.getExternalEnvironmentRegistry().registerInstaller(environmentClass, installerClass, icon);
     }
 

@@ -26,7 +26,7 @@ import java.util.Set;
 @JIPipeDocumentation(name = "Simplify annotations", description = "Merges multiple annotations that are used for data batch generation into a single annotation. Deletes or downgrades annotations that were involved in the merge.")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression annotationFilter = new AnnotationQueryExpression("STRING_STARTS_WITH(key, \"#\")");

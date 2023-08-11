@@ -43,7 +43,7 @@ import java.util.List;
  * Supported are .tar.gz and .zip archives that should contain the hierarchy of files as expected in the environment installation directory.
  * The run() method will ensure that
  */
-public abstract class EasyInstallExternalEnvironmentInstaller<T extends ExternalEnvironment> extends ExternalEnvironmentInstaller {
+public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeExternalEnvironment> extends ExternalEnvironmentInstaller {
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     private List<EasyInstallExternalEnvironmentInstallerPackage> availablePackages = new ArrayList<>();
@@ -90,7 +90,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
     }
 
     @Override
-    public ExternalEnvironment getInstalledEnvironment() {
+    public JIPipeExternalEnvironment getInstalledEnvironment() {
         return generatedEnvironment;
     }
 

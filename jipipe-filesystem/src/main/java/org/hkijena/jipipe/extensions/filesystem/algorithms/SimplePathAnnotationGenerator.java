@@ -35,7 +35,7 @@ import java.nio.file.Files;
 @JIPipeDocumentation(name = "Add path to annotations", description = "Creates an annotation for each path based on its name or its full path.")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
 @JIPipeInputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true, inheritedSlot = "Paths")
+@JIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true)
 public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {
 
     private String generatedAnnotation = "#Dataset";

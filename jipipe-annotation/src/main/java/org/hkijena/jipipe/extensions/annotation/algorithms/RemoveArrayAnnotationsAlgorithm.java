@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
         "Array values are valid JSON arrays encased in [ and ].")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private boolean removeColumn = false;

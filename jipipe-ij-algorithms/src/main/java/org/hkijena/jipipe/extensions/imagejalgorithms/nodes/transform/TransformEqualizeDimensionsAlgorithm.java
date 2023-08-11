@@ -18,7 +18,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParame
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size... (multiple images hyperstack)")
 public class TransformEqualizeDimensionsAlgorithm extends JIPipeIteratingAlgorithm {
 

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Sort data rows by annotation", description = "Sorts the data rows by one or multiple annotations.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
 public class SortRowsByAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm {
     private StringQueryExpressionAndSortOrderPairParameter.List sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List();

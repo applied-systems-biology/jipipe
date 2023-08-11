@@ -36,7 +36,7 @@ import java.nio.file.Path;
 
 
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 
 
 public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {

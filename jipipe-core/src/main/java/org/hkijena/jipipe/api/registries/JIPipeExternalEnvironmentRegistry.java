@@ -4,7 +4,7 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
  */
 public class JIPipeExternalEnvironmentRegistry {
     private final JIPipe jiPipe;
-    private final Multimap<Class<? extends ExternalEnvironment>, InstallerEntry> installers = HashMultimap.create();
-    private final Map<Class<? extends ExternalEnvironment>, ExternalEnvironmentSettings> settings = new HashMap<>();
+    private final Multimap<Class<? extends JIPipeExternalEnvironment>, InstallerEntry> installers = HashMultimap.create();
+    private final Map<Class<? extends JIPipeExternalEnvironment>, ExternalEnvironmentSettings> settings = new HashMap<>();
 
     public JIPipeExternalEnvironmentRegistry(JIPipe jiPipe) {
 
@@ -36,7 +36,7 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param environmentClass the environment
      * @param settings         the settings
      */
-    public void registerEnvironment(Class<? extends ExternalEnvironment> environmentClass, ExternalEnvironmentSettings settings) {
+    public void registerEnvironment(Class<? extends JIPipeExternalEnvironment> environmentClass, ExternalEnvironmentSettings settings) {
         this.settings.put(environmentClass, settings);
         getJIPipe().getProgressInfo().log("Registered environment " + environmentClass + " with settings class " + settings);
     }
@@ -48,7 +48,7 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param installerClass   the installer
      * @param icon             icon for the installer
      */
-    public void registerInstaller(Class<? extends ExternalEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
+    public void registerInstaller(Class<? extends JIPipeExternalEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
         installers.put(environmentClass, new InstallerEntry(installerClass, icon));
         getJIPipe().getProgressInfo().log("Registered environment installer for " + environmentClass + " with installer class " + installerClass);
     }
@@ -59,7 +59,7 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param environmentClass the environment
      * @return list of installers
      */
-    public List<InstallerEntry> getInstallers(Class<? extends ExternalEnvironment> environmentClass) {
+    public List<InstallerEntry> getInstallers(Class<? extends JIPipeExternalEnvironment> environmentClass) {
         return installers.get(environmentClass).stream().sorted(Comparator.comparing(InstallerEntry::getName)).collect(Collectors.toList());
     }
 
@@ -79,12 +79,12 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param environmentClass the environment class
      * @return list of presets
      */
-    public List<ExternalEnvironment> getPresets(Class<?> environmentClass) {
+    public List<JIPipeExternalEnvironment> getPresets(Class<?> environmentClass) {
         ExternalEnvironmentSettings settings = getSettings(environmentClass);
         if (settings == null)
             return Collections.emptyList();
         return settings.getPresetsListInterface(environmentClass).stream()
-                .sorted(Comparator.comparing(ExternalEnvironment::getName)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(JIPipeExternalEnvironment::getName)).collect(Collectors.toList());
     }
 
     /**
@@ -93,9 +93,9 @@ public class JIPipeExternalEnvironmentRegistry {
      * @param environmentClass the environment class
      * @param preset           the preset
      */
-    public void addPreset(Class<?> environmentClass, ExternalEnvironment preset) {
+    public void addPreset(Class<?> environmentClass, JIPipeExternalEnvironment preset) {
         ExternalEnvironmentSettings settings = getSettings(environmentClass);
-        List<ExternalEnvironment> presets = new ArrayList<>(settings.getPresetsListInterface(environmentClass));
+        List<JIPipeExternalEnvironment> presets = new ArrayList<>(settings.getPresetsListInterface(environmentClass));
         presets.add(preset);
         settings.setPresetsListInterface(presets, environmentClass);
         settings.emitParameterChangedEvent("presets");

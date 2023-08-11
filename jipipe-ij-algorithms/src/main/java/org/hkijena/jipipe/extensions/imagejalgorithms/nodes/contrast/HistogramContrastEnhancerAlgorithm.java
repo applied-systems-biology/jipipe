@@ -22,7 +22,7 @@ import static ij.measure.Measurements.MIN_MAX;
  */
 @JIPipeDocumentation(name = "Histogram-based contrast enhancer", description = "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods.")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Enhance Contrast...")
 public class HistogramContrastEnhancerAlgorithm extends JIPipeSimpleIteratingAlgorithm {

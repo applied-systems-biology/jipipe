@@ -37,7 +37,7 @@ import java.util.Set;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus2DColorRGBData.class, slotName = "LUT", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nLookup Tables")
 public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean duplicateImage = true;

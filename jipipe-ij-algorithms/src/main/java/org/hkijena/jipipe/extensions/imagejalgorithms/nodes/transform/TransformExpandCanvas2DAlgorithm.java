@@ -32,7 +32,7 @@ import java.awt.*;
 @JIPipeDocumentation(name = "Expand canvas 2D", description = "Pads each image slice with a background color.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Canvas Size...")
 public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
 

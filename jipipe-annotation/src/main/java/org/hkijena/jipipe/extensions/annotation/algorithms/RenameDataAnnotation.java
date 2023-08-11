@@ -36,7 +36,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Rename data annotation", description = "Renames one or multiple data annotations.")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class RenameDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpressionAndStringPairParameter.List renamingItems = new StringQueryExpressionAndStringPairParameter.List();

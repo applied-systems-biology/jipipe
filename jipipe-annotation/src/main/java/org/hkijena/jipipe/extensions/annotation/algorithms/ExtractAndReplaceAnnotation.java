@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParamet
         "replace the existing annotation or put the results into a new one. If you require more flexibility, please use 'Set/Edit annotations', which provide customizable mathematical expressions for generating or editing annotations.")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     private StringPatternExtractionFunction.List functions = new StringPatternExtractionFunction.List();

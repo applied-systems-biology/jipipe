@@ -15,7 +15,7 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.AnchorParameterSetti
 
 @JIPipeDocumentation(name = "Reslice", description = "Defines a new Z axis and projects the image so that its Z axis is the newly defined one.")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Reslice Z")
 public class ResliceAlgorithm extends JIPipeSimpleIteratingAlgorithm {

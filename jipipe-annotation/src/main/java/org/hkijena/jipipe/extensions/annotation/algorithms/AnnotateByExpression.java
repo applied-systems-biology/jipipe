@@ -37,8 +37,11 @@ import java.util.Set;
  */
 @JIPipeDocumentation(name = "Set/Edit annotations", description = "Modifies the specified annotations to the specified values. Supports expressions to combine existing annotations or generate new values.")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
+@JIPipeNodeAlias(aliasName = "Set annotations")
+@JIPipeNodeAlias(aliasName = "Modify annotations")
+@JIPipeNodeAlias(aliasName = "Edit annotations")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customVariables;

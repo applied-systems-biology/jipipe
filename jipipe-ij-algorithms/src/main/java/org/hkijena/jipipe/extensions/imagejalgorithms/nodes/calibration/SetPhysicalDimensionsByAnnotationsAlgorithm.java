@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
         "extracts the properties from the annotations.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nProperties")
 public class SetPhysicalDimensionsByAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

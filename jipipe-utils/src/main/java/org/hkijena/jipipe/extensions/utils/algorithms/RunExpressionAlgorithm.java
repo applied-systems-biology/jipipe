@@ -23,7 +23,7 @@ import java.util.Set;
         "The result of the expression may or may not be used as annotation.")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true, inheritedSlot = "Data")
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter expression = new DefaultExpressionParameter();

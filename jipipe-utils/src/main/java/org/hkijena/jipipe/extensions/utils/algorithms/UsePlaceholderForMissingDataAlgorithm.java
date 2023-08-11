@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Reference", autoCreate = true)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true, optional = true)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Placeholder", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", inheritedSlot = "Placeholder", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGeneratorAlgorithm {
 
     private JIPipeTextAnnotationMergeMode placeholderAnnotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;

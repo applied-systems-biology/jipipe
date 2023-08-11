@@ -13,14 +13,18 @@ import javax.swing.*;
 /**
  * Defines an external environment
  */
-public abstract class ExternalEnvironment extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
+public abstract class JIPipeExternalEnvironment extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
     private String name;
+    private String version = "unknown";
+    private String source = "NA";
 
-    public ExternalEnvironment() {
+    public JIPipeExternalEnvironment() {
     }
 
-    public ExternalEnvironment(ExternalEnvironment other) {
+    public JIPipeExternalEnvironment(JIPipeExternalEnvironment other) {
         this.name = other.name;
+        this.version = other.version;
+        this.source = other.source;
     }
 
     /**
@@ -49,5 +53,29 @@ public abstract class ExternalEnvironment extends AbstractJIPipeParameterCollect
     @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JIPipeDocumentation(name = "Version", description = "The version of this environment")
+    @JIPipeParameter("version")
+    @JsonGetter("version")
+    public String getVersion() {
+        return version;
+    }
+
+    @JIPipeParameter("version")
+    @JsonSetter("version")
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    @JIPipeDocumentation(name = "Source", description = "Information about where this environment was sourced from")
+    @JIPipeParameter("source")
+    public String getSource() {
+        return source;
+    }
+
+    @JIPipeParameter("source")
+    public void setSource(String source) {
+        this.source = source;
     }
 }

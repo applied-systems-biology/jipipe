@@ -84,9 +84,9 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
         if (settings == null || settings.allowManagePreset()) {
             JMenu presetMenu = new JMenu("Load preset");
-            List<ExternalEnvironment> presets = JIPipe.getInstance().getExternalEnvironmentRegistry().getPresets(fieldClass);
+            List<JIPipeExternalEnvironment> presets = JIPipe.getInstance().getExternalEnvironmentRegistry().getPresets(fieldClass);
 
-            for (ExternalEnvironment preset : presets) {
+            for (JIPipeExternalEnvironment preset : presets) {
                 JMenuItem presetItem = new JMenuItem(preset.getName(), preset.getIcon());
                 presetItem.addActionListener(e -> loadPreset(preset));
                 presetMenu.add(presetItem);
@@ -108,7 +108,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
             String menuCategory = settings != null ? settings.showCategory() : "";
             boolean foundAdditionalEnvironments = false;
             for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
-                    .getExternalEnvironmentRegistry().getInstallers((Class<? extends ExternalEnvironment>) fieldClass)) {
+                    .getExternalEnvironmentRegistry().getInstallers((Class<? extends JIPipeExternalEnvironment>) fieldClass)) {
 
                 if (!StringUtils.isNullOrEmpty(menuCategory)) {
                     // Check if the category matches
@@ -132,7 +132,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
             if (foundAdditionalEnvironments) {
                 JMenu additionalEnvironmentsMenu = new JMenu("Additional compatible installers");
                 for (JIPipeExternalEnvironmentRegistry.InstallerEntry installer : JIPipe.getInstance()
-                        .getExternalEnvironmentRegistry().getInstallers((Class<? extends ExternalEnvironment>) fieldClass)) {
+                        .getExternalEnvironmentRegistry().getInstallers((Class<? extends JIPipeExternalEnvironment>) fieldClass)) {
                     if (!StringUtils.isNullOrEmpty(menuCategory)) {
                         // Check if the category matches
                         ExternalEnvironmentInfo installerInfo = installer.getInstallerClass().getAnnotation(ExternalEnvironmentInfo.class);
@@ -156,7 +156,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         }
     }
 
-    private void loadPreset(ExternalEnvironment preset) {
+    private void loadPreset(JIPipeExternalEnvironment preset) {
         if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "Do you really want to load " +
                 "the preset '" + preset.getName() + "?", "Load preset", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             setParameter(preset, true);
@@ -165,7 +165,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
     private void saveAsPreset() {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        ExternalEnvironment parameter = getParameter(ExternalEnvironment.class);
+        JIPipeExternalEnvironment parameter = getParameter(JIPipeExternalEnvironment.class);
         parameter.reportValidity(new UnspecifiedValidationReportContext(), report);
 
         if (!report.isValid()) {
@@ -180,7 +180,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         Class<?> fieldClass = getParameterAccess().getFieldClass();
         JIPipeParameterTypeInfo typeInfo = JIPipe.getInstance().getParameterTypeRegistry().getInfoByFieldClass(fieldClass);
 
-        ExternalEnvironment duplicate = (ExternalEnvironment) typeInfo.duplicate(parameter);
+        JIPipeExternalEnvironment duplicate = (JIPipeExternalEnvironment) typeInfo.duplicate(parameter);
         String newName = JOptionPane.showInputDialog(getWorkbench().getWindow(), "Please insert the name of the preset:", duplicate.getName());
         if (StringUtils.isNullOrEmpty(newName))
             return;
@@ -192,7 +192,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
     private void editEnvironment() {
         Class<?> fieldClass = getParameterAccess().getFieldClass();
         JIPipeParameterTypeInfo typeInfo = JIPipe.getInstance().getParameterTypeRegistry().getInfoByFieldClass(fieldClass);
-        ExternalEnvironment parameter = (ExternalEnvironment) typeInfo.duplicate(getParameter(ExternalEnvironment.class));
+        JIPipeExternalEnvironment parameter = (JIPipeExternalEnvironment) typeInfo.duplicate(getParameter(JIPipeExternalEnvironment.class));
         boolean result = ParameterPanel.showDialog(getWorkbench(),
                 parameter,
                 null,
@@ -219,7 +219,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
             installButton.setVisible(true);
         }
 
-        ExternalEnvironment parameter = getParameter(ExternalEnvironment.class);
+        JIPipeExternalEnvironment parameter = getParameter(JIPipeExternalEnvironment.class);
         nameLabel.setIcon(parameter.getIcon());
         nameLabel.setText(parameter.getName());
         pathLabel.setText(StringUtils.orElse(parameter.getInfo(), "<Nothing set>"));

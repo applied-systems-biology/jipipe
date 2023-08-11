@@ -13,7 +13,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 @JIPipeDocumentation(name = "Remove data annotations", description = "Removes data annotations by their column name. Data annotations are different to string annotations and contain data instead of strings.")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Remove")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class RemoveDataAnnotations extends JIPipeSimpleIteratingAlgorithm {
 
 

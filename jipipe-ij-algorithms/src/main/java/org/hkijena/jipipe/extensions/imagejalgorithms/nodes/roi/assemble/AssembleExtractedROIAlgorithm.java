@@ -39,7 +39,7 @@ import java.util.Map;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Target")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
 
     private String annotationX = "X";

@@ -52,7 +52,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Arrange channels", description = "Reorders the channels of each input image")
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Arrange Channels...")
 public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

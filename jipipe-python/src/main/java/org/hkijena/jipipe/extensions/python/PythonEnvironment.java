@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.python;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -32,7 +32,7 @@ import java.util.Set;
 /**
  * Parameter that describes a Python environment
  */
-public class PythonEnvironment extends ExternalEnvironment {
+public class PythonEnvironment extends JIPipeExternalEnvironment {
 
     public static final String ENVIRONMENT_ID = "python";
 

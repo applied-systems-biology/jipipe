@@ -26,7 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
         "switch the depth and time axis. If a stack is provided, it is interpreted as hyperstack with depth and with one frame and one channel. " +
         "2D images are ignored and passed to the output without processing.")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks", aliasName = "Re-order Hyperstack...")
 public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

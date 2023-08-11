@@ -43,7 +43,7 @@ import java.nio.file.Path;
         "converted into their respective JIPipe types.")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;

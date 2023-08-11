@@ -30,7 +30,7 @@ import java.util.List;
 
 @JIPipeDocumentation(name = "Sort data rows (Expression)", description = "Sorts the data rows by one or multiple values that are extracted via expressions.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
 public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm {
 

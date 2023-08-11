@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -30,7 +30,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ProcessEnvironment extends ExternalEnvironment {
+public class ProcessEnvironment extends JIPipeExternalEnvironment {
 
     private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY()");
     private Path executablePathWindows = Paths.get("");

@@ -29,7 +29,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
         "This does not change the pixel data.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Brightness/Contrast...")
 public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ImageJCalibrationMode calibrationMode = ImageJCalibrationMode.AutomaticImageJ;

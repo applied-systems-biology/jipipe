@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.parameters.library.quantities.QuantityParam
 @JIPipeDocumentation(name = "Set physical dimensions", description = "Allows to set the physical dimensions of the incoming images")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Calibration")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nProperties")
 public class SetPhysicalDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

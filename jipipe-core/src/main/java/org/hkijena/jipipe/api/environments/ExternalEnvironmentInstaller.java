@@ -27,7 +27,7 @@ public abstract class ExternalEnvironmentInstaller implements JIPipeRunnable {
      *
      * @return the final environment or null if there was an error
      */
-    public abstract ExternalEnvironment getInstalledEnvironment();
+    public abstract JIPipeExternalEnvironment getInstalledEnvironment();
 
     public JIPipeWorkbench getWorkbench() {
         return workbench;

@@ -33,14 +33,14 @@ import java.util.Set;
 /**
  * Algorithm that annotates all data with the same annotation
  */
-@JIPipeDocumentation(name = "Set single annotation", description = "Sets a single annotation")
+@JIPipeDocumentation(name = "Set annotation (expression)", description = "Sets a single annotation. The name and the value are determined by expressions")
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringQueryExpression annotationValue = new StringQueryExpression();
-    private StringQueryExpression annotationName = new StringQueryExpression();
+    private StringQueryExpression annotationValue = new StringQueryExpression("\"Annotation value\"");
+    private StringQueryExpression annotationName = new StringQueryExpression("\"Annotation name\"");
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**

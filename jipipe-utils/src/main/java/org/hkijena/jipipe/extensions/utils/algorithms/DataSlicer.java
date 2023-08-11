@@ -21,7 +21,7 @@ import java.util.List;
 
 @JIPipeDocumentation(name = "Limit data", description = "Slices the incoming data table into a smaller table with a limited row set according to the selected row.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
 public class DataSlicer extends JIPipeParameterSlotAlgorithm {
 

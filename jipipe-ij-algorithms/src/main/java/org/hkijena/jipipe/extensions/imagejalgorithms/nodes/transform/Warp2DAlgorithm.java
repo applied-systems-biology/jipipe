@@ -24,7 +24,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Vector field", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Image")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension vectorDimension = HyperstackDimension.Channel;

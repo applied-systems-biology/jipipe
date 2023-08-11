@@ -23,7 +23,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", autoCreate = true)
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Target")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageROITargetArea targetArea = ImageROITargetArea.InsideMask;
