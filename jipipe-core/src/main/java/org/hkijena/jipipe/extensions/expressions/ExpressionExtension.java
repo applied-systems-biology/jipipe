@@ -17,6 +17,8 @@ import org.hkijena.jipipe.extensions.expressions.functions.math.*;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityConvertFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetUnitFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetValueFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.scripts.JavaScriptFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.scripts.JythonScriptFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.statistics.*;
 import org.hkijena.jipipe.extensions.expressions.functions.string.*;
 import org.hkijena.jipipe.extensions.expressions.functions.util.PrintFunction;
@@ -286,6 +288,8 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new IsNaNFunction());
         registerExpressionFunction(new IsFiniteFunction());
         registerExpressionFunction(new IsInfiniteFunction());
+        registerExpressionFunction(new JavaScriptFunction());
+        registerExpressionFunction(new JythonScriptFunction());
     }
 
     @Override

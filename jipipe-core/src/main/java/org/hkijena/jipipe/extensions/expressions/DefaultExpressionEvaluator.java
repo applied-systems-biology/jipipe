@@ -256,6 +256,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 }
                 continue;
             }
+            if(expressionEscape > 0 && c == '{') {
+                ++expressionEscape;
+            }
             if (expressionEscape > 0 && c == '}') {
                 --expressionEscape;
                 if (expressionEscape <= 0) {
@@ -263,6 +266,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                     String escaped = "\"" + escapeString(buffer.toString()) + "\"";
                     tokens.add(escaped);
                     buffer.setLength(0);
+                }
+                else {
+                    buffer.append(c);
                 }
                 continue;
             }
