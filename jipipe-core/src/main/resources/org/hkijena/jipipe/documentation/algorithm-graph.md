@@ -25,7 +25,6 @@ Edges represent that data is transferred from an output to an input node.
 <tr><td><img src="resource://icons/actions/search.png"/></td><td>You can also use the search bar to find nodes.</td></tr>
 <tr><td><img src="resource://icons/actions/target.png"/></td><td>New nodes will appear at the cursor.</td></tr>
 <tr><td><img src="resource://icons/actions/edit-select-all.png"/></td><td>Select a node to show its parameters.</td></tr>
-<tr><td><img src="resource://icons/actions/cursor-arrow.png"/></td><td>Hover over a parameter to show its documentation.</td></tr>
 <tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Right-click a node to show its context menu.</td></tr>
 </table>
 <h3>Edges</h3>

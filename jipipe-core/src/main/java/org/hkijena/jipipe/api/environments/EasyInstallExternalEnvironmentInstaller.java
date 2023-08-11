@@ -107,6 +107,11 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeEx
             executePostprocess();
             generatedEnvironment = generateEnvironment();
 
+            if(generatedEnvironment != null && getTargetPackage() != null) {
+                generatedEnvironment.setVersion(getTargetPackage().getVersion());
+                generatedEnvironment.setSource((getTargetPackage().getUrlMultiPart() != null && getTargetPackage().getUrlMultiPart().isEmpty()) ?
+                        String.join(" ", getTargetPackage().getUrlMultiPart()) : getTargetPackage().getUrl());
+            }
             if (getParameterAccess() != null && generatedEnvironment != null) {
                 SwingUtilities.invokeLater(() -> {
                     writeEnvironmentToParameters(generatedEnvironment, getParameterAccess());

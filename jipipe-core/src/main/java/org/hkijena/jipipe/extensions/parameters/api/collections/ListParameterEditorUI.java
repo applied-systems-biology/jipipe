@@ -243,6 +243,13 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
                 selectedEntryComponents.add(entryComponentsList.get(finalI));
                 removeSelectedEntries();
             }));
+            handleMenu.addSeparator();
+            handleMenu.add(UIUtils.createMenuItem("Move up", "Moves this item one position up", UIUtils.getIconFromResources("actions/up.png"), () -> {
+                moveEntryUp(entry);
+            }));
+            handleMenu.add(UIUtils.createMenuItem("Move down", "Moves this item one position down", UIUtils.getIconFromResources("actions/down.png"), () -> {
+                moveEntryUp(entry);
+            }));
 
             ListParameterItemParameterAccess<?> access = new ListParameterItemParameterAccess(getParameterAccess(),
                     parameter,

@@ -26,7 +26,6 @@ the drawbacks of group nodes and full access to the cache system.
 <tr><td><img src="resource://icons/actions/search.png"/></td><td>You can also use the search bar to quickly navigate to a compartment.</td></tr>
 <tr><td><img src="resource://icons/actions/target.png"/></td><td>New compartments will appear at the cursor.</td></tr>
 <tr><td><img src="resource://icons/actions/edit-select-all.png"/></td><td>Select a compartments to show its parameters.</td></tr>
-<tr><td><img src="resource://icons/actions/cursor-arrow.png"/></td><td>Hover over a parameter to show its documentation.</td></tr>
 <tr><td><img src="resource://icons/devices/input-mouse.png"/></td><td>Right-click a compartments to show its context menu.</td></tr>
 </table>
 
