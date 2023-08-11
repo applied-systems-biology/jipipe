@@ -25,6 +25,7 @@ import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.python.antlr.ast.Str;
 
 import java.io.IOException;
 import java.net.URL;
@@ -39,10 +40,10 @@ public class MarkdownDocument {
 
     static final MutableDataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
-    private static Map<Path, MarkdownDocument> fromFileCache = new HashMap<>();
-    private static Map<URL, MarkdownDocument> fromResourcesCache = new HashMap<>();
-    private static Map<String, URL> resourceReplacementCache = new HashMap<>();
-    private static Map<String, URL> iconResourceReplacementCache = new HashMap<>();
+    private static final Map<Path, MarkdownDocument> fromFileCache = new HashMap<>();
+    private static final Map<String, MarkdownDocument> fromResourcesCache = new HashMap<>();
+    private static final Map<String, URL> resourceReplacementCache = new HashMap<>();
+    private static final Map<String, URL> iconResourceReplacementCache = new HashMap<>();
     private String markdown;
     private String renderedHTML;
 
@@ -88,14 +89,14 @@ public class MarkdownDocument {
     public static MarkdownDocument fromPluginResource(String internalPath, Map<String, Class<?>> additionalResourceProtocols) {
         try {
             URL resourcePath = ResourceUtils.getPluginResource(internalPath);
-            MarkdownDocument existing = fromResourcesCache.getOrDefault(resourcePath, null);
+            MarkdownDocument existing = fromResourcesCache.getOrDefault(resourcePath.toString(), null);
             if (existing != null)
                 return existing;
             String md = Resources.toString(resourcePath, Charsets.UTF_8);
             md = replaceResourceURLs(md, additionalResourceProtocols);
 
             MarkdownDocument markdownDocument = new MarkdownDocument(md);
-            fromResourcesCache.put(resourcePath, markdownDocument);
+            fromResourcesCache.put(resourcePath.toString(), markdownDocument);
             return markdownDocument;
         } catch (IOException e) {
             throw new RuntimeException(e);

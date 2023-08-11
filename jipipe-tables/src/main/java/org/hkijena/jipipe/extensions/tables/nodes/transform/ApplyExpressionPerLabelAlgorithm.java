@@ -24,11 +24,11 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Table to key/value histogram", description = "Given a table with two numeric columns containing a key and a value, integrate all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.")
+@JIPipeDocumentation(name = "Apply expression per label", description = "Given a table with two numeric columns containing a key and a value, summarize all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter keyColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"key\"");
     private TableColumnSourceExpressionParameter valueColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"value\"");
@@ -40,11 +40,11 @@ public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean cumulative = false;
     private boolean normalize = false;
 
-    public HistogramAlgorithm(JIPipeNodeInfo info) {
+    public ApplyExpressionPerLabelAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public HistogramAlgorithm(HistogramAlgorithm other) {
+    public ApplyExpressionPerLabelAlgorithm(ApplyExpressionPerLabelAlgorithm other) {
         super(other);
         this.keyColumn = new TableColumnSourceExpressionParameter(other.keyColumn);
         this.valueColumn = new TableColumnSourceExpressionParameter(other.valueColumn);
@@ -177,7 +177,7 @@ public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.valueColumn = valueColumn;
     }
 
-    @JIPipeDocumentation(name = "Integration function", description = "The function that integrates the values assigned to the same key")
+    @JIPipeDocumentation(name = "Summary function", description = "The function that summarizes the values assigned to the same key")
     @JIPipeParameter("integration-function")
     @ExpressionParameterSettingsVariable(key = "values", name = "Values", description = "The values to be integrated")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)

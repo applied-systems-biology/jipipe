@@ -38,6 +38,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionConstant CONSTANT_PI = new NumericPiConstant();
     public static final ExpressionConstant CONSTANT_TAU = new NumericTauConstant();
     public static final ExpressionConstant CONSTANT_E = new NumericEulerConstant();
+    public static final ExpressionConstant CONSTANT_POSITIVE_INFINITY = new NumericInfinityConstant();
+    public static final ExpressionConstant CONSTANT_NEGATIVE_INFINITY = new NumericNegativeInfinityConstant();
+    public static final ExpressionConstant CONSTANT_NAN = new NumericNaNInfinityConstant();
     public static final ExpressionOperator OPERATOR_NEGATE_SYMBOL = new LogicalNotOperator("!", 3);
     public static final ExpressionOperator OPERATOR_NEGATE_TEXT = new LogicalNotOperator("NOT", 3);
     public static final ExpressionOperator OPERATOR_AND_SYMBOL = new LogicalAndOperator("&", 2);
@@ -100,6 +103,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         parameters.add(CONSTANT_E);
         parameters.add(CONSTANT_PI);
         parameters.add(CONSTANT_TAU);
+        parameters.add(CONSTANT_POSITIVE_INFINITY);
+        parameters.add(CONSTANT_NEGATIVE_INFINITY);
+        parameters.add(CONSTANT_NAN);
 
         // Add boolean operators
         parameters.add(OPERATOR_NEGATE_SYMBOL);
