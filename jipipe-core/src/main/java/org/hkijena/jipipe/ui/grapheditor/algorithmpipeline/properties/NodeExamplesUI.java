@@ -8,6 +8,7 @@ import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplatesRefreshedEventListener;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -18,11 +19,13 @@ import java.awt.event.MouseEvent;
 public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel implements NodeTemplatesRefreshedEventListener {
 
     private final JIPipeAlgorithm algorithm;
+    private final DocumentTabPane tabbedPane;
     private final JList<JIPipeNodeExample> exampleJList = new JList<>();
 
-    public NodeExamplesUI(JIPipeProjectWorkbench workbench, JIPipeAlgorithm algorithm) {
+    public NodeExamplesUI(JIPipeProjectWorkbench workbench, JIPipeAlgorithm algorithm, DocumentTabPane tabbedPane) {
         super(workbench);
         this.algorithm = algorithm;
+        this.tabbedPane = tabbedPane;
         initialize();
         reloadList();
         JIPipe.getInstance().getNodeTemplatesRefreshedEventEmitter().subscribeWeak(this);
@@ -64,6 +67,9 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel implements NodeT
         }
         algorithm.loadExample(example);
         getWorkbench().sendStatusBarText("Loaded example '" + example.getNodeTemplate().getName() + "' into " + algorithm.getDisplayName());
+        if(tabbedPane != null) {
+            tabbedPane.selectSingletonTab("PARAMETERS");
+        }
     }
 
     private void reloadList() {

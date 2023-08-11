@@ -100,7 +100,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 tabbedPane.registerSingletonTab("EXAMPLES",
                         "Examples",
                         UIUtils.getIconFromResources("actions/graduation-cap.png"),
-                        () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node),
+                        () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node, tabbedPane),
                         DocumentTabPane.CloseMode.withoutCloseButton,
                         DocumentTabPane.SingletonTabMode.Present);
             }
@@ -132,7 +132,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 tabbedPane.registerSingletonTab("EXAMPLES",
                         "Examples",
                         UIUtils.getIconFromResources("actions/graduation-cap.png"),
-                        () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node),
+                        () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node, tabbedPane),
                         DocumentTabPane.CloseMode.withoutCloseButton,
                         DocumentTabPane.SingletonTabMode.Present);
             }
@@ -345,6 +345,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         JIPipeNodeExample selection = pickerDialog.showDialog();
         if (selection != null) {
             ((JIPipeAlgorithm) node).loadExample(selection);
+            tabbedPane.selectSingletonTab("PARAMETERS");
         }
     }
 
