@@ -717,7 +717,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
                         }
                         continue;
                     } else {
-                        progressInfo.log("Extension with ID " + extension.getDependencyId() + " indicated that its pre-activation checks failed. WILL BE LOADED ANYWAYS DUE TO APPLICATION SETTINGS!");
+                        progressInfo.log("Extension with ID " + extension.getDependencyId() + " indicated that its pre-activation checks failed. WILL BE LOADED anyway DUE TO APPLICATION SETTINGS!");
                     }
                 }
 

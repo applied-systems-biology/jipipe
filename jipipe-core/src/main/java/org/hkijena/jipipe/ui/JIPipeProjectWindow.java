@@ -341,7 +341,7 @@ public class JIPipeProjectWindow extends JFrame {
                 }
                 Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
-                    if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
+                    if (!InvalidProjectDependenciesInfoDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
                         return;
                 }
 
@@ -382,7 +382,7 @@ public class JIPipeProjectWindow extends JFrame {
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
                 Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
-                    if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
+                    if (!InvalidProjectDependenciesInfoDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                         return;
                 }
 
@@ -565,12 +565,12 @@ public class JIPipeProjectWindow extends JFrame {
         try {
             if (Files.exists(directory) && Files.list(directory).count() > 0) {
                 if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
-                        "Continue anyways?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                        "Continue anyway?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
                     return;
             }
             if (Files.exists(directory) && Files.list(directory).count() > 0 && !Files.exists(directory.resolve("project.jip"))) {
                 if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " does not look like an old output. Please note that the directory will be deleted!" +
-                        "Continue anyways?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                        "Continue anyway?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
                     return;
             }
         } catch (Exception e) {

@@ -31,9 +31,22 @@ public class VersionUtils {
     /**
      * The current version of JIPipe according to the Maven-proved information
      *
-     * @return the version string or 'Development' if none is available
+     * @return the version string or '1.81.0' if none is available
      */
     public static String getJIPipeVersion() {
-        return getVersionString(CoreExtension.class);
+        return StringUtils.orElse(CoreExtension.class.getPackage().getImplementationVersion(), "1.81.0");
+    }
+
+    /**
+     * Similar to {@link StringUtils} compareVersions, but supports the 'Development' version
+     * @param version1 the first version
+     * @param version2 the second version
+     * @return -1 if version1 is less than version2. 1 if version2 is less than version1. 0 if equal
+     */
+    public static int compareVersions(String version1, String version2) {
+        if("Development".equalsIgnoreCase(version1) || "Development".equalsIgnoreCase(version2)) {
+            return 0;
+        }
+        return StringUtils.compareVersions(version1, version2);
     }
 }

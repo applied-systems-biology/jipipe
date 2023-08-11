@@ -253,7 +253,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
 //                    if (JOptionPane.showConfirmDialog(this,
 //                            "It looks like that this folder was created for a different node type.\n" +
 //                                    "The node you have selected has the type ID '" + graphNode.getInfo().getId() + "',\n" +
-//                                    "while the cache folder was created for type ID '" + stateNode.getInfo().getId() + "'.\n\nContinue anyways?",
+//                                    "while the cache folder was created for type ID '" + stateNode.getInfo().getId() + "'.\n\nContinue anyway?",
 //                            "Import cache",
 //                            JOptionPane.YES_NO_OPTION,
 //                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
@@ -270,7 +270,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
 //                    currentStateIdJson.remove("jipipe:node-uuid");
 //                    if (!Objects.equals(stateIdJson, currentStateIdJson)) {
 //                        if (JOptionPane.showConfirmDialog(this,
-//                                "The cache folder was created for a different parameter set.\n\nContinue anyways?",
+//                                "The cache folder was created for a different parameter set.\n\nContinue anyway?",
 //                                "Import cache",
 //                                JOptionPane.YES_NO_OPTION,
 //                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
@@ -281,7 +281,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
 //            } catch (Exception e) {
 //                UIUtils.openErrorDialog(this, e);
 //                if (JOptionPane.showConfirmDialog(this,
-//                        "There was an error while checking for data compatibility.\n\nContinue anyways?",
+//                        "There was an error while checking for data compatibility.\n\nContinue anyway?",
 //                        "Import cache",
 //                        JOptionPane.YES_NO_OPTION,
 //                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
@@ -291,7 +291,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
 //        } else {
 //            if (JOptionPane.showConfirmDialog(this,
 //                    "The folder does not contain 'node.json', which is there to check if " +
-//                            "you have chosen the correct node.\n\nContinue anyways?",
+//                            "you have chosen the correct node.\n\nContinue anyway?",
 //                    "Import cache",
 //                    JOptionPane.YES_NO_OPTION,
 //                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
@@ -306,7 +306,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
         }
         if (!missingSlots.isEmpty()) {
             if (JOptionPane.showConfirmDialog(this,
-                    "Could not find cached folders for following outputs:\n\n" + String.join("\n", missingSlots) + "\n\nContinue anyways?",
+                    "Could not find cached folders for following outputs:\n\n" + String.join("\n", missingSlots) + "\n\nContinue anyway?",
                     "Import cache",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {

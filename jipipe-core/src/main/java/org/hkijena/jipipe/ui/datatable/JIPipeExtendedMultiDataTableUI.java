@@ -468,7 +468,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
             try {
                 if (Files.isDirectory(directory) && Files.list(directory).findAny().isPresent()) {
                     if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
-                            "Continue anyways?", "Export as JIPipe data table", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                            "Continue anyway?", "Export as JIPipe data table", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
                         return;
                 }
             } catch (Exception e) {

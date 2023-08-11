@@ -170,7 +170,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
         if (!report.isValid()) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
-                    "The current settings seem to be invalid. Do you want to save them as preset, anyways?",
+                    "The current settings seem to be invalid. Do you want to save them as preset, anyway?",
                     "Save preset",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 return;

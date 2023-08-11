@@ -164,7 +164,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
         }
 
-        // There should be only one batch, but we iterate anyways
+        // There should be only one batch, but we iterate anyway
         for (int i = 0; i < dataBatches.size(); i++) {
             if (progressInfo.isCancelled())
                 return;

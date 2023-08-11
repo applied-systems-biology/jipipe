@@ -80,7 +80,7 @@ import java.util.stream.Collectors;
  */
 public abstract class JIPipeDefaultJavaExtension extends AbstractService implements JIPipeJavaExtension {
 
-    private JIPipeMetadata metadata;
+    private final JIPipeMetadata metadata;
     private JIPipe registry;
 
     /**

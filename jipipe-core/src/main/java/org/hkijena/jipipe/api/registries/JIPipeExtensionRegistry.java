@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -79,7 +80,15 @@ public class JIPipeExtensionRegistry {
     public static Set<JIPipeDependency> findUnsatisfiedDependencies(Set<JIPipeDependency> dependencies) {
         Set<JIPipeDependency> result = new HashSet<>();
         for (JIPipeDependency dependency : dependencies) {
-            boolean found = JIPipe.getInstance().getRegisteredExtensions().stream().anyMatch(d -> d.getDependencyId().equals(dependency.getDependencyId()));
+            boolean found = false;
+            for (JIPipeDependency registeredExtension : JIPipe.getInstance().getRegisteredExtensions()) {
+                if(registeredExtension.getDependencyId().equals(dependency.getDependencyId())) {
+                    // Check version
+                    if(VersionUtils.compareVersions(registeredExtension.getDependencyVersion(), dependency.getDependencyVersion()) >= 0) {
+                        found = true;
+                    }
+                }
+            }
             if (!found)
                 result.add(dependency);
         }

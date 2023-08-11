@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipeDefaultJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 import java.net.URL;
 import java.util.Arrays;
@@ -60,6 +61,11 @@ public abstract class JIPipePrepackagedDefaultJavaExtension extends JIPipeDefaul
                         "thilo.figge@leibniz-hki.de",
                         false,
                         true));
+    }
+
+    @Override
+    public String getDependencyVersion() {
+        return VersionUtils.getJIPipeVersion();
     }
 
     @Override

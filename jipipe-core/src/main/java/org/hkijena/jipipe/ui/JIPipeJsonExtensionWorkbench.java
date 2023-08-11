@@ -243,7 +243,7 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         JIPipeValidationReport report = validityCheckerPanel.getReport();
         if (!report.isValid()) {
             validateProject();
-            if (JOptionPane.showConfirmDialog(this, "The extension builder found potential issues with the extension. Install anyways?",
+            if (JOptionPane.showConfirmDialog(this, "The extension builder found potential issues with the extension. Install anyway?",
                     "Install extension",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION)

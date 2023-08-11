@@ -37,7 +37,7 @@ import org.hkijena.jipipe.ui.events.WindowClosedEventEmitter;
 import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
 import org.hkijena.jipipe.ui.events.WindowOpenedEventEmitter;
 import org.hkijena.jipipe.ui.ijupdater.MissingRegistrationUpdateSiteResolver;
-import org.hkijena.jipipe.ui.project.MissingProjectDependenciesDialog;
+import org.hkijena.jipipe.ui.project.InvalidProjectDependenciesInfoDialog;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -138,7 +138,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
             Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
             if (!missingDependencies.isEmpty()) {
-                if (!MissingProjectDependenciesDialog.showDialog(workbench, filePath, missingDependencies, Collections.emptySet()))
+                if (!InvalidProjectDependenciesInfoDialog.showDialog(workbench, filePath, missingDependencies, Collections.emptySet()))
                     return;
             }
 
@@ -166,7 +166,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         boolean alreadyExists = JIPipe.getInstance().getRegisteredExtensionIds().contains(extension.getDependencyId());
         if (alreadyExists) {
             if (JOptionPane.showConfirmDialog(workbench.getWindow(), "There already exists an extension with ID '"
-                    + extension.getDependencyId() + "'. Do you want to install this extension anyways?", "Install", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                    + extension.getDependencyId() + "'. Do you want to install this extension anyway?", "Install", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                 return;
             }
         }
@@ -352,7 +352,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             }
 
             if (!missingDependencies.isEmpty()) {
-                if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
+                if (!InvalidProjectDependenciesInfoDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                     return;
             }
 

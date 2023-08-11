@@ -116,7 +116,7 @@ public class FormsDialog extends JFrame {
         JIPipeValidationReport report = getReportForDataBatch(row, info);
         if (!report.isValid()) {
             int result = JOptionPane.showOptionDialog(this,
-                    "The current batch has settings that are not fully valid. Do you want to continue, anyways?",
+                    "The current batch has settings that are not fully valid. Do you want to continue, anyway?",
                     "Issues found",
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
@@ -608,7 +608,7 @@ public class FormsDialog extends JFrame {
         long invalid = dataBatchStatuses.stream().filter(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Invalid).count();
         if (unvisited > 0) {
             if (JOptionPane.showConfirmDialog(FormsDialog.this,
-                    "There are " + unvisited + " data batches that are not marked as reviewed. Do you want to continue, anyways?",
+                    "There are " + unvisited + " data batches that are not marked as reviewed. Do you want to continue, anyway?",
                     getTitle(),
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
@@ -617,7 +617,7 @@ public class FormsDialog extends JFrame {
         }
         if (invalid > 0) {
             if (JOptionPane.showConfirmDialog(FormsDialog.this,
-                    "There are " + invalid + " data batches that report issues. Do you want to continue, anyways?",
+                    "There are " + invalid + " data batches that report issues. Do you want to continue, anyway?",
                     getTitle(),
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
