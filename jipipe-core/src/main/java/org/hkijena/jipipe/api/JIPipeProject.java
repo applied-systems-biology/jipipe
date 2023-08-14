@@ -900,18 +900,18 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             if(node instanceof JIPipeProjectCompartment) {
                 stringBuilder.append("<h").append(headingLevel).append(">Compartment \"").append(node.getName()).append("\"</h").append(headingLevel).append(">");
                 stringBuilder.append("<ul>");
-
                 // Resolve sources
                 for (JIPipeDataSlot sourceSlot : compartmentGraph.getInputIncomingSourceSlots(node.getFirstInputSlot())) {
                     if(sourceSlot.getNode() instanceof JIPipeProjectCompartment) {
                         stringBuilder.append("<li>The \"").append(node.getName()).append("\" compartment receives data from the \"").append(sourceSlot.getNode().getName()).append("\" compartment").append("</li>");
                     }
                 }
+                stringBuilder.append("</ul>");
 
                 // Resolve nodes
                 graph.getTextDescription(stringBuilder, node.getUUIDInParentGraph(), headingLevel + 1);
 
-                stringBuilder.append("</ul>");
+
             }
         }
     }
