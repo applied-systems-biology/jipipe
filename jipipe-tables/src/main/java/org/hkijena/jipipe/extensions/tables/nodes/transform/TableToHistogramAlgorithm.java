@@ -5,6 +5,7 @@ import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.map.TDoubleIntMap;
 import gnu.trove.map.hash.TDoubleIntHashMap;
+import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -111,36 +112,31 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Determine the bins
         TDoubleList sortedUniqueFilteredInputColumnValues = new TDoubleArrayList(uniqueFilteredInputColumnValues);
         sortedUniqueFilteredInputColumnValues.sort();
+        TDoubleSet usedSortedUniqueFilteredInputColumnValues = new TDoubleHashSet();
 
         List<TDoubleList> generatedBins = new ArrayList<>();
 
         {
-            // Calculate the size of each bin
-            int binSize = sortedUniqueFilteredInputColumnValues.size() / nBins;
-
-            // Initialize variables to track bin boundaries
-            int startIndex = 0;
-            int endIndex = binSize - 1;
-
-            // Loop through each bin
-            for (int i = 0; i < nBins; i++) {
-                if (i == nBins - 1) {
-                    // Adjust the end index for the last bin
-                    endIndex = sortedUniqueFilteredInputColumnValues.size() - 1;
+            double minValue = sortedUniqueFilteredInputColumnValues.min();
+            double maxValue = sortedUniqueFilteredInputColumnValues.max();
+            double binWidth = (maxValue - minValue) / nBins;
+            double currentStart = minValue;
+            double currentEnd = currentStart + binWidth;
+            do {
+                TDoubleList values = new TDoubleArrayList();
+                for (int i = 0; i < sortedUniqueFilteredInputColumnValues.size(); i++) {
+                    double value = sortedUniqueFilteredInputColumnValues.get(i);
+                    if(value >= currentStart && value <= currentEnd && !usedSortedUniqueFilteredInputColumnValues.contains(value)) {
+                        values.add(value);
+                        usedSortedUniqueFilteredInputColumnValues.add(value);
+                    }
                 }
-
-                // Extract elements for the current bin
-                TDoubleArrayList bin = new TDoubleArrayList();
-                for (int j = startIndex; j <= endIndex; j++) {
-                    bin.add(sortedUniqueFilteredInputColumnValues.get(j));
-                }
-
-                generatedBins.add(bin);
-
-                // Update indices for the next bin
-                startIndex = endIndex + 1;
-                endIndex = startIndex + binSize - 1;
+                generatedBins.add(values);
+                currentStart += binWidth;
+                currentEnd += binWidth;
+                System.out.println(currentStart + " , " + currentEnd + " of " + maxValue);
             }
+            while (currentEnd <= maxValue);
         }
 
         // Generate intermediate arrays
