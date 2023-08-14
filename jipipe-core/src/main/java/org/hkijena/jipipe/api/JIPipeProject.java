@@ -909,7 +909,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                 }
 
                 // Resolve nodes
-                graph.getTextDescription(stringBuilder, node.getUUIDInParentGraph(), headingLevel - 1);
+                graph.getTextDescription(stringBuilder, node.getUUIDInParentGraph(), headingLevel + 1);
 
                 stringBuilder.append("</ul>");
             }
