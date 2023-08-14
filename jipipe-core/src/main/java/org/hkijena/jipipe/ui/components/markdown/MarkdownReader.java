@@ -65,6 +65,7 @@ public class MarkdownReader extends JPanel {
     private JTextPane content;
     private MarkdownDocument document;
     private MarkdownDocument temporaryDocument;
+    private final JToolBar toolBar = new JToolBar();
 
     /**
      * @param withToolbar if a toolbar should be shown
@@ -132,7 +133,6 @@ public class MarkdownReader extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         if (withToolbar) {
-            JToolBar toolBar = new JToolBar();
             toolBar.setFloatable(false);
 
             JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/save.png"));
@@ -187,6 +187,10 @@ public class MarkdownReader extends JPanel {
 
             add(toolBar, BorderLayout.NORTH);
         }
+    }
+
+    public JToolBar getToolBar() {
+        return toolBar;
     }
 
     /**

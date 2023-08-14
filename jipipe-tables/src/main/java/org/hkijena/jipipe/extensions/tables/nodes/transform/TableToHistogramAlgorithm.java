@@ -131,10 +131,11 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         usedSortedUniqueFilteredInputColumnValues.add(value);
                     }
                 }
-                generatedBins.add(values);
+                if(!values.isEmpty()) {
+                    generatedBins.add(values);
+                }
                 currentStart += binWidth;
                 currentEnd += binWidth;
-                System.out.println(currentStart + " , " + currentEnd + " of " + maxValue);
             }
             while (currentEnd <= maxValue);
         }

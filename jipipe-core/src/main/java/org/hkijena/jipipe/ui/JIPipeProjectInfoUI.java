@@ -289,6 +289,13 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
 
         toolBar.add(Box.createHorizontalGlue());
 
+        JButton reportButton = new JButton("Generate report", UIUtils.getIconFromResources("actions/document-preview.png"));
+        reportButton.setOpaque(false);
+        reportButton.setBackground(new Color(0, 0, 0, 0));
+        reportButton.setToolTipText("Opens a report that contains information about this project.");
+        reportButton.addActionListener(e -> openProjectReport());
+        toolBar.add(reportButton);
+
         JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.setOpaque(false);
         refreshButton.setBackground(new Color(0, 0, 0, 0));
@@ -304,6 +311,10 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         toolBar.add(openSettingsButton);
 
         topPanel.add(toolBar, BorderLayout.SOUTH);
+    }
+
+    private void openProjectReport() {
+        getProjectWorkbench().openProjectReport();
     }
 
 }

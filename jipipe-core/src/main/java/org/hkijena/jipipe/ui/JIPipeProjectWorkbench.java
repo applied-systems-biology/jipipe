@@ -533,6 +533,11 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         projectInfo.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         projectMenu.add(projectInfo);
 
+        JMenuItem projectReport = new JMenuItem("Project report", UIUtils.getIconFromResources("actions/document-preview.png"));
+        projectReport.setToolTipText("Opens the project report");
+        projectReport.addActionListener(e -> openProjectReport());
+        projectMenu.add(projectReport);
+
         JMenuItem openProjectFolderItem = new JMenuItem("Open project folder", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         openProjectFolderItem.setToolTipText("Opens the folder that contains the project file");
         openProjectFolderItem.addActionListener(e -> openProjectFolder());
@@ -681,6 +686,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         UIUtils.installMenuExtension(this, helpMenu, JIPipeMenuExtensionTarget.ProjectHelpMenu, true);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    public void openProjectReport() {
+        JIPipeProjectReportUI reportUI = new JIPipeProjectReportUI(this);
+        documentTabPane.addTab("Project report",
+                UIUtils.getIconFromResources("actions/document-preview.png"),
+                reportUI,
+                DocumentTabPane.CloseMode.withSilentCloseButton);
+        documentTabPane.switchToLastTab();
     }
 
     private void openManual() {
