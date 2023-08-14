@@ -29,49 +29,53 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.text.*;
-import javax.swing.text.html.HTML;
-import javax.swing.text.html.HTMLDocument;
-import javax.swing.text.html.HTMLEditorKit;
-import javax.swing.text.html.StyleSheet;
+import javax.swing.text.html.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Panel that allows reading of Markdown data
  */
 public class MarkdownReader extends JPanel {
 
-    public static final String[] CSS_RULES = {"body { font-family: \"Sans-serif\"; }",
+    public static final List<String> CSS_RULES = Arrays.asList("body { font-family: \"Sans-serif\"; }",
             "pre { background-color: #f5f2f0; border: 3px #f5f2f0 solid; }",
             "code { background-color: #ffffff; border: none; }",
             "h2 { padding-top: 30px; }",
             "h3 { padding-top: 30px; }",
             "th { border-bottom: 1px solid #c8c8c8; }",
-            ".toc-list { list-style: none; }"};
-    public static final String[] CSS_RULES_DARK = {"body { font-family: \"Sans-serif\"; color: #eeeeee; }",
+            ".toc-list { list-style: none; }");
+    public static final List<String> CSS_RULES_DARK = Arrays.asList("body { font-family: \"Sans-serif\"; color: #eeeeee; }",
             "pre { background-color: #333333; border: 3px #333333 solid; }",
             "code { background-color: #121212; border: none; }",
             "a { color: #65a4e3; }",
             "h2 { padding-top: 30px; }",
             "h3 { padding-top: 30px; }",
             "th { border-bottom: 1px solid #c8c8c8; }",
-            ".toc-list { list-style: none; }"};
+            ".toc-list { list-style: none; }");
     public static final MutableDataHolder OPTIONS = new MutableDataSet()
             .set(Parser.EXTENSIONS, Arrays.asList(TablesExtension.create(), AutolinkExtension.create(), TocExtension.create()));
+    private final List<String> cssRules;
+    private final List<String> cssRulesDark;
     private JScrollPane scrollPane;
     private JTextPane content;
     private MarkdownDocument document;
     private MarkdownDocument temporaryDocument;
     private final JToolBar toolBar = new JToolBar();
 
+    public MarkdownReader() {
+        this(true, null, CSS_RULES, CSS_RULES_DARK);
+    }
+
     /**
      * @param withToolbar if a toolbar should be shown
      */
     public MarkdownReader(boolean withToolbar) {
-        initialize(withToolbar);
+        this(withToolbar, null, CSS_RULES, CSS_RULES_DARK);
     }
 
     /**
@@ -79,8 +83,20 @@ public class MarkdownReader extends JPanel {
      * @param document    initialize with document
      */
     public MarkdownReader(boolean withToolbar, MarkdownDocument document) {
-        this(withToolbar);
-        this.setDocument(document);
+        this(withToolbar, document, CSS_RULES, CSS_RULES_DARK);
+    }
+
+    /**
+     * @param withToolbar if a toolbar should be shown
+     * @param document    initialize with document
+     */
+    public MarkdownReader(boolean withToolbar, MarkdownDocument document, List<String> cssRules, List<String> cssRulesDark) {
+        this.cssRules = cssRules;
+        this.cssRulesDark = cssRulesDark;
+        initialize(withToolbar);
+        if(document != null) {
+            this.setDocument(document);
+        }
     }
 
     public static MarkdownReader showDialog(MarkdownDocument document, boolean withToolbar, String title, Component parent, boolean modal) {
@@ -234,7 +250,7 @@ public class MarkdownReader extends JPanel {
     private String toHTML() {
         String html = content.getText();
         StringBuilder stylesheet = new StringBuilder();
-        for (String rule : CSS_RULES) {
+        for (String rule : cssRules) {
             stylesheet.append(rule).append(" ");
         }
         html = "<html><head><style>" + stylesheet + "</style></head><body>" + html + "</body></html>";
@@ -244,17 +260,17 @@ public class MarkdownReader extends JPanel {
     private void initializeStyleSheet(StyleSheet styleSheet) {
         try {
             if (JIPipe.getInstance() != null && GeneralUISettings.getInstance().getTheme().isDark()) {
-                for (String rule : CSS_RULES_DARK) {
+                for (String rule : cssRulesDark) {
                     styleSheet.addRule(rule);
                 }
             } else {
-                for (String rule : CSS_RULES) {
+                for (String rule : cssRules) {
                     styleSheet.addRule(rule);
                 }
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
-            for (String rule : CSS_RULES) {
+            for (String rule : cssRules) {
                 styleSheet.addRule(rule);
             }
         }
@@ -284,7 +300,7 @@ public class MarkdownReader extends JPanel {
     /**
      * Sets the document to some temporary one without changing the reference to the main document
      *
-     * @param temporaryDocument if not null, render the temporary document. Otherwise render the main document
+     * @param temporaryDocument if not null, render the temporary document. Otherwise, render the main document
      */
     public void setTemporaryDocument(MarkdownDocument temporaryDocument) {
         if (temporaryDocument == null) {

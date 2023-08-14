@@ -1937,6 +1937,21 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         disconnect(connection.getSource(), connection.getTarget(), true);
     }
 
+    /**
+     * Gets a description of the graph as text
+     * @param stringBuilder the string builder
+     * @param compartment the targeted compartment (null to target all compartments)
+     * @param headingLevel the heading level
+     */
+    public void getTextDescription(StringBuilder stringBuilder, UUID compartment, int headingLevel) {
+        for (JIPipeGraphNode node : traverse()) {
+            if((compartment == null || node.isVisibleIn(compartment)) && (node instanceof JIPipeAlgorithm)) {
+                stringBuilder.append("<h").append(headingLevel).append(">").append("Node \"").append(node.getName()).append("\" of type \"").append(node.getInfo().getName()).append("\"</h").append(headingLevel).append(">");
+                node.getTextDescription(stringBuilder);
+            }
+        }
+    }
+
     public interface GraphChangedEventListener {
         void onGraphChanged(GraphChangedEvent event);
     }

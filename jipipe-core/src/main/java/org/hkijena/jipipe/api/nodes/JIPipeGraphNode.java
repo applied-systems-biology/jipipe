@@ -1264,6 +1264,14 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         return new Dimension(12, 12);
     }
 
+    /**
+     * Gets a description of the node as text
+     * @param stringBuilder the string builder
+     */
+    public void getTextDescription(StringBuilder stringBuilder) {
+        JIPipeGraphNode referenceInstance = getInfo().newInstance();
+    }
+
     public interface NodeSlotsChangedEventListener {
         void onNodeSlotsChanged(NodeSlotsChangedEvent event);
     }

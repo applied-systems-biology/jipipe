@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.scene3d.utils;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.extensions.clij2.Scene3DExtension;
+import org.hkijena.jipipe.extensions.scene3d.Scene3DExtension;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGeometry;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;

@@ -385,21 +385,26 @@ public class ParameterTableEditorWindow extends JFrame {
     }
 
     private void removeSelectedRows() {
-        int[] selectedRows = getSelectedRows(true);
-        table.setModel(new DefaultTableModel());
-        for (int i = selectedRows.length - 1; i >= 0; --i) {
-            parameterTable.removeRow(selectedRows[i]);
+        if(JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected ROW(S)?", "Delete row(s)", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            int[] selectedRows = getSelectedRows(true);
+            table.setModel(new DefaultTableModel());
+            for (int i = selectedRows.length - 1; i >= 0; --i) {
+                parameterTable.removeRow(selectedRows[i]);
+            }
+            reload();
         }
-        reload();
     }
 
     private void removeSelectedColumns() {
-        int[] selectedColumns = getSelectedColumns(true);
-        table.setModel(new DefaultTableModel());
-        for (int i = selectedColumns.length - 1; i >= 0; --i) {
-            parameterTable.removeColumn(selectedColumns[i]);
+        if(JOptionPane.showConfirmDialog(this, "Do you really want to delete the selected COLUMN(S)?\n" +
+                "All settings for the parameter will be gone!", "Delete column(s)", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            int[] selectedColumns = getSelectedColumns(true);
+            table.setModel(new DefaultTableModel());
+            for (int i = selectedColumns.length - 1; i >= 0; --i) {
+                parameterTable.removeColumn(selectedColumns[i]);
+            }
+            reload();
         }
-        reload();
     }
 
     /**

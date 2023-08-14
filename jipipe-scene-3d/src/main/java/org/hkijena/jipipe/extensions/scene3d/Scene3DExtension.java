@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.clij2;
+package org.hkijena.jipipe.extensions.scene3d;
 
 import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
