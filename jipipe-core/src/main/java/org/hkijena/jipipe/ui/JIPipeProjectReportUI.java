@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -70,6 +71,13 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
         JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.addActionListener(e -> rebuildReport());
         markdownReader.getToolBar().add(refreshButton);
+        markdownReader.getToolBar().add(new JIPipeRunnerQueueButton(getWorkbench(), queue));
+        for (Component component : markdownReader.getToolBar().getComponents()) {
+            if(component instanceof JButton) {
+                UIUtils.setStandardButtonBorder((AbstractButton) component);
+            }
+        }
+
     }
 
     private void rebuildReport() {
@@ -173,7 +181,9 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
 
         private void renderPipelineTextDescription() {
             stringBuilder.append("<h2>Pipeline text description</h2>");
-            project.getTextDescription(stringBuilder, 3);
+            StringBuilder tempBuilder = new StringBuilder();
+            project.getTextDescription(tempBuilder, 3);
+            stringBuilder.append(tempBuilder.toString().replace("</ul><ul>", ""));
         }
 
         private void renderDependencyCitations() {

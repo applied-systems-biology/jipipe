@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Disposable;
 
@@ -25,7 +25,7 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable,
 
     private JCheckBoxMenuItem algorithmAwareToggle;
     private JButton updateCacheButton;
-    private JIPipeRunnerQueueUI runnerQueue;
+    private JIPipeRunnerQueueButton runnerQueue;
 
     public JIPipeCachedDataDisplayCacheControl(JIPipeProjectWorkbench workbench, JToolBar toolBar, JIPipeGraphNode node) {
         this.workbench = workbench;
@@ -113,7 +113,7 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable,
         algorithmAwareToggle.setToolTipText("If enabled, automatically update the cache when algorithm parameters change");
         menu.add(algorithmAwareToggle);
 
-        runnerQueue = new JIPipeRunnerQueueUI(workbench);
+        runnerQueue = new JIPipeRunnerQueueButton(workbench);
     }
 
     public void installRefreshOnActivate(Runnable refreshFunction) {

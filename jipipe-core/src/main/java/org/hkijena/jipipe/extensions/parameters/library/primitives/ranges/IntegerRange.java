@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.library.primitives.ranges;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
@@ -33,7 +34,7 @@ import java.util.*;
  */
 @JIPipeDocumentationDescription(description = "The format is the following: [range];[range];... with [range] either being a single integer or a range [from]-[to] (both inclusive). " +
         "Negative values must be enclosed in parentheses. Example: 0-5;1;(-1)-10. If you want more customization options use the expression mode and functions such as MAKE_SEQUENCE.")
-public class IntegerRange {
+public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
 
     private String value;
     private boolean useExpression = false;
@@ -132,6 +133,19 @@ public class IntegerRange {
         return integers;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IntegerRange that = (IntegerRange) o;
+        return useExpression == that.useExpression && Objects.equals(value, that.value) && Objects.equals(expression, that.expression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value, useExpression, expression);
+    }
+
     @JsonGetter("is-expression")
     public boolean isUseExpression() {
         return useExpression;
@@ -227,6 +241,11 @@ public class IntegerRange {
     @Override
     public String toString() {
         return StringUtils.orElse(value, "[Empty]");
+    }
+
+    @Override
+    public String getTextDescription() {
+        return useExpression ? expression.getTextDescription() : value;
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

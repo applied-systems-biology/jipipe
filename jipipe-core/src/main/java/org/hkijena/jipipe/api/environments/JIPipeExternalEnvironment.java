@@ -70,11 +70,13 @@ public abstract class JIPipeExternalEnvironment extends AbstractJIPipeParameterC
 
     @JIPipeDocumentation(name = "Source", description = "Information about where this environment was sourced from")
     @JIPipeParameter("source")
+    @JsonGetter("source")
     public String getSource() {
         return source;
     }
 
     @JIPipeParameter("source")
+    @JsonSetter("source")
     public void setSource(String source) {
         this.source = source;
     }

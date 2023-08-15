@@ -896,20 +896,28 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * @param headingLevel the heading level
      */
     public void getTextDescription(StringBuilder stringBuilder, int headingLevel) {
+
+        Map<UUID, Integer> compartmentIndices = new HashMap<>();
+        Map<UUID, Integer> nodeIndices = new HashMap<>();
         for (JIPipeGraphNode node : compartmentGraph.traverse()) {
             if(node instanceof JIPipeProjectCompartment) {
-                stringBuilder.append("<h").append(headingLevel).append(">Compartment \"").append(node.getName()).append("\"</h").append(headingLevel).append(">");
+                UUID uuid = node.getUUIDInParentGraph();
+                compartmentIndices.put(uuid, compartmentIndices.size() + 1);
+                stringBuilder.append("<h").append(headingLevel).append(">Compartment C").append(compartmentIndices.get(uuid)).append(" \"").append(node.getName()).append("\"</h").append(headingLevel).append(">");
                 stringBuilder.append("<ul>");
                 // Resolve sources
                 for (JIPipeDataSlot sourceSlot : compartmentGraph.getInputIncomingSourceSlots(node.getFirstInputSlot())) {
-                    if(sourceSlot.getNode() instanceof JIPipeProjectCompartment) {
-                        stringBuilder.append("<li>The \"").append(node.getName()).append("\" compartment receives data from the \"").append(sourceSlot.getNode().getName()).append("\" compartment").append("</li>");
+                    JIPipeGraphNode sourceNode = sourceSlot.getNode();
+                    UUID sourceUUID = sourceNode.getUUIDInParentGraph();
+                    if(sourceNode instanceof JIPipeProjectCompartment) {
+                        stringBuilder.append("<li>The \"").append(node.getName()).append("\" compartment (C").append(compartmentIndices.get(uuid)).append(") receives data from the \"")
+                                .append(sourceNode.getName()).append("\" compartment (C").append(compartmentIndices.get(sourceUUID)).append(")").append("</li>");
                     }
                 }
                 stringBuilder.append("</ul>");
 
                 // Resolve nodes
-                graph.getTextDescription(stringBuilder, node.getUUIDInParentGraph(), headingLevel + 1);
+                graph.getTextDescription(stringBuilder, uuid, nodeIndices, headingLevel + 1);
 
 
             }

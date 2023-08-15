@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -36,7 +37,7 @@ import java.util.Objects;
  */
 @JsonSerialize(using = PairParameter.Serializer.class)
 @JsonDeserialize(using = PairParameter.Deserializer.class)
-public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entry<K, V> {
+public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entry<K, V>, JIPipeCustomTextDescriptionParameter {
 
     private Class<K> keyClass;
     private Class<V> valueClass;
@@ -119,6 +120,11 @@ public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entr
     @Override
     public String toString() {
         return getKey() + " -> " + getValue();
+    }
+
+    @Override
+    public String getTextDescription() {
+        return "(" + JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(getKey()) + ", " + JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(getValue()) + ")";
     }
 
     /**

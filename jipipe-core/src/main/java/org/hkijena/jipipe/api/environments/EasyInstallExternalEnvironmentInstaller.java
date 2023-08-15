@@ -115,6 +115,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeEx
             if (getParameterAccess() != null && generatedEnvironment != null) {
                 SwingUtilities.invokeLater(() -> {
                     writeEnvironmentToParameters(generatedEnvironment, getParameterAccess());
+                    JIPipe.getInstance().getSettingsRegistry().save();
                 });
             }
         }

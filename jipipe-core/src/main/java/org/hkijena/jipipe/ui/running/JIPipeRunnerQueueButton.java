@@ -28,7 +28,7 @@ import java.awt.*;
 /**
  * UI that monitors the queue
  */
-public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAccess, JIPipeRunnable.StartedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
+public class JIPipeRunnerQueueButton extends JButton implements JIPipeWorkbenchAccess, JIPipeRunnable.StartedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
     private final JIPipeWorkbench workbench;
     private final JIPipeRunnerQueue runnerQueue;
@@ -43,11 +43,11 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
     /**
      * Creates new instance
      */
-    public JIPipeRunnerQueueUI(JIPipeWorkbench workbench) {
+    public JIPipeRunnerQueueButton(JIPipeWorkbench workbench) {
         this(workbench, JIPipeRunnerQueue.getInstance());
     }
 
-    public JIPipeRunnerQueueUI(JIPipeWorkbench workbench, JIPipeRunnerQueue runnerQueue) {
+    public JIPipeRunnerQueueButton(JIPipeWorkbench workbench, JIPipeRunnerQueue runnerQueue) {
         this.workbench = workbench;
         this.runnerQueue = runnerQueue;
         initialize();

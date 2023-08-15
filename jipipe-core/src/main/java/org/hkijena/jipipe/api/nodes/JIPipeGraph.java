@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
@@ -1939,14 +1940,33 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
     /**
      * Gets a description of the graph as text
+     *
      * @param stringBuilder the string builder
-     * @param compartment the targeted compartment (null to target all compartments)
-     * @param headingLevel the heading level
+     * @param compartment   the targeted compartment (null to target all compartments)
+     * @param nodeIndices map of node indices. used for sharing node IDs. can be null.
+     * @param headingLevel  the heading level
      */
-    public void getTextDescription(StringBuilder stringBuilder, UUID compartment, int headingLevel) {
+    public void getTextDescription(StringBuilder stringBuilder, UUID compartment, Map<UUID, Integer> nodeIndices, int headingLevel) {
+        if(nodeIndices == null) {
+            nodeIndices = new HashMap<>();
+        }
         for (JIPipeGraphNode node : traverse()) {
             if((compartment == null || node.isVisibleIn(compartment)) && (node instanceof JIPipeAlgorithm)) {
-                stringBuilder.append("<h").append(headingLevel).append(">").append("Node \"").append(node.getName()).append("\" of type \"").append(node.getInfo().getName()).append("\"</h").append(headingLevel).append(">");
+                Integer index = nodeIndices.getOrDefault(node.getUUIDInParentGraph(), null);
+                if(index == null) {
+                    index = nodeIndices.size() + 1;
+                    nodeIndices.put(node.getUUIDInParentGraph(), index);
+                }
+                stringBuilder.append("<h").append(headingLevel).append(">").append("Node #").append(index).append(" \"").append(node.getName()).append("\" of type \"").append(node.getInfo().getName()).append("\"</h").append(headingLevel).append(">");
+                stringBuilder.append("<ul>");
+                for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+                    for (JIPipeDataSlot sourceSlot : getInputIncomingSourceSlots(inputSlot)) {
+                        int sourceNodeIndex = nodeIndices.get(sourceSlot.getNode().getUUIDInParentGraph());
+                        stringBuilder.append("<li>").append("Input \"").append(inputSlot.getName()).append("\" of node #").append(index).append(" receives data from output \"")
+                                .append(sourceSlot.getName()).append("\" of node #").append(sourceNodeIndex).append("</li>");
+                    }
+                }
+                stringBuilder.append("</ul>");
                 node.getTextDescription(stringBuilder);
             }
         }

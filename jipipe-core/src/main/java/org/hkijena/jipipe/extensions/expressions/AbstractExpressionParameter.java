@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -27,7 +28,7 @@ import java.util.*;
  * This allows users to set up filters etc. from within the UI.
  * Use {@link ExpressionParameterSettings} to control the behavior of this parameter.
  */
-public abstract class AbstractExpressionParameter {
+public abstract class AbstractExpressionParameter implements JIPipeCustomTextDescriptionParameter {
     private String expression = "";
 
     public AbstractExpressionParameter() {
@@ -222,6 +223,19 @@ public abstract class AbstractExpressionParameter {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AbstractExpressionParameter that = (AbstractExpressionParameter) o;
+        return Objects.equals(expression, that.expression);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(expression);
+    }
+
     /**
      * Runs the expression and returns the result.
      *
@@ -235,5 +249,10 @@ public abstract class AbstractExpressionParameter {
     @Override
     public String toString() {
         return "Expression: " + expression;
+    }
+
+    @Override
+    public String getTextDescription() {
+        return expression;
     }
 }

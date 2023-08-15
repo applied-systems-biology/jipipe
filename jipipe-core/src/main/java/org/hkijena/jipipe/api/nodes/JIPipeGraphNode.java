@@ -23,6 +23,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.*;
@@ -37,11 +38,13 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -1270,6 +1273,42 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public void getTextDescription(StringBuilder stringBuilder) {
         JIPipeGraphNode referenceInstance = getInfo().newInstance();
+        JIPipeParameterTree currentTree = new JIPipeParameterTree(this);
+        JIPipeParameterTree referenceTree = new JIPipeParameterTree(referenceInstance);
+        stringBuilder.append("<ul>");
+        for (String key : currentTree.getParameters().keySet()) {
+            if("jipipe:node:name".equals(key))
+                continue;
+            if("jipipe:node:description".equals(key))
+                continue;
+            JIPipeParameterAccess currentAccess = currentTree.getParameterAccess(key);
+            JIPipeParameterAccess referenceAccess = referenceTree.getParameterAccess(key);
+            Object reference = referenceAccess != null ? referenceAccess.get(Object.class) : null;
+            Object obj = currentAccess.get(Object.class);
+            if(referenceAccess == null || !Objects.equals(obj, reference)) {
+                if(obj instanceof ListParameter) {
+                    ListParameter<?> objects = (ListParameter<?>) obj;
+                    for (int i = 0; i < objects.size(); i++) {
+                        Object item = objects.get(i);
+                        stringBuilder.append("<li>").append("The parameter item #").append(i + 1).append(" of \"").append(currentAccess.getName()).append("\"");
+                        if(currentAccess.getSource() != this) {
+                            stringBuilder.append(" in category \"").append( currentTree.getSourceDocumentationName(currentAccess.getSource())).append("\"");
+                        }
+                        stringBuilder.append(" (").append(key).append(") is set to <code>")
+                                .append(JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(item)).append("</code></li>");
+                    }
+                }
+                else {
+                    stringBuilder.append("<li>").append("The parameter \"").append(currentAccess.getName()).append("\"");
+                    if(currentAccess.getSource() != this) {
+                        stringBuilder.append(" in category \"").append( currentTree.getSourceDocumentationName(currentAccess.getSource())).append("\"");
+                    }
+                    stringBuilder.append(" (").append(key).append(") is set to <code>")
+                            .append(JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(obj)).append("</code></li>");
+                }
+            }
+        }
+        stringBuilder.append("</ul>");
     }
 
     public interface NodeSlotsChangedEventListener {

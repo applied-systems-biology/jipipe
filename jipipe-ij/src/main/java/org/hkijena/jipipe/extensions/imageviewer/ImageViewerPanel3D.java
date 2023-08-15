@@ -37,7 +37,7 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -206,7 +206,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         statusBar.setFloatable(false);
         viewerPanel.add(statusBar, BorderLayout.SOUTH);
 
-        JIPipeRunnerQueueUI runnerQueueUI = new JIPipeRunnerQueueUI(getWorkbench(), viewerRunnerQueue);
+        JIPipeRunnerQueueButton runnerQueueUI = new JIPipeRunnerQueueButton(getWorkbench(), viewerRunnerQueue);
         runnerQueueUI.makeFlat();
         statusBar.add(runnerQueueUI);
         statusBar.add(Box.createHorizontalGlue());

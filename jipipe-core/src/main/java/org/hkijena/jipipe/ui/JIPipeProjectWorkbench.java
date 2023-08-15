@@ -625,7 +625,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         menu.add(cacheManagerUI);
 
         // Queue monitor
-        menu.add(new JIPipeRunnerQueueUI(this));
+        menu.add(new JIPipeRunnerQueueButton(this));
 
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));

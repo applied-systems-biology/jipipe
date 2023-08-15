@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -30,13 +31,14 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * A parameter that is a collection of another parameter type
  */
 @JsonSerialize(using = ListParameter.Serializer.class)
 @JsonDeserialize(using = ListParameter.Deserializer.class)
-public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeValidatable {
+public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeValidatable, JIPipeCustomTextDescriptionParameter {
     private Class<T> contentClass;
     private Supplier<T> customInstanceGenerator;
 
@@ -80,6 +82,11 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
                 report.report(new CustomValidationReportContext("Item #" + (i + 1)), validatable);
             }
         }
+    }
+
+    @Override
+    public String getTextDescription() {
+        return JsonUtils.toJsonString(stream().map(JIPipeCustomTextDescriptionParameter::getTexDescriptionOf).collect(Collectors.toList()));
     }
 
     public Supplier<T> getCustomInstanceGenerator() {

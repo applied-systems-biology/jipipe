@@ -36,7 +36,7 @@ import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 
@@ -205,7 +205,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         statusBar.setBorder(BorderFactory.createMatteBorder(1, 0, 1, 0, UIManager.getColor("MenuBar.borderColor")));
         viewerPanel.add(statusBar, BorderLayout.SOUTH);
 
-        JIPipeRunnerQueueUI runnerQueueUI = new JIPipeRunnerQueueUI(getWorkbench(), viewerRunnerQueue);
+        JIPipeRunnerQueueButton runnerQueueUI = new JIPipeRunnerQueueButton(getWorkbench(), viewerRunnerQueue);
         runnerQueueUI.makeFlat();
         statusBar.add(runnerQueueUI);
 

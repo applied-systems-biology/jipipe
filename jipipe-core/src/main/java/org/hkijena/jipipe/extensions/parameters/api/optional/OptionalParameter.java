@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -32,8 +33,8 @@ import java.util.Objects;
  */
 @JsonSerialize(using = OptionalParameter.Serializer.class)
 @JsonDeserialize(using = OptionalParameter.Deserializer.class)
-public abstract class OptionalParameter<T> {
-    private Class<T> contentClass;
+public abstract class OptionalParameter<T> implements JIPipeCustomTextDescriptionParameter {
+    private final Class<T> contentClass;
     private boolean enabled = false;
     private T content;
 
@@ -91,6 +92,11 @@ public abstract class OptionalParameter<T> {
 
     public void setContent(T content) {
         this.content = content;
+    }
+
+    @Override
+    public String getTextDescription() {
+        return enabled ? JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(content) : "[Disabled]";
     }
 
     @Override

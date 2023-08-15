@@ -42,7 +42,7 @@ import java.util.function.Function;
  * Holds a user-definable set of parameters
  */
 @JsonDeserialize(using = JIPipeDynamicParameterCollection.Deserializer.class)
-public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCollection, JIPipeValidatable, JsonDeserializable {
+public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCollection, JIPipeValidatable, JsonDeserializable, JIPipeCustomTextDescriptionParameter {
     private final BiMap<String, JIPipeMutableParameterAccess> dynamicParameters = HashBiMap.create();
     private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
     private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
@@ -395,6 +395,22 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         parameterAccess.setAnnotationMap(annotationMap);
 
         return addParameter(parameterAccess);
+    }
+
+    @Override
+    public String getTextDescription() {
+        StringBuilder stringBuilder = new StringBuilder();
+        boolean first = true;
+        for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
+            if(!first) {
+                stringBuilder.append(", ");
+            }
+            else {
+                first = false;
+            }
+            stringBuilder.append(entry.getKey()).append(" = ").append(JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(entry.getValue().get(Object.class)));
+        }
+        return stringBuilder.toString();
     }
 
 
