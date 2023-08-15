@@ -120,6 +120,11 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.persistence = other.persistence;
         this.uiOrder = other.uiOrder;
         this.pinned = other.pinned;
+        this.important = other.important;
+        this.shortKey = other.shortKey;
+        for (Annotation annotation : other.getAnnotations()) {
+            annotationMap.put(annotation.annotationType(), annotation);
+        }
     }
 
     @Override
