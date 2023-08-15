@@ -32,24 +32,8 @@ import java.util.stream.Collectors;
 
 public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
-    public static final List<String> CSS_RULES = Arrays.asList("body { font-family: \"Sans-serif\"; }",
-            "pre { background-color: #f5f2f0; border: 3px #f5f2f0 solid; }",
-            "code { background-color: #ffffff; border: none; }",
-            "h2 { padding-top: 30px; }",
-            "h3 { padding-top: 30px; }",
-            "tr { border-bottom: 1px solid #c8c8c8; }",
-            ".toc-list { list-style: none; }");
-    public static final List<String> CSS_RULES_DARK = Arrays.asList("body { font-family: \"Sans-serif\"; color: #eeeeee; }",
-            "pre { background-color: #333333; border: 3px #333333 solid; }",
-            "code { background-color: #121212; border: none; }",
-            "a { color: #65a4e3; }",
-            "h2 { padding-top: 30px; }",
-            "h3 { padding-top: 30px; }",
-            "tr { border-bottom: 1px solid #c8c8c8; }",
-            ".toc-list { list-style: none; }");
-
     private final ReportSettings reportSettings = new ReportSettings();
-    private final MarkdownReader markdownReader = new MarkdownReader(true, new MarkdownDocument(), CSS_RULES, CSS_RULES_DARK);
+    private final MarkdownReader markdownReader = new MarkdownReader(true, new MarkdownDocument());
     private final JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Report");
 
     public JIPipeProjectReportUI(JIPipeProjectWorkbench workbench) {
