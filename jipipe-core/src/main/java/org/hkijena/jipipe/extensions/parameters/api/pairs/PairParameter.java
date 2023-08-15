@@ -124,7 +124,7 @@ public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entr
 
     @Override
     public String getTextDescription() {
-        return "(" + JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(getKey()) + ", " + JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(getValue()) + ")";
+        return "(" + JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(getKey()) + ", " + JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(getValue()) + ")";
     }
 
     /**

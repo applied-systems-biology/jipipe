@@ -96,7 +96,7 @@ public abstract class OptionalParameter<T> implements JIPipeCustomTextDescriptio
 
     @Override
     public String getTextDescription() {
-        return enabled ? JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(content) : "[Disabled]";
+        return enabled ? JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(content) : "[Disabled]";
     }
 
     @Override

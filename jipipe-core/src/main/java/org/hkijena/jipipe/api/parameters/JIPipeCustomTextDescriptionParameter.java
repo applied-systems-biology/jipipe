@@ -18,7 +18,7 @@ public interface JIPipeCustomTextDescriptionParameter {
      * @param obj the object
      * @return the text description or JSON serialized string
      */
-    static String getTexDescriptionOf(Object obj) {
+    static String getTextDescriptionOf(Object obj) {
         if(obj != null) {
             if (obj instanceof JIPipeCustomTextDescriptionParameter) {
                 return ((JIPipeCustomTextDescriptionParameter) obj).getTextDescription();

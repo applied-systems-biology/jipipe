@@ -408,7 +408,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
             else {
                 first = false;
             }
-            stringBuilder.append(entry.getKey()).append(" = ").append(JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(entry.getValue().get(Object.class)));
+            stringBuilder.append(entry.getKey()).append(" = ").append(JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(entry.getValue().get(Object.class)));
         }
         return stringBuilder.toString();
     }

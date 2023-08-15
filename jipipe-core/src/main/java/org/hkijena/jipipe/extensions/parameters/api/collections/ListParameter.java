@@ -86,7 +86,7 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
 
     @Override
     public String getTextDescription() {
-        return JsonUtils.toJsonString(stream().map(JIPipeCustomTextDescriptionParameter::getTexDescriptionOf).collect(Collectors.toList()));
+        return JsonUtils.toJsonString(stream().map(JIPipeCustomTextDescriptionParameter::getTextDescriptionOf).collect(Collectors.toList()));
     }
 
     public Supplier<T> getCustomInstanceGenerator() {

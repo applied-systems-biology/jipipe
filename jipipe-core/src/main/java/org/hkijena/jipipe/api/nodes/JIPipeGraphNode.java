@@ -44,7 +44,6 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParamet
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -1294,8 +1293,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
                         if(currentAccess.getSource() != this) {
                             stringBuilder.append(" in category \"").append( currentTree.getSourceDocumentationName(currentAccess.getSource())).append("\"");
                         }
-                        stringBuilder.append(" (").append(key).append(") is set to <code>")
-                                .append(JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(item)).append("</code></li>");
+                        String textDescription = JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(item);
+                        stringBuilder.append(" (").append(key).append(") is set to <strong>")
+                                .append(HtmlEscapers.htmlEscaper().escape(textDescription)).append("</strong></li>");
                     }
                 }
                 else {
@@ -1303,8 +1303,10 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
                     if(currentAccess.getSource() != this) {
                         stringBuilder.append(" in category \"").append( currentTree.getSourceDocumentationName(currentAccess.getSource())).append("\"");
                     }
-                    stringBuilder.append(" (").append(key).append(") is set to <code>")
-                            .append(JIPipeCustomTextDescriptionParameter.getTexDescriptionOf(obj)).append("</code></li>");
+                    String textDescription = JIPipeCustomTextDescriptionParameter.getTextDescriptionOf(obj);
+                    stringBuilder.append(" (").append(key).append(") is set to <strong>")
+                            .append(HtmlEscapers.htmlEscaper().escape(textDescription)).append("</strong></li>");
+
                 }
             }
         }

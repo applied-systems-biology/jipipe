@@ -1957,17 +1957,23 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     index = nodeIndices.size() + 1;
                     nodeIndices.put(node.getUUIDInParentGraph(), index);
                 }
-                stringBuilder.append("<h").append(headingLevel).append(">").append("Node #").append(index).append(" \"").append(node.getName()).append("\" of type \"").append(node.getInfo().getName()).append("\"</h").append(headingLevel).append(">");
+                stringBuilder.append("<h").append(headingLevel).append(">").append("Node #").append(index).append(" \"").append(node.getName()).append("\" of type \"").append(node.getInfo().getName()).append("\"</h").append(headingLevel).append(">\n\n");
                 stringBuilder.append("<ul>");
                 for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
                     for (JIPipeDataSlot sourceSlot : getInputIncomingSourceSlots(inputSlot)) {
                         int sourceNodeIndex = nodeIndices.get(sourceSlot.getNode().getUUIDInParentGraph());
                         stringBuilder.append("<li>").append("Input \"").append(inputSlot.getName()).append("\" of node #").append(index).append(" receives data from output \"")
-                                .append(sourceSlot.getName()).append("\" of node #").append(sourceNodeIndex).append("</li>");
+                                .append(sourceSlot.getName()).append("\" of node #").append(sourceNodeIndex).append("</li>\n");
                     }
                 }
                 stringBuilder.append("</ul>");
-                node.getTextDescription(stringBuilder);
+                if(node instanceof GraphWrapperAlgorithm) {
+                    stringBuilder.append("<ul><li>This node contains a sub-graph. The \"Group Input\" and \"Group Output\" nodes contained in the graph are internally connected to the inputs and outputs of this node.</li></ul>");
+                    ((GraphWrapperAlgorithm) node).getWrappedGraph().getTextDescription(stringBuilder, null, nodeIndices, headingLevel);
+                }
+                else {
+                    node.getTextDescription(stringBuilder);
+                }
             }
         }
     }

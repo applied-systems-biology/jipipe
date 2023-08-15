@@ -903,7 +903,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             if(node instanceof JIPipeProjectCompartment) {
                 UUID uuid = node.getUUIDInParentGraph();
                 compartmentIndices.put(uuid, compartmentIndices.size() + 1);
-                stringBuilder.append("<h").append(headingLevel).append(">Compartment C").append(compartmentIndices.get(uuid)).append(" \"").append(node.getName()).append("\"</h").append(headingLevel).append(">");
+                stringBuilder.append("<h").append(headingLevel).append(">Compartment C").append(compartmentIndices.get(uuid)).append(" \"").append(node.getName()).append("\"</h").append(headingLevel).append(">\n\n");
                 stringBuilder.append("<ul>");
                 // Resolve sources
                 for (JIPipeDataSlot sourceSlot : compartmentGraph.getInputIncomingSourceSlots(node.getFirstInputSlot())) {
@@ -911,7 +911,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                     UUID sourceUUID = sourceNode.getUUIDInParentGraph();
                     if(sourceNode instanceof JIPipeProjectCompartment) {
                         stringBuilder.append("<li>The \"").append(node.getName()).append("\" compartment (C").append(compartmentIndices.get(uuid)).append(") receives data from the \"")
-                                .append(sourceNode.getName()).append("\" compartment (C").append(compartmentIndices.get(sourceUUID)).append(")").append("</li>");
+                                .append(sourceNode.getName()).append("\" compartment (C").append(compartmentIndices.get(sourceUUID)).append(")").append("</li>\n");
                     }
                 }
                 stringBuilder.append("</ul>");
