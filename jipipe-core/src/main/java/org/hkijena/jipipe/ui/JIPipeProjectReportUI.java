@@ -172,7 +172,8 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
 
         private void renderDependencyCitations() {
             stringBuilder.append("<h2>Citations (dependencies)</h2>");
-            Set<String> citations = new HashSet<>();
+
+            Set<String> citations = new HashSet<>(project.getMetadata().getDependencyCitations());
 
             // Collect dependencies
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
@@ -421,7 +422,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
         }
 
         @JIPipeDocumentation(name = "Acknowledgements", description = "If enabled, add the project acknowledgements")
-        @JIPipeParameter("add-acknowledgements")
+        @JIPipeParameter(value = "add-acknowledgements", uiOrder = -94)
         public boolean isAddAcknowledgements() {
             return addAcknowledgements;
         }
