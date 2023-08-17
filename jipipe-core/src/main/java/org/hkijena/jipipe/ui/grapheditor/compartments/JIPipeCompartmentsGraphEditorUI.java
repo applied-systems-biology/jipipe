@@ -78,6 +78,8 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
 
         getCanvasUI().setDragAndDropBehavior(new JIPipeCompartmentGraphDragAndDropBehavior());
         List<NodeUIContextAction> actions = Arrays.asList(
+                new AddNewCompartmentUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
                 new AddBookmarkNodeUIContextAction(),
@@ -269,8 +271,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     private void addCompartment() {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
             return;
-        String compartmentName = UIUtils.getUniqueStringByDialog(this, "Please enter the name of the compartment",
-                "Compartment", s -> getProject().getCompartments().containsKey(s));
+        String compartmentName = JOptionPane.showInputDialog(this, "Please enter the name of the compartment", "Compartment");
         if (compartmentName != null && !compartmentName.trim().isEmpty()) {
             if (getHistoryJournal() != null) {
                 getHistoryJournal().snapshotBeforeAddCompartment(compartmentName);
