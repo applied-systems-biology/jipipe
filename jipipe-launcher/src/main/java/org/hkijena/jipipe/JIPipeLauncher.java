@@ -48,8 +48,7 @@ public class JIPipeLauncher {
             windowsOpen += JIPipeJsonExtensionWindow.getOpenWindows().size();
 
             if (windowsOpen == 0 && !JIPipe.isRestarting()) {
-                JIPipe.getSettings().save();
-                System.exit(0);
+                JIPipe.exitLater(0);
             }
         }
 

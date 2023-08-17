@@ -254,8 +254,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel implements J
         } else if (event.getRun() == applyRun) {
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> {
-                JIPipe.getSettings().save();
-                System.exit(0);
+                JIPipe.exitLater(0);
             });
             messagePanel.addMessage(MessagePanel.MessageType.Info, "Changes were successfully applied. Please restart ImageJ.", true, true, exitButton);
             showCurrentFilesCollection();

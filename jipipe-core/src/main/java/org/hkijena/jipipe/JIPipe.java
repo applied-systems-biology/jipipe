@@ -68,6 +68,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -1375,5 +1376,18 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeUtilityRegistry getUtilityRegistry() {
         return utilityRegistry;
+    }
+
+    /**
+     * Exits the Java application in 500ms
+     * Prevents the lockup of Java under certain circumstances
+     * @param exitCode the exit code
+     */
+    public static void exitLater(int exitCode) {
+        JIPipe.getSettings().save();
+        Timer timer = new Timer(500, e -> {
+            System.exit(exitCode);
+        });
+        timer.start();
     }
 }

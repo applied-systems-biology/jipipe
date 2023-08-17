@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.ijupdater;
 
 import net.imagej.updater.UpdateSite;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeRunnable;
@@ -214,7 +215,7 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun && this.clickedInstallAll) {
             if (JOptionPane.showOptionDialog(this, "Please close and restart ImageJ to complete the installation of updates. " +
                     "If you have any issues, please install the necessary dependencies via the ImageJ update manager (Help > Update)", "Dependencies installed", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Close ImageJ", "Ignore"}, "Close ImageJ") == JOptionPane.YES_OPTION) {
-                System.exit(0);
+                JIPipe.exitLater(0);
             }
         }
     }
