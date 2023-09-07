@@ -392,7 +392,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             throw new JIPipeValidationRuntimeException(e,
                     "Error while evaluating expression " + expression,
                     "The expression could not be evaluated. Available variables are " + expressionVariables.entrySet().stream()
-                            .map(kv -> kv.getKey() + "=" + kv.getValue()).collect(Collectors.joining(" ")),
+                            .map(kv -> kv.getKey() + "=" + kv.getValue()).collect(Collectors.joining("\n")),
                     "Please check if the expression is correct.");
         }
     }
