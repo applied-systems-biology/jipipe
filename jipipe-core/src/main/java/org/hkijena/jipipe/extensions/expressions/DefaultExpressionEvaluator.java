@@ -391,8 +391,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         } catch (Exception e) {
             throw new JIPipeValidationRuntimeException(e,
                     "Error while evaluating expression " + expression,
-                    "The expression could not be evaluated. Available variables are " + expressionVariables.entrySet().stream()
-                            .map(kv -> kv.getKey() + "=" + kv.getValue()).collect(Collectors.joining("\n")),
+                    "The expression could not be evaluated. Available variables are:\n\n" + expressionVariables.entrySet().stream()
+                            .map(kv -> "‣ " + kv.getKey() + " \t\t= " + kv.getValue()).collect(Collectors.joining("\n\n")),
                     "Please check if the expression is correct.");
         }
     }
