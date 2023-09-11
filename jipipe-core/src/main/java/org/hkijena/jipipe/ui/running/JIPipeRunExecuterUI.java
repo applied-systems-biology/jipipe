@@ -172,6 +172,9 @@ public class JIPipeRunExecuterUI extends JPanel implements JIPipeRunnable.Starte
             progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getStatus().getMessage());
             log.append(event.getStatus().render() + "\n");
         }
+        else {
+            log.append("[~] " + event.getStatus().render() + "\n");
+        }
     }
 
     @Override
