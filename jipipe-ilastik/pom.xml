@@ -88,10 +88,6 @@
         </dependency>
         <dependency>
             <groupId>org.hkijena</groupId>
-            <artifactId>jipipe-python</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hkijena</groupId>
             <artifactId>jipipe-ij-algorithms</artifactId>
         </dependency>
     </dependencies>

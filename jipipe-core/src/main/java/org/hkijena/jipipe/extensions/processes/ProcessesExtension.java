@@ -43,6 +43,13 @@ public class ProcessesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Process environment",
                 "A process environment",
                 UIUtils.getIconFromResources("apps/utilities-terminal.png"));
+        registerParameterType("optional-process-environment",
+                OptionalProcessEnvironment.class,
+                null,
+                null,
+                "Optional process environment",
+                "An optional process environment",
+                null);
         registerSettingsSheet(ProcessesExtensionSettings.ID,
                 "Processes",
                 "Setup external processes to be used in the 'Run process' nodes",
