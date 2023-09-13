@@ -66,6 +66,7 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
                 -1,
                 new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
         outputPath = PathUtils.ensureExtension(outputPath, ".xlsx");
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         // Generate excel workbook
         try (Workbook workbook = new XSSFWorkbook()) {
