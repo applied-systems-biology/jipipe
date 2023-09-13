@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
@@ -91,6 +92,7 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
     @StringParameterSettings(monospace = true)
     @PairParameterSettings(singleRow = false, keyLabel = "From", valueLabel = "To")
     @JIPipeParameter("renaming-entries")
+    @ParameterCollectionListTemplate(RenamingEntry.class)
     public ParameterCollectionList getRenamingEntries() {
         return renamingEntries;
     }

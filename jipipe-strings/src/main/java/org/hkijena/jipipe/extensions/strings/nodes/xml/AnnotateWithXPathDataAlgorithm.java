@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.strings.XMLData;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
@@ -76,6 +77,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
     @JIPipeParameter("entries")
+    @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
         return entries;
     }

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -97,6 +98,7 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
 
     @JIPipeDocumentation(name = "Generated values", description = "List of expressions that describe how new values are generated")
     @JIPipeParameter("entries")
+    @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
         return entries;
     }

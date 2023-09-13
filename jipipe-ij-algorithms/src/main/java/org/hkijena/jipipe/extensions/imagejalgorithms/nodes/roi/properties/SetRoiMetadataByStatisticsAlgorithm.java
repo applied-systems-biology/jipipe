@@ -34,6 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.AllMeasurement
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -161,6 +162,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
 
     @JIPipeDocumentation(name = "Generated metadata", description = "Each entry contains an expression that is applied for each ROI. The generated value is written into the metadata key. <strong>Please note that ImageJ ROI metadata are subject to some limitations. For example, keys cannot have space characters, equal signs, and colons.</strong>")
     @JIPipeParameter(value = "metadata-generators", important = true)
+    @ParameterCollectionListTemplate(MetadataProperty.class)
     public ParameterCollectionList getMetadataGenerators() {
         return metadataGenerators;
     }

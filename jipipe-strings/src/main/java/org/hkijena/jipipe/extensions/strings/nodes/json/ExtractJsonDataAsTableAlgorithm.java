@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVari
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.strings.JsonData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.StringArrayTableColumn;
@@ -88,6 +89,7 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")
     @JIPipeParameter("entries")
+    @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
         return entries;
     }

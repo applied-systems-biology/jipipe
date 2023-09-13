@@ -14,6 +14,7 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.OMEAccessorParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -53,6 +54,7 @@ public class OMEMetadataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")
     @JIPipeParameter("entries")
+    @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
         return entries;
     }

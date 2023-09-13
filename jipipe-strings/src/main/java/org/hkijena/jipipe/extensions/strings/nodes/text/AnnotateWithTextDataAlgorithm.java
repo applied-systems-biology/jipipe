@@ -14,6 +14,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVari
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.strings.StringData;
 
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")
     @JIPipeParameter("entries")
+    @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
         return entries;
     }

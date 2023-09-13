@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeParameterTypeInfoRef;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -140,6 +141,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
 
         @JIPipeDocumentation(name = "Table column", description = "The table column")
         @JIPipeParameter("table-column")
+        @ParameterCollectionListTemplate(Column.class)
         public TableColumnSourceExpressionParameter getTableColumn() {
             return tableColumn;
         }

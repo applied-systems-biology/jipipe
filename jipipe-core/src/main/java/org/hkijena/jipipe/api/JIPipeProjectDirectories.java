@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -24,6 +25,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
     @JIPipeParameter("user-directories")
     @JsonGetter("user-directories")
     @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
+    @ParameterCollectionListTemplate(DirectoryEntry.class)
     public ParameterCollectionList getDirectories() {
         return directories;
     }
