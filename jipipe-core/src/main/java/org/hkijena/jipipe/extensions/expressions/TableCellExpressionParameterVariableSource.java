@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -31,7 +32,7 @@ public class TableCellExpressionParameterVariableSource implements ExpressionPar
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

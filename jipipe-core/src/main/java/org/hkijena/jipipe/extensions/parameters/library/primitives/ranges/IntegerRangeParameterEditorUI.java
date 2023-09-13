@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
@@ -44,8 +45,8 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public IntegerRangeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public IntegerRangeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }
@@ -105,7 +106,7 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
                             setParameter(rangeString, false);
                             checkParameter();
                         }).build();
-                add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access), BorderLayout.CENTER);
+                add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), new JIPipeParameterTree(access), access), BorderLayout.CENTER);
             } else {
                 rangeStringEditor.setText(rangeString.getValue());
                 add(rangeStringEditor, BorderLayout.CENTER);

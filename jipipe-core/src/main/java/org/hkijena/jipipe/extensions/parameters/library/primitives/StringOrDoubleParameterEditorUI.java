@@ -36,8 +36,8 @@ public class StringOrDoubleParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public StringOrDoubleParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public StringOrDoubleParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }
@@ -63,10 +63,10 @@ public class StringOrDoubleParameterEditorUI extends JIPipeParameterEditorUI {
 
         if (parameter.getMode() == StringOrDouble.Mode.Double) {
             doubleToggle.setSelected(true);
-            add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("number")));
+            add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), traversedParameterCollection, traversedParameterCollection.getParameters().get("number")));
         } else if (parameter.getMode() == StringOrDouble.Mode.String) {
             stringToggle.setSelected(true);
-            add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), traversedParameterCollection.getParameters().get("string")));
+            add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), traversedParameterCollection, traversedParameterCollection.getParameters().get("string")));
         }
 
         revalidate();

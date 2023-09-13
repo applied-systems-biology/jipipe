@@ -817,7 +817,7 @@ public class ImageJUtils {
                 roi = new PolygonRoi(xCoords.toArray(), yCoords.toArray(), xCoords.size(), PolygonRoi.POLYGON);
             }
             if (expandCanvas) {
-                System.out.println(rotatedBoundingRectangle);
+//                System.out.println(rotatedBoundingRectangle);
                 int newWidth = rotatedBoundingRectangle.width;
                 int newHeight = rotatedBoundingRectangle.height;
 

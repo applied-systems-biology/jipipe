@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -314,7 +315,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

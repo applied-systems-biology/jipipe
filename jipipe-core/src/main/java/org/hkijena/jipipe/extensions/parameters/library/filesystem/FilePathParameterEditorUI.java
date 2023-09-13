@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.filesystem;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -35,8 +36,8 @@ public class FilePathParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public FilePathParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public FilePathParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
 //        getWorkbenchUI().getProject().getEventBus().register(this);
     }

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.table;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,10 +37,11 @@ public class ParameterTableEditorUI extends JIPipeParameterEditorUI implements P
      * Creates new instance
      *
      * @param workbench       workbench
+     * @param parameterTree the parameter tree
      * @param parameterAccess Parameter
      */
-    public ParameterTableEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public ParameterTableEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

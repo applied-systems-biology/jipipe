@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
@@ -343,7 +344,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static class VariableSource implements ExpressionParameterVariableSource {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();
             result.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             result.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));

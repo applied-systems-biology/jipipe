@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.parameters.library.images;
 
 import ij.IJ;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.library.references.IconRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -29,8 +30,8 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       the workbech
      * @param parameterAccess Parameter
      */
-    public ImageParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public ImageParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

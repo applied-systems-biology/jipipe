@@ -22,10 +22,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -131,7 +128,7 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

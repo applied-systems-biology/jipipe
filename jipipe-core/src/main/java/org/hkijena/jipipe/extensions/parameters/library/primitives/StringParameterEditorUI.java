@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.library.primitives;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FancyTextField;
@@ -38,8 +39,8 @@ public class StringParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public StringParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public StringParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

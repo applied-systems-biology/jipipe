@@ -4,6 +4,7 @@ import ij.ImagePlus;
 import ij.measure.Calibration;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -49,7 +50,7 @@ public class ImagePlusPropertiesExpressionParameterVariableSource implements Exp
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

@@ -174,7 +174,7 @@ public class ParameterTableEditorWindow extends JFrame {
                     palettePanel.addGroupHeader("Edit parameter", UIUtils.getIconFromResources("actions/document-edit.png"));
                     ParameterTableCellAccess access = new ParameterTableCellAccess(getParameterAccess(), parameterTable,
                             selectedRows[0], selectedColumns[0]);
-                    JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
+                    JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), new JIPipeParameterTree(access), access);
                     palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(access, null));
                 } else {
                     palettePanel.addGroupHeader("Edit multiple parameters", UIUtils.getIconFromResources("actions/document-edit.png"));
@@ -184,7 +184,7 @@ public class ParameterTableEditorWindow extends JFrame {
                                 row, selectedColumns[0]));
                     }
                     JIPipeMultiParameterAccess multiParameterAccess = new JIPipeMultiParameterAccess(accessList);
-                    JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), multiParameterAccess);
+                    JIPipeParameterEditorUI editor = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), new JIPipeParameterTree(multiParameterAccess), multiParameterAccess);
                     palettePanel.addWideToForm(editor, ParameterPanel.generateParameterDocumentation(multiParameterAccess, null));
                 }
 

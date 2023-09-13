@@ -1235,7 +1235,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param traversed list of algorithms to sort by (usually this is in topological order)
      * @return predecessors in topological order
      */
-    public List<JIPipeGraphNode> getPredecessorAlgorithms(JIPipeGraphNode target, List<JIPipeGraphNode> traversed) {
+    public List<JIPipeGraphNode> getPredecessorNodes(JIPipeGraphNode target, List<JIPipeGraphNode> traversed) {
         Set<JIPipeGraphNode> predecessors = new HashSet<>();
         for (JIPipeDataSlot inputSlot : target.getInputSlots()) {
             for (JIPipeDataSlot predecessor : GraphUtils.getAllPredecessors(graph, inputSlot)) {
@@ -1477,7 +1477,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param satisfied  all algorithms that are considered to have a satisfied input
      */
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode, Set<JIPipeGraphNode> satisfied) {
-        List<JIPipeGraphNode> predecessorAlgorithms = getPredecessorAlgorithms(targetNode, traverse());
+        List<JIPipeGraphNode> predecessorAlgorithms = getPredecessorNodes(targetNode, traverse());
         predecessorAlgorithms.add(targetNode);
         for (JIPipeGraphNode node : predecessorAlgorithms) {
             if (satisfied.contains(node))

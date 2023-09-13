@@ -245,7 +245,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             return VARIABLES;
         }
     }

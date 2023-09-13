@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
@@ -97,7 +98,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public static class VariableSource implements ExpressionParameterVariableSource {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();
             result.add(new ExpressionParameterVariable("Data as string", "The data value, represented as string", "data_string"));
             result.add(new ExpressionParameterVariable("Data type id", "The ID of the data type", "data_type"));

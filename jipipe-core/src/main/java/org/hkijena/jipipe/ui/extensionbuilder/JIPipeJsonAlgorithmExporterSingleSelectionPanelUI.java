@@ -20,7 +20,6 @@ import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeAdvancedParameterEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeSlotEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -62,13 +61,6 @@ public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWor
                 parametersUI,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
-
-        if (JIPipeAdvancedParameterEditorUI.supports(node)) {
-            tabbedPane.addTab("Advanced parameters", UIUtils.getIconFromResources("actions/configure_toolbars.png"),
-                    new JIPipeAdvancedParameterEditorUI(getWorkbench(), node),
-                    DocumentTabPane.CloseMode.withoutCloseButton,
-                    false);
-        }
 
         JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
         tabbedPane.addTab("Slots", UIUtils.getIconFromResources("actions/plug.png"),

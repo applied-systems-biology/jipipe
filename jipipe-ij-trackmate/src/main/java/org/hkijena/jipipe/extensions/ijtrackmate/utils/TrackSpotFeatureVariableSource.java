@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.utils;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
@@ -59,7 +60,7 @@ public class TrackSpotFeatureVariableSource implements ExpressionParameterVariab
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         initializeVariablesIfNeeded();
         return VARIABLES;
     }

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.api.collections;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -46,8 +47,8 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess Parameter
      */
-    public ListParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public ListParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }
@@ -255,7 +256,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
                     parameter,
                     parameter.getContentClass(),
                     i);
-            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), access);
+            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), new JIPipeParameterTree(access), access);
             ui.setOpaque(false);
 
             JPanel entryPanel = new JPanel(new GridBagLayout());

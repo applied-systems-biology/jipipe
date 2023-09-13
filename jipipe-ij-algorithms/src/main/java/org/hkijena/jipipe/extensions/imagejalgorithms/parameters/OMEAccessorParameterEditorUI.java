@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OMEAccessorTemplate;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -26,8 +27,8 @@ public class OMEAccessorParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
-    public OMEAccessorParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public OMEAccessorParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

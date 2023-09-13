@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.library.references;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.pickers.JIPipeParameterTypeInfoPicker;
@@ -33,8 +34,8 @@ public class JIPipeParameterTypeInfoRefParameterEditorUI extends JIPipeParameter
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public JIPipeParameterTypeInfoRefParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public JIPipeParameterTypeInfoRefParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

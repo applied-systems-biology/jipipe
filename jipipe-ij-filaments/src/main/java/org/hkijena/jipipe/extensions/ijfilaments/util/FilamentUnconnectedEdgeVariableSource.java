@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -18,7 +19,7 @@ public class FilamentUnconnectedEdgeVariableSource implements ExpressionParamete
         VARIABLES.add(new ExpressionParameterVariable("Length", "The length of the edge", "length"));
 
         FilamentVertexVariableSource source = new FilamentVertexVariableSource();
-        for (ExpressionParameterVariable variable : source.getVariables(null)) {
+        for (ExpressionParameterVariable variable : source.getVariables(null, null)) {
             VARIABLES.add(new ExpressionParameterVariable("Source " + variable.getName(), variable.getDescription(), "source." + variable.getKey()));
             VARIABLES.add(new ExpressionParameterVariable("Target " + variable.getName(), variable.getDescription(), "target." + variable.getKey()));
         }
@@ -31,7 +32,7 @@ public class FilamentUnconnectedEdgeVariableSource implements ExpressionParamete
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return VARIABLES;
     }
 }

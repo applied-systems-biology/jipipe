@@ -80,7 +80,7 @@ public class IntegerFormData extends ParameterFormData {
         JIPipeParameterTree tree = new JIPipeParameterTree(this);
         JIPipeReflectionParameterAccess access = (JIPipeReflectionParameterAccess) tree.getParameters().get("initial-value");
         access.setDocumentation(new JIPipeDefaultDocumentation(getName(), getDescription().getBody()));
-        return JIPipe.getParameterTypes().createEditorFor(workbench, access);
+        return JIPipe.getParameterTypes().createEditorFor(workbench, new JIPipeParameterTree(access), access);
     }
 
     @Override

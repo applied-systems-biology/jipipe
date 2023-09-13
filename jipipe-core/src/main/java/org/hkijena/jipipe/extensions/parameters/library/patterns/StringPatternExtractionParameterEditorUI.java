@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.library.patterns;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -33,8 +34,8 @@ public class StringPatternExtractionParameterEditorUI extends JIPipeParameterEdi
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public StringPatternExtractionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public StringPatternExtractionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }

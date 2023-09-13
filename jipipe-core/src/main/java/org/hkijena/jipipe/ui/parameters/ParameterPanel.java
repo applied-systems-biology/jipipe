@@ -447,7 +447,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
                 collapseButton.setSelected(true);
             }
 
-            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(workbench, parameterAccess);
+            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(workbench, traversed, parameterAccess);
             uiList.add(ui);
             uiComponents.add(ui);
         }
@@ -686,5 +686,9 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
     @Override
     public Context context() {
         return context;
+    }
+
+    public JIPipeParameterTree getParameterTree() {
+        return traversed;
     }
 }

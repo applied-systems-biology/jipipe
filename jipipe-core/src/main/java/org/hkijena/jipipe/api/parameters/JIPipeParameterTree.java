@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jetbrains.annotations.NotNull;
 import org.scijava.Priority;
 
 import java.lang.reflect.InvocationTargetException;
@@ -75,6 +76,45 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
         this.root = new Node(null, rootParameter);
         this.nodeMap.put(rootParameter, root);
         merge(rootParameter, root);
+    }
+
+    /**
+     * Creates a new dummy tree for a single access
+     * @param access the access
+     */
+    public JIPipeParameterTree(JIPipeParameterAccess access) {
+        this(createDummyCollectionFromAccess(access));
+    }
+
+    private static JIPipeCustomParameterCollection createDummyCollectionFromAccess(JIPipeParameterAccess access) {
+        return new JIPipeCustomParameterCollection() {
+
+            private final ParameterChangedEventEmitter parameterChangedEventEmitter = new ParameterChangedEventEmitter();
+            private final ParameterStructureChangedEventEmitter parameterStructureChangedEventEmitter = new ParameterStructureChangedEventEmitter();
+            private final ParameterUIChangedEventEmitter parameterUIChangedEventEmitter = new ParameterUIChangedEventEmitter();
+
+            @Override
+            public ParameterChangedEventEmitter getParameterChangedEventEmitter() {
+                return parameterChangedEventEmitter;
+            }
+
+            @Override
+            public ParameterStructureChangedEventEmitter getParameterStructureChangedEventEmitter() {
+                return parameterStructureChangedEventEmitter;
+            }
+
+            @Override
+            public ParameterUIChangedEventEmitter getParameterUIChangedEventEmitter() {
+                return parameterUIChangedEventEmitter;
+            }
+
+            @Override
+            public Map<String, JIPipeParameterAccess> getParameters() {
+                Map<String, JIPipeParameterAccess> result = new HashMap<>();
+                result.put(access.getKey(), access);
+                return result;
+            }
+        };
     }
 
     /**

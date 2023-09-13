@@ -274,8 +274,8 @@ public class ParameterExplorerWindow extends JFrame implements JIPipeParameterCo
         testerValue.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
 
         // Set editors
-        currentValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, parameterAccess), BorderLayout.CENTER);
-        testerValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, testerValue), BorderLayout.CENTER);
+        currentValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, parameterTree, parameterAccess), BorderLayout.CENTER);
+        testerValuePanel.add(JIPipe.getParameterTypes().createEditorFor(workbench, parameterTree, testerValue), BorderLayout.CENTER);
 
         // Load info
         nameLabel.setText(parameterAccess.getName());

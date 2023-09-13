@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.environments;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeExternalEnvironmentRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -23,9 +24,9 @@ import java.util.Objects;
 
 public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
 
-    private JLabel nameLabel = new JLabel();
-    private JTextField pathLabel = UIUtils.makeReadonlyBorderlessTextField("");
-    private JPopupMenu installMenu = new JPopupMenu();
+    private final JLabel nameLabel = new JLabel();
+    private final JTextField pathLabel = UIUtils.makeReadonlyBorderlessTextField("");
+    private final JPopupMenu installMenu = new JPopupMenu();
     private JButton editButton;
     private JButton installButton;
 
@@ -35,8 +36,8 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
      * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
-    public ExternalEnvironmentParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public ExternalEnvironmentParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
         JIPipeRunnerQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);

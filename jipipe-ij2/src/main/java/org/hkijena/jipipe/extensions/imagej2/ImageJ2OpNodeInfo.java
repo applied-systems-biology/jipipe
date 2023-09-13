@@ -122,9 +122,6 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
     private void initializeParameters(Context context, JIPipeProgressInfo progressInfo) {
         ImageJ2JIPipeModuleIOService service = context.getService(ImageJ2JIPipeModuleIOService.class);
-        if (opInfo.getType() == Ops.Threshold.Otsu.class) {
-            System.out.println();
-        }
         for (ModuleItem<?> item : opInfo.outputs()) {
             ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Output);
             if (moduleIO == null) {
