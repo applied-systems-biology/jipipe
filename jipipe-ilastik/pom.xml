@@ -7,12 +7,12 @@
         <version>1.82.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jipipe-strings</artifactId>
+    <artifactId>jipipe-ilastik</artifactId>
     <version>1.82.0-SNAPSHOT</version>
 
-    <name>jipipe-strings</name>
-    <description>JIPipe Strings</description>
-    <inceptionYear>2020</inceptionYear>
+    <name>jipipe-ilastik</name>
+    <description>JIPipe Ilastik Integration</description>
+    <inceptionYear>2023</inceptionYear>
     <url>https://www.jipipe.org/</url>
 
     <organization>
@@ -74,18 +74,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <license.licenseName>bsd_2</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
-        <license.projectName>JIPipe-Python</license.projectName>
+        <license.projectName>jipipe-ilastik</license.projectName>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.jayway.jsonpath</groupId>
-                <artifactId>json-path</artifactId>
-                <version>2.7.0</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -93,8 +83,16 @@
             <artifactId>jipipe-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-ij</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-python</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-ij-algorithms</artifactId>
         </dependency>
     </dependencies>
 
