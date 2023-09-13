@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * Queue for {@link JIPipeRunnable}
+ * Local queue for {@link JIPipeRunnable}
  */
 public class JIPipeRunnerQueue implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener {
 
@@ -43,6 +43,10 @@ public class JIPipeRunnerQueue implements JIPipeRunnable.FinishedEventListener, 
 
     public JIPipeRunnerQueue(String name) {
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     /**
