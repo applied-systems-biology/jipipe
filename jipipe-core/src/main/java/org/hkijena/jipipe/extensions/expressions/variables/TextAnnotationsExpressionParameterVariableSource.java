@@ -38,7 +38,7 @@ public class TextAnnotationsExpressionParameterVariableSource implements Express
             for (Map.Entry<UUID, Map<String, JIPipeDataTable>> uuidMapEntry : predecessorNodeCache.entrySet()) {
                 for (Map.Entry<String, JIPipeDataTable> dataTableEntry : uuidMapEntry.getValue().entrySet()) {
                     for (String annotationColumn : dataTableEntry.getValue().getTextAnnotationColumns()) {
-                        variables.add(new ExpressionParameterVariable(annotationColumn + " (Annotation)",
+                        variables.add(new ExpressionParameterVariable(annotationColumn + " (Cached annotation)",
                                 "The text annotation \"" + annotationColumn + "\". Automatically detected from cached predecessor nodes.",
                                 annotationColumn));
                     }
