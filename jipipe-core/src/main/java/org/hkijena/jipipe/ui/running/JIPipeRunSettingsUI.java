@@ -131,7 +131,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 MarkdownDocument.fromPluginResource("documentation/run.md", new HashMap<>()),
                 ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
 
-        Set<JIPipeGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getDeactivatedAlgorithms(true);
+        Set<JIPipeGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getDeactivatedNodes(true);
         if (!algorithmsWithMissingInput.isEmpty()) {
             formPanel.removeLastRow();
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Skipped algorithms", UIUtils.getIconFromResources("emblems/warning.png"));

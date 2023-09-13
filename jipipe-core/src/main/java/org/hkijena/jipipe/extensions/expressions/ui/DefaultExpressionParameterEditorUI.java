@@ -53,7 +53,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     public DefaultExpressionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterTree, parameterAccess);
         initialize();
-        reloadVariables();
+//        reloadVariables();
         reload();
     }
 
@@ -130,6 +130,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     }
 
     private void editInFunctionBuilder() {
+        reloadVariables();
         String expression = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), expressionEditor.getText(), variables);
         if (expression != null)
             expressionEditor.setText(expression);

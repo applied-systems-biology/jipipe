@@ -81,6 +81,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
     public static final int DEFAULT_DIALOG_FLAGS = WITH_SEARCH_BAR | WITH_DOCUMENTATION | WITH_SCROLLING;
 
     private final JIPipeWorkbench workbench;
+    private final JIPipeParameterTree parentTree;
     private final boolean noGroupHeaders;
     private final boolean noEmptyGroupHeaders;
     private final boolean forceTraverse;
@@ -91,7 +92,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
     private final Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
     private Context context;
     private JIPipeParameterCollection displayedParameters;
-    private JIPipeParameterTree traversed;
+    private JIPipeParameterTree parameterTree;
     private BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> customIsParameterVisible;
     private BiFunction<JIPipeParameterTree, JIPipeParameterCollection, Boolean> customIsParameterCollectionVisible;
 
@@ -101,8 +102,9 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
      * @param documentation       Optional documentation
      * @param flags               Flags
      */
-    public ParameterPanel(JIPipeWorkbench workbench, JIPipeParameterCollection displayedParameters, MarkdownDocument documentation, int flags) {
+    public ParameterPanel(JIPipeWorkbench workbench, JIPipeParameterCollection displayedParameters, JIPipeParameterTree parentTree, MarkdownDocument documentation, int flags) {
         super(documentation, flags);
+        this.parentTree = parentTree;
         this.noGroupHeaders = (flags & NO_GROUP_HEADERS) == NO_GROUP_HEADERS;
         this.noEmptyGroupHeaders = (flags & NO_EMPTY_GROUP_HEADERS) == NO_EMPTY_GROUP_HEADERS;
         this.forceTraverse = (flags & FORCE_TRAVERSE) == FORCE_TRAVERSE;
@@ -119,6 +121,16 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
             this.displayedParameters.getParameterStructureChangedEventEmitter().subscribeWeak(this);
             this.displayedParameters.getParameterUIChangedEventEmitter().subscribeWeak(this);
         }
+    }
+
+    /**
+     * @param workbench           SciJava context
+     * @param displayedParameters Object containing the parameters. If the object is an {@link JIPipeParameterTree} and FORCE_TRAVERSE is not set, it will be used directly. Can be null.
+     * @param documentation       Optional documentation
+     * @param flags               Flags
+     */
+    public ParameterPanel(JIPipeWorkbench workbench, JIPipeParameterCollection displayedParameters, MarkdownDocument documentation, int flags) {
+       this(workbench, displayedParameters, null, documentation, flags);
     }
 
     /**
@@ -232,7 +244,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
             displayedParameters.getParameterUIChangedEventEmitter().unsubscribe(this);
             displayedParameters.getParameterStructureChangedEventEmitter().unsubscribe(this);
         }
-        traversed = null;
+        parameterTree = null;
         displayedParameters = null;
     }
 
@@ -272,9 +284,10 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
     public void reloadForm() {
         if (displayedParameters != null) {
             if (forceTraverse || !(getDisplayedParameters() instanceof JIPipeParameterTree))
-                traversed = new JIPipeParameterTree(getDisplayedParameters());
+                parameterTree = new JIPipeParameterTree(getDisplayedParameters());
             else
-                traversed = (JIPipeParameterTree) getDisplayedParameters();
+                parameterTree = (JIPipeParameterTree) getDisplayedParameters();
+            parameterTree.setParent(parentTree);
         }
         refreshForm();
     }
@@ -291,27 +304,27 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
         Set<JIPipeParameterCollection> hiddenCollections = new HashSet<>();
         Set<JIPipeParameterAccess> hiddenAccesses = new HashSet<>();
 
-        if (traversed == null) {
+        if (parameterTree == null) {
             return;
         }
 
-        JIPipeParameterCollection rootCollection = traversed.getRoot().getCollection();
+        JIPipeParameterCollection rootCollection = parameterTree.getRoot().getCollection();
 
-        for (JIPipeParameterCollection source : traversed.getRegisteredSources()) {
+        for (JIPipeParameterCollection source : parameterTree.getRegisteredSources()) {
 
-            JIPipeParameterTree.Node sourceNode = traversed.getSourceNode(source);
+            JIPipeParameterTree.Node sourceNode = parameterTree.getSourceNode(source);
 
             // Hidden parameter groups
             if (rootCollection != null) {
                 if (customIsParameterCollectionVisible == null) {
-                    if (rootCollection != source && !rootCollection.isParameterUIVisible(traversed, source))
+                    if (rootCollection != source && !rootCollection.isParameterUIVisible(parameterTree, source))
                         hiddenCollections.add(source);
                 } else {
-                    if (rootCollection != source && !customIsParameterCollectionVisible.apply(traversed, source))
+                    if (rootCollection != source && !customIsParameterCollectionVisible.apply(parameterTree, source))
                         hiddenCollections.add(source);
                 }
             } else if (sourceNode.getParent() != null && sourceNode.getParent().getCollection() != null) {
-                if (!sourceNode.getParent().getCollection().isParameterUIVisible(traversed, source))
+                if (!sourceNode.getParent().getCollection().isParameterUIVisible(parameterTree, source))
                     hiddenCollections.add(source);
             }
 
@@ -320,9 +333,9 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
             for (JIPipeParameterAccess parameterAccess : sourceNode.getParameters().values()) {
                 boolean visible;
                 if (customIsParameterVisible == null)
-                    visible = (rootCollection != null ? rootCollection.isParameterUIVisible(traversed, parameterAccess) : !parameterAccess.isHidden());
+                    visible = (rootCollection != null ? rootCollection.isParameterUIVisible(parameterTree, parameterAccess) : !parameterAccess.isHidden());
                 else
-                    visible = (rootCollection != null ? customIsParameterVisible.apply(traversed, parameterAccess) : !parameterAccess.isHidden());
+                    visible = (rootCollection != null ? customIsParameterVisible.apply(parameterTree, parameterAccess) : !parameterAccess.isHidden());
                 if (!visible) {
                     hiddenAccesses.add(parameterAccess);
                     --parameterCount;
@@ -335,20 +348,20 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
         }
 
         // Generate form
-        Map<JIPipeParameterCollection, List<JIPipeParameterAccess>> groupedBySource = traversed.getGroupedBySource();
+        Map<JIPipeParameterCollection, List<JIPipeParameterAccess>> groupedBySource = parameterTree.getGroupedBySource();
         if (groupedBySource.containsKey(this.displayedParameters) && !hiddenCollections.contains(displayedParameters)) {
-            addToForm(traversed, this.displayedParameters, groupedBySource.get(this.displayedParameters), hiddenAccesses);
+            addToForm(parameterTree, this.displayedParameters, groupedBySource.get(this.displayedParameters), hiddenAccesses);
         }
 
         for (JIPipeParameterCollection collection : groupedBySource.keySet().stream().sorted(
-                        Comparator.comparing(traversed::getSourceCollapsed).thenComparing(traversed::getSourceUIOrder).thenComparing(
-                                Comparator.nullsFirst(Comparator.comparing(traversed::getSourceDocumentationName))))
+                        Comparator.comparing(parameterTree::getSourceCollapsed).thenComparing(parameterTree::getSourceUIOrder).thenComparing(
+                                Comparator.nullsFirst(Comparator.comparing(parameterTree::getSourceDocumentationName))))
                 .collect(Collectors.toList())) {
             if (collection == this.displayedParameters)
                 continue;
             if (hiddenCollections.contains(collection))
                 continue;
-            addToForm(traversed, collection, groupedBySource.get(collection), hiddenAccesses);
+            addToForm(parameterTree, collection, groupedBySource.get(collection), hiddenAccesses);
         }
         addVerticalGlue();
 
@@ -447,7 +460,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
                 collapseButton.setSelected(true);
             }
 
-            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(workbench, traversed, parameterAccess);
+            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(workbench, parameterTree, parameterAccess);
             uiList.add(ui);
             uiComponents.add(ui);
         }
@@ -689,6 +702,6 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
     }
 
     public JIPipeParameterTree getParameterTree() {
-        return traversed;
+        return parameterTree;
     }
 }

@@ -225,7 +225,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
     }
 
     private void runPipeline() {
-        Set<JIPipeGraphNode> unExecutableAlgorithms = copiedGraph.getDeactivatedAlgorithms(!configuration.isIgnoreDeactivatedInputs());
+        Set<JIPipeGraphNode> unExecutableAlgorithms = copiedGraph.getDeactivatedNodes(!configuration.isIgnoreDeactivatedInputs());
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = copiedGraph.traverseSlots();
 

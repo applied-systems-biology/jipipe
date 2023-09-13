@@ -55,7 +55,7 @@ public interface ExpressionParameterVariableSource {
                 JIPipeGraph graph = project.getGraph();
                 node = graph.getNodeByUUID(node.getUUIDInParentGraph());
                 if(node != null) {
-                    for (JIPipeGraphNode predecessorNode : graph.getPredecessorNodes(node, graph.traverse())) {
+                    for (JIPipeGraphNode predecessorNode : graph.getDirectPredecessorNodes(node)) {
                         Map<String, JIPipeDataTable> cache = project.getCache().query(predecessorNode, predecessorNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
                         if(!cache.isEmpty()) {
                             result.put(predecessorNode.getUUIDInParentGraph(), cache);
@@ -90,6 +90,16 @@ public interface ExpressionParameterVariableSource {
         }
         if(parameterTree != null && parameterTree.getRoot() != null && parameterTree.getRoot().getCollection() instanceof JIPipeGraphNode) {
             return (JIPipeGraphNode) parameterTree.getRoot().getCollection();
+        }
+        if(parameterTree != null) {
+            // Look in the parent tree
+            parameterTree = parameterTree.getParent();
+            while (parameterTree != null) {
+                if(parameterTree.getRoot() != null && parameterTree.getRoot().getCollection() instanceof JIPipeGraphNode) {
+                    return (JIPipeGraphNode) parameterTree.getRoot().getCollection();
+                }
+                parameterTree = parameterTree.getParent();
+            }
         }
         return null;
     }

@@ -64,6 +64,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
     private boolean ignoreCustomParameters = false;
     private boolean forceReflection = false;
 
+    private JIPipeParameterTree parent;
     public JIPipeParameterTree() {
     }
 
@@ -76,6 +77,22 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
         this.root = new Node(null, rootParameter);
         this.nodeMap.put(rootParameter, root);
         merge(rootParameter, root);
+    }
+
+    /**
+     * Gets the tree assigned as parent. This is used for tracing the owner of parameters.
+     * @return the parent. can be null.
+     */
+    public JIPipeParameterTree getParent() {
+        return parent;
+    }
+
+    /**
+     * Sets the parent of this tree. This is used for tracing the owner of parameters.
+     * @param parent the parent. can be null.
+     */
+    public void setParent(JIPipeParameterTree parent) {
+        this.parent = parent;
     }
 
     /**

@@ -273,7 +273,7 @@ public class ParameterCollectionListEditorUI extends JIPipeParameterEditorUI {
                 moveEntryUp(entry);
             }));
 
-            ParameterPanel ui = new ParameterPanel(getWorkbench(), parameter.get(i), null, ParameterPanel.NO_EMPTY_GROUP_HEADERS);
+            ParameterPanel ui = new ParameterPanel(getWorkbench(), parameter.get(i), getParameterTree(), null, ParameterPanel.NO_EMPTY_GROUP_HEADERS);
             ui.setBorder(BorderFactory.createEtchedBorder());
             ui.setOpaque(false);
 
