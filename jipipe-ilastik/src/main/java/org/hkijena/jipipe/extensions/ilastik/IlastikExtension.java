@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.extensions.ilastik.installers.IlastikEasyInstaller;
+import org.hkijena.jipipe.extensions.ilastik.nodes.IlastikPixelClassificationAlgorithm;
 import org.hkijena.jipipe.extensions.ilastik.nodes.ImportIlastikModel;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
@@ -304,6 +305,7 @@ public class IlastikExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URLFromResources("ilastik-model.png"));
 
         registerNodeType("import-ilastik-model", ImportIlastikModel.class);
+        registerNodeType("ilastik-pixel-classification", IlastikPixelClassificationAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
     }
 
     @Override
