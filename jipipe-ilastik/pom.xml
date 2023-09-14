@@ -90,6 +90,10 @@
             <groupId>org.hkijena</groupId>
             <artifactId>jipipe-ij-algorithms</artifactId>
         </dependency>
+        <dependency>
+            <groupId>cisd</groupId>
+            <artifactId>jhdf5</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
