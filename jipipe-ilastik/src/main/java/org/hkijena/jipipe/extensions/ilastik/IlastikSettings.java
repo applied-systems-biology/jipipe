@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 
@@ -23,6 +24,7 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
 
     public IlastikSettings() {
         easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-ilastik.json");
+        environment.setArguments(new DefaultExpressionParameter("cli_parameters"));
     }
 
     public static IlastikSettings getInstance() {
@@ -50,12 +52,12 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
      * @param context the context
      * @param report  the report
      */
-    public static void checkPythonSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+    public static void checkIlastikSettings(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         if (!environmentSettingsAreValid()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, context, "Ilastik is not configured!",
                     "This node requires an installation of Ilastik. You have to point JIPipe to a Ilastik installation.",
                     "Please install Ilastik from https://www.ilastik.org\n" +
-                            "Then go to Project > Application settings > Extensions > Ilastik and choose the correct environment. " +
+                            "Then go to Project > Application settings > Extensions > Ilastik and setup the environment. " +
                             "Alternatively, the settings page will provide you with means to install Ilastik automatically."));
         }
     }

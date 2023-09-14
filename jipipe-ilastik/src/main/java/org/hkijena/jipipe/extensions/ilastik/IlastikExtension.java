@@ -12,16 +12,17 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.ilastik.installers.IlastikEasyInstaller;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.python.PythonEnvironment;
-import org.hkijena.jipipe.extensions.python.PythonExtension;
+import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -57,35 +58,38 @@ public class IlastikExtension extends JIPipePrepackagedDefaultJavaExtension {
         getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
-    private static void easyInstallOmnipose(JIPipeWorkbench workbench) {
-
+    private static void easyInstallIlastik(JIPipeWorkbench workbench) {
+        IlastikSettings settings = IlastikSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("environment");
+        IlastikEasyInstaller installer = new IlastikEasyInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
-    private static void configureOmnipose(JIPipeWorkbench workbench) {
+    private static void configureIlastik(JIPipeWorkbench workbench) {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/Ilastik");
     }
 
-    public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
-//        if (!OmniposeSettings.pythonSettingsAreValid()) {
-//            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":python-not-configured");
-//            notification.setHeading("Omnipose is not configured");
-//            notification.setDescription("You need to setup a Python environment that contains Omnipose." + "Click 'Install Omnipose' to let JIPipe setup a Python distribution with Omnipose automatically. " +
-//                    "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
-//                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.\n\n" +
-//                    "For more information, please visit https://www.jipipe.org/installation/third-party/omnipose/");
-//            notification.getActions().add(new JIPipeNotificationAction("Install Omnipose",
-//                    "Installs Omnipose via the EasyInstaller",
-//                    UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
-//                    JIPipeNotificationAction.Style.Success,
-//                    IlastikExtension::easyInstallOmnipose));
-//            notification.getActions().add(new JIPipeNotificationAction("Open settings",
-//                    "Opens the applications settings page",
-//                    UIUtils.getIconFromResources("actions/configure.png"),
-//                    IlastikExtension::configureOmnipose));
-//            inbox.push(notification);
-//        }
+    public static void createMissingIlastikNotificationIfNeeded(JIPipeNotificationInbox inbox) {
+        if (!IlastikSettings.getInstance().getEnvironment().generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":ilastik-not-configured");
+            notification.setHeading("Ilastik is not configured");
+            notification.setDescription("You need to point JIPipe to an Ilastik installation." + "Click 'Install Ilastik' to let JIPipe setup automatically. " +
+                    "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
+                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Ilastik installation.");
+            notification.getActions().add(new JIPipeNotificationAction("Install Ilastik",
+                    "Installs Ilastik via the EasyInstaller",
+                    UIUtils.getIconInvertedFromResources("actions/browser-download.png"),
+                    JIPipeNotificationAction.Style.Success,
+                    IlastikExtension::easyInstallIlastik));
+            notification.getActions().add(new JIPipeNotificationAction("Open settings",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    IlastikExtension::configureIlastik));
+            inbox.push(notification);
+        }
     }
 
     @Override
@@ -286,24 +290,18 @@ public class IlastikExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-//        registerSettingsSheet(OmniposeSettings.ID,
-//                "Omnipose",
-//                "Connect existing Omnipose installations to JIPipe or automatically install a new Omnipose environment if none is available",
-//                RESOURCES.getIconFromResources("omnipose.png"),
-//                "Extensions",
-//                UIUtils.getIconFromResources("actions/plugins.png"),
-//                new OmniposeSettings());
-//        registerEnumParameterType("omnipose-model", OmniposeModel.class, "Omnipose model", "An Omnipose model");
-//        registerEnumParameterType("omnipose-pretrained-model", OmniposePretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
-//
-//        registerNodeType("omnipose", OmniposeAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
-//        registerNodeType("omnipose-training", OmniposeTrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
-//
-//        registerEnvironmentInstaller(PythonEnvironment.class, OmniposeEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
+        registerSettingsSheet(IlastikSettings.ID,
+                "Ilastik",
+                "Connect existing Ilastik installations to JIPipe or automatically install a new Ilastik environment if none is available",
+                RESOURCES.getIconFromResources("ilastik.png"),
+                "Extensions",
+                UIUtils.getIconFromResources("actions/plugins.png"),
+                new IlastikSettings());
+        registerEnvironmentInstaller(ProcessEnvironment.class, IlastikEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
     }
 
     @Override
     public void postprocess(JIPipeProgressInfo progressInfo) {
-        createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
+        createMissingIlastikNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }
