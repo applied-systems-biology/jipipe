@@ -12,10 +12,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
@@ -37,6 +34,7 @@ public class ProcessEnvironment extends JIPipeExternalEnvironment {
     private Path executablePathWindows = Paths.get("");
     private Path executablePathLinux = Paths.get("");
     private Path executablePathOSX = Paths.get("");
+    private DefaultExpressionParameter workDirectory = new DefaultExpressionParameter("executable_dir");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
     public ProcessEnvironment() {
@@ -50,6 +48,7 @@ public class ProcessEnvironment extends JIPipeExternalEnvironment {
         this.executablePathLinux = other.executablePathLinux;
         this.executablePathOSX = other.executablePathOSX;
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
+        this.workDirectory = new DefaultExpressionParameter(other.workDirectory);
     }
 
     @Override
@@ -72,7 +71,8 @@ public class ProcessEnvironment extends JIPipeExternalEnvironment {
 
     @JIPipeDocumentation(name = "Arguments", description = "Arguments passed to the process.")
     @JIPipeParameter("arguments")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "executable", name = "Executable path", description = "The path to the executable")
+    @ExpressionParameterSettingsVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
     @JsonGetter("arguments")
     public DefaultExpressionParameter getArguments() {
         return arguments;
@@ -123,6 +123,21 @@ public class ProcessEnvironment extends JIPipeExternalEnvironment {
         this.executablePathOSX = executablePathOSX;
     }
 
+    @JIPipeDocumentation(name = "Work directory", description = "The work directory of the process")
+    @JIPipeParameter("work-directory")
+    @JsonGetter("work-directory")
+    @ExpressionParameterSettingsVariable(key = "executable", name = "Executable path", description = "The path to the executable")
+    @ExpressionParameterSettingsVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
+    public DefaultExpressionParameter getWorkDirectory() {
+        return workDirectory;
+    }
+
+    @JIPipeParameter("work-directory")
+    @JsonSetter("work-directory")
+    public void setWorkDirectory(DefaultExpressionParameter workDirectory) {
+        this.workDirectory = workDirectory;
+    }
+
     public Path getAbsoluteExecutablePath() {
         if (SystemUtils.IS_OS_WINDOWS) {
             if (StringUtils.isNullOrEmpty(getExecutablePathWindows()))
@@ -148,7 +163,7 @@ public class ProcessEnvironment extends JIPipeExternalEnvironment {
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
-    @ExpressionParameterSettings(variableSource = EnvironmentVariablesSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = EnvironmentVariablesSource.class)
     public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
         return environmentVariables;
     }
@@ -173,6 +188,7 @@ public class ProcessEnvironment extends JIPipeExternalEnvironment {
         return "Process environment {" +
                 "Arguments=" + arguments +
                 ", Executable=" + executablePathWindows +
+                ", WorkDirectory=" + workDirectory +
                 '}';
     }
 

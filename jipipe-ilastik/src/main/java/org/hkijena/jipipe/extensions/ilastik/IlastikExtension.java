@@ -298,6 +298,7 @@ public class IlastikExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new IlastikSettings());
         registerEnvironmentInstaller(ProcessEnvironment.class, IlastikEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
+        registerMenuExtension(RunIlastikMenuExtension.class);
     }
 
     @Override

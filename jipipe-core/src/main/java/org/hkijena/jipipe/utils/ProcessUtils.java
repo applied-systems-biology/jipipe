@@ -108,6 +108,7 @@ public class ProcessUtils {
             variables = new ExpressionVariables();
         }
         variables.set("executable", environment.getAbsoluteExecutablePath().toString());
+        variables.set("executable_dir", environment.getAbsoluteExecutablePath().getParent().toString());
         Object evaluationResult = environment.getArguments().evaluate(variables);
         for (Object item : (Collection<?>) evaluationResult) {
             commandLine.addArgument(StringUtils.nullToEmpty(item));
@@ -115,6 +116,7 @@ public class ProcessUtils {
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         setupLogger(commandLine, executor, progressInfo);
+        executor.setWorkingDirectory(Paths.get(environment.getWorkDirectory().evaluateToString(variables)).toFile());
 
         try {
             executor.execute(commandLine, environmentVariables);
