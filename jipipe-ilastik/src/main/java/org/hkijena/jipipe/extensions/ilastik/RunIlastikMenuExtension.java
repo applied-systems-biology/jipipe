@@ -49,7 +49,8 @@ public class RunIlastikMenuExtension extends JIPipeMenuExtension implements Acti
             variables.set("cli_parameters", Collections.emptyList());
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             progressInfo.setLogToStdOut(true);
-            ProcessUtils.runProcess(environment, variables, progressInfo);
+            getWorkbench().sendStatusBarText("Launching Ilastik ...");
+            ProcessUtils.launchProcess(environment, variables, progressInfo);
         }
         else {
             JIPipeNotificationInbox inbox = new JIPipeNotificationInbox();

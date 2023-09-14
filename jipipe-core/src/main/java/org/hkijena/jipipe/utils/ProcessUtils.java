@@ -125,6 +125,53 @@ public class ProcessUtils {
         }
     }
 
+    /**
+     * Runs a process
+     *
+     * @param environment  the process environment
+     * @param variables    additional variables for the arguments (can be null)
+     * @param progressInfo the progress info
+     */
+    public static void launchProcess(ProcessEnvironment environment, ExpressionVariables variables, JIPipeProgressInfo progressInfo) {
+        CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
+
+        Map<String, String> environmentVariables = new HashMap<>();
+        ExpressionVariables existingEnvironmentVariables = new ExpressionVariables();
+        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+            existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
+            environmentVariables.put(entry.getKey(), entry.getValue());
+        }
+        for (StringQueryExpressionAndStringPairParameter environmentVariable : environment.getEnvironmentVariables()) {
+            String value = StringUtils.nullToEmpty(environmentVariable.getKey().evaluate(existingEnvironmentVariables));
+            environmentVariables.put(environmentVariable.getValue(), value);
+        }
+        for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
+            progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+        }
+
+        if (variables == null) {
+            variables = new ExpressionVariables();
+        }
+        variables.set("executable", environment.getAbsoluteExecutablePath().toString());
+        variables.set("executable_dir", environment.getAbsoluteExecutablePath().getParent().toString());
+        Object evaluationResult = environment.getArguments().evaluate(variables);
+        for (Object item : (Collection<?>) evaluationResult) {
+            commandLine.addArgument(StringUtils.nullToEmpty(item));
+        }
+
+        File workDirectory = Paths.get(environment.getWorkDirectory().evaluateToString(variables)).toFile();
+
+        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
+        setupLogger(commandLine, executor, progressInfo);
+        executor.setWorkingDirectory(workDirectory);
+
+        try {
+            executor.launch(commandLine, environmentVariables, workDirectory);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void setupLogger(CommandLine commandLine, DefaultExecutor executor, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Running " + Arrays.stream(commandLine.toStrings()).map(s -> {
             if (s.contains(" ")) {
