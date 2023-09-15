@@ -19,12 +19,14 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +79,9 @@ public class IlastikModelData implements JIPipeData {
         if (!forceName)
             name = this.name;
         try {
-            Files.write(storage.getFileSystemPath().resolve(name), data);
+            if(StringUtils.isNullOrEmpty(name))
+                name = "project";
+            Files.write(storage.getFileSystemPath().resolve(PathUtils.ensureExtension(Paths.get(name), ".ilp")), data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -64,7 +64,7 @@ public class WebUtils {
                         ExpressionVariables variables = new ExpressionVariables();
                         variables.set("output_file", outputFile.toAbsolutePath().toString());
                         variables.set("url", url.toString());
-                        ProcessUtils.runProcess(process, variables, progressInfo);
+                        ProcessUtils.runProcess(process, variables, true, progressInfo);
                     }
 
                     if (Files.isRegularFile(outputFile)) {

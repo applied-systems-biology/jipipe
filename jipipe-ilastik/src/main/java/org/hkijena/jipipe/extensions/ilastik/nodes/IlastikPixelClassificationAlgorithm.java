@@ -1,24 +1,40 @@
 package org.hkijena.jipipe.extensions.ilastik.nodes;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.AbstractJIPipeRunnable;
+import ij.ImagePlus;
+import net.imagej.DefaultDataset;
+import net.imagej.ImgPlus;
+import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.type.numeric.NumericType;
+import org.apache.commons.io.FilenameUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.ilastik.IlastikSettings;
 import org.hkijena.jipipe.extensions.ilastik.datatypes.IlastikModelData;
+import org.hkijena.jipipe.extensions.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.processes.OptionalProcessEnvironment;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ProcessUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,6 +42,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.LongConsumer;
+
+import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
 @JIPipeDocumentation(name = "Ilastik pixel classification", description = "Assigns labels to pixels based on pixel features and user annotations")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
@@ -45,7 +64,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel");
     public static final JIPipeDataSlotInfo OUTPUT_SLOT_SIMPLE_SEGMENTATION = new JIPipeDataSlotInfo(ImagePlusData.class,
             JIPipeSlotType.Output,
-            "Simple segmentation",
+            "Simple Segmentation",
             "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
                     "For this image, every pixel with the same value should belong to the same class of pixels");
     public static final JIPipeDataSlotInfo OUTPUT_SLOT_UNCERTAINTY = new JIPipeDataSlotInfo(ImagePlusData.class,
@@ -86,6 +105,9 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
+        JIPipeInputDataSlot projectInputSlot = getInputSlot("Project");
+        JIPipeInputDataSlot imageInputSlot = getInputSlot("Image");
+
         // Collect the parameters
         List<String> exportSources = new ArrayList<>();
         if(outputParameters.outputFeatures)
@@ -101,11 +123,10 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
 
         // Export the projects
         List<Path> exportedModelPaths = new ArrayList<>();
-        List<IlastikModelData> modelDataList = dataBatch.getInputData("Project", IlastikModelData.class, progressInfo);
-        for (int i = 0; i < modelDataList.size(); i++) {
-            progressInfo.resolveAndLog("Exporting project", i, modelDataList.size());
-            IlastikModelData project = modelDataList.get(i);
-            Path exportedPath = workDirectory.resolve("project_" + i);
+        for (int i = 0; i < projectInputSlot.getRowCount(); i++) {
+            JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting project", i, projectInputSlot.getRowCount());
+            IlastikModelData project = projectInputSlot.getData(i, IlastikModelData.class, exportProgress);
+            Path exportedPath = workDirectory.resolve("project_" + i + ".ilp");
             exportedModelPaths.add(exportedPath);
             try {
                 Files.write(exportedPath, project.getData(), StandardOpenOption.CREATE);
@@ -116,22 +137,64 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
 
         // Export images
         List<Path> exportedImagePaths = new ArrayList<>();
-        List<ImagePlusData> imageDataList = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
-        for (int i = 0; i < imageDataList.size(); i++) {
-            progressInfo.resolveAndLog("Exporting input image", i, imageDataList.size());
-            ImagePlusData imagePlusData = imageDataList.get(i);
-            Path exportedPath = workDirectory.resolve("img_" + i);
-            exportedModelPaths.add(exportedPath);
-            IJ.saveAsTiff(imagePlusData.getImage(), exportedPath.toString());
+        for (int i = 0; i < imageInputSlot.getRowCount(); i++) {
+            JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting input image", i, imageInputSlot.getRowCount());
+            ImagePlusData imagePlusData = imageInputSlot.getData(i, ImagePlusData.class, exportProgress);
+            DefaultDataset dataset = new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus(ImageJFunctions.wrap(imagePlusData.getImage())));
+            Path exportedPath = workDirectory.resolve("img_" + i + ".h5");
+            Hdf5.writeDataset(exportedPath.toFile(), "data", (ImgPlus)dataset.getImgPlus(), 1, DEFAULT_AXES, value -> {
+            });
             exportedImagePaths.add(exportedPath);
         }
 
 
         // Run analysis
-        for (int i = 0; i < exportSources.size(); i++) {
-            String exportSource = exportSources.get(i);
-            JIPipeProgressInfo exportSourceProgress = progressInfo.resolveAndLog(exportSource, i, exportSources.size());
+        for (int i = 0; i < exportedModelPaths.size(); i++) {
+            Path modelPath = exportedModelPaths.get(i);
+            Path modelResultPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "project_" + i);
+            JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Project", i, exportedModelPaths.size());
+
+            for (int j = 0; j < exportSources.size(); j++) {
+                String exportSource = exportSources.get(j);
+                JIPipeProgressInfo exportSourceProgress = modelProgress.resolveAndLog(exportSource, j, exportSources.size());
+                ExpressionVariables variables = new ExpressionVariables();
+                List<String> args = new ArrayList<>();
+                String axes = reversed(DEFAULT_STRING_AXES);
+                args.add("--headless");
+                args.add("--readonly");
+                args.add("--project=" + modelPath);
+                args.add("--output_format=hdf5");
+                args.add("--export_source=" + exportSource);
+                args.add("--output_filename_format=" + modelResultPath + "/{result_type}__{nickname}.tiff");
+                args.add("--output_axis_order=" + axes);
+                args.add("--input_axes=" + axes);
+                for (Path exportedImagePath : exportedImagePaths) {
+                    args.add(exportedImagePath.toAbsolutePath().toString());
+                }
+                variables.set("cli_parameters", args);
+
+                // Run ilastik
+                ProcessUtils.runProcess(overrideEnvironment.getContentOrDefault(IlastikSettings.getInstance().getEnvironment()), variables, false, exportSourceProgress.resolve("Run Ilastik"));
+
+                // Extract results
+                for (int k = 0; k < exportedImagePaths.size(); k++) {
+                    Path inputImagePath = exportedImagePaths.get(k);
+                    Path outputImagePath = modelResultPath.resolve(exportSource + "__" + FilenameUtils.removeExtension(inputImagePath.getFileName().toString()) + ".h5");
+                    exportSourceProgress.log("Extracting result: " + outputImagePath);
+
+                    ImgPlus dataset = Hdf5.readDataset(outputImagePath.toFile(), "exported_data");
+                    ImagePlus imagePlus = ImageJFunctions.wrap(dataset, exportSource);
+                    ImageJUtils.calibrate(imagePlus, ImageJCalibrationMode.MinMax,0, 0);
+
+                    List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(imageInputSlot.getTextAnnotations(k));
+                    textAnnotations.addAll(projectInputSlot.getTextAnnotations(i));
+                    List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>(imageInputSlot.getDataAnnotations(k));
+                    dataAnnotations.addAll(projectInputSlot.getDataAnnotations(i));
+                    getOutputSlot(exportSource).addData(new ImagePlusData(imagePlus), textAnnotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, exportSourceProgress);
+                }
+            }
         }
+
 
         // Cleanup
         if (cleanUpAfterwards) {

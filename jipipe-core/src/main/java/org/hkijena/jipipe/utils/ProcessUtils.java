@@ -83,11 +83,12 @@ public class ProcessUtils {
     /**
      * Runs a process
      *
-     * @param environment  the process environment
-     * @param variables    additional variables for the arguments (can be null)
-     * @param progressInfo the progress info
+     * @param environment   the process environment
+     * @param variables     additional variables for the arguments (can be null)
+     * @param handleQuoting if argument quoting is handled by commons exec (can be buggy)
+     * @param progressInfo  the progress info
      */
-    public static void runProcess(ProcessEnvironment environment, ExpressionVariables variables, JIPipeProgressInfo progressInfo) {
+    public static void runProcess(ProcessEnvironment environment, ExpressionVariables variables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
         CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
@@ -111,12 +112,13 @@ public class ProcessUtils {
         variables.set("executable_dir", environment.getAbsoluteExecutablePath().getParent().toString());
         Object evaluationResult = environment.getArguments().evaluate(variables);
         for (Object item : (Collection<?>) evaluationResult) {
-            commandLine.addArgument(StringUtils.nullToEmpty(item));
+            commandLine.addArgument(StringUtils.nullToEmpty(item), handleQuoting);
         }
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         setupLogger(commandLine, executor, progressInfo);
         executor.setWorkingDirectory(Paths.get(environment.getWorkDirectory().evaluateToString(variables)).toFile());
+        progressInfo.log("Work directory is " + executor.getWorkingDirectory());
 
         try {
             executor.execute(commandLine, environmentVariables);
@@ -164,6 +166,7 @@ public class ProcessUtils {
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         setupLogger(commandLine, executor, progressInfo);
         executor.setWorkingDirectory(workDirectory);
+        progressInfo.log("Work directory is " + executor.getWorkingDirectory());
 
         try {
             executor.launch(commandLine, environmentVariables, workDirectory);

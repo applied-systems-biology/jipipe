@@ -74,7 +74,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
             environment.setArguments(overrideArguments.getContent());
         }
 
-        ProcessUtils.runProcess(environment, variables, progressInfo);
+        ProcessUtils.runProcess(environment, variables, true, progressInfo);
 
         // Extract outputs
         if (outputOutputFolder) {
