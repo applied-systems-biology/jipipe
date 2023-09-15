@@ -23,6 +23,7 @@ import org.hkijena.jipipe.utils.ProcessUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "Run process (Merging)", description = "Executes a process.")
@@ -73,7 +74,7 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
             environment.setArguments(overrideArguments.getContent());
         }
 
-        ProcessUtils.runProcess(environment, variables, true, progressInfo);
+        ProcessUtils.runProcess(environment, variables, Collections.emptyMap(), true, progressInfo);
 
         // Extract outputs
         if (outputOutputFolder) {

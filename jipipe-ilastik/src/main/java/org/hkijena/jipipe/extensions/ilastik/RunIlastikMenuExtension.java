@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.ilastik;
 
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -44,13 +43,10 @@ public class RunIlastikMenuExtension extends JIPipeMenuExtension implements Acti
     @Override
     public void actionPerformed(ActionEvent e) {
         if(IlastikSettings.environmentSettingsAreValid()) {
-            ProcessEnvironment environment = IlastikSettings.getInstance().getEnvironment();
-            ExpressionVariables variables = new ExpressionVariables();
-            variables.set("cli_parameters", Collections.emptyList());
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             progressInfo.setLogToStdOut(true);
             getWorkbench().sendStatusBarText("Launching Ilastik ...");
-            ProcessUtils.launchProcess(environment, variables, progressInfo);
+            IlastikExtension.runIlastik(null, Collections.emptyList(), progressInfo, true);
         }
         else {
             JIPipeNotificationInbox inbox = new JIPipeNotificationInbox();

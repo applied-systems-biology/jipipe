@@ -1,11 +1,9 @@
 package org.hkijena.jipipe.extensions.ilastik.nodes;
 
-import ij.IJ;
 import ij.ImagePlus;
 import net.imagej.DefaultDataset;
 import net.imagej.ImgPlus;
 import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.type.numeric.NumericType;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -24,17 +22,20 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.extensions.ilastik.IlastikExtension;
 import org.hkijena.jipipe.extensions.ilastik.IlastikSettings;
 import org.hkijena.jipipe.extensions.ilastik.datatypes.IlastikModelData;
+import org.hkijena.jipipe.extensions.ilastik.parameters.IlastikProjectValidationMode;
+import org.hkijena.jipipe.extensions.ilastik.utils.IlastikUtils;
 import org.hkijena.jipipe.extensions.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.processes.OptionalProcessEnvironment;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ProcessUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,7 +43,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.LongConsumer;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
@@ -57,6 +57,8 @@ import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features", description = "Multi-channel image where each channel represents one of the computed pixel features")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels", description = "Image representing the users’ manually created annotations")
 public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
+
+    public static final String PROJECT_TYPE = "PixelClassification";
 
     public static final JIPipeDataSlotInfo OUTPUT_SLOT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusData.class,
             JIPipeSlotType.Output,
@@ -84,6 +86,8 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
     private boolean cleanUpAfterwards = true;
     private OptionalProcessEnvironment overrideEnvironment = new OptionalProcessEnvironment();
 
+    private IlastikProjectValidationMode projectValidationMode = IlastikProjectValidationMode.CrashOnError;
+
     public IlastikPixelClassificationAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.outputParameters = new OutputParameters();
@@ -94,6 +98,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
     public IlastikPixelClassificationAlgorithm(IlastikPixelClassificationAlgorithm other) {
         super(other);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.projectValidationMode = other.projectValidationMode;
         this.overrideEnvironment = new OptionalProcessEnvironment(other.overrideEnvironment);
         this.outputParameters = new OutputParameters(other.outputParameters);
         registerSubParameter(outputParameters);
@@ -110,15 +115,15 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
 
         // Collect the parameters
         List<String> exportSources = new ArrayList<>();
-        if(outputParameters.outputFeatures)
+        if (outputParameters.outputFeatures)
             exportSources.add("Features");
-        if(outputParameters.outputLabels)
+        if (outputParameters.outputLabels)
             exportSources.add("Labels");
-        if(outputParameters.outputProbabilities)
+        if (outputParameters.outputProbabilities)
             exportSources.add("Probabilities");
-        if(outputParameters.outputUncertainty)
+        if (outputParameters.outputUncertainty)
             exportSources.add("Uncertainty");
-        if(outputParameters.outputSimpleSegmentation)
+        if (outputParameters.outputSimpleSegmentation)
             exportSources.add("Simple Segmentation");
 
         // Export the projects
@@ -127,12 +132,26 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting project", i, projectInputSlot.getRowCount());
             IlastikModelData project = projectInputSlot.getData(i, IlastikModelData.class, exportProgress);
             Path exportedPath = workDirectory.resolve("project_" + i + ".ilp");
-            exportedModelPaths.add(exportedPath);
             try {
                 Files.write(exportedPath, project.getData(), StandardOpenOption.CREATE);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
+            // Check the project
+            if (projectValidationMode != IlastikProjectValidationMode.Ignore) {
+                exportProgress.log("Checking if " + exportedPath + " supports project type '" + PROJECT_TYPE + "'");
+                if(!IlastikUtils.projectSupports(exportedPath, PROJECT_TYPE)) {
+                    if(projectValidationMode == IlastikProjectValidationMode.CrashOnError) {
+                        throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this),
+                                new IllegalArgumentException("Project does not support '" + PROJECT_TYPE + "'"),
+                                "Provided project is not supported by '" + getInfo().getName() + "'!",
+                                "The node tried to load project (row " + i + ") with annotations " + JsonUtils.toJsonString(projectInputSlot.getTextAnnotations(i)) + ", but the project does not support " + PROJECT_TYPE,
+                                "Check if the inputs are correct or set the validation mode to 'Skip on error'.");
+                    }
+                }
+            }
+            exportedModelPaths.add(exportedPath);
         }
 
         // Export images
@@ -142,7 +161,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             ImagePlusData imagePlusData = imageInputSlot.getData(i, ImagePlusData.class, exportProgress);
             DefaultDataset dataset = new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus(ImageJFunctions.wrap(imagePlusData.getImage())));
             Path exportedPath = workDirectory.resolve("img_" + i + ".h5");
-            Hdf5.writeDataset(exportedPath.toFile(), "data", (ImgPlus)dataset.getImgPlus(), 1, DEFAULT_AXES, value -> {
+            Hdf5.writeDataset(exportedPath.toFile(), "data", (ImgPlus) dataset.getImgPlus(), 1, DEFAULT_AXES, value -> {
             });
             exportedImagePaths.add(exportedPath);
         }
@@ -157,7 +176,6 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
             for (int j = 0; j < exportSources.size(); j++) {
                 String exportSource = exportSources.get(j);
                 JIPipeProgressInfo exportSourceProgress = modelProgress.resolveAndLog(exportSource, j, exportSources.size());
-                ExpressionVariables variables = new ExpressionVariables();
                 List<String> args = new ArrayList<>();
                 String axes = reversed(DEFAULT_STRING_AXES);
                 args.add("--headless");
@@ -171,10 +189,12 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
                 for (Path exportedImagePath : exportedImagePaths) {
                     args.add(exportedImagePath.toAbsolutePath().toString());
                 }
-                variables.set("cli_parameters", args);
 
                 // Run ilastik
-                ProcessUtils.runProcess(overrideEnvironment.getContentOrDefault(IlastikSettings.getInstance().getEnvironment()), variables, false, exportSourceProgress.resolve("Run Ilastik"));
+                IlastikExtension.runIlastik(overrideEnvironment.getContentOrDefault(IlastikSettings.getInstance().getEnvironment()),
+                        args,
+                        exportSourceProgress.resolve("Run Ilastik"),
+                        false);
 
                 // Extract results
                 for (int k = 0; k < exportedImagePaths.size(); k++) {
@@ -184,7 +204,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
 
                     ImgPlus dataset = Hdf5.readDataset(outputImagePath.toFile(), "exported_data");
                     ImagePlus imagePlus = ImageJFunctions.wrap(dataset, exportSource);
-                    ImageJUtils.calibrate(imagePlus, ImageJCalibrationMode.MinMax,0, 0);
+                    ImageJUtils.calibrate(imagePlus, ImageJCalibrationMode.MinMax, 0, 0);
 
                     List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(imageInputSlot.getTextAnnotations(k));
                     textAnnotations.addAll(projectInputSlot.getTextAnnotations(i));
@@ -212,6 +232,17 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
                 IlastikSettings.checkIlastikSettings(context, report);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
+    @JIPipeParameter("project-validation-mode")
+    public IlastikProjectValidationMode getProjectValidationMode() {
+        return projectValidationMode;
+    }
+
+    @JIPipeParameter("project-validation-mode")
+    public void setProjectValidationMode(IlastikProjectValidationMode projectValidationMode) {
+        this.projectValidationMode = projectValidationMode;
     }
 
     @JIPipeDocumentation(name = "Generated outputs", description = "Select which outputs should be generated. " +
@@ -248,7 +279,7 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
-        if(event.getSource() == outputParameters) {
+        if (event.getSource() == outputParameters) {
             updateSlots();
         }
     }

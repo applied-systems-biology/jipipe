@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.ilastik.datatypes;
 
 import ij.IJ;
-import jdk.nashorn.internal.scripts.JO;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -29,7 +28,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
-import java.util.List;
 
 @JIPipeDocumentation(name = "Ilastik project", description = "An Ilastik project")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A *.ilp project file",
@@ -105,13 +103,10 @@ public class IlastikModelData implements JIPipeData {
                 IJ.handleException(e);
             }
 
-            ProcessEnvironment environment = IlastikSettings.getInstance().getEnvironment();
-            ExpressionVariables variables = new ExpressionVariables();
-            variables.set("cli_parameters", Collections.singleton(outputFile.toString()));
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             progressInfo.setLogToStdOut(true);
             workbench.sendStatusBarText("Launching Ilastik ...");
-            ProcessUtils.launchProcess(environment, variables, progressInfo);
+            IlastikExtension.runIlastik(null, Collections.singletonList(outputFile.toString()), progressInfo, true);
         }
         else {
             JIPipeNotificationInbox inbox = new JIPipeNotificationInbox();

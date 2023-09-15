@@ -83,12 +83,13 @@ public class ProcessUtils {
     /**
      * Runs a process
      *
-     * @param environment   the process environment
-     * @param variables     additional variables for the arguments (can be null)
-     * @param handleQuoting if argument quoting is handled by commons exec (can be buggy)
-     * @param progressInfo  the progress info
+     * @param environment                  the process environment
+     * @param variables                    additional variables for the arguments (can be null)
+     * @param overrideEnvironmentVariables additional environment variables
+     * @param handleQuoting                if argument quoting is handled by commons exec (can be buggy)
+     * @param progressInfo                 the progress info
      */
-    public static void runProcess(ProcessEnvironment environment, ExpressionVariables variables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
+    public static void runProcess(ProcessEnvironment environment, ExpressionVariables variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
         CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
@@ -101,6 +102,7 @@ public class ProcessUtils {
             String value = StringUtils.nullToEmpty(environmentVariable.getKey().evaluate(existingEnvironmentVariables));
             environmentVariables.put(environmentVariable.getValue(), value);
         }
+        environmentVariables.putAll(overrideEnvironmentVariables);
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
@@ -130,11 +132,13 @@ public class ProcessUtils {
     /**
      * Runs a process
      *
-     * @param environment  the process environment
-     * @param variables    additional variables for the arguments (can be null)
-     * @param progressInfo the progress info
+     * @param environment                  the process environment
+     * @param variables                    additional variables for the arguments (can be null)
+     * @param overrideEnvironmentVariables additional environment variables
+     * @param handleQuoting                if argument quoting is handled by commons exec (can be buggy)
+     * @param progressInfo                 the progress info
      */
-    public static void launchProcess(ProcessEnvironment environment, ExpressionVariables variables, JIPipeProgressInfo progressInfo) {
+    public static void launchProcess(ProcessEnvironment environment, ExpressionVariables variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
         CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
@@ -147,6 +151,7 @@ public class ProcessUtils {
             String value = StringUtils.nullToEmpty(environmentVariable.getKey().evaluate(existingEnvironmentVariables));
             environmentVariables.put(environmentVariable.getValue(), value);
         }
+        environmentVariables.putAll(overrideEnvironmentVariables);
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
         }
@@ -158,7 +163,7 @@ public class ProcessUtils {
         variables.set("executable_dir", environment.getAbsoluteExecutablePath().getParent().toString());
         Object evaluationResult = environment.getArguments().evaluate(variables);
         for (Object item : (Collection<?>) evaluationResult) {
-            commandLine.addArgument(StringUtils.nullToEmpty(item));
+            commandLine.addArgument(StringUtils.nullToEmpty(item), handleQuoting);
         }
 
         File workDirectory = Paths.get(environment.getWorkDirectory().evaluateToString(variables)).toFile();

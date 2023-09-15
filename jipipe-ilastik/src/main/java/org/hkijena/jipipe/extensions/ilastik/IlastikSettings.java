@@ -14,13 +14,15 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 
+import java.util.List;
+
 public class IlastikSettings extends AbstractJIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:ilastik";
-
     private ProcessEnvironment environment = new ProcessEnvironment();
-
     private StringList easyInstallerRepositories = new StringList();
+    private int maxThreads = -1;
+    private int maxMemory = 4096;
 
     public IlastikSettings() {
         easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-ilastik.json");
@@ -83,5 +85,27 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("easy-installer-repositories")
     public void setEasyInstallerRepositories(StringList easyInstallerRepositories) {
         this.easyInstallerRepositories = easyInstallerRepositories;
+    }
+
+    @JIPipeDocumentation(name = "Maximum number of threads", description = "The maximum number of threads Ilastik will utilize. Negative or zero values indicate no limitation.")
+    @JIPipeParameter("max-threads")
+    public int getMaxThreads() {
+        return maxThreads;
+    }
+
+    @JIPipeParameter("max-threads")
+    public void setMaxThreads(int maxThreads) {
+        this.maxThreads = maxThreads;
+    }
+
+    @JIPipeDocumentation(name = "Maximum RAM allocation (MB)", description = "The maximum RAM that Ilastik will utilize. Must be at least 256 (values below that limit will be automatically increased)")
+    @JIPipeParameter("max-memory")
+    public int getMaxMemory() {
+        return maxMemory;
+    }
+
+    @JIPipeParameter("max-memory")
+    public void setMaxMemory(int maxMemory) {
+        this.maxMemory = maxMemory;
     }
 }
