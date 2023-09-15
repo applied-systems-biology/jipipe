@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.ilastik.nodes;
 import ij.ImagePlus;
 import net.imagej.DefaultDataset;
 import net.imagej.ImgPlus;
+import net.imagej.axis.AxisType;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -29,6 +30,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.DEFAULT_AXES;
@@ -82,14 +84,15 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         String hdf5Path_ = hdf5Path.evaluateToString(variables);
 
+        List<AxisType> axisTypeList = ImgUtils.toImagejAxes(axes);
+
         DefaultDataset dataset = new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus(ImageJFunctions.wrap(inputData.getImage())));
-        Hdf5.writeDataset(outputFile.toFile(), hdf5Path_, (ImgPlus) dataset.getImgPlus(), 1, ImgUtils.toImagejAxes(axes), value -> {
+        Hdf5.writeDataset(outputFile.toFile(), hdf5Path_, (ImgPlus) dataset.getImgPlus(), 1, axisTypeList, value -> {
         });
     }
 
     @JIPipeDocumentation(name = "HDF5 internal path", description = "Path to the HDF5 data set to export")
     @JIPipeParameter("hdf5-path")
-    @StringParameterSettings(monospace = true)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getHdf5Path() {
         return hdf5Path;
@@ -102,6 +105,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @JIPipeDocumentation(name = "Axes", description = "The order of the axes. Allowed values are X, Y, Z, C, and T")
     @JIPipeParameter("axes")
+    @StringParameterSettings(monospace = true)
     public String getAxes() {
         return axes;
     }

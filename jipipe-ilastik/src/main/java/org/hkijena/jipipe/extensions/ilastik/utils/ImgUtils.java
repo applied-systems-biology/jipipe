@@ -269,7 +269,9 @@ public final class ImgUtils {
 
         if (srcAxes.size() != dstAxes.size()) {
             throw new IllegalArgumentException(
-                    "Some source axes are not listed in destination axes");
+                    "Some source axes are not listed in destination axes!\n" +
+                            "Source axes: " + ImgUtils.toStringAxes(srcAxes) + "\n" +
+                            "Destination axes: " + ImgUtils.toStringAxes(dstAxes));
         }
 
         for (int dst = 0; dst < dstAxes.size(); dst++) {
