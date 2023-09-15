@@ -18,7 +18,9 @@ import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.extensions.ilastik.installers.IlastikEasyInstaller;
+import org.hkijena.jipipe.extensions.ilastik.nodes.ExportIlastikHDF5ImageAlgorithm;
 import org.hkijena.jipipe.extensions.ilastik.nodes.IlastikPixelClassificationAlgorithm;
+import org.hkijena.jipipe.extensions.ilastik.nodes.ImportIlastikHDF5ImageAlgorithm;
 import org.hkijena.jipipe.extensions.ilastik.nodes.ImportIlastikModel;
 import org.hkijena.jipipe.extensions.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
@@ -311,6 +313,8 @@ public class IlastikExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Determines how Ilastik projects are checked");
 
         registerNodeType("import-ilastik-model", ImportIlastikModel.class);
+        registerNodeType("import-ilastik-hdf5-image", ImportIlastikHDF5ImageAlgorithm.class);
+        registerNodeType("export-ilastik-hdf5-image", ExportIlastikHDF5ImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("ilastik-pixel-classification", IlastikPixelClassificationAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
     }
 

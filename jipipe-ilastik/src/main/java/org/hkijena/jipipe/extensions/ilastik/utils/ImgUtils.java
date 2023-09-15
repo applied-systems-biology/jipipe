@@ -292,7 +292,7 @@ public final class ImgUtils {
      *
      * @throws JSONException if JSON is malformed/invalid, or if axes are invalid.
      */
-    public static List<AxisType> parseAxes(String json) {
+    public static List<AxisType> parseJsonAxes(String json) {
         Objects.requireNonNull(json);
 
         List<AxisType> axes = new ArrayList<>();

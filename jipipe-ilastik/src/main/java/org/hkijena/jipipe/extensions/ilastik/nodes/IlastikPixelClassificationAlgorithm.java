@@ -46,10 +46,11 @@ import java.util.List;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
-@JIPipeDocumentation(name = "Ilastik pixel classification", description = "Assigns labels to pixels based on pixel features and user annotations")
+@JIPipeDocumentation(name = "Ilastik pixel classification", description = "Assigns labels to pixels based on pixel features and user annotations. " +
+        "Please note that results will be generated for each image and each project (pairwise).")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, description = "The image(s) to classify.")
+@JIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", autoCreate = true, description = "The Ilastik project. Must support pixel classification.")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple segmentation", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
         "For this image, every pixel with the same value should belong to the same class of pixels")

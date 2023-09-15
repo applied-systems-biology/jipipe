@@ -10,7 +10,7 @@ import org.json.JSONException;
 import java.util.*;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.guessAxes;
-import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.parseAxes;
+import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.parseJsonAxes;
 
 /**
  * From ilastik4ij
@@ -59,7 +59,7 @@ public final class DatasetDescription {
     public final List<AxisType> axes;
 
     /**
-     * Whether {@link #axes} are read by {@link ImgUtils#parseAxes}
+     * Whether {@link #axes} are read by {@link ImgUtils#parseJsonAxes}
      * or inferred with {@link ImgUtils#guessAxes}.
      */
     public boolean axesGuessed;
@@ -86,7 +86,7 @@ public final class DatasetDescription {
         List<AxisType> axes;
         boolean axesGuessed;
         try {
-            axes = parseAxes(reader.string().getAttr(path, "axistags"));
+            axes = parseJsonAxes(reader.string().getAttr(path, "axistags"));
             axesGuessed = false;
         } catch (HDF5AttributeException | JSONException ignored) {
             axes = guessAxes(dims);
