@@ -14,6 +14,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -34,6 +35,7 @@ import org.hkijena.jipipe.extensions.ilastik.utils.hdf5.Hdf5;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.processes.OptionalProcessEnvironment;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -47,43 +49,51 @@ import java.util.List;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
-@JIPipeDocumentation(name = "Ilastik pixel classification", description = "Assigns labels to pixels based on pixel features and user annotations. " +
-        "Please note that results will be generated for each image and each project (pairwise).")
-@JIPipeCitation("Pixel classification documentation: https://www.ilastik.org/documentation/pixelclassification/pixelclassification")
+@JIPipeDocumentation(name = "Ilastik object classification", description = "The object classification workflow aims to classify full objects, based on object-level features and user annotations")
+@JIPipeCitation("Object classification documentation: https://www.ilastik.org/documentation/objects/objects")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, description = "The image(s) to classify.")
 @JIPipeInputSlot(value = IlastikModelData.class, slotName = "Project", autoCreate = true, description = "The Ilastik project. Must support pixel classification.")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Probabilities", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Simple Segmentation", description = "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
-        "For this image, every pixel with the same value should belong to the same class of pixels")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Uncertainty", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Features", description = "Multi-channel image where each channel represents one of the computed pixel features")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Labels", description = "Image representing the users’ manually created annotations")
-public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Predictions", description = "A label image of the object class predictions")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Predictions", description = "A label image of the object class predictions. " +
+        "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Blockwise Object Probabilities", description = "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class) " +
+        "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Pixel Probabilities", description = "Pixel prediction images of the pixel classification part of that workflow")
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
+public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
 
-    public static final String PROJECT_TYPE = "PixelClassification";
+    public static final String PROJECT_TYPE = "ObjectClassification";
 
-    public static final JIPipeDataSlotInfo OUTPUT_SLOT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusData.class,
+    public static final JIPipeDataSlotInfo OUTPUT_SLOT_OBJECT_PREDICTIONS = new JIPipeDataSlotInfo(ImagePlusData.class,
             JIPipeSlotType.Output,
-            "Probabilities",
-            "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel");
-    public static final JIPipeDataSlotInfo OUTPUT_SLOT_SIMPLE_SEGMENTATION = new JIPipeDataSlotInfo(ImagePlusData.class,
+            "Object Predictions",
+            "A label image of the object class predictions");
+    public static final JIPipeDataSlotInfo OUTPUT_SLOT_OBJECT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusData.class,
             JIPipeSlotType.Output,
-            "Simple Segmentation",
-            "A single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
-                    "For this image, every pixel with the same value should belong to the same class of pixels");
-    public static final JIPipeDataSlotInfo OUTPUT_SLOT_UNCERTAINTY = new JIPipeDataSlotInfo(ImagePlusData.class,
+            "Object Probabilities",
+            "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)");
+
+    public static final JIPipeDataSlotInfo OUTPUT_SLOT_BLOCKWISE_OBJECT_PREDICTIONS = new JIPipeDataSlotInfo(ImagePlusData.class,
             JIPipeSlotType.Output,
-            "Uncertainty",
-            "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel");
-    public static final JIPipeDataSlotInfo OUTPUT_SLOT_FEATURES = new JIPipeDataSlotInfo(ImagePlusData.class,
+            "Blockwise Object Predictions",
+            "A label image of the object class predictions. " +
+                    "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.");
+    public static final JIPipeDataSlotInfo OUTPUT_SLOT_BLOCKWISE_OBJECT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusData.class,
+            JIPipeSlotType.Output,
+            "Blockwise Object Probabilities",
+            "A multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class). " +
+                    "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.");
+
+    public static final JIPipeDataSlotInfo OUTPUT_SLOT_PIXEL_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusData.class,
+            JIPipeSlotType.Output,
+            "Pixel Probabilities",
+            "Pixel prediction images of the pixel classification part of that workflow");
+    public static final JIPipeDataSlotInfo OUTPUT_SLOT_FEATURES = new JIPipeDataSlotInfo(ResultsTableData.class,
             JIPipeSlotType.Output,
             "Features",
-            "Multi-channel image where each channel represents one of the computed pixel features");
-    public static final JIPipeDataSlotInfo OUTPUT_SLOT_LABELS = new JIPipeDataSlotInfo(ImagePlusData.class,
-            JIPipeSlotType.Output,
-            "Labels",
-            "Image representing the users’ manually created annotations");
+            "Table of the computed object features that were used during classification, indexed by object id");
 
     private final OutputParameters outputParameters;
     private boolean cleanUpAfterwards = true;
@@ -91,14 +101,14 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
 
     private IlastikProjectValidationMode projectValidationMode = IlastikProjectValidationMode.CrashOnError;
 
-    public IlastikPixelClassificationAlgorithm(JIPipeNodeInfo info) {
+    public IlastikObjectClassificationAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.outputParameters = new OutputParameters();
         registerSubParameter(outputParameters);
         updateSlots();
     }
 
-    public IlastikPixelClassificationAlgorithm(IlastikPixelClassificationAlgorithm other) {
+    public IlastikObjectClassificationAlgorithm(IlastikObjectClassificationAlgorithm other) {
         super(other);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.projectValidationMode = other.projectValidationMode;
@@ -118,16 +128,21 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
 
         // Collect the parameters
         List<String> exportSources = new ArrayList<>();
-        if (outputParameters.outputFeatures)
-            exportSources.add("Features");
-        if (outputParameters.outputLabels)
-            exportSources.add("Labels");
-        if (outputParameters.outputProbabilities)
-            exportSources.add("Probabilities");
-        if (outputParameters.outputUncertainty)
-            exportSources.add("Uncertainty");
-        if (outputParameters.outputSimpleSegmentation)
-            exportSources.add("Simple Segmentation");
+        if (outputParameters.outputObjectPredictions)
+            exportSources.add("Object Predictions");
+        if (outputParameters.outputObjectProbabilities)
+            exportSources.add("Object Probabilities");
+        if (outputParameters.outputBlockwiseObjectPredictions)
+            exportSources.add("Blockwise Object Predictions");
+        if (outputParameters.outputBlockwiseObjectProbabilities)
+            exportSources.add("Blockwise Object Probabilities");
+        if(outputParameters.outputPixelProbabilities)
+            exportSources.add("Pixel Probabilities");
+
+        // If the user only requests features
+        if(outputParameters.outputFeatures && exportSources.isEmpty()) {
+            exportSources.add("Object Predictions");
+        }
 
         // Export the projects
         List<Path> exportedModelPaths = new ArrayList<>();
@@ -189,6 +204,10 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
                 args.add("--output_filename_format=" + modelResultPath + "/{result_type}__{nickname}.tiff");
                 args.add("--output_axis_order=" + axes);
                 args.add("--input_axes=" + axes);
+                if(i == 0 && outputParameters.outputFeatures) {
+                    // Special handling for the features table
+                    args.add("--table_filename=" + modelResultPath + "/features__{nickname}.csv");
+                }
                 for (Path exportedImagePath : exportedImagePaths) {
                     args.add(exportedImagePath.toAbsolutePath().toString());
                 }
@@ -202,18 +221,30 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
                 // Extract results
                 for (int k = 0; k < exportedImagePaths.size(); k++) {
                     Path inputImagePath = exportedImagePaths.get(k);
-                    Path outputImagePath = modelResultPath.resolve(exportSource + "__" + FilenameUtils.removeExtension(inputImagePath.getFileName().toString()) + ".h5");
-                    exportSourceProgress.log("Extracting result: " + outputImagePath);
-
-                    ImgPlus dataset = Hdf5.readDataset(outputImagePath.toFile(), "exported_data");
-                    ImagePlus imagePlus = ImageJFunctions.wrap(dataset, exportSource);
-                    ImageJUtils.calibrate(imagePlus, ImageJCalibrationMode.MinMax, 0, 0);
-
                     List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(imageInputSlot.getTextAnnotations(k));
                     textAnnotations.addAll(projectInputSlot.getTextAnnotations(i));
                     List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>(imageInputSlot.getDataAnnotations(k));
                     dataAnnotations.addAll(projectInputSlot.getDataAnnotations(i));
-                    getOutputSlot(exportSource).addData(new ImagePlusData(imagePlus), textAnnotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, exportSourceProgress);
+
+                    JIPipeDataSlot outputImageSlot = getOutputSlot(exportSource);
+                    if(outputImageSlot != null) {
+                        Path outputImagePath = modelResultPath.resolve(exportSource + "__" + FilenameUtils.removeExtension(inputImagePath.getFileName().toString()) + ".h5");
+                        exportSourceProgress.log("Extracting result: " + outputImagePath);
+
+                        ImgPlus dataset = Hdf5.readDataset(outputImagePath.toFile(), "exported_data");
+                        ImagePlus imagePlus = ImageJFunctions.wrap(dataset, exportSource);
+                        ImageJUtils.calibrate(imagePlus, ImageJCalibrationMode.MinMax, 0, 0);
+
+                        outputImageSlot.addData(new ImagePlusData(imagePlus), textAnnotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, exportSourceProgress);
+                    }
+
+                    // Extract features
+                    if(i == 0 && outputParameters.outputFeatures) {
+                        Path tablePath = modelResultPath.resolve("features__" + inputImagePath.getFileName().toString() + ".csv");
+                        exportSourceProgress.log("Extracting result: " + tablePath);
+                        ResultsTableData tableData = ResultsTableData.fromCSV(tablePath);
+                        getOutputSlot(OUTPUT_SLOT_FEATURES.getName()).addData(tableData, textAnnotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, exportSourceProgress);
+                    }
                 }
             }
         }
@@ -288,66 +319,91 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
     }
 
     private void updateSlots() {
+        toggleSlot(OUTPUT_SLOT_OBJECT_PREDICTIONS, outputParameters.outputObjectPredictions);
+        toggleSlot(OUTPUT_SLOT_OBJECT_PROBABILITIES, outputParameters.outputPixelProbabilities);
+        toggleSlot(OUTPUT_SLOT_BLOCKWISE_OBJECT_PREDICTIONS, outputParameters.outputBlockwiseObjectPredictions);
+        toggleSlot(OUTPUT_SLOT_BLOCKWISE_OBJECT_PROBABILITIES, outputParameters.outputBlockwiseObjectProbabilities);
+        toggleSlot(OUTPUT_SLOT_PIXEL_PROBABILITIES, outputParameters.outputPixelProbabilities);
         toggleSlot(OUTPUT_SLOT_FEATURES, outputParameters.outputFeatures);
-        toggleSlot(OUTPUT_SLOT_PROBABILITIES, outputParameters.outputProbabilities);
-        toggleSlot(OUTPUT_SLOT_UNCERTAINTY, outputParameters.outputUncertainty);
-        toggleSlot(OUTPUT_SLOT_LABELS, outputParameters.outputLabels);
-        toggleSlot(OUTPUT_SLOT_SIMPLE_SEGMENTATION, outputParameters.outputSimpleSegmentation);
     }
 
     public static class OutputParameters extends AbstractJIPipeParameterCollection {
-        private boolean outputProbabilities = false;
-        private boolean outputSimpleSegmentation = true;
-        private boolean outputUncertainty = false;
+        private boolean outputObjectPredictions = true;
+        private boolean outputObjectProbabilities = false;
+        private boolean outputBlockwiseObjectPredictions = false;
+        private boolean outputBlockwiseObjectProbabilities = false;
+        private boolean outputPixelProbabilities = false;
         private boolean outputFeatures = false;
-        private boolean outputLabels = false;
-
         public OutputParameters() {
         }
 
         public OutputParameters(OutputParameters other) {
-            this.outputProbabilities = other.outputProbabilities;
-            this.outputSimpleSegmentation = other.outputSimpleSegmentation;
-            this.outputUncertainty = other.outputUncertainty;
+            this.outputObjectPredictions = other.outputObjectPredictions;
+            this.outputObjectProbabilities = other.outputObjectProbabilities;
+            this.outputBlockwiseObjectPredictions = other.outputBlockwiseObjectPredictions;
+            this.outputBlockwiseObjectProbabilities = other.outputBlockwiseObjectProbabilities;
+            this.outputPixelProbabilities = other.outputPixelProbabilities;
             this.outputFeatures = other.outputFeatures;
-            this.outputLabels = other.outputLabels;
         }
 
-        @JIPipeDocumentation(name = "Output probabilities", description = "Exports a multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel")
-        @JIPipeParameter("output-probabilities")
-        public boolean isOutputProbabilities() {
-            return outputProbabilities;
+        @JIPipeDocumentation(name = "Output object predictions", description = "If enabled, output a label image of the object class predictions")
+        @JIPipeParameter("output-object-predictions")
+        public boolean isOutputObjectPredictions() {
+            return outputObjectPredictions;
         }
 
-        @JIPipeParameter("output-probabilities")
-        public void setOutputProbabilities(boolean outputProbabilities) {
-            this.outputProbabilities = outputProbabilities;
+        @JIPipeParameter("output-object-predictions")
+        public void setOutputObjectPredictions(boolean outputObjectPredictions) {
+            this.outputObjectPredictions = outputObjectPredictions;
         }
 
-        @JIPipeDocumentation(name = "Output simple segmentation", description = "Produces a single-channel image where the (integer) pixel values indicate the class to which a pixel belongs. " +
-                "For this image, every pixel with the same value should belong to the same class of pixels")
-        @JIPipeParameter("output-simple-segmentation")
-        public boolean isOutputSimpleSegmentation() {
-            return outputSimpleSegmentation;
+        @JIPipeDocumentation(name = "Output object probabilities", description = "If enabled, output a multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class)")
+        @JIPipeParameter("output-object-probabilities")
+        public boolean isOutputObjectProbabilities() {
+            return outputObjectProbabilities;
         }
 
-        @JIPipeParameter("output-simple-segmentation")
-        public void setOutputSimpleSegmentation(boolean outputSimpleSegmentation) {
-            this.outputSimpleSegmentation = outputSimpleSegmentation;
+        @JIPipeParameter("output-object-probabilities")
+        public void setOutputObjectProbabilities(boolean outputObjectProbabilities) {
+            this.outputObjectProbabilities = outputObjectProbabilities;
         }
 
-        @JIPipeDocumentation(name = "Output uncertainty", description = "Produces an image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
-        @JIPipeParameter("output-uncertainty")
-        public boolean isOutputUncertainty() {
-            return outputUncertainty;
+        @JIPipeDocumentation(name = "Output object predictions (blockwise)", description = "If enabled, output a label image of the object class predictions. " +
+                "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
+        @JIPipeParameter("output-blockwise-object-predictions")
+        public boolean isOutputBlockwiseObjectPredictions() {
+            return outputBlockwiseObjectPredictions;
         }
 
-        @JIPipeParameter("output-uncertainty")
-        public void setOutputUncertainty(boolean outputUncertainty) {
-            this.outputUncertainty = outputUncertainty;
+        @JIPipeParameter("output-blockwise-object-predictions")
+        public void setOutputBlockwiseObjectPredictions(boolean outputBlockwiseObjectPredictions) {
+            this.outputBlockwiseObjectPredictions = outputBlockwiseObjectPredictions;
         }
 
-        @JIPipeDocumentation(name = "Output features", description = "Outputs a multi-channel image where each channel represents one of the computed pixel features")
+        @JIPipeDocumentation(name = "Output object probabilities (blockwise)", description = "If enabled, output a multi-channel image volume of object prediction probabilities instead of a label image (one channel for each prediction class). " +
+                "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
+        @JIPipeParameter("output-blockwise-object-probabilities")
+        public boolean isOutputBlockwiseObjectProbabilities() {
+            return outputBlockwiseObjectProbabilities;
+        }
+
+        @JIPipeParameter("output-blockwise-object-probabilities")
+        public void setOutputBlockwiseObjectProbabilities(boolean outputBlockwiseObjectProbabilities) {
+            this.outputBlockwiseObjectProbabilities = outputBlockwiseObjectProbabilities;
+        }
+
+        @JIPipeDocumentation(name = "Output pixel probabilities", description = "If enabled, output pixel prediction images of the pixel classification part of that workflow")
+        @JIPipeParameter("output-pixel-probabilities")
+        public boolean isOutputPixelProbabilities() {
+            return outputPixelProbabilities;
+        }
+
+        @JIPipeParameter("output-pixel-probabilities")
+        public void setOutputPixelProbabilities(boolean outputPixelProbabilities) {
+            this.outputPixelProbabilities = outputPixelProbabilities;
+        }
+
+        @JIPipeDocumentation(name = "Output features table", description = "If enabled, output a aable of the computed object features that were used during classification, indexed by object id")
         @JIPipeParameter("output-features")
         public boolean isOutputFeatures() {
             return outputFeatures;
@@ -356,17 +412,6 @@ public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAl
         @JIPipeParameter("output-features")
         public void setOutputFeatures(boolean outputFeatures) {
             this.outputFeatures = outputFeatures;
-        }
-
-        @JIPipeDocumentation(name = "Output labels", description = "Outputs an image representing the users’ manually created annotations")
-        @JIPipeParameter("output-labels")
-        public boolean isOutputLabels() {
-            return outputLabels;
-        }
-
-        @JIPipeParameter("output-labels")
-        public void setOutputLabels(boolean outputLabels) {
-            this.outputLabels = outputLabels;
         }
     }
 }
