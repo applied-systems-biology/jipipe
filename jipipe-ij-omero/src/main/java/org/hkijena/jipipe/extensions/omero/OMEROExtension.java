@@ -27,10 +27,10 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
-import org.hkijena.jipipe.extensions.omero.algorithms.DownloadOMEROImageAlgorithm;
-import org.hkijena.jipipe.extensions.omero.algorithms.DownloadOMEROTableAlgorithm;
-import org.hkijena.jipipe.extensions.omero.algorithms.UploadOMEROImageAlgorithm;
-import org.hkijena.jipipe.extensions.omero.algorithms.UploadOMEROTableAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.DownloadOMEROImageAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.DownloadOMEROTableAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.UploadOMEROImageAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.UploadOMEROTableAlgorithm;
 import org.hkijena.jipipe.extensions.omero.datasources.*;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
@@ -40,6 +40,7 @@ import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -63,6 +64,8 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:omero",
             JIPipe.getJIPipeVersion(),
             "OMERO Integration");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(OMEROExtension.class, "org/hkijena/jipipe/extensions/omero");
 
     public OMEROExtension() {
     }
@@ -172,13 +175,21 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        OMEROSettings omeroSettings = new OMEROSettings();
         registerSettingsSheet(OMEROSettings.ID,
                 "OMERO",
                 "Settings for the OMERO integration (e.g., default credentials)",
                 UIUtils.getIconFromResources("apps/omero.png"),
                 "Extensions",
                 null,
-                new OMEROSettings());
+                omeroSettings);
+        registerEnvironment(OMEROCredentialsEnvironment.class,
+                OMEROCredentialsEnvironment.List.class,
+                omeroSettings,
+                "omero-credentials",
+                "OMERO Credentials",
+                "Credentials for an OMERO server",
+                RESOURCES.getIconFromResources("omero.png"));
         registerDatatype("omero-group-id", OMEROGroupReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-project-id", OMEROProjectReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
@@ -207,7 +218,7 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(UIUtils.getIcon32FromResources("apps/omero.png"));
+        return Arrays.asList(RESOURCES.getIcon32FromResources("omero.png"));
     }
 
     @Override

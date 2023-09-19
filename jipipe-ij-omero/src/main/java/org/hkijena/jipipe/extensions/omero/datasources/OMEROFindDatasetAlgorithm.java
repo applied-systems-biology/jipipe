@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringMapQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
-    private OMEROCredentials credentials = new OMEROCredentials();
+    private OMEROCredentialsEnvironment credentials = new OMEROCredentialsEnvironment();
     private StringQueryExpression datasetNameFilters = new StringQueryExpression("");
     private OptionalAnnotationNameParameter projectNameAnnotation = new OptionalAnnotationNameParameter("Project", true);
     private OptionalAnnotationNameParameter datasetNameAnnotation = new OptionalAnnotationNameParameter("Dataset", true);
@@ -63,7 +63,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     public OMEROFindDatasetAlgorithm(OMEROFindDatasetAlgorithm other) {
         super(other);
-        this.credentials = new OMEROCredentials(other.credentials);
+        this.credentials = new OMEROCredentialsEnvironment(other.credentials);
         this.datasetNameFilters = new StringQueryExpression(other.datasetNameFilters);
         this.datasetNameAnnotation = new OptionalAnnotationNameParameter(other.datasetNameAnnotation);
         this.projectNameAnnotation = new OptionalAnnotationNameParameter(other.projectNameAnnotation);
@@ -81,7 +81,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
             projectIds.add(getFirstInputSlot().getData(row, OMEROProjectReferenceData.class, progressInfo).getProjectId());
         }
 
-        LoginCredentials credentials = this.credentials.getCredentials();
+        LoginCredentials credentials = this.credentials.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             for (Long projectId : projectIds) {
@@ -136,7 +136,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
     @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
             "loaded from the OMERO category at the JIPipe application settings.")
     @JIPipeParameter("credentials")
-    public OMEROCredentials getCredentials() {
+    public OMEROCredentialsEnvironment getCredentials() {
         return credentials;
     }
 

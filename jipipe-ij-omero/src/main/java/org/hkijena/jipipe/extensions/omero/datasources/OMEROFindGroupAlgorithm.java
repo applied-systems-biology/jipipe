@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
@@ -41,7 +41,7 @@ import java.util.List;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROFindGroupAlgorithm extends JIPipeParameterSlotAlgorithm {
 
-    private OMEROCredentials credentials = new OMEROCredentials();
+    private OMEROCredentialsEnvironment credentials = new OMEROCredentialsEnvironment();
     private StringQueryExpression groupNameFilters = new StringQueryExpression("");
     private boolean addKeyValuePairsAsAnnotations = true;
     private OptionalAnnotationNameParameter groupNameAnnotation = new OptionalAnnotationNameParameter("Group", true);
@@ -53,7 +53,7 @@ public class OMEROFindGroupAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     public OMEROFindGroupAlgorithm(OMEROFindGroupAlgorithm other) {
         super(other);
-        this.credentials = new OMEROCredentials(other.credentials);
+        this.credentials = new OMEROCredentialsEnvironment(other.credentials);
         this.groupNameFilters = new StringQueryExpression(other.groupNameFilters);
         this.groupNameAnnotation = new OptionalAnnotationNameParameter(other.groupNameAnnotation);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
@@ -62,7 +62,7 @@ public class OMEROFindGroupAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        LoginCredentials credentials = this.credentials.getCredentials();
+        LoginCredentials credentials = this.credentials.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (Gateway gateway = new Gateway(new OMEROToJIPipeLogger(progressInfo))) {
             ExperimenterData user = gateway.connect(credentials);
@@ -96,7 +96,7 @@ public class OMEROFindGroupAlgorithm extends JIPipeParameterSlotAlgorithm {
     @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
             "loaded from the OMERO category at the JIPipe application settings.")
     @JIPipeParameter("credentials")
-    public OMEROCredentials getCredentials() {
+    public OMEROCredentialsEnvironment getCredentials() {
         return credentials;
     }
 

@@ -15,27 +15,43 @@ package org.hkijena.jipipe.extensions.omero;
 
 import omero.gateway.LoginCredentials;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
-public class OMEROCredentials extends AbstractJIPipeParameterCollection {
-    private String host = "localhost";
+import javax.swing.*;
 
+public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
+    private String host = "localhost";
     private int port = 4064;
     private String userName = "";
     private PasswordParameter password = new PasswordParameter();
+    private String eMail = "anonymous@anonymous";
 
-    public OMEROCredentials() {
+    public OMEROCredentialsEnvironment() {
     }
 
-    public OMEROCredentials(OMEROCredentials other) {
+    public OMEROCredentialsEnvironment(OMEROCredentialsEnvironment other) {
         this.host = other.host;
         this.userName = other.userName;
         this.port = other.port;
         this.password = new PasswordParameter(other.password);
+        this.eMail = other.eMail;
+    }
+
+    @Override
+    public Icon getIcon() {
+        return OMEROExtension.RESOURCES.getIconFromResources("omero.png");
+    }
+
+    @Override
+    public String getInfo() {
+        return StringUtils.orElse(userName, "[no user]") + "@" + StringUtils.orElse(host, "[no host]") + ":" + port;
     }
 
     @JIPipeDocumentation(name = "Host", description = "The server host. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")
@@ -85,17 +101,42 @@ public class OMEROCredentials extends AbstractJIPipeParameterCollection {
         this.password = password;
     }
 
+    @JIPipeDocumentation(name = "E-Mail", description = "The E-Mail address sent to the server")
+    @JIPipeParameter("e-mail")
+    public String geteMail() {
+        return eMail;
+    }
+
+    @JIPipeParameter("e-mail")
+    public void seteMail(String eMail) {
+        this.eMail = eMail;
+    }
+
     /**
      * Converts the credentials into a SciJava OMERO location
      *
      * @return the location
      */
-    public LoginCredentials getCredentials() {
-        String host_ = StringUtils.orElse(host, OMEROSettings.getInstance().getDefaultHost());
-        int port_ = port > 0 ? port : OMEROSettings.getInstance().getDefaultPort();
-        String user_ = StringUtils.orElse(userName, OMEROSettings.getInstance().getDefaultUserName());
-        String password_ = StringUtils.orElse(password.getPassword(), OMEROSettings.getInstance().getDefaultPassword().getPassword());
+    public LoginCredentials toLoginCredentials() {
+        return new LoginCredentials(userName, password.getPassword(), host, port);
+    }
 
-        return new LoginCredentials(user_, password_, host_, port_);
+    @Override
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+
+    }
+
+    public static class List extends ListParameter<OMEROCredentialsEnvironment> {
+
+        public List() {
+            super(OMEROCredentialsEnvironment.class);
+        }
+
+        public List(List other) {
+            super(OMEROCredentialsEnvironment.class);
+            for (OMEROCredentialsEnvironment environment : other) {
+                add(new OMEROCredentialsEnvironment(environment));
+            }
+        }
     }
 }

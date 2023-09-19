@@ -16,7 +16,6 @@ import omero.model.NamedValue;
 import omero.model.Pixels;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -24,6 +23,7 @@ import java.util.List;
 
 public class OMEROImageUploader implements AutoCloseable {
     private final LoginCredentials credentials;
+    private final String eMail;
     private final long datasetId;
     private final SecurityContext context;
     private final JIPipeProgressInfo progressInfo;
@@ -33,8 +33,9 @@ public class OMEROImageUploader implements AutoCloseable {
     private ImportLibrary library;
     private ImportConfig config;
 
-    public OMEROImageUploader(LoginCredentials credentials, long datasetId, SecurityContext context, JIPipeProgressInfo progressInfo) {
+    public OMEROImageUploader(LoginCredentials credentials, String eMail, long datasetId, SecurityContext context, JIPipeProgressInfo progressInfo) {
         this.credentials = credentials;
+        this.eMail = eMail;
         this.datasetId = datasetId;
         this.context = context;
         this.progressInfo = progressInfo;
@@ -43,7 +44,7 @@ public class OMEROImageUploader implements AutoCloseable {
 
     private void initialize() {
         config = new ImportConfig();
-        config.email.set(OMEROSettings.getInstance().getEmail());
+        config.email.set(eMail);
         config.sendFiles.set(true);
         config.sendReport.set(false);
         config.contOnError.set(false);

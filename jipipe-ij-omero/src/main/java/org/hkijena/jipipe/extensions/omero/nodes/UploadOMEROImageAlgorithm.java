@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.omero.algorithms;
+package org.hkijena.jipipe.extensions.omero.nodes;
 
 import omero.gateway.SecurityContext;
 import omero.gateway.model.DatasetData;
@@ -29,7 +29,8 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
@@ -51,7 +52,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
     private final Map<Thread, OMEROGateway> currentGateways = new HashMap<>();
     private final Map<Thread, Map<Long, OMEROImageUploader>> currentUploaders = new HashMap<>();
-    private OMEROCredentials credentials = new OMEROCredentials();
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
     private boolean uploadAnnotations = false;
     private AnnotationQueryExpression uploadedAnnotationsFilter = new AnnotationQueryExpression("");
@@ -59,17 +60,15 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
 
     public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        registerSubParameter(credentials);
         registerSubParameter(exporter);
     }
 
     public UploadOMEROImageAlgorithm(UploadOMEROImageAlgorithm other) {
         super(other);
-        this.credentials = new OMEROCredentials(other.credentials);
+        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.uploadAnnotations = other.uploadAnnotations;
         this.uploadedAnnotationsFilter = new AnnotationQueryExpression(other.uploadedAnnotationsFilter);
-        registerSubParameter(credentials);
         registerSubParameter(exporter);
     }
 
@@ -121,7 +120,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
             gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
             if (gateway == null) {
                 parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
-                gateway = new OMEROGateway(credentials.getCredentials(), parameterProgressInfo);
+                gateway = new OMEROGateway(credentials.toLoginCredentials(), parameterProgressInfo);
                 currentGateways.put(Thread.currentThread(), gateway);
             }
             Map<Long, OMEROImageUploader> uploaderMap = currentUploaders.getOrDefault(Thread.currentThread(), null);
@@ -133,7 +132,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
             if (uploader == null) {
                 parameterProgressInfo.log("Creating OMERO uploader for dataset=" + datasetId + " in thread " + Thread.currentThread());
                 DatasetData dataset = gateway.getDataset(datasetId, -1);
-                uploader = new OMEROImageUploader(credentials.getCredentials(), datasetId, new SecurityContext(dataset.getGroupId()), parameterProgressInfo.resolve("Dataset " + datasetId));
+                uploader = new OMEROImageUploader(credentials.toLoginCredentials(), eMail, datasetId, new SecurityContext(dataset.getGroupId()), parameterProgressInfo.resolve("Dataset " + datasetId));
                 uploaderMap.put(datasetId, uploader);
             }
         }
@@ -161,11 +160,15 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         exporter.writeToFolder(dummy, targetPath, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
-            "loaded from the OMERO category at the JIPipe application settings.")
-    @JIPipeParameter("credentials")
-    public OMEROCredentials getCredentials() {
-        return credentials;
+    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @JIPipeParameter("override-credentials")
+    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
+        return overrideCredentials;
+    }
+
+    @JIPipeParameter("override-credentials")
+    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
+        this.overrideCredentials = overrideCredentials;
     }
 
     @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")

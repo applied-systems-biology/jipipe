@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.omero.algorithms;
+package org.hkijena.jipipe.extensions.omero.nodes;
 
 import ij.ImagePlus;
 import loci.common.Region;
@@ -35,7 +35,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIHandler;
-import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OMEROSettings;
+import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -59,7 +61,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final Map<Thread, OMEROGateway> currentGateways = new HashMap<>();
-    private OMEROCredentials credentials = new OMEROCredentials();
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OMEColorMode colorMode = OMEColorMode.Default;
     private DimensionOrder stackOrder = DimensionOrder.XYCZT;
     private boolean splitChannels;
@@ -81,13 +83,12 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public DownloadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        registerSubParameter(credentials);
         titleAnnotation.setContent("Image title");
     }
 
     public DownloadOMEROImageAlgorithm(DownloadOMEROImageAlgorithm other) {
         super(other);
-        this.credentials = new OMEROCredentials(other.credentials);
+        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.colorMode = other.colorMode;
         this.stackOrder = other.stackOrder;
         this.splitChannels = other.splitChannels;
@@ -103,7 +104,6 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.extractRois = other.extractRois;
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
-        registerSubParameter(credentials);
     }
 
     @Override
@@ -124,7 +124,8 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
-        LoginCredentials lc = credentials.getCredentials();
+        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
+        LoginCredentials lc = environment.toLoginCredentials();
 
         // Get gateway and fine the appropriate group for the image
         OMEROGateway gateway;
@@ -132,7 +133,7 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
             if (gateway == null) {
                 parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
-                gateway = new OMEROGateway(credentials.getCredentials(), parameterProgressInfo);
+                gateway = new OMEROGateway(environment.toLoginCredentials(), parameterProgressInfo);
                 currentGateways.put(Thread.currentThread(), gateway);
             }
         }
@@ -248,11 +249,15 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
     }
 
-    @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
-            "loaded from the OMERO category at the JIPipe application settings.")
-    @JIPipeParameter("credentials")
-    public OMEROCredentials getCredentials() {
-        return credentials;
+    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @JIPipeParameter("override-credentials")
+    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
+        return overrideCredentials;
+    }
+
+    @JIPipeParameter("override-credentials")
+    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
+        this.overrideCredentials = overrideCredentials;
     }
 
     @JIPipeDocumentation(name = "Auto scale", description = "Stretches the channel histograms to each channel's global minimum and maximum value throughout the stack. " +

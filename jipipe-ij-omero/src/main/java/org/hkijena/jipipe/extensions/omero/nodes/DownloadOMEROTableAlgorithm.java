@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.omero.algorithms;
+package org.hkijena.jipipe.extensions.omero.nodes;
 
 import omero.gateway.SecurityContext;
 import omero.gateway.facility.TablesFacility;
@@ -26,7 +26,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.omero.OMEROCredentials;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OMEROSettings;
+import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
@@ -44,7 +46,7 @@ import java.util.List;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OMEROCredentials credentials = new OMEROCredentials();
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private boolean addKeyValuePairsAsAnnotations = true;
     private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
     private OptionalStringParameter fileNameAnnotation = new OptionalStringParameter("Filename", true);
@@ -52,16 +54,14 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public DownloadOMEROTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        registerSubParameter(credentials);
     }
 
     public DownloadOMEROTableAlgorithm(DownloadOMEROTableAlgorithm other) {
         super(other);
-        this.credentials = new OMEROCredentials(other.credentials);
+        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         this.fileNameAnnotation = new OptionalStringParameter(other.fileNameAnnotation);
-        registerSubParameter(credentials);
     }
 
     @Override
@@ -71,8 +71,9 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
-        try (OMEROGateway gateway = new OMEROGateway(credentials.getCredentials(), progressInfo)) {
+        try (OMEROGateway gateway = new OMEROGateway(environment.toLoginCredentials(), progressInfo)) {
             TablesFacility tablesFacility = gateway.getGateway().getFacility(TablesFacility.class);
             ImageData imageData = gateway.getImage(imageReferenceData.getImageId(), -1);
             SecurityContext context = new SecurityContext(imageData.getGroupId());
@@ -91,11 +92,15 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
     }
 
-    @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
-            "loaded from the OMERO category at the JIPipe application settings.")
-    @JIPipeParameter("credentials")
-    public OMEROCredentials getCredentials() {
-        return credentials;
+    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @JIPipeParameter("override-credentials")
+    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
+        return overrideCredentials;
+    }
+
+    @JIPipeParameter("override-credentials")
+    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
+        this.overrideCredentials = overrideCredentials;
     }
 
     @JIPipeDocumentation(name = "Annotate with tags", description = "Creates an annotation with given key and writes the tags into them in JSON format.")
