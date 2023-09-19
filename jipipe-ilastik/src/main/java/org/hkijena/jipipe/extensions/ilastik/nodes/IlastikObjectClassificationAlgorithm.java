@@ -45,11 +45,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 
-@JIPipeDocumentation(name = "Ilastik object classification", description = "The object classification workflow aims to classify full objects, based on object-level features and user annotations")
+@JIPipeDocumentation(name = "Ilastik object classification", description = "The object classification workflow aims to classify full objects, based on object-level features and user annotations. " +
+        "Supports 'Pixel Classification + Object Classification' projects.")
 @JIPipeCitation("Object classification documentation: https://www.ilastik.org/documentation/objects/objects")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, description = "The image(s) to classify.")
@@ -64,7 +66,7 @@ import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.*;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
 public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
 
-    public static final String PROJECT_TYPE = "ObjectClassification";
+    public static final List<String> PROJECT_TYPES = Arrays.asList("ObjectClassification", "PixelClassification");
 
     public static final JIPipeDataSlotInfo OUTPUT_SLOT_OBJECT_PREDICTIONS = new JIPipeDataSlotInfo(ImagePlusData.class,
             JIPipeSlotType.Output,
@@ -158,14 +160,16 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
 
             // Check the project
             if (projectValidationMode != IlastikProjectValidationMode.Ignore) {
-                exportProgress.log("Checking if " + exportedPath + " supports project type '" + PROJECT_TYPE + "'");
-                if(!IlastikUtils.projectSupports(exportedPath, PROJECT_TYPE)) {
-                    if(projectValidationMode == IlastikProjectValidationMode.CrashOnError) {
-                        throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this),
-                                new IllegalArgumentException("Project does not support '" + PROJECT_TYPE + "'"),
-                                "Provided project is not supported by '" + getInfo().getName() + "'!",
-                                "The node tried to load project (row " + i + ") with annotations " + JsonUtils.toJsonString(projectInputSlot.getTextAnnotations(i)) + ", but the project does not support " + PROJECT_TYPE,
-                                "Check if the inputs are correct or set the validation mode to 'Skip on error'.");
+                for (String projectType : PROJECT_TYPES) {
+                    exportProgress.log("Checking if " + exportedPath + " supports project type '" + projectType + "'");
+                    if(!IlastikUtils.projectSupports(exportedPath, projectType)) {
+                        if(projectValidationMode == IlastikProjectValidationMode.CrashOnError) {
+                            throw new JIPipeValidationRuntimeException(new GraphNodeValidationReportContext(this),
+                                    new IllegalArgumentException("Project does not support '" + projectType + "'"),
+                                    "Provided project is not supported by '" + getInfo().getName() + "'!",
+                                    "The node tried to load project (row " + i + ") with annotations " + JsonUtils.toJsonString(projectInputSlot.getTextAnnotations(i)) + ", but the project does not support " + projectType,
+                                    "Check if the inputs are correct or set the validation mode to 'Skip on error'.");
+                        }
                     }
                 }
             }
@@ -208,9 +212,7 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                     // Special handling for the features table
                     args.add("--table_filename=" + modelResultPath + "/features__{nickname}.csv");
                 }
-                for (Path exportedImagePath : exportedImagePaths) {
-                    args.add(exportedImagePath.toAbsolutePath().toString());
-                }
+                args.add("--raw_data=" + workDirectory.toAbsolutePath() + "/*.h5");
 
                 // Run ilastik
                 IlastikExtension.runIlastik(overrideEnvironment.getContentOrDefault(IlastikSettings.getInstance().getEnvironment()),
