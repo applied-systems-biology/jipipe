@@ -31,6 +31,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringMapQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OMEROSettings;
+import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
-    private OMEROCredentialsEnvironment credentials = new OMEROCredentialsEnvironment();
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private StringQueryExpression datasetNameFilters = new StringQueryExpression("");
     private OptionalAnnotationNameParameter projectNameAnnotation = new OptionalAnnotationNameParameter("Project", true);
     private OptionalAnnotationNameParameter datasetNameAnnotation = new OptionalAnnotationNameParameter("Dataset", true);
@@ -58,12 +60,11 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     public OMEROFindDatasetAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        registerSubParameter(credentials);
     }
 
     public OMEROFindDatasetAlgorithm(OMEROFindDatasetAlgorithm other) {
         super(other);
-        this.credentials = new OMEROCredentialsEnvironment(other.credentials);
+        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.datasetNameFilters = new StringQueryExpression(other.datasetNameFilters);
         this.datasetNameAnnotation = new OptionalAnnotationNameParameter(other.datasetNameAnnotation);
         this.projectNameAnnotation = new OptionalAnnotationNameParameter(other.projectNameAnnotation);
@@ -71,7 +72,6 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagFilters = new StringMapQueryExpression(other.tagFilters);
         this.tagAnnotation = new OptionalAnnotationNameParameter(other.tagAnnotation);
-        registerSubParameter(credentials);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
             projectIds.add(getFirstInputSlot().getData(row, OMEROProjectReferenceData.class, progressInfo).getProjectId());
         }
 
-        LoginCredentials credentials = this.credentials.toLoginCredentials();
+        LoginCredentials credentials = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials()).toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             for (Long projectId : projectIds) {
@@ -133,11 +133,15 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.datasetNameFilters = datasetNameFilters;
     }
 
-    @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
-            "loaded from the OMERO category at the JIPipe application settings.")
-    @JIPipeParameter("credentials")
-    public OMEROCredentialsEnvironment getCredentials() {
-        return credentials;
+    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @JIPipeParameter("override-credentials")
+    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
+        return overrideCredentials;
+    }
+
+    @JIPipeParameter("override-credentials")
+    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
+        this.overrideCredentials = overrideCredentials;
     }
 
     @JIPipeDocumentation(name = "Annotate with dataset name", description = "Creates an annotation with the dataset name")

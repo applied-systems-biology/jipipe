@@ -190,6 +190,10 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "OMERO Credentials",
                 "Credentials for an OMERO server",
                 RESOURCES.getIconFromResources("omero.png"));
+        registerParameterType("optional-omero-credentials",
+                OptionalOMEROCredentialsEnvironment.class,
+                "Optimal OMERO credentials",
+                "Optional OMERO credentials");
         registerDatatype("omero-group-id", OMEROGroupReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-project-id", OMEROProjectReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));

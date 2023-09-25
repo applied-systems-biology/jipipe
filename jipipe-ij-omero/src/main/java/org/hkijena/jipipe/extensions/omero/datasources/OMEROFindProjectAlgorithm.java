@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringMapQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OMEROSettings;
+import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
@@ -47,7 +49,7 @@ import java.util.stream.Collectors;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OMEROCredentialsEnvironment credentials = new OMEROCredentialsEnvironment();
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private StringQueryExpression projectNameFilters = new StringQueryExpression("");
     private StringMapQueryExpression keyValuePairFilters = new StringMapQueryExpression("");
     private boolean addKeyValuePairsAsAnnotations = true;
@@ -57,24 +59,23 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public OMEROFindProjectAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        registerSubParameter(credentials);
     }
 
     public OMEROFindProjectAlgorithm(OMEROFindProjectAlgorithm other) {
         super(other);
-        this.credentials = new OMEROCredentialsEnvironment(other.credentials);
+        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.projectNameFilters = new StringQueryExpression(other.projectNameFilters);
         this.keyValuePairFilters = new StringMapQueryExpression(other.keyValuePairFilters);
         this.projectNameAnnotation = new OptionalAnnotationNameParameter(other.projectNameAnnotation);
         this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
         this.tagFilters = new StringMapQueryExpression(other.tagFilters);
         this.tagAnnotation = new OptionalAnnotationNameParameter(other.tagAnnotation);
-        registerSubParameter(credentials);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         long groupId = dataBatch.getInputData("Group", OMEROGroupReferenceData.class, progressInfo).getGroupId();
+        OMEROCredentialsEnvironment credentials = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         try (OMEROGateway gateway = new OMEROGateway(credentials.toLoginCredentials(), progressInfo)) {
             SecurityContext context = new SecurityContext(groupId);
             try {
@@ -133,11 +134,15 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.keyValuePairFilters = keyValuePairFilters;
     }
 
-    @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
-            "loaded from the OMERO category at the JIPipe application settings.")
-    @JIPipeParameter("credentials")
-    public OMEROCredentialsEnvironment getCredentials() {
-        return credentials;
+    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @JIPipeParameter("override-credentials")
+    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
+        return overrideCredentials;
+    }
+
+    @JIPipeParameter("override-credentials")
+    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
+        this.overrideCredentials = overrideCredentials;
     }
 
     @JIPipeDocumentation(name = "Annotate with project name", description = "Creates an annotation with the project name")

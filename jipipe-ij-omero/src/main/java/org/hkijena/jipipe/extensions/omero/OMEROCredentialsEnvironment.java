@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -27,7 +29,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import javax.swing.*;
 
 public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
-    private String host = "localhost";
+    private String host = "";
     private int port = 4064;
     private String userName = "";
     private PasswordParameter password = new PasswordParameter();
@@ -55,7 +57,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     }
 
     @JIPipeDocumentation(name = "Host", description = "The server host. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")
-    @JIPipeParameter(value = "host", uiOrder = 1)
+    @JIPipeParameter(value = "host", uiOrder = -100, important = true)
     @StringParameterSettings(monospace = true)
     public String getHost() {
         return host;
@@ -67,7 +69,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     }
 
     @JIPipeDocumentation(name = "Port", description = "The server port. Set to zero to use the global default port.")
-    @JIPipeParameter(value = "port", uiOrder = 2)
+    @JIPipeParameter(value = "port", uiOrder = -99, important = true)
     public int getPort() {
         return port;
     }
@@ -78,7 +80,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     }
 
     @JIPipeDocumentation(name = "User name", description = "The user name")
-    @JIPipeParameter(value = "user-name", uiOrder = 3)
+    @JIPipeParameter(value = "user-name", uiOrder = -98, important = true)
     @StringParameterSettings(monospace = true)
     public String getUserName() {
         return userName;
@@ -91,7 +93,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
 
     @JIPipeDocumentation(name = "Password", description = "The password. The password is not saved in clear text, but encoded in Base64, which can be easily decoded by scripts. " +
             "If you use JIPipe in a GUI environment, it will ask for the credentials when running a pipeline if you do not provide the password. In a CLI environment, the pipeline will fail.")
-    @JIPipeParameter(value = "password", uiOrder = 4)
+    @JIPipeParameter(value = "password", uiOrder = -97, important = true)
     public PasswordParameter getPassword() {
         return password;
     }
@@ -102,7 +104,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     }
 
     @JIPipeDocumentation(name = "E-Mail", description = "The E-Mail address sent to the server")
-    @JIPipeParameter("e-mail")
+    @JIPipeParameter(value = "e-mail", important = true, uiOrder = -96)
     public String geteMail() {
         return eMail;
     }
@@ -123,7 +125,12 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-
+        if(StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(eMail)) {
+            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "Invalid OMERO credentials",
+                    "Please ensure to always provide a user name, host, and email address."));
+        }
     }
 
     public static class List extends ListParameter<OMEROCredentialsEnvironment> {

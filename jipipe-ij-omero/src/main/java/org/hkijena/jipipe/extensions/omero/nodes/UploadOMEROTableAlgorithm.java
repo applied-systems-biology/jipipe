@@ -31,6 +31,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OMEROSettings;
+import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
@@ -47,19 +49,17 @@ import java.util.Set;
 @JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Image", autoCreate = true)
 public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
 
-    private OMEROCredentialsEnvironment credentials = new OMEROCredentialsEnvironment();
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
 
     public UploadOMEROTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        registerSubParameter(credentials);
     }
 
     public UploadOMEROTableAlgorithm(UploadOMEROTableAlgorithm other) {
         super(other);
-        this.credentials = new OMEROCredentialsEnvironment(other.credentials);
+        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
-        registerSubParameter(credentials);
         registerSubParameter(exporter);
     }
 
@@ -69,6 +69,7 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
         List<ResultsTableData> tables = dataBatch.getInputData("Table", ResultsTableData.class, progressInfo);
         JIPipeDataSlot dummy = dataBatch.toDummySlot(new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input), null, getInputSlot("Table"), progressInfo);
 
+        OMEROCredentialsEnvironment credentials = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         try (OMEROGateway gateway = new OMEROGateway(credentials.toLoginCredentials(), progressInfo)) {
 
             TablesFacility tablesFacility = gateway.getGateway().getFacility(TablesFacility.class);
@@ -101,11 +102,15 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "OMERO Server credentials", description = "The following credentials will be used to connect to the OMERO server. If you leave items empty, they will be " +
-            "loaded from the OMERO category at the JIPipe application settings.")
-    @JIPipeParameter("credentials")
-    public OMEROCredentialsEnvironment getCredentials() {
-        return credentials;
+    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @JIPipeParameter("override-credentials")
+    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
+        return overrideCredentials;
+    }
+
+    @JIPipeParameter("override-credentials")
+    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
+        this.overrideCredentials = overrideCredentials;
     }
 
     @JIPipeDocumentation(name = "File name", description = "Determines the file name of the exported tables.")

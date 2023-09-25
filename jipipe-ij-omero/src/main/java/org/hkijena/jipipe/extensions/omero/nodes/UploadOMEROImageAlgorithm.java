@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.omero.nodes;
 
+import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.model.DatasetData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -30,6 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
@@ -113,6 +115,8 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     private void uploadImages(Path targetPath, List<JIPipeTextAnnotation> annotations, long datasetId, JIPipeProgressInfo progressInfo) {
+        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
+        LoginCredentials credentials = environment.toLoginCredentials();
         // Create OMERO connection if needed
         OMEROImageUploader uploader;
         OMEROGateway gateway;
@@ -120,7 +124,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
             gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
             if (gateway == null) {
                 parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
-                gateway = new OMEROGateway(credentials.toLoginCredentials(), parameterProgressInfo);
+                gateway = new OMEROGateway(credentials, parameterProgressInfo);
                 currentGateways.put(Thread.currentThread(), gateway);
             }
             Map<Long, OMEROImageUploader> uploaderMap = currentUploaders.getOrDefault(Thread.currentThread(), null);
@@ -132,7 +136,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
             if (uploader == null) {
                 parameterProgressInfo.log("Creating OMERO uploader for dataset=" + datasetId + " in thread " + Thread.currentThread());
                 DatasetData dataset = gateway.getDataset(datasetId, -1);
-                uploader = new OMEROImageUploader(credentials.toLoginCredentials(), eMail, datasetId, new SecurityContext(dataset.getGroupId()), parameterProgressInfo.resolve("Dataset " + datasetId));
+                uploader = new OMEROImageUploader(credentials, environment.geteMail(), datasetId, new SecurityContext(dataset.getGroupId()), parameterProgressInfo.resolve("Dataset " + datasetId));
                 uploaderMap.put(datasetId, uploader);
             }
         }
