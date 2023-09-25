@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.omero.datasources;
+package org.hkijena.jipipe.extensions.omero.nodes.datasources;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -22,41 +22,42 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
 
-@JIPipeDocumentation(name = "Define project IDs", description = "Manually defines OMERO project ids.")
-@JIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Output", autoCreate = true)
+@JIPipeDocumentation(name = "Define group IDs", description = "Manually defines OMERO group ids.")
+@JIPipeOutputSlot(value = OMEROGroupReferenceData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class, menuPath = "OMERO")
-public class OMEROProjectReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
+public class OMEROGroupReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
 
-    private LongList projectIds = new LongList();
+    private LongList groupIds = new LongList();
 
-    public OMEROProjectReferenceDataSource(JIPipeNodeInfo info) {
+    public OMEROGroupReferenceDataSource(JIPipeNodeInfo info) {
         super(info);
-        projectIds.add(0L);
+        groupIds.add(0L);
     }
 
-    public OMEROProjectReferenceDataSource(OMEROProjectReferenceDataSource other) {
+    public OMEROGroupReferenceDataSource(OMEROGroupReferenceDataSource other) {
         super(other);
-        projectIds = new LongList(other.projectIds);
+        groupIds = new LongList(other.groupIds);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (Long projectId : projectIds) {
+        for (Long projectId : groupIds) {
             dataBatch.addOutputData(getFirstOutputSlot(), new OMEROProjectReferenceData(projectId), progressInfo);
         }
     }
 
-    @JIPipeDocumentation(name = "Project IDs", description = "List of project IDs")
-    @JIPipeParameter("dataset-ids")
-    public LongList getProjectIds() {
-        return projectIds;
+    @JIPipeDocumentation(name = "Group IDs", description = "List of group IDs")
+    @JIPipeParameter("group-ids")
+    public LongList getGroupIds() {
+        return groupIds;
     }
 
-    @JIPipeParameter("dataset-ids")
-    public void setProjectIds(LongList projectIds) {
-        this.projectIds = projectIds;
+    @JIPipeParameter("group-ids")
+    public void setGroupIds(LongList groupIds) {
+        this.groupIds = groupIds;
     }
 }

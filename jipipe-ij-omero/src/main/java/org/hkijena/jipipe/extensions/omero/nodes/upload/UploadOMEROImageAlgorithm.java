@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.omero.nodes;
+package org.hkijena.jipipe.extensions.omero.nodes.upload;
 
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
@@ -28,6 +28,9 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
@@ -206,5 +209,12 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     public boolean supportsParallelization() {
         return true;
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
+        report.report(new GraphNodeValidationReportContext(context, this), environment);
     }
 }

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -86,6 +87,6 @@ public class OMEROGroupReferenceData implements JIPipeData {
 
     @Override
     public String toString() {
-        return "OMERO Group ID=" + groupId;
+        return "OMERO group ID=" + groupId;
     }
 }

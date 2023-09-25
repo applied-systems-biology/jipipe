@@ -11,8 +11,11 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.omero.datasources;
+package org.hkijena.jipipe.extensions.omero.nodes.datasources;
 
+import omero.gateway.LoginCredentials;
+import omero.gateway.model.DatasetData;
+import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,7 +25,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OMEROSettings;
+import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
 
 @JIPipeDocumentation(name = "Define image IDs", description = "Manually defines OMERO image ids that can be used for importing data.")
@@ -31,6 +39,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList
 public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private LongList imageIds = new LongList();
+    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
 
     public OMEROImageReferenceDataSource(JIPipeNodeInfo info) {
         super(info);
@@ -39,13 +48,21 @@ public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorith
 
     public OMEROImageReferenceDataSource(OMEROImageReferenceDataSource other) {
         super(other);
-        imageIds = new LongList(other.imageIds);
+        this.imageIds = new LongList(other.imageIds);
+        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (Long imageId : imageIds) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(imageId), progressInfo);
+        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
+        LoginCredentials credentials = environment.toLoginCredentials();
+        progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
+        try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
+            for (Long imageId : imageIds) {
+                progressInfo.log("Reading info about image ID=" + imageId);
+                ImageData imageData = gateway.getImage(imageId, -1);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(imageData, environment), progressInfo);
+            }
         }
     }
 
@@ -58,5 +75,15 @@ public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("image-ids")
     public void setImageIds(LongList imageIds) {
         this.imageIds = imageIds;
+    }
+    @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
+    @JIPipeParameter("override-credentials")
+    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
+        return overrideCredentials;
+    }
+
+    @JIPipeParameter("override-credentials")
+    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
+        this.overrideCredentials = overrideCredentials;
     }
 }

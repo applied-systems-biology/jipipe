@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.omero.nodes;
+package org.hkijena.jipipe.extensions.omero.nodes.upload;
 
 import omero.gateway.SecurityContext;
 import omero.gateway.facility.TablesFacility;
@@ -30,6 +30,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
@@ -117,5 +120,12 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("exporter")
     public JIPipeDataByMetadataExporter getExporter() {
         return exporter;
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.reportValidity(context, report);
+        OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
+        report.report(new GraphNodeValidationReportContext(context, this), environment);
     }
 }

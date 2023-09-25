@@ -27,15 +27,22 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
-import org.hkijena.jipipe.extensions.omero.nodes.DownloadOMEROImageAlgorithm;
-import org.hkijena.jipipe.extensions.omero.nodes.DownloadOMEROTableAlgorithm;
-import org.hkijena.jipipe.extensions.omero.nodes.UploadOMEROImageAlgorithm;
-import org.hkijena.jipipe.extensions.omero.nodes.UploadOMEROTableAlgorithm;
-import org.hkijena.jipipe.extensions.omero.datasources.*;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
+import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMERODatasetReferenceDataSource;
+import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMEROGroupReferenceDataSource;
+import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMEROImageReferenceDataSource;
+import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMEROProjectReferenceDataSource;
+import org.hkijena.jipipe.extensions.omero.nodes.download.DownloadOMEROImageAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.download.DownloadOMEROTableAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.navigate.OMEROListDatasetsAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.navigate.OMEROListGroupsAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.navigate.OMEROListImagesAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.navigate.OMEROListProjectsAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.upload.UploadOMEROImageAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.upload.UploadOMEROTableAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -194,31 +201,30 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
                 OptionalOMEROCredentialsEnvironment.class,
                 "Optimal OMERO credentials",
                 "Optional OMERO credentials");
+
+        // Data types
         registerDatatype("omero-group-id", OMEROGroupReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-project-id", OMEROProjectReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-image-id", OMEROImageReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
 
+        // Data sources
         registerNodeType("omero-image-id-definition", OMEROImageReferenceDataSource.class);
         registerNodeType("omero-dataset-id-definition", OMERODatasetReferenceDataSource.class);
         registerNodeType("omero-project-id-definition", OMEROProjectReferenceDataSource.class);
         registerNodeType("omero-group-id-definition", OMEROGroupReferenceDataSource.class);
-        registerNodeType("omero-find-group-id", OMEROFindGroupAlgorithm.class);
-        registerNodeType("omero-find-project-id", OMEROFindProjectAlgorithm.class);
-        registerNodeType("omero-find-dataset-id", OMEROFindDatasetAlgorithm.class);
-        registerNodeType("omero-find-image-id", OMEROFindImageAlgorithm.class);
-        registerNodeType("omero-download-image", DownloadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/cloud-download.png"));
-        registerNodeType("omero-upload-image", UploadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/cloud-upload.png"));
-        registerNodeType("omero-download-table", DownloadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cloud-download.png"));
-        registerNodeType("omero-upload-table", UploadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cloud-upload.png"));
-    }
 
-//    @Override
-//    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
-//        return Collections.singletonList(
-//            new JIPipeImageJUpdateSiteDependency(new UpdateSite("OMERO 5.4", "https://sites.imagej.net/OMERO-5.4/", "", "", "", "", 0))
-//        );
-//    }
+        registerNodeType("omero-list-group-ids", OMEROListGroupsAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-list-project-ids", OMEROListProjectsAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-list-dataset-ids", OMEROListDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-list-image-ids", OMEROListImagesAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+
+        registerNodeType("omero-download-image", DownloadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-download-table", DownloadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+
+        registerNodeType("omero-upload-image", UploadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-upload-table", UploadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+    }
 
     @Override
     public List<ImageIcon> getSplashIcons() {

@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.omero;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.LoginCredentials;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
@@ -34,6 +36,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     private String userName = "";
     private PasswordParameter password = new PasswordParameter();
     private String eMail = "anonymous@anonymous";
+    private String webclientUrl = "";
 
     public OMEROCredentialsEnvironment() {
     }
@@ -44,6 +47,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
         this.port = other.port;
         this.password = new PasswordParameter(other.password);
         this.eMail = other.eMail;
+        this.webclientUrl = other.webclientUrl;
     }
 
     @Override
@@ -59,22 +63,26 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     @JIPipeDocumentation(name = "Host", description = "The server host. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")
     @JIPipeParameter(value = "host", uiOrder = -100, important = true)
     @StringParameterSettings(monospace = true)
+    @JsonGetter("host")
     public String getHost() {
         return host;
     }
 
     @JIPipeParameter("host")
+    @JsonSetter("host")
     public void setHost(String host) {
         this.host = host;
     }
 
     @JIPipeDocumentation(name = "Port", description = "The server port. Set to zero to use the global default port.")
     @JIPipeParameter(value = "port", uiOrder = -99, important = true)
+    @JsonGetter("port")
     public int getPort() {
         return port;
     }
 
     @JIPipeParameter("port")
+    @JsonSetter("port")
     public void setPort(int port) {
         this.port = port;
     }
@@ -82,11 +90,13 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     @JIPipeDocumentation(name = "User name", description = "The user name")
     @JIPipeParameter(value = "user-name", uiOrder = -98, important = true)
     @StringParameterSettings(monospace = true)
+    @JsonGetter("user-name")
     public String getUserName() {
         return userName;
     }
 
     @JIPipeParameter("user-name")
+    @JsonSetter("user-name")
     public void setUserName(String userName) {
         this.userName = userName;
     }
@@ -94,24 +104,42 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     @JIPipeDocumentation(name = "Password", description = "The password. The password is not saved in clear text, but encoded in Base64, which can be easily decoded by scripts. " +
             "If you use JIPipe in a GUI environment, it will ask for the credentials when running a pipeline if you do not provide the password. In a CLI environment, the pipeline will fail.")
     @JIPipeParameter(value = "password", uiOrder = -97, important = true)
+    @JsonGetter("password")
     public PasswordParameter getPassword() {
         return password;
     }
 
     @JIPipeParameter("password")
+    @JsonSetter("password")
     public void setPassword(PasswordParameter password) {
         this.password = password;
     }
 
     @JIPipeDocumentation(name = "E-Mail", description = "The E-Mail address sent to the server")
     @JIPipeParameter(value = "e-mail", important = true, uiOrder = -96)
+    @JsonGetter("e-mail")
     public String geteMail() {
         return eMail;
     }
 
     @JIPipeParameter("e-mail")
+    @JsonSetter("e-mail")
     public void seteMail(String eMail) {
         this.eMail = eMail;
+    }
+
+    @JIPipeDocumentation(name = "Web-client URL", description = "URL of the OMERO web-client. Used for displaying data.")
+    @JIPipeParameter(value = "webclient-url", important = true, uiOrder = -95)
+    @StringParameterSettings(monospace = true)
+    @JsonGetter("webclient-url")
+    public String getWebclientUrl() {
+        return webclientUrl;
+    }
+
+    @JIPipeParameter("webclient-url")
+    @JsonGetter("webclient-url")
+    public void setWebclientUrl(String webclientUrl) {
+        this.webclientUrl = webclientUrl;
     }
 
     /**
