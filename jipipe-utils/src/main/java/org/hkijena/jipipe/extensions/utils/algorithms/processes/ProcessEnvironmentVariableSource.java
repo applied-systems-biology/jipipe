@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.utils.algorithms.processes;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 
@@ -9,7 +10,7 @@ import java.util.Set;
 
 public class ProcessEnvironmentVariableSource implements ExpressionParameterVariableSource {
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         Set<ExpressionParameterVariable> result = new HashSet<>();
         result.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
         result.add(new ExpressionParameterVariable("Executable", "The executable", "executable"));

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
@@ -64,7 +65,7 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
                     setExpression((DefaultExpressionParameter) o);
                     return true;
                 }).setSource(new JIPipeDummyParameterCollection()).build();
-        expressionEditor = new DefaultExpressionParameterEditorUI(getWorkbench(), access);
+        expressionEditor = new DefaultExpressionParameterEditorUI(getWorkbench(), new JIPipeParameterTree(access.getSource()), access);
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(expressionEditor, BorderLayout.CENTER);

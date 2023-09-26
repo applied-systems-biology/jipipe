@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -139,7 +140,7 @@ public class REnvironment extends JIPipeExternalEnvironment {
 
     public static class RArgumentsVariableSource implements ExpressionParameterVariableSource {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();
             result.add(new ExpressionParameterVariable("R executable", "The R executable", "r_executable"));
             result.add(new ExpressionParameterVariable("Script file", "The R script file to be executed", "script_file"));

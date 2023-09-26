@@ -15,6 +15,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVari
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
@@ -76,6 +77,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generated annotations", description = "List of annotations to be created. Each is provided with two expressions: one for generating the name, and one for generating the value.\n\n" +
             "Both the name and value expressions have access to annotations and variables that correspond to the table columns of the input table.")
     @JIPipeParameter(value = "generated-annotations", important = true)
+    @ParameterCollectionListTemplate(AnnotationSettings.class)
     public ParameterCollectionList getGeneratedAnnotations() {
         return generatedAnnotations;
     }

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.api.parameters;
 
 /**
- * {@link JIPipeParameterCollection} that implements the {@link com.google.common.eventbus.EventBus}
+ * {@link JIPipeParameterCollection} that implements the event emitters
  */
 public class AbstractJIPipeParameterCollection implements JIPipeParameterCollection {
 

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.grouping.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -34,8 +35,8 @@ public class GraphNodeParameterReferenceGroupCollectionParameterEditorUI extends
      * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
-    public GraphNodeParameterReferenceGroupCollectionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public GraphNodeParameterReferenceGroupCollectionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
     }
 

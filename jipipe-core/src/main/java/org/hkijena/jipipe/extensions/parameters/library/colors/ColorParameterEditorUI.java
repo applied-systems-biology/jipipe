@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.library.colors;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -30,15 +31,15 @@ public class ColorParameterEditorUI extends JIPipeParameterEditorUI {
 
     private boolean isReloading = false;
     private JButton currentlyDisplayed;
-    private SolidColorIcon icon = new SolidColorIcon();
+    private final SolidColorIcon icon = new SolidColorIcon();
 
 
     /**
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public ColorParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public ColorParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

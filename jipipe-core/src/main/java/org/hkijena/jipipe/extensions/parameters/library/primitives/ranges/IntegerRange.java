@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
@@ -250,7 +251,7 @@ public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
 
     public static class VariableSource implements ExpressionParameterVariableSource {
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> variables = new HashSet<>();
             variables.add(new ExpressionParameterVariable("Minimum value", "The minimum value the range of the range. Can be any value if not suitable for the parameter.", "min"));
             variables.add(new ExpressionParameterVariable("Maximum value", "The minimum value the range of the range. Can be any value if not suitable for the parameter.", "max"));

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -64,6 +65,7 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
                 inputData.toString(),
                 dataBatch.getInputRow(getFirstInputSlot()),
                 new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         if (forceName) {
             inputData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath.getParent()), outputPath.getFileName().toString(), true, progressInfo);

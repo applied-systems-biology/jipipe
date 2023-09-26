@@ -14,6 +14,7 @@ import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
@@ -75,6 +76,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Generated annotations", description = "The list of annotations that will be generated.")
     @JIPipeParameter("generated-annotations")
+    @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getGeneratedAnnotations() {
         return generatedAnnotations;
     }

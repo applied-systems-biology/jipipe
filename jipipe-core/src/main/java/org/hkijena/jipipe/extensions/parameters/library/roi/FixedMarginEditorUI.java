@@ -38,10 +38,11 @@ public class FixedMarginEditorUI extends JIPipeParameterEditorUI {
 
     /**
      * @param workbench       workbench
+     * @param parameterTree the parameter tree
      * @param parameterAccess the parameter
      */
-    public FixedMarginEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public FixedMarginEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

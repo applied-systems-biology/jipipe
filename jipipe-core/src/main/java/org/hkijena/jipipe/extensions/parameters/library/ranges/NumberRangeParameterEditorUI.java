@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.parameters.library.ranges;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -22,8 +23,8 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
 
     private JXMultiThumbSlider<DisplayRangeStop> slider;
     private TrackRenderer trackRenderer;
-    private JTextField minEditor = new JTextField();
-    private JTextField maxEditor = new JTextField();
+    private final JTextField minEditor = new JTextField();
+    private final JTextField maxEditor = new JTextField();
     private boolean isUpdatingThumbs = false;
     private boolean isUpdatingTextBoxes = false;
 
@@ -33,8 +34,8 @@ public class NumberRangeParameterEditorUI extends JIPipeParameterEditorUI implem
      * @param workbench       the workbech
      * @param parameterAccess Parameter
      */
-    public NumberRangeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public NumberRangeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

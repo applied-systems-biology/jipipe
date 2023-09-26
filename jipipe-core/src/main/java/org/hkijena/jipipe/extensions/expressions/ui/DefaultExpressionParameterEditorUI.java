@@ -18,6 +18,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.UndefinedExpressionParameterVariableSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -46,12 +47,13 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
      * Creates new instance
      *
      * @param workbench       the workbech
+     * @param parameterTree
      * @param parameterAccess Parameter
      */
-    public DefaultExpressionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public DefaultExpressionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
-        reloadVariables();
+//        reloadVariables();
         reload();
     }
 
@@ -128,6 +130,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
     }
 
     private void editInFunctionBuilder() {
+        reloadVariables();
         String expression = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), expressionEditor.getText(), variables);
         if (expression != null)
             expressionEditor.setText(expression);
@@ -158,7 +161,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
             }
             if (settings != null && settings.variableSource() != UndefinedExpressionParameterVariableSource.class) {
                 ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
-                variables.addAll(variableSource.getVariables(getParameterAccess()));
+                variables.addAll(variableSource.getVariables(getParameterTree(), getParameterAccess()));
             }
             List<ExpressionParameterSettingsVariable> variableAnnotations = getParameterAccess().getAnnotationsOfType(ExpressionParameterSettingsVariable.class);
             if (variableAnnotations.isEmpty()) {
@@ -174,7 +177,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 }
                 if (variable.fromClass() != UndefinedExpressionParameterVariableSource.class) {
                     ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(variable.fromClass());
-                    variables.addAll(variableSource.getVariables(getParameterAccess()));
+                    variables.addAll(variableSource.getVariables(getParameterTree(), getParameterAccess()));
                 }
             }
         }
@@ -186,7 +189,7 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 }
                 if (variable.fromClass() != UndefinedExpressionParameterVariableSource.class) {
                     ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(variable.fromClass());
-                    variables.addAll(variableSource.getVariables(getParameterAccess()));
+                    variables.addAll(variableSource.getVariables(getParameterTree(), getParameterAccess()));
                 }
             }
         }

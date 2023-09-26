@@ -761,7 +761,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
      * @return set of deactivated nodes
      */
     public Set<JIPipeGraphNode> getDeactivatedAlgorithms() {
-        return graph.getDeactivatedAlgorithms(true);
+        return graph.getDeactivatedNodes(true);
     }
 
     /**

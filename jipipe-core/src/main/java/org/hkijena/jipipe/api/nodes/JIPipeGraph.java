@@ -1229,13 +1229,29 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     /**
+     * Returns DIRECT predecessor algorithms of an algorithm
+     *
+     * @param target    the target algorithm
+     * @return predecessors in topological order
+     */
+    public List<JIPipeGraphNode> getDirectPredecessorNodes(JIPipeGraphNode target) {
+        Set<JIPipeGraphNode> result = new HashSet<>();
+        for (JIPipeInputDataSlot inputSlot : target.getInputSlots()) {
+            for (JIPipeDataSlot sourceSlot : getInputIncomingSourceSlots(inputSlot)) {
+                result.add(sourceSlot.getNode());
+            }
+        }
+        return new ArrayList<>(result);
+    }
+
+    /**
      * Returns ALL predecessor algorithms of an algorithm. The predecessors are ordered according to the list of traversed algorithms (topological order)
      *
      * @param target    the target algorithm
      * @param traversed list of algorithms to sort by (usually this is in topological order)
      * @return predecessors in topological order
      */
-    public List<JIPipeGraphNode> getPredecessorAlgorithms(JIPipeGraphNode target, List<JIPipeGraphNode> traversed) {
+    public List<JIPipeGraphNode> getAllPredecessorNodes(JIPipeGraphNode target, List<JIPipeGraphNode> traversed) {
         Set<JIPipeGraphNode> predecessors = new HashSet<>();
         for (JIPipeDataSlot inputSlot : target.getInputSlots()) {
             for (JIPipeDataSlot predecessor : GraphUtils.getAllPredecessors(graph, inputSlot)) {
@@ -1257,7 +1273,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param cascading if predecessors are also checked.
      * @return set of algorithms
      */
-    public Set<JIPipeGraphNode> getDeactivatedAlgorithms(boolean cascading) {
+    public Set<JIPipeGraphNode> getDeactivatedNodes(boolean cascading) {
         Set<JIPipeGraphNode> missing = new HashSet<>();
         if (cascading) {
             for (JIPipeGraphNode algorithm : traverse()) {
@@ -1303,7 +1319,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param externallySatisfied list of algorithms that have their input set externally
      * @return set of algorithms
      */
-    public Set<JIPipeGraphNode> getDeactivatedAlgorithms(Set<JIPipeGraphNode> externallySatisfied) {
+    public Set<JIPipeGraphNode> getDeactivatedNodes(Set<JIPipeGraphNode> externallySatisfied) {
         Set<JIPipeGraphNode> missing = new HashSet<>();
         for (JIPipeGraphNode algorithm : traverse()) {
             if (!algorithm.getInfo().isRunnable())
@@ -1477,7 +1493,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param satisfied  all algorithms that are considered to have a satisfied input
      */
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode, Set<JIPipeGraphNode> satisfied) {
-        List<JIPipeGraphNode> predecessorAlgorithms = getPredecessorAlgorithms(targetNode, traverse());
+        List<JIPipeGraphNode> predecessorAlgorithms = getAllPredecessorNodes(targetNode, traverse());
         predecessorAlgorithms.add(targetNode);
         for (JIPipeGraphNode node : predecessorAlgorithms) {
             if (satisfied.contains(node))

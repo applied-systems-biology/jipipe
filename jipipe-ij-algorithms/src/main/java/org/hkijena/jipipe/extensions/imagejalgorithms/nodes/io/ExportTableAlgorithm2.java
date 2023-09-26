@@ -53,6 +53,7 @@ public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {
                 inputData.toString(),
                 dataBatch.getInputRow(getFirstInputSlot()),
                 new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         Path outputFile;
         switch (fileFormat) {

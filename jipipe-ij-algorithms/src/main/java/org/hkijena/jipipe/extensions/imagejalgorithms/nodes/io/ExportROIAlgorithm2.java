@@ -52,6 +52,7 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
                 inputData.toString(),
                 dataBatch.getInputRow(getFirstInputSlot()),
                 new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         if (exportAsROIFile && inputData.size() > 1) {
             Set<String> existing = new HashSet<>();

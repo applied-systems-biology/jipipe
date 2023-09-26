@@ -90,7 +90,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
                         .setSetter(t -> {
                         }).setSource(new JIPipeDummyParameterCollection()).build();
 
-                DefaultExpressionParameterEditorUI newEditorUI = new DefaultExpressionParameterEditorUI(parameterEditorUI.getWorkbench(), dummy);
+                DefaultExpressionParameterEditorUI newEditorUI = new DefaultExpressionParameterEditorUI(parameterEditorUI.getWorkbench(), parameterPanel.getParameterTree(), dummy);
                 JLabel label = new JLabel("Adaptive", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
                 label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4),
                         new RoundedLineBorder(new Color(0xE6E6E6), 1, 3)));

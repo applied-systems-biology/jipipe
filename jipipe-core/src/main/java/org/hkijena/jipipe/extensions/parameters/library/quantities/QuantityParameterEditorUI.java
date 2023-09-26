@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.parameters.library.quantities;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -26,8 +27,8 @@ public class QuantityParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       the workbech
      * @param parameterAccess Parameter
      */
-    public QuantityParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public QuantityParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

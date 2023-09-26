@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.parameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -33,6 +34,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
     public static final int CONTROL_STYLE_LIST = 2;
     public static final int CONTROL_STYLE_CHECKBOX = 4;
 
+    private final JIPipeParameterTree parameterTree;
     private JIPipeParameterAccess parameterAccess;
     private Context context;
     private int preventReload = 0;
@@ -42,11 +44,13 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      * Creates new instance
      *
      * @param workbench       the workbench
-     * @param parameterAccess Parameter
+     * @param parameterTree the parameter tree that contains the access
+     * @param parameterAccess the parameter access
      */
-    public JIPipeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public JIPipeParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         super(workbench);
         this.context = workbench.getContext();
+        this.parameterTree = parameterTree;
         this.parameterAccess = parameterAccess;
         parameterAccess.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
     }
@@ -102,6 +106,10 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
             --preventReload;
         }
         return success;
+    }
+
+    public JIPipeParameterTree getParameterTree() {
+        return parameterTree;
     }
 
     /**

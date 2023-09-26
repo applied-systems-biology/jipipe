@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -38,8 +39,8 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
      * @param workbench       the workbech
      * @param parameterAccess Parameter
      */
-    public JIPipeAuthorMetadataParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public JIPipeAuthorMetadataParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

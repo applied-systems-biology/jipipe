@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
 import java.util.Collections;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class SingleExpressionParameterVariableSource implements ExpressionParame
     }
 
     @Override
-    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+    public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         return Collections.singleton(variable);
     }
 }

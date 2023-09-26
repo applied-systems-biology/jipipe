@@ -2994,6 +2994,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         minDimensions = null;
         if (getParent() != null)
             getParent().revalidate();
+        repaintLowLag();
     }
 
     public Point getGraphEditorCursor() {

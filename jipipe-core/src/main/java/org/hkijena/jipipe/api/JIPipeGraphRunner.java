@@ -57,7 +57,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable, JIPipeGraphGCHelper.Sl
         progressInfo.resolve("GC").log("GC status: " + gc);
         gc.getSlotCompletedEventEmitter().subscribe(this);
 
-        Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedAlgorithms(algorithmsWithExternalInput);
+        Set<JIPipeGraphNode> unExecutableAlgorithms = algorithmGraph.getDeactivatedNodes(algorithmsWithExternalInput);
         Set<JIPipeGraphNode> executedAlgorithms = new HashSet<>();
         List<JIPipeDataSlot> traversedSlots = algorithmGraph.traverseSlots();
 

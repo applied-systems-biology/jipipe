@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.scripts;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
@@ -40,8 +41,8 @@ public class LargeScriptParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       the workbech
      * @param parameterAccess Parameter
      */
-    public LargeScriptParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public LargeScriptParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
     }
 

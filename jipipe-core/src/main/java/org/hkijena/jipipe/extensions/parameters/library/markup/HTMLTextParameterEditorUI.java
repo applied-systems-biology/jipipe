@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.library.markup;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
@@ -36,8 +37,8 @@ public class HTMLTextParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public HTMLTextParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public HTMLTextParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         editor = new HTMLEditor(workbench, HTMLEditor.Mode.Compact, HTMLEditor.WITH_DIALOG_EDITOR_BUTTON);
         initialize();
         reload();

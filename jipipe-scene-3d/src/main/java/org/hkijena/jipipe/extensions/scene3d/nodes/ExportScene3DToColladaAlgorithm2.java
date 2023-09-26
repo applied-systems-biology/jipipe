@@ -54,6 +54,7 @@ public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
                 new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
 
         Path outputFile = PathUtils.ensureExtension(outputPath, ".dae");
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         Scene3DToColladaExporter scene3DToColladaExporter = new Scene3DToColladaExporter(scene3DData, outputFile);
         scene3DToColladaExporter.setIndexMeshes(indexMeshes);

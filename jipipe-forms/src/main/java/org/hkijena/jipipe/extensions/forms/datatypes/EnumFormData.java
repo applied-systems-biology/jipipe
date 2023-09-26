@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
@@ -102,7 +103,7 @@ public class EnumFormData extends ParameterFormData {
                 .setSource(new JIPipeDummyParameterCollection())
                 .setFieldClass(DynamicStringEnumParameter.class)
                 .build();
-        return JIPipe.getParameterTypes().createEditorFor(workbench, access);
+        return JIPipe.getParameterTypes().createEditorFor(workbench, new JIPipeParameterTree(access), access);
     }
 
     @Override

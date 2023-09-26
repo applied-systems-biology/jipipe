@@ -15,6 +15,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.extensions.strings.XMLData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -82,6 +83,7 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
 
     @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
     @JIPipeParameter("entries")
+    @ParameterCollectionListTemplate(Entry.class)
     public ParameterCollectionList getEntries() {
         return entries;
     }

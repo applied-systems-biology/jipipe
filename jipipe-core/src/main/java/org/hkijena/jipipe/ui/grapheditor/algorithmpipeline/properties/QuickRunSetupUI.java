@@ -229,7 +229,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         JIPipeValidationReport report = new JIPipeValidationReport();
         getProject().reportValidity(new UnspecifiedValidationReportContext(), report, algorithm);
 
-        Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedAlgorithms(true);
+        Set<JIPipeGraphNode> algorithmsWithMissingInput = getProject().getGraph().getDeactivatedNodes(true);
         if (algorithmsWithMissingInput.contains(algorithm)) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(algorithm),

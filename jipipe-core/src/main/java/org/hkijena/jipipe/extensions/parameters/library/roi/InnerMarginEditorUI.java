@@ -34,10 +34,11 @@ public class InnerMarginEditorUI extends JIPipeParameterEditorUI {
 
     /**
      * @param workbench       workbench
+     * @param parameterTree the parameter tree
      * @param parameterAccess the parameter
      */
-    public InnerMarginEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public InnerMarginEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }

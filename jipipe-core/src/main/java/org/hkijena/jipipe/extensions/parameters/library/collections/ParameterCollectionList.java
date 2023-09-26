@@ -154,6 +154,9 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
                     toAdd.add(entry.getKey());
                 }
                 itemAccess.setUIOrder(templateAccess.getUIOrder());
+                if(templateAccess instanceof JIPipeMutableParameterAccess) {
+                    itemAccess.setAnnotationMap(((JIPipeMutableParameterAccess) templateAccess).getAnnotationMap());
+                }
             }
             for (Map.Entry<String, JIPipeParameterAccess> entry : template.getParameters().entrySet()) {
                 if (!collection.containsKey(entry.getKey())) {

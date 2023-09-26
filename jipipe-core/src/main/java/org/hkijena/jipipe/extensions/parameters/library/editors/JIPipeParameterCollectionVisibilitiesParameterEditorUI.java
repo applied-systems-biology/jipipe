@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.library.editors;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -40,8 +41,8 @@ public class JIPipeParameterCollectionVisibilitiesParameterEditorUI extends JIPi
      * @param workbench       workbench
      * @param parameterAccess Parameter
      */
-    public JIPipeParameterCollectionVisibilitiesParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public JIPipeParameterCollectionVisibilitiesParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }
@@ -83,7 +84,7 @@ public class JIPipeParameterCollectionVisibilitiesParameterEditorUI extends JIPi
                 JIPipeParameterAccess parameterAccess = parameters.get(key);
 
                 JIPipeParameterEditorUI ui = JIPipe.getInstance()
-                        .getParameterTypeRegistry().createEditorFor(getWorkbench(), parameterAccess);
+                        .getParameterTypeRegistry().createEditorFor(getWorkbench(), new JIPipeParameterTree(parameterAccess), parameterAccess);
 
                 JPanel labelPanel = new JPanel(new BorderLayout(8, 8));
                 JToggleButton exportParameterToggle = new JToggleButton(UIUtils.getIconFromResources("actions/eye.png"));

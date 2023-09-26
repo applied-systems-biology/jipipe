@@ -15,10 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.api.scripts;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.LargeScriptParameterEditorUI;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -30,7 +27,6 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.*;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -63,8 +59,8 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public ScriptParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
-        super(workbench, parameterAccess);
+    public ScriptParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+        super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
     }
@@ -147,7 +143,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         ExternalFileExternalEditor externalEditor = new ExternalFileExternalEditor(getWorkbench(),
                 new WeakReference<>(getParameterCollection()),
                 getParameterAccess().getKey(),
-                getParameterAccess());
+                getParameterTree(), getParameterAccess());
         OPENED_EXTERNAL_EDITORS.add(externalEditor);
         reload();
     }
@@ -157,7 +153,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         WindowExternalEditor externalEditor = new WindowExternalEditor(getWorkbench(),
                 new WeakReference<>(getParameterCollection()),
                 getParameterAccess().getKey(),
-                getParameterAccess());
+                getParameterTree(), getParameterAccess());
         OPENED_EXTERNAL_EDITORS.add(externalEditor);
         reload();
     }
@@ -180,7 +176,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         TabExternalEditor externalEditor = new TabExternalEditor(getWorkbench(),
                 new WeakReference<>(getParameterCollection()),
                 getParameterAccess().getKey(),
-                getParameterAccess());
+                getParameterTree(), getParameterAccess());
         OPENED_EXTERNAL_EDITORS.add(externalEditor);
         reload();
     }
@@ -234,7 +230,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                                     return FileChooserSettings.LastDirectoryKey.Projects;
                                 }
                             }).build();
-                    JIPipeParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypeRegistry().createEditorFor(getWorkbench(), access);
+                    JIPipeParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypeRegistry().createEditorFor(getWorkbench(), getParameterTree(), access);
                     FormPanel formPanel = new FormPanel(null, FormPanel.NONE);
                     formPanel.addToForm(pathEditor, new JLabel("External script path"), null);
                     add(formPanel, BorderLayout.CENTER);
@@ -261,13 +257,19 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         private final JIPipeWorkbench workbench;
         private final WeakReference<JIPipeParameterCollection> parameterCollection;
         private final String parameterKey;
+        private final JIPipeParameterTree parameterTree;
         private JIPipeParameterAccess parameterAccess;
 
-        public ExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterAccess parameterAccess) {
+        public ExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             this.workbench = workbench;
             this.parameterCollection = parameterCollection;
             this.parameterKey = parameterKey;
+            this.parameterTree = parameterTree;
             this.parameterAccess = parameterAccess;
+        }
+
+        public JIPipeParameterTree getParameterTree() {
+            return parameterTree;
         }
 
         public WeakReference<JIPipeParameterCollection> getParameterCollection() {
@@ -304,13 +306,13 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
     public static class TabExternalEditor extends ExternalEditor {
         private  LargeScriptParameterEditorUI editorUI;
 
-        public TabExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterAccess access) {
-            super(workbench, parameterCollection, parameterKey, access);
+        public TabExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterTree parameterTree, JIPipeParameterAccess access) {
+            super(workbench, parameterCollection, parameterKey, parameterTree, access);
             initialize();
         }
 
         private void initialize() {
-            editorUI = new LargeScriptParameterEditorUI(getWorkbench(), getParameterAccess());
+            editorUI = new LargeScriptParameterEditorUI(getWorkbench(), getParameterTree(), getParameterAccess());
             ScriptParameter code = getParameter(ScriptParameter.class);
             getWorkbench().getDocumentTabPane().addTab(getParameterAccess().getName() + " (" + code.getLanguageName() + ")",
                     UIUtils.getIconFromResources("actions/dialog-xml-editor.png"),
@@ -335,13 +337,13 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
         private JFrame frame;
 
-        public WindowExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterAccess access) {
-            super(workbench, parameterCollection, parameterKey, access);
+        public WindowExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterTree parameterTree, JIPipeParameterAccess access) {
+            super(workbench, parameterCollection, parameterKey, parameterTree, access);
             initialize();
         }
 
         private void initialize() {
-            LargeScriptParameterEditorUI editorUI = new LargeScriptParameterEditorUI(getWorkbench(), getParameterAccess());
+            LargeScriptParameterEditorUI editorUI = new LargeScriptParameterEditorUI(getWorkbench(), getParameterTree(), getParameterAccess());
             ScriptParameter code = getParameter(ScriptParameter.class);
             frame = new JFrame();
             frame.setTitle("JIPipe - " + getParameterAccess().getKey() + " (" + code.getLanguageName() + ")");
@@ -376,8 +378,8 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
         private Timer timer;
 
-        public ExternalFileExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterAccess parameterAccess) {
-            super(workbench, parameterCollection, parameterKey, parameterAccess);
+        public ExternalFileExternalEditor(JIPipeWorkbench workbench, WeakReference<JIPipeParameterCollection> parameterCollection, String parameterKey, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            super(workbench, parameterCollection, parameterKey, parameterTree, parameterAccess);
             initialize();
         }
 

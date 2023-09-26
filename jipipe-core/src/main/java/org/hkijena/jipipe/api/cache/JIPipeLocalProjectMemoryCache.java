@@ -118,7 +118,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         }
 
         // Register predecessors
-        List<JIPipeGraphNode> predecessorAlgorithms = project.getGraph().getPredecessorAlgorithms(projectNode, project.getGraph().traverse());
+        List<JIPipeGraphNode> predecessorAlgorithms = project.getGraph().getAllPredecessorNodes(projectNode, project.getGraph().traverse());
         for (JIPipeGraphNode predecessorAlgorithm : predecessorAlgorithms) {
             UUID predecessorUUID = predecessorAlgorithm.getUUIDInParentGraph();
 

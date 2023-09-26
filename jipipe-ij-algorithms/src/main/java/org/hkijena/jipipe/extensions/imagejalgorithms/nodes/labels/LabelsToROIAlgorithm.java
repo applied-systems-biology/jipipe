@@ -199,7 +199,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public static class VariableSource implements ExpressionParameterVariableSource {
 
         @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
+        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> variables = new HashSet<>();
             variables.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             variables.add(new ExpressionParameterVariable("Label index", "The index of the label (value > 0)", "index"));

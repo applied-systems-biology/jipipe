@@ -11,29 +11,31 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.parameters.api.collections;
+package org.hkijena.jipipe.extensions.parameters.library.collections;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterItemParameterAccess;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Generic parameter for {@link ListParameter}
  */
-public class ListParameterEditorUI extends JIPipeParameterEditorUI {
+public class ParameterCollectionListEditorUI extends JIPipeParameterEditorUI {
     private final JLabel emptyLabel = UIUtils.createInfoLabel("This list is empty", "Click <i>Add</i> to add a new item.");
     private final List<EntryComponents> entryComponentsList = new ArrayList<>();
     private final Set<EntryComponents> selectedEntryComponents = new HashSet<>();
@@ -47,7 +49,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess Parameter
      */
-    public ListParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+    public ParameterCollectionListEditorUI(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterTree, parameterAccess);
         initialize();
         reload();
@@ -199,7 +201,26 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         entryComponentsList.clear();
         selectedEntryComponents.clear();
         lastClickedIndex = -1;
-        ListParameter<?> parameter = getParameter(ListParameter.class);
+        ParameterCollectionList parameter = getParameter(ParameterCollectionList.class);
+
+        // Workaround for ParameterCollectionList template issues
+        // Recreates the template on creating the UI to enforce the class-based
+        ParameterCollectionListTemplate annotation = getParameterAccess().getAnnotationOfType(ParameterCollectionListTemplate.class);
+        if(annotation != null) {
+            JIPipeDynamicParameterCollection template = parameter.getTemplate();
+            template.clear();
+            JIPipeParameterCollection templateCollection = (JIPipeParameterCollection) ReflectionUtils.newInstance(annotation.value());
+            JIPipeParameterTree tree = new JIPipeParameterTree(templateCollection);
+            for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
+                JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess(entry.getValue());
+                template.addParameter(parameterAccess);
+            }
+
+            // Apply the template to the items
+            parameter.applyTemplateToItems();
+        }
+
+        // Generate entries
         for (int i = 0; i < parameter.size(); ++i) {
             Object entry = parameter.get(i);
 
@@ -252,11 +273,8 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
                 moveEntryUp(entry);
             }));
 
-            ListParameterItemParameterAccess<?> access = new ListParameterItemParameterAccess(getParameterAccess(),
-                    parameter,
-                    parameter.getContentClass(),
-                    i);
-            JIPipeParameterEditorUI ui = JIPipe.getParameterTypes().createEditorFor(getWorkbench(), new JIPipeParameterTree(access), access);
+            ParameterPanel ui = new ParameterPanel(getWorkbench(), parameter.get(i), getParameterTree(), null, ParameterPanel.NO_EMPTY_GROUP_HEADERS);
+            ui.setBorder(BorderFactory.createEtchedBorder());
             ui.setOpaque(false);
 
             JPanel entryPanel = new JPanel(new GridBagLayout());

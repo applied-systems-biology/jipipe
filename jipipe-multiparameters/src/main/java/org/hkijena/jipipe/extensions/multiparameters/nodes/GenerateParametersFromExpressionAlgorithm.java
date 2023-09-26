@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeParameterTypeInfoRef;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -162,6 +163,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
             "<li>Values are JSON: determines whether the values from the 'Values' parameter are in JSON format or already of the expected object type. If 'Values are JSON' is enabled and non-string values are returned (e.g., a map), they will be automatically converted to JSON.</li>" +
             "</ul>\nIf the columns have different sizes, the last values of the smaller columns will be repeated to fill the whole table. Duplicate keys are overwritten based on the order.")
     @JIPipeParameter(value = "columns", important = true)
+    @ParameterCollectionListTemplate(Column.class)
     public ParameterCollectionList getColumns() {
         return columns;
     }

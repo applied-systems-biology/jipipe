@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVari
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -108,6 +109,7 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
 
     @JIPipeDocumentation(name = "Sort entries", description = "Each entry contains an expression that should return a value that is compared across the data.")
     @JIPipeParameter("entries")
+    @ParameterCollectionListTemplate(SortEntry.class)
     public ParameterCollectionList getEntries() {
         return entries;
     }

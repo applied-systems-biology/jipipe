@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
@@ -185,6 +186,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
 
     @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns")
     @JIPipeParameter("generated-columns")
+    @ParameterCollectionListTemplate(GeneratedColumn.class)
     public ParameterCollectionList getGeneratedColumns() {
         return generatedColumns;
     }
