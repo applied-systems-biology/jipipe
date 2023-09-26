@@ -37,9 +37,11 @@ import java.util.List;
 public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private OptionalAnnotationNameParameter nameAnnotation = new OptionalAnnotationNameParameter("Image title", false);
+    private OptionalAnnotationNameParameter nameAnnotation = new OptionalAnnotationNameParameter("Image title", true);
+    private OptionalAnnotationNameParameter idAnnotation = new OptionalAnnotationNameParameter("#OMERO:Image_ID", true);
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
+    private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public AnnotateOMEROImageReferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -57,6 +59,8 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
         registerSubParameter(tagToAnnotationImporter);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameAnnotation = new OptionalAnnotationNameParameter(other.nameAnnotation);
+        this.idAnnotation = new OptionalAnnotationNameParameter(other.idAnnotation);
+        this.annotationMergeMode = other.annotationMergeMode;
     }
 
     @Override
@@ -74,8 +78,8 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
                 try {
-                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, imageData);
-                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, imageData);
+                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, imageData);
+                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, imageData);
                 } catch (DSOutOfServiceException | DSAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -83,8 +87,11 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
                 if (nameAnnotation.isEnabled()) {
                     annotations.add(new JIPipeTextAnnotation(nameAnnotation.getContent(), imageData.getName()));
                 }
+                if(idAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(imageData.getId())));
+                }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(imageData, environment), annotations, JIPipeTextAnnotationMergeMode.Merge, rowProgress);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(imageData, environment), annotations, annotationMergeMode, rowProgress);
             }
         }
     }
@@ -123,6 +130,28 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
     @JIPipeParameter("tag-to-annotation-importer")
     public OMEROTagToAnnotationImporter getTagToAnnotationImporter() {
         return tagToAnnotationImporter;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with OMERO image ID", description = "If enabled, adds the OMERO image ID as annotation")
+    @JIPipeParameter("id-annotation")
+    public OptionalAnnotationNameParameter getIdAnnotation() {
+        return idAnnotation;
+    }
+
+    @JIPipeParameter("id-annotation")
+    public void setIdAnnotation(OptionalAnnotationNameParameter idAnnotation) {
+        this.idAnnotation = idAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
+    @JIPipeParameter("annotation-merge-mode")
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeMode() {
+        return annotationMergeMode;
+    }
+
+    @JIPipeParameter("annotation-merge-mode")
+    public void setAnnotationMergeMode(JIPipeTextAnnotationMergeMode annotationMergeMode) {
+        this.annotationMergeMode = annotationMergeMode;
     }
 
     @Override

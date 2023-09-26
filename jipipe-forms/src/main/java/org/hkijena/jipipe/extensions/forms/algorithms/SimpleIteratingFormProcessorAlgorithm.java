@@ -207,7 +207,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
         this.tabAnnotation = tabAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
+    @JIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings getDataBatchGenerationSettings() {

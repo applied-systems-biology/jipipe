@@ -27,10 +27,7 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
-import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
-import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
-import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
-import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
+import org.hkijena.jipipe.extensions.omero.datatypes.*;
 import org.hkijena.jipipe.extensions.omero.nodes.annotate.AnnotateOMERODatasetReferenceAlgorithm;
 import org.hkijena.jipipe.extensions.omero.nodes.annotate.AnnotateOMEROImageReferenceAlgorithm;
 import org.hkijena.jipipe.extensions.omero.nodes.annotate.AnnotateOMEROProjectReferenceAlgorithm;
@@ -211,6 +208,7 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("omero-project-id", OMEROProjectReferenceData.class, RESOURCES.getIconURLFromResources("omero-project.png"));
         registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, RESOURCES.getIconURLFromResources("omero-dataset.png"));
         registerDatatype("omero-image-id", OMEROImageReferenceData.class, RESOURCES.getIconURLFromResources("omero-image.png"));
+        registerDatatype("omero-image-id", OMEROAnnotationReferenceData.class, RESOURCES.getIconURLFromResources("omero-annotation.png"));
 
         // Data sources
         registerNodeType("omero-image-id-definition", OMEROImageReferenceDataSource.class);

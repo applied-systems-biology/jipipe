@@ -37,9 +37,12 @@ import java.util.List;
 public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private OptionalAnnotationNameParameter nameAnnotation = new OptionalAnnotationNameParameter("Project name", false);
+
+    private OptionalAnnotationNameParameter idAnnotation = new OptionalAnnotationNameParameter("#OMERO:Project_ID", true);
+    private OptionalAnnotationNameParameter nameAnnotation = new OptionalAnnotationNameParameter("Project name", true);
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
+    private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public AnnotateOMEROProjectReferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -57,6 +60,8 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
         registerSubParameter(tagToAnnotationImporter);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameAnnotation = new OptionalAnnotationNameParameter(other.nameAnnotation);
+        this.idAnnotation = new OptionalAnnotationNameParameter(other.idAnnotation);
+        this.annotationMergeMode = other.annotationMergeMode;
     }
 
     @Override
@@ -74,8 +79,8 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
                 try {
-                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, projectData);
-                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, projectData);
+                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, projectData);
+                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, projectData);
                 } catch (DSOutOfServiceException | DSAccessException e) {
                     throw new RuntimeException(e);
                 }
@@ -83,8 +88,11 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
                 if (nameAnnotation.isEnabled()) {
                     annotations.add(new JIPipeTextAnnotation(nameAnnotation.getContent(), projectData.getName()));
                 }
+                if(idAnnotation.isEnabled()) {
+                    annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(projectData.getId())));
+                }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEROProjectReferenceData(projectData, environment), annotations, JIPipeTextAnnotationMergeMode.Merge, rowProgress);
+                dataBatch.addOutputData(getFirstOutputSlot(), new OMEROProjectReferenceData(projectData, environment), annotations, annotationMergeMode, rowProgress);
             }
         }
     }
@@ -123,6 +131,28 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
     @JIPipeParameter("tag-to-annotation-importer")
     public OMEROTagToAnnotationImporter getTagToAnnotationImporter() {
         return tagToAnnotationImporter;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with OMERO project ID", description = "If enabled, adds the OMERO project ID as annotation")
+    @JIPipeParameter("id-annotation")
+    public OptionalAnnotationNameParameter getIdAnnotation() {
+        return idAnnotation;
+    }
+
+    @JIPipeParameter("id-annotation")
+    public void setIdAnnotation(OptionalAnnotationNameParameter idAnnotation) {
+        this.idAnnotation = idAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
+    @JIPipeParameter("annotation-merge-mode")
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeMode() {
+        return annotationMergeMode;
+    }
+
+    @JIPipeParameter("annotation-merge-mode")
+    public void setAnnotationMergeMode(JIPipeTextAnnotationMergeMode annotationMergeMode) {
+        this.annotationMergeMode = annotationMergeMode;
     }
 
     @Override

@@ -22,8 +22,6 @@ import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,14 +35,10 @@ import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
-import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List OMERO images", description = "Returns the ID(s) of images(s) according to search criteria. Requires project IDs as input.")
 @JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", autoCreate = true)
@@ -85,8 +79,8 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm {
                         variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
                         variables.put("name", imageData.getName());
                         variables.put("id", imageData.getId());
-                        variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadata(), context, imageData));
-                        variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadata(), context, imageData)));
+                        variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, imageData));
+                        variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, imageData)));
                         if(filters.test(variables)) {
                             getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment),rowProgress);
                         }

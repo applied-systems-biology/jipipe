@@ -56,7 +56,7 @@ import java.util.*;
 @JIPipeDocumentation(name = "Upload image to OMERO", description = "Uploads an image to OMERO.")
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @JIPipeInputSlot(value = OMEImageData.class, slotName = "Images", autoCreate = true, description = "The image(s) to upload")
-@JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target", autoCreate = true, description = "The data set where the image(s) will be stored")
+@JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target dataset", autoCreate = true, description = "The data set where the image(s) will be stored")
 @JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", autoCreate = true, description = "Reference to the uploaded image(s)")
 public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
@@ -86,7 +86,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         OMEImageData imageData = dataBatch.getInputData("Images", OMEImageData.class, progressInfo);
-        long datasetId = dataBatch.getInputData("Target", OMERODatasetReferenceData.class, progressInfo).getDatasetId();
+        long datasetId = dataBatch.getInputData("Target dataset", OMERODatasetReferenceData.class, progressInfo).getDatasetId();
 
         // Export image
         Path tmpDirectory = getNewScratch();

@@ -26,7 +26,7 @@ public class OMEROGateway implements AutoCloseable {
     private Gateway gateway;
     private BrowseFacility browseFacility;
     private DataManagerFacility dataManagerFacility;
-    private MetadataFacility metadata;
+    private MetadataFacility metadataFacility;
 
     public OMEROGateway(LoginCredentials credentials, JIPipeProgressInfo progressInfo) {
         this.credentials = credentials;
@@ -40,7 +40,7 @@ public class OMEROGateway implements AutoCloseable {
             user = gateway.connect(credentials);
             browseFacility = gateway.getFacility(BrowseFacility.class);
             dataManagerFacility = gateway.getFacility(DataManagerFacility.class);
-            metadata = gateway.getFacility(MetadataFacility.class);
+            metadataFacility = gateway.getFacility(MetadataFacility.class);
 
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -80,8 +80,8 @@ public class OMEROGateway implements AutoCloseable {
         }
     }
 
-    public MetadataFacility getMetadata() {
-        return metadata;
+    public MetadataFacility getMetadataFacility() {
+        return metadataFacility;
     }
 
     /**

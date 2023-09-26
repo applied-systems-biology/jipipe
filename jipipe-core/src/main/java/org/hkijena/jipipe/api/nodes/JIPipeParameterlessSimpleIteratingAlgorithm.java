@@ -187,7 +187,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         this.parallelizationEnabled = parallelizationEnabled;
     }
 
-    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
+    @JIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public DataBatchGenerationSettings getDataBatchGenerationSettings() {

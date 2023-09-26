@@ -69,7 +69,7 @@ public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWor
                 false);
 
         if (node instanceof JIPipeDataBatchAlgorithm) {
-            tabbedPane.addTab("Data batches",
+            tabbedPane.addTab("Input management",
                     UIUtils.getIconFromResources("actions/package.png"),
                     new ParameterPanel(getWorkbench(), ((JIPipeDataBatchAlgorithm) node).getGenerationSettingsInterface(), null, ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING),
                     DocumentTabPane.CloseMode.withoutCloseButton);

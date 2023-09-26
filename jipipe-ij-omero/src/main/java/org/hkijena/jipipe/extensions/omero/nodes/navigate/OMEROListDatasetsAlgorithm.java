@@ -20,8 +20,6 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,11 +35,8 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List OMERO datasets", description = "Returns the ID(s) of dataset(s) according to search criteria. Requires project IDs as input.")
 @JIPipeInputSlot(value = OMEROProjectReferenceData.class, slotName = "Projects", autoCreate = true)
@@ -79,8 +74,8 @@ public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm {
                     variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
                     variables.put("name", dataset.getName());
                     variables.put("id", dataset.getId());
-                    variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadata(), context, dataset));
-                    variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadata(), context, dataset)));
+                    variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, dataset));
+                    variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, dataset)));
 
                     if(filters.test(variables)) {
                         getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset, environment), rowProgress);

@@ -20,7 +20,6 @@ import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
-import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.parameters.OMEROKeyValuePairToAnnotationImporter;
 import org.hkijena.jipipe.extensions.omero.parameters.OMEROTagToAnnotationImporter;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
@@ -35,12 +34,14 @@ import java.util.List;
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
 @JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", autoCreate = true)
 @JIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Datasets", autoCreate = true)
-public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private OptionalAnnotationNameParameter nameAnnotation = new OptionalAnnotationNameParameter("Dataset name", false);
+    private OptionalAnnotationNameParameter nameAnnotation = new OptionalAnnotationNameParameter("Dataset name", true);
+    private OptionalAnnotationNameParameter idAnnotation = new OptionalAnnotationNameParameter("#OMERO:Dataset_ID", true);
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
+    private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public AnnotateOMERODatasetReferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -58,35 +59,38 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSingleIteratio
         registerSubParameter(tagToAnnotationImporter);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameAnnotation = new OptionalAnnotationNameParameter(other.nameAnnotation);
+        this.idAnnotation = new OptionalAnnotationNameParameter(other.idAnnotation);
+        this.annotationMergeMode = other.annotationMergeMode;
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
+
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
-            for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO dataset", row, getFirstInputSlot().getRowCount());
-                long datasetId = getFirstInputSlot().getData(row, OMERODatasetReferenceData.class, rowProgress).getDatasetId();
-                DatasetData datasetData = gateway.getDataset(datasetId, -1);
-                SecurityContext context = new SecurityContext(datasetData.getGroupId());
+            long datasetId = dataBatch.getInputData(getFirstInputSlot(), OMERODatasetReferenceData.class, progressInfo).getDatasetId();
+            DatasetData datasetData = gateway.getDataset(datasetId, -1);
+            SecurityContext context = new SecurityContext(datasetData.getGroupId());
 
-                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
-                try {
-                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, datasetData);
-                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, datasetData);
-                } catch (DSOutOfServiceException | DSAccessException e) {
-                    throw new RuntimeException(e);
-                }
-
-                if (nameAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeTextAnnotation(nameAnnotation.getContent(), datasetData.getName()));
-                }
-
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetData, environment), annotations, JIPipeTextAnnotationMergeMode.Merge, rowProgress);
+            try {
+                tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, datasetData);
+                keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, datasetData);
+            } catch (DSOutOfServiceException | DSAccessException e) {
+                throw new RuntimeException(e);
             }
+
+            if (nameAnnotation.isEnabled()) {
+                annotations.add(new JIPipeTextAnnotation(nameAnnotation.getContent(), datasetData.getName()));
+            }
+            if(idAnnotation.isEnabled()) {
+                annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(datasetData.getId())));
+            }
+
+            dataBatch.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetData, environment), annotations, annotationMergeMode, progressInfo);
         }
     }
 
@@ -126,10 +130,34 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSingleIteratio
         return tagToAnnotationImporter;
     }
 
+    @JIPipeDocumentation(name = "Annotate with OMERO dataset ID", description = "If enabled, adds the OMERO dataset ID as annotation")
+    @JIPipeParameter("id-annotation")
+    public OptionalAnnotationNameParameter getIdAnnotation() {
+        return idAnnotation;
+    }
+
+    @JIPipeParameter("id-annotation")
+    public void setIdAnnotation(OptionalAnnotationNameParameter idAnnotation) {
+        this.idAnnotation = idAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how newly generated annotations are merged with existing ones")
+    @JIPipeParameter("annotation-merge-mode")
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeMode() {
+        return annotationMergeMode;
+    }
+
+    @JIPipeParameter("annotation-merge-mode")
+    public void setAnnotationMergeMode(JIPipeTextAnnotationMergeMode annotationMergeMode) {
+        this.annotationMergeMode = annotationMergeMode;
+    }
+
     @Override
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
         super.reportValidity(context, report);
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         report.report(new GraphNodeValidationReportContext(context, this), environment);
     }
+
+
 }

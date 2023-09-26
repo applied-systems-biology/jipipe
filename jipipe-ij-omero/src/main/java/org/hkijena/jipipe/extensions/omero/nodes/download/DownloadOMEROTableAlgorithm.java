@@ -95,8 +95,8 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                     annotations.add(new JIPipeTextAnnotation(fileNameAnnotation.getContent(), fileName));
                 }
                 try {
-                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, fileAnnotationData);
-                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, fileAnnotationData);
+                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, fileAnnotationData);
+                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadataFacility(), context, fileAnnotationData);
                 } catch (DSOutOfServiceException | DSAccessException e) {
                     throw new RuntimeException(e);
                 }

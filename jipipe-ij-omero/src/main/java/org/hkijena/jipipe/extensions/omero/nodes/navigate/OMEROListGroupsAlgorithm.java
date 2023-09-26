@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.omero.nodes.navigate;
 
-import omero.gateway.Gateway;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.model.ExperimenterData;
@@ -21,8 +20,6 @@ import omero.gateway.model.GroupData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -30,18 +27,14 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
-import org.hkijena.jipipe.extensions.omero.util.OMEROToJIPipeLogger;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
 import java.util.ArrayList;
-import java.util.List;
 
 @JIPipeDocumentation(name = "List OMERO groups", description = "Returns the ID(s) of groups(s) according to search criteria.")
 @JIPipeOutputSlot(value = OMEROGroupReferenceData.class, slotName = "Groups", autoCreate = true)
@@ -73,8 +66,8 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
                 ExpressionVariables variables = new ExpressionVariables();
                 variables.put("name", groupData.getName());
                 variables.put("id", groupData.getId());
-                variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadata(), context, groupData));
-                variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadata(), context, groupData)));
+                variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, groupData));
+                variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, groupData)));
                 if(filters.test(variables)) {
                     getFirstOutputSlot().addData(new OMEROGroupReferenceData(groupData.getId()), progressInfo);
                 }

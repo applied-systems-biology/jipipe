@@ -200,7 +200,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
+    @JIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
     public JIPipeMissingDataGeneratorDataBatchGenerationSettings getDataBatchGenerationSettings() {

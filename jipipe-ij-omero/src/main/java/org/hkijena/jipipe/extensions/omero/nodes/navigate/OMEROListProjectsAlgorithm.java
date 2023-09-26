@@ -21,10 +21,7 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -39,14 +36,8 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List OMERO projects", description = "Returns the ID(s) of project(s) according to search criteria.")
 @JIPipeInputSlot(value = OMEROGroupReferenceData.class, slotName = "Group", autoCreate = true, description = "The group to be utilized. If not provided, the user's default group is used.", optional = true)
@@ -100,8 +91,8 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm {
                 }
                 variables.put("name", project.getName());
                 variables.put("id", project.getId());
-                variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadata(), context, project));
-                variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadata(), context, project)));
+                variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, project));
+                variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, project)));
                 if(filters.test(variables)) {
                     getFirstOutputSlot().addData(new OMEROProjectReferenceData(project, environment), progressInfo);
                 }
