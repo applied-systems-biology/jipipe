@@ -31,6 +31,9 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
+import org.hkijena.jipipe.extensions.omero.nodes.annotate.AnnotateOMERODatasetReferenceAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.annotate.AnnotateOMEROImageReferenceAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.annotate.AnnotateOMEROProjectReferenceAlgorithm;
 import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMERODatasetReferenceDataSource;
 import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMEROGroupReferenceDataSource;
 import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMEROImageReferenceDataSource;
@@ -218,6 +221,10 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("omero-list-project-ids", OMEROListProjectsAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
         registerNodeType("omero-list-dataset-ids", OMEROListDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
         registerNodeType("omero-list-image-ids", OMEROListImagesAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+
+        registerNodeType("omero-annotate-dataset-from-remote", AnnotateOMERODatasetReferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-annotate-image-from-remote", AnnotateOMEROImageReferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-annotate-project-from-remote", AnnotateOMEROProjectReferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
 
         registerNodeType("omero-download-image", DownloadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
         registerNodeType("omero-download-table", DownloadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));

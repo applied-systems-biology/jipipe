@@ -49,7 +49,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "List OMERO projects", description = "Returns the ID(s) of project(s) according to search criteria.")
-@JIPipeInputSlot(value = OMEROGroupReferenceData.class, slotName = "Group", autoCreate = true)
+@JIPipeInputSlot(value = OMEROGroupReferenceData.class, slotName = "Group", autoCreate = true, description = "The group to be utilized. If not provided, the user's default group is used.", optional = true)
 @JIPipeOutputSlot(value = OMEROProjectReferenceData.class, slotName = "Projects", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
 public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm {
@@ -75,26 +75,39 @@ public class OMEROListProjectsAlgorithm extends JIPipeSingleIterationAlgorithm {
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
 
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
-            for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO group", row, getFirstInputSlot().getRowCount());
-                long groupId = getFirstInputSlot().getData(row, OMEROGroupReferenceData.class, rowProgress).getGroupId();
-                SecurityContext context = new SecurityContext(groupId);
-                try {
-                    for (ProjectData project : gateway.getBrowseFacility().getProjects(context)) {
-                        ExpressionVariables variables = new ExpressionVariables();
-                        variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
-                        variables.put("name", project.getName());
-                        variables.put("id", project.getId());
-                        variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadata(), context, project));
-                        variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadata(), context, project)));
-                        if(filters.test(variables)) {
-                            getFirstOutputSlot().addData(new OMEROProjectReferenceData(project, environment), progressInfo);
-                        }
-                    }
-                } catch (DSOutOfServiceException | DSAccessException e) {
-                    throw new RuntimeException(e);
+            if(getFirstInputSlot().getRowCount() > 0) {
+                for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
+                    JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO group", row, getFirstInputSlot().getRowCount());
+                    long groupId = getFirstInputSlot().getData(row, OMEROGroupReferenceData.class, rowProgress).getGroupId();
+                    processGroupId(rowProgress, groupId, gateway, row, environment);
                 }
             }
+            else {
+                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("OMERO default group (" + gateway.getUser().getGroupId() + ")");
+                long groupId = gateway.getUser().getGroupId();
+                processGroupId(rowProgress, groupId, gateway, -1, environment);
+            }
+        }
+    }
+
+    private void processGroupId(JIPipeProgressInfo progressInfo, long groupId, OMEROGateway gateway, int row, OMEROCredentialsEnvironment environment) {
+        SecurityContext context = new SecurityContext(groupId);
+        try {
+            for (ProjectData project : gateway.getBrowseFacility().getProjects(context)) {
+                ExpressionVariables variables = new ExpressionVariables();
+                if(row >= 0) {
+                    variables.putAnnotations(getFirstInputSlot().getTextAnnotations(row));
+                }
+                variables.put("name", project.getName());
+                variables.put("id", project.getId());
+                variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadata(), context, project));
+                variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadata(), context, project)));
+                if(filters.test(variables)) {
+                    getFirstOutputSlot().addData(new OMEROProjectReferenceData(project, environment), progressInfo);
+                }
+            }
+        } catch (DSOutOfServiceException | DSAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
