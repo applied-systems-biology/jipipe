@@ -48,6 +48,10 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
                 replacement.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
                 graph.replaceNode(node, replacement);
             }
+            else if(node.getCategory() instanceof InternalNodeTypeCategory) {
+                // Don't paste internal nodes
+                graph.removeNode(node, false);
+            }
         }
 
         // Save the original locations (if available)
