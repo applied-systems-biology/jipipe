@@ -8,10 +8,14 @@ import ome.formats.importer.ImportConfig;
 import ome.formats.importer.ImportLibrary;
 import ome.formats.importer.OMEROWrapper;
 import ome.formats.importer.cli.ErrorHandler;
+import omero.ServerError;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
+import omero.gateway.exception.DSAccessException;
+import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ImageData;
 import omero.gateway.model.MapAnnotationData;
+import omero.gateway.model.TagAnnotationData;
 import omero.model.NamedValue;
 import omero.model.Pixels;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -20,6 +24,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class OMEROImageUploader implements AutoCloseable {
     private final LoginCredentials credentials;
@@ -72,30 +78,34 @@ public class OMEROImageUploader implements AutoCloseable {
         }
     }
 
-    public List<Long> upload(Path imagePath, List<JIPipeTextAnnotation> annotationList, OMEROGateway gateway) {
+    public List<Long> upload(Path imagePath, Set<String> tags, Map<String, String> keyValuePairs, OMEROGateway gateway, JIPipeProgressInfo progressInfo) throws DSOutOfServiceException, DSAccessException, ServerError {
         ImportCandidates candidates = new ImportCandidates(reader, new String[]{imagePath.toString()}, handler);
         reader.setMetadataOptions(new DefaultMetadataOptions(MetadataLevel.ALL));
         List<Long> uploadedImages = new ArrayList<>();
+
+        progressInfo.log("Uploading data ...");
         for (Pixels image : OMEROUtils.importImages(library, store, config, candidates)) {
             uploadedImages.add(image.getId().getValue());
         }
-        if (annotationList != null && !annotationList.isEmpty()) {
-            List<NamedValue> namedValues = new ArrayList<>();
-            for (JIPipeTextAnnotation annotation : annotationList) {
-                namedValues.add(new NamedValue(annotation.getName(), annotation.getValue()));
-            }
-            MapAnnotationData mapAnnotationData = new MapAnnotationData();
-            mapAnnotationData.setContent(namedValues);
-            mapAnnotationData.setNameSpace(MapAnnotationData.NS_CLIENT_CREATED);
+
+        if (!keyValuePairs.isEmpty()) {
+            progressInfo.log("Attaching key-value pairs ...");
+
             for (Long uploadedImage : uploadedImages) {
-                try {
-                    ImageData image = gateway.getBrowseFacility().getImage(context, uploadedImage);
-                    gateway.getDataManagerFacility().attachAnnotation(context, mapAnnotationData, image);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
+                ImageData image = gateway.getBrowseFacility().getImage(context, uploadedImage);
+                gateway.attachKeyValuePairs(keyValuePairs, image, context);
             }
         }
+
+        if(!tags.isEmpty()) {
+            progressInfo.log("Attaching tags ...");
+
+            for (Long uploadedImage : uploadedImages) {
+                ImageData image = gateway.getBrowseFacility().getImage(context, uploadedImage);
+                gateway.attachTags(tags, image, context);
+            }
+        }
+
         return uploadedImages;
     }
 

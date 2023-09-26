@@ -35,7 +35,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     private int port = 4064;
     private String userName = "";
     private PasswordParameter password = new PasswordParameter();
-    private String eMail = "anonymous@anonymous";
+    private String email = "anonymous@anonymous";
     private String webclientUrl = "";
 
     public OMEROCredentialsEnvironment() {
@@ -46,7 +46,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
         this.userName = other.userName;
         this.port = other.port;
         this.password = new PasswordParameter(other.password);
-        this.eMail = other.eMail;
+        this.email = other.email;
         this.webclientUrl = other.webclientUrl;
     }
 
@@ -118,14 +118,14 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
     @JIPipeDocumentation(name = "E-Mail", description = "The E-Mail address sent to the server")
     @JIPipeParameter(value = "e-mail", important = true, uiOrder = -96)
     @JsonGetter("e-mail")
-    public String geteMail() {
-        return eMail;
+    public String getEmail() {
+        return email;
     }
 
     @JIPipeParameter("e-mail")
     @JsonSetter("e-mail")
-    public void seteMail(String eMail) {
-        this.eMail = eMail;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @JIPipeDocumentation(name = "Web-client URL", description = "URL of the OMERO web-client. Used for displaying data.")
@@ -153,7 +153,7 @@ public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report) {
-        if(StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(eMail)) {
+        if(StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(email)) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     context,
                     "Invalid OMERO credentials",

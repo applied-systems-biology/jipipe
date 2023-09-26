@@ -40,6 +40,7 @@ import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMEROImageReference
 import org.hkijena.jipipe.extensions.omero.nodes.datasources.OMEROProjectReferenceDataSource;
 import org.hkijena.jipipe.extensions.omero.nodes.download.DownloadOMEROImageAlgorithm;
 import org.hkijena.jipipe.extensions.omero.nodes.download.DownloadOMEROTableAlgorithm;
+import org.hkijena.jipipe.extensions.omero.nodes.manage.OMEROCreateDatasetAlgorithm;
 import org.hkijena.jipipe.extensions.omero.nodes.navigate.OMEROListDatasetsAlgorithm;
 import org.hkijena.jipipe.extensions.omero.nodes.navigate.OMEROListGroupsAlgorithm;
 import org.hkijena.jipipe.extensions.omero.nodes.navigate.OMEROListImagesAlgorithm;
@@ -206,10 +207,10 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Optional OMERO credentials");
 
         // Data types
-        registerDatatype("omero-group-id", OMEROGroupReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
-        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
-        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
-        registerDatatype("omero-image-id", OMEROImageReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
+        registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIconURLFromResources("omero-group.png"));
+        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, RESOURCES.getIconURLFromResources("omero-project.png"));
+        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, RESOURCES.getIconURLFromResources("omero-dataset.png"));
+        registerDatatype("omero-image-id", OMEROImageReferenceData.class, RESOURCES.getIconURLFromResources("omero-image.png"));
 
         // Data sources
         registerNodeType("omero-image-id-definition", OMEROImageReferenceDataSource.class);
@@ -217,14 +218,16 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("omero-project-id-definition", OMEROProjectReferenceDataSource.class);
         registerNodeType("omero-group-id-definition", OMEROGroupReferenceDataSource.class);
 
-        registerNodeType("omero-list-group-ids", OMEROListGroupsAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
-        registerNodeType("omero-list-project-ids", OMEROListProjectsAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
-        registerNodeType("omero-list-dataset-ids", OMEROListDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
-        registerNodeType("omero-list-image-ids", OMEROListImagesAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-list-group-ids", OMEROListGroupsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
+        registerNodeType("omero-list-project-ids", OMEROListProjectsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
+        registerNodeType("omero-list-dataset-ids", OMEROListDatasetsAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
+        registerNodeType("omero-list-image-ids", OMEROListImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/search.png"));
 
-        registerNodeType("omero-annotate-dataset-from-remote", AnnotateOMERODatasetReferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
-        registerNodeType("omero-annotate-image-from-remote", AnnotateOMEROImageReferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
-        registerNodeType("omero-annotate-project-from-remote", AnnotateOMEROProjectReferenceAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
+        registerNodeType("omero-annotate-dataset-from-remote", AnnotateOMERODatasetReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("omero-annotate-image-from-remote", AnnotateOMEROImageReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("omero-annotate-project-from-remote", AnnotateOMEROProjectReferenceAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+
+        registerNodeType("omero-create-dataset", OMEROCreateDatasetAlgorithm.class, UIUtils.getIconURLFromResources("actions/group-new.png"));
 
         registerNodeType("omero-download-image", DownloadOMEROImageAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));
         registerNodeType("omero-download-table", DownloadOMEROTableAlgorithm.class, UIUtils.getIconURLFromResources("apps/omero-monochrome.png"));

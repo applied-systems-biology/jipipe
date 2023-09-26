@@ -64,12 +64,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @JIPipeInputSlot(value = OMEROImageReferenceData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", autoCreate = true)
 public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-
-    private final Map<Thread, OMEROGateway> currentGateways = new HashMap<>();
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter("Image title", false);
-    private JIPipeProgressInfo parameterProgressInfo;
-    private AtomicLong lastGroupId = new AtomicLong(-1);
     private final ImageImportParameters imageImportParameters;
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
@@ -98,136 +94,108 @@ public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        this.parameterProgressInfo = progressInfo;
-        this.lastGroupId.set(-1);
-        // Run downloader
-        super.runParameterSet(progressInfo, parameterAnnotations);
-        for (OMEROGateway gateway : currentGateways.values()) {
-            try {
-                gateway.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         LoginCredentials lc = environment.toLoginCredentials();
 
         // Get gateway and fine the appropriate group for the image
-        OMEROGateway gateway;
-        synchronized (this) {
-            gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
-            if (gateway == null) {
-                parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
-                gateway = new OMEROGateway(environment.toLoginCredentials(), parameterProgressInfo);
-                currentGateways.put(Thread.currentThread(), gateway);
-            }
-        }
-
-        ImageData imageData = gateway.getImage(imageReferenceData.getImageId(), lastGroupId.get());
-        if (imageData == null) {
-            progressInfo.log("Unable to obtain image info. Retrying by testing available groups.");
-            imageData = gateway.getImage(imageReferenceData.getImageId(), -1);
-        }
-        if (imageData == null) {
-            throw new RuntimeException("Unable to find image with ID=" + imageReferenceData.getImageId());
-        }
-        lastGroupId.set(imageData.getGroupId());
-
-        // Setup for Bioformats
-        ImporterOptions options;
-        try {
-            options = new ImporterOptions();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Workaround bug where OMERO is not added to the list of available locations
-        if (!options.getStringOption(ImporterOptions.KEY_LOCATION).getPossible().contains(ImporterOptions.LOCATION_OMERO)) {
-            options.getStringOption(ImporterOptions.KEY_LOCATION).addPossible(ImporterOptions.LOCATION_OMERO);
-        }
-
-        options.setLocation(ImporterOptions.LOCATION_OMERO);
-        String omeroId = "omero:server=" +
-                lc.getServer().getHost() +
-                "\nuser=" +
-                lc.getUser().getUsername() +
-                "\nport=" +
-                lc.getServer().getPort() +
-                "\npass=" +
-                lc.getUser().getPassword() +
-                "\ngroupID=" +
-                imageData.getGroupId() +
-                "\niid=" +
-                imageReferenceData.getImageId();
-        options.setId(omeroId);
-        options.setWindowless(true);
-        options.setQuiet(true);
-        options.setShowMetadata(false);
-        options.setShowOMEXML(false);
-        options.setShowROIs(false);
-        options.setVirtual(false);
-        options.setColorMode(imageImportParameters.getColorMode().name());
-        options.setStackOrder(imageImportParameters.getStackOrder().name());
-        options.setSplitChannels(imageImportParameters.isSplitChannels());
-        options.setSplitFocalPlanes(imageImportParameters.isSplitFocalPlanes());
-        options.setSplitTimepoints(imageImportParameters.isSplitTimePoints());
-        options.setSwapDimensions(imageImportParameters.isSwapDimensions());
-        options.setConcatenate(imageImportParameters.isConcatenate());
-        options.setCrop(imageImportParameters.isCrop());
-        options.setAutoscale(imageImportParameters.isAutoScale());
-        options.setStitchTiles(imageImportParameters.isStitchTiles());
-        for (int i = 0; i < imageImportParameters.getCropRegions().size(); i++) {
-            Rectangle rectangle = imageImportParameters.getCropRegions().get(i);
-            options.setCropRegion(i, new Region(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
-        }
-
-        try {
-            ImportProcess process = new ImportProcess(options);
-            progressInfo.log("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort() + " (Group " + imageData.getGroupId() + ")");
-            if (!process.execute()) {
-                throw new NullPointerException();
-            }
-            ImagePlusReader reader = new ImagePlusReader(process);
-            ImagePlus[] images = reader.openImagePlus();
-            if (!options.isVirtual()) {
-                process.getReader().close();
+        try(OMEROGateway gateway = new OMEROGateway(environment.toLoginCredentials(), progressInfo)) {
+            ImageData imageData = gateway.getImage(imageReferenceData.getImageId(), -1);
+            if (imageData == null) {
+                throw new RuntimeException("Unable to find image with ID=" + imageReferenceData.getImageId());
             }
 
-            OMEXMLMetadata omexmlMetadata = null;
-            if (process.getOMEMetadata() instanceof OMEXMLMetadata) {
-                omexmlMetadata = (OMEXMLMetadata) process.getOMEMetadata();
+            // Setup for Bioformats
+            ImporterOptions options;
+            try {
+                options = new ImporterOptions();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
-            for (ImagePlus image : images) {
-                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-                SecurityContext context = new SecurityContext(imageData.getGroupId());
+            // Workaround bug where OMERO is not added to the list of available locations
+            if (!options.getStringOption(ImporterOptions.KEY_LOCATION).getPossible().contains(ImporterOptions.LOCATION_OMERO)) {
+                options.getStringOption(ImporterOptions.KEY_LOCATION).addPossible(ImporterOptions.LOCATION_OMERO);
+            }
 
-                try {
-                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, imageData);
-                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, imageData);
-                } catch (DSOutOfServiceException | DSAccessException e) {
-                    throw new RuntimeException(e);
+            options.setLocation(ImporterOptions.LOCATION_OMERO);
+            String omeroId = "omero:server=" +
+                    lc.getServer().getHost() +
+                    "\nuser=" +
+                    lc.getUser().getUsername() +
+                    "\nport=" +
+                    lc.getServer().getPort() +
+                    "\npass=" +
+                    lc.getUser().getPassword() +
+                    "\ngroupID=" +
+                    imageData.getGroupId() +
+                    "\niid=" +
+                    imageReferenceData.getImageId();
+            options.setId(omeroId);
+            options.setWindowless(true);
+            options.setQuiet(true);
+            options.setShowMetadata(false);
+            options.setShowOMEXML(false);
+            options.setShowROIs(false);
+            options.setVirtual(false);
+            options.setColorMode(imageImportParameters.getColorMode().name());
+            options.setStackOrder(imageImportParameters.getStackOrder().name());
+            options.setSplitChannels(imageImportParameters.isSplitChannels());
+            options.setSplitFocalPlanes(imageImportParameters.isSplitFocalPlanes());
+            options.setSplitTimepoints(imageImportParameters.isSplitTimePoints());
+            options.setSwapDimensions(imageImportParameters.isSwapDimensions());
+            options.setConcatenate(imageImportParameters.isConcatenate());
+            options.setCrop(imageImportParameters.isCrop());
+            options.setAutoscale(imageImportParameters.isAutoScale());
+            options.setStitchTiles(imageImportParameters.isStitchTiles());
+            for (int i = 0; i < imageImportParameters.getCropRegions().size(); i++) {
+                Rectangle rectangle = imageImportParameters.getCropRegions().get(i);
+                options.setCropRegion(i, new Region(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
+            }
+
+            try {
+                ImportProcess process = new ImportProcess(options);
+                progressInfo.log("Downloading image ID=" + imageReferenceData.getImageId() + " from " + lc.getUser().getUsername() + "@" + lc.getServer().getHost() + ":" + lc.getServer().getPort() + " (Group " + imageData.getGroupId() + ")");
+                if (!process.execute()) {
+                    throw new NullPointerException();
+                }
+                ImagePlusReader reader = new ImagePlusReader(process);
+                ImagePlus[] images = reader.openImagePlus();
+                if (!options.isVirtual()) {
+                    process.getReader().close();
                 }
 
-                if (titleAnnotation.isEnabled()) {
-                    annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), image.getTitle()));
+                OMEXMLMetadata omexmlMetadata = null;
+                if (process.getOMEMetadata() instanceof OMEXMLMetadata) {
+                    omexmlMetadata = (OMEXMLMetadata) process.getOMEMetadata();
                 }
 
-                ROIListData rois = new ROIListData();
-                if (imageImportParameters.isExtractRois()) {
-                    rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
-                }
+                for (ImagePlus image : images) {
+                    List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+                    SecurityContext context = new SecurityContext(imageData.getGroupId());
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                    try {
+                        tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, imageData);
+                        keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, imageData);
+                    } catch (DSOutOfServiceException | DSAccessException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    if (titleAnnotation.isEnabled()) {
+                        annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), image.getTitle()));
+                    }
+
+                    ROIListData rois = new ROIListData();
+                    if (imageImportParameters.isExtractRois()) {
+                        rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
+                    }
+
+                    dataBatch.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                }
+            } catch (FormatException | IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (FormatException | IOException e) {
-            throw new RuntimeException(e);
         }
     }
 

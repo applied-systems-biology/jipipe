@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.extensions.omero.nodes.download;
 
 import omero.gateway.SecurityContext;
+import omero.gateway.exception.DSAccessException;
+import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.TablesFacility;
 import omero.gateway.model.FileAnnotationData;
 import omero.gateway.model.ImageData;
@@ -33,6 +35,8 @@ import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.extensions.omero.parameters.OMEROKeyValuePairToAnnotationImporter;
+import org.hkijena.jipipe.extensions.omero.parameters.OMEROTagToAnnotationImporter;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
@@ -50,26 +54,27 @@ import java.util.List;
 public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private boolean addKeyValuePairsAsAnnotations = true;
-    private OptionalStringParameter tagAnnotation = new OptionalStringParameter("Tags", true);
     private OptionalStringParameter fileNameAnnotation = new OptionalStringParameter("Filename", true);
+    private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
+    private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
 
 
     public DownloadOMEROTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.keyValuePairToAnnotationImporter = new OMEROKeyValuePairToAnnotationImporter();
+        registerSubParameter(keyValuePairToAnnotationImporter);
+        this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter();
+        registerSubParameter(tagToAnnotationImporter);
     }
 
     public DownloadOMEROTableAlgorithm(DownloadOMEROTableAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
-        this.addKeyValuePairsAsAnnotations = other.addKeyValuePairsAsAnnotations;
-        this.tagAnnotation = new OptionalStringParameter(other.tagAnnotation);
         this.fileNameAnnotation = new OptionalStringParameter(other.fileNameAnnotation);
-    }
-
-    @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        super.runParameterSet(progressInfo, parameterAnnotations);
+        this.keyValuePairToAnnotationImporter = new OMEROKeyValuePairToAnnotationImporter(other.keyValuePairToAnnotationImporter);
+        registerSubParameter(keyValuePairToAnnotationImporter);
+        this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter(other.tagToAnnotationImporter);
+        registerSubParameter(tagToAnnotationImporter);
     }
 
     @Override
@@ -86,8 +91,15 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 TableData table = tablesFacility.getTable(context, fileID);
                 ResultsTableData resultsTableData = OMEROUtils.tableFromOMERO(table);
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-                if (fileNameAnnotation.isEnabled())
+                if (fileNameAnnotation.isEnabled()) {
                     annotations.add(new JIPipeTextAnnotation(fileNameAnnotation.getContent(), fileName));
+                }
+                try {
+                    tagToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, fileAnnotationData);
+                    keyValuePairToAnnotationImporter.createAnnotations(annotations, gateway.getMetadata(), context, fileAnnotationData);
+                } catch (DSOutOfServiceException | DSAccessException e) {
+                    throw new RuntimeException(e);
+                }
                 dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         } catch (Exception e) {
@@ -106,28 +118,6 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.overrideCredentials = overrideCredentials;
     }
 
-    @JIPipeDocumentation(name = "Annotate with tags", description = "Creates an annotation with given key and writes the tags into them in JSON format.")
-    @JIPipeParameter("tag-annotation")
-    public OptionalStringParameter getTagAnnotation() {
-        return tagAnnotation;
-    }
-
-    @JIPipeParameter("tag-annotation")
-    public void setTagAnnotation(OptionalStringParameter tagAnnotation) {
-        this.tagAnnotation = tagAnnotation;
-    }
-
-    @JIPipeDocumentation(name = "Add Key-Value pairs as annotations", description = "Adds OMERO project annotations as JIPipe annotations")
-    @JIPipeParameter("add-key-value-pairs-as-annotations")
-    public boolean isAddKeyValuePairsAsAnnotations() {
-        return addKeyValuePairsAsAnnotations;
-    }
-
-    @JIPipeParameter("add-key-value-pairs-as-annotations")
-    public void setAddKeyValuePairsAsAnnotations(boolean addKeyValuePairsAsAnnotations) {
-        this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
-    }
-
     @JIPipeDocumentation(name = "Annotate with file name", description = "Attach the file name of the table file to the output")
     @JIPipeParameter("file-name-annotation")
     public OptionalStringParameter getFileNameAnnotation() {
@@ -137,6 +127,18 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeParameter("file-name-annotation")
     public void setFileNameAnnotation(OptionalStringParameter fileNameAnnotation) {
         this.fileNameAnnotation = fileNameAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Import key-value pairs", description = "OMERO key-value pairs can be imported into annotations")
+    @JIPipeParameter("key-value-pair-to-annotation-importer")
+    public OMEROKeyValuePairToAnnotationImporter getKeyValuePairToAnnotationImporter() {
+        return keyValuePairToAnnotationImporter;
+    }
+
+    @JIPipeDocumentation(name = "Import tags", description = "OMERO tags can be imported into annotations")
+    @JIPipeParameter("tag-to-annotation-importer")
+    public OMEROTagToAnnotationImporter getTagToAnnotationImporter() {
+        return tagToAnnotationImporter;
     }
 
     @Override

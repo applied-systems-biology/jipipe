@@ -13,158 +13,130 @@
 
 package org.hkijena.jipipe.extensions.omero.nodes.upload;
 
+import omero.ServerError;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
+import omero.gateway.exception.DSAccessException;
+import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
+import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
+import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
+import org.hkijena.jipipe.extensions.omero.parameters.AnnotationsToOMEROKeyValuePairExporter;
+import org.hkijena.jipipe.extensions.omero.parameters.AnnotationsToOMEROTagExporter;
 import org.hkijena.jipipe.extensions.omero.util.OMEROGateway;
 import org.hkijena.jipipe.extensions.omero.util.OMEROImageUploader;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-@JIPipeDocumentation(name = "Upload to OMERO", description = "Uploads an image to OMERO.")
+@JIPipeDocumentation(name = "Upload image to OMERO", description = "Uploads an image to OMERO.")
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
-@JIPipeInputSlot(value = OMEImageData.class, slotName = "Image", autoCreate = true)
-@JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Dataset", autoCreate = true)
-@JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "ID", autoCreate = true)
-public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
-
-    private final Map<Thread, OMEROGateway> currentGateways = new HashMap<>();
-    private final Map<Thread, Map<Long, OMEROImageUploader>> currentUploaders = new HashMap<>();
+@JIPipeInputSlot(value = OMEImageData.class, slotName = "Images", autoCreate = true, description = "The image(s) to upload")
+@JIPipeInputSlot(value = OMERODatasetReferenceData.class, slotName = "Target", autoCreate = true, description = "The data set where the image(s) will be stored")
+@JIPipeOutputSlot(value = OMEROImageReferenceData.class, slotName = "Images", autoCreate = true, description = "Reference to the uploaded image(s)")
+public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
-    private boolean uploadAnnotations = false;
-    private AnnotationQueryExpression uploadedAnnotationsFilter = new AnnotationQueryExpression("");
-    private JIPipeProgressInfo parameterProgressInfo;
+    private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
+
+    private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
+    private final AnnotationsToOMEROTagExporter tagExporter;
 
     public UploadOMEROImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        registerSubParameter(exporter);
+        this.keyValuePairExporter = new AnnotationsToOMEROKeyValuePairExporter();
+        registerSubParameter(keyValuePairExporter);
+        this.tagExporter = new AnnotationsToOMEROTagExporter();
+        registerSubParameter(tagExporter);
     }
 
     public UploadOMEROImageAlgorithm(UploadOMEROImageAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
-        this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
-        this.uploadAnnotations = other.uploadAnnotations;
-        this.uploadedAnnotationsFilter = new AnnotationQueryExpression(other.uploadedAnnotationsFilter);
-        registerSubParameter(exporter);
+        this.fileNameGenerator = new DataExportExpressionParameter(other.fileNameGenerator);
+        this.keyValuePairExporter = new AnnotationsToOMEROKeyValuePairExporter(other.keyValuePairExporter);
+        registerSubParameter(keyValuePairExporter);
+        this.tagExporter = new AnnotationsToOMEROTagExporter(other.tagExporter);
+        registerSubParameter(tagExporter);
     }
 
     @Override
-    public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        this.parameterProgressInfo = progressInfo;
-        super.runParameterSet(progressInfo, parameterAnnotations);
-        for (OMEROGateway gateway : currentGateways.values()) {
-            try {
-                gateway.close();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        for (Map<Long, OMEROImageUploader> threadUploaders : currentUploaders.values()) {
-            for (OMEROImageUploader uploader : threadUploaders.values()) {
-                try {
-                    uploader.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        OMEImageData imageData = dataBatch.getInputData("Images", OMEImageData.class, progressInfo);
+        long datasetId = dataBatch.getInputData("Target", OMERODatasetReferenceData.class, progressInfo).getDatasetId();
 
-    @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<OMEImageData> images = dataBatch.getInputData("Image", OMEImageData.class, progressInfo);
-        ArrayList<JIPipeTextAnnotation> annotations = new ArrayList<>(dataBatch.getMergedTextAnnotations().values());
-        for (OMEImageData image : images) {
-            Path targetPath = getNewScratch();
-            exportImages(image, annotations, targetPath, progressInfo);
-            for (OMERODatasetReferenceData dataset : dataBatch.getInputData("Dataset", OMERODatasetReferenceData.class, progressInfo)) {
-                uploadImages(targetPath, annotations, dataset.getDatasetId(), progressInfo);
-            }
-            try {
-                PathUtils.deleteDirectoryRecursively(targetPath, progressInfo.resolve("Cleanup"));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        // Export image
+        Path tmpDirectory = getNewScratch();
+        String fileName;
+        if(StringUtils.isNullOrEmpty(fileNameGenerator.getExpression())) {
+            fileName = "unnamed";
         }
-    }
+        else {
+            Path outputPath = fileNameGenerator.generatePath(tmpDirectory,
+                    getProjectDirectory(),
+                    getProjectDataDirs(),
+                    imageData.toString(),
+                    dataBatch.getInputRow("Images"),
+                    new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+            fileName = outputPath.getFileName().toString();
+        }
+        Path imagePath = PathUtils.ensureExtension(tmpDirectory.resolve(fileName), ".ome.tif", ".ome.tiff");
+        progressInfo.log("Exporting image to " + imagePath);
+        imageData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tmpDirectory), imagePath.getFileName().toString(), true, progressInfo);
 
-    private void uploadImages(Path targetPath, List<JIPipeTextAnnotation> annotations, long datasetId, JIPipeProgressInfo progressInfo) {
+        // Determine tags/kv-pairs
+        Set<String> tags = new HashSet<>();
+        Map<String, String> kvPairs = new HashMap<>();
+
+        keyValuePairExporter.createKeyValuePairs(kvPairs, dataBatch.getMergedTextAnnotations().values());
+        tagExporter.createTags(tags,  dataBatch.getMergedTextAnnotations().values());
+
+        // Upload to OMERO
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         LoginCredentials credentials = environment.toLoginCredentials();
-        // Create OMERO connection if needed
-        OMEROImageUploader uploader;
-        OMEROGateway gateway;
-        synchronized (this) {
-            gateway = currentGateways.getOrDefault(Thread.currentThread(), null);
-            if (gateway == null) {
-                parameterProgressInfo.log("Creating OMERO gateway for thread " + Thread.currentThread());
-                gateway = new OMEROGateway(credentials, parameterProgressInfo);
-                currentGateways.put(Thread.currentThread(), gateway);
-            }
-            Map<Long, OMEROImageUploader> uploaderMap = currentUploaders.getOrDefault(Thread.currentThread(), null);
-            if (uploaderMap == null) {
-                uploaderMap = new HashMap<>();
-                currentUploaders.put(Thread.currentThread(), uploaderMap);
-            }
-            uploader = uploaderMap.getOrDefault(datasetId, null);
-            if (uploader == null) {
-                parameterProgressInfo.log("Creating OMERO uploader for dataset=" + datasetId + " in thread " + Thread.currentThread());
-                DatasetData dataset = gateway.getDataset(datasetId, -1);
-                uploader = new OMEROImageUploader(credentials, environment.geteMail(), datasetId, new SecurityContext(dataset.getGroupId()), parameterProgressInfo.resolve("Dataset " + datasetId));
-                uploaderMap.put(datasetId, uploader);
+
+        try(OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
+            DatasetData datasetData = gateway.getDataset(datasetId, -1);
+            SecurityContext context = new SecurityContext(datasetData.getGroupId());
+            try (OMEROImageUploader uploader = new OMEROImageUploader(credentials, environment.getEmail(), datasetId, context, progressInfo)) {
+                List<Long> imageIds = uploader.upload(imagePath, tags, kvPairs, gateway, progressInfo);
+                for (Long imageId : imageIds) {
+                    ImageData uploadedImageData = gateway.getImage(imageId, -1);
+                    dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(uploadedImageData, environment), progressInfo);
+                }
+            } catch (DSOutOfServiceException | DSAccessException | ServerError e) {
+                throw new RuntimeException(e);
             }
         }
 
-        List<Path> filePaths = PathUtils.findFilesByExtensionIn(targetPath, ".ome.tif");
-        progressInfo.log("Uploading " + filePaths.size() + " files");
-
-        List<JIPipeTextAnnotation> filteredAnnotations = uploadedAnnotationsFilter.queryAll(annotations);
-        if (!uploadAnnotations) {
-            filteredAnnotations = null;
+        try {
+            PathUtils.deleteDirectoryRecursively(tmpDirectory, progressInfo.resolve("Cleanup"));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        for (Path filePath : filePaths) {
-            for (long imageId : uploader.upload(filePath, filteredAnnotations, gateway)) {
-                getFirstOutputSlot().addData(new OMEROImageReferenceData(imageId), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-            }
-        }
-    }
-
-    private void exportImages(OMEImageData image, List<JIPipeTextAnnotation> annotations, Path targetPath, JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot dummy = new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input).createInstance(this);
-        dummy.addData(image, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-
-        // Export to BioFormats
-        progressInfo.log("Image files will be written into " + targetPath);
-        exporter.writeToFolder(dummy, targetPath, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
@@ -178,32 +150,28 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         this.overrideCredentials = overrideCredentials;
     }
 
-    @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")
-    @JIPipeParameter("exporter")
-    public JIPipeDataByMetadataExporter getExporter() {
-        return exporter;
+    @JIPipeDocumentation(name = "File name", description = "Expression that generates the file name for the OME TIFF to be uploaded. Please note that the directory will be ignored and 'unnamed' will be assumed if " +
+            "no name is provided.")
+    @JIPipeParameter("file-name-generator")
+    public DataExportExpressionParameter getFileNameGenerator() {
+        return fileNameGenerator;
     }
 
-    @JIPipeDocumentation(name = "Upload annotations", description = "Uploads annotations as Key-Value pairs. Use the 'Uploaded annotations' setting to control which annotations to upload.")
-    @JIPipeParameter("upload-annotations")
-    public boolean isUploadAnnotations() {
-        return uploadAnnotations;
+    @JIPipeParameter("file-name-generator")
+    public void setFileNameGenerator(DataExportExpressionParameter fileNameGenerator) {
+        this.fileNameGenerator = fileNameGenerator;
     }
 
-    @JIPipeParameter("upload-annotations")
-    public void setUploadAnnotations(boolean uploadAnnotations) {
-        this.uploadAnnotations = uploadAnnotations;
+    @JIPipeDocumentation(name = "Export annotations as key-value pairs", description = "The following settings allow you to export annotations as key-value pairs")
+    @JIPipeParameter("key-value-pair-exporter")
+    public AnnotationsToOMEROKeyValuePairExporter getKeyValuePairExporter() {
+        return keyValuePairExporter;
     }
 
-    @JIPipeDocumentation(name = "Uploaded annotations", description = "Determines which annotations should be uploaded. ")
-    @JIPipeParameter("uploaded-annotations")
-    public AnnotationQueryExpression getUploadedAnnotationsFilter() {
-        return uploadedAnnotationsFilter;
-    }
-
-    @JIPipeParameter("uploaded-annotations")
-    public void setUploadedAnnotationsFilter(AnnotationQueryExpression uploadedAnnotationsFilter) {
-        this.uploadedAnnotationsFilter = uploadedAnnotationsFilter;
+    @JIPipeDocumentation(name = "Export list annotation as tag", description = "The following settings allow you to export a single list-like annotation as tag list.")
+    @JIPipeParameter("tag-exporter")
+    public AnnotationsToOMEROTagExporter getTagExporter() {
+        return tagExporter;
     }
 
     @Override
