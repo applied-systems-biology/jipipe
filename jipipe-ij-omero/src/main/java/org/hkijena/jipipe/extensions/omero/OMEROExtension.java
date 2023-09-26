@@ -208,7 +208,7 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("omero-project-id", OMEROProjectReferenceData.class, RESOURCES.getIconURLFromResources("omero-project.png"));
         registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, RESOURCES.getIconURLFromResources("omero-dataset.png"));
         registerDatatype("omero-image-id", OMEROImageReferenceData.class, RESOURCES.getIconURLFromResources("omero-image.png"));
-        registerDatatype("omero-image-id", OMEROAnnotationReferenceData.class, RESOURCES.getIconURLFromResources("omero-annotation.png"));
+        registerDatatype("omero-annotation-id", OMEROAnnotationReferenceData.class, RESOURCES.getIconURLFromResources("omero-annotation.png"));
 
         // Data sources
         registerNodeType("omero-image-id-definition", OMEROImageReferenceDataSource.class);
