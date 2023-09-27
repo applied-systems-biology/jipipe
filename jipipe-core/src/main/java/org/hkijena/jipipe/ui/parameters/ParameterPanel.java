@@ -88,6 +88,8 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
     private final boolean withSearchBar;
     private final boolean withoutLabelSeparation;
     private final boolean allowCollapse;
+
+    private boolean onlyPinned;
     private final SearchTextField searchField = new SearchTextField();
     private final Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
     private Context context;
@@ -278,6 +280,15 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
         }
     }
 
+    public boolean isOnlyPinned() {
+        return onlyPinned;
+    }
+
+    public void setOnlyPinned(boolean onlyPinned) {
+        this.onlyPinned = onlyPinned;
+        refreshForm();
+    }
+
     /**
      * Reloads the form. This re-traverses the parameters and recreates the UI elements
      */
@@ -317,11 +328,13 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
             // Hidden parameter groups
             if (rootCollection != null) {
                 if (customIsParameterCollectionVisible == null) {
-                    if (rootCollection != source && !rootCollection.isParameterUIVisible(parameterTree, source))
+                    if (rootCollection != source && !rootCollection.isParameterUIVisible(parameterTree, source)) {
                         hiddenCollections.add(source);
+                    }
                 } else {
-                    if (rootCollection != source && !customIsParameterCollectionVisible.apply(parameterTree, source))
+                    if (rootCollection != source && !customIsParameterCollectionVisible.apply(parameterTree, source)) {
                         hiddenCollections.add(source);
+                    }
                 }
             } else if (sourceNode.getParent() != null && sourceNode.getParent().getCollection() != null) {
                 if (!sourceNode.getParent().getCollection().isParameterUIVisible(parameterTree, source))
@@ -332,10 +345,14 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
             int parameterCount = sourceNode.getParameters().size();
             for (JIPipeParameterAccess parameterAccess : sourceNode.getParameters().values()) {
                 boolean visible;
-                if (customIsParameterVisible == null)
+                if (customIsParameterVisible == null) {
                     visible = (rootCollection != null ? rootCollection.isParameterUIVisible(parameterTree, parameterAccess) : !parameterAccess.isHidden());
-                else
+                } else {
                     visible = (rootCollection != null ? customIsParameterVisible.apply(parameterTree, parameterAccess) : !parameterAccess.isHidden());
+                }
+                if(onlyPinned && !parameterAccess.isPinned()) {
+                    visible = false;
+                }
                 if (!visible) {
                     hiddenAccesses.add(parameterAccess);
                     --parameterCount;

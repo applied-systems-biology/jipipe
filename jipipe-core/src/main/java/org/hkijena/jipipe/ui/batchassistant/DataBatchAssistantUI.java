@@ -268,7 +268,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                 ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface(),
                 null,
-                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_NO_UI);
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_NO_UI | ParameterPanel.NO_EMPTY_GROUP_HEADERS);
         splitPane.setTopComponent(parameterPanel);
     }
 
@@ -276,15 +276,15 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        JButton updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
-        updateCacheButton.setToolTipText("Updates the data cache");
+        JButton updateCacheButton = new JButton("Update predecessor cache", UIUtils.getIconFromResources("actions/cache-predecessors.png"));
+        updateCacheButton.setToolTipText("Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.");
         updateCacheButton.addActionListener(e -> runTestBench.run());
         toolBar.add(updateCacheButton);
         add(toolBar, BorderLayout.NORTH);
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton refreshButton = new JButton("Refresh batches", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        JButton refreshButton = new JButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshButton.setToolTipText("Refreshes the preview of generated batches");
         refreshButton.addActionListener(e -> refreshBatchPreview());
         toolBar.add(refreshButton);
@@ -308,7 +308,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         errorPanel.add(errorLabel, BorderLayout.NORTH);
 
         JTextArea explanation = UIUtils.makeReadonlyBorderlessTextArea("This tool can only work if it knows which metadata columns are available. " +
-                "Such data is stored in the project-wide cache. You might need to generate or update the cache by clicking the 'Update cache' button at the top-right corner.");
+                "Such data is stored in the project-wide cache. You might need to generate or update the cache by clicking the 'Update predecessor cache' button at the top-right corner.");
         explanation.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         errorPanel.add(explanation, BorderLayout.CENTER);
     }

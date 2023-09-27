@@ -1,12 +1,7 @@
 # Data slots
 
-Algorithms process input data to generate output data. The input and output can be 
-addressed as individual *data slots* that are left and right to the colored area of 
-an algorithm node. 
+Nodes process input data to generate output data. To provide inputs and further process outputs, each node has a set of input and output slots that are located at the top (inputs) and 
+the bottom (outputs) of the node.
 
-**Input data slots** are located on the left side
-
-**Output data slots** are located on the right side
-
-Some algorithms allow you to add additional slots. To add another slot, click the ![](resource://icons/actions/list-add.png)
-add button and select which data type the slot should have.
+Some nodes allow you to add additional slots. To add another slot, click the ![](resource://icons/actions/list-add.png)
+add button, select the slot type, and provide a name.

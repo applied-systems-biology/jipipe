@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Merge 2D slices into hyperstack", description = "Merges all incoming 2D slices into a hyperstack. The slice positions within the hyperstack can be controlled via annotations. " +
+@JIPipeDocumentation(name = "Merge 2D slices into hyperstack", description = "Merges all incoming 2D slices into a hyperstack. The slice positions within the hyperstack can be controlled via expressions. " +
         "The node can handle missing and negative slice positions due to a remapping procedure. Please ensure that there are no duplicate locations.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Slices", description = "The 2D slices. Each one should be annotated by the Z, C, and T position", autoCreate = true)
@@ -136,8 +136,8 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Slice Z location", description = "Expression that returns the expected Z location of the slice")
-    @JIPipeParameter("slice-z-location")
+    @JIPipeDocumentation(name = "Assign 2D slice to Z location", description = "Expression that returns the expected Z location of the slice")
+    @JIPipeParameter(value = "slice-z-location", important = true)
     @ExpressionParameterSettings(hint = "per 2D slice")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getSliceZLocation() {
@@ -149,8 +149,8 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
         this.sliceZLocation = sliceZLocation;
     }
 
-    @JIPipeDocumentation(name = "Slice C location", description = "Expression that returns the expected C (channel) location of the slice")
-    @JIPipeParameter("slice-c-location")
+    @JIPipeDocumentation(name = "Assign 2D slice C location", description = "Expression that returns the expected C (channel) location of the slice")
+    @JIPipeParameter(value = "slice-c-location", important = true)
     @ExpressionParameterSettings(hint = "per 2D slice")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getSliceCLocation() {
@@ -162,8 +162,8 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
         this.sliceCLocation = sliceCLocation;
     }
 
-    @JIPipeDocumentation(name = "Slice T location", description = "Expression that returns the expected T (frame) location of the slice")
-    @JIPipeParameter("slice-t-location")
+    @JIPipeDocumentation(name = "Assign 2D slice to T location", description = "Expression that returns the expected T (frame) location of the slice")
+    @JIPipeParameter(value = "slice-t-location", important = true)
     @ExpressionParameterSettings(hint = "per 2D slice")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getSliceTLocation() {
