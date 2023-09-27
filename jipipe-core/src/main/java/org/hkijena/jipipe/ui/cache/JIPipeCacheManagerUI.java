@@ -50,7 +50,7 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
         setLayout(new BorderLayout());
         setOpaque(false);
         setIcon(UIUtils.getIconFromResources("actions/database.png"));
-        UIUtils.addReloadablePopupMenuToComponent(this, menu, this::reloadMenu);
+        UIUtils.addReloadablePopupMenuToButton(this, menu, this::reloadMenu);
     }
 
     private void reloadMenu() {

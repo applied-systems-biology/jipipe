@@ -90,7 +90,7 @@ public class JIPipeCachedDataDisplayCacheControl implements Disposable,
         updateCacheButton = new JButton("Update", UIUtils.getIconFromResources("actions/run-play.png"));
         updateCacheButton.setToolTipText("Updates the cache, so the currently viewed data is updated.");
 
-        JPopupMenu menu = UIUtils.addPopupMenuToComponent(updateCacheButton);
+        JPopupMenu menu = UIUtils.addPopupMenuToButton(updateCacheButton);
 
         JMenuItem updateCacheItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("actions/database.png"));
         updateCacheButton.setToolTipText("Updates the node that contains this viewed data. Intermediate results are discarded.");

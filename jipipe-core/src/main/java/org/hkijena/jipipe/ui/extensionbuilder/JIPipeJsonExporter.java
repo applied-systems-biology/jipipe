@@ -106,7 +106,7 @@ public class JIPipeJsonExporter extends JIPipeGraphEditorUI {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton exportToExtensionButton = new JButton("Export to extension", UIUtils.getIconFromResources("actions/document-export.png"));
-        exportMenu = UIUtils.addPopupMenuToComponent(exportToExtensionButton);
+        exportMenu = UIUtils.addPopupMenuToButton(exportToExtensionButton);
         toolBar.add(exportToExtensionButton);
         reloadExportMenu();
 

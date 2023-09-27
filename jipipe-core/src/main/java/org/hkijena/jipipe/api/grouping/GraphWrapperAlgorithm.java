@@ -18,6 +18,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeGraphRunner;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
@@ -160,7 +161,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             runWithDataPassThrough(progressInfo);
             return;
         }
-        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getDataInputSlots(), progressInfo);
+        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
         for (int i = 0; i < dataBatches.size(); i++) {
             JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, dataBatches.size());
             JIPipeMergingDataBatch dataBatch = dataBatches.get(i);
@@ -291,7 +292,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
@@ -299,7 +300,14 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                     dataBatch.addInputData(inputSlot, row);
                 }
             }
-            return Collections.singletonList(dataBatch);
+
+            // Generate result object
+            JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+            result.setDataBatches(Collections.singletonList(dataBatch));
+            result.setReferenceTextAnnotationColumns(Collections.emptySet());
+
+            return result;
+
         } else {
             JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
             builder.setNode(this);
@@ -336,7 +344,13 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
                 dataBatches.removeAll(incomplete);
             }
-            return dataBatches;
+
+            // Generate result object
+            JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+            result.setDataBatches(dataBatches);
+            result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
+
+            return result;
         }
     }
 

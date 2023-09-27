@@ -41,7 +41,7 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
         add(imagePreview, BorderLayout.WEST);
 
         JButton importButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
-        JPopupMenu importMenu = UIUtils.addPopupMenuToComponent(importButton);
+        JPopupMenu importMenu = UIUtils.addPopupMenuToButton(importButton);
         add(importButton, BorderLayout.CENTER);
 
         JMenuItem openImageItem = new JMenuItem("Open from file ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));

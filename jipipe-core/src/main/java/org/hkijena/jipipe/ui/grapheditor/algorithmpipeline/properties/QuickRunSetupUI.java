@@ -280,7 +280,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel implements JIPi
         errorPanel.add(errorUI, BorderLayout.CENTER);
 
         JButton openLogButton = new JButton("Open log", UIUtils.getIconFromResources("actions/show_log.png"));
-        JPopupMenu openLogMenu = UIUtils.addPopupMenuToComponent(openLogButton);
+        JPopupMenu openLogMenu = UIUtils.addPopupMenuToButton(openLogButton);
 
         JMenuItem openLogInJIPipeItem = new JMenuItem("Open log in JIPipe", UIUtils.getIconFromResources("apps/jipipe.png"));
         openLogInJIPipeItem.addActionListener(e -> openLogInJIPipe());

@@ -16,6 +16,8 @@ package org.hkijena.jipipe.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
 import ij.IJ;
+import net.java.balloontip.BalloonTip;
+import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
@@ -40,6 +42,7 @@ import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -125,6 +128,14 @@ public class UIUtils {
         return label;
     }
 
+    public static JLabel createInfoLabel(String text, String subtext, Icon icon) {
+        JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subtext + "</html>",
+                icon, JLabel.LEFT);
+        label.setAlignmentX(0f);
+        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        return label;
+    }
+
     public static void registerHyperlinkHandler(JTextPane content) {
         content.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -145,6 +156,38 @@ public class UIUtils {
 
     public static Image getJIPipeIcon128() {
         return UIUtils.getIcon128FromResources("jipipe.png").getImage();
+    }
+
+    public static void addBalloonToComponent(AbstractButton button, String text) {
+        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), ModernMetalTheme.PRIMARY5);
+        final BalloonTip balloonTip = new BalloonTip(
+                button,
+                new JLabel(StringUtils.wordWrappedHTML(text, 100)),
+                style,
+                BalloonTip.Orientation.LEFT_ABOVE,
+                BalloonTip.AttachLocation.ALIGNED,
+                30, 10,
+                true
+        );
+        balloonTip.setVisible(false);
+
+        JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/window-close.png"));
+        closeButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        closeButton.setOpaque(false);
+
+        balloonTip.setCloseButton(closeButton, false);
+        button.addActionListener(e -> {
+            balloonTip.refreshLocation();
+            balloonTip.setVisible(true);
+        });
+    }
+
+    public static JButton createBalloonHelpButton(String text) {
+        JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
+        UIUtils.makeFlat25x25(helpButton);
+        UIUtils.addBalloonToComponent(helpButton, text);
+        helpButton.setOpaque(false);
+        return helpButton;
     }
 
     public static void sendTrayNotification(String caption, String message, TrayIcon.MessageType messageType) {
@@ -349,8 +392,8 @@ public class UIUtils {
      * @param target target button
      * @return the popup menu
      */
-    public static JPopupMenu addPopupMenuToComponent(AbstractButton target) {
-        return addPopupMenuToComponent(target, new JPopupMenu());
+    public static JPopupMenu addPopupMenuToButton(AbstractButton target) {
+        return addPopupMenuToButton(target, new JPopupMenu());
     }
 
     /**
@@ -360,7 +403,7 @@ public class UIUtils {
      * @param popupMenu the popup menu
      * @return the popup menu
      */
-    public static JPopupMenu addPopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu) {
+    public static JPopupMenu addPopupMenuToButton(AbstractButton target, JPopupMenu popupMenu) {
         target.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -392,7 +435,7 @@ public class UIUtils {
      * @param reloadFunction the function that is run before showing the popup
      * @return the popup menu
      */
-    public static JPopupMenu addReloadablePopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu, Runnable reloadFunction) {
+    public static JPopupMenu addReloadablePopupMenuToButton(AbstractButton target, JPopupMenu popupMenu, Runnable reloadFunction) {
         target.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -427,7 +470,7 @@ public class UIUtils {
      * @param reloadFunction the function that is run before showing the popup
      * @return the popup menu
      */
-    public static JPopupMenu addReloadableRightClickPopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu, Runnable reloadFunction) {
+    public static JPopupMenu addReloadableRightClickPopupMenuToButton(AbstractButton target, JPopupMenu popupMenu, Runnable reloadFunction) {
         target.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
@@ -462,7 +505,29 @@ public class UIUtils {
      * @param target target button
      * @return the popup menu
      */
-    public static JPopupMenu addRightClickPopupMenuToComponent(AbstractButton target) {
+    public static JPopupMenu addRightClickPopupMenuToComponent(Component target) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    popupMenu.revalidate();
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
+            }
+        });
+        return popupMenu;
+    }
+
+    /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target target button
+     * @return the popup menu
+     */
+    public static JPopupMenu addRightClickPopupMenuToButton(AbstractButton target) {
         JPopupMenu popupMenu = new JPopupMenu();
         target.addMouseListener(new MouseAdapter() {
             @Override
@@ -496,7 +561,7 @@ public class UIUtils {
      * @param target target button
      * @return the popup menu
      */
-    public static JPopupMenu addRightClickPopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu) {
+    public static JPopupMenu addRightClickPopupMenuToButton(AbstractButton target, JPopupMenu popupMenu) {
         target.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {

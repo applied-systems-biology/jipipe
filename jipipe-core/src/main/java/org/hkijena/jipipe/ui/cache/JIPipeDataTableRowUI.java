@@ -109,7 +109,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
 
         if (dataAnnotationStores.size() > 0) {
             dataAnnotationsButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
-            JPopupMenu menu = UIUtils.addPopupMenuToComponent(dataAnnotationsButton);
+            JPopupMenu menu = UIUtils.addPopupMenuToButton(dataAnnotationsButton);
 
             for (Store<JIPipeDataAnnotation> store : dataAnnotationStores) {
                 JMenu subMenu = new JMenu(store.get().getName());
@@ -133,7 +133,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         List<JIPipeTextAnnotation> textAnnotations = dataTable.getTextAnnotations(row);
         if (!textAnnotations.isEmpty()) {
             textAnnotationsButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
-            JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(textAnnotationsButton);
+            JPopupMenu annotationMenu = UIUtils.addPopupMenuToButton(textAnnotationsButton);
             {
                 JMenuItem toTableItem = new JMenuItem("Display as table", UIUtils.getIconFromResources("data-types/results-table.png"));
                 toTableItem.addActionListener(e -> displayAnnotationsAsTable(textAnnotations));
@@ -172,7 +172,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         add(copyButton);
 
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
-        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+        JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
 
         JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/browser-download.png"));
         exportToFolderItem.setToolTipText("Saves the data to a folder. If multiple files are present, the names will be generated according to the selected name.");
@@ -200,7 +200,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                 menuButton.setMaximumSize(new Dimension(1, (int) mainActionButton.getPreferredSize().getHeight()));
                 menuButton.setToolTipText("Shows more actions to display the data. On selecting an entry, " +
                         "it becomes the default action.");
-                JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
+                JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
                 for (JIPipeDataDisplayOperation otherSlotAction : displayOperations) {
                     if (otherSlotAction == mainOperation)
                         continue;

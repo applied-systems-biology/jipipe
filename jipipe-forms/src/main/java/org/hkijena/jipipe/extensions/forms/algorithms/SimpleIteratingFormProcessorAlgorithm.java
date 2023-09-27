@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.forms.algorithms;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -233,7 +234,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         List<JIPipeMergingDataBatch> batches = new ArrayList<>();
         JIPipeDataSlot slot = slots.stream().filter(s -> "Data".equals(s.getName())).findFirst().get();
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
@@ -247,6 +248,12 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             dataBatch.addMergedTextAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
             batches.add(dataBatch);
         }
-        return batches;
+
+        // Generate result object
+        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        result.setDataBatches(batches);
+        result.setReferenceTextAnnotationColumns(Collections.emptySet());
+
+        return result;
     }
 }

@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.forms.algorithms;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -129,7 +130,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             }
         } else {
             // Generate data batches and show the user interface
-            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getDataInputSlots(), progressInfo);
+            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
 
             if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches. Skipping.");
@@ -308,7 +309,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
@@ -346,6 +347,12 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
             dataBatches.removeAll(incomplete);
         }
-        return dataBatches;
+
+        // Generate result object
+        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        result.setDataBatches(dataBatches);
+        result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
+
+        return result;
     }
 }

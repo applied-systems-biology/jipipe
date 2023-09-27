@@ -238,7 +238,7 @@ public abstract class ImageViewerOpacityLUTEditor extends JPanel implements Thum
         JButton moreButton = new JButton("More ...", UIUtils.getIconFromResources("actions/configure.png"));
         UIUtils.makeFlat(moreButton);
         toolBar.add(moreButton);
-        JPopupMenu moreMenu = UIUtils.addPopupMenuToComponent(moreButton);
+        JPopupMenu moreMenu = UIUtils.addPopupMenuToButton(moreButton);
 
         JMenuItem setColorsButton = new JMenuItem("Set to color", UIUtils.getIconFromResources("actions/stock_edit.png"));
         setColorsButton.addActionListener(e -> setToUniformColorByDialog());

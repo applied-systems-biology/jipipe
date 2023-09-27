@@ -153,7 +153,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel implements NodeTemplat
         JButton manageButton = new JButton("Manage", UIUtils.getIconFromResources("actions/wrench.png"));
         toolBar.add(manageButton);
 
-        UIUtils.addPopupMenuToComponent(manageButton, manageMenu);
+        UIUtils.addPopupMenuToButton(manageButton, manageMenu);
 
         initializeManageMenu();
 

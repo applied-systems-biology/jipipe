@@ -79,7 +79,7 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
                 dataBatches.add(dataBatch);
             }
         } else {
-            dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots(), progressInfo);
+            dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
         }
 
         runForm(dataBatches, progressInfo);

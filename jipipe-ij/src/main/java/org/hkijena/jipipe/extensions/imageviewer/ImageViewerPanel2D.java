@@ -393,7 +393,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         toolBar.add(zoomOutButton);
 
         UIUtils.makeBorderlessWithoutMargin(zoomStatusButton);
-        JPopupMenu zoomMenu = UIUtils.addPopupMenuToComponent(zoomStatusButton);
+        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomStatusButton);
         for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
             JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
             double finalZoom = zoom;
@@ -476,7 +476,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
         copyCurrentSliceItem.addActionListener(e -> copyCurrentSliceToClipboard());
         exportMenu.add(copyCurrentSliceItem);
 
-        UIUtils.addPopupMenuToComponent(exportMenuButton, exportMenu);
+        UIUtils.addPopupMenuToButton(exportMenuButton, exportMenu);
         toolBar.add(exportMenuButton);
     }
 

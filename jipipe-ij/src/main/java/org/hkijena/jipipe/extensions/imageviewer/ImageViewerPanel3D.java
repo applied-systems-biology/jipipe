@@ -285,7 +285,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
 
     private void initializeResetViewMenu() {
         JButton resetViewButton = new JButton("Reset view", UIUtils.getIconFromResources("actions/view-restore.png"));
-        JPopupMenu resetViewMenu = UIUtils.addPopupMenuToComponent(resetViewButton);
+        JPopupMenu resetViewMenu = UIUtils.addPopupMenuToButton(resetViewButton);
         resetViewMenu.add(UIUtils.createMenuItem("Top",
                 "Display the image from the top",
                 UIUtils.getIconFromResources("actions/3d-side-top.png"),
@@ -366,7 +366,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         copyCurrentSliceItem.addActionListener(e -> copySnapshotToClipboard());
         exportMenu.add(copyCurrentSliceItem);
 
-        UIUtils.addPopupMenuToComponent(exportMenuButton, exportMenu);
+        UIUtils.addPopupMenuToButton(exportMenuButton, exportMenu);
         toolBar.add(exportMenuButton);
     }
 

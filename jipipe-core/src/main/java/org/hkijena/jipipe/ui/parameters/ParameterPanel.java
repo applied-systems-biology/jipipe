@@ -601,7 +601,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
             JButton optionsButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle4-muted.png"));
             optionsButton.setBorder(null);
 
-            JPopupMenu optionsMenu = UIUtils.addPopupMenuToComponent(optionsButton);
+            JPopupMenu optionsMenu = UIUtils.addPopupMenuToButton(optionsButton);
 
             JMenuItem copyItem = new JMenuItem("Copy", UIUtils.getIconFromResources("actions/edit-copy.png"));
             copyItem.addActionListener(e -> {

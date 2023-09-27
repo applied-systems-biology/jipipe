@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -380,7 +381,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         List<JIPipeMergingDataBatch> batches = new ArrayList<>();
         JIPipeDataSlot slot = slots.get(0);
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
@@ -394,7 +395,13 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             dataBatch.addMergedTextAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
             batches.add(dataBatch);
         }
-        return batches;
+
+        // Generate result object
+        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        result.setDataBatches(batches);
+        result.setReferenceTextAnnotationColumns(Collections.emptySet());
+
+        return result;
     }
 
 }

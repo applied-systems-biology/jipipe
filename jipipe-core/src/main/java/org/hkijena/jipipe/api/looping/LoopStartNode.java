@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.looping;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -76,7 +77,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == GraphWrapperAlgorithm.IterationMode.PassThrough) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
@@ -84,7 +85,13 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
                     dataBatch.addInputData(inputSlot, row);
                 }
             }
-            return Collections.singletonList(dataBatch);
+
+            // Generate result object
+            JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+            result.setDataBatches(Collections.singletonList(dataBatch));
+            result.setReferenceTextAnnotationColumns(Collections.emptySet());
+
+            return result;
         } else {
             JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
             builder.setNode(this);
@@ -122,7 +129,13 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
                 progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
                 dataBatches.removeAll(incomplete);
             }
-            return dataBatches;
+
+            // Generate result object
+            JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+            result.setDataBatches(dataBatches);
+            result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
+
+            return result;
         }
     }
 }

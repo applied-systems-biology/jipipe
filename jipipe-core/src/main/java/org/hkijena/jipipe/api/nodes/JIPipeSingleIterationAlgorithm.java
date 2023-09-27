@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -104,7 +105,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
@@ -112,7 +113,15 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
         builder.setDataAnnotationMergeStrategy(dataBatchGenerationSettings.getDataAnnotationMergeStrategy());
         builder.setReferenceColumns(JIPipeColumMatching.MergeAll, new StringQueryExpression());
-        return builder.build(progressInfo);
+
+        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
+
+        // Generate result object
+        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        result.setDataBatches(dataBatches);
+        result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
+
+        return result;
     }
 
     /**
@@ -159,7 +168,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             return;
         }
 
-        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots(), progressInfo);
+        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
         for (JIPipeMergingDataBatch dataBatch : dataBatches) {
             dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
         }

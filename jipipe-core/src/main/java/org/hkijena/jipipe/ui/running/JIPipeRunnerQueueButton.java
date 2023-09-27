@@ -65,12 +65,13 @@ public class JIPipeRunnerQueueButton extends JButton implements JIPipeWorkbenchA
         UIUtils.setStandardButtonBorder(this);
 
         throbberIcon = new JIPipeRunnerQueueThrobberIcon(this, runnerQueue);
-        UIUtils.addReloadablePopupMenuToComponent(this, menu, this::reloadMenu);
+        UIUtils.addReloadablePopupMenuToButton(this, menu, this::reloadMenu);
     }
 
-    public void makeFlat() {
+    public JIPipeRunnerQueueButton makeFlat() {
         setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
         flatMode = true;
+        return this;
     }
 
     public JIPipeRunnerQueue getRunnerQueue() {

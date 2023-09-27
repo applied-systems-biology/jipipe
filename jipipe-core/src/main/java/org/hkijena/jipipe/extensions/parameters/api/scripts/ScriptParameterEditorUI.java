@@ -110,7 +110,7 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
         toolBar.add(collapseButton);
 
         JButton openIdeButton = new JButton("Open in ...", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
-        JPopupMenu popupMenu = UIUtils.addPopupMenuToComponent(openIdeButton);
+        JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(openIdeButton);
         popupMenu.add(UIUtils.createMenuItem("New tab", "Opens the editor in a new tab", UIUtils.getIconFromResources("actions/tab-new.png"), this::openIDEInTab));
         popupMenu.add(UIUtils.createMenuItem("New window", "Opens the editor in a new window", UIUtils.getIconFromResources("actions/window_new.png"), this::openIdeInNewWindow));
         popupMenu.add(UIUtils.createMenuItem("External editor", "Opens the editor in an external application", UIUtils.getIconFromResources("actions/edit.png"), this::openExternalIde));

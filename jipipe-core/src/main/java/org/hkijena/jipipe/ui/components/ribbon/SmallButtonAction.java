@@ -31,7 +31,7 @@ public class SmallButtonAction extends Ribbon.Action {
         button.setBorder(Ribbon.DEFAULT_BORDER);
 
         if (menuItems.length > 0) {
-            JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
+            JPopupMenu menu = UIUtils.addPopupMenuToButton(button);
             for (JMenuItem item : menuItems) {
                 if (item == null) {
                     menu.addSeparator();

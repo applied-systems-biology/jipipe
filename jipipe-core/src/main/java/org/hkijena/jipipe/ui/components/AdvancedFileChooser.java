@@ -230,8 +230,8 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
                 menu.add(pathItem);
             }
 
-            UIUtils.addPopupMenuToComponent(pathButton, menu);
-            UIUtils.addPopupMenuToComponent(nextButton, menu);
+            UIUtils.addPopupMenuToButton(pathButton, menu);
+            UIUtils.addPopupMenuToButton(nextButton, menu);
         }
 
         Collections.reverse(parents);
@@ -253,7 +253,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             drillDownToolBar.add(nextButton);
 
             JPopupMenu nextMenu = new JPopupMenu();
-            UIUtils.addReloadablePopupMenuToComponent(nextButton, nextMenu, () -> {
+            UIUtils.addReloadablePopupMenuToButton(nextButton, nextMenu, () -> {
                 nextMenu.removeAll();
                 try {
                     Files.list(path).forEach(child -> {

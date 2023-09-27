@@ -127,7 +127,7 @@ public class ParameterTableEditorWindow extends JFrame {
         {
             LargeButtonAction action = new LargeButtonAction("Generate", "Generates new rows", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"));
             JPopupMenu menu = new JPopupMenu();
-            UIUtils.addReloadablePopupMenuToComponent(action.getButton(), menu, () -> {
+            UIUtils.addReloadablePopupMenuToButton(action.getButton(), menu, () -> {
                 int[] selectedColumns = getSelectedColumns(true);
                 createGenerateMenuFor(selectedColumns, menu);
             });
@@ -136,7 +136,7 @@ public class ParameterTableEditorWindow extends JFrame {
         {
             SmallButtonAction action = new SmallButtonAction("Replace", "Replaces the selected values by generated values", UIUtils.getIconFromResources("actions/edit.png"));
             JPopupMenu menu = new JPopupMenu();
-            UIUtils.addReloadablePopupMenuToComponent(action.getButton(), menu, () -> {
+            UIUtils.addReloadablePopupMenuToButton(action.getButton(), menu, () -> {
                 menu.removeAll();
                 int[] selectedColumns = getSelectedColumns(true);
                 if (selectedColumns.length > 0) {

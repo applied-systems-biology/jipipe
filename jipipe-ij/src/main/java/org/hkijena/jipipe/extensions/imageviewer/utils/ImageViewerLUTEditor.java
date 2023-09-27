@@ -246,7 +246,7 @@ public abstract class ImageViewerLUTEditor extends JPanel implements ThumbListen
         JButton moreButton = new JButton("More ...", UIUtils.getIconFromResources("actions/configure.png"));
         UIUtils.makeFlat(moreButton);
         toolBar.add(moreButton);
-        JPopupMenu moreMenu = UIUtils.addPopupMenuToComponent(moreButton);
+        JPopupMenu moreMenu = UIUtils.addPopupMenuToButton(moreButton);
 
         JMenuItem exportLUTToJSONButton = new JMenuItem("Export LUT as *.json", UIUtils.getIconFromResources("actions/document-export.png"));
         exportLUTToJSONButton.addActionListener(e -> exportLUTToJSON());

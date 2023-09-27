@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -99,7 +100,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setApplyMerging(false);
@@ -125,7 +126,13 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
             }
             dataBatches = limitedBatches;
         }
-        return dataBatches;
+
+        // Generate result object
+        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        result.setDataBatches(dataBatches);
+        result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
+
+        return result;
     }
 
     @Override
@@ -154,7 +161,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                 dataBatches.add(dataBatch);
             }
         } else {
-            dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots(), progressInfo);
+            dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
         }
 
         if (dataBatches == null) {

@@ -45,7 +45,7 @@ public class DataPreviewControlUI extends JPanel implements JIPipeParameterColle
         add(zoomOutButton);
 
         UIUtils.makeBorderlessWithoutMargin(zoomStatusButton);
-        JPopupMenu zoomMenu = UIUtils.addPopupMenuToComponent(zoomStatusButton);
+        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomStatusButton);
         initializeZoomMenu(zoomMenu);
         add(zoomStatusButton);
 

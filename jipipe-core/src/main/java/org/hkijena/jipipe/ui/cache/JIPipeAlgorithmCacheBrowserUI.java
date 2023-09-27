@@ -156,7 +156,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel i
         Ribbon.Band cacheUpdateBand = cacheTask.addBand("Update");
         LargeButtonAction updateCacheAction = new LargeButtonAction("Update cache", "Updates the cache. Intermediate results are not stored", UIUtils.getIcon32FromResources("actions/update-cache.png"), () -> {
         });
-        JPopupMenu updateCacheMenu = UIUtils.addPopupMenuToComponent(updateCacheAction.getButton());
+        JPopupMenu updateCacheMenu = UIUtils.addPopupMenuToButton(updateCacheAction.getButton());
         JMenuItem updateCacheMenuItem = new JMenuItem("Update cache", UIUtils.getIcon16FromResources("actions/update-cache.png"));
         updateCacheMenuItem.addActionListener(e -> updateCache(false));
         updateCacheMenu.add(updateCacheMenuItem);

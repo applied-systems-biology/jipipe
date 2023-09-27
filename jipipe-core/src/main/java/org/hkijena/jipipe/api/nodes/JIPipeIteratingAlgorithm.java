@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -109,7 +110,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setApplyMerging(false);
@@ -148,7 +149,13 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
             dataBatches.removeAll(incomplete);
         }
-        return dataBatches;
+
+        // Generate result object
+        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        result.setDataBatches(dataBatches);
+        result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
+
+        return result;
     }
 
 //    @Override
@@ -240,7 +247,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
         } else {
             // First generate merging data batches
-            List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(getNonParameterInputSlots(), progressInfo);
+            List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
 
             // Check for incomplete batches
             List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();

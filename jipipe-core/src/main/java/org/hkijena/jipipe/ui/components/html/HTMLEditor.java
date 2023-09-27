@@ -377,7 +377,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         modeButton = new JButton(UIUtils.getIconFromResources("actions/arrow-down.png"));
         modeButton.setHorizontalTextPosition(SwingConstants.LEFT);
         UIUtils.makeFlat(modeButton);
-        JPopupMenu modeMenu = UIUtils.addPopupMenuToComponent(modeButton);
+        JPopupMenu modeMenu = UIUtils.addPopupMenuToButton(modeButton);
         {
             JMenuItem compactModeItem = new JMenuItem("Compact", UIUtils.getIconFromResources("actions/edit-select-text.png"));
             compactModeItem.addActionListener(e -> setMode(Mode.Compact));
@@ -406,7 +406,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
         // Insert image
         insertImageButton = new JButton("Image", UIUtils.getIconFromResources("actions/insert-image.png"));
         UIUtils.makeFlat(insertImageButton);
-        JPopupMenu insertImageMenu = UIUtils.addPopupMenuToComponent(insertImageButton);
+        JPopupMenu insertImageMenu = UIUtils.addPopupMenuToButton(insertImageButton);
         {
             JMenuItem insertImageFromFileItem = new JMenuItem("Embed from file ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
             insertImageFromFileItem.addActionListener(e -> insertImageFromFile());

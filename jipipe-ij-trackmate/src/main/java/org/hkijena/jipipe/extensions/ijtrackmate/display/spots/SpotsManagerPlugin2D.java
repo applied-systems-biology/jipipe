@@ -116,7 +116,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             SmallButtonAction colorButton = new SmallButtonAction("Color by ...", "Allows to change how spots are colored", UIUtils.getIconFromResources("actions/colors-rgb.png"));
             visualizationBand.add(colorButton);
             {
-                JPopupMenu colorByMenu = UIUtils.addPopupMenuToComponent(colorButton.getButton());
+                JPopupMenu colorByMenu = UIUtils.addPopupMenuToButton(colorButton.getButton());
                 SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
                     String name = SpotFeature.VALUE_LABELS.get(key);
                     JMenuItem colorByMenuEntry = new JMenuItem(name);
@@ -134,7 +134,7 @@ public class SpotsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             SmallButtonAction labelButton = new SmallButtonAction("Set label to ...", "Allows to change how spots are labeled", UIUtils.getIconFromResources("actions/colors-rgb.png"));
             visualizationBand.add(labelButton);
             {
-                JPopupMenu setLabelMenu = UIUtils.addPopupMenuToComponent(labelButton.getButton());
+                JPopupMenu setLabelMenu = UIUtils.addPopupMenuToButton(labelButton.getButton());
                 {
                     JMenuItem nameItem = new JMenuItem("Name");
                     nameItem.addActionListener(e -> {

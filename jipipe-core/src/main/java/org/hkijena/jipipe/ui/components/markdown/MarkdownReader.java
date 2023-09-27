@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -153,7 +152,7 @@ public class MarkdownReader extends JPanel {
             toolBar.setFloatable(false);
 
             JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/save.png"));
-            JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+            JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
 
             JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
             saveMarkdown.addActionListener(e -> {

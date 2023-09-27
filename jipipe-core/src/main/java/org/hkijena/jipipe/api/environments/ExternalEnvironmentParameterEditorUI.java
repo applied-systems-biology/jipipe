@@ -73,7 +73,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                 BorderFactory.createEmptyBorder(4, 3, 4, 8)));
         installButton.setOpaque(false);
         installButton.setToolTipText("Installs a new environment (if available) or selects an existing one");
-        UIUtils.addReloadablePopupMenuToComponent(installButton, installMenu, this::reloadInstallMenu);
+        UIUtils.addReloadablePopupMenuToButton(installButton, installMenu, this::reloadInstallMenu);
         buttonPanel.add(installButton);
     }
 

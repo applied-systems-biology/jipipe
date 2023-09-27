@@ -376,7 +376,7 @@ public class FormsDialog extends JFrame {
         buttonBar.add(Box.createHorizontalStrut(8));
 
         JButton applyToButton = new JButton("Apply to ...", UIUtils.getIconFromResources("actions/tools-wizard.png"));
-        JPopupMenu applyToMenu = UIUtils.addPopupMenuToComponent(applyToButton);
+        JPopupMenu applyToMenu = UIUtils.addPopupMenuToButton(applyToButton);
 
         JMenuItem applyToAllButton = new JMenuItem("All data batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
         applyToAllButton.addActionListener(e -> {
@@ -415,7 +415,7 @@ public class FormsDialog extends JFrame {
         buttonBar.add(applyToButton);
 
         JButton resetButton = new JButton("Reset ...", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        JPopupMenu resetMenu = UIUtils.addPopupMenuToComponent(resetButton);
+        JPopupMenu resetMenu = UIUtils.addPopupMenuToButton(resetButton);
 
         JMenuItem resetVisitedItem = new JMenuItem("'Reviewed' status only", UIUtils.getIconFromResources("actions/eye-slash.png"));
         resetVisitedItem.setToolTipText("Marks all data batches as not reviewed. This will not change any settings.");

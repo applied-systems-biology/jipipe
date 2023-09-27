@@ -110,7 +110,9 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
             column.setHeaderRenderer(new WrapperColumnHeaderRenderer(new WeakStore<>(dataTable)));
         }
         table.setAutoCreateRowSorter(true);
-        columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+        if(columnModel.getColumnCount() > 1) {
+            columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
+        }
         SwingUtilities.invokeLater(() -> {
             dataTableModel.updateRenderedPreviews();
             UIUtils.packDataTable(table);

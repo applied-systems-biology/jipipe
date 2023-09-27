@@ -80,7 +80,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
 
         JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
         exportButton.setToolTipText("Export whole compendium");
-        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+        JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
         JMenuItem saveMarkdown = new JMenuItem("as Markdown (*.md)", UIUtils.getIconFromResources("mimetypes/text-markdown.png"));
         saveMarkdown.addActionListener(e -> {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", UIUtils.EXTENSION_FILTER_MD);

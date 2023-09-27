@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -122,7 +123,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
@@ -161,7 +162,13 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
             dataBatches.removeAll(incomplete);
         }
-        return dataBatches;
+
+        // Generate result object
+        JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
+        result.setDataBatches(dataBatches);
+        result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
+
+        return result;
     }
 
     /**
@@ -208,7 +215,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             return;
         }
 
-        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots(), progressInfo);
+        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
         for (JIPipeMergingDataBatch dataBatch : dataBatches) {
             dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
         }

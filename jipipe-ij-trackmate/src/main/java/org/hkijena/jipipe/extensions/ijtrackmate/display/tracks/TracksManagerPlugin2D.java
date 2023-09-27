@@ -103,7 +103,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             SmallButtonAction colorButton = new SmallButtonAction("Color by ...", "Allows to change how tracks are colored", UIUtils.getIconFromResources("actions/colors-rgb.png"));
             visualizationBand.add(colorButton);
             {
-                JPopupMenu colorByMenu = UIUtils.addPopupMenuToComponent(colorButton.getButton());
+                JPopupMenu colorByMenu = UIUtils.addPopupMenuToButton(colorButton.getButton());
                 EdgeFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
                     String name = EdgeFeature.VALUE_LABELS.get(key);
                     JMenuItem colorByMenuEntry = new JMenuItem("Edge: " + name);
@@ -134,7 +134,7 @@ public class TracksManagerPlugin2D extends JIPipeImageViewerPlugin2D {
             SmallButtonAction displayModeButton = new SmallButtonAction("Display mode", "Sets the display mode", UIUtils.getIconFromResources("actions/distribute-graph-directed.png"));
             visualizationBand.add(displayModeButton);
             {
-                JPopupMenu displayMenu = UIUtils.addPopupMenuToComponent(displayModeButton.getButton());
+                JPopupMenu displayMenu = UIUtils.addPopupMenuToButton(displayModeButton.getButton());
                 for (DisplaySettings.TrackDisplayMode displayMode : DisplaySettings.TrackDisplayMode.values()) {
                     JMenuItem item = new JMenuItem(displayMode.toString());
                     item.addActionListener(e -> {

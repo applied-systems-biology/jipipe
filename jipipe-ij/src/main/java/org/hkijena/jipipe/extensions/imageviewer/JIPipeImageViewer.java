@@ -190,7 +190,7 @@ public class JIPipeImageViewer extends JPanel implements JIPipeWorkbenchAccess, 
         // Switcher
         toolBar.add(switchModeButton);
         JPopupMenu switchModeMenu = new JPopupMenu();
-        UIUtils.addReloadablePopupMenuToComponent(switchModeButton, switchModeMenu, () -> {
+        UIUtils.addReloadablePopupMenuToButton(switchModeButton, switchModeMenu, () -> {
             switchModeMenu.removeAll();
             switchModeMenu.add(UIUtils.createMenuItem("Switch to 2D", "Display the image in 2D", UIUtils.getIconFromResources("data-types/imgplus-2d.png"), this::switchTo2D));
             switchModeMenu.add(UIUtils.createMenuItem("Switch to 3D", "Display the image in 3D", UIUtils.getIconFromResources("data-types/imgplus-3d.png"), this::switchTo3D));

@@ -68,7 +68,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel implements JIPipeGra
         toolBar.add(Box.createHorizontalGlue());
 
         runButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-play.png"));
-        JPopupMenu runMenu = UIUtils.addPopupMenuToComponent(runButton);
+        JPopupMenu runMenu = UIUtils.addPopupMenuToButton(runButton);
         for (NodeUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
             if (entry == null)
                 runMenu.addSeparator();

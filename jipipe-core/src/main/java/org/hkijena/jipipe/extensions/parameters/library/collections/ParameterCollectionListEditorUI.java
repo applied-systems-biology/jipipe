@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.collections;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterItemParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -83,7 +81,7 @@ public class ParameterCollectionListEditorUI extends JIPipeParameterEditorUI {
 
         JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
         menuButton.setToolTipText("Show additional options");
-        JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
+        JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
         toolBar.add(menuButton);
 
         initializeMoreMenu(menu);
@@ -259,7 +257,7 @@ public class ParameterCollectionListEditorUI extends JIPipeParameterEditorUI {
             });
             buttonPanel.add(handleButton, new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-            JPopupMenu handleMenu = UIUtils.addRightClickPopupMenuToComponent(handleButton);
+            JPopupMenu handleMenu = UIUtils.addRightClickPopupMenuToButton(handleButton);
             handleMenu.add(UIUtils.createMenuItem("Delete", "Removes this item", UIUtils.getIconFromResources("actions/delete.png"), () -> {
                 selectedEntryComponents.clear();
                 selectedEntryComponents.add(entryComponentsList.get(finalI));

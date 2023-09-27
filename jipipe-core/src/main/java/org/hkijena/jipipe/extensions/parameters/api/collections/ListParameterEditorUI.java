@@ -81,7 +81,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
 
         JButton menuButton = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
         menuButton.setToolTipText("Show additional options");
-        JPopupMenu menu = UIUtils.addPopupMenuToComponent(menuButton);
+        JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
         toolBar.add(menuButton);
 
         initializeMoreMenu(menu);
@@ -238,7 +238,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
             });
             buttonPanel.add(handleButton, new GridBagConstraints(0, 1, 1, 1, 0, 0, GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
 
-            JPopupMenu handleMenu = UIUtils.addRightClickPopupMenuToComponent(handleButton);
+            JPopupMenu handleMenu = UIUtils.addRightClickPopupMenuToButton(handleButton);
             handleMenu.add(UIUtils.createMenuItem("Delete", "Removes this item", UIUtils.getIconFromResources("actions/delete.png"), () -> {
                 selectedEntryComponents.clear();
                 selectedEntryComponents.add(entryComponentsList.get(finalI));

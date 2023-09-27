@@ -167,7 +167,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
             toolBar.add(addButton);
         } else {
             JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/add.png"));
-            JPopupMenu popupMenu = UIUtils.addPopupMenuToComponent(addButton);
+            JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(addButton);
             popupMenu.add(UIUtils.createMenuItem("Search ...", null, UIUtils.getIconFromResources("actions/search.png"), this::addParameterByPicker));
             popupMenu.addSeparator();
             for (Class<?> parameterType : quickAccessParameterTypes) {

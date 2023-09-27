@@ -162,7 +162,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             JButton button = new JButton(UIUtils.getIconFromResources("actions/open-menu.png"));
             UIUtils.makeFlat25x25(button);
             button.setToolTipText("Shows the context menu for the selected node. Alternatively, you can also right-click the node");
-            UIUtils.addPopupMenuToComponent(button, menu);
+            UIUtils.addPopupMenuToButton(button, menu);
             toolBar.add(Box.createHorizontalStrut(4), 0);
             toolBar.add(button, 0);
         }
@@ -447,7 +447,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             zoomButton.setText((int) (canvasUI.getZoom() * 100) + "%");
         });
         zoomButton.setBorder(null);
-        JPopupMenu zoomMenu = UIUtils.addPopupMenuToComponent(zoomButton);
+        JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomButton);
         for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
             JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
             double finalZoom = zoom;

@@ -142,7 +142,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
         toolBar.add(Box.createHorizontalGlue());
 
         JButton addGroupButton = new JButton("Add", UIUtils.getIconFromResources("actions/list-add.png"));
-        JPopupMenu popupMenu = UIUtils.addPopupMenuToComponent(addGroupButton);
+        JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(addGroupButton);
         popupMenu.add(UIUtils.createMenuItem("Add empty group", "Adds an empty group", UIUtils.getIconFromResources("actions/list-add.png"), this::addEmptyGroup));
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Add parameter", "Adds a reference to a parameter", UIUtils.getIconFromResources("data-types/parameters.png"), this::addParameterReference));

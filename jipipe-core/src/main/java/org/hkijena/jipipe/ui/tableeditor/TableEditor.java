@@ -220,7 +220,7 @@ public class TableEditor extends FlexContentWorkbenchPanel {
             LargeButtonAction convertButton = new LargeButtonAction("Apply function", "Applies a function to the selected table cells", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"), () -> {
             });
             JPopupMenu convertMenu = new JPopupMenu();
-            UIUtils.addReloadablePopupMenuToComponent(convertButton.getButton(), convertMenu, () -> updateConvertMenu(convertButton.getButton(), convertMenu));
+            UIUtils.addReloadablePopupMenuToButton(convertButton.getButton(), convertMenu, () -> updateConvertMenu(convertButton.getButton(), convertMenu));
             dataBand.add(convertButton);
         }
         dataBand.add(new LargeButtonAction("Plot", "Creates a plot from this table", UIUtils.getIcon32FromResources("actions/labplot-xy-plot-two-axes.png"), this::createNewPlot));

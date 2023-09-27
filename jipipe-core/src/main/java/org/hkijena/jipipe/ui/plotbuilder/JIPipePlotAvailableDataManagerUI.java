@@ -64,7 +64,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel imple
 
         JButton importDataButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
         this.importPopupMenu = new JPopupMenu();
-        UIUtils.addReloadablePopupMenuToComponent(importDataButton, importPopupMenu, this::reloadImportPopupMenu);
+        UIUtils.addReloadablePopupMenuToButton(importDataButton, importPopupMenu, this::reloadImportPopupMenu);
         toolBar.add(importDataButton);
 
         toolBar.add(Box.createHorizontalGlue());

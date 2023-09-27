@@ -103,7 +103,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame implements JIPi
         UIUtils.makeFlat25x25(nextRowButton);
         rowInfoLabel = new JButton("?/?");
         rowInfoLabel.setBorder(null);
-        UIUtils.addReloadablePopupMenuToComponent(rowInfoLabel, rowInfoLabelMenu, this::reloadInfoLabelMenu);
+        UIUtils.addReloadablePopupMenuToButton(rowInfoLabel, rowInfoLabelMenu, this::reloadInfoLabelMenu);
 
         super.setContentPane(contentPane);
         InputMap inputMap = contentPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);

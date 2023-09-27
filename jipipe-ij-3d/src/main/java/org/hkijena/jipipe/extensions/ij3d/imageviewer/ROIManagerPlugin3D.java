@@ -285,7 +285,7 @@ public class ROIManagerPlugin3D extends JIPipeImageViewerPlugin3D implements JIP
             SmallButtonAction modifyEditAction = new SmallButtonAction("Modify", "Modifies the selected ROI", UIUtils.getIconFromResources("actions/edit.png"), () -> {
             });
             JPopupMenu modifyEditMenu = new JPopupMenu();
-            UIUtils.addReloadablePopupMenuToComponent(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
+            UIUtils.addReloadablePopupMenuToButton(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
             modifyBand.add(modifyEditAction);
 
 //            measureBand.add(new SmallButtonAction("Metadata", "Shows the metadata of the selected ROI as table", UIUtils.getIconFromResources("actions/tag.png"), this::showSelectedROIMetadata));

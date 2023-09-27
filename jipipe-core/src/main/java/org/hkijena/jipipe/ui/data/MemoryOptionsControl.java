@@ -34,7 +34,7 @@ public class MemoryOptionsControl extends JIPipeProjectWorkbenchPanel {
     public JButton createOptionsButton() {
         JButton button = new JButton("Memory", UIUtils.getIconFromResources("devices/media-memory.png"));
         JPopupMenu menu = new JPopupMenu();
-        UIUtils.addReloadablePopupMenuToComponent(button, menu, () -> {
+        UIUtils.addReloadablePopupMenuToButton(button, menu, () -> {
             menu.removeAll();
             JMenuItem gcItem = new JMenuItem("Clean memory", UIUtils.getIconFromResources("actions/clear-brush.png"));
             gcItem.setToolTipText("Runs the garbage collector (GC) that attempts to clean unused memory. Please note that this will shortly freeze the application.");
