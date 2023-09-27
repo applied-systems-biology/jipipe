@@ -31,6 +31,7 @@ import org.hkijena.jipipe.extensions.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.extensions.strings.StringData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -53,17 +54,14 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
     private final Runnable runTestBench;
     private final JIPipeParameterCollection batchSettings;
     private final Multimap<String, Store<JIPipeDataTable>> currentCache = HashMultimap.create();
-    AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
-    private JPanel batchPanel;
-    private JPanel errorPanel;
-    private JLabel errorLabel;
-    private JLabel batchPreviewNumberLabel;
-    private JLabel batchPreviewMissingLabel;
-    private JLabel batchPreviewDuplicateLabel;
+    private final MessagePanel messagePanel = new MessagePanel();
+    AutoResizeSplitPane splitPane1 = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
+    AutoResizeSplitPane splitPane2 = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_1);
+    private DataBatchAssistantBatchPanel batchPanel;
     private JIPipeGraphNode batchesNodeCopy;
     private boolean autoRefresh = true;
     private DataBatchGeneratorWorker lastWorker = null;
-    private DataBatchAssistantDataTableUI batchTable;
+
 
 
     /**
@@ -85,9 +83,9 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
     }
 
     private void updateCurrentCache() {
+        messagePanel.clear();
         currentCache.clear();
         if (algorithm.getInputSlots().isEmpty()) {
-            errorLabel.setText("No input slots");
             return;
         }
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
@@ -96,7 +94,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
                     Map<String, JIPipeDataTable> sourceCache = getProject().getCache().query(sourceSlot.getNode(), sourceSlot.getNode().getUUIDInParentGraph(), new JIPipeProgressInfo());
                     if (sourceCache == null || sourceCache.isEmpty()) {
-                        errorLabel.setText("No cached data available");
+                        messagePanel.addMessage(MessagePanel.MessageType.Error, "No cached data available! Click 'Update predecessor cache' to generate the data.", true, true);
                         currentCache.clear();
                         return;
                     }
@@ -105,13 +103,13 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
                         currentCache.put(inputSlot.getName(), new WeakStore<>(cache));
                     } else {
                         currentCache.clear();
-                        errorLabel.setText("No up-to-date cached data available");
+                        messagePanel.addMessage(MessagePanel.MessageType.Error, "Cached data is outdated! Click 'Update predecessor cache' to re-generate the data.", true, true);
                         return;
                     }
                 }
             } else if (!inputSlot.getInfo().isOptional()) {
                 currentCache.clear();
-                errorLabel.setText("Unconnected input slots");
+                messagePanel.addMessage(MessagePanel.MessageType.Error, "Not all inputs are connected to an output!", true, true);
                 return;
             }
         }
@@ -120,26 +118,14 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
     private void updateStatus() {
         updateCurrentCache();
         if (currentCache.isEmpty()) {
-            switchToError();
+//            switchToError();
         } else {
             refreshBatchPreview();
         }
     }
 
-    private void switchToError() {
-        splitPane.setBottomComponent(errorPanel);
-        revalidate();
-        repaint();
-    }
-
-    private void switchToBatches() {
-        splitPane.setBottomComponent(batchPanel);
-        revalidate();
-        repaint();
-    }
-
     private void refreshBatchPreview() {
-        batchPreviewNumberLabel.setText("Please wait ...");
+//        batchPreviewNumberLabel.setText("Please wait ...");
 
         // Stop worker
         if (lastWorker != null) {
@@ -153,25 +139,25 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
             for (Store<JIPipeDataTable> cacheSlotReference : currentCache.get(inputSlot.getName())) {
                 JIPipeDataTable cacheSlot = cacheSlotReference.get();
                 if (cacheSlot == null) {
-                    batchPreviewNumberLabel.setText("Cache was cleared! Aborted.");
+//                    batchPreviewNumberLabel.setText("Cache was cleared! Aborted.");
                     return;
                 }
                 inputSlot.addDataFromTable(cacheSlot, new JIPipeProgressInfo());
             }
         }
         // Generate dry-run
-        batchTable.setDataTable(new JIPipeDataTable(JIPipeData.class));
+        batchPanel.setDataTable(new JIPipeDataTable(JIPipeData.class));
 
         lastWorker = new DataBatchGeneratorWorker(this, batchesNodeCopy);
         lastWorker.execute();
     }
 
     private void displayBatches(List<JIPipeMergingDataBatch> batches, JIPipeGraphNode algorithm) {
-        batchTable.setDataTable(new JIPipeDataTable(DataBatchStatusData.class));
+        batchPanel.setDataTable(new JIPipeDataTable(DataBatchStatusData.class));
 
-        batchPreviewNumberLabel.setText(batches.size() + " batches");
-        batchPreviewMissingLabel.setVisible(false);
-        batchPreviewDuplicateLabel.setVisible(false);
+//        batchPreviewNumberLabel.setText(batches.size() + " batches");
+//        batchPreviewMissingLabel.setVisible(false);
+//        batchPreviewDuplicateLabel.setVisible(false);
 
         JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -215,10 +201,11 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
                 dataAnnotations.add(new JIPipeDataAnnotation(inputSlot.getName(), singletonData));
             }
 
-            if (hasEmpty)
-                batchPreviewMissingLabel.setVisible(true);
-            if (hasMultiple)
-                batchPreviewDuplicateLabel.setVisible(true);
+//            if (hasEmpty)
+//                batchPreviewMissingLabel.setVisible(true);
+//            if (hasMultiple)
+//                batchPreviewDuplicateLabel.setVisible(true);
+
             statusData.setStatusValid(!hasEmpty);
             statusData.setStatusMessage(hasEmpty ? "Missing data!" : (hasMultiple ? "Multiple data per slot" : "One data per slot"));
 
@@ -229,50 +216,37 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
                     JIPipeDataAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
 
-        batchTable.setDataTable(dataTable);
-        switchToBatches();
+        batchPanel.setDataTable(dataTable);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        add(splitPane, BorderLayout.CENTER);
-        initializeToolBar();
+
+        // Setup split panes
+        add(splitPane1, BorderLayout.CENTER);
+        splitPane1.setTopComponent(splitPane2);
+
+        initializeTopPanel();
         initializeParameterPanel();
-        initializeBatchPanel();
-        initializeErrorPanel();
+
+        splitPane1.setBottomComponent(batchPanel);
     }
 
-    private void initializeBatchPanel() {
-        batchPanel = new JPanel(new BorderLayout());
-
-        JToolBar batchPreviewOverview = new JToolBar();
-
-        batchPreviewNumberLabel = new JLabel();
-        batchPreviewOverview.add(batchPreviewNumberLabel);
-        batchPreviewOverview.add(Box.createHorizontalGlue());
-
-        batchPreviewMissingLabel = new JLabel("Missing items found!", UIUtils.getIconFromResources("emblems/warning.png"), JLabel.LEFT);
-        batchPreviewOverview.add(batchPreviewMissingLabel);
-
-        batchPreviewDuplicateLabel = new JLabel("Multiple items per batch", UIUtils.getIconFromResources("emblems/emblem-information.png"), JLabel.LEFT);
-        batchPreviewOverview.add(batchPreviewDuplicateLabel);
-
-        batchPreviewOverview.setFloatable(false);
-        batchPanel.add(batchPreviewOverview, BorderLayout.NORTH);
-
-        this.batchTable = new DataBatchAssistantDataTableUI(getWorkbench(), new JIPipeDataTable(JIPipeData.class));
-        batchPanel.add(batchTable, BorderLayout.CENTER);
-    }
 
     private void initializeParameterPanel() {
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                 ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface(),
                 null,
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_NO_UI | ParameterPanel.NO_EMPTY_GROUP_HEADERS);
-        splitPane.setTopComponent(parameterPanel);
+        splitPane1.setTopComponent(parameterPanel);
     }
 
-    private void initializeToolBar() {
+    private void initializeTopPanel() {
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        add(topPanel, BorderLayout.NORTH);
+
+        // Toolbar
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
@@ -280,7 +254,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         updateCacheButton.setToolTipText("Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.");
         updateCacheButton.addActionListener(e -> runTestBench.run());
         toolBar.add(updateCacheButton);
-        add(toolBar, BorderLayout.NORTH);
+        topPanel.add(toolBar);
 
         toolBar.add(Box.createHorizontalGlue());
 
@@ -298,19 +272,9 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
                 refreshBatchPreview();
         });
         toolBar.add(autoRefreshButton);
-    }
 
-    private void initializeErrorPanel() {
-        errorPanel = new JPanel(new BorderLayout());
-        errorLabel = new JLabel("No cached data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
-        errorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-        errorLabel.setFont(errorLabel.getFont().deriveFont(20.0f));
-        errorPanel.add(errorLabel, BorderLayout.NORTH);
-
-        JTextArea explanation = UIUtils.makeReadonlyBorderlessTextArea("This tool can only work if it knows which metadata columns are available. " +
-                "Such data is stored in the project-wide cache. You might need to generate or update the cache by clicking the 'Update predecessor cache' button at the top-right corner.");
-        explanation.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        errorPanel.add(explanation, BorderLayout.CENTER);
+        // Message panel
+        topPanel.add(messagePanel);
     }
 
     /**
@@ -332,7 +296,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         if (batchesNodeCopy != null) {
             batchesNodeCopy.clearSlotData();
         }
-        batchTable.setDataTable(new JIPipeDataTable(JIPipeData.class));
+        batchPanel.setDataTable(new JIPipeDataTable(JIPipeData.class));
     }
 
     /**
@@ -398,7 +362,8 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         @Override
         public void onProgressStatusUpdated(JIPipeProgressInfo.StatusUpdatedEvent event) {
             SwingUtilities.invokeLater(() -> {
-                assistantUI.batchPreviewNumberLabel.setText("Please wait ... " + event.getMessage());
+                System.out.println("TODO: Update status");
+//                assistantUI.batchPreviewNumberLabel.setText("Please wait ... " + event.getMessage());
             });
         }
     }
