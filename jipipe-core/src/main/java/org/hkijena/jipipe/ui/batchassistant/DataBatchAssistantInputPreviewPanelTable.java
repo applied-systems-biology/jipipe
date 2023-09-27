@@ -185,7 +185,10 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
         tableHighlighter = highlighter;
         table.addHighlighter(highlighter);
 
-        SwingUtilities.invokeLater(() ->  table.repaint(50));
+        SwingUtilities.invokeLater(() -> {
+          revalidate();
+          repaint(50);
+        });
     }
 
     private static class HeaderCellRenderer implements TableCellRenderer {
