@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -22,11 +23,17 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "OMERO Image", description = "An OMERO image ID")
@@ -34,12 +41,20 @@ import java.nio.file.Path;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-image-reference-data.schema.json")
 public class OMEROImageReferenceData implements JIPipeData {
     private long imageId;
+    private String name;
+    private String url;
 
     public OMEROImageReferenceData() {
     }
 
     public OMEROImageReferenceData(long imageId) {
         this.imageId = imageId;
+    }
+
+    public OMEROImageReferenceData(ImageData imageData, OMEROCredentialsEnvironment environment) {
+        this.imageId = imageData.getId();
+        this.name = imageData.getName();
+        this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "image", imageId);
     }
 
     public static OMEROImageReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -60,6 +75,25 @@ public class OMEROImageReferenceData implements JIPipeData {
     public void setImageId(long imageId) {
         this.imageId = imageId;
     }
+    @JsonGetter("name")
+    public String getName() {
+        return name;
+    }
+
+    @JsonSetter("name")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonGetter("url")
+    public String getUrl() {
+        return url;
+    }
+
+    @JsonSetter("url")
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
@@ -78,11 +112,28 @@ public class OMEROImageReferenceData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-
+        if(!StringUtils.isNullOrEmpty(url)) {
+            try {
+                Desktop.getDesktop().browse(URI.create(url));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(workbench.getWindow(), "The OMERO image with ID=" + imageId + " is not associated to a webclient URL. " +
+                            "Please configure the OMERO default credentials or 'Override OMERO credentials' with a URL to the webclient.",
+                    "Display OMERO project",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
     public String toString() {
-        return "OMERO Image ID=" + imageId;
+        if(StringUtils.isNullOrEmpty(name)) {
+            return "OMERO image ID=" + imageId;
+        }
+        else {
+            return "OMERO image '" + name + "' [ID=" + imageId + "]";
+        }
     }
 }

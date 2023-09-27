@@ -92,7 +92,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                     DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             if (node instanceof JIPipeDataBatchAlgorithm) {
                 batchAssistantTabContent = new JPanel(new BorderLayout());
-                tabbedPane.registerSingletonTab("DATA_BATCHES", "Data batches", UIUtils.getIconFromResources("actions/package.png"),
+                tabbedPane.registerSingletonTab("DATA_BATCHES", "Input management", UIUtils.getIconFromResources("actions/package.png"),
                         () -> batchAssistantTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
@@ -137,7 +137,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                         DocumentTabPane.SingletonTabMode.Present);
             }
             if (node instanceof JIPipeDataBatchAlgorithm) {
-                tabbedPane.addTab("Data batches",
+                tabbedPane.addTab("Input management",
                         UIUtils.getIconFromResources("actions/package.png"),
                         new ParameterPanel(getWorkbench(), ((JIPipeDataBatchAlgorithm) node).getGenerationSettingsInterface(), null, ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING),
                         DocumentTabPane.CloseMode.withoutCloseButton);

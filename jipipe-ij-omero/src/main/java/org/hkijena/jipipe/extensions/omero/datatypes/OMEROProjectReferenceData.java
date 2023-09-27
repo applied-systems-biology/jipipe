@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -22,11 +23,18 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.OMEROExtension;
+import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 
 /**
@@ -37,12 +45,20 @@ import java.nio.file.Path;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-project-reference-data.schema.json")
 public class OMEROProjectReferenceData implements JIPipeData {
     private long projectId;
+    private String name;
+    private String url;
 
     public OMEROProjectReferenceData() {
     }
 
     public OMEROProjectReferenceData(long projectId) {
         this.projectId = projectId;
+    }
+
+    public OMEROProjectReferenceData(ProjectData projectData, OMEROCredentialsEnvironment environment) {
+        this.projectId = projectData.getId();
+        this.name = projectData.getName();
+        this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "project", projectId);
     }
 
     public static OMEROProjectReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -63,6 +79,25 @@ public class OMEROProjectReferenceData implements JIPipeData {
     public void setProjectId(long projectId) {
         this.projectId = projectId;
     }
+    @JsonGetter("name")
+    public String getName() {
+        return name;
+    }
+
+    @JsonSetter("name")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonGetter("url")
+    public String getUrl() {
+        return url;
+    }
+
+    @JsonSetter("url")
+    public void setUrl(String url) {
+        this.url = url;
+    }
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
@@ -81,11 +116,28 @@ public class OMEROProjectReferenceData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-
+        if(!StringUtils.isNullOrEmpty(url)) {
+            try {
+                Desktop.getDesktop().browse(URI.create(url));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(workbench.getWindow(), "The OMERO project with ID=" + projectId + " is not associated to a webclient URL. " +
+                    "Please configure the OMERO default credentials or 'Override OMERO credentials' with a URL to the webclient.",
+                    "Display OMERO project",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
     public String toString() {
-        return "OMERO Project ID=" + projectId;
+        if(StringUtils.isNullOrEmpty(name)) {
+            return "OMERO project ID=" + projectId;
+        }
+        else {
+            return "OMERO project '" + name + "' [ID=" + projectId + "]";
+        }
     }
 }

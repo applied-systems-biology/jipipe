@@ -139,6 +139,9 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
      * @param entry the entry
      */
     public void addEntry(JIPipeValidationReportEntry entry) {
+        if(report.contains(entry)) {
+            return;
+        }
         report.add(entry);
 
         JPanel entryPanel = new JPanel(new BorderLayout());
@@ -180,8 +183,12 @@ public class UserFriendlyErrorUI extends FormPanel implements JIPipeWorkbenchAcc
             default:
                 throw new UnsupportedOperationException();
         }
-
-        entryPanel.setBackground(fill);
+        if(entry.getContext() instanceof UnspecifiedValidationReportContext) {
+            entryPanel.setBackground(UIManager.getColor("Panel.background"));
+        }
+        else {
+            entryPanel.setBackground(fill);
+        }
         entryPanel.setBorder(new RoundedLineBorder(border, 1, 4));
 
 

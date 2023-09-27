@@ -282,7 +282,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
         this.tabAnnotation = tabAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm will iterate through multiple inputs at once and apply the workload. " +
+    @JIPipeDocumentation(name = "Input management", description = "This algorithm will iterate through multiple inputs at once and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public JIPipeMergingAlgorithmDataBatchGenerationSettings getDataBatchGenerationSettings() {

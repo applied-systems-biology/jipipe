@@ -22,6 +22,8 @@ import com.google.common.collect.ImmutableBiMap;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -44,10 +46,16 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
     private final JIPipe jiPipe;
     private final BiMap<String, Sheet> registeredSheets = HashBiMap.create();
     private boolean isLoading = false;
+    private final ApplicationSettingsSavedEventEmitter applicationSettingsSavedEventEmitter = new ApplicationSettingsSavedEventEmitter();
+
 
     public JIPipeSettingsRegistry(JIPipe jiPipe) {
 
         this.jiPipe = jiPipe;
+    }
+
+    public ApplicationSettingsSavedEventEmitter getApplicationSettingsSavedEventEmitter() {
+        return applicationSettingsSavedEventEmitter;
     }
 
     /**
@@ -168,6 +176,7 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
         }
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), objectNode);
+            applicationSettingsSavedEventEmitter.emit(new ApplicationSettingsSavedEvent(this, file));
         } catch (IOException e) {
             IJ.handleException(e);
             e.printStackTrace();
@@ -279,6 +288,29 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
 
         public JIPipeParameterCollection getParameterCollection() {
             return parameterCollection;
+        }
+    }
+
+    public static class ApplicationSettingsSavedEvent extends AbstractJIPipeEvent {
+        private final Path settingsFile;
+        public ApplicationSettingsSavedEvent(Object source, Path settingsFile) {
+            super(source);
+            this.settingsFile = settingsFile;
+        }
+
+        public Path getSettingsFile() {
+            return settingsFile;
+        }
+    }
+
+    public interface ApplicationSettingsSavedEventListener {
+        void onApplicationSettingsSaved(ApplicationSettingsSavedEvent event);
+    }
+
+    public static class ApplicationSettingsSavedEventEmitter extends JIPipeEventEmitter<ApplicationSettingsSavedEvent, ApplicationSettingsSavedEventListener> {
+        @Override
+        protected void call(ApplicationSettingsSavedEventListener applicationSettingsSavedEventListener, ApplicationSettingsSavedEvent event) {
+            applicationSettingsSavedEventListener.onApplicationSettingsSaved(event);
         }
     }
 }

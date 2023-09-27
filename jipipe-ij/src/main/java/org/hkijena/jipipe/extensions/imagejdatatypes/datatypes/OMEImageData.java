@@ -1037,7 +1037,7 @@ public class OMEImageData implements JIPipeData {
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        OMEExport(this, storage.getFileSystemPath().resolve(name + ".ome.tif"), exporterSettings);
+        OMEExport(this, PathUtils.ensureExtension(storage.getFileSystemPath().resolve(name), ".ome.tif", ".ome.tiff"), exporterSettings);
     }
 
     @Override

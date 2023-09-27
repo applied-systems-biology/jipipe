@@ -109,10 +109,12 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                     menu.addSeparator();
                 }
                 for (Map.Entry<String, JIPipeDataSlotInfo> infoEntry : entry.getOutputSlots().entrySet()) {
-                    menu.add(UIUtils.createMenuItem("Connect to " + infoEntry.getKey(),
-                            "Connect to the specified slot. Add the node if required.",
-                            JIPipe.getDataTypes().getIconFor(infoEntry.getValue().getDataClass()),
-                            () -> addAndConnectEntry(entry, infoEntry.getValue())));
+                    if(JIPipe.getDataTypes().isConvertible(infoEntry.getValue().getDataClass(), querySlot.getAcceptedDataType())) {
+                        menu.add(UIUtils.createMenuItem("Connect to " + infoEntry.getKey(),
+                                "Connect to the specified slot. Add the node if required.",
+                                JIPipe.getDataTypes().getIconFor(infoEntry.getValue().getDataClass()),
+                                () -> addAndConnectEntry(entry, infoEntry.getValue())));
+                    }
                 }
                 if(entry.canAddOutputSlots()) {
                     menu.addSeparator();
@@ -127,10 +129,12 @@ public class JIPipeNodeFinderDialogUI extends JDialog {
                     menu.addSeparator();
                 }
                 for (Map.Entry<String, JIPipeDataSlotInfo> infoEntry : entry.getInputSlots().entrySet()) {
-                    menu.add(UIUtils.createMenuItem("Connect to " + infoEntry.getKey(),
-                            "Connect to the specified slot. Add the node if required.",
-                            JIPipe.getDataTypes().getIconFor(infoEntry.getValue().getDataClass()),
-                            () -> addAndConnectEntry(entry, infoEntry.getValue())));
+                    if(JIPipe.getDataTypes().isConvertible(querySlot.getAcceptedDataType(), infoEntry.getValue().getDataClass())) {
+                        menu.add(UIUtils.createMenuItem("Connect to " + infoEntry.getKey(),
+                                "Connect to the specified slot. Add the node if required.",
+                                JIPipe.getDataTypes().getIconFor(infoEntry.getValue().getDataClass()),
+                                () -> addAndConnectEntry(entry, infoEntry.getValue())));
+                    }
                 }
                 if(entry.canAddInputSlots()) {
                     menu.addSeparator();

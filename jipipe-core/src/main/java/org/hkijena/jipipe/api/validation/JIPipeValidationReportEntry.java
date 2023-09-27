@@ -3,6 +3,8 @@ package org.hkijena.jipipe.api.validation;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.util.Objects;
+
 /**
  * A validity report message
  */
@@ -104,5 +106,18 @@ public class JIPipeValidationReportEntry {
 
     public String getDetails() {
         return details;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JIPipeValidationReportEntry that = (JIPipeValidationReportEntry) o;
+        return level == that.level && Objects.equals(title, that.title) && Objects.equals(explanation, that.explanation) && Objects.equals(solution, that.solution) && Objects.equals(details, that.details);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(level, title, explanation, solution, details);
     }
 }

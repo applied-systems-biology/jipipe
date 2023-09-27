@@ -15,7 +15,7 @@ See the LICENSE file provided with this code for the full license.
     <packaging>pom</packaging>
     <groupId>org.hkijena</groupId>
     <artifactId>pom-jipipe</artifactId>
-    <version>1.81.1-SNAPSHOT</version>
+    <version>1.82.0-SNAPSHOT</version>
     <name>jipipe</name>
     <description>JIPipe</description>
     <url>https://www.jipipe.org/</url>
@@ -312,6 +312,11 @@ See the LICENSE file provided with this code for the full license.
                 <artifactId>jipipe-scene-3d</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ilastik</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -360,6 +365,7 @@ See the LICENSE file provided with this code for the full license.
         <module>jipipe-ij-trackmate</module>
         <module>jipipe-ij-3d</module>
         <module>jipipe-scene-3d</module>
+        <module>jipipe-ilastik</module>
         <module>jipipe-launcher</module>
     </modules>
 

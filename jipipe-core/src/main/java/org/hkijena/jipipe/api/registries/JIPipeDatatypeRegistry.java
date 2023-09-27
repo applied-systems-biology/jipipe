@@ -231,6 +231,11 @@ public class JIPipeDatatypeRegistry {
      * @param source The dependency that registers the data
      */
     public void register(String id, Class<? extends JIPipeData> klass, JIPipeDependency source) {
+
+        if(registeredDataTypes.containsKey(id) && klass != registeredDataTypes.get(id)) {
+            throw new IllegalArgumentException("CONFLICTING DATA TYPE ID REGISTRATION!!! Data type ID=" + id + " already exists and is assigned to " + registeredDataTypes.get(id) + ", but " + source + " tried to register the ID to " + klass);
+        }
+
         registeredDataTypes.put(id, klass);
         registeredDatatypeSources.put(id, source);
         if (klass.getAnnotationsByType(JIPipeHidden.class).length > 0)

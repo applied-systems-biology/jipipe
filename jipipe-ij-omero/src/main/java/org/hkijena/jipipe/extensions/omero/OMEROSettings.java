@@ -15,80 +15,58 @@ package org.hkijena.jipipe.extensions.omero;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 
-public class OMEROSettings extends AbstractJIPipeParameterCollection {
+import java.util.ArrayList;
+import java.util.List;
+
+public class OMEROSettings extends AbstractJIPipeParameterCollection implements ExternalEnvironmentSettings {
     public static final String ID = "org.hkijena.jipipe:omero";
 
-    private String defaultHost = "localhost";
-
-    private int defaultPort = 4064;
-    private String defaultUserName = "";
-    private PasswordParameter defaultPassword = new PasswordParameter();
-    private String email = "";
+    private OMEROCredentialsEnvironment defaultCredentials = new OMEROCredentialsEnvironment();
+    private OMEROCredentialsEnvironment.List presets = new OMEROCredentialsEnvironment.List();
 
     public static OMEROSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, OMEROSettings.class);
     }
 
-    @JIPipeDocumentation(name = "Default server host", description = "The server host used as default if none is provided. For example <code>localhost</code>, <code>my.server.name</code>, or <code>wss://my.server.name</code>.")
-    @JIPipeParameter("default-host")
-    @StringParameterSettings(monospace = true)
-    public String getDefaultHost() {
-        return defaultHost;
+    @JIPipeDocumentation(name = "Default credentials", description = "The default credentials for the OMERO server")
+    @JIPipeParameter("default-credentials")
+    public OMEROCredentialsEnvironment getDefaultCredentials() {
+        return defaultCredentials;
     }
 
-    @JIPipeParameter("default-host")
-    public void setDefaultHost(String defaultHost) {
-        this.defaultHost = defaultHost;
+    @JIPipeParameter("default-credentials")
+    public void setDefaultCredentials(OMEROCredentialsEnvironment defaultCredentials) {
+        this.defaultCredentials = defaultCredentials;
     }
 
-    @JIPipeDocumentation(name = "Default server port", description = "The server port used as default if none is provided.")
-    @JIPipeParameter("default-port")
-    public int getDefaultPort() {
-        return defaultPort;
+    @JIPipeDocumentation(name = "Presets", description = "The list of presets")
+    @JIPipeParameter("presets")
+    public OMEROCredentialsEnvironment.List getPresets() {
+        return presets;
     }
 
-    @JIPipeParameter("default-port")
-    public void setDefaultPort(int defaultPort) {
-        this.defaultPort = defaultPort;
+    @JIPipeParameter("presets")
+    public void setPresets(OMEROCredentialsEnvironment.List presets) {
+        this.presets = presets;
     }
 
-    @JIPipeDocumentation(name = "Default user name", description = "The user name used as default if none is provided.")
-    @JIPipeParameter("default-user-name")
-    @StringParameterSettings(monospace = true)
-    public String getDefaultUserName() {
-        return defaultUserName;
+    @Override
+    public List<JIPipeExternalEnvironment> getPresetsListInterface(Class<?> environmentClass) {
+        return new ArrayList<>(presets);
     }
 
-    @JIPipeParameter("default-user-name")
-    public void setDefaultUserName(String defaultUserName) {
-        this.defaultUserName = defaultUserName;
-    }
-
-    @JIPipeDocumentation(name = "Default password", description = "The password used as default if none is provided. The password is not saved in clear text, but encoded in Base64, which can be easily decoded by scripts. " +
-            "If you use JIPipe in a GUI environment, it will ask for the credentials when running a pipeline if you do not provide the password. In a CLI environment, the pipeline will fail.")
-    @JIPipeParameter("default-password")
-    public PasswordParameter getDefaultPassword() {
-        return defaultPassword;
-    }
-
-    @JIPipeParameter("default-password")
-    public void setDefaultPassword(PasswordParameter defaultPassword) {
-        this.defaultPassword = defaultPassword;
-    }
-
-    @JIPipeDocumentation(name = "E-Mail", description = "E-Mail that is passed to the OMERO importer.")
-    @JIPipeParameter("email")
-    public String getEmail() {
-        return email;
-    }
-
-    @JIPipeParameter("email")
-    public void setEmail(String email) {
-        this.email = email;
+    @Override
+    public void setPresetsListInterface(List<JIPipeExternalEnvironment> presets, Class<?> environmentClass) {
+        this.presets.clear();
+        for (JIPipeExternalEnvironment preset : presets) {
+            this.presets.add((OMEROCredentialsEnvironment) preset);
+        }
     }
 }

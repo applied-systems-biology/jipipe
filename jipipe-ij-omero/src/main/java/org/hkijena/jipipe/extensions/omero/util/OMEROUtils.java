@@ -30,6 +30,7 @@ import omero.model.NamedValue;
 import omero.model.Pixels;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -70,7 +71,7 @@ public class OMEROUtils {
         return new TableData(columns, data);
     }
 
-    public static Map<String, String> getKeyValuePairAnnotations(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
+    public static Map<String, String> getKeyValuePairs(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
         Map<String, String> keyValuePairs = new HashMap<>();
         for (AnnotationData annotation : metadata.getAnnotations(context, dataObject)) {
             if (annotation instanceof MapAnnotationData) {
@@ -83,7 +84,7 @@ public class OMEROUtils {
         return keyValuePairs;
     }
 
-    public static Set<String> getTagAnnotations(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
+    public static Set<String> getTags(MetadataFacility metadata, SecurityContext context, DataObject dataObject) throws DSAccessException, DSOutOfServiceException {
         Set<String> result = new HashSet<>();
         for (AnnotationData annotation : metadata.getAnnotations(context, dataObject)) {
             if (annotation instanceof TagAnnotationData) {
@@ -181,5 +182,22 @@ public class OMEROUtils {
             }
         }
         return result;
+    }
+
+    public static String tryGetWebClientURL(String webclientUrl, String type, long id) {
+        if(!StringUtils.isNullOrEmpty(webclientUrl)) {
+            webclientUrl = webclientUrl.trim().toLowerCase();
+            if(StringUtils.isNullOrEmpty(webclientUrl)) {
+                return null;
+            }
+            if(!webclientUrl.endsWith("/")) {
+                webclientUrl += "/";
+            }
+            if(!webclientUrl.endsWith("/webclient/")) {
+                webclientUrl += "webclient/";
+            }
+            return webclientUrl + "?show=" + type + "-" + id;
+        }
+        return null;
     }
 }

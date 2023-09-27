@@ -15,6 +15,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -137,6 +138,7 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Slice Z location", description = "Expression that returns the expected Z location of the slice")
     @JIPipeParameter("slice-z-location")
+    @ExpressionParameterSettings(hint = "per 2D slice")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getSliceZLocation() {
         return sliceZLocation;
@@ -149,6 +151,7 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Slice C location", description = "Expression that returns the expected C (channel) location of the slice")
     @JIPipeParameter("slice-c-location")
+    @ExpressionParameterSettings(hint = "per 2D slice")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getSliceCLocation() {
         return sliceCLocation;
@@ -161,6 +164,7 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Slice T location", description = "Expression that returns the expected T (frame) location of the slice")
     @JIPipeParameter("slice-t-location")
+    @ExpressionParameterSettings(hint = "per 2D slice")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getSliceTLocation() {
         return sliceTLocation;

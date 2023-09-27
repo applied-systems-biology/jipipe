@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.omero.util;
 
+import omero.ServerError;
+import omero.api.IQueryPrx;
 import omero.gateway.Gateway;
 import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
@@ -9,10 +11,12 @@ import omero.gateway.facility.BrowseFacility;
 import omero.gateway.facility.DataManagerFacility;
 import omero.gateway.facility.MetadataFacility;
 import omero.gateway.model.*;
+import omero.model.IObject;
+import omero.model.NamedValue;
+import omero.model.TagAnnotation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 
 public class OMEROGateway implements AutoCloseable {
 
@@ -22,7 +26,7 @@ public class OMEROGateway implements AutoCloseable {
     private Gateway gateway;
     private BrowseFacility browseFacility;
     private DataManagerFacility dataManagerFacility;
-    private MetadataFacility metadata;
+    private MetadataFacility metadataFacility;
 
     public OMEROGateway(LoginCredentials credentials, JIPipeProgressInfo progressInfo) {
         this.credentials = credentials;
@@ -36,7 +40,8 @@ public class OMEROGateway implements AutoCloseable {
             user = gateway.connect(credentials);
             browseFacility = gateway.getFacility(BrowseFacility.class);
             dataManagerFacility = gateway.getFacility(DataManagerFacility.class);
-            metadata = gateway.getFacility(MetadataFacility.class);
+            metadataFacility = gateway.getFacility(MetadataFacility.class);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -75,8 +80,8 @@ public class OMEROGateway implements AutoCloseable {
         }
     }
 
-    public MetadataFacility getMetadata() {
-        return metadata;
+    public MetadataFacility getMetadataFacility() {
+        return metadataFacility;
     }
 
     /**
@@ -173,5 +178,38 @@ public class OMEROGateway implements AutoCloseable {
             }
         }
         return null;
+    }
+
+    public Map<String, TagAnnotationData> getKnownTags(SecurityContext context) throws DSOutOfServiceException, ServerError {
+        IQueryPrx qs = gateway.getQueryService(context);
+        List<IObject> tmp = qs.findAll(TagAnnotation.class.getSimpleName(), null);
+        Map<String, TagAnnotationData> knownTags = new HashMap<>();
+        for (IObject object : tmp) {
+            TagAnnotationData tagAnnotationData = new TagAnnotationData((TagAnnotation) object);
+            knownTags.put(tagAnnotationData.getTagValue(), tagAnnotationData);
+        }
+        return knownTags;
+    }
+
+    public void attachKeyValuePairs(Map<String, String> keyValuePairs, DataObject data, SecurityContext context) throws DSOutOfServiceException, DSAccessException {
+        List<NamedValue> namedValues = new ArrayList<>();
+        for (Map.Entry<String, String> entry : keyValuePairs.entrySet()) {
+            namedValues.add(new NamedValue(entry.getKey(), entry.getValue()));
+        }
+        MapAnnotationData mapAnnotationData = new MapAnnotationData();
+        mapAnnotationData.setContent(namedValues);
+        mapAnnotationData.setNameSpace(MapAnnotationData.NS_CLIENT_CREATED);
+        dataManagerFacility.attachAnnotation(context, mapAnnotationData, data);
+    }
+
+    public void attachTags(Set<String> tags, DataObject data, SecurityContext context) throws DSOutOfServiceException, DSAccessException, ServerError {
+        Map<String, TagAnnotationData> knownTags = getKnownTags(context);
+        for (String tag : tags) {
+            TagAnnotationData tagAnnotationData = knownTags.getOrDefault(tag, null);
+            if(tagAnnotationData == null) {
+                tagAnnotationData = new TagAnnotationData(tag);
+            }
+            dataManagerFacility.attachAnnotation(context, tagAnnotationData, data);
+        }
     }
 }

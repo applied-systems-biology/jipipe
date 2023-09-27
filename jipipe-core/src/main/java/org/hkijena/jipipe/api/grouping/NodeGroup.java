@@ -312,7 +312,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         emitParameterStructureChangedEvent();
     }
 
-    @JIPipeDocumentation(name = "Data batch generation", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
+    @JIPipeDocumentation(name = "Input management", description = "Only used if the graph iteration mode is not set to 'Pass data through'. " +
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)

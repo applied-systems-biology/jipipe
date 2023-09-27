@@ -32,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -64,7 +65,7 @@ public class WebUtils {
                         ExpressionVariables variables = new ExpressionVariables();
                         variables.set("output_file", outputFile.toAbsolutePath().toString());
                         variables.set("url", url.toString());
-                        ProcessUtils.runProcess(process, variables, progressInfo);
+                        ProcessUtils.runProcess(process, variables, Collections.emptyMap(), true, progressInfo);
                     }
 
                     if (Files.isRegularFile(outputFile)) {

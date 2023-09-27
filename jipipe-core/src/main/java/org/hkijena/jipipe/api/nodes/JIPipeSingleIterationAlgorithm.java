@@ -281,7 +281,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         return super.isParameterUIVisible(tree, access);
     }
 
-    @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm can have multiple inputs. " +
+    @JIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. " +
             "This node merges all data of all inputs into one batch. Here you can determine how annotations and data annotations are copied to the output.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.omero.datatypes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import omero.gateway.model.DatasetData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -22,11 +23,17 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
+import org.hkijena.jipipe.extensions.omero.util.OMEROUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.swing.*;
+import java.awt.*;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "OMERO Dataset", description = "An OMERO dataset ID")
@@ -34,12 +41,20 @@ import java.nio.file.Path;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-dataset-reference-data.schema.json")
 public class OMERODatasetReferenceData implements JIPipeData {
     private long datasetId;
+    private String name;
+    private String url;
 
     public OMERODatasetReferenceData() {
     }
 
     public OMERODatasetReferenceData(long datasetId) {
         this.datasetId = datasetId;
+    }
+
+    public OMERODatasetReferenceData(DatasetData dataset, OMEROCredentialsEnvironment environment) {
+        this.datasetId = dataset.getId();
+        this.name = dataset.getName();
+        this.url = OMEROUtils.tryGetWebClientURL(environment.getWebclientUrl(), "dataset", datasetId);
     }
 
     public static OMERODatasetReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -61,6 +76,26 @@ public class OMERODatasetReferenceData implements JIPipeData {
         this.datasetId = datasetId;
     }
 
+    @JsonGetter("name")
+    public String getName() {
+        return name;
+    }
+
+    @JsonSetter("name")
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @JsonGetter("url")
+    public String getUrl() {
+        return url;
+    }
+
+    @JsonSetter("url")
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         Path jsonFile = storage.getFileSystemPath().resolve(name + ".json");
@@ -78,11 +113,30 @@ public class OMERODatasetReferenceData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-
+        if(!StringUtils.isNullOrEmpty(url)) {
+            try {
+                Desktop.getDesktop().browse(URI.create(url));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else {
+            JOptionPane.showMessageDialog(workbench.getWindow(), "The OMERO dataset with ID=" + datasetId + " is not associated to a webclient URL. " +
+                            "Please configure the OMERO default credentials or 'Override OMERO credentials' with a URL to the webclient.",
+                    "Display OMERO project",
+                    JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
     public String toString() {
-        return "OMERO dataset ID=" + datasetId;
+        if(StringUtils.isNullOrEmpty(name)) {
+            return "OMERO dataset ID=" + datasetId;
+        }
+        else {
+            return "OMERO dataset '" + name + "' [ID=" + datasetId + "]";
+        }
     }
+
+
 }
