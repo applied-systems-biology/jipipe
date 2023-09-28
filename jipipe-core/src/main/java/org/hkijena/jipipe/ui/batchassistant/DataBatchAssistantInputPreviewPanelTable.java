@@ -1,33 +1,34 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.border.DropShadowBorder;
-import org.jdesktop.swingx.decorator.ColorHighlighter;
-import org.jdesktop.swingx.decorator.ComponentAdapter;
-import org.jdesktop.swingx.decorator.HighlightPredicate;
-import org.jdesktop.swingx.decorator.Highlighter;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.*;
 
 public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
 
@@ -40,7 +41,9 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
     private final boolean shouldLimitData;
     private boolean hasLimitedData;
     private final JXTable table = new JXTable();
-    private Highlighter tableHighlighter;
+    private final DefaultTableModel model = new DefaultTableModel();
+    private JIPipeDataBatchGenerationResult dataBatchGenerationResult;
+    private Multimap<Integer, Integer> dataBatchMapping = HashMultimap.create();
 
     public DataBatchAssistantInputPreviewPanelTable(DataBatchAssistantInputPreviewPanel previewPanel, JIPipeInputDataSlot inputSlot, boolean shouldLimitData) {
         this.previewPanel = previewPanel;
@@ -76,57 +79,95 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
         if (stores.isEmpty()) {
             add(UIUtils.createInfoLabel("No cached data", "Please click 'Update predecessor cache'", UIUtils.getIcon32FromResources("actions/update-cache.png")), BorderLayout.CENTER);
         } else {
-            ResultsTableData model = new ResultsTableData();
-            for (Store<JIPipeDataTable> store : stores) {
-                JIPipeDataTable dataTable = store.get();
-                if (dataTable != null) {
-                    AnnotationTableData annotationTable = dataTable.toAnnotationTable(false);
+            createModel(stores);
+            initializeTable();
+        }
+    }
 
-                    // Must copy manually due to limit
-                    for (int i = 0; i < annotationTable.getRowCount(); i++) {
-                        if(shouldLimitData && model.getRowCount() >= LIMITED_DATA_LIMIT) {
-                            hasLimitedData = true;
-                            break;
-                        }
+    private void createModel(Collection<Store<JIPipeDataTable>> stores) {
+        // Collect data
+        List<JIPipeWeakDataTableDataSource> sourceColumn = new ArrayList<>();
+        Map<String, List<JIPipeTextAnnotation>> annotationColumns = new HashMap<>();
 
-                        int targetRow = model.addRow();
-                        for (int j = 0; j < annotationTable.getColumnCount(); j++) {
-                            model.setValueAt(annotationTable.getValueAsString(i, j), targetRow, annotationTable.getColumnName(j));
+        for (Store<JIPipeDataTable> store : stores) {
+            JIPipeDataTable dataTable = store.get();
+            if (dataTable != null) {
+                AnnotationTableData annotationTable = dataTable.toAnnotationTable(false);
+
+                // Must copy manually due to limit
+                for (int i = 0; i < annotationTable.getRowCount(); i++) {
+                    if (shouldLimitData && sourceColumn.size() >= LIMITED_DATA_LIMIT) {
+                        hasLimitedData = true;
+                        break;
+                    }
+
+                    // Track the source
+                    sourceColumn.add(new JIPipeWeakDataTableDataSource(dataTable, i));
+
+                    // Add the annotations
+                    for (JIPipeTextAnnotation textAnnotation : dataTable.getTextAnnotations(i)) {
+                        List<JIPipeTextAnnotation> target = annotationColumns.getOrDefault(textAnnotation.getName(), null);
+                        if (target == null) {
+                            target = new ArrayList<>();
+                            for (int j = 0; j < sourceColumn.size() - 1; j++) {
+                                target.add(null);
+                            }
+                            annotationColumns.put(textAnnotation.getName(), target);
                         }
+                        target.add(textAnnotation);
                     }
                 }
-
-            }
-
-            if (model.getColumnCount() == 0) {
-                add(UIUtils.createInfoLabel("No columns", "This input contains no text annotation columns", UIUtils.getIcon32FromResources("actions/tag.png")), BorderLayout.CENTER);
-            } else {
-
-                if(hasLimitedData) {
-                    int row = model.addRow();
-                    for (int i = 0; i < model.getColumnCount(); i++) {
-                        model.setValueAt("...", row, i);
-                    }
-                }
-
-                initializeTable(model);
             }
         }
 
+        // Create columns
+        model.addColumn("{data}", sourceColumn.toArray());
+        model.addColumn("{id}", sourceColumn.toArray());
+        for (Map.Entry<String, List<JIPipeTextAnnotation>> entry : annotationColumns.entrySet()) {
+            model.addColumn(entry.getKey(), entry.getValue().toArray(new JIPipeTextAnnotation[0]));
+        }
+
+        if (hasLimitedData) {
+            String[] arr = new String[model.getColumnCount()];
+            Arrays.fill(arr, "...");
+            model.addRow(arr);
+        }
     }
 
-    private void initializeTable(ResultsTableData model) {
+    private void initializeTable() {
 
         table.setModel(model);
         table.setEditable(false);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
-            column.setHeaderRenderer(new HeaderCellRenderer());
+            column.setHeaderRenderer(new HeaderCellRenderer(this));
         }
+        table.setDefaultRenderer(Object.class, new ContentCellRenderer(this));
 
         // Popup menu for copying
+        initializeTableContextMenu();
+
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(table.getTableHeader(), BorderLayout.NORTH);
+        tablePanel.add(table, BorderLayout.CENTER);
+        add(tablePanel, BorderLayout.CENTER);
+
+        if (model.getColumnCount() > 0) {
+            table.getColumnExt(0).setMinWidth(100);
+            table.getColumnExt(0).setMaxWidth(100);
+            table.getColumnExt(0).setPreferredWidth(100);
+        }
+        if (model.getColumnCount() > 1) {
+            table.getColumnExt(1).setMinWidth(100);
+            table.getColumnExt(1).setMaxWidth(100);
+            table.getColumnExt(1).setPreferredWidth(100);
+        }
+    }
+
+    private void initializeTableContextMenu() {
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -137,6 +178,9 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
                         table.changeSelection(row, col, false, false);
                     }
                 }
+                else if(SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+                    displaySelectedData();
+                }
             }
         });
         JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToComponent(table);
@@ -146,7 +190,10 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
             if (viewRow >= 0 && viewColumn >= 0) {
                 int modelRow = table.convertRowIndexToModel(viewRow);
                 int modelColumn = table.convertColumnIndexToModel(viewColumn);
-                UIUtils.copyToClipboard(model.getValueAsString(modelRow, modelColumn));
+                Object value = model.getValueAt(modelRow, modelColumn);
+                if (value instanceof JIPipeTextAnnotation) {
+                    UIUtils.copyToClipboard(((JIPipeTextAnnotation) value).getValue());
+                }
             }
         }));
         popupMenu.add(UIUtils.createMenuItem("Copy annotation name", "Copies the column name of the highlighted column", UIUtils.getIconFromResources("actions/edit-copy.png"), () -> {
@@ -156,51 +203,161 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
                 UIUtils.copyToClipboard(model.getColumnName(modelColumn));
             }
         }));
+        popupMenu.addSeparator();
+        popupMenu.add(UIUtils.createMenuItem("Display data", "Displays the selected data", UIUtils.getIconFromResources("actions/search.png"), this::displaySelectedData));
+    }
 
-        add(UIUtils.boxVertical(table.getTableHeader(), table), BorderLayout.CENTER);
+    private void displaySelectedData() {
+        int viewRow = table.getSelectedRow();
+        int viewColumn = table.getSelectedColumn();
+        if (viewRow >= 0 && viewColumn >= 0) {
+            int modelRow = table.convertRowIndexToModel(viewRow);
+            Object value = model.getValueAt(modelRow, 0);
+            if(value instanceof JIPipeWeakDataTableDataSource) {
+                JIPipeWeakDataTableDataSource dataSource = (JIPipeWeakDataTableDataSource) value;
+                JIPipeDataTable dataTable = dataSource.getDataTable();
+                if(dataTable != null) {
+                    JIPipeData data = dataTable.getData(dataSource.getRow(), JIPipeData.class, new JIPipeProgressInfo());
+                    JIPipeDataDisplayOperation mainOperation = JIPipeDataTableRowUI.getMainOperation(data.getClass());
+                    if(mainOperation != null) {
+                        mainOperation.display(dataTable, dataSource.getRow(), previewPanel.getWorkbench(), false);
+                    }
+                    else {
+                        data.display(data.toString(), previewPanel.getWorkbench(), dataSource);
+                    }
+                }
+            }
+        }
     }
 
     public void highlightResults(JIPipeDataBatchGenerationResult dataBatchGenerationResult) {
 
-        // Header highlight
-        TableColumnModel columnModel = table.getColumnModel();
-        for (int i = 0; i < columnModel.getColumnCount(); ++i) {
-            TableColumn column = columnModel.getColumn(i);
-            ((HeaderCellRenderer)column.getHeaderRenderer()).setHighlightedColumns(dataBatchGenerationResult.getReferenceTextAnnotationColumns());
+        this.dataBatchGenerationResult = dataBatchGenerationResult;
+
+        // Generate data batch mapping
+        this.dataBatchMapping.clear();
+        List<JIPipeMergingDataBatch> dataBatches = dataBatchGenerationResult.getDataBatches();
+        for (int dataBatchIndex = 0; dataBatchIndex < dataBatches.size(); dataBatchIndex++) {
+            JIPipeMergingDataBatch dataBatch = dataBatches.get(dataBatchIndex);
+            for (Integer inputRow : dataBatch.getInputRows(inputSlot.getName())) {
+                dataBatchMapping.put(inputRow, dataBatchIndex);
+            }
         }
 
-        // Cell highlighters
-        if(tableHighlighter != null) {
-            table.removeHighlighter(tableHighlighter);
-        }
-
-        final HighlightPredicate predicate = (renderer, adapter) -> dataBatchGenerationResult.getReferenceTextAnnotationColumns()
-                .contains(adapter.getColumnName(adapter.convertColumnIndexToModel(adapter.column)));
-
-        ColorHighlighter highlighter = new ColorHighlighter(
-                predicate,
-                COLOR_HIGHLIGHT_CELL,   // background color
-                null);       // no change in foreground color
-
-        tableHighlighter = highlighter;
-        table.addHighlighter(highlighter);
 
         SwingUtilities.invokeLater(() -> {
-          revalidate();
-          repaint(50);
+            revalidate();
+            repaint(50);
         });
+    }
+
+    private static class ContentCellRenderer extends JLabel implements TableCellRenderer {
+
+        private final DataBatchAssistantInputPreviewPanelTable previewPanelTable;
+
+        private final Color defaultForeground = UIManager.getColor("Table.foreground");
+        private final Color defaultBackground = UIManager.getColor("Table.background");
+
+        private ContentCellRenderer(DataBatchAssistantInputPreviewPanelTable previewPanelTable) {
+            this.previewPanelTable = previewPanelTable;
+            setOpaque(true);
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+            setForeground(defaultForeground);
+            setBackground(defaultBackground);
+            setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            setIcon(null);
+
+            int dataBatchIndex = -1;
+            if (previewPanelTable.dataBatchMapping != null && table.getModel().getColumnCount() > 0) {
+                Object obj = table.getModel().getValueAt(table.convertRowIndexToView(row), 0);
+                if(obj instanceof JIPipeWeakDataTableDataSource) {
+                    JIPipeWeakDataTableDataSource dataSource = (JIPipeWeakDataTableDataSource) obj;
+                    Collection<Integer> indices = previewPanelTable.dataBatchMapping.get(dataSource.getRow());
+                    if (indices.size() > 1) {
+                        dataBatchIndex = Integer.MAX_VALUE;
+                    } else if (indices.size() == 1) {
+                        dataBatchIndex = indices.iterator().next();
+                    }
+                }
+            }
+
+
+            if (value instanceof JIPipeTextAnnotation) {
+                JIPipeTextAnnotation textAnnotation = (JIPipeTextAnnotation) value;
+
+                String columnName = table.getColumnName(column);
+                if (previewPanelTable.dataBatchGenerationResult != null && previewPanelTable.dataBatchGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
+                    setBackground(COLOR_HIGHLIGHT_CELL);
+                    setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+                }
+                setText(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(textAnnotation.getValue())));
+
+                if(dataBatchIndex >= 0 && dataBatchIndex != Integer.MAX_VALUE) {
+                    setForeground(Color.getHSBColor(1.0f * dataBatchIndex / previewPanelTable.dataBatchGenerationResult.getDataBatches().size(), 0.6f, 0.5f));
+                }
+
+            } else if (value instanceof JIPipeWeakDataTableDataSource) {
+
+                if(table.convertColumnIndexToModel(column) == 0) {
+                    // Display the data
+                    JIPipeWeakDataTableDataSource dataSource = (JIPipeWeakDataTableDataSource) value;
+                    JIPipeDataTable dataTable = dataSource.getDataTable();
+                    if(dataTable != null && dataSource.getRow() < dataTable.getRowCount()) {
+                        JIPipeDataItemStore dataItemStore = dataTable.getDataItemStore(dataSource.getRow());
+                        setText(dataItemStore.getStringRepresentation());
+                        setIcon(JIPipe.getDataTypes().getIconFor(dataItemStore.getDataClass()));
+                    }
+                    else {
+                        setText("NA");
+                        setIcon(UIUtils.getIconFromResources("actions/edit-clear-all.png"));
+                    }
+                }
+                else {
+                    if (dataBatchIndex == Integer.MAX_VALUE) {
+                        setForeground(Color.BLUE);
+                        setText("*");
+                    } else if (dataBatchIndex >= 0) {
+                        setIcon(UIUtils.getIconInvertedFromResources("actions/go-right.png"));
+                        setText(String.valueOf(dataBatchIndex));
+                        setBackground(Color.getHSBColor(1.0f * dataBatchIndex / previewPanelTable.dataBatchGenerationResult.getDataBatches().size(), 0.3f, 0.7f));
+                        setForeground(Color.WHITE);
+                    } else {
+                        setForeground(Color.LIGHT_GRAY);
+                        setText("NA");
+                    }
+                }
+
+            } else {
+                String columnName = table.getColumnName(column);
+                if (previewPanelTable.dataBatchGenerationResult != null && previewPanelTable.dataBatchGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
+                    setBackground(COLOR_HIGHLIGHT_CELL);
+                    setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+                }
+                setText(StringUtils.nullToEmpty(value));
+            }
+
+            if (isSelected) {
+                setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY),
+                        BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+            } else {
+                setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            }
+
+            return this;
+        }
     }
 
     private static class HeaderCellRenderer implements TableCellRenderer {
 
-        private Set<String > highlightedColumns = new HashSet<>();
+        private final DataBatchAssistantInputPreviewPanelTable previewPanelTable;
 
-        public Set<String> getHighlightedColumns() {
-            return highlightedColumns;
-        }
-
-        public void setHighlightedColumns(Set<String> highlightedColumns) {
-            this.highlightedColumns = highlightedColumns;
+        private HeaderCellRenderer(DataBatchAssistantInputPreviewPanelTable previewPanelTable) {
+            this.previewPanelTable = previewPanelTable;
         }
 
         @Override
@@ -208,17 +365,26 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
             String columnName = table.getModel().getColumnName(modelColumn);
-            String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                    UIUtils.getIconFromResources("data-types/annotation.png"),
-                    StringUtils.nullToEmpty(value));
+            String html;
+            if (modelColumn == 0) {
+                html = "Data";
+            }
+            else if(modelColumn == 1) {
+                html = "Iteration step";
+            }
+            else {
+                html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
+                        UIUtils.getIconFromResources("data-types/annotation.png"),
+                        StringUtils.nullToEmpty(value));
+            }
 
             Component component = defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
 
-            if(highlightedColumns.contains(columnName)) {
+            if (previewPanelTable.dataBatchGenerationResult != null &&
+                    previewPanelTable.dataBatchGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                 component.setBackground(COLOR_HIGHLIGHT);
                 component.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
-            }
-            else {
+            } else {
                 component.setBackground(UIManager.getColor("TableHeader.background"));
                 component.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
             }
@@ -226,4 +392,5 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
             return component;
         }
     }
+
 }

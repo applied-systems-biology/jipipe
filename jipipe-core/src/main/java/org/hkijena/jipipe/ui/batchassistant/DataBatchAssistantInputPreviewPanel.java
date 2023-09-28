@@ -12,7 +12,7 @@ import java.awt.*;
 
 public class DataBatchAssistantInputPreviewPanel extends JIPipeWorkbenchPanel {
 
-    private static boolean SHOW_ALL_INPUT_DATA = false;
+    private static boolean SHOW_ALL_INPUT_DATA = true;
 
     private final DataBatchAssistantUI dataBatchAssistantUI;
     private final JCheckBox showAllInputsCheck = new JCheckBox("Show all");

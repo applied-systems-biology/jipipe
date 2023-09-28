@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 import java.util.Vector;
 
 /**
@@ -30,7 +31,7 @@ public class TableUtils {
      * @param tableModel the table
      * @return the copy
      */
-    public static DefaultTableModel cloneTableModel(DefaultTableModel tableModel) {
+    public static DefaultTableModel cloneTableModel(TableModel tableModel) {
         DefaultTableModel copy = new DefaultTableModel();
         copy.setColumnCount(tableModel.getColumnCount());
         {
