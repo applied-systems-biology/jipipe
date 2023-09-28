@@ -237,7 +237,6 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         // Generate result object
         JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
         result.setDataBatches(batches);
-        result.setReferenceTextAnnotationColumns(Collections.emptySet());
 
         return result;
     }

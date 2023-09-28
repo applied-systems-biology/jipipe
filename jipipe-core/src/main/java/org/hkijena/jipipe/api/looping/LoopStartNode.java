@@ -88,8 +88,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
 
             // Generate result object
             JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
-            result.setDataBatches(Collections.singletonList(dataBatch));
-            result.setReferenceTextAnnotationColumns(Collections.emptySet());
+            result.setDataBatches(dataBatch);
 
             return result;
         } else {

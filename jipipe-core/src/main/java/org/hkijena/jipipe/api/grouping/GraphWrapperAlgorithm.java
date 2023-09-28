@@ -303,8 +303,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
             // Generate result object
             JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
-            result.setDataBatches(Collections.singletonList(dataBatch));
-            result.setReferenceTextAnnotationColumns(Collections.emptySet());
+            result.setDataBatches(dataBatch);
 
             return result;
 

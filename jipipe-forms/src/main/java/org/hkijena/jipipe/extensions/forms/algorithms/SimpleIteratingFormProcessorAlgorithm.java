@@ -252,7 +252,6 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
         // Generate result object
         JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
         result.setDataBatches(batches);
-        result.setReferenceTextAnnotationColumns(Collections.emptySet());
 
         return result;
     }
