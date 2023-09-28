@@ -29,6 +29,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
 
@@ -273,11 +274,12 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
             setIcon(null);
 
             int dataBatchIndex = -1;
+            Collection<Integer> indices = null;
             if (previewPanelTable.dataBatchMapping != null && table.getModel().getColumnCount() > 0) {
                 Object obj = table.getModel().getValueAt(table.convertRowIndexToView(row), 0);
                 if(obj instanceof JIPipeWeakDataTableDataSource) {
                     JIPipeWeakDataTableDataSource dataSource = (JIPipeWeakDataTableDataSource) obj;
-                    Collection<Integer> indices = previewPanelTable.dataBatchMapping.get(dataSource.getRow());
+                    indices = previewPanelTable.dataBatchMapping.get(dataSource.getRow());
                     if (indices.size() > 1) {
                         dataBatchIndex = Integer.MAX_VALUE;
                     } else if (indices.size() == 1) {
@@ -319,8 +321,9 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
                 }
                 else {
                     if (dataBatchIndex == Integer.MAX_VALUE) {
+                        setIcon(UIUtils.getIconInvertedFromResources("actions/go-right.png"));
                         setForeground(Color.BLUE);
-                        setText("*");
+                        setText(indices.stream().sorted().map(Object::toString).collect(Collectors.joining(", ")));
                     } else if (dataBatchIndex >= 0) {
                         setIcon(UIUtils.getIconInvertedFromResources("actions/go-right.png"));
                         setText(String.valueOf(dataBatchIndex));
