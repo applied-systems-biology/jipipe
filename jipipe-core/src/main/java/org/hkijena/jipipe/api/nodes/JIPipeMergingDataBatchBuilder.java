@@ -353,7 +353,7 @@ public class JIPipeMergingDataBatchBuilder {
             batch.addMergedTextAnnotations(annotations, getAnnotationMergeStrategy());
             batch.addMergedDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
         }
-        return Arrays.asList(batch);
+        return new ArrayList<>(Arrays.asList(batch));
     }
 
     private List<JIPipeMergingDataBatch> applyFlowGraphSolver(JIPipeProgressInfo progressInfo) {
