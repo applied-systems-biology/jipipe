@@ -60,7 +60,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
     private static boolean SHOW_ADVANCED_SETTINGS = false;
 
     private final JIPipeAlgorithm algorithm;
-    private final Runnable runTestBench;
+    private final Runnable runUpdatePredecessorCache;
     private final JIPipeParameterCollection batchSettings;
     private final Multimap<String, Store<JIPipeDataTable>> currentCache = HashMultimap.create();
     private final MessagePanel messagePanel = new MessagePanel();
@@ -76,13 +76,13 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
     /**
      * @param workbenchUI  The workbench UI
      * @param algorithm    the target algorithm
-     * @param runTestBench function that updates the cache
+     * @param runUpdatePredecessorCache function that updates the cache
      */
-    public DataBatchAssistantUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode algorithm, Runnable runTestBench) {
+    public DataBatchAssistantUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode algorithm, Runnable runUpdatePredecessorCache) {
         super(workbenchUI);
         this.algorithm = (JIPipeAlgorithm) algorithm;
         this.batchSettings = ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface();
-        this.runTestBench = runTestBench;
+        this.runUpdatePredecessorCache = runUpdatePredecessorCache;
         this.batchPanel = new DataBatchAssistantBatchPanel(workbenchUI, this);
         this.inputPreviewPanel = new DataBatchAssistantInputPreviewPanel(workbenchUI, this);
         initialize();
@@ -312,7 +312,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
 
         JButton updateCacheButton = new JButton("Update predecessor cache", UIUtils.getIconFromResources("actions/cache-predecessors.png"));
         updateCacheButton.setToolTipText("Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.");
-        updateCacheButton.addActionListener(e -> runTestBench.run());
+        updateCacheButton.addActionListener(e -> updatePredecessorCache());
         toolBar.add(updateCacheButton);
         topPanel.add(toolBar);
 
@@ -333,6 +333,10 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
 
         // Message panel
         topPanel.add(messagePanel);
+    }
+
+    public void updatePredecessorCache() {
+        runUpdatePredecessorCache.run();
     }
 
     /**

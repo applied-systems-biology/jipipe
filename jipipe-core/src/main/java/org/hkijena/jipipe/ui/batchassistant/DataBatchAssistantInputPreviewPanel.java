@@ -39,7 +39,9 @@ public class DataBatchAssistantInputPreviewPanel extends JIPipeWorkbenchPanel {
         });
         groupHeaderPanel.addColumn(showAllInputsCheck);
 
-        groupHeaderPanel.addColumn(UIUtils.createBalloonHelpButton("An overview of the available input data tables and which columns are considered for assigning data into iteration steps"));
+        groupHeaderPanel.addColumn(UIUtils.createBalloonHelpButton("An overview of the available input data tables and which columns are considered for assigning data into iteration steps.\n" +
+                "A green column indicates that the text annotation is used for determining which rows are put together into an iteration step.\n" +
+                "If a row has a unique iteration step, the associated column and its values are highlighted with a color."));
 
         add(groupHeaderPanel, BorderLayout.NORTH);
 

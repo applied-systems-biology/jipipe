@@ -44,7 +44,7 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
     private final JXTable table = new JXTable();
     private final DefaultTableModel model = new DefaultTableModel();
     private JIPipeDataBatchGenerationResult dataBatchGenerationResult;
-    private Multimap<Integer, Integer> dataBatchMapping = HashMultimap.create();
+    private final Multimap<Integer, Integer> dataBatchMapping = HashMultimap.create();
 
     public DataBatchAssistantInputPreviewPanelTable(DataBatchAssistantInputPreviewPanel previewPanel, JIPipeInputDataSlot inputSlot, boolean shouldLimitData) {
         this.previewPanel = previewPanel;
@@ -78,7 +78,12 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
         Collection<Store<JIPipeDataTable>> stores = previewPanel.getDataBatchAssistantUI().getCurrentCache().get(inputSlot.getName());
 
         if (stores.isEmpty()) {
-            add(UIUtils.createInfoLabel("No cached data", "Please click 'Update predecessor cache'", UIUtils.getIcon32FromResources("actions/update-cache.png")), BorderLayout.CENTER);
+//            add(UIUtils.createInfoLabel("No cached data", "Please run 'Update predecessor cache'", UIUtils.getIcon32FromResources("actions/update-cache.png")), BorderLayout.CENTER);
+            JButton updateCacheButton = new JButton("<html><strong>No cached data</strong><br/>Click here to update the predecessor cache</html>", UIUtils.getIcon32FromResources("actions/cache-predecessors.png"));
+            updateCacheButton.setHorizontalAlignment(SwingConstants.LEFT);
+            updateCacheButton.addActionListener(e -> previewPanel.getDataBatchAssistantUI().updatePredecessorCache());
+            updateCacheButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            add(updateCacheButton, BorderLayout.CENTER);
         } else {
             createModel(stores);
             initializeTable();
