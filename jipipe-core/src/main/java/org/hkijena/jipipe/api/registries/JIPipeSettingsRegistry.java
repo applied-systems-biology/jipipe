@@ -228,11 +228,11 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
 
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
-        if (!isLoading) {
-            if (JIPipe.getInstance() != null && JIPipe.getInstance().isInitializing())
-                return;
-            save();
-        }
+//        if (!isLoading) {
+//            if (JIPipe.getInstance() != null && JIPipe.getInstance().isInitializing())
+//                return;
+//            save();
+//        }
     }
 
     /**

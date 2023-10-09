@@ -78,9 +78,9 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private static void configureR(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/R integration");
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/R integration");
+        }
     }
 
     public static void createMissingRNotificationIfNeeded(JIPipeNotificationInbox inbox) {

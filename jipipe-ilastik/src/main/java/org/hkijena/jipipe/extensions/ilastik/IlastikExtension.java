@@ -70,9 +70,9 @@ public class IlastikExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private static void configureIlastik(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/Ilastik");
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Ilastik");
+        }
     }
 
     public static void createMissingIlastikNotificationIfNeeded(JIPipeNotificationInbox inbox) {

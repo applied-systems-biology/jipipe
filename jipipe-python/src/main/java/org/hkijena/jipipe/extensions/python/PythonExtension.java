@@ -109,15 +109,15 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private static void openSettingsPage(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/Python integration");
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Python integration");
+        }
     }
 
     private static void openAdapterSettingsPage(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/Python integration (adapter)");
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Python integration (adapter)");
+        }
     }
 
     public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {

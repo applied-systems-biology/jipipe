@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,16 +55,23 @@ public class OptionalParameterEditorUI extends JIPipeParameterEditorUI {
         removeAll();
 
         // Create toggle button
-        JToggleButton toggle = new JToggleButton("Enabled", UIUtils.getIconFromResources("emblems/check-square.png"));
-        UIUtils.setStandardButtonBorder(toggle);
+        JButton toggle = new JButton("Enabled", UIUtils.getIconFromResources("emblems/checkbox-checked.png"));
+        toggle.setBorder(BorderFactory.createEmptyBorder(4,8,4,16));
         toggle.setToolTipText("If enabled, the parameter is not ignored.");
-        toggle.setSelected(parameter.isEnabled());
-        toggle.setIcon(toggle.isSelected() ? UIUtils.getIconFromResources("emblems/check-square.png") :
-                UIUtils.getIconFromResources("emblems/empty-square.png"));
+        boolean selected = parameter.isEnabled();
+//        toggle.setSelected(parameter.isEnabled());
+        toggle.setIcon(selected ? UIUtils.getIconFromResources("emblems/checkbox-checked.png") :
+                UIUtils.getIconFromResources("emblems/checkbox-unchecked.png"));
         toggle.addActionListener(e -> {
-            parameter.setEnabled(toggle.isSelected());
+            parameter.setEnabled(!selected);
             setParameter(parameter, true);
         });
+        if(selected) {
+            setBorder(new RoundedLineBorder(new Color(0x5CB85C), 1, 3));
+        }
+        else {
+            setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 3));
+        }
         add(toggle, BorderLayout.WEST);
 
         OptionalParameterContentAccess<?> access = new OptionalParameterContentAccess(getParameterAccess(), parameter);

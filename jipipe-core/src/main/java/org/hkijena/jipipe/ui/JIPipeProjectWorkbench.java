@@ -36,6 +36,7 @@ import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
+import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -71,6 +72,7 @@ import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URI;
@@ -80,6 +82,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * UI around an {@link JIPipeProject}
@@ -90,7 +93,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
     public static final String TAB_LICENSE = "LICENSE";
     public static final String TAB_COMPARTMENT_EDITOR = "COMPARTMENT_EDITOR";
     public static final String TAB_PROJECT_SETTINGS = "PROJECT_SETTINGS";
-    public static final String TAB_APPLICATION_SETTINGS = "APPLICATION_SETTINGS";
     public static final String TAB_PLUGIN_MANAGER = "PLUGIN_MANAGER";
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
@@ -232,11 +234,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
                 "Project settings",
                 UIUtils.getIconFromResources("actions/wrench.png"),
                 () -> new JIPipeProjectSettingsUI(this),
-                DocumentTabPane.SingletonTabMode.Hidden);
-        documentTabPane.registerSingletonTab(TAB_APPLICATION_SETTINGS,
-                "Application settings",
-                UIUtils.getIconFromResources("apps/jipipe.png"),
-                () -> new JIPipeApplicationSettingsUI(this),
                 DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PLUGIN_MANAGER,
                 "Plugin manager",
@@ -525,7 +522,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         JMenuItem openApplicationSettingsButton = new JMenuItem("Application settings", UIUtils.getIconFromResources("apps/jipipe.png"));
         openApplicationSettingsButton.setToolTipText("Opens the application settings");
         openApplicationSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
-        openApplicationSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_APPLICATION_SETTINGS));
+        openApplicationSettingsButton.addActionListener(e -> openApplicationSettings(null));
         projectMenu.add(openApplicationSettingsButton);
 
         projectMenu.addSeparator();
@@ -688,6 +685,62 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         UIUtils.installMenuExtension(this, helpMenu, JIPipeMenuExtensionTarget.ProjectHelpMenu, true);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    public void openApplicationSettings(String navigateToNode) {
+        JDialog dialog = new JDialog(getWindow());
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setTitle("JIPipe - Application settings");
+        dialog.setModal(true);
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
+        JIPipeApplicationSettingsUI applicationSettingsUI = new JIPipeApplicationSettingsUI(this);
+        if (navigateToNode != null) {
+            applicationSettingsUI.selectNode(navigateToNode);
+        }
+        UIUtils.addEscapeListener(dialog);
+        JPanel contentPanel = new JPanel(new BorderLayout(8,8));
+        contentPanel.add(applicationSettingsUI, BorderLayout.CENTER);
+
+        AtomicBoolean saved = new AtomicBoolean(false);
+        window.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                if(!saved.get()) {
+                    JIPipe.getSettings().reload();
+                }
+            }
+        });
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        JButton resetButton = new JButton("Reset", UIUtils.getIconFromResources("actions/edit-reset.png"));
+        resetButton.addActionListener(e -> {
+            JIPipe.getSettings().reload();
+            applicationSettingsUI.selectNode("/General");
+        });
+        buttonPanel.add(resetButton);
+        buttonPanel.add(Box.createHorizontalGlue());
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            JIPipe.getSettings().reload();
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+        JButton saveButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
+        saveButton.addActionListener(e -> {
+            JIPipe.getSettings().save();
+            saved.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(saveButton);
+        contentPanel.add(buttonPanel, BorderLayout.SOUTH);
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+
+        dialog.setContentPane(contentPanel);
+        dialog.pack();
+        dialog.setSize(1280,768);
+        dialog.setLocationRelativeTo(getWindow());
+        dialog.setVisible(true);
     }
 
     public void openProjectReport() {

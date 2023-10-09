@@ -79,9 +79,9 @@ public class CellposeExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private static void configureCellpose(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/Cellpose");
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Cellpose");
+        }
     }
 
     public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {

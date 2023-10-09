@@ -10,12 +10,16 @@ import java.lang.annotation.RetentionPolicy;
 public @interface ExternalEnvironmentParameterSettings {
     /**
      * @return if the edit button should be visible
+     * @deprecated has no effect
      */
+    @Deprecated
     boolean allowEditButton() default true;
 
     /**
      * @return if the install button should be visible
+     * @deprecated has no effect
      */
+    @Deprecated
     boolean allowInstallButton() default true;
 
     /**

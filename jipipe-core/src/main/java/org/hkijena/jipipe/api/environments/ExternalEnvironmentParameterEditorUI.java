@@ -19,6 +19,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,9 +28,8 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
     private final JLabel nameLabel = new JLabel();
     private final JTextField pathLabel = UIUtils.makeReadonlyBorderlessTextField("");
-    private final JPopupMenu installMenu = new JPopupMenu();
-    private JButton editButton;
-    private JButton installButton;
+    private final JPopupMenu configureMenu = new JPopupMenu();
+    private JButton configureButton;
 
     /**
      * Creates new instance
@@ -58,30 +59,35 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         add(buttonPanel, BorderLayout.EAST);
 
-        editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/document-edit.png"));
-        editButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
+        configureButton = new JButton("Configure ...", UIUtils.getIconFromResources("actions/configure.png"));
+        configureButton.setBackground(getBackground());
+        configureButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
                         UIManager.getColor("Separator.foreground")),
                 BorderFactory.createEmptyBorder(4, 3, 4, 3)));
-        editButton.setOpaque(false);
-        editButton.setToolTipText("Edit current environment");
-        editButton.addActionListener(e -> editEnvironment());
-        buttonPanel.add(editButton);
+        configureButton.setOpaque(true);
+        configureButton.setToolTipText("Edit/select/install environment");
+        UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadInstallMenu);
+        buttonPanel.add(configureButton);
 
-        installButton = new JButton("Select/Install", UIUtils.getIconFromResources("actions/browser-download.png"));
-        installButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 1, 0, 0,
-                        UIManager.getColor("Separator.foreground")),
-                BorderFactory.createEmptyBorder(4, 3, 4, 8)));
-        installButton.setOpaque(false);
-        installButton.setToolTipText("Installs a new environment (if available) or selects an existing one");
-        UIUtils.addReloadablePopupMenuToButton(installButton, installMenu, this::reloadInstallMenu);
-        buttonPanel.add(installButton);
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(!e.isConsumed()) {
+                    e.consume();
+                    editEnvironment();
+                }
+            }
+        });
     }
 
     private void reloadInstallMenu() {
         Class<?> fieldClass = getParameterAccess().getFieldClass();
-        installMenu.removeAll();
+        configureMenu.removeAll();
 
         ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
+
+        JMenuItem editMenuItem = UIUtils.createMenuItem("Edit", "Edits the current environment", UIUtils.getIconFromResources("actions/edit.png"), this::editEnvironment);
+        configureMenu.add(editMenuItem);
 
         if (settings == null || settings.allowManagePreset()) {
             JMenu presetMenu = new JMenu("Load preset");
@@ -93,16 +99,18 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                 presetMenu.add(presetItem);
             }
 
+            configureMenu.addSeparator();
+
             if (!presets.isEmpty()) {
-                installMenu.add(presetMenu);
+                configureMenu.add(presetMenu);
             }
 
             JMenuItem savePresetItem = new JMenuItem("Save as preset ...", UIUtils.getIconFromResources("actions/save.png"));
             savePresetItem.addActionListener(e -> saveAsPreset());
-            installMenu.add(savePresetItem);
+            configureMenu.add(savePresetItem);
         }
-        if (installMenu.getComponentCount() > 0) {
-            installMenu.addSeparator();
+        if (configureMenu.getComponentCount() > 0) {
+            configureMenu.addSeparator();
         }
         if (settings == null || settings.allowInstall()) {
 
@@ -128,7 +136,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                 item.setToolTipText(installer.getDescription());
                 item.addActionListener(e -> JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(),
                         (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getWorkbench(), getParameterAccess())));
-                installMenu.add(item);
+                configureMenu.add(item);
             }
             if (foundAdditionalEnvironments) {
                 JMenu additionalEnvironmentsMenu = new JMenu("Additional compatible installers");
@@ -152,7 +160,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
                             (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getWorkbench(), getParameterAccess())));
                     additionalEnvironmentsMenu.add(item);
                 }
-                installMenu.add(additionalEnvironmentsMenu);
+                configureMenu.add(additionalEnvironmentsMenu);
             }
         }
     }
@@ -211,14 +219,7 @@ public class ExternalEnvironmentParameterEditorUI extends JIPipeParameterEditorU
 
     @Override
     public void reload() {
-        ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
-        if (settings != null) {
-            editButton.setVisible(settings.allowEditButton());
-            installButton.setVisible(settings.allowInstallButton());
-        } else {
-            editButton.setVisible(true);
-            installButton.setVisible(true);
-        }
+//        ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
 
         JIPipeExternalEnvironment parameter = getParameter(JIPipeExternalEnvironment.class);
         nameLabel.setIcon(parameter.getIcon());

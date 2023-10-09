@@ -66,9 +66,9 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private static void configureOmnipose(JIPipeWorkbench workbench) {
-        DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
-        JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
-        applicationSettingsUI.selectNode("/Extensions/Omnipose");
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) workbench).openApplicationSettings("/Extensions/Omnipose");
+        }
     }
 
     public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
