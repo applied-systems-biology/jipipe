@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -194,7 +195,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             }
 
             // Extract outputs
-            for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+            for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                 ClearCLBuffer buffer = outputs.get(outputSlot.getName());
                 CLIJImageData imageData = new CLIJImageData(buffer);
                 if (!avoidGPUMemory) {

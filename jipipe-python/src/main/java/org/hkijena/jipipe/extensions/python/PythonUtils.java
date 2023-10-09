@@ -237,7 +237,7 @@ public class PythonUtils {
     }
 
     public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot outputSlot : outputSlots) {
+        for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
@@ -250,7 +250,7 @@ public class PythonUtils {
     }
 
     public static void extractOutputs(JIPipeMergingDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot outputSlot : outputSlots) {
+        for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
@@ -263,7 +263,7 @@ public class PythonUtils {
     }
 
     public static void extractOutputs(Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot outputSlot : outputSlots) {
+        for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {

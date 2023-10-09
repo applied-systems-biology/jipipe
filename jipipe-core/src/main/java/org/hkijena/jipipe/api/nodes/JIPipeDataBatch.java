@@ -18,10 +18,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.*;
 
 import java.util.*;
 
@@ -331,7 +328,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param data         Added data
      * @param progressInfo storage progress
      */
-    public void addOutputData(JIPipeDataSlot slot, JIPipeData data, JIPipeProgressInfo progressInfo) {
+    public void addOutputData(JIPipeOutputDataSlot slot, JIPipeData data, JIPipeProgressInfo progressInfo) {
         if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
@@ -349,7 +346,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param mergeStrategy         how annotations should be merged
      * @param progressInfo          storage progress
      */
-    public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
+    public void addOutputData(JIPipeOutputDataSlot slot, JIPipeData data, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
         addOutputData(slot, data, additionalAnnotations, mergeStrategy, Collections.emptyList(), JIPipeDataAnnotationMergeMode.OverwriteExisting, progressInfo);
     }
 
@@ -363,7 +360,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param mergeStrategy         how annotations should be merged
      * @param progressInfo          storage progress
      */
-    public void addOutputData(JIPipeDataSlot slot, JIPipeData data, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeTextAnnotationMergeMode mergeStrategy,
+    public void addOutputData(JIPipeOutputDataSlot slot, JIPipeData data, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeTextAnnotationMergeMode mergeStrategy,
                               List<JIPipeDataAnnotation> additionalDataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
@@ -388,7 +385,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param mergeStrategy         how annotations should be merged
      * @param progressInfo          storage progress
      */
-    public void addOutputData(JIPipeDataSlot slot, JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeTextAnnotationMergeMode mergeStrategy,
+    public void addOutputData(JIPipeOutputDataSlot slot, JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeTextAnnotationMergeMode mergeStrategy,
                               List<JIPipeDataAnnotation> additionalDataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");

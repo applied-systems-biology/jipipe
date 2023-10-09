@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
@@ -1554,7 +1555,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     public void replaceNode(JIPipeGraphNode target, JIPipeGraphNode replacement) {
         UUID compartment = getCompartmentUUIDOf(target);
         insertNode(replacement, compartment);
-        for (Map.Entry<String, JIPipeDataSlot> entry : target.getInputSlotMap().entrySet()) {
+        for (Map.Entry<String, JIPipeInputDataSlot> entry : target.getInputSlotMap().entrySet()) {
             JIPipeDataSlot replacementInput = replacement.getInputSlotMap().getOrDefault(entry.getKey(), null);
             if (replacementInput == null) {
                 System.err.println("Could not find input slot " + entry.getKey());
@@ -1564,7 +1565,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 connect(slot, replacementInput);
             }
         }
-        for (Map.Entry<String, JIPipeDataSlot> entry : target.getOutputSlotMap().entrySet()) {
+        for (Map.Entry<String, JIPipeOutputDataSlot> entry : target.getOutputSlotMap().entrySet()) {
             JIPipeDataSlot replacementOutput = replacement.getOutputSlotMap().getOrDefault(entry.getKey(), null);
             if (replacementOutput == null) {
                 System.err.println("Could not find output slot " + entry.getKey());

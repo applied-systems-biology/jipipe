@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -121,7 +123,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
         }
 
         // Fetch parameters (data)
-        for (Map.Entry<String, JIPipeDataSlot> entry : getInputSlotMap().entrySet()) {
+        for (Map.Entry<String, JIPipeInputDataSlot> entry : getInputSlotMap().entrySet()) {
             clParameters.put(entry.getKey(), dataBatch.getInputData(entry.getValue(), CLIJImageData.class, progressInfo).getImage());
         }
         PyDictionary clOutputBuffersDict = pythonInterpreter.get("cl_output_buffers", PyDictionary.class);
@@ -144,7 +146,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
         clij2.executeCode(kernelScript.getCode(getProjectDirectory()), kernelName, clDimensionsArr, clGlobalSizesArr, clParameters);
 
         // Extract outputs
-        for (Map.Entry<String, JIPipeDataSlot> entry : getOutputSlotMap().entrySet()) {
+        for (Map.Entry<String, JIPipeOutputDataSlot> entry : getOutputSlotMap().entrySet()) {
             dataBatch.addOutputData(entry.getKey(), new CLIJImageData((ClearCLBuffer) clParameters.get(entry.getKey())), progressInfo);
         }
     }

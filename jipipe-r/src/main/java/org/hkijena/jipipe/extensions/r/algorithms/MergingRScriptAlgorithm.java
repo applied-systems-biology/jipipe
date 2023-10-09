@@ -196,7 +196,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getEnvironment(),
                 progressInfo);
 
-        for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+        for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {

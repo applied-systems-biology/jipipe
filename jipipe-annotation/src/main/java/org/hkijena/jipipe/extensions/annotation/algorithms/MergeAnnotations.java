@@ -5,6 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -37,8 +39,8 @@ public class MergeAnnotations extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
-            JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
+        for (JIPipeInputDataSlot inputSlot : getNonParameterInputSlots()) {
+            JIPipeOutputDataSlot outputSlot = getOutputSlot(inputSlot.getName());
             dataBatch.addOutputData(outputSlot, dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo), progressInfo);
         }
     }

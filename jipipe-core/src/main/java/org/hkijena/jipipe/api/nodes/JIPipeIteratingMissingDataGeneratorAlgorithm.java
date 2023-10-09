@@ -23,10 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -269,8 +266,8 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      * @param progressInfo the progress info from the run
      */
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
-            JIPipeDataSlot outputSlot = getCorrespondingOutputSlot(inputSlot);
+        for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
+            JIPipeOutputDataSlot outputSlot = getCorrespondingOutputSlot(inputSlot);
             if (outputSlot == null)
                 continue;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Input slot '" + inputSlot.getName() + "'");
@@ -308,7 +305,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      * @param inputSlot the input slot
      * @return the output slot or null
      */
-    protected JIPipeDataSlot getCorrespondingOutputSlot(JIPipeDataSlot inputSlot) {
+    protected JIPipeOutputDataSlot getCorrespondingOutputSlot(JIPipeDataSlot inputSlot) {
         return getOutputSlotMap().getOrDefault(inputSlot.getName(), null);
     }
 
@@ -320,6 +317,6 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      * @param outputSlot   the output slot where data should be put.
      * @param progressInfo the progress info
      */
-    protected abstract void runGenerator(JIPipeMergingDataBatch dataBatch, JIPipeDataSlot inputSlot, JIPipeDataSlot outputSlot, JIPipeProgressInfo progressInfo);
+    protected abstract void runGenerator(JIPipeMergingDataBatch dataBatch, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo);
 
 }

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -78,7 +79,7 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
         }
 
         PathData inputData = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
-        JIPipeDataSlot firstOutputSlot = getFirstOutputSlot();
+        JIPipeOutputDataSlot firstOutputSlot = getFirstOutputSlot();
         Path inputPath = inputData.toPath();
         if (!canOutput(inputPath))
             return;

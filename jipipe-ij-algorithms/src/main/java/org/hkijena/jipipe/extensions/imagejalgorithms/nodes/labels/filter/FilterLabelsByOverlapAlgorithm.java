@@ -13,8 +13,8 @@ import ij.process.ShortProcessor;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -141,7 +141,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void applyFiltering(ImagePlus targetLabels, ImagePlus otherLabels, String targetPrefix, String otherPrefix,
-                                JIPipeDataSlot outputSlot, LabelFilterSettings settings, JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+                                JIPipeOutputDataSlot outputSlot, LabelFilterSettings settings, JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         boolean withExpression = !StringUtils.isNullOrEmpty(settings.overlapFilter.getExpression());
         ByteProcessor overlap = new ByteProcessor(targetLabels.getWidth(), targetLabels.getHeight());
         ExpressionVariables variables = new ExpressionVariables();

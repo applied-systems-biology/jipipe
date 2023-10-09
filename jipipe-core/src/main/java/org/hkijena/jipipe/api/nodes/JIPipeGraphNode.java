@@ -370,7 +370,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @return Current algorithm slots
      */
-    public Map<String, JIPipeDataSlot> getInputSlotMap() {
+    public Map<String, JIPipeInputDataSlot> getInputSlotMap() {
         return Collections.unmodifiableMap(inputSlotMap);
     }
 
@@ -379,7 +379,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      *
      * @return Current algorithm slots
      */
-    public Map<String, JIPipeDataSlot> getOutputSlotMap() {
+    public Map<String, JIPipeOutputDataSlot> getOutputSlotMap() {
         return Collections.unmodifiableMap(outputSlotMap);
     }
 
@@ -679,8 +679,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param name Slot name
      * @return Slot instance
      */
-    public JIPipeDataSlot getOutputSlot(String name) {
-        JIPipeDataSlot slot = outputSlotMap.get(name);
+    public JIPipeOutputDataSlot getOutputSlot(String name) {
+        JIPipeOutputDataSlot slot = outputSlotMap.get(name);
         if (slot == null)
             return null;
         if (!slot.isOutput())

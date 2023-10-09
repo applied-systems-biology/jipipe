@@ -299,7 +299,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void passOutputData(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+        for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
             Object configuration = outputFromImageJImporters.get(outputSlot.getName()).get(Object.class);
             ImageJDataImporter importer;
             ImageJImportParameters parameters = new ImageJImportParameters(outputSlot.getName());

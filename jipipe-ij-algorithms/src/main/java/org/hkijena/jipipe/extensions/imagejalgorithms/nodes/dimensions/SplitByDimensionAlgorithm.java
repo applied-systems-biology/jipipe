@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -79,7 +80,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, c + "");
 
-                for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
                         if (!range.getContent().getIntegers(0, img.getNChannels(), new ExpressionVariables()).contains(c)) {
@@ -107,7 +108,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, z + "");
 
-                for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
                         if (!range.getContent().getIntegers(0, img.getNSlices(), new ExpressionVariables()).contains(z)) {
@@ -135,7 +136,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
                 targetDimensionAnnotation.addAnnotationIfEnabled(annotationList, t + "");
 
-                for (JIPipeDataSlot outputSlot : getOutputSlots()) {
+                for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
                         if (!range.getContent().getIntegers(0, img.getNFrames(), new ExpressionVariables()).contains(t)) {

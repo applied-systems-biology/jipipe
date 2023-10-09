@@ -30,12 +30,12 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
 
     /**
      * To be used with getLocation().
-     * Returns the node name if a node is set. Otherwise the default value is returned.
+     * Returns the node name if a node is set. Otherwise, the default value is returned.
      */
     public static final String LOCATION_KEY_NODE_NAME = "jipipe:node:name";
     /**
      * To be used with getLocation().
-     * Returns the node display name if a node is set. Otherwise the default value is returned.
+     * Returns the node display name if a node is set. Otherwise, the default value is returned.
      */
     public static final String LOCATION_KEY_NODE_DISPLAY_NAME = "jipipe:node:display-name";
     /**
@@ -159,7 +159,7 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
 
     /**
      * Saves the stored data to the provided storage path and sets data to null
-     * Warning: Ensure that depending input slots do not use this slot, anymore!
+     * Warning: Ensure that dependency input slots do not use this slot, anymore!
      *
      * @param saveProgress progress that reports the saving
      */
