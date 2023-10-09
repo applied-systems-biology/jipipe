@@ -241,7 +241,7 @@ public class RUtils {
     }
 
     public static void runR(Path scriptFile, REnvironment environment, JIPipeProgressInfo progressInfo) {
-        Path rExecutable = PathUtils.relativeToImageJToAbsolute(environment.getRScriptExecutablePath());
+        Path rExecutable = PathUtils.relativeJIPipeUserDirToAbsolute(environment.getRScriptExecutablePath());
         CommandLine commandLine = new CommandLine(rExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();

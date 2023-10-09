@@ -52,7 +52,7 @@ public class JIPipeProjectTemplateRegistry {
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(new JIPipeProgressInfo(), file)) {
                 Path projectFile = storage.findFileByExtension(".jip").get();
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storage.open(projectFile));
-                String id = PathUtils.absoluteToImageJRelative(file) + "";
+                String id = PathUtils.absoluteToJIPipeUserDirRelative(file) + "";
                 JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
                 JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, file, file);
                 register(template);
@@ -60,7 +60,7 @@ public class JIPipeProjectTemplateRegistry {
             }
         } else {
             JsonNode node = JsonUtils.readFromFile(file, JsonNode.class);
-            String id = PathUtils.absoluteToImageJRelative(file) + "";
+            String id = PathUtils.absoluteToJIPipeUserDirRelative(file) + "";
             JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
             JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, file, null);
             register(template);

@@ -86,11 +86,11 @@ public class ProjectTemplateDownloaderPackage {
     }
 
     public Path getFinalOutputPath() {
-        return PathUtils.getImageJDir().resolve("jipipe").resolve("templates").resolve(outputFile);
+        return PathUtils.getJIPipeUserDir().resolve("jipipe").resolve("templates").resolve(outputFile);
     }
 
     public String getId() {
-        return PathUtils.absoluteToImageJRelative(getFinalOutputPath()).toString();
+        return PathUtils.absoluteToJIPipeUserDirRelative(getFinalOutputPath()).toString();
     }
 
     @Override

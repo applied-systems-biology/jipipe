@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -28,7 +28,7 @@ import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ProcessEnvironment extends JIPipeExternalEnvironment {
+public class ProcessEnvironment extends JIPipeEnvironment {
 
     private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY()");
     private Path executablePathWindows = Paths.get("");
@@ -142,20 +142,20 @@ public class ProcessEnvironment extends JIPipeExternalEnvironment {
         if (SystemUtils.IS_OS_WINDOWS) {
             if (StringUtils.isNullOrEmpty(getExecutablePathWindows()))
                 return Paths.get("");
-            return PathUtils.relativeToImageJToAbsolute(getExecutablePathWindows());
+            return PathUtils.relativeJIPipeUserDirToAbsolute(getExecutablePathWindows());
         } else if (SystemUtils.IS_OS_LINUX) {
             if (StringUtils.isNullOrEmpty(getExecutablePathLinux()))
                 return Paths.get("");
-            return PathUtils.relativeToImageJToAbsolute(getExecutablePathLinux());
+            return PathUtils.relativeJIPipeUserDirToAbsolute(getExecutablePathLinux());
         } else if (SystemUtils.IS_OS_MAC_OSX) {
             if (StringUtils.isNullOrEmpty(getExecutablePathOSX()))
                 return Paths.get("");
-            return PathUtils.relativeToImageJToAbsolute(getExecutablePathOSX());
+            return PathUtils.relativeJIPipeUserDirToAbsolute(getExecutablePathOSX());
         } else {
             System.err.println("Operating system not detected.");
             if (StringUtils.isNullOrEmpty(getExecutablePathWindows()))
                 return Paths.get("");
-            return PathUtils.relativeToImageJToAbsolute(getExecutablePathWindows());
+            return PathUtils.relativeJIPipeUserDirToAbsolute(getExecutablePathWindows());
         }
     }
 

@@ -127,6 +127,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
+        table.setDefaultRenderer(Integer.class, new BatchIndexCellRenderer());
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         table.setDefaultRenderer(Component.class, new JIPipeComponentCellRenderer());
         table.setDefaultRenderer(JIPipeTextAnnotation.class, new JIPipeAnnotationTableCellRenderer());
@@ -413,6 +414,30 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
                     return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 }
             }
+        }
+    }
+
+    public static class BatchIndexCellRenderer extends JLabel implements TableCellRenderer {
+
+        public BatchIndexCellRenderer() {
+            setOpaque(true);
+            setHorizontalAlignment(CENTER);
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        }
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            if(value instanceof Integer) {
+                setText(value.toString());
+                setBackground(Color.getHSBColor(1.0f * (Integer) value / table.getRowCount(), 0.3f, 0.7f));
+                setForeground(Color.WHITE);
+            }
+            if (isSelected) {
+                setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.DARK_GRAY),
+                        BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+            } else {
+                setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            }
+            return this;
         }
     }
 }

@@ -130,7 +130,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         }
 
         // Generate result
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         generatedEnvironment = new REnvironment();
         generatedEnvironment.setRExecutablePath(installationPath.resolve("bin").resolve("R.exe"));
         generatedEnvironment.setRScriptExecutablePath(installationPath.resolve("bin").resolve("Rscript.exe"));
@@ -150,7 +150,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             }
         };
 
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         progressInfo.log("Installation path: " + installationPath);
         progressInfo.log("If you have issues, please visit this site and install R manually: https://cloud.r-project.org/bin/windows/base/");
         CommandLine commandLine = new CommandLine(installerPath.toFile());

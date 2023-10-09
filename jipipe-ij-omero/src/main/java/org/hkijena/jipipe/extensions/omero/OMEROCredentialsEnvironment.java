@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.LoginCredentials;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -30,7 +30,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 
-public class OMEROCredentialsEnvironment extends JIPipeExternalEnvironment {
+public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
     private String host = "";
     private int port = 4064;
     private String userName = "";

@@ -15,7 +15,7 @@ public interface ExternalEnvironmentSettings extends JIPipeParameterCollection {
      *
      * @return the presets
      */
-    List<JIPipeExternalEnvironment> getPresetsListInterface(Class<?> environmentClass);
+    List<JIPipeEnvironment> getPresetsListInterface(Class<?> environmentClass);
 
     /**
      * Sets the presets
@@ -23,6 +23,6 @@ public interface ExternalEnvironmentSettings extends JIPipeParameterCollection {
      *
      * @param presets the presets
      */
-    void setPresetsListInterface(List<JIPipeExternalEnvironment> presets, Class<?> environmentClass);
+    void setPresetsListInterface(List<JIPipeEnvironment> presets, Class<?> environmentClass);
 
 }

@@ -13,9 +13,8 @@
 
 package org.hkijena.jipipe.utils;
 
-import ij.IJ;
-import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import javax.swing.*;
@@ -251,24 +250,14 @@ public class PathUtils {
         return null;
     }
 
-    public static Path getImageJDir() {
-        Path imageJDir = Paths.get(StringUtils.nullToEmpty(Prefs.getImageJDir()));
-        if (!imageJDir.isAbsolute())
-            imageJDir = imageJDir.toAbsolutePath();
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        return imageJDir;
+    public static Path getJIPipeUserDir() {
+        return JIPipe.getJIPipeUserDir();
     }
 
-    public static Path absoluteToImageJRelative(Path path) {
+    public static Path absoluteToJIPipeUserDirRelative(Path path) {
         if (!path.isAbsolute())
             return path;
-        return getImageJDir().relativize(path);
+        return getJIPipeUserDir().relativize(path);
     }
 
     /**
@@ -278,10 +267,10 @@ public class PathUtils {
      * @param path the path
      * @return absolute paths
      */
-    public static Path relativeToImageJToAbsolute(Path path) {
+    public static Path relativeJIPipeUserDirToAbsolute(Path path) {
         if (path.isAbsolute())
             return path;
-        return getImageJDir().resolve(path);
+        return getJIPipeUserDir().resolve(path);
     }
 
     /**

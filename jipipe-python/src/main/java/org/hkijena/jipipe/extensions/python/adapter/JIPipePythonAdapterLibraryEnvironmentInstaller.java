@@ -68,7 +68,7 @@ public class JIPipePythonAdapterLibraryEnvironmentInstaller extends EasyInstallE
             throw new RuntimeException(e);
         }
         getProgressInfo().log("Detected library: " + libDir[0]);
-        Path relativeLibDir = PathUtils.getImageJDir().relativize(libDir[0]);
+        Path relativeLibDir = PathUtils.getJIPipeUserDir().relativize(libDir[0]);
         environment.setLibraryDirectory(relativeLibDir);
         return environment;
     }

@@ -85,7 +85,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
         progressInfo.incrementProgress();
 
         // Cleanup phase
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         if (Files.exists(installationPath)) {
             progressInfo.log("Deleting old installation");
             progressInfo.log("Deleting: " + installationPath);
@@ -141,7 +141,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
     }
 
     public Path getPythonExecutable() {
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         if (SystemUtils.IS_OS_WINDOWS) {
             return installationPath.resolve("python").resolve("Python.exe");
         } else {
@@ -150,7 +150,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
     }
 
     protected void runPip(String... args) {
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         CommandLine commandLine = new CommandLine(getPythonExecutable().toFile());
         commandLine.addArgument("-m");
         commandLine.addArgument("pip");
@@ -197,7 +197,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
      * @param archivePath the setup
      */
     protected void extractPythonArchive(Path archivePath) {
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         progressInfo.log("Installation path: " + installationPath);
         progressInfo.log("The Python distribution was obtained from: https://github.com/indygreg/python-build-standalone/releases/");
         try {
@@ -241,7 +241,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
                                 "Please review the settings on the left-hand side. Click OK to download the Python distribution and install it.\n\n" +
                                 "You have to agree to the following licenses: https://python-build-standalone.readthedocs.io/en/latest/running.html#licensing"), "Download & install Python",
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-                Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+                Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
                 if (result && Files.exists(installationPath)) {
                     if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + installationPath
                             + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {

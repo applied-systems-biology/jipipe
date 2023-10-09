@@ -96,23 +96,14 @@ public class JIPipeExtensionRegistry {
     }
 
     public static boolean isLegacy() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        return Files.isRegularFile(imageJDir.resolve("jipipe.properties.json"));
+        return Files.isRegularFile(JIPipe.getJIPipeUserDir().resolve("jipipe.properties.json"));
     }
 
     /**
      * @return The location of the file where the settings are stored
      */
     public static Path getPropertyFile() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        return imageJDir.resolve("jipipe.extensions.json");
+        return JIPipe.getJIPipeUserDir().resolve("jipipe.extensions.json");
     }
 
     public void initialize() {

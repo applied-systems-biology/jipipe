@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.api.client.util.Lists;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -14,7 +13,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -141,7 +140,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
         if(overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());

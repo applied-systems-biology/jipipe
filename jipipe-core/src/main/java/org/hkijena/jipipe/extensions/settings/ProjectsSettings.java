@@ -83,10 +83,12 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         if (index == -1) {
             recentProjects.add(0, fileName);
             emitParameterChangedEvent("recent-projects");
+            JIPipe.getSettings().save();
         } else if (index != 0) {
             recentProjects.remove(index);
             recentProjects.add(0, fileName);
             emitParameterChangedEvent("recent-projects");
+            JIPipe.getSettings().save();
         }
     }
 
@@ -100,10 +102,12 @@ public class ProjectsSettings extends AbstractJIPipeParameterCollection {
         if (index == -1) {
             recentJsonExtensionProjects.add(0, fileName);
             emitParameterChangedEvent("recent-json-extension-projects");
+            JIPipe.getSettings().save();
         } else if (index != 0) {
             recentJsonExtensionProjects.remove(index);
             recentJsonExtensionProjects.add(0, fileName);
             emitParameterChangedEvent("recent-json-extension-projects");
+            JIPipe.getSettings().save();
         }
     }
 

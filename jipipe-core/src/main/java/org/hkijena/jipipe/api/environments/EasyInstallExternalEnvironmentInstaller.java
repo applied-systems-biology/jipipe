@@ -43,7 +43,7 @@ import java.util.List;
  * Supported are .tar.gz and .zip archives that should contain the hierarchy of files as expected in the environment installation directory.
  * The run() method will ensure that
  */
-public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeExternalEnvironment> extends ExternalEnvironmentInstaller {
+public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeEnvironment> extends ExternalEnvironmentInstaller {
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     private List<EasyInstallExternalEnvironmentInstallerPackage> availablePackages = new ArrayList<>();
@@ -82,7 +82,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeEx
      * @return the installation path
      */
     public Path getRelativeInstallationPath() {
-        return PathUtils.absoluteToImageJRelative(absoluteInstallationPath);
+        return PathUtils.absoluteToJIPipeUserDirRelative(absoluteInstallationPath);
     }
 
     public Path getAbsoluteInstallationPath() {
@@ -90,7 +90,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeEx
     }
 
     @Override
-    public JIPipeExternalEnvironment getInstalledEnvironment() {
+    public JIPipeEnvironment getInstalledEnvironment() {
         return generatedEnvironment;
     }
 
@@ -328,7 +328,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends JIPipeEx
             return;
         }
 
-        absoluteInstallationPath = PathUtils.relativeToImageJToAbsolute(Paths.get("jipipe").resolve(targetPackage.getInstallDir()));
+        absoluteInstallationPath = PathUtils.relativeJIPipeUserDirToAbsolute(Paths.get("jipipe").resolve(targetPackage.getInstallDir()));
         if (Files.exists(absoluteInstallationPath)) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + absoluteInstallationPath
                     + " already exists. Do you want to overwrite it?\n\n" +

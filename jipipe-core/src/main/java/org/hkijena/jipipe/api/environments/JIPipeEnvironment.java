@@ -11,17 +11,17 @@ import org.hkijena.jipipe.utils.StringUtils;
 import javax.swing.*;
 
 /**
- * Defines an external environment
+ * Defines an environment
  */
-public abstract class JIPipeExternalEnvironment extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
+public abstract class JIPipeEnvironment extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
     private String name;
     private String version = "unknown";
     private String source = "NA";
 
-    public JIPipeExternalEnvironment() {
+    public JIPipeEnvironment() {
     }
 
-    public JIPipeExternalEnvironment(JIPipeExternalEnvironment other) {
+    public JIPipeEnvironment(JIPipeEnvironment other) {
         this.name = other.name;
         this.version = other.version;
         this.source = other.source;

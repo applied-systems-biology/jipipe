@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.python;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -33,7 +33,7 @@ import java.util.Set;
 /**
  * Parameter that describes a Python environment
  */
-public class PythonEnvironment extends JIPipeExternalEnvironment {
+public class PythonEnvironment extends JIPipeEnvironment {
 
     public static final String ENVIRONMENT_ID = "python";
 
@@ -107,7 +107,7 @@ public class PythonEnvironment extends JIPipeExternalEnvironment {
     }
 
     public Path getAbsoluteExecutablePath() {
-        return PathUtils.relativeToImageJToAbsolute(getExecutablePath());
+        return PathUtils.relativeJIPipeUserDirToAbsolute(getExecutablePath());
     }
 
     @JIPipeDocumentation(name = "Environment variables", description = "These variables are provided to the Python executable. Existing environment " +

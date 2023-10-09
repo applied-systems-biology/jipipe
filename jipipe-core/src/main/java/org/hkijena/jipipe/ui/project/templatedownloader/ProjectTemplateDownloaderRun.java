@@ -89,7 +89,7 @@ public class ProjectTemplateDownloaderRun implements JIPipeRunnable {
         progressInfo.log("Downloading selected templates ...");
 
         // Find and create output directory
-        Path outputDir = PathUtils.getImageJDir().resolve("jipipe").resolve("templates");
+        Path outputDir = PathUtils.getJIPipeUserDir().resolve("jipipe").resolve("templates");
         if (!Files.isDirectory(outputDir)) {
             Files.createDirectories(outputDir);
         }

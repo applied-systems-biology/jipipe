@@ -8,7 +8,7 @@ import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -233,7 +233,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
             }
             stringBuilder.append("</table>");
 
-            List<JIPipeExternalEnvironment> externalEnvironments = new ArrayList<>();
+            List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
             for (JIPipeGraphNode graphNode : project.getGraph().getGraphNodes()) {
                 graphNode.getExternalEnvironments(externalEnvironments);
             }
@@ -241,7 +241,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
                 stringBuilder.append("<h3>External environments</h3>");
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Type</th><th>Name</th><th>Version</th><th>Source/URL</th></tr>");
-                for (JIPipeExternalEnvironment externalEnvironment : externalEnvironments) {
+                for (JIPipeEnvironment externalEnvironment : externalEnvironments) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td>").append(escaper.escape(externalEnvironment.getClass().getSimpleName())).append("</td>");
                     stringBuilder.append("<td><strong>").append(escaper.escape(externalEnvironment.getName())).append("</strong></td>");

@@ -103,7 +103,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         progressInfo.incrementProgress();
 
         // Cleanup phase
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         if (Files.exists(installationPath)) {
             progressInfo.log("Deleting old installation");
             progressInfo.log("Deleting: " + installationPath);
@@ -164,7 +164,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      * @param args arguments
      */
     public void runConda(String... args) {
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         CommandLine commandLine = new CommandLine(getCondaExecutableInInstallationPath().toFile());
         for (String arg : args) {
             commandLine.addArgument(arg);
@@ -205,7 +205,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      * @return the conda path
      */
     public Path getCondaExecutableInInstallationPath() {
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         if (SystemUtils.IS_OS_WINDOWS) {
             return installationPath.resolve("Scripts").resolve("conda.exe");
         } else {
@@ -220,7 +220,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      */
     protected SelectCondaEnvPythonInstaller.Configuration generateCondaConfig() {
         SelectCondaEnvPythonInstaller.Configuration condaConfig = new SelectCondaEnvPythonInstaller.Configuration();
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         if (SystemUtils.IS_OS_WINDOWS) {
             condaConfig.setCondaExecutable(installationPath.resolve("Scripts").resolve("conda.exe"));
         } else {
@@ -275,7 +275,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
                                 "Please review the settings on the left-hand side. Click OK to install Miniconda.\n\n" +
                                 "You have to agree to the following license: https://docs.conda.io/en/latest/license.html"), "Download & install Miniconda",
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-                Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+                Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
                 if (result && Files.exists(installationPath)) {
                     if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + installationPath
                             + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
@@ -314,7 +314,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             }
         };
 
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         progressInfo.log("Installation path: " + installationPath);
         progressInfo.log("Please note that you agreed to the Conda license: https://docs.conda.io/en/latest/license.html");
         CommandLine commandLine = new CommandLine(installerPath.toFile());
@@ -343,7 +343,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             }
         };
 
-        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        Path installationPath = PathUtils.relativeJIPipeUserDirToAbsolute(getConfiguration().getInstallationPath());
         progressInfo.log("Installation path: " + installationPath);
         progressInfo.log("Please note that you agreed to the Conda license: https://docs.conda.io/en/latest/license.html");
         CommandLine commandLine = new CommandLine(installerPath.toFile());

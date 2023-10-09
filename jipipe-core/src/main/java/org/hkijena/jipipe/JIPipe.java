@@ -930,7 +930,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     private void registerProjectTemplatesFromFileSystem() {
-        Path examplesDir = PathUtils.getImageJDir().resolve("jipipe").resolve("templates");
+        Path examplesDir = PathUtils.getJIPipeUserDir().resolve("jipipe").resolve("templates");
         try {
             if (!Files.isDirectory(examplesDir))
                 Files.createDirectories(examplesDir);
@@ -954,7 +954,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     private void registerNodeExamplesFromFileSystem() {
-        Path examplesDir = PathUtils.getImageJDir().resolve("jipipe").resolve("examples");
+        Path examplesDir = PathUtils.getJIPipeUserDir().resolve("jipipe").resolve("examples");
         try {
             if (!Files.isDirectory(examplesDir))
                 Files.createDirectories(examplesDir);
@@ -1376,6 +1376,31 @@ public class JIPipe extends AbstractService implements JIPipeService {
     @Override
     public JIPipeUtilityRegistry getUtilityRegistry() {
         return utilityRegistry;
+    }
+
+    /**
+     * Gets the JIPipe user-writable directory.
+     * Can be overwritten by setting the JIPIPE_USER_DIR environment variable to deploy JIPipe into a read-only environment
+     * @return the JIPipe user directory
+     */
+    public static Path getJIPipeUserDir() {
+        String environmentVar = System.getenv().getOrDefault("JIPIPE_USER_DIR", null);
+        if(environmentVar != null) {
+            return Paths.get(environmentVar);
+        }
+        else {
+            Path imageJDir = Paths.get(Prefs.getImageJDir());
+            if (!imageJDir.isAbsolute())
+                imageJDir = imageJDir.toAbsolutePath();
+            if (!Files.isDirectory(imageJDir)) {
+                try {
+                    Files.createDirectories(imageJDir);
+                } catch (IOException e) {
+                    IJ.handleException(e);
+                }
+            }
+            return imageJDir;
+        }
     }
 
     /**

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.python.adapter;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -104,14 +104,14 @@ public class PythonAdapterExtensionSettings extends AbstractJIPipeParameterColle
     }
 
     @Override
-    public List<JIPipeExternalEnvironment> getPresetsListInterface(Class<?> environmentClass) {
+    public List<JIPipeEnvironment> getPresetsListInterface(Class<?> environmentClass) {
         return ImmutableList.copyOf(pythonAdapterPresets);
     }
 
     @Override
-    public void setPresetsListInterface(List<JIPipeExternalEnvironment> presets, Class<?> environmentClass) {
+    public void setPresetsListInterface(List<JIPipeEnvironment> presets, Class<?> environmentClass) {
         this.pythonAdapterPresets.clear();
-        for (JIPipeExternalEnvironment preset : presets) {
+        for (JIPipeEnvironment preset : presets) {
             this.pythonAdapterPresets.add((JIPipePythonAdapterLibraryEnvironment) preset);
         }
     }

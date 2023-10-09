@@ -304,7 +304,7 @@ public class PythonUtils {
      * @param progressInfo the progress info
      */
     public static void runPython(Path scriptFile, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
-        Path pythonExecutable = PathUtils.relativeToImageJToAbsolute(environment.getExecutablePath());
+        Path pythonExecutable = PathUtils.relativeJIPipeUserDirToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
@@ -369,7 +369,7 @@ public class PythonUtils {
      * @param progressInfo                   the progress info
      */
     public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, Map<String, String> additionalEnvironmentVariables, JIPipeProgressInfo progressInfo) {
-        Path pythonExecutable = PathUtils.relativeToImageJToAbsolute(environment.getExecutablePath());
+        Path pythonExecutable = PathUtils.relativeJIPipeUserDirToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();

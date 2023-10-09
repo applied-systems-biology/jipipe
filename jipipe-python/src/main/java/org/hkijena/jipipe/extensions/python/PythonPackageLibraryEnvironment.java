@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -39,7 +39,7 @@ import java.nio.file.Paths;
 /**
  * An environment-like type that points to a package
  */
-public abstract class PythonPackageLibraryEnvironment extends JIPipeExternalEnvironment {
+public abstract class PythonPackageLibraryEnvironment extends JIPipeEnvironment {
 
     private Path libraryDirectory = Paths.get("library");
     private boolean providedByEnvironment = false;
@@ -95,7 +95,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeExternalEnvi
     }
 
     public Path getAbsoluteLibraryDirectory() {
-        return PathUtils.relativeToImageJToAbsolute(libraryDirectory);
+        return PathUtils.relativeJIPipeUserDirToAbsolute(libraryDirectory);
     }
 
     @Override
@@ -122,7 +122,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeExternalEnvi
             if (!code.toString().contains("import sys")) {
                 code.append("import sys\n");
             }
-            code.append("sys.path.append(\"").append(MacroUtils.escapeString(PathUtils.relativeToImageJToAbsolute(getLibraryDirectory()).toString())).append("\")\n");
+            code.append("sys.path.append(\"").append(MacroUtils.escapeString(PathUtils.relativeJIPipeUserDirToAbsolute(getLibraryDirectory()).toString())).append("\")\n");
         }
     }
 

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -107,7 +107,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.overrideEnvironment = overrideEnvironment;
     }
     @Override
-    public void getExternalEnvironments(List<JIPipeExternalEnvironment> target) {
+    public void getExternalEnvironments(List<JIPipeEnvironment> target) {
         super.getExternalEnvironments(target);
         if(overrideEnvironment.isEnabled()) {
             target.add(overrideEnvironment.getContent());

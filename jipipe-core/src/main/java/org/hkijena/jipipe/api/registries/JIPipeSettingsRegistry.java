@@ -79,15 +79,7 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
      * @return The location of the file where the settings are stored
      */
     public static Path getPropertyFile() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        return imageJDir.resolve("jipipe.properties.json");
+        return JIPipe.getJIPipeUserDir().resolve("jipipe.properties.json");
     }
 
     /**

@@ -16,6 +16,7 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.border.DropShadowBorder;
 
@@ -64,16 +65,18 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
                 true,
                 true), BorderFactory.createLineBorder(Color.LIGHT_GRAY)));
 
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.setBackground(UIManager.getColor("Panel.background"));
+//        JToolBar toolBar = new JToolBar();
+//        toolBar.setFloatable(false);
+//        toolBar.setBackground(UIManager.getColor("Panel.background"));
 
-        add(toolBar, BorderLayout.NORTH);
-
-        JLabel slotLabel = new JLabel(inputSlot.getName(), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()), JLabel.LEFT);
+        JButton slotLabel = new JButton(inputSlot.getName(), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()));
+        slotLabel.setHorizontalAlignment(SwingConstants.LEFT);
         slotLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        add(slotLabel, BorderLayout.NORTH);
 
-        toolBar.add(slotLabel);
+        createSlotLabelMenu(slotLabel);
+
+//        toolBar.add(slotLabel);
 
         Collection<Store<JIPipeDataTable>> stores = previewPanel.getDataBatchAssistantUI().getCurrentCache().get(inputSlot.getName());
 
@@ -87,6 +90,35 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
         } else {
             createModel(stores);
             initializeTable();
+        }
+    }
+
+    private void createSlotLabelMenu(JButton slotLabel) {
+        JPopupMenu menu = UIUtils.addPopupMenuToButton(slotLabel);
+        // Information item
+        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(inputSlot.getAcceptedDataType());
+        ViewOnlyMenuItem infoItem = new ViewOnlyMenuItem("<html>" + dataInfo.getName() + "<br><small>" + StringUtils.orElse(dataInfo.getDescription(), "No description provided") + "</small></html>",
+                JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()));
+        menu.add(infoItem);
+
+        // Optional info
+        if (inputSlot.getInfo().isOptional()) {
+            menu.add(new ViewOnlyMenuItem("<html>Optional slot<br><small>This slot requires no input connections.</small></html>",
+                    UIUtils.getIconFromResources("actions/checkbox.png")));
+        }
+
+        // Role information item
+        if (inputSlot.getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
+            ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for data batch generation.</small></html>",
+                    UIUtils.getIconFromResources("actions/wrench.png"));
+            menu.add(roleInfoItem);
+        }
+
+        // Input info
+        List<ViewOnlyMenuItem> additionalItems = new ArrayList<>();
+        inputSlot.getNode().createUIInputSlotIconDescriptionMenuItems(inputSlot.getName(), additionalItems);
+        for (ViewOnlyMenuItem additionalItem : additionalItems) {
+            menu.add(additionalItem);
         }
     }
 
