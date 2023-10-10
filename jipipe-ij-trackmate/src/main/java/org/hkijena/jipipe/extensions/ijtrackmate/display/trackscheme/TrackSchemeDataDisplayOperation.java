@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.display.trackscheme;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 

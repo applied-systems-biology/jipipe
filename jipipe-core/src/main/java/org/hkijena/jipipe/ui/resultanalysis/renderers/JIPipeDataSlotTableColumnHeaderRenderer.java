@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

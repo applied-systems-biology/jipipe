@@ -4,7 +4,7 @@ import net.imglib2.outofbounds.OutOfBoundsFactory;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeSerializedParameterCollectionData;
+import org.hkijena.jipipe.api.data.utils.JIPipeSerializedParameterCollectionData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 @JIPipeDocumentation(name = "IJ2 Out Of Bounds factory", description = "An ImageJ2 generator for values outside the image bounds")

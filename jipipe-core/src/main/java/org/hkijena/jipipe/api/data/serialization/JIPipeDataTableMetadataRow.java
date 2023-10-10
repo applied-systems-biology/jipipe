@@ -1,8 +1,9 @@
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.data.serialization;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 
 import java.util.ArrayList;

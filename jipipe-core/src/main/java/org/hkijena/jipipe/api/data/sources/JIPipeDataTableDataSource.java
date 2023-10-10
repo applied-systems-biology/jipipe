@@ -11,28 +11,29 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.data.sources;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-
-import java.lang.ref.WeakReference;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 
 /**
  * A {@link JIPipeDataSource}
  */
-public class JIPipeWeakDataTableDataSource implements JIPipeDataSource {
-    private final WeakReference<JIPipeDataTable> dataTable;
+public class JIPipeDataTableDataSource implements JIPipeDataSource {
+    private final JIPipeDataTable dataTable;
     private final int row;
     private final String dataAnnotation;
 
-    public JIPipeWeakDataTableDataSource(JIPipeDataTable dataTable, int row) {
-        this.dataTable = new WeakReference<>(dataTable);
+    public JIPipeDataTableDataSource(JIPipeDataTable dataTable, int row) {
+        this.dataTable = dataTable;
         this.row = row;
         this.dataAnnotation = null;
     }
 
-    public JIPipeWeakDataTableDataSource(JIPipeDataTable dataTable, int row, String dataAnnotation) {
-        this.dataTable = new WeakReference<>(dataTable);
+    public JIPipeDataTableDataSource(JIPipeDataTable dataTable, int row, String dataAnnotation) {
+        this.dataTable = dataTable;
         this.row = row;
         this.dataAnnotation = dataAnnotation;
     }
@@ -45,13 +46,13 @@ public class JIPipeWeakDataTableDataSource implements JIPipeDataSource {
      * @param dataSource the data source. can be null.
      * @return a table data source
      */
-    public static JIPipeWeakDataTableDataSource wrap(JIPipeData data, JIPipeDataSource dataSource) {
-        if (dataSource instanceof JIPipeWeakDataTableDataSource) {
-            return (JIPipeWeakDataTableDataSource) dataSource;
+    public static JIPipeDataTableDataSource wrap(JIPipeData data, JIPipeDataSource dataSource) {
+        if (dataSource instanceof JIPipeDataTableDataSource) {
+            return (JIPipeDataTableDataSource) dataSource;
         } else {
             JIPipeDataTable table = new JIPipeDataTable(data.getClass());
             table.addData(data, new JIPipeProgressInfo());
-            return new JIPipeWeakDataTableDataSource(table, 0);
+            return new JIPipeDataTableDataSource(table, 0);
         }
     }
 
@@ -61,7 +62,7 @@ public class JIPipeWeakDataTableDataSource implements JIPipeDataSource {
      * @return the data slot
      */
     public JIPipeDataTable getDataTable() {
-        return dataTable.get();
+        return dataTable;
     }
 
     /**

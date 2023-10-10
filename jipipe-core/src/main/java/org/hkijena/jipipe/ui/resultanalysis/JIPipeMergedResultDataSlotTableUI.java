@@ -18,6 +18,9 @@ import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
@@ -66,7 +69,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private final SearchTextField searchTextField = new SearchTextField();
     private final Ribbon ribbon = new Ribbon();
     private JXTable table;
-    private JIPipeMergedExportedDataTable mergedDataTable;
+    private JIPipeMergedDataTableMetadata mergedDataTable;
     private FormPanel rowUIList;
     private JScrollPane scrollPane;
     private JIPipeRowDataMergedTableCellRenderer previewRenderer;
@@ -269,7 +272,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     }
 
     private void reloadTable() {
-        mergedDataTable = new JIPipeMergedExportedDataTable();
+        mergedDataTable = new JIPipeMergedDataTableMetadata();
         for (JIPipeDataSlot slot : this.slots) {
             JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
             mergedDataTable.add(getProject(), slot, dataTable);

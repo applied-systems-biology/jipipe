@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes;
+package org.hkijena.jipipe.api.nodes.utils;
 
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
@@ -24,8 +24,12 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -48,12 +52,12 @@ import java.util.concurrent.Future;
  * Original annotations are preserved.
  */
 @JIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
-        "Those groups can consist of one or multiple data item per slot. " +
+        "Those groups can consist of one data item per slot. " +
         "If items are missing, they will be generated according to this node's generator function. " +
         "Otherwise data will be passed through.")
-public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
+public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
 
-    private JIPipeMissingDataGeneratorDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeMissingDataGeneratorDataBatchGenerationSettings();
+    private JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings();
     private boolean parallelizationEnabled = true;
     private boolean keepOriginalAnnotations = true;
 
@@ -63,7 +67,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
      * @param info              Algorithm info
      * @param slotConfiguration Slot configuration override
      */
-    public JIPipeMissingDataGeneratorAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
+    public JIPipeIteratingMissingDataGeneratorAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
     }
 
@@ -72,7 +76,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
      *
      * @param info Algorithm info
      */
-    public JIPipeMissingDataGeneratorAlgorithm(JIPipeNodeInfo info) {
+    public JIPipeIteratingMissingDataGeneratorAlgorithm(JIPipeNodeInfo info) {
         super(info, null);
         registerSubParameter(dataBatchGenerationSettings);
     }
@@ -82,9 +86,9 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
      *
      * @param other The original
      */
-    public JIPipeMissingDataGeneratorAlgorithm(JIPipeMissingDataGeneratorAlgorithm other) {
+    public JIPipeIteratingMissingDataGeneratorAlgorithm(JIPipeIteratingMissingDataGeneratorAlgorithm other) {
         super(other);
-        this.dataBatchGenerationSettings = new JIPipeMissingDataGeneratorDataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.dataBatchGenerationSettings = new JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings(other.dataBatchGenerationSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
         registerSubParameter(dataBatchGenerationSettings);
@@ -99,11 +103,14 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
-        builder.setApplyMerging(dataBatchGenerationSettings.isAllowMerging());
+        builder.setApplyMerging(false);
         builder.setSlots(slots);
         builder.setAnnotationMergeStrategy(dataBatchGenerationSettings.getAnnotationMergeStrategy());
-        builder.setReferenceColumns(dataBatchGenerationSettings.getDataSetMatching(),
+        builder.setReferenceColumns(dataBatchGenerationSettings.getColumnMatching(),
                 dataBatchGenerationSettings.getCustomColumns());
+        builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
+        builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
+        builder.setForceFlowGraphSolver(dataBatchGenerationSettings.isForceFlowGraphSolver());
         List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
@@ -158,8 +165,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         }
 
         if (dataBatches == null) {
-            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
-                    "Unable to split data into batches!",
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this), "Unable to split data into batches!",
                     "The algorithm needs to assign input a unique data set via annotations, but there are either missing elements or multiple data per slot.",
                     "Please check the input of the algorithm by running the quick run on each input algorithm. " +
                             "Try to switch to the 'Data batches' tab to preview how data is split into batches."));
@@ -196,18 +202,10 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
         }
     }
 
-    @Override
-    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
-            return false;
-        }
-        return super.isParameterUIVisible(tree, access);
-    }
-
     @JIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
-    public JIPipeMissingDataGeneratorDataBatchGenerationSettings getDataBatchGenerationSettings() {
+    public JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
     }
 
@@ -246,6 +244,22 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     @JIPipeParameter("keep-original-annotations")
     public void setKeepOriginalAnnotations(boolean keepOriginalAnnotations) {
         this.keepOriginalAnnotations = keepOriginalAnnotations;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if (ParameterUtils.isHiddenLocalParameterCollection(tree, subParameter, "jipipe:data-batch-generation", "jipipe:adaptive-parameters")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:parallelization:enabled")) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     /**

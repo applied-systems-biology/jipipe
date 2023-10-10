@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis.renderers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
+import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
@@ -30,11 +30,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Renders data in {@link JIPipeMergedExportedDataTable}
+ * Renders data in {@link JIPipeMergedDataTableMetadata}
  */
 public class JIPipeRowDataAnnotationMergedTableCellRenderer implements TableCellRenderer {
 
-    private final JIPipeMergedExportedDataTable mergedDataTable;
+    private final JIPipeMergedDataTableMetadata mergedDataTable;
     private final JScrollPane scrollPane;
     private final JTable table;
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
@@ -48,7 +48,7 @@ public class JIPipeRowDataAnnotationMergedTableCellRenderer implements TableCell
      * @param scrollPane      the scroll pane
      * @param table           the table
      */
-    public JIPipeRowDataAnnotationMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable, JScrollPane scrollPane, JTable table) {
+    public JIPipeRowDataAnnotationMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedDataTableMetadata mergedDataTable, JScrollPane scrollPane, JTable table) {
         this.workbenchUI = workbenchUI;
         this.mergedDataTable = mergedDataTable;
         this.scrollPane = scrollPane;
@@ -84,7 +84,7 @@ public class JIPipeRowDataAnnotationMergedTableCellRenderer implements TableCell
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeExportedDataAnnotation) {
             JIPipeExportedDataAnnotation dataAnnotation = (JIPipeExportedDataAnnotation) value;
-            JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
+            JIPipeMergedDataTableMetadata model = (JIPipeMergedDataTableMetadata) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
 
             revalidatePreviewCache();

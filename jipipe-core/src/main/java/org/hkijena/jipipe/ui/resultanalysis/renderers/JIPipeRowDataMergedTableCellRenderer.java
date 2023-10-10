@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
-import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
@@ -28,11 +28,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Renders data in {@link JIPipeMergedExportedDataTable}
+ * Renders data in {@link JIPipeMergedDataTableMetadata}
  */
 public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
 
-    private final JIPipeMergedExportedDataTable mergedDataTable;
+    private final JIPipeMergedDataTableMetadata mergedDataTable;
     private final JScrollPane scrollPane;
     private final JTable table;
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
@@ -46,7 +46,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
      * @param scrollPane      the scroll pane
      * @param table           the table
      */
-    public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable, JScrollPane scrollPane, JTable table) {
+    public JIPipeRowDataMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedDataTableMetadata mergedDataTable, JScrollPane scrollPane, JTable table) {
         this.workbenchUI = workbenchUI;
         this.mergedDataTable = mergedDataTable;
         this.scrollPane = scrollPane;
@@ -67,7 +67,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeDataTableMetadataRow) {
-            JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
+            JIPipeMergedDataTableMetadata model = (JIPipeMergedDataTableMetadata) table.getModel();
             JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
             while (row > previewCache.size() - 1) {
                 previewCache.add(null);

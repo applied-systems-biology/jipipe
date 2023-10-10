@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.ilastik.nodes;
 
-import ij.ImagePlus;
 import net.imagej.DefaultDataset;
 import net.imagej.ImgPlus;
 import net.imagej.axis.AxisType;
@@ -10,9 +9,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.utils.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -22,7 +22,6 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils;
 import org.hkijena.jipipe.extensions.ilastik.utils.hdf5.Hdf5;
-import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.io.ExportImage2Algorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.PathUtils;

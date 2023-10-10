@@ -13,14 +13,15 @@
 
 package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 /**
- * Renders the location of of {@link JIPipeDataTableMetadata} and {@link org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable}
+ * Renders the location of of {@link JIPipeDataTableMetadata} and {@link JIPipeMergedDataTableMetadata}
  */
 public class JIPipeRowIndexTableCellRenderer extends JLabel implements TableCellRenderer {
 

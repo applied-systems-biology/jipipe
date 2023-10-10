@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
 
 import java.util.List;
 

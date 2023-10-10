@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.data;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 
 import java.nio.file.Path;
 import java.util.Objects;

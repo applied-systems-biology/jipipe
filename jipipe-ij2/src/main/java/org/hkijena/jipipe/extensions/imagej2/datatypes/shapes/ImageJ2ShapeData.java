@@ -4,7 +4,7 @@ import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeSerializedParameterCollectionData;
+import org.hkijena.jipipe.api.data.utils.JIPipeSerializedParameterCollectionData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 @JIPipeDocumentation(name = "IJ2 Shape", description = "An ImageJ2 shape generator")

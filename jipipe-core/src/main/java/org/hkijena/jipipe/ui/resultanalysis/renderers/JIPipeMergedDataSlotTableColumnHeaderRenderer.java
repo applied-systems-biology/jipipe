@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
-import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
+import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableMetadata;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -25,12 +25,12 @@ import java.awt.*;
  * Renders the column header in merged {@link JIPipeDataTableMetadata} instances
  */
 public class JIPipeMergedDataSlotTableColumnHeaderRenderer implements TableCellRenderer {
-    private JIPipeMergedExportedDataTable dataTable;
+    private JIPipeMergedDataTableMetadata dataTable;
 
     /**
      * @param dataTable The table
      */
-    public JIPipeMergedDataSlotTableColumnHeaderRenderer(JIPipeMergedExportedDataTable dataTable) {
+    public JIPipeMergedDataSlotTableColumnHeaderRenderer(JIPipeMergedDataTableMetadata dataTable) {
         this.dataTable = dataTable;
     }
 

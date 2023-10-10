@@ -11,11 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.data.serialization;
 
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import javax.swing.event.TableModelListener;
@@ -29,7 +32,7 @@ import java.util.UUID;
 /**
  * Merges multiple {@link JIPipeDataTableMetadata}
  */
-public class JIPipeMergedExportedDataTable implements TableModel {
+public class JIPipeMergedDataTableMetadata implements TableModel {
 
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();

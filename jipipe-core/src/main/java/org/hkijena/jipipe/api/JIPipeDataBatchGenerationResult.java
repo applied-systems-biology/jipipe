@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
 
 import java.util.*;
 
