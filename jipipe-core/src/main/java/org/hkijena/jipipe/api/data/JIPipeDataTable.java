@@ -50,6 +50,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     private final Map<String, ArrayList<JIPipeDataItemStore>> dataAnnotations = new HashMap<>();
     private Class<? extends JIPipeData> acceptedDataType;
 
+    public JIPipeDataTable() {
+        this.acceptedDataType = JIPipeData.class;
+    }
+
     public JIPipeDataTable(Class<? extends JIPipeData> acceptedDataType) {
         this.acceptedDataType = acceptedDataType;
     }
@@ -1246,7 +1250,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public JIPipeDataTable slice(Collection<Integer> rows) {
         JIPipeDataTable result = new JIPipeDataTable(getAcceptedDataType());
         for (Integer row : rows) {
-            result.addData(getDataItemStore(row), getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
+            result.addData(getDataItemStore(row), getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, getDataContext(row), new JIPipeProgressInfo());
             for (Map.Entry<String, JIPipeDataItemStore> entry : getDataAnnotationItemStoreMap(row).entrySet()) {
                 result.setDataAnnotationItemStore(result.getRowCount() - 1, entry.getKey(), entry.getValue());
             }
