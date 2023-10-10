@@ -7,6 +7,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.MutableJIPipeDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -37,16 +39,13 @@ import java.util.*;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-data-table.schema.json")
 public class JIPipeDataTable implements JIPipeData, TableModel {
     private final List<TableModelListener> listeners = new ArrayList<>();
-    // The main data table
     private final ArrayList<JIPipeDataItemStore> data = new ArrayList<>();
-    // String annotations
+    private final ArrayList<JIPipeDataContext> dataContexts = new ArrayList<>();
     private final List<String> textAnnotationColumns = new ArrayList<>();
     private final Map<String, ArrayList<JIPipeTextAnnotation>> annotations = new HashMap<>();
-    // Data annotations
     private final List<String> dataAnnotationColumns = new ArrayList<>();
     private final Map<String, ArrayList<JIPipeDataItemStore>> dataAnnotations = new HashMap<>();
     private Class<? extends JIPipeData> acceptedDataType;
-    // Metadata
 
     public JIPipeDataTable(Class<? extends JIPipeData> acceptedDataType) {
         this.acceptedDataType = acceptedDataType;
@@ -78,6 +77,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     dataAnnotations,
                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    other.getDataContext(row),
                     rowProgress);
         }
     }
@@ -90,25 +90,25 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public static JIPipeDataTable importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path storagePath = storage.getFileSystemPath();
-        JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(storagePath.resolve("data-table.json"));
-        Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTable.getAcceptedDataTypeId());
-        JIPipeDataTable slot = new JIPipeDataTable(acceptedDataType);
-        for (int i = 0; i < dataTable.getRowCount(); i++) {
-            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTable.getRowCount());
-            JIPipeDataTableMetadataRow row = dataTable.getRowList().get(i);
+        JIPipeDataTableMetadata dataTableMetadata = JIPipeDataTableMetadata.loadFromJson(storagePath.resolve("data-table.json"));
+        Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTableMetadata.getAcceptedDataTypeId());
+        JIPipeDataTable dataTable = new JIPipeDataTable(acceptedDataType);
+        for (int i = 0; i < dataTableMetadata.getRowCount(); i++) {
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTableMetadata.getRowCount());
+            JIPipeDataTableMetadataRow row = dataTableMetadata.getRowList().get(i);
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
             JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorage), rowDataType, rowProgress);
-            slot.addData(data, row.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
+            dataTable.addData(data, row.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, row.getDataContext(), rowProgress);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());
                 Class<? extends JIPipeData> dataAnnotationDataType = JIPipe.getDataTypes().getById(dataAnnotation.getTrueDataType());
                 JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, dataAnnotationRowStorage), dataAnnotationDataType, progressInfo);
-                slot.setDataAnnotation(i, dataAnnotation.getName(), dataAnnotationData);
+                dataTable.setDataAnnotation(i, dataAnnotation.getName(), dataAnnotationData);
             }
         }
-        return slot;
+        return dataTable;
     }
 
     /**
@@ -141,6 +141,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     dataAnnotations,
                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    getDataContext(row),
                     rowProgress);
         }
         return result;
@@ -272,6 +273,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             }
         }
         data.clear();
+        dataContexts.clear();
         textAnnotationColumns.clear();
         annotations.clear();
         dataAnnotations.clear();
@@ -401,6 +403,15 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
+     * Gets the context of the data in the row
+     * @param row the row
+     * @return the data context
+     */
+    public JIPipeDataContext getDataContext(int row) {
+        return dataContexts.get(row);
+    }
+
+    /**
      * Gets the data stored in a specific row.
      * Please note that this will allocate virtual data
      *
@@ -518,6 +529,18 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         JIPipeDataItemStore virtualData = new JIPipeDataItemStore(JIPipe.getDataTypes().convert(data, getAcceptedDataType(), new JIPipeProgressInfo()));
         virtualData.addUser(this);
         this.data.set(row, virtualData);
+    }
+
+    /**
+     * Sets the context of data in given row
+     * @param row the row
+     * @param context the new context. if null, a new context is created.
+     */
+    public void setDataContext(int row, JIPipeDataContext context) {
+        if(context == null) {
+            context = new MutableJIPipeDataContext();
+        }
+        this.dataContexts.set(row, context);
     }
 
     /**
@@ -824,6 +847,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         return arrayList;
     }
 
+    public List<JIPipeDataContext> getDataContexts() {
+        return Collections.unmodifiableList(dataContexts);
+    }
+
     /**
      * Adds a data row
      *
@@ -831,7 +858,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param annotations  Optional annotations
      * @param progressInfo progress for data storage
      */
-    public synchronized void addData(JIPipeData value, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
+    public synchronized void addData(JIPipeData value, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeDataContext context, JIPipeProgressInfo progressInfo) {
         if (!accepts(value))
             throw new IllegalArgumentException("Tried to add data of type " + value.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         if (!annotations.isEmpty()) {
@@ -840,11 +867,23 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         JIPipeDataItemStore virtualData = new JIPipeDataItemStore(JIPipe.getDataTypes().convert(value, getAcceptedDataType(), progressInfo));
         virtualData.addUser(this);
         data.add(virtualData);
+        dataContexts.add(context != null ? context : new MutableJIPipeDataContext());
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
         }
         fireChangedEvent(new TableModelEvent(this));
+    }
+
+    /**
+     * Adds a data row
+     *
+     * @param value        The data
+     * @param annotations  Optional annotations
+     * @param progressInfo progress for data storage
+     */
+    public synchronized void addData(JIPipeData value, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
+        addData(value, annotations, mergeStrategy, null, progressInfo);
     }
 
     /**
@@ -924,6 +963,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     table.getDataAnnotations(row),
                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    table.getDataContext(row),
                     addDataProgress);
         }
     }
@@ -992,6 +1032,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             rowMetadata.setIndex(row);
             rowMetadata.setTrueDataType(JIPipe.getDataTypes().getIdOf(getDataItemStore(row).getDataClass()));
             rowMetadata.setTextAnnotations(getTextAnnotations(row));
+            rowMetadata.setDataContext(getDataContext(row));
             JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
             saveDataRow(storage, row, previewSizes, rowProgress);
             for (JIPipeDataAnnotation dataAnnotation : getDataAnnotations(row)) {
@@ -1071,7 +1112,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         String text = "Copying data from " + sourceSlot.getDisplayName() + " to " + getDisplayName();
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
             progressInfo.resolveAndLog(text, row, sourceSlot.getRowCount());
-            addData(sourceSlot.getDataItemStore(row), sourceSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            addData(sourceSlot.getDataItemStore(row), sourceSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge, sourceSlot.getDataContext(row), progressInfo);
 
             // Copy data annotations
             for (Map.Entry<String, JIPipeDataItemStore> entry : sourceSlot.getDataAnnotationItemStoreMap(row).entrySet()) {
@@ -1088,7 +1129,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param mergeStrategy merge strategy
      * @param progressInfo the progress info
      */
-    public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
+    public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeDataContext context, JIPipeProgressInfo progressInfo) {
         if (!accepts(virtualData.getDataClass()))
             throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts "
                     + acceptedDataType + ". A converter could not be found.");
@@ -1097,10 +1138,23 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
         virtualData.addUser(this);
         data.add(virtualData);
+        dataContexts.add(context != null ? context : new MutableJIPipeDataContext());
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
         }
+    }
+
+    /**
+     * Adds data as virtual data reference
+     *
+     * @param virtualData   the virtual data
+     * @param annotations   the annotations
+     * @param mergeStrategy merge strategy
+     * @param progressInfo the progress info
+     */
+    public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
+        addData(virtualData, annotations, mergeStrategy, null, progressInfo);
     }
 
     /**
@@ -1231,7 +1285,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param progressInfo  the progress info
      */
     public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
-                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeDataContext context, JIPipeProgressInfo progressInfo) {
         if (!accepts(virtualData.getDataClass()))
             throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts "
                     + acceptedDataType + ". A converter could not be found.");
@@ -1239,6 +1293,49 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             annotations = mergeStrategy.merge(annotations);
         }
         data.add(virtualData);
+        dataContexts.add(context != null ? context : new MutableJIPipeDataContext());
+        virtualData.addUser(this);
+        for (JIPipeTextAnnotation annotation : annotations) {
+            List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
+            annotationArray.set(getRowCount() - 1, annotation);
+        }
+        for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
+            setDataAnnotationItemStore(getRowCount() - 1, annotation.getName(), annotation.getVirtualData());
+        }
+    }
+
+    /**
+     * Adds data as virtual data reference
+     *
+     * @param virtualData   the virtual data
+     * @param annotations   the annotations
+     * @param mergeStrategy merge strategy
+     * @param progressInfo  the progress info
+     */
+    public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
+                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+        addData(virtualData, annotations, mergeStrategy, dataAnnotations, dataAnnotationMergeStrategy, null, progressInfo);
+    }
+
+    /**
+     * Adds data as virtual data reference
+     *
+     * @param data          the data
+     * @param annotations   the annotations
+     * @param mergeStrategy merge strategy
+     * @param progressInfo the progress info
+     */
+    public void addData(JIPipeData data, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
+                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeDataContext context, JIPipeProgressInfo progressInfo) {
+        if (!accepts(data))
+            throw new IllegalArgumentException("Tried to add data of type " + data.getClass() + ", but slot only accepts "
+                    + acceptedDataType + ". A converter could not be found.");
+        if (!annotations.isEmpty()) {
+            annotations = mergeStrategy.merge(annotations);
+        }
+        JIPipeDataItemStore virtualData = new JIPipeDataItemStore(data);
+        this.data.add(virtualData);
+        this.dataContexts.add(context != null ? context : new MutableJIPipeDataContext());
         virtualData.addUser(this);
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
@@ -1259,22 +1356,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void addData(JIPipeData data, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
                         List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
-        if (!accepts(data))
-            throw new IllegalArgumentException("Tried to add data of type " + data.getClass() + ", but slot only accepts "
-                    + acceptedDataType + ". A converter could not be found.");
-        if (!annotations.isEmpty()) {
-            annotations = mergeStrategy.merge(annotations);
-        }
-        JIPipeDataItemStore virtualData = new JIPipeDataItemStore(data);
-        this.data.add(virtualData);
-        virtualData.addUser(this);
-        for (JIPipeTextAnnotation annotation : annotations) {
-            List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
-            annotationArray.set(getRowCount() - 1, annotation);
-        }
-        for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
-            setDataAnnotationItemStore(getRowCount() - 1, annotation.getName(), annotation.getVirtualData());
-        }
+        addData(data, annotations, mergeStrategy, dataAnnotations, dataAnnotationMergeStrategy, null, progressInfo);
     }
 
     /**

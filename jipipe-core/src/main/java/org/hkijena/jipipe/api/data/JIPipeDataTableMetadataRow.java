@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.data;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class JIPipeDataTableMetadataRow {
     private List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>();
     private List<JIPipeExportedDataAnnotation> dataAnnotations = new ArrayList<>();
     private String trueDataType;
+    private JIPipeDataContext dataContext;
 
     /**
      * Creates new instance
@@ -96,5 +98,15 @@ public class JIPipeDataTableMetadataRow {
     @JsonSetter("true-data-type")
     public void setTrueDataType(String trueDataType) {
         this.trueDataType = trueDataType;
+    }
+
+    @JsonGetter("data-context")
+    public JIPipeDataContext getDataContext() {
+        return dataContext;
+    }
+
+    @JsonSetter("data-context")
+    public void setDataContext(JIPipeDataContext dataContext) {
+        this.dataContext = dataContext;
     }
 }

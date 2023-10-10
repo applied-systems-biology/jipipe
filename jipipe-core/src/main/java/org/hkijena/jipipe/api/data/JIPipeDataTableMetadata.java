@@ -43,7 +43,6 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     private List<String> annotationColumns;
     private List<String> dataAnnotationColumns;
 
-
     public JIPipeDataTableMetadata() {
     }
 
@@ -153,6 +152,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
             tableRow.put("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
             tableRow.put("jipipe:true-data-type", row.getTrueDataType());
             tableRow.put("jipipe:index", row.getIndex());
+            tableRow.put("jipipe:data-context", JsonUtils.toJsonString(row.getDataContext()));
             for (String dataAnnotationColumn : getDataAnnotationColumns()) {
                 JIPipeExportedDataAnnotation existing = row.getDataAnnotations().stream().filter(t -> t.nameEquals(dataAnnotationColumn)).findFirst().orElse(null);
                 if (existing != null)
