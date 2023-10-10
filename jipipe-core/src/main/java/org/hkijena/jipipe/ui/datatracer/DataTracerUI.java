@@ -14,6 +14,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
+import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -60,6 +61,8 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
 
     private void initializeToolbar(JToolBar toolBar) {
         toolBar.add(new JIPipeRunnerQueueButton(getWorkbench(), queue));
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(new AlwaysOnTopToggle((JWindow) SwingUtilities.getWindowAncestor(this)));
     }
 
     private void refreshContent() {
