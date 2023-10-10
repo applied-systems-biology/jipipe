@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 
 @JIPipeDocumentation(name = "Merge into data tables", description = "Creates data batches from the incoming data and merges them into data table data. " +
         "Such tables might be needed for some nodes that process lists of data.")

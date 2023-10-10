@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 
 @JIPipeDocumentation(name = "Merge 3D scenes", description = "Merges the input scenes into one")

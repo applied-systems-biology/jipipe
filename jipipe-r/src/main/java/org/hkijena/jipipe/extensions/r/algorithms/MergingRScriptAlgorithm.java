@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;

@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeMissingDataGeneratorAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 @JIPipeDocumentation(name = "Use placeholder for missing data", description = "Creates a data batch of the reference and data inputs. " +

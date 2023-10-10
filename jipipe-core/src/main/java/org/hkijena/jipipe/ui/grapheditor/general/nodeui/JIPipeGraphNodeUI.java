@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeParameterSlotAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;

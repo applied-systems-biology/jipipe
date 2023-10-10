@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.utils;
+package org.hkijena.jipipe.api.nodes.algorithm;
 
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
@@ -25,6 +25,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;

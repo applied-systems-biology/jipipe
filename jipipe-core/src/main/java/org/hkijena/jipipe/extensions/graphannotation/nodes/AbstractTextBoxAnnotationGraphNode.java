@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.graphannotation.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;

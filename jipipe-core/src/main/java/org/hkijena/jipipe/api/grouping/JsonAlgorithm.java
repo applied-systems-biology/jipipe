@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeMergingAlgorithmDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.utils.ParameterUtils;
 

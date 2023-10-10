@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.graphannotation.tools;
 
 import ij.IJ;
-import org.hkijena.jipipe.api.nodes.JIPipeAnnotationGraphNodeTool;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.extensions.graphannotation.nodes.ImageBoxAnnotationGraphNode;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;

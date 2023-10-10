@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 
 import java.util.*;
 

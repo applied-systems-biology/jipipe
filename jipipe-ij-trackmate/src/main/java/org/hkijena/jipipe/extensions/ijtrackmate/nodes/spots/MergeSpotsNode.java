@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 
 import java.util.List;

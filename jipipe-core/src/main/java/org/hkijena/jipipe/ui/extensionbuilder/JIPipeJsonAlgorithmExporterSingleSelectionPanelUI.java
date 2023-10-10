@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.extensionbuilder;
 
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;

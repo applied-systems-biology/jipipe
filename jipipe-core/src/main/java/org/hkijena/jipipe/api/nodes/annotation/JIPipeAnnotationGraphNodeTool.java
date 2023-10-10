@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.api.nodes;
+package org.hkijena.jipipe.api.nodes.annotation;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;

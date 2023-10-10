@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 

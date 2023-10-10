@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
-import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
+import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;

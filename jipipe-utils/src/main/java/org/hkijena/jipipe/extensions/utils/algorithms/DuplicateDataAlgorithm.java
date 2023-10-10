@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 
 @JIPipeDocumentation(name = "Duplicate data", description = "Creates a duplicate of the input data. Useful for debugging purposes.")
 @JIPipeInputSlot(slotName = "Input", value = JIPipeData.class, autoCreate = true)

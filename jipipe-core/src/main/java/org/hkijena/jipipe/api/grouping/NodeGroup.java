@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGro
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeMergingAlgorithmDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;

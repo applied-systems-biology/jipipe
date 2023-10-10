@@ -11,12 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes;
+package org.hkijena.jipipe.api.nodes.databatch;
 
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 
 import java.util.List;
 

@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.extensions.scene3d.model.Scene3DGroupNode;

@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.utils.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;

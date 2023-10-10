@@ -38,6 +38,7 @@ import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.looping.LoopEndNode;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
+import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;

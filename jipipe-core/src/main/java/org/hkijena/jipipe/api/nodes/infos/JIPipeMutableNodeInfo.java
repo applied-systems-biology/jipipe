@@ -11,10 +11,11 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes;
+package org.hkijena.jipipe.api.nodes.infos;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
 import java.util.ArrayList;

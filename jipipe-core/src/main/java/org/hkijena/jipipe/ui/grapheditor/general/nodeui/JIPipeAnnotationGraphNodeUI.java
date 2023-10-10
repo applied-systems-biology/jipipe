@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.ui.grapheditor.general.nodeui;
 
-import org.hkijena.jipipe.api.nodes.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;

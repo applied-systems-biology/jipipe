@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.api.nodes;
+package org.hkijena.jipipe.api.nodes.databatch;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 

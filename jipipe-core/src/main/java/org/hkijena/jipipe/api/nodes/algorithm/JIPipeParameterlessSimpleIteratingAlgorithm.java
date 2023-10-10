@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.utils;
+package org.hkijena.jipipe.api.nodes.algorithm;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -25,6 +25,8 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;

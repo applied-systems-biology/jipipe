@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.graphannotation.tools;
 
-import org.hkijena.jipipe.api.nodes.JIPipeAnnotationGraphNodeTool;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.extensions.graphannotation.nodes.GroupBoxAnnotationGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 

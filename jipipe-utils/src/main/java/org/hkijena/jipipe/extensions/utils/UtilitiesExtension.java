@@ -21,7 +21,7 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
-import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
