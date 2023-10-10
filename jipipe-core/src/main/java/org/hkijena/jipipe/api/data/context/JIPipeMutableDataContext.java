@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-public class MutableJIPipeDataContext implements JIPipeDataContext {
+public class JIPipeMutableDataContext implements JIPipeDataContext {
     private String id;
     private Set<String> predecessors = new HashSet<>();
 
-    public MutableJIPipeDataContext() {
+    public JIPipeMutableDataContext() {
         this.id = "/" + UUID.randomUUID();
     }
 
@@ -35,5 +35,9 @@ public class MutableJIPipeDataContext implements JIPipeDataContext {
     @JsonSetter("predecessors")
     public void setPredecessors(Set<String> predecessors) {
         this.predecessors = predecessors;
+    }
+
+    public void addPredecessor(JIPipeDataContext predecessorContext) {
+        predecessors.add(predecessorContext.getId());
     }
 }

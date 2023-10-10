@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import java.util.*;
@@ -282,6 +284,20 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
         return mergedDataAnnotations.getOrDefault(name, null);
     }
 
+
+    /**
+     * Creates a context for new data that inherits direct predecessors from this data batch's input
+     * @return the new context
+     */
+    public JIPipeDataContext createNewContext() {
+        JIPipeMutableDataContext context = new JIPipeMutableDataContext();
+        for (Map.Entry<JIPipeDataSlot, Integer> entry : inputSlotRows.entrySet()) {
+            JIPipeDataContext predecessorContext = entry.getKey().getDataContext(entry.getValue());
+            context.addPredecessor(predecessorContext);
+        }
+        return context;
+    }
+
     /**
      * Writes output data into the provided slot
      * Please note that annotations should be set up till this point
@@ -335,7 +351,13 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isOutput())
             throw new IllegalArgumentException("Slot is not an output slot!");
-        slot.addData(data, new ArrayList<>(mergedAnnotations.values()), JIPipeTextAnnotationMergeMode.Merge, new ArrayList<>(mergedDataAnnotations.values()), JIPipeDataAnnotationMergeMode.Merge, progressInfo);
+        slot.addData(data,
+                new ArrayList<>(mergedAnnotations.values()),
+                JIPipeTextAnnotationMergeMode.Merge,
+                new ArrayList<>(mergedDataAnnotations.values()),
+                JIPipeDataAnnotationMergeMode.Merge,
+                createNewContext(),
+                progressInfo);
     }
 
     /**
@@ -374,7 +396,13 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
         List<JIPipeDataAnnotation> finalDataAnnotations = new ArrayList<>(mergedDataAnnotations.values());
         finalDataAnnotations.addAll(additionalDataAnnotations);
 
-        slot.addData(data, finalAnnotations, mergeStrategy, finalDataAnnotations, dataAnnotationMergeStrategy, progressInfo);
+        slot.addData(data,
+                finalAnnotations,
+                mergeStrategy,
+                finalDataAnnotations,
+                dataAnnotationMergeStrategy,
+                createNewContext(),
+                progressInfo);
     }
 
     /**
@@ -398,7 +426,13 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
         List<JIPipeDataAnnotation> finalDataAnnotations = new ArrayList<>(mergedDataAnnotations.values());
         finalDataAnnotations.addAll(additionalDataAnnotations);
 
-        slot.addData(virtualData, finalAnnotations, mergeStrategy, finalDataAnnotations, dataAnnotationMergeStrategy, progressInfo);
+        slot.addData(virtualData,
+                finalAnnotations,
+                mergeStrategy,
+                finalDataAnnotations,
+                dataAnnotationMergeStrategy,
+                createNewContext(),
+                progressInfo);
     }
 
     /**
@@ -414,7 +448,12 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
         JIPipeDataSlot dummy = info.createInstance(node);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>(getMergedTextAnnotations().values());
         List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>(getMergedDataAnnotations().values());
-        dummy.addData(sourceSlot.getDataItemStore(getInputRow(sourceSlot.getName())), annotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, progressInfo);
+        dummy.addData(sourceSlot.getDataItemStore(getInputRow(sourceSlot.getName())),
+                annotations,
+                JIPipeTextAnnotationMergeMode.Merge,
+                dataAnnotations,
+                JIPipeDataAnnotationMergeMode.Merge,
+                progressInfo);
         return dummy;
     }
 

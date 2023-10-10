@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 
@@ -315,6 +317,21 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
         }
     }
 
+    /**
+     * Creates a context for new data that inherits direct predecessors from this data batch's input
+     * @return the new context
+     */
+    public JIPipeDataContext createNewContext() {
+        JIPipeMutableDataContext context = new JIPipeMutableDataContext();
+        for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
+            for (Integer row : entry.getValue()) {
+                JIPipeDataContext predecessorContext = entry.getKey().getDataContext(row);
+                context.addPredecessor(predecessorContext);
+            }
+        }
+        return context;
+    }
+
 
     /**
      * Removes an annotation of provided type
@@ -428,7 +445,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
         finalAnnotations.addAll(additionalAnnotations);
         List<JIPipeDataAnnotation> finalDataAnnotations = new ArrayList<>(mergedDataAnnotations.values());
         finalDataAnnotations.addAll(additionalDataAnnotations);
-        slot.addData(data, finalAnnotations, annotationMergeStrategy, finalDataAnnotations, dataAnnotationMergeStrategy, progressInfo);
+        slot.addData(data, finalAnnotations, annotationMergeStrategy, finalDataAnnotations, dataAnnotationMergeStrategy, createNewContext(), progressInfo);
     }
 
     /**
@@ -506,7 +523,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
         finalAnnotations.addAll(additionalAnnotations);
         List<JIPipeDataAnnotation> finalDataAnnotations = new ArrayList<>(mergedDataAnnotations.values());
         finalDataAnnotations.addAll(additionalDataAnnotations);
-        slot.addData(data, finalAnnotations, mergeStrategy, finalDataAnnotations, dataAnnotationMergeStrategy, progressInfo);
+        slot.addData(data, finalAnnotations, mergeStrategy, finalDataAnnotations, dataAnnotationMergeStrategy, createNewContext(), progressInfo);
     }
 
     /**
@@ -527,7 +544,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
         List<JIPipeTextAnnotation> finalAnnotations = new ArrayList<>(mergedTextAnnotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         List<JIPipeDataAnnotation> finalDataAnnotations = new ArrayList<>(mergedDataAnnotations.values());
-        slot.addData(data, finalAnnotations, mergeStrategy, finalDataAnnotations, JIPipeDataAnnotationMergeMode.Merge, progressInfo);
+        slot.addData(data, finalAnnotations, mergeStrategy, finalDataAnnotations, JIPipeDataAnnotationMergeMode.Merge, createNewContext(), progressInfo);
     }
 
     /**
@@ -548,7 +565,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
         List<JIPipeTextAnnotation> finalAnnotations = new ArrayList<>(mergedTextAnnotations.values());
         finalAnnotations.addAll(additionalAnnotations);
         List<JIPipeDataAnnotation> finalDataAnnotations = new ArrayList<>(mergedDataAnnotations.values());
-        slot.addData(data, finalAnnotations, mergeStrategy, finalDataAnnotations, JIPipeDataAnnotationMergeMode.Merge, progressInfo);
+        slot.addData(data, finalAnnotations, mergeStrategy, finalDataAnnotations, JIPipeDataAnnotationMergeMode.Merge, createNewContext(), progressInfo);
     }
 
     /**

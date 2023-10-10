@@ -1,18 +1,15 @@
 package org.hkijena.jipipe.api.data.context;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
-import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * Context annotation attached to data in a data table.
  * Contains information about the unique ID of the data and list of predecessor data.
  */
-@JsonDeserialize(as = MutableJIPipeDataContext.class)
+@JsonDeserialize(as = JIPipeMutableDataContext.class)
 public interface JIPipeDataContext {
 
     /**

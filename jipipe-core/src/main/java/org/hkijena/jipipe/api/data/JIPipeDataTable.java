@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.context.MutableJIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
@@ -541,7 +541,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void setDataContext(int row, JIPipeDataContext context) {
         if(context == null) {
-            context = new MutableJIPipeDataContext();
+            context = new JIPipeMutableDataContext();
         }
         this.dataContexts.set(row, context);
     }
@@ -870,7 +870,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         JIPipeDataItemStore virtualData = new JIPipeDataItemStore(JIPipe.getDataTypes().convert(value, getAcceptedDataType(), progressInfo));
         virtualData.addUser(this);
         data.add(virtualData);
-        dataContexts.add(context != null ? context : new MutableJIPipeDataContext());
+        dataContexts.add(context != null ? context : new JIPipeMutableDataContext());
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
@@ -1141,7 +1141,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
         virtualData.addUser(this);
         data.add(virtualData);
-        dataContexts.add(context != null ? context : new MutableJIPipeDataContext());
+        dataContexts.add(context != null ? context : new JIPipeMutableDataContext());
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
@@ -1296,7 +1296,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             annotations = mergeStrategy.merge(annotations);
         }
         data.add(virtualData);
-        dataContexts.add(context != null ? context : new MutableJIPipeDataContext());
+        dataContexts.add(context != null ? context : new JIPipeMutableDataContext());
         virtualData.addUser(this);
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
@@ -1338,7 +1338,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
         JIPipeDataItemStore virtualData = new JIPipeDataItemStore(data);
         this.data.add(virtualData);
-        this.dataContexts.add(context != null ? context : new MutableJIPipeDataContext());
+        this.dataContexts.add(context != null ? context : new JIPipeMutableDataContext());
         virtualData.addUser(this);
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
