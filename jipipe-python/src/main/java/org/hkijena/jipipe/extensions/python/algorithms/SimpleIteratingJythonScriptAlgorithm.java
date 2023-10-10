@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -92,7 +92,7 @@ public class SimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
         pythonInterpreter.set("data_batch", dataBatch);

@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -53,7 +53,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(exporterType.getInstance().getExportedJIPipeDataType());
         for (Integer row : dataBatch.getInputRows(getFirstInputSlot())) {
             dataTable.addData(getFirstInputSlot().getDataItemStore(row),

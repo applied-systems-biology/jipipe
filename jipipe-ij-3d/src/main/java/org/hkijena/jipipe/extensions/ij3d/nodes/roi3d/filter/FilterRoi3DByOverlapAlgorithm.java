@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -99,7 +99,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROI3DListData roi1List = dataBatch.getInputData("ROI 1", ROI3DListData.class, progressInfo);
         ROI3DListData roi2List = dataBatch.getInputData("ROI 2", ROI3DListData.class, progressInfo);
         ImageHandler imageHandler = IJ3DUtils.wrapImage(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));

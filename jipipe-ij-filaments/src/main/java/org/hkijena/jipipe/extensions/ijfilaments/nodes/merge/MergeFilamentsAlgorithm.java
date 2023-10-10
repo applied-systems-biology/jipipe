@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -24,7 +24,7 @@ public class MergeFilamentsAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Filaments3DData outputData = new Filaments3DData();
         for (Filaments3DData data : dataBatch.getInputData(getFirstInputSlot(), Filaments3DData.class, progressInfo)) {
             outputData.mergeWith(data);

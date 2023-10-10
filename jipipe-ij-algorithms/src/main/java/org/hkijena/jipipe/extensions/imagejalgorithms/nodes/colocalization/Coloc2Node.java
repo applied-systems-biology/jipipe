@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -98,7 +98,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus channel1Img = dataBatch.getInputData("Channel 1", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImagePlus channel2Img = dataBatch.getInputData("Channel 2", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         channel2Img = ImageJUtils.convertToSameTypeIfNeeded(channel2Img, channel1Img, true);

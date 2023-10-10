@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -93,7 +93,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
         Map<String, PlotColumn> plotColumns = new HashMap<>();
         for (PlotColumn column : plotMetadata.columns()) {

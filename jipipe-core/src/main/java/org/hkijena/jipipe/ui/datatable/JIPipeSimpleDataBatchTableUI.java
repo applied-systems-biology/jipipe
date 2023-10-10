@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.ui.datatable;
 
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
@@ -37,13 +37,13 @@ import java.util.List;
  * Panel that displays a data batch table
  */
 public class JIPipeSimpleDataBatchTableUI extends JPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
-    private List<JIPipeMergingDataBatch> dataBatchList;
+    private List<JIPipeMultiDataBatch> dataBatchList;
     private JXTable table;
     private JScrollPane scrollPane;
     private SearchTextField searchTextField;
     private JIPipeSimpleDataBatchTableModel dataTableModel;
 
-    public JIPipeSimpleDataBatchTableUI(List<JIPipeMergingDataBatch> dataBatchList) {
+    public JIPipeSimpleDataBatchTableUI(List<JIPipeMultiDataBatch> dataBatchList) {
         this.dataBatchList = dataBatchList;
         initialize();
         reloadTable();
@@ -57,7 +57,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel implements JIPipeParame
         return table;
     }
 
-    public List<JIPipeMergingDataBatch> getDataBatchList() {
+    public List<JIPipeMultiDataBatch> getDataBatchList() {
         return dataBatchList;
     }
 

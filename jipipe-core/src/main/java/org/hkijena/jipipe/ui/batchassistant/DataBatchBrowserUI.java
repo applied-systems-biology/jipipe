@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * Browser for a Data batch, similar to the cache browser
  */
 public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
-    private final JIPipeMergingDataBatch dataBatch;
+    private final JIPipeMultiDataBatch dataBatch;
     private JSplitPane splitPane;
     private DataBatchTree tree;
 
@@ -42,7 +42,7 @@ public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
      * @param workbenchUI the workbench
      * @param dataBatch   the data batch
      */
-    public DataBatchBrowserUI(JIPipeWorkbench workbenchUI, JIPipeMergingDataBatch dataBatch) {
+    public DataBatchBrowserUI(JIPipeWorkbench workbenchUI, JIPipeMultiDataBatch dataBatch) {
         super(workbenchUI);
         this.dataBatch = dataBatch;
         initialize();

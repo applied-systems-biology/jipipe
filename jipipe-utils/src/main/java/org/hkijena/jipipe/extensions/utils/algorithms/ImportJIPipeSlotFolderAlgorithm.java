@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -70,7 +70,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
         Path dataFolder = outputData.toPath().resolve(getCompartmentId()).resolve(getNodeId()).resolve(getSlotName());
         if (ignoreInputTextAnnotations)

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -107,7 +107,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
         return orderAssignment;
     }
 
-    private List<ImagePlus> getOrderedInputImages(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private List<ImagePlus> getOrderedInputImages(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> inputImages = new ArrayList<>();
         Map<JIPipeDataSlot, Integer> orderMap = new HashMap<>();
         for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
@@ -124,7 +124,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
         List<ImagePlus> inputImages = getOrderedInputImages(dataBatch, progressInfo);
         inputImages = ImageJUtils.convertToConsensusBitDepthIfNeeded(inputImages);

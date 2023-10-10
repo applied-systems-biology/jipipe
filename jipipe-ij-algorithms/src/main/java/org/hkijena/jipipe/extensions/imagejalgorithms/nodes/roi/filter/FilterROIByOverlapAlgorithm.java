@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -101,7 +101,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
         ROIListData roi1_original = dataBatch.getInputData("ROI 1", ROIListData.class, progressInfo);
         ROIListData roi2_original = dataBatch.getInputData("ROI 2", ROIListData.class, progressInfo);
@@ -144,7 +144,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void applyFiltering(ROIListData first, ROIListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private void applyFiltering(ROIListData first, ROIListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         boolean withFiltering = !StringUtils.isNullOrEmpty(settings.getOverlapFilter().getExpression());
         ExpressionVariables variableSet = new ExpressionVariables();
         ROIListData temp = new ROIListData();

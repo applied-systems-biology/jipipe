@@ -11,9 +11,9 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -173,7 +173,7 @@ public class PythonUtils {
         }
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeSingleDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
@@ -208,7 +208,7 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeMergingDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeMultiDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
@@ -237,7 +237,7 @@ public class PythonUtils {
         runPython(codeFilePath, environment, libraryPaths, progressInfo);
     }
 
-    public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(JIPipeSingleDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
@@ -250,7 +250,7 @@ public class PythonUtils {
         }
     }
 
-    public static void extractOutputs(JIPipeMergingDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(JIPipeMultiDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));

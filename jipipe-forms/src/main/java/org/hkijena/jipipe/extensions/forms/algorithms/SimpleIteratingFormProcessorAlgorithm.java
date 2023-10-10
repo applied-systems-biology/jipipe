@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -80,14 +80,14 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             outputDataSlot.addDataFromSlot(dataSlot, progressInfo);
         } else if (!dataSlot.isEmpty()) {
             // Generate data batches and show the user interface
-            List<JIPipeMergingDataBatch> dataBatchList = new ArrayList<>();
+            List<JIPipeMultiDataBatch> dataBatchList = new ArrayList<>();
             boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataSlot.getRowCount(), new ExpressionVariables())) : null;
             for (int row = 0; row < dataSlot.getRowCount(); row++) {
                 if (withLimit && !allowedIndices.contains(row))
                     continue;
-                JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+                JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
                 dataBatch.addInputData(dataSlot, row);
                 dataBatch.addMergedTextAnnotations(dataSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
                 dataBatchList.add(dataBatch);
@@ -172,7 +172,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             // Write the output
             for (int i = 0; i < dataBatchForms.size(); i++) {
                 JIPipeDataSlot forms = dataBatchForms.get(i);
-                JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
+                JIPipeMultiDataBatch dataBatch = dataBatchList.get(i);
                 getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
                         new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
@@ -239,7 +239,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        List<JIPipeMergingDataBatch> batches = new ArrayList<>();
+        List<JIPipeMultiDataBatch> batches = new ArrayList<>();
         JIPipeDataSlot slot = slots.stream().filter(s -> "Data".equals(s.getName())).findFirst().get();
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
@@ -247,7 +247,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
         for (int i = 0; i < slot.getRowCount(); i++) {
             if (withLimit && !allowedIndices.contains(i))
                 continue;
-            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
             dataBatch.addInputData(slot, i);
             dataBatch.addMergedTextAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
             batches.add(dataBatch);

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -38,14 +38,14 @@ import java.util.Set;
 public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
 
     private final JIPipeGraphNode node;
-    private final JIPipeMergingDataBatch batch;
+    private final JIPipeMultiDataBatch batch;
 
     /**
      * @param workbenchUI The workbench UI
      * @param node        the node
      * @param batch       the batch to be displayed
      */
-    public DataBatchUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode node, JIPipeMergingDataBatch batch) {
+    public DataBatchUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode node, JIPipeMultiDataBatch batch) {
         super(workbenchUI);
         this.node = node;
         this.batch = batch;

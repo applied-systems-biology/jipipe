@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -103,7 +103,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
         builder.setNode(this);
         builder.setApplyMerging(false);
         builder.setSlots(slots);
@@ -113,14 +113,14 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
         builder.setForceFlowGraphSolver(dataBatchGenerationSettings.isForceFlowGraphSolver());
-        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
+        List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
             progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-            List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+            List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (allowedIndices.contains(i)) {
                     limitedBatches.add(dataBatches.get(i));
@@ -146,7 +146,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
             return;
         }
 
-        List<JIPipeMergingDataBatch> dataBatches;
+        List<JIPipeMultiDataBatch> dataBatches;
 
         // No input slots -> Nothing to do
         if (getDataInputSlotCount() == 0) {
@@ -156,7 +156,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 if (progressInfo.isCancelled())
                     break;
-                JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+                JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
                 dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
@@ -270,7 +270,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      * @param dataBatch    The data interface
      * @param progressInfo the progress info from the run
      */
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
             JIPipeOutputDataSlot outputSlot = getCorrespondingOutputSlot(inputSlot);
             if (outputSlot == null)
@@ -322,6 +322,6 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
      * @param outputSlot   the output slot where data should be put.
      * @param progressInfo the progress info
      */
-    protected abstract void runGenerator(JIPipeMergingDataBatch dataBatch, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo);
+    protected abstract void runGenerator(JIPipeMultiDataBatch dataBatch, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo);
 
 }

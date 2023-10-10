@@ -14,8 +14,8 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -83,7 +83,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == GraphWrapperAlgorithm.IterationMode.PassThrough) {
-            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
                 for (int row = 0; row < inputSlot.getRowCount(); row++) {
                     dataBatch.addInputData(inputSlot, row);
@@ -96,7 +96,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
 
             return result;
         } else {
-            JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+            JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
             builder.setNode(this);
             builder.setApplyMerging(iterationMode == GraphWrapperAlgorithm.IterationMode.MergingDataBatch);
             builder.setSlots(slots);
@@ -106,14 +106,14 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
             builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
             builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
             builder.setForceFlowGraphSolver(batchGenerationSettings.isForceFlowGraphSolver());
-            List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
+            List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
             dataBatches.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
             if (withLimit) {
                 progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-                List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+                List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < dataBatches.size(); i++) {
                     if (allowedIndices.contains(i)) {
                         limitedBatches.add(dataBatches.get(i));
@@ -121,8 +121,8 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
                 }
                 dataBatches = limitedBatches;
             }
-            List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
-            for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            List<JIPipeMultiDataBatch> incomplete = new ArrayList<>();
+            for (JIPipeMultiDataBatch dataBatch : dataBatches) {
                 if (dataBatch.isIncomplete()) {
                     incomplete.add(dataBatch);
                     progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);

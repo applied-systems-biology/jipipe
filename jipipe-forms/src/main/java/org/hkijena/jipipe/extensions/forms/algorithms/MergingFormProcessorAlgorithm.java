@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -84,7 +84,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             outputDataSlot.addDataFromSlot(dataSlot, progressInfo);
         } else if (!dataSlot.isEmpty()) {
             // Generate data batches and show the user interface
-            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
+            List<JIPipeMultiDataBatch> dataBatchList = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
 
             if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches selected (according to limit). Skipping.");
@@ -165,7 +165,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             // Write the output
             for (int i = 0; i < dataBatchForms.size(); i++) {
                 JIPipeDataSlot forms = dataBatchForms.get(i);
-                JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
+                JIPipeMultiDataBatch dataBatch = dataBatchList.get(i);
                 getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
                         new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
@@ -232,7 +232,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
         builder.setApplyMerging(true);
@@ -243,14 +243,14 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
         builder.setForceFlowGraphSolver(dataBatchGenerationSettings.isForceFlowGraphSolver());
-        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
+        List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
             progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-            List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+            List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (allowedIndices.contains(i)) {
                     limitedBatches.add(dataBatches.get(i));
@@ -258,8 +258,8 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             }
             dataBatches = limitedBatches;
         }
-        List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
-        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+        List<JIPipeMultiDataBatch> incomplete = new ArrayList<>();
+        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
             if (dataBatch.isIncomplete()) {
                 incomplete.add(dataBatch);
                 progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);

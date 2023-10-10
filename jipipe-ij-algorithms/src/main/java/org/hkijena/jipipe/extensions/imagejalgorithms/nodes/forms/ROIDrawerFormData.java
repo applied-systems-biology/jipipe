@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
@@ -31,7 +31,7 @@ import java.util.List;
  */
 public class ROIDrawerFormData extends FormData {
 
-    private final List<JIPipeMergingDataBatch> dataBatches;
+    private final List<JIPipeMultiDataBatch> dataBatches;
     private final DrawROIAlgorithm drawROIAlgorithm;
     private JIPipeImageViewer imageViewerPanel;
 
@@ -40,7 +40,7 @@ public class ROIDrawerFormData extends FormData {
     private ImagePlus lazyLoadedImage;
     private ROIListData lazyLoadedROIs;
 
-    public ROIDrawerFormData(List<JIPipeMergingDataBatch> dataBatches, DrawROIAlgorithm drawROIAlgorithm) {
+    public ROIDrawerFormData(List<JIPipeMultiDataBatch> dataBatches, DrawROIAlgorithm drawROIAlgorithm) {
         this.dataBatches = dataBatches;
         this.drawROIAlgorithm = drawROIAlgorithm;
     }
@@ -126,7 +126,7 @@ public class ROIDrawerFormData extends FormData {
     }
 
     @Override
-    public void loadData(JIPipeMergingDataBatch dataBatch) {
+    public void loadData(JIPipeMultiDataBatch dataBatch) {
         int row = dataBatches.indexOf(dataBatch);
         ImagePlus referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).get(0).getImage();
         ROIListData rois = drawROIAlgorithm.getOutputSlot("ROI").getData(row, ROIListData.class, new JIPipeProgressInfo());
@@ -141,7 +141,7 @@ public class ROIDrawerFormData extends FormData {
     }
 
     @Override
-    public void writeData(JIPipeMergingDataBatch dataBatch) {
+    public void writeData(JIPipeMultiDataBatch dataBatch) {
 
     }
 }

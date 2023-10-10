@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -41,7 +41,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData targetData = dataBatch.getInputData("Target", ImagePlusData.class, progressInfo);
         ImagePlus src = dataBatch.getInputData("Source", targetData.getClass(), progressInfo).getImage();
         ImagePlus target = targetData.getImage();
@@ -61,7 +61,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void combineFrames(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
+    private void combineFrames(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
         if (src.getNChannels() != target.getNChannels()) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),
@@ -96,7 +96,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
-    private void combineDepth(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
+    private void combineDepth(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
         if (src.getNChannels() != target.getNChannels()) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),
@@ -131,7 +131,7 @@ public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
-    private void combineChannel(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
+    private void combineChannel(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus src, ImagePlus target) {
         if (src.getNSlices() != target.getNSlices()) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),

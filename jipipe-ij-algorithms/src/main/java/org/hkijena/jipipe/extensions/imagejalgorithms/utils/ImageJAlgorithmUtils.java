@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.ROI2DRelationMeasurement;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood3D;
@@ -289,7 +289,7 @@ public class ImageJAlgorithmUtils {
         }
     }
 
-    public static ImageProcessor getMaskProcessorFromMaskOrROI(ImageROITargetArea targetArea, JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
+    public static ImageProcessor getMaskProcessorFromMaskOrROI(ImageROITargetArea targetArea, JIPipeSingleDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
                 ImagePlusData img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
@@ -340,7 +340,7 @@ public class ImageJAlgorithmUtils {
         throw new UnsupportedOperationException();
     }
 
-    public static ImagePlus getMaskFromMaskOrROI(ImageROITargetArea targetArea, JIPipeDataBatch dataBatch, String imageSlotName, JIPipeProgressInfo progressInfo) {
+    public static ImagePlus getMaskFromMaskOrROI(ImageROITargetArea targetArea, JIPipeSingleDataBatch dataBatch, String imageSlotName, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);

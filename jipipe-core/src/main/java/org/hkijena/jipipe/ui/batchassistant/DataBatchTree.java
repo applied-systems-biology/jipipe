@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.cachetree.JIPipeCacheStateTreeCellRenderer;
@@ -33,7 +33,7 @@ import java.util.Set;
  * Displays a tree that contains data stored in a data batch
  */
 public class DataBatchTree extends JIPipeWorkbenchPanel {
-    private final JIPipeMergingDataBatch dataBatch;
+    private final JIPipeMultiDataBatch dataBatch;
     private JScrollPane treeScollPane;
     private JTree tree;
 
@@ -41,7 +41,7 @@ public class DataBatchTree extends JIPipeWorkbenchPanel {
      * @param workbenchUI Workbench ui
      * @param dataBatch   the data batch
      */
-    public DataBatchTree(JIPipeWorkbench workbenchUI, JIPipeMergingDataBatch dataBatch) {
+    public DataBatchTree(JIPipeWorkbench workbenchUI, JIPipeMultiDataBatch dataBatch) {
         super(workbenchUI);
         this.dataBatch = dataBatch;
         initialize();

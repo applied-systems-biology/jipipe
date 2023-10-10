@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.ROI2DRelationMeasurementSetParameter;
@@ -43,7 +43,7 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData roi1List = dataBatch.getInputData("ROI 1", ROIListData.class, progressInfo);
         ROIListData roi2List = dataBatch.getInputData("ROI 2", ROIListData.class, progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));

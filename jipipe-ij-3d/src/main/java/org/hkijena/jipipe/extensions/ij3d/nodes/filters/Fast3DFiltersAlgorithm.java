@@ -14,7 +14,7 @@ import mcib_plugins.Filter3D.Filter3Dmean;
 import mcib_plugins.Filter3D.Filter3Dmin;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -51,7 +51,7 @@ public abstract class Fast3DFiltersAlgorithm extends JIPipeSimpleIteratingAlgori
     protected abstract int getFilterIndex();
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         int radiusX = (int) kernelX.convertToPixels(ImageJUtils.getPixelSizeX(inputImage)).getValue();
         int radiusY = (int) kernelY.convertToPixels(ImageJUtils.getPixelSizeY(inputImage)).getValue();

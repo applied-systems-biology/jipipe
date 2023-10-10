@@ -24,10 +24,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
@@ -100,7 +100,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         if (getInputSlots().isEmpty()) {
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
-            JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+            JIPipeSingleDataBatch dataBatch = new JIPipeSingleDataBatch(this);
             runIteration(dataBatch, slotProgress);
         } else {
 
@@ -115,7 +115,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
-                    JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+                    JIPipeSingleDataBatch dataBatch = new JIPipeSingleDataBatch(this);
                     dataBatch.setInputData(getFirstInputSlot(), i);
                     dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
                     runIteration(dataBatch, slotProgress);
@@ -130,7 +130,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         if (progressInfo.isCancelled())
                             return;
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
-                        JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+                        JIPipeSingleDataBatch dataBatch = new JIPipeSingleDataBatch(this);
                         dataBatch.setInputData(getFirstInputSlot(), rowIndex);
                         dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
                         runIteration(dataBatch, slotProgress);
@@ -166,7 +166,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
      * @param dataBatch    The data interface
      * @param progressInfo the progress info from the run
      */
-    protected abstract void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo);
+    protected abstract void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {
@@ -223,7 +223,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        List<JIPipeMergingDataBatch> batches = new ArrayList<>();
+        List<JIPipeMultiDataBatch> batches = new ArrayList<>();
         JIPipeDataSlot slot = slots.get(0);
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
@@ -231,7 +231,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         for (int i = 0; i < slot.getRowCount(); i++) {
             if (withLimit && !allowedIndices.contains(i))
                 continue;
-            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
             dataBatch.addInputData(slot, i);
             dataBatch.addMergedTextAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
             dataBatch.addMergedDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeMode.MergeTables);

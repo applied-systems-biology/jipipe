@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -66,7 +66,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
             return;
 
         // Get back the data batches
-        List<JIPipeMergingDataBatch> dataBatches;
+        List<JIPipeMultiDataBatch> dataBatches;
 
         // No input slots -> Nothing to do
         if (getDataInputSlotCount() == 0) {
@@ -76,7 +76,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 if (progressInfo.isCancelled())
                     break;
-                JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+                JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
                 dataBatch.addMergedTextAnnotations(parameterAnnotations, getDataBatchGenerationSettings().getAnnotationMergeStrategy());
                 dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(row), getDataBatchGenerationSettings().getAnnotationMergeStrategy());
@@ -99,7 +99,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         return true;
     }
 
-    private void runForm(List<JIPipeMergingDataBatch> dataBatches, JIPipeProgressInfo progressInfo) {
+    private void runForm(List<JIPipeMultiDataBatch> dataBatches, JIPipeProgressInfo progressInfo) {
         if (dataBatches.isEmpty()) {
             progressInfo.log("No data batches selected (according to limit). Skipping.");
             return;
@@ -179,7 +179,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
     }
 
     @Override
-    protected void runGenerator(JIPipeMergingDataBatch dataBatch, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
+    protected void runGenerator(JIPipeMultiDataBatch dataBatch, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot referenceSlot = getInputSlot("Reference");
         ImagePlus referenceImage = dataBatch.getInputData(referenceSlot, ImagePlusData.class, progressInfo).get(0).getImage();
         int width = referenceImage.getWidth();

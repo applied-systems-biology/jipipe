@@ -5,7 +5,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -50,7 +50,7 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
-    public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
+    public ImageProcessor getMask(JIPipeSingleDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
                 ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);

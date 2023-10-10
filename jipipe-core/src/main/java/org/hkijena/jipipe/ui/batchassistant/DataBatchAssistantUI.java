@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -188,7 +188,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-        for (JIPipeMergingDataBatch batch : dataBatchGenerationResult.getDataBatches()) {
+        for (JIPipeMultiDataBatch batch : dataBatchGenerationResult.getDataBatches()) {
             List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(batch.getMergedTextAnnotations().values());
             List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
 

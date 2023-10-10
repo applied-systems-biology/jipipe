@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -113,7 +113,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
         ImagePlusGreyscaleData roi1_original = dataBatch.getInputData("Labels 1", ImagePlusGreyscaleData.class, progressInfo);
         ImagePlusGreyscaleData roi2_original = dataBatch.getInputData("Labels 2", ImagePlusGreyscaleData.class, progressInfo);
@@ -143,7 +143,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void applyFiltering(ImagePlus targetLabels, ImagePlus otherLabels, String targetPrefix, String otherPrefix,
-                                JIPipeOutputDataSlot outputSlot, LabelFilterSettings settings, JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+                                JIPipeOutputDataSlot outputSlot, LabelFilterSettings settings, JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         boolean withExpression = !StringUtils.isNullOrEmpty(settings.overlapFilter.getExpression());
         ByteProcessor overlap = new ByteProcessor(targetLabels.getWidth(), targetLabels.getHeight());
         ExpressionVariables variables = new ExpressionVariables();

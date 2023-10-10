@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -29,7 +29,7 @@ public class SetVertexIntensityFromImageAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Filaments3DData filaments = new Filaments3DData(dataBatch.getInputData("Filaments", Filaments3DData.class, progressInfo));
         ImagePlus thickness = dataBatch.getInputData("Intensity", ImagePlusGreyscaleData.class, progressInfo).getImage();
 

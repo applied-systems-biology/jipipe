@@ -51,7 +51,7 @@ public interface JIPipeDataBatchAlgorithm {
      * @return the batches
      */
     @Deprecated
-    default List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    default List<JIPipeMultiDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         return generateDataBatchesGenerationResult(slots, progressInfo).getDataBatches();
     }
 }

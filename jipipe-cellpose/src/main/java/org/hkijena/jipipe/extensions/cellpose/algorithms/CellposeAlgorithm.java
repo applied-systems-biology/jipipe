@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -204,7 +204,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -313,7 +313,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    private void extractDataFromInfo(JIPipeMergingDataBatch dataBatch, CellposeImageInfo imageInfo, Path ioPath, JIPipeProgressInfo progressInfo) {
+    private void extractDataFromInfo(JIPipeMultiDataBatch dataBatch, CellposeImageInfo imageInfo, Path ioPath, JIPipeProgressInfo progressInfo) {
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(imageInfo.sourceRow));
         if (diameterAnnotation.isEnabled()) {
             progressInfo.log("Reading info ...");
@@ -511,7 +511,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
                 CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo);
     }
 
-    private void saveInputImages(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {
+    private void saveInputImages(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {
         for (int row : dataBatch.getInputRows("Input")) {
             JIPipeProgressInfo rowProgress = progressInfo.resolve("Data row " + row);
 

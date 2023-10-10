@@ -12,7 +12,7 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.extensions.cellpose.parameters.deprecated.CellposeSegmentationOutputSettings_Old;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
@@ -119,7 +119,7 @@ public class CellposeUtils {
         return rois;
     }
 
-    public static void extractCellposeOutputs(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, Path outputRoiOutline, Path outputLabels, Path outputFlows, Path outputProbabilities, Path outputStyles, List<JIPipeTextAnnotation> annotationList, CellposeSegmentationOutputSettings_Old outputParameters) {
+    public static void extractCellposeOutputs(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo, Path outputRoiOutline, Path outputLabels, Path outputFlows, Path outputProbabilities, Path outputStyles, List<JIPipeTextAnnotation> annotationList, CellposeSegmentationOutputSettings_Old outputParameters) {
         if (outputParameters.isOutputROI()) {
             ROIListData rois = cellposeROIJsonToImageJ(outputRoiOutline);
             dataBatch.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);

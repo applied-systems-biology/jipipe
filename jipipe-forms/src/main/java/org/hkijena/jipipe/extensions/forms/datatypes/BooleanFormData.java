@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
@@ -108,7 +108,7 @@ public class BooleanFormData extends ParameterFormData {
     }
 
     @Override
-    public void loadData(JIPipeMergingDataBatch dataBatch) {
+    public void loadData(JIPipeMultiDataBatch dataBatch) {
         if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeTextAnnotation annotation =
                     dataBatch.getMergedTextAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
@@ -132,7 +132,7 @@ public class BooleanFormData extends ParameterFormData {
     }
 
     @Override
-    public void writeData(JIPipeMergingDataBatch dataBatch) {
+    public void writeData(JIPipeMultiDataBatch dataBatch) {
         if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
             if (value) {
                 if (trueString.isEnabled()) {

@@ -30,8 +30,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -58,7 +58,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 /**
- * An {@link JIPipeAlgorithm} that applies a similar algorithm to {@link JIPipeIteratingAlgorithm}, but does create {@link JIPipeMergingDataBatch} instead.
+ * An {@link JIPipeAlgorithm} that applies a similar algorithm to {@link JIPipeIteratingAlgorithm}, but does create {@link JIPipeMultiDataBatch} instead.
  * This algorithm instead just groups the data based on the annotations and passes those groups to
  * the runIteration() function. This is useful for merging algorithms.
  * Please note that the single-input case will still group the data into multiple groups, or just one group if no grouping could be acquired.
@@ -129,7 +129,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
         builder.setApplyMerging(true);
@@ -141,14 +141,14 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
         builder.setForceFlowGraphSolver(dataBatchGenerationSettings.isForceFlowGraphSolver());
         builder.setForceNAIsAny(dataBatchGenerationSettings.isForceNAIsAny());
-        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
+        List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
             progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-            List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+            List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (allowedIndices.contains(i)) {
                     limitedBatches.add(dataBatches.get(i));
@@ -156,8 +156,8 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             }
             dataBatches = limitedBatches;
         }
-        List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
-        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+        List<JIPipeMultiDataBatch> incomplete = new ArrayList<>();
+        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
             if (dataBatch.isIncomplete()) {
                 incomplete.add(dataBatch);
                 progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
@@ -183,7 +183,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      * @param progressInfo progress info
      * @param dataBatch    the data batch
      */
-    protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMergingDataBatch dataBatch) {
+    protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMultiDataBatch dataBatch) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
         for (int row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
             dataBatch.addOutputData(getFirstOutputSlot(), getFirstInputSlot().getData(row, JIPipeData.class, progressInfo), progressInfo);
@@ -209,7 +209,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 return;
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
-            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
             dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
             if (isPassThrough()) {
@@ -220,14 +220,14 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             return;
         }
 
-        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
-        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+        List<JIPipeMultiDataBatch> dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
+        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
             dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
         }
 
         // Check for incomplete batches
-        List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
-        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+        List<JIPipeMultiDataBatch> incomplete = new ArrayList<>();
+        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
             if (dataBatch.isIncomplete()) {
                 incomplete.add(dataBatch);
                 progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
@@ -239,7 +239,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 dataBatches.removeAll(incomplete);
             }
         } else {
-            for (JIPipeMergingDataBatch batch : dataBatches) {
+            for (JIPipeMultiDataBatch batch : dataBatches) {
                 if (batch.isIncomplete()) {
                     throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new GraphNodeValidationReportContext(this),
                             "Incomplete data set found!",
@@ -274,7 +274,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, dataBatches.size());
-                    JIPipeMergingDataBatch dataBatch = dataBatches.get(dataBatchIndex);
+                    JIPipeMultiDataBatch dataBatch = dataBatches.get(dataBatchIndex);
                     uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, dataBatch);
@@ -296,7 +296,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
     }
 
-    private void uploadAdaptiveParameters(JIPipeMergingDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
+    private void uploadAdaptiveParameters(JIPipeMultiDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         ExpressionVariables expressionVariables = new ExpressionVariables();
         for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             expressionVariables.put(annotation.getName(), annotation.getValue());
@@ -339,7 +339,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
     }
 
-    private void annotateWithParameter(JIPipeMergingDataBatch dataBatch, String key, JIPipeParameterAccess target, Object newValue) {
+    private void annotateWithParameter(JIPipeMultiDataBatch dataBatch, String key, JIPipeParameterAccess target, Object newValue) {
         String name;
         if (getAdaptiveParameterSettings().isParameterAnnotationsUseInternalNames())
             name = key;
@@ -384,7 +384,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
      * @param dataBatch    The data interface
      * @param progressInfo the progress from the run
      */
-    protected abstract void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo);
+    protected abstract void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {

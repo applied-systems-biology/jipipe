@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
@@ -33,7 +33,7 @@ public class FormsDialog extends JFrame {
     private static final String TAB_ISSUES_DETECTED = "Issues detected";
     private final JIPipeWorkbench workbench;
     private final String tabAnnotation;
-    private final List<JIPipeMergingDataBatch> dataBatchList;
+    private final List<JIPipeMultiDataBatch> dataBatchList;
     private final List<JIPipeDataSlot> dataBatchForms = new ArrayList<>();
     private final JIPipeDataSlot originalForms;
     private final DocumentTabPane tabPane = new DocumentTabPane(true);
@@ -47,7 +47,7 @@ public class FormsDialog extends JFrame {
     private JIPipeSimpleDataBatchTableUI dataBatchTableUI;
     private String lastTab = "";
 
-    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot originalForms, String tabAnnotation) {
+    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMultiDataBatch> dataBatchList, JIPipeDataSlot originalForms, String tabAnnotation) {
         this.originalForms = originalForms;
         setIconImage(UIUtils.getJIPipeIcon128());
         this.workbench = workbench;

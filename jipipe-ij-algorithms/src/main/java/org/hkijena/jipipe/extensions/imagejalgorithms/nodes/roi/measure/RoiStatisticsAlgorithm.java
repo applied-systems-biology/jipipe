@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -88,7 +88,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData roi = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
         ImagePlus reference = getReferenceImage(dataBatch, progressInfo);
         if (roi.isEmpty()) {
@@ -108,7 +108,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private ImagePlus getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private ImagePlus getReferenceImage(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus reference = null;
         {
             ImagePlusData data = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);

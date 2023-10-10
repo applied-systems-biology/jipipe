@@ -24,12 +24,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Wraps a set of input and output slots that belong together.
- * This is a less restricted variant of {@link JIPipeDataBatch} used by {@link JIPipeMergingAlgorithm}
+ * This is a less restricted variant of {@link JIPipeSingleDataBatch} used by {@link JIPipeMergingAlgorithm}
  */
-public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch> {
+public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeMultiDataBatch> {
     private final JIPipeGraphNode node;
     private final Map<JIPipeDataSlot, Set<Integer>> inputSlotRows;
     private Map<String, JIPipeTextAnnotation> mergedTextAnnotations = new HashMap<>();
@@ -40,10 +41,9 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param node The algorithm
      */
-    public JIPipeMergingDataBatch(JIPipeGraphNode node) {
+    public JIPipeMultiDataBatch(JIPipeGraphNode node) {
         this.node = node;
         this.inputSlotRows = new HashMap<>();
-//        initialize(inputSlots, row);
     }
 
     /**
@@ -51,7 +51,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      *
      * @param other the original
      */
-    public JIPipeMergingDataBatch(JIPipeMergingDataBatch other) {
+    public JIPipeMultiDataBatch(JIPipeMultiDataBatch other) {
         this.node = other.node;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.mergedTextAnnotations = new HashMap<>(other.mergedTextAnnotations);
@@ -652,7 +652,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
     }
 
     @Override
-    public int compareTo(JIPipeMergingDataBatch o) {
+    public int compareTo(JIPipeMultiDataBatch o) {
         Set<String> annotationKeySet = new HashSet<>(mergedTextAnnotations.keySet());
         annotationKeySet.addAll(o.mergedTextAnnotations.keySet());
         List<String> annotationKeys = new ArrayList<>(annotationKeySet);
@@ -687,5 +687,25 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
         }
         stringBuilder.append(" }");
         return stringBuilder.toString();
+    }
+
+    @Override
+    public Set<Integer> getInputSlotRowIndices(String slotName) {
+        for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
+            if(slotName.equals(entry.getKey().getName())) {
+                return entry.getValue();
+            }
+        }
+        return Collections.emptySet();
+    }
+
+    @Override
+    public Set<String> getInputSlotNames() {
+        return inputSlotRows.keySet().stream().map(JIPipeDataSlot::getName).collect(Collectors.toSet());
+    }
+
+    @Override
+    public Set<JIPipeDataSlot> getInputSlots() {
+        return inputSlotRows.keySet();
     }
 }

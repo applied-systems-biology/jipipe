@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagej2.io.parameters.output;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
 import org.hkijena.jipipe.extensions.imagej2.io.parameters.ParameterModuleIO;
@@ -32,12 +32,12 @@ public abstract class ParameterImageJ2ModuleOutput<ModuleType, JIPipeType> exten
     }
 
     @Override
-    public boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeSingleDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         return true;
     }
 
     @Override
-    public boolean transferToJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferToJIPipe(ImageJ2OpNode node, JIPipeSingleDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         moduleOutputParameters.getParameterData().put(moduleItem.getName(), convertFromModuleToJIPipe((ModuleType) moduleItem.getValue(module)));
         return true;
     }

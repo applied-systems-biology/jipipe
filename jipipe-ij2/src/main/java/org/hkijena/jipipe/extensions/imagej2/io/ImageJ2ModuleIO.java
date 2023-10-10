@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagej2.io;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
@@ -50,7 +50,7 @@ public interface ImageJ2ModuleIO extends Service {
      * @param progressInfo the progress info
      * @return if successful
      */
-    boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
+    boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeSingleDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
 
     /**
      * Transfers data from JIPipe from the module
@@ -63,5 +63,5 @@ public interface ImageJ2ModuleIO extends Service {
      * @param progressInfo           the progress info
      * @return if successful
      */
-    boolean transferToJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
+    boolean transferToJIPipe(ImageJ2OpNode node, JIPipeSingleDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
 }

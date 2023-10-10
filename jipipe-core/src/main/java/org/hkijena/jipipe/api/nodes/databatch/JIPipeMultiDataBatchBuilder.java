@@ -27,9 +27,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Class that generates a {@link JIPipeMergingDataBatch} or {@link JIPipeDataBatch} instance.
+ * Class that generates a {@link JIPipeMultiDataBatch} or {@link JIPipeSingleDataBatch} instance.
  */
-public class JIPipeMergingDataBatchBuilder {
+public class JIPipeMultiDataBatchBuilder {
 
     private static final Set<String> REFERENCE_COLUMN_MERGE_ALL = Sets.newHashSet("{{}}MERGE_ALL");
     private static final Set<String> REFERENCE_COLUMN_SPLIT_ALL = Sets.newHashSet("{{}}SPLIT_ALL");
@@ -47,7 +47,7 @@ public class JIPipeMergingDataBatchBuilder {
 
     private boolean forceNAIsAny = false;
 
-    public JIPipeMergingDataBatchBuilder() {
+    public JIPipeMultiDataBatchBuilder() {
 
     }
 
@@ -56,10 +56,10 @@ public class JIPipeMergingDataBatchBuilder {
      *
      * @return the list of batched or null if none can be generated
      */
-    public static List<JIPipeDataBatch> convertMergingToSingleDataBatches(List<JIPipeMergingDataBatch> mergingDataBatches) {
-        List<JIPipeDataBatch> result = new ArrayList<>();
-        for (JIPipeMergingDataBatch batch : mergingDataBatches) {
-            JIPipeDataBatch singleBatch = new JIPipeDataBatch(batch.getNode());
+    public static List<JIPipeSingleDataBatch> convertMergingToSingleDataBatches(List<JIPipeMultiDataBatch> mergingDataBatches) {
+        List<JIPipeSingleDataBatch> result = new ArrayList<>();
+        for (JIPipeMultiDataBatch batch : mergingDataBatches) {
+            JIPipeSingleDataBatch singleBatch = new JIPipeSingleDataBatch(batch.getNode());
             for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : batch.getInputSlotRows().entrySet()) {
                 if (entry.getValue().size() > 1)
                     return null;
@@ -166,7 +166,7 @@ public class JIPipeMergingDataBatchBuilder {
         return result;
     }
 
-    public List<JIPipeMergingDataBatch> build(JIPipeProgressInfo progressInfo) {
+    public List<JIPipeMultiDataBatch> build(JIPipeProgressInfo progressInfo) {
 
         // Special case: Merge all
         if (getReferenceColumns() == REFERENCE_COLUMN_MERGE_ALL) {
@@ -192,7 +192,7 @@ public class JIPipeMergingDataBatchBuilder {
      * @param progressInfo the progress info
      * @return data batches
      */
-    private List<JIPipeMergingDataBatch> applyDictionarySolver(JIPipeProgressInfo progressInfo) {
+    private List<JIPipeMultiDataBatch> applyDictionarySolver(JIPipeProgressInfo progressInfo) {
         final String annotationKey = referenceColumns.iterator().next();
         Set<String> allKeys = new HashSet<>();
         Map<JIPipeDataSlot, Multimap<String, Integer>> matchedRows = new HashMap<>();
@@ -232,11 +232,11 @@ public class JIPipeMergingDataBatchBuilder {
             allKeys.remove("");
         }
 
-        List<JIPipeMergingDataBatch> dataBatches = new ArrayList<>();
+        List<JIPipeMultiDataBatch> dataBatches = new ArrayList<>();
         if (applyMerging) {
             // We are done. Directly convert to data batches
             for (String key : allKeys) {
-                JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(node);
+                JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(node);
                 for (JIPipeDataSlot slot : slotList) {
                     Multimap<String, Integer> slotMap = matchedRows.get(slot);
                     dataBatch.addInputData(slot, slotMap.get(key));
@@ -249,14 +249,14 @@ public class JIPipeMergingDataBatchBuilder {
             // Split apart into single batches
             progressInfo.log("Splitting batches");
             for (String key : allKeys) {
-                List<JIPipeMergingDataBatch> keyBatches = new ArrayList<>();
-                List<JIPipeMergingDataBatch> tempKeyBatches = new ArrayList<>();
+                List<JIPipeMultiDataBatch> keyBatches = new ArrayList<>();
+                List<JIPipeMultiDataBatch> tempKeyBatches = new ArrayList<>();
                 for (JIPipeDataSlot slot : slotList) {
                     Collection<Integer> rows = matchedRows.get(slot).get(key);
                     if (keyBatches.isEmpty()) {
                         // No data batches -> Create initial batch set
                         for (Integer row : rows) {
-                            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(node);
+                            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(node);
                             dataBatch.addInputData(slot, row);
                             tempKeyBatches.add(dataBatch);
                         }
@@ -264,8 +264,8 @@ public class JIPipeMergingDataBatchBuilder {
                         // Add the row into copies of all key batches
                         if (!rows.isEmpty()) {
                             for (Integer row : rows) {
-                                for (JIPipeMergingDataBatch dataBatch : keyBatches) {
-                                    JIPipeMergingDataBatch copy = new JIPipeMergingDataBatch(dataBatch);
+                                for (JIPipeMultiDataBatch dataBatch : keyBatches) {
+                                    JIPipeMultiDataBatch copy = new JIPipeMultiDataBatch(dataBatch);
                                     copy.addInputData(slot, row);
                                     tempKeyBatches.add(copy);
                                 }
@@ -282,7 +282,7 @@ public class JIPipeMergingDataBatchBuilder {
             }
             // Resolve annotations
             progressInfo.log("Resolving annotations");
-            for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            for (JIPipeMultiDataBatch dataBatch : dataBatches) {
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
                 for (JIPipeDataSlot slot : slotList) {
@@ -294,7 +294,7 @@ public class JIPipeMergingDataBatchBuilder {
             }
         }
         // Ensure that all slots are known to the data batch builder
-        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
             for (JIPipeDataSlot slot : slotList) {
                 dataBatch.addEmptySlot(slot);
             }
@@ -308,8 +308,8 @@ public class JIPipeMergingDataBatchBuilder {
      * @param progressInfo the progress info
      * @return data batches
      */
-    private List<JIPipeMergingDataBatch> applySplitAllSolver(JIPipeProgressInfo progressInfo) {
-        List<JIPipeMergingDataBatch> split = new ArrayList<>();
+    private List<JIPipeMultiDataBatch> applySplitAllSolver(JIPipeProgressInfo progressInfo) {
+        List<JIPipeMultiDataBatch> split = new ArrayList<>();
         for (JIPipeDataSlot slot : slotList) {
             for (int row = 0; row < slot.getRowCount(); row++) {
                 if (row % 1000 == 0) {
@@ -317,7 +317,7 @@ public class JIPipeMergingDataBatchBuilder {
                     if (progressInfo.isCancelled())
                         return null;
                 }
-                JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
+                JIPipeMultiDataBatch batch = new JIPipeMultiDataBatch(this.node);
                 for (JIPipeDataSlot slot2 : slotList) {
                     batch.addEmptySlot(slot2);
                 }
@@ -336,8 +336,8 @@ public class JIPipeMergingDataBatchBuilder {
      * @param progressInfo the progress info
      * @return data batches
      */
-    private List<JIPipeMergingDataBatch> applyMergeAllSolver(JIPipeProgressInfo progressInfo) {
-        JIPipeMergingDataBatch batch = new JIPipeMergingDataBatch(this.node);
+    private List<JIPipeMultiDataBatch> applyMergeAllSolver(JIPipeProgressInfo progressInfo) {
+        JIPipeMultiDataBatch batch = new JIPipeMultiDataBatch(this.node);
         for (JIPipeDataSlot slot : slotList) {
             batch.addEmptySlot(slot);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
@@ -359,7 +359,7 @@ public class JIPipeMergingDataBatchBuilder {
         return new ArrayList<>(Arrays.asList(batch));
     }
 
-    private List<JIPipeMergingDataBatch> applyFlowGraphSolver(JIPipeProgressInfo progressInfo) {
+    private List<JIPipeMultiDataBatch> applyFlowGraphSolver(JIPipeProgressInfo progressInfo) {
         DefaultDirectedGraph<RowNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
         // Create one node per row
@@ -497,7 +497,7 @@ public class JIPipeMergingDataBatchBuilder {
         if (progressInfo.isCancelled())
             return null;
         progressInfo.log("Getting all paths");
-        List<JIPipeMergingDataBatch> result = new ArrayList<>();
+        List<JIPipeMultiDataBatch> result = new ArrayList<>();
         AllDirectedPaths<RowNode, DefaultEdge> directedPaths = new AllDirectedPaths<>(graph);
         List<GraphPath<RowNode, DefaultEdge>> allPaths = directedPaths.getAllPaths(source, sink, false, Integer.MAX_VALUE);
         progressInfo.log("Found " + allPaths.size() + " paths");
@@ -507,7 +507,7 @@ public class JIPipeMergingDataBatchBuilder {
 
         progressInfo.log("Generating data batches");
         for (GraphPath<RowNode, DefaultEdge> path : allPaths) {
-            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this.node);
+            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this.node);
             for (RowNode rowNode : path.getVertexList()) {
                 if (rowNode == source || rowNode == sink)
                     continue;
@@ -525,7 +525,7 @@ public class JIPipeMergingDataBatchBuilder {
         }
 
         // Ensure that all slots are covered
-        for (JIPipeMergingDataBatch dataBatch : result) {
+        for (JIPipeMultiDataBatch dataBatch : result) {
             for (JIPipeDataSlot slot : slotList) {
                 dataBatch.getInputSlotRows().putIfAbsent(slot, Collections.emptySet());
             }

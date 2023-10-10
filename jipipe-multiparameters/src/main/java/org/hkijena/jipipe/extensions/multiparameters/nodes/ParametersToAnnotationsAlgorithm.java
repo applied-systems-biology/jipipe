@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterlessSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
@@ -36,7 +36,7 @@ public class ParametersToAnnotationsAlgorithm extends JIPipeParameterlessSimpleI
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ParametersData data = dataBatch.getInputData(getFirstInputSlot(), ParametersData.class, progressInfo);
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {

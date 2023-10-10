@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -48,7 +48,7 @@ public class CreateSpotDetectorNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Map<String, Object> settings = new HashMap<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
             String settingsKey = nodeInfo.getSettingsToParameterMap().inverse().get(entry.getKey());

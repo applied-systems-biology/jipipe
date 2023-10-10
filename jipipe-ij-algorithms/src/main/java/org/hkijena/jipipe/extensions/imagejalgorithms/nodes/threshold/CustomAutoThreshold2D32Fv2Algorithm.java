@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -110,7 +110,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus inputImage = inputData.getImage();
         ImagePlus outputImage = IJ.createHyperStack(inputImage.getTitle() + " Thresholded",
@@ -157,7 +157,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
         }
     }
 
-    private void thresholdCombineThresholds(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
+    private void thresholdCombineThresholds(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
         List<Float> minThresholds = new ArrayList<>();
         List<Float> maxThresholds = new ArrayList<>();
         TFloatArrayList pixels = new TFloatArrayList(inputImage.getWidth() * inputImage.getHeight());
@@ -215,7 +215,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
                 progressInfo);
     }
 
-    private void thresholdCombineStatistics(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
+    private void thresholdCombineStatistics(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
         TFloatArrayList pixels = new TFloatArrayList(inputImage.getWidth() * inputImage.getHeight() *
                 inputImage.getNFrames() * inputImage.getNChannels() * inputImage.getNSlices());
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
@@ -254,7 +254,7 @@ public class CustomAutoThreshold2D32Fv2Algorithm extends JIPipeIteratingAlgorith
                 progressInfo);
     }
 
-    private void thresholdApplyPerSlice(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
+    private void thresholdApplyPerSlice(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
         List<Float> minThresholds = new ArrayList<>();
         List<Float> maxThresholds = new ArrayList<>();
         TFloatArrayList pixels = new TFloatArrayList(inputImage.getWidth() * inputImage.getHeight());

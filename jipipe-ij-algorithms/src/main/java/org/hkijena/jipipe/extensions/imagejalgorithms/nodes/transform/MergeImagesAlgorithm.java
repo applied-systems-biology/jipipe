@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -42,7 +42,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData targetImageData = dataBatch.getInputData("Target", ImagePlusData.class, progressInfo);
         ImagePlus output = targetImageData.getDuplicateImage();
         ImagePlus src = dataBatch.getInputData("Source", targetImageData.getClass(), progressInfo).getImage();
@@ -81,7 +81,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
-    public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
+    public ImageProcessor getMask(JIPipeSingleDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
                 ImagePlusData img = dataBatch.getInputData("Target", ImagePlusData.class, progressInfo);

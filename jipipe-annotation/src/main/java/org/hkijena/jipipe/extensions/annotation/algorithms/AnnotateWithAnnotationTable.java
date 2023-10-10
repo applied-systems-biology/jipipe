@@ -11,8 +11,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -67,8 +67,8 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         return tableMergeSettings;
     }
 
-    private List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+    private List<JIPipeMultiDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
         builder.setNode(this);
         builder.setApplyMerging(false);
         builder.setSlots(slots);
@@ -79,14 +79,14 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         builder.setAnnotationMatchingMethod(tableMergeSettings.getAnnotationMatchingMethod());
         builder.setForceFlowGraphSolver(tableMergeSettings.isForceFlowGraphSolver());
         builder.setForceFlowGraphSolver(tableMergeSettings.isForceFlowGraphSolver());
-        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
+        List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = tableMergeSettings.getLimit().isEnabled();
         IntegerRange limit = tableMergeSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
         if (withLimit) {
             progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-            List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+            List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
             for (int i = 0; i < dataBatches.size(); i++) {
                 if (allowedIndices.contains(i)) {
                     limitedBatches.add(dataBatches.get(i));
@@ -94,13 +94,13 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
             }
             dataBatches = limitedBatches;
         }
-        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
             if (dataBatch.isIncomplete()) {
                 progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
             }
         }
         if (tableMergeSettings.isSkipIncompleteDataSets()) {
-            dataBatches.removeIf(JIPipeMergingDataBatch::isIncomplete);
+            dataBatches.removeIf(JIPipeMultiDataBatch::isIncomplete);
         }
         return dataBatches;
     }
@@ -127,8 +127,8 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         }
 
         // Group the data by annotations
-        List<JIPipeMergingDataBatch> mergingDataBatches = generateDataBatchesDryRun(Arrays.asList(dataInputSlot, dummy), progressInfo);
-        for (JIPipeMergingDataBatch dataBatch : mergingDataBatches) {
+        List<JIPipeMultiDataBatch> mergingDataBatches = generateDataBatchesDryRun(Arrays.asList(dataInputSlot, dummy), progressInfo);
+        for (JIPipeMultiDataBatch dataBatch : mergingDataBatches) {
             Set<Integer> dataRows = dataBatch.getInputRows("Data");
             if (dataRows == null)
                 continue;

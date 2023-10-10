@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -194,7 +194,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         backupWindows();
         try {
             prepareInputData(dataBatch, progressInfo);
@@ -300,7 +300,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void passOutputData(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private void passOutputData(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
             Object configuration = outputFromImageJImporters.get(outputSlot.getName()).get(Object.class);
             ImageJDataImporter importer;
@@ -367,7 +367,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     /**
      * Loads input data, so it can be discovered by ImageJ
      */
-    private void prepareInputData(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private void prepareInputData(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 //        long imageInputSlotCount = getInputSlots().stream().filter(slot -> JIPipeMultichannelImageData.class.isAssignableFrom(slot.getAcceptedDataType())).count();
         initiallyOpenedImages.clear();
         for (int i = 0; i < WindowManager.getImageCount(); ++i) {

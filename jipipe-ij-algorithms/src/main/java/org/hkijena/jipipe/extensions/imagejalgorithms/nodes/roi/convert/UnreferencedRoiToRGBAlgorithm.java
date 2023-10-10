@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -116,7 +116,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).groupByReferenceImage().entrySet()) {
                 ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate(progressInfo);
@@ -129,7 +129,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     }
 
-    private void processROIList(JIPipeDataBatch dataBatch, ROIListData inputData, ImagePlus reference, JIPipeProgressInfo progressInfo) {
+    private void processROIList(JIPipeSingleDataBatch dataBatch, ROIListData inputData, ImagePlus reference, JIPipeProgressInfo progressInfo) {
         // Find the bounds and future stack position
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());

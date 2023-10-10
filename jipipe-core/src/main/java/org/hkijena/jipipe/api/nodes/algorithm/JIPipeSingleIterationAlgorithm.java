@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -111,7 +111,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);
         builder.setApplyMerging(true);
@@ -119,7 +119,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         builder.setDataAnnotationMergeStrategy(dataBatchGenerationSettings.getDataAnnotationMergeStrategy());
         builder.setReferenceColumns(JIPipeColumMatching.MergeAll, new StringQueryExpression());
 
-        List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
+        List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
 
         // Generate result object
         JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
@@ -136,7 +136,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
      * @param progressInfo progress info
      * @param dataBatch    the data batch
      */
-    protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMergingDataBatch dataBatch) {
+    protected void runPassThrough(JIPipeProgressInfo progressInfo, JIPipeMultiDataBatch dataBatch) {
         progressInfo.log("Passing trough (via dynamic pass-through)");
         for (int row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
             dataBatch.addOutputData(getFirstOutputSlot(), getFirstInputSlot().getData(row, JIPipeData.class, progressInfo), progressInfo);
@@ -162,7 +162,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
                 return;
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
-            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
             dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
             if (isPassThrough()) {
@@ -173,8 +173,8 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             return;
         }
 
-        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
-        for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+        List<JIPipeMultiDataBatch> dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
+        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
             dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
         }
 
@@ -192,7 +192,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         }
     }
 
-    private void uploadAdaptiveParameters(JIPipeMergingDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
+    private void uploadAdaptiveParameters(JIPipeMultiDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         ExpressionVariables expressionVariables = new ExpressionVariables();
         for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             expressionVariables.put(annotation.getName(), annotation.getValue());
@@ -235,7 +235,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
         }
     }
 
-    private void annotateWithParameter(JIPipeMergingDataBatch dataBatch, String key, JIPipeParameterAccess target, Object newValue) {
+    private void annotateWithParameter(JIPipeMultiDataBatch dataBatch, String key, JIPipeParameterAccess target, Object newValue) {
         String name;
         if (getAdaptiveParameterSettings().isParameterAnnotationsUseInternalNames())
             name = key;
@@ -252,7 +252,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
      * @param dataBatch    The data interface
      * @param progressInfo the progress from the run
      */
-    protected abstract void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo);
+    protected abstract void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {

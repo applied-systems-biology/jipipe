@@ -28,8 +28,8 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatchBuilder;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -166,10 +166,10 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             runWithDataPassThrough(progressInfo);
             return;
         }
-        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
+        List<JIPipeMultiDataBatch> dataBatches = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
         for (int i = 0; i < dataBatches.size(); i++) {
             JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, dataBatches.size());
-            JIPipeMergingDataBatch dataBatch = dataBatches.get(i);
+            JIPipeMultiDataBatch dataBatch = dataBatches.get(i);
 
             // Iterate through own input slots and pass them to the equivalents in group input
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
@@ -299,7 +299,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
-            JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
+            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
                 for (int row = 0; row < inputSlot.getRowCount(); row++) {
                     dataBatch.addInputData(inputSlot, row);
@@ -313,7 +313,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             return result;
 
         } else {
-            JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
+            JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
             builder.setNode(this);
             builder.setApplyMerging(iterationMode == IterationMode.MergingDataBatch);
             builder.setSlots(slots);
@@ -322,14 +322,14 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                     batchGenerationSettings.getCustomColumns());
             builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
             builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
-            List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
+            List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
             dataBatches.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
             if (withLimit) {
                 progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-                List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
+                List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < dataBatches.size(); i++) {
                     if (allowedIndices.contains(i)) {
                         limitedBatches.add(dataBatches.get(i));
@@ -337,8 +337,8 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 }
                 dataBatches = limitedBatches;
             }
-            List<JIPipeMergingDataBatch> incomplete = new ArrayList<>();
-            for (JIPipeMergingDataBatch dataBatch : dataBatches) {
+            List<JIPipeMultiDataBatch> incomplete = new ArrayList<>();
+            for (JIPipeMultiDataBatch dataBatch : dataBatches) {
                 if (dataBatch.isIncomplete()) {
                     incomplete.add(dataBatch);
                     progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);

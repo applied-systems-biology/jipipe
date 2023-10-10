@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.sources.JIPipeWeakDataTableDataSource;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -273,9 +273,9 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
 
         // Generate data batch mapping
         this.dataBatchMapping.clear();
-        List<JIPipeMergingDataBatch> dataBatches = dataBatchGenerationResult.getDataBatches();
+        List<JIPipeMultiDataBatch> dataBatches = dataBatchGenerationResult.getDataBatches();
         for (int dataBatchIndex = 0; dataBatchIndex < dataBatches.size(); dataBatchIndex++) {
-            JIPipeMergingDataBatch dataBatch = dataBatches.get(dataBatchIndex);
+            JIPipeMultiDataBatch dataBatch = dataBatches.get(dataBatchIndex);
             for (Integer inputRow : dataBatch.getInputRows(inputSlot.getName())) {
                 dataBatchMapping.put(inputRow, dataBatchIndex);
             }

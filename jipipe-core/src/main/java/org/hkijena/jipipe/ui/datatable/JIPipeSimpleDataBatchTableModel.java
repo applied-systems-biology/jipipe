@@ -17,7 +17,7 @@ package org.hkijena.jipipe.ui.datatable;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class JIPipeSimpleDataBatchTableModel implements TableModel {
 
-    private final List<JIPipeMergingDataBatch> dataBatchList;
+    private final List<JIPipeMultiDataBatch> dataBatchList;
     private final List<String> inputSlotNames = new ArrayList<>();
     private final List<String> annotationColumns = new ArrayList<>();
     private final Map<String, List<Component>> previews = new HashMap<>();
@@ -42,14 +42,14 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
     private final JTable table;
     private JScrollPane scrollPane;
 
-    public JIPipeSimpleDataBatchTableModel(JTable table, List<JIPipeMergingDataBatch> dataBatchList, Class<? extends Store> storeClass) {
+    public JIPipeSimpleDataBatchTableModel(JTable table, List<JIPipeMultiDataBatch> dataBatchList, Class<? extends Store> storeClass) {
         this.table = table;
         this.dataBatchList = dataBatchList;
 
 
         Set<String> inputSlotNameSet = new HashSet<>();
         Set<String> annotationColumnSet = new HashSet<>();
-        for (JIPipeMergingDataBatch dataBatch : dataBatchList) {
+        for (JIPipeMultiDataBatch dataBatch : dataBatchList) {
             Map<String, Store<JIPipeDataItemStore>> previewMap = new HashMap<>();
             for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : dataBatch.getInputSlotRows().entrySet()) {
                 inputSlotNameSet.add(entry.getKey().getName());

@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.imagej2.io.data.input;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
 import org.hkijena.jipipe.extensions.imagej2.io.data.DataSlotModuleIO;
@@ -39,7 +39,7 @@ public abstract class DataSlotModuleInput<ModuleDataType, JIPipeDataType extends
     }
 
     @Override
-    public boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeSingleDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         String slotName = node.getModuleNodeInfo().getInputSlotName(moduleItem);
         if (dataBatch.getInputRow(slotName) >= 0) {
             JIPipeDataType obj = dataBatch.getInputData(slotName, getJIPipeDataType(), progressInfo);
@@ -52,7 +52,7 @@ public abstract class DataSlotModuleInput<ModuleDataType, JIPipeDataType extends
     }
 
     @Override
-    public boolean transferToJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferToJIPipe(ImageJ2OpNode node, JIPipeSingleDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         return true;
     }
 

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 
@@ -53,7 +53,7 @@ public class ConcatenatePaths extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PathData left = dataBatch.getInputData("Left", PathData.class, progressInfo);
         PathData right = dataBatch.getInputData("Right", PathData.class, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new PathData(left.toPath().resolve(right.getPath())), progressInfo);

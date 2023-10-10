@@ -4,7 +4,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -32,14 +32,14 @@ import java.util.List;
  */
 public class MaskDrawerFormData extends FormData {
 
-    private final List<JIPipeMergingDataBatch> dataBatches;
+    private final List<JIPipeMultiDataBatch> dataBatches;
     private final DrawMaskAlgorithm drawMaskAlgorithm;
     private JIPipeImageViewer imageViewerPanel;
     private MaskDrawerPlugin2D maskDrawerPlugin;
     private ImagePlus lazyLoadedImage;
     private ImagePlus lazyLoadedMask;
 
-    public MaskDrawerFormData(List<JIPipeMergingDataBatch> dataBatches, DrawMaskAlgorithm drawMaskAlgorithm) {
+    public MaskDrawerFormData(List<JIPipeMultiDataBatch> dataBatches, DrawMaskAlgorithm drawMaskAlgorithm) {
         this.dataBatches = dataBatches;
         this.drawMaskAlgorithm = drawMaskAlgorithm;
     }
@@ -134,7 +134,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public void loadData(JIPipeMergingDataBatch dataBatch) {
+    public void loadData(JIPipeMultiDataBatch dataBatch) {
         int row = dataBatches.indexOf(dataBatch);
         ImagePlus referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).get(0).getImage();
         ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusGreyscaleMaskData.class, new JIPipeProgressInfo()).getImage();
@@ -149,7 +149,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public void writeData(JIPipeMergingDataBatch dataBatch) {
+    public void writeData(JIPipeMultiDataBatch dataBatch) {
 
     }
 }
