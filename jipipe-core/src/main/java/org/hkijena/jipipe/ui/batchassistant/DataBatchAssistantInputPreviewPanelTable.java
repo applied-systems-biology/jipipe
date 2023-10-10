@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.data.sources.JIPipeWeakDataTableDataSource;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
+import org.hkijena.jipipe.ui.datatracer.DataTracerUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -241,7 +242,25 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
             }
         }));
         popupMenu.addSeparator();
+        popupMenu.add(UIUtils.createMenuItem("Trace data", "Allows to trace how the selected data was generated", UIUtils.getIconFromResources("actions/footsteps.png"), this::traceSelectedData));
         popupMenu.add(UIUtils.createMenuItem("Display data", "Displays the selected data", UIUtils.getIconFromResources("actions/search.png"), this::displaySelectedData));
+
+    }
+
+    private void traceSelectedData() {
+        int viewRow = table.getSelectedRow();
+        int viewColumn = table.getSelectedColumn();
+        if (viewRow >= 0 && viewColumn >= 0) {
+            int modelRow = table.convertRowIndexToModel(viewRow);
+            Object value = model.getValueAt(modelRow, 0);
+            if (value instanceof JIPipeWeakDataTableDataSource) {
+                JIPipeWeakDataTableDataSource dataSource = (JIPipeWeakDataTableDataSource) value;
+                JIPipeDataTable dataTable = dataSource.getDataTable();
+                if (dataTable != null) {
+                    DataTracerUI.openWindow(previewPanel.getDataBatchAssistantUI().getProjectWorkbench(), dataTable.getDataContext(dataSource.getRow()).getId());
+                }
+            }
+        }
     }
 
     private void displaySelectedData() {

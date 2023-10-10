@@ -50,6 +50,7 @@ import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
 import org.hkijena.jipipe.ui.components.search.ExtendedDataTableSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.datatracer.DataTracerUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeAnnotationTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeNodeTableCellRenderer;
@@ -252,6 +253,14 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                 popupMenu.add(openWithMenu);
             }
 
+            // Trace
+            if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+                popupMenu.add(UIUtils.createMenuItem("Trace",
+                        "Allows to trace how the selected data was generated",
+                        UIUtils.getIconFromResources("actions/footsteps.png"),
+                        () -> traceData(dataTable.getDataContext(modelRow).getId())));
+            }
+
             if (dataAnnotationColumn >= 0) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(modelRow, dataAnnotationColumn);
                 JMenu openWithMenu = new JMenu();
@@ -322,6 +331,10 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
             popupMenu.show(table, e.getX(), e.getY());
 
         }
+    }
+
+    private void traceData(String id) {
+        DataTracerUI.openWindow((JIPipeProjectWorkbench) getWorkbench(), id);
     }
 
     private void initializeRibbon(JPanel menuContainerPanel) {
