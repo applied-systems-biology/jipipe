@@ -77,7 +77,9 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
         initializeToolbar(toolBar);
 
         contentPanel.setLayout(new GridBagLayout());
-        add(new JScrollPane(contentPanel), BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     private void initializeToolbar(JToolBar toolBar) {
