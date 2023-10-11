@@ -200,7 +200,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
         int viewRow = table.rowAtPoint(e.getPoint());
         int viewCol = table.columnAtPoint(e.getPoint());
         if (viewRow >= 0) {
-            int modelRow = table.convertRowIndexToModel(viewRow);
+            int rawModelRow = table.convertRowIndexToModel(viewRow);
             table.setRowSelectionInterval(viewRow, viewRow);
             Object objectAtColumn;
             JIPipeDataTable dataTable;
@@ -214,7 +214,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
             }
             if (viewCol >= 0) {
                 int modelColumn = table.convertColumnIndexToModel(viewCol);
-                objectAtColumn = table.getModel().getValueAt(modelRow,
+                objectAtColumn = table.getModel().getValueAt(rawModelRow,
                         modelColumn);
                 int multiDataAnnotationColumn = multiSlotTable.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(viewCol));
                 if (dataTable != null) {
@@ -224,9 +224,11 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                     }
                 }
             } else {
-
                 objectAtColumn = null;
             }
+
+            // Conversion to internal row
+            int modelRow = multiSlotTable.getRow(multiRow);
 
             JPopupMenu popupMenu = new JPopupMenu();
 

@@ -2,6 +2,7 @@ package org.hkijena.jipipe.ui.datatracer;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -14,18 +15,23 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
+import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener {
+public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, Disposable, JIPipeCache.ModifiedEventListener {
     private final JIPipeRunnerQueue queue = new JIPipeRunnerQueue("Data tracer");
     private final JIPipeGraphNode targetNode;
 
@@ -34,6 +40,9 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
     private final JIPipeDataTable targetTable;
     private final int targetTableRow;
     private final FormPanel contentPanel = new FormPanel(FormPanel.WITH_SCROLLING);
+    private final JToolBar toolBar = new JToolBar();
+    private final MessagePanel messagePanel = new MessagePanel();
+    private Map<Integer, Map<String, Map<String, JIPipeDataTable>>> resultMap = Collections.emptyMap();
 
     public DataTracerUI(JIPipeProjectWorkbench workbench, JIPipeGraphNode targetNode, String targetSlotName, UUID targetNodeUUID, JIPipeDataTable targetTable, int targetTableRow) {
         super(workbench);
@@ -47,14 +56,23 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
         // Run tracer
         queue.getInterruptedEventEmitter().subscribe(this);
         queue.getFinishedEventEmitter().subscribe(this);
-        queue.enqueue(new CollectTraceRun(getProjectWorkbench(), targetNode, targetSlotName, targetNodeUUID, targetTable, targetTableRow));
+
+        workbench.getProject().getCache().getModifiedEventEmitter().subscribe(this);
+
+        rebuildContent();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JToolBar toolBar = new JToolBar();
+
+        JPanel topPanel = new JPanel();
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+        topPanel.add(toolBar);
+        topPanel.add(messagePanel);
+
         toolBar.setFloatable(false);
-        add(toolBar, BorderLayout.NORTH);
+
+        add(topPanel, BorderLayout.NORTH);
         initializeToolbar(toolBar);
         add(contentPanel, BorderLayout.CENTER);
     }
@@ -62,11 +80,53 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
     private void initializeToolbar(JToolBar toolBar) {
         toolBar.add(new JIPipeRunnerQueueButton(getWorkbench(), queue));
         toolBar.add(Box.createHorizontalGlue());
-        toolBar.add(new AlwaysOnTopToggle((JWindow) SwingUtilities.getWindowAncestor(this)));
+        toolBar.add(UIUtils.createButton("Refresh", UIUtils.getIconFromResources("actions/view-refresh.png"), this::rebuildContent));
+    }
+
+    private void rebuildContent() {
+        queue.cancelAll();
+        queue.enqueue(new CollectTraceRun(getProjectWorkbench(), targetNode, targetSlotName, targetNodeUUID, targetTable, targetTableRow));
     }
 
     private void refreshContent() {
         contentPanel.clear();
+        List<Integer> levels = resultMap.keySet().stream().sorted().collect(Collectors.toList());
+        for (int i = 0; i < levels.size(); i++) {
+            int level = levels.get(i);
+            if(i != 0) {
+                JLabel separatorLabel = new JLabel(UIUtils.getIconFromResources("actions/merge-down.png"));
+                contentPanel.addWideToForm(separatorLabel);
+            }
+
+            Map<String, Map<String, JIPipeDataTable>> nodes = resultMap.get(level);
+            JPanel levelPanel = new JPanel();
+
+//            int tableCount = 0;
+            for (Map.Entry<String, Map<String, JIPipeDataTable>> nodeEntry : nodes.entrySet()) {
+                String nodeUUID = nodeEntry.getKey();
+                for (Map.Entry<String, JIPipeDataTable> outputSlotEntry : nodeEntry.getValue().entrySet()) {
+                    String outputSlotName = outputSlotEntry.getKey();
+                    JIPipeDataTable dataTable = outputSlotEntry.getValue();
+
+                    DataTrackerNodeOutputUI outputUI = new DataTrackerNodeOutputUI(getProjectWorkbench(), nodeUUID, outputSlotName, dataTable, level == 0);
+                    levelPanel.add(outputUI);
+                }
+            }
+
+//            levelPanel.setLayout(new GridLayout(1, tableCount, 8,8));
+            levelPanel.setLayout(new BoxLayout(levelPanel, BoxLayout.X_AXIS));
+
+            contentPanel.addWideToForm(levelPanel);
+        }
+        contentPanel.addVerticalGlue();
+
+        messagePanel.clear();
+        if(levels.size() == 1) {
+            messagePanel.addMessage(MessagePanel.MessageType.InfoLight,
+                    "The trace function cannot follow data if predecessors are missing. Use 'Cache intermediate results' instead of 'Update cache'.",
+                    true,
+                    true);
+        }
     }
 
     public static void openWindow(JIPipeProjectWorkbench workbench, String targetId) {
@@ -102,7 +162,9 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
 
         if(targetTable != null) {
             frame.setTitle("JIPipe - Data trace - " + targetNode.getCompartmentDisplayName() + "/" + targetNode.getName() + "/" + targetSlotName + "/" + targetTableRow);
-            frame.setContentPane(new DataTracerUI(workbench, targetNode, targetSlotName, targetNodeUUID, targetTable, targetTableRow));
+            DataTracerUI tracerUI = new DataTracerUI(workbench, targetNode, targetSlotName, targetNodeUUID, targetTable, targetTableRow);
+            tracerUI.toolBar.add(new AlwaysOnTopToggle(frame));
+            frame.setContentPane(tracerUI);
         }
         else {
             JIPipeValidationReport report = new JIPipeValidationReport();
@@ -138,6 +200,22 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        refreshContent();
+        if(event.getRun() instanceof CollectTraceRun) {
+            this.resultMap = ((CollectTraceRun) event.getRun()).getResultMap();
+            refreshContent();
+        }
+    }
+
+    @Override
+    public void dispose() {
+        Disposable.super.dispose();
+
+        queue.cancelAll();
+        resultMap.clear();
+    }
+
+    @Override
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
+
     }
 }

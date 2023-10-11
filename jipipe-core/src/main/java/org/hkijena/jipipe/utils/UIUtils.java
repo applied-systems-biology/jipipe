@@ -1974,6 +1974,12 @@ public class UIUtils {
         return button;
     }
 
+    public static JButton createButton(String text, Icon icon, Runnable function) {
+        JButton button = new JButton(text, icon);
+        button.addActionListener(e -> function.run());
+        return button;
+    }
+
     public static String keyStrokeToString(KeyStroke key) {
         int m = key.getModifiers();
         List<String> keyNames = new ArrayList<>();

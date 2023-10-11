@@ -12,7 +12,7 @@
  *
  */
 
-package org.hkijena.jipipe.ui.datatable;
+package org.hkijena.jipipe.ui.datatracer;
 
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -32,10 +32,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Wraps around a {@link org.hkijena.jipipe.api.data.JIPipeDataTable} to display additional columns.
+ * Wraps around a {@link JIPipeDataTable} to display additional columns.
  * For example, it is capable of displaying previews.
  */
-public class JIPipeExtendedDataTableModel implements TableModel {
+public class DataTracerTableModel implements TableModel {
 
     private final JTable table;
     private final Store<JIPipeDataTable> dataTableStore;
@@ -51,7 +51,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
      * @param table          the table
      * @param dataTableStore the wrapped slot
      */
-    public JIPipeExtendedDataTableModel(JTable table, Store<JIPipeDataTable> dataTableStore) {
+    public DataTracerTableModel(JTable table, Store<JIPipeDataTable> dataTableStore) {
         this.table = table;
         this.dataTableStore = dataTableStore;
 
@@ -97,8 +97,8 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     public int toAnnotationColumnIndex(int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
-                return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
+            if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 3)
+                return columnIndex - dataTable.getDataAnnotationColumns().size() - 3;
             else
                 return -1;
         } else {
@@ -115,8 +115,8 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     public int toDataAnnotationColumnIndex(int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
-                return columnIndex - 4;
+            if (columnIndex < dataTable.getDataAnnotationColumns().size() + 3 && (columnIndex - 3) < dataTable.getDataAnnotationColumns().size()) {
+                return columnIndex - 3;
             } else {
                 return -1;
             }
@@ -139,9 +139,9 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     public int getColumnCount() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 4;
+            return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 3;
         } else {
-            return 4;
+            return 3;
         }
     }
 
@@ -149,12 +149,10 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     public String getColumnName(int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (columnIndex == 0)
-            return "Index";
-        else if (columnIndex == 1)
             return "Type";
-        else if (columnIndex == 2)
+        else if (columnIndex == 1)
             return "Preview";
-        else if (columnIndex == 3)
+        else if (columnIndex == 2)
             return "String representation";
         else if (toDataAnnotationColumnIndex(columnIndex) != -1 && dataTable != null) {
             return "$" + dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
@@ -168,12 +166,10 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         if (columnIndex == 0)
-            return Integer.class;
-        else if (columnIndex == 1)
             return JIPipeDataInfo.class;
-        else if (columnIndex == 2)
+        else if (columnIndex == 1)
             return Component.class;
-        else if (columnIndex == 3)
+        else if (columnIndex == 2)
             return String.class;
         else if (toDataAnnotationColumnIndex(columnIndex) != -1)
             return Component.class;
@@ -191,15 +187,13 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            if (columnIndex == 0) {
-                return rowIndex;
-            } else if (columnIndex == 1) {
+           if (columnIndex == 0) {
                 try {
                     return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowIndex));
                 } catch (IndexOutOfBoundsException e) {
                     return null;
                 }
-            } else if (columnIndex == 2) {
+            } else if (columnIndex == 1) {
                 revalidatePreviewCache();
                 Component preview = previewCache.get(rowIndex);
                 if (preview == null) {
@@ -212,7 +206,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
                     }
                 }
                 return preview;
-            } else if (columnIndex == 3)
+            } else if (columnIndex == 2)
                 try {
                     return "" + dataTable.getDataItemStore(rowIndex).getStringRepresentation();
                 } catch (IndexOutOfBoundsException e) {
