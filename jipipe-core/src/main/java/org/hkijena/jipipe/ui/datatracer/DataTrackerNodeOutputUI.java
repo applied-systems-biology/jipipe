@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.jdesktop.swingx.border.DropShadowBorder;
@@ -46,20 +47,37 @@ public class DataTrackerNodeOutputUI extends JIPipeProjectWorkbenchPanel impleme
 
         JIPipeGraphNode node = getProjectWorkbench().getProject().getGraph().getNodeByUUID(UUID.fromString(nodeUUID));
         JIPipeOutputDataSlot outputSlot = node.getOutputSlot(outputSlotName);
-
-        JButton slotLabel = new JButton(node.getCompartmentDisplayName() + " ‣ " + node.getName() + " ‣ " + outputSlot.getName(), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()));
+        JPanel topPanel = new JPanel();
+        topPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
         if(highlighted) {
-            slotLabel.setBackground(COLOR_HIGHLIGHT);
+            topPanel.setBackground(COLOR_HIGHLIGHT);
         }
-        slotLabel.setHorizontalAlignment(SwingConstants.LEFT);
-        slotLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        add(slotLabel, BorderLayout.NORTH);
+
+        JButton compartmentButton = new JButton(node.getCompartmentDisplayName(), UIUtils.getIconFromResources("actions/graph-compartment.png"));
+        compartmentButton.setOpaque(false);
+        initializeContextMenu(UIUtils.addPopupMenuToButton(compartmentButton));
+        topPanel.add(compartmentButton);
+
+        topPanel.add(new JLabel("⏵"));
+
+        JButton nodeButton = new JButton(node.getName(), node.getInfo().getIcon());
+        nodeButton.setOpaque(false);
+        initializeContextMenu(UIUtils.addPopupMenuToButton(nodeButton));
+        topPanel.add(nodeButton);
+
+        topPanel.add(new JLabel("⏵"));
+
+        JButton slotButton = new JButton(outputSlot.getName(), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()));
+        slotButton.setOpaque(false);
+        initializeContextMenu(UIUtils.addPopupMenuToButton(slotButton));
+        topPanel.add(slotButton);
+
+        add(topPanel, BorderLayout.NORTH);
 
         DataTracerDataTableUI tableUI = new DataTracerDataTableUI(getWorkbench(), new WeakStore<>(dataTable));
         add(tableUI, BorderLayout.SOUTH);
 
-        JPopupMenu slotContextMenu = UIUtils.addPopupMenuToButton(slotLabel);
-        initializeContextMenu(slotContextMenu);
     }
 
     private void initializeContextMenu(JPopupMenu contextMenu) {

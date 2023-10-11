@@ -20,6 +20,7 @@ import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueueButton;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jdesktop.swingx.JXPanel;
 import org.scijava.Disposable;
 
 import javax.swing.*;
@@ -39,7 +40,7 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
     private final UUID targetNodeUUID;
     private final JIPipeDataTable targetTable;
     private final int targetTableRow;
-    private final FormPanel contentPanel = new FormPanel(FormPanel.WITH_SCROLLING);
+    private final JPanel contentPanel = new JPanel();
     private final JToolBar toolBar = new JToolBar();
     private final MessagePanel messagePanel = new MessagePanel();
     private Map<Integer, Map<String, Map<String, JIPipeDataTable>>> resultMap = Collections.emptyMap();
@@ -74,7 +75,9 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
 
         add(topPanel, BorderLayout.NORTH);
         initializeToolbar(toolBar);
-        add(contentPanel, BorderLayout.CENTER);
+
+        contentPanel.setLayout(new GridBagLayout());
+        add(new JScrollPane(contentPanel), BorderLayout.CENTER);
     }
 
     private void initializeToolbar(JToolBar toolBar) {
@@ -89,13 +92,24 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
     }
 
     private void refreshContent() {
-        contentPanel.clear();
+        contentPanel.removeAll();
         List<Integer> levels = resultMap.keySet().stream().sorted().collect(Collectors.toList());
+        int numRows = 0;
         for (int i = 0; i < levels.size(); i++) {
             int level = levels.get(i);
             if(i != 0) {
                 JLabel separatorLabel = new JLabel(UIUtils.getIconFromResources("actions/merge-down.png"));
-                contentPanel.addWideToForm(separatorLabel);
+                contentPanel.add(separatorLabel, new GridBagConstraints(0,
+                        numRows++,
+                        1,
+                        1,
+                        1,
+                        0,
+                        GridBagConstraints.NORTHWEST,
+                        GridBagConstraints.HORIZONTAL,
+                        UIUtils.UI_PADDING,
+                        0,
+                        0));
             }
 
             Map<String, Map<String, JIPipeDataTable>> nodes = resultMap.get(level);
@@ -116,12 +130,33 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
 //            levelPanel.setLayout(new GridLayout(1, tableCount, 8,8));
             levelPanel.setLayout(new BoxLayout(levelPanel, BoxLayout.X_AXIS));
 
-            contentPanel.addWideToForm(levelPanel);
+            contentPanel.add(levelPanel, new GridBagConstraints(0,
+                    numRows++,
+                    1,
+                    1,
+                    1,
+                    0,
+                    GridBagConstraints.NORTHWEST,
+                    GridBagConstraints.HORIZONTAL,
+                    UIUtils.UI_PADDING,
+                    0,
+                    0));
         }
-        contentPanel.addVerticalGlue();
+
+        contentPanel.add(new JPanel(), new GridBagConstraints(0,
+                numRows++,
+                1,
+                1,
+                1,
+                1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.BOTH,
+                UIUtils.UI_PADDING,
+                0,
+                0));
 
         messagePanel.clear();
-        if(levels.size() == 1) {
+        if(numRows <= 1) {
             messagePanel.addMessage(MessagePanel.MessageType.InfoLight,
                     "The trace function cannot follow data if predecessors are missing. Use 'Cache intermediate results' instead of 'Update cache'.",
                     true,
@@ -185,7 +220,7 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        contentPanel.clear();
+        contentPanel.removeAll();
         JIPipeValidityReportUI reportUI = new JIPipeValidityReportUI(getWorkbench(), false);
         JIPipeValidationReport report = new JIPipeValidationReport();
         report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
@@ -195,7 +230,7 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
                 "See details",
                 event.getException().toString()));
         reportUI.setReport(report);
-        contentPanel.addWideToForm(reportUI);
+        contentPanel.add(reportUI);
     }
 
     @Override
