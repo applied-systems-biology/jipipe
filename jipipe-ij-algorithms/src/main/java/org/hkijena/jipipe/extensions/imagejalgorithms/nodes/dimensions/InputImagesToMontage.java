@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.CanvasEqualizer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 
@@ -99,6 +100,8 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
             return;
         List<ImagePlus> input = labelledImages.keySet().stream()
                 .sorted(Comparator.comparing(sortingLabels::get, NaturalOrderComparator.INSTANCE)).collect(Collectors.toList());
+        input = ImageJUtils.convertToConsensusBitDepthIfNeeded(input);
+
         List<String> labels = input.stream().map(labelledImages::get).collect(Collectors.toList());
 
         // Equalize canvas
