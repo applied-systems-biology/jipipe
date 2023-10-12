@@ -671,6 +671,7 @@ public class FileChooserSettings extends AbstractJIPipeParameterCollection {
                 setLastParametersDirectory(lastDirectory);
                 break;
         }
+        JIPipe.getSettings().save();
     }
 
     @JIPipeDocumentation(name = "Last external directory", description = "The file chooser will open in this folder when selecting external utilities.")

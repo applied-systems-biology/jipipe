@@ -574,6 +574,7 @@ public class ImageViewerPanel2D extends JPanel implements JIPipeWorkbenchAccess 
                 null);
         if (response == JOptionPane.OK_OPTION) {
             FileChooserSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
+            JIPipe.getSettings().save();
             Path targetPath = exportPathEditor.getPath();
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
