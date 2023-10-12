@@ -80,7 +80,7 @@ public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm {
                     variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, dataset)));
 
                     if(filters.test(variables)) {
-                        getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset, environment), rowProgress);
+                        getFirstOutputSlot().addData(new OMERODatasetReferenceData(dataset, environment), getFirstInputSlot().getDataContext(row).branch(this), rowProgress);
                     }
                 }
             }

@@ -78,6 +78,7 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        getFirstInputSlot().getDataContext(row).branch(this),
                         progressInfo);
             }
             --available;

@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -75,12 +77,12 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
         }
         if (isPassThrough()) {
             progressInfo.log("Data passed through to output");
-            getFirstOutputSlot().addData(new FolderData(outputPath), progressInfo);
+            getFirstOutputSlot().addData(new FolderData(outputPath), JIPipeDataContext.create(this), progressInfo);
             return;
         }
 
         exporter.writeToFolder(getInputSlots(), outputPath, progressInfo);
-        getFirstOutputSlot().addData(new FolderData(outputPath), progressInfo);
+        getFirstOutputSlot().addData(new FolderData(outputPath), JIPipeDataContext.create(this), progressInfo);
     }
 
     @Override

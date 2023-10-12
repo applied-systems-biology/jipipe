@@ -24,7 +24,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
@@ -37,7 +39,7 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeDocumentation(name = "Convert ImageJ image", description = "Converts an ImageJ image into another ImageJ image data type")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
-public class ImageTypeConverter extends JIPipeAlgorithm {
+public class ImageTypeConverter extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(ImagePlusData.class);
 
@@ -75,13 +77,10 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
     }
 
     @Override
-    public void run(JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot inputSlot = getFirstInputSlot();
-        JIPipeDataSlot outputSlot = getFirstOutputSlot();
-        for (int i = 0; i < inputSlot.getRowCount(); ++i) {
-            ImagePlusData data = inputSlot.getData(i, ImagePlusData.class, progressInfo);
-            JIPipeData converted = JIPipe.createData(outputType.getInfo().getDataClass(), data.getImage());
-            outputSlot.addData(converted, outputSlot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        }
+    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+        JIPipeData converted = JIPipe.createData(outputType.getInfo().getDataClass(), data.getImage());
+        dataBatch.addOutputData(getFirstOutputSlot(), converted, progressInfo);
     }
+
 }

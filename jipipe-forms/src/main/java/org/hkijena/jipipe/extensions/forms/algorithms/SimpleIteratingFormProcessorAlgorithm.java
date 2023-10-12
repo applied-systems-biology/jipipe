@@ -173,11 +173,12 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
             for (int i = 0; i < dataBatchForms.size(); i++) {
                 JIPipeDataSlot forms = dataBatchForms.get(i);
                 JIPipeMultiDataBatch dataBatch = dataBatchList.get(i);
-                getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
+                getFirstOutputSlot().addData(dataBatch.getInputDataStore(dataSlot).get(0),
                         new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         new ArrayList<>(dataBatch.getMergedDataAnnotations().values()),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        dataBatch.createNewContext(),
                         progressInfo);
 
                 // Copy user-modified forms
@@ -189,6 +190,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             forms.getDataAnnotations(row),
                             JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                            forms.getDataContext(row).branch(this),
                             progressInfo);
                 }
             }

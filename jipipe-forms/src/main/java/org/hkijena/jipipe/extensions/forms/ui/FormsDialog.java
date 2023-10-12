@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.ui;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -83,6 +84,9 @@ public class FormsDialog extends JFrame {
             copy.addData(formCopy,
                     originalForms.getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                    originalForms.getDataAnnotations(row),
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    originalForms.getDataContext(row),
                     progressInfo);
         }
         return copy;
@@ -511,9 +515,21 @@ public class FormsDialog extends JFrame {
             FormData target = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
             if (target.isUsingCustomReset()) {
                 target.customReset();
-                copy.addData(target, tmpCopy.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+                copy.addData(target,
+                        tmpCopy.getTextAnnotations(row),
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                        tmpCopy.getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        tmpCopy.getDataContext(row),
+                        progressInfo);
             } else {
-                copy.addData(src, tmpCopy.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+                copy.addData(src,
+                        tmpCopy.getTextAnnotations(row),
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                        tmpCopy.getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        tmpCopy.getDataContext(row),
+                        progressInfo);
             }
         }
         dataBatchForms.set(i, copy);

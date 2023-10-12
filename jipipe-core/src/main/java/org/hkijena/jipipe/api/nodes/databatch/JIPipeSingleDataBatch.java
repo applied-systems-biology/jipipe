@@ -290,7 +290,7 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
      * @return the new context
      */
     public JIPipeDataContext createNewContext() {
-        JIPipeMutableDataContext context = new JIPipeMutableDataContext();
+        JIPipeMutableDataContext context = new JIPipeMutableDataContext(node.getUUIDInParentGraph().toString());
         for (Map.Entry<JIPipeDataSlot, Integer> entry : inputSlotRows.entrySet()) {
             JIPipeDataContext predecessorContext = entry.getKey().getDataContext(entry.getValue());
             context.addPredecessor(predecessorContext);
@@ -453,6 +453,7 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
                 JIPipeTextAnnotationMergeMode.Merge,
                 dataAnnotations,
                 JIPipeDataAnnotationMergeMode.Merge,
+                createNewContext(),
                 progressInfo);
         return dummy;
     }

@@ -204,8 +204,8 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
      * @param slotName The slot name
      * @return Input data with provided name
      */
-    public List<JIPipeDataItemStore> getVirtualInputData(String slotName) {
-        return getVirtualInputData(node.getInputSlot(slotName));
+    public List<JIPipeDataItemStore> getInputDataStore(String slotName) {
+        return getInputDataStore(node.getInputSlot(slotName));
     }
 
     /**
@@ -235,7 +235,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
      * @param slot The slot
      * @return Input data with provided name
      */
-    public List<JIPipeDataItemStore> getVirtualInputData(JIPipeDataSlot slot) {
+    public List<JIPipeDataItemStore> getInputDataStore(JIPipeDataSlot slot) {
         if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
@@ -322,7 +322,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
      * @return the new context
      */
     public JIPipeDataContext createNewContext() {
-        JIPipeMutableDataContext context = new JIPipeMutableDataContext();
+        JIPipeMutableDataContext context = new JIPipeMutableDataContext(node.getUUIDInParentGraph().toString());
         for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
             for (Integer row : entry.getValue()) {
                 JIPipeDataContext predecessorContext = entry.getKey().getDataContext(row);
@@ -466,6 +466,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
                 JIPipeTextAnnotationMergeMode.Merge,
                 new ArrayList<>(mergedDataAnnotations.values()),
                 JIPipeDataAnnotationMergeMode.Merge,
+                createNewContext(),
                 progressInfo);
     }
 
@@ -487,6 +488,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
                 JIPipeTextAnnotationMergeMode.Merge,
                 new ArrayList<>(mergedDataAnnotations.values()),
                 JIPipeDataAnnotationMergeMode.Merge,
+                createNewContext(),
                 progressInfo);
     }
 
@@ -663,7 +665,13 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
         ArrayList<JIPipeTextAnnotation> annotations = new ArrayList<>(getMergedTextAnnotations().values());
         List<JIPipeDataAnnotation> finalDataAnnotations = new ArrayList<>(mergedDataAnnotations.values());
         for (int row : getInputRows(sourceSlot.getName())) {
-            dummy.addData(sourceSlot.getDataItemStore(row), annotations, JIPipeTextAnnotationMergeMode.Merge, finalDataAnnotations, JIPipeDataAnnotationMergeMode.Merge, progressInfo);
+            dummy.addData(sourceSlot.getDataItemStore(row),
+                    annotations,
+                    JIPipeTextAnnotationMergeMode.Merge,
+                    finalDataAnnotations,
+                    JIPipeDataAnnotationMergeMode.Merge,
+                    sourceSlot.getDataContext(row),
+                    progressInfo);
         }
         return dummy;
     }

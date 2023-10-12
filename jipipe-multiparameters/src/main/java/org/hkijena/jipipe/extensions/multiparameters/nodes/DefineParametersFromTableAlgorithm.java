@@ -3,6 +3,8 @@ package org.hkijena.jipipe.extensions.multiparameters.nodes;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
@@ -74,7 +76,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
             for (Map.Entry<String, List<Object>> entry : valueMap.entrySet()) {
                 data.getParameterData().put(entry.getKey(), entry.getValue().get(row));
             }
-            getFirstOutputSlot().addData(data, progressInfo);
+            getFirstOutputSlot().addData(data, JIPipeDataContext.create(this), progressInfo);
         }
     }
 

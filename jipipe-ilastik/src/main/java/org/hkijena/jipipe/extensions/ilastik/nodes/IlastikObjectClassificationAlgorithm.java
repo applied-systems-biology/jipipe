@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
@@ -150,10 +151,12 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
 
         // Export the projects
         List<Path> exportedModelPaths = new ArrayList<>();
+        List<JIPipeDataContext> exportedModelContexts = new ArrayList<>();
         for (int i = 0; i < projectInputSlot.getRowCount(); i++) {
             JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting project", i, projectInputSlot.getRowCount());
             IlastikModelData project = projectInputSlot.getData(i, IlastikModelData.class, exportProgress);
             Path exportedPath = workDirectory.resolve("project_" + i + ".ilp");
+
             try {
                 Files.write(exportedPath, project.getData(), StandardOpenOption.CREATE);
             } catch (IOException e) {
@@ -175,31 +178,37 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                     }
                 }
             }
+
             exportedModelPaths.add(exportedPath);
+            exportedModelContexts.add(projectInputSlot.getDataContext(i));
         }
 
         // Export images
         List<Path> exportedImagePaths = new ArrayList<>();
+        List<JIPipeDataContext> exportedImageContexts = new ArrayList<>();
         for (int i = 0; i < imageInputSlot.getRowCount(); i++) {
             JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting input image", i, imageInputSlot.getRowCount());
             ImagePlusData imagePlusData = imageInputSlot.getData(i, ImagePlusData.class, exportProgress);
             DefaultDataset dataset = new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus(ImageJFunctions.wrap(imagePlusData.getImage())));
+
             Path exportedPath = workDirectory.resolve("img_" + i + ".h5");
             Hdf5.writeDataset(exportedPath.toFile(), "data", (ImgPlus) dataset.getImgPlus(), 1, DEFAULT_AXES, value -> {
             });
+
             exportedImagePaths.add(exportedPath);
+            exportedImageContexts.add(imageInputSlot.getDataContext(i));
         }
 
 
         // Run analysis
-        for (int i = 0; i < exportedModelPaths.size(); i++) {
-            Path modelPath = exportedModelPaths.get(i);
-            Path modelResultPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "project_" + i);
-            JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Project", i, exportedModelPaths.size());
+        for (int modelIndex = 0; modelIndex < exportedModelPaths.size(); modelIndex++) {
+            Path modelPath = exportedModelPaths.get(modelIndex);
+            Path modelResultPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "project_" + modelIndex);
+            JIPipeProgressInfo modelProgress = progressInfo.resolveAndLog("Project", modelIndex, exportedModelPaths.size());
 
-            for (int j = 0; j < exportSources.size(); j++) {
-                String exportSource = exportSources.get(j);
-                JIPipeProgressInfo exportSourceProgress = modelProgress.resolveAndLog(exportSource, j, exportSources.size());
+            for (int exportSourceIndex = 0; exportSourceIndex < exportSources.size(); exportSourceIndex++) {
+                String exportSource = exportSources.get(exportSourceIndex);
+                JIPipeProgressInfo exportSourceProgress = modelProgress.resolveAndLog(exportSource, exportSourceIndex, exportSources.size());
                 List<String> args = new ArrayList<>();
                 String axes = reversed(DEFAULT_STRING_AXES);
                 args.add("--headless");
@@ -210,7 +219,7 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                 args.add("--output_filename_format=" + modelResultPath + "/{result_type}__{nickname}.tiff");
                 args.add("--output_axis_order=" + axes);
                 args.add("--input_axes=" + axes);
-                if(i == 0 && outputParameters.outputFeatures) {
+                if(modelIndex == 0 && outputParameters.outputFeatures) {
                     // Special handling for the features table
                     args.add("--table_filename=" + modelResultPath + "/features__{nickname}.csv");
                 }
@@ -223,12 +232,13 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                         false);
 
                 // Extract results
-                for (int k = 0; k < exportedImagePaths.size(); k++) {
-                    Path inputImagePath = exportedImagePaths.get(k);
-                    List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(imageInputSlot.getTextAnnotations(k));
-                    textAnnotations.addAll(projectInputSlot.getTextAnnotations(i));
-                    List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>(imageInputSlot.getDataAnnotations(k));
-                    dataAnnotations.addAll(projectInputSlot.getDataAnnotations(i));
+                for (int imageIndex = 0; imageIndex < exportedImagePaths.size(); imageIndex++) {
+                    Path inputImagePath = exportedImagePaths.get(imageIndex);
+                    List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(imageInputSlot.getTextAnnotations(imageIndex));
+                    textAnnotations.addAll(projectInputSlot.getTextAnnotations(modelIndex));
+                    List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>(imageInputSlot.getDataAnnotations(imageIndex));
+                    dataAnnotations.addAll(projectInputSlot.getDataAnnotations(modelIndex));
+                    JIPipeDataContext newContext = JIPipeDataContext.create(this, exportedImageContexts.get(imageIndex), exportedModelContexts.get(modelIndex));
 
                     JIPipeDataSlot outputImageSlot = getOutputSlot(exportSource);
                     if(outputImageSlot != null) {
@@ -239,15 +249,27 @@ public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationA
                         ImagePlus imagePlus = ImageJFunctions.wrap(dataset, exportSource);
                         ImageJUtils.calibrate(imagePlus, ImageJCalibrationMode.MinMax, 0, 0);
 
-                        outputImageSlot.addData(new ImagePlusData(imagePlus), textAnnotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, exportSourceProgress);
+                        outputImageSlot.addData(new ImagePlusData(imagePlus),
+                                textAnnotations,
+                                JIPipeTextAnnotationMergeMode.Merge,
+                                dataAnnotations,
+                                JIPipeDataAnnotationMergeMode.Merge,
+                                newContext,
+                                exportSourceProgress);
                     }
 
                     // Extract features
-                    if(i == 0 && outputParameters.outputFeatures) {
+                    if(modelIndex == 0 && outputParameters.outputFeatures) {
                         Path tablePath = modelResultPath.resolve("features__" + inputImagePath.getFileName().toString() + ".csv");
                         exportSourceProgress.log("Extracting result: " + tablePath);
                         ResultsTableData tableData = ResultsTableData.fromCSV(tablePath);
-                        getOutputSlot(OUTPUT_SLOT_FEATURES.getName()).addData(tableData, textAnnotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, exportSourceProgress);
+                        getOutputSlot(OUTPUT_SLOT_FEATURES.getName()).addData(tableData,
+                                textAnnotations,
+                                JIPipeTextAnnotationMergeMode.Merge,
+                                dataAnnotations,
+                                JIPipeDataAnnotationMergeMode.Merge,
+                                newContext,
+                                exportSourceProgress);
                     }
                 }
             }

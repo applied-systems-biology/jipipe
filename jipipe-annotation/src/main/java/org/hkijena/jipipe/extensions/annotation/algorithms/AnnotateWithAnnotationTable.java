@@ -6,6 +6,7 @@ import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
@@ -171,7 +172,13 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
                 }
 
                 // Add data to output
-                getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class, progressInfo), new ArrayList<>(annotationMap.values()), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                getFirstOutputSlot().addData(dataInputSlot.getData(row, JIPipeData.class, progressInfo),
+                        new ArrayList<>(annotationMap.values()),
+                        JIPipeTextAnnotationMergeMode.Merge,
+                        dataInputSlot.getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeMode.Merge,
+                        dataInputSlot.getDataContext(row).branch(this),
+                        progressInfo);
             }
         }
     }

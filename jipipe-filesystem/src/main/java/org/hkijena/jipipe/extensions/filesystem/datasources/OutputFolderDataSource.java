@@ -3,6 +3,8 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -29,6 +31,6 @@ public class OutputFolderDataSource extends JIPipeAlgorithm {
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
         Path storagePath = getFirstOutputSlot().getSlotStoragePath().getParent().getParent().getParent();
-        getFirstOutputSlot().addData(new PathData(storagePath), progressInfo);
+        getFirstOutputSlot().addData(new PathData(storagePath), JIPipeDataContext.create(this), progressInfo);
     }
 }

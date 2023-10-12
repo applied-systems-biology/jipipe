@@ -20,6 +20,7 @@ import omero.gateway.model.GroupData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
@@ -71,7 +72,7 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
                 variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, groupData));
                 variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, groupData)));
                 if(filters.test(variables)) {
-                    getFirstOutputSlot().addData(new OMEROGroupReferenceData(groupData.getId()), progressInfo);
+                    getFirstOutputSlot().addData(new OMEROGroupReferenceData(groupData.getId()), JIPipeDataContext.create(this), progressInfo);
                 }
             }
         } catch (Exception e) {

@@ -17,8 +17,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -102,9 +105,13 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
 
         List<PyDictionary> rows = new ArrayList<>();
+        List<JIPipeDataContext> contexts = new ArrayList<>();
+        List<List<JIPipeDataAnnotation>> dataAnnotations = new ArrayList<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             PyDictionary rowDictionary = new PyDictionary();
             ResultsTableData tableData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
+            contexts.add(getFirstInputSlot().getDataContext(row));
+            dataAnnotations.add(getFirstInputSlot().getDataAnnotations(row));
 
             rowDictionary.put("data", tableData.toPython());
             rowDictionary.put("nrow", tableData.getRowCount());
@@ -117,10 +124,11 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
         pythonInterpreter.exec(code.getCode(getProjectDirectory()));
         rows = (List<PyDictionary>) pythonInterpreter.get("tables").__tojava__(List.class);
 
-        for (PyDictionary row : rows) {
-            ResultsTableData data = ResultsTableData.fromPython((PyDictionary) row.get("data"));
-            List<JIPipeTextAnnotation> annotations = JIPipeTextAnnotation.extractAnnotationsFromPython((PyDictionary) row.getOrDefault("annotations", new PyDictionary()));
-            getFirstOutputSlot().addData(data, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+        for (int i = 0; i < rows.size(); i++) {
+            PyDictionary pyDictionary = rows.get(i);
+            ResultsTableData data = ResultsTableData.fromPython((PyDictionary) pyDictionary.get("data"));
+            List<JIPipeTextAnnotation> annotations = JIPipeTextAnnotation.extractAnnotationsFromPython((PyDictionary) pyDictionary.getOrDefault("annotations", new PyDictionary()));
+            getFirstOutputSlot().addData(data, annotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations.get(i), JIPipeDataAnnotationMergeMode.Merge, contexts.get(i).branch(this), progressInfo);
         }
 
         this.pythonInterpreter = null;

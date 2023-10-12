@@ -46,6 +46,7 @@ public class DataSlicer extends JIPipeParameterSlotAlgorithm {
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        getFirstInputSlot().getDataContext(row).branch(this),
                         progressInfo);
             }
         }

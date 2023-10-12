@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.APIErrorValidationReportContext;
@@ -215,6 +216,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         dataTable.getDataAnnotations(row),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        new JIPipeMutableDataContext(),
                         new JIPipeProgressInfo());
             }
         }

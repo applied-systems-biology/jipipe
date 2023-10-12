@@ -84,7 +84,7 @@ public class OMEROListImagesAlgorithm extends JIPipeSingleIterationAlgorithm {
                         variables.put("kv_pairs", OMEROUtils.getKeyValuePairs(gateway.getMetadataFacility(), context, imageData));
                         variables.put("tags", new ArrayList<>(OMEROUtils.getTags(gateway.getMetadataFacility(), context, imageData)));
                         if(filters.test(variables)) {
-                            getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment),rowProgress);
+                            getFirstOutputSlot().addData(new OMEROImageReferenceData(imageData, environment), getFirstInputSlot().getDataContext(row).branch(this),rowProgress);
                         }
                     }
                 }

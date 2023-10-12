@@ -35,6 +35,7 @@ public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     getFirstInputSlot().getDataAnnotations(row),
                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    getFirstInputSlot().getDataContext(row).branch(this),
                     progressInfo);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataTable, progressInfo);

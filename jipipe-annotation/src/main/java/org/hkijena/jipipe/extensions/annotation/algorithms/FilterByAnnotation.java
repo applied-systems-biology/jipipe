@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.annotation.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -82,7 +83,13 @@ public class FilterByAnnotation extends JIPipeAlgorithm {
             ExpressionVariables variables = new ExpressionVariables();
             customVariables.writeToVariables(variables, true, "custom.", true, "custom");
             if (expression.test(annotations, dataString, variables)) {
-                getFirstOutputSlot().addData(inputSlot.getData(row, JIPipeData.class, progressInfo), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                getFirstOutputSlot().addData(inputSlot.getData(row, JIPipeData.class, progressInfo),
+                        annotations,
+                        JIPipeTextAnnotationMergeMode.Merge,
+                        inputSlot.getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeMode.Merge,
+                        inputSlot.getDataContext(row).branch(this),
+                        progressInfo);
             }
         }
     }

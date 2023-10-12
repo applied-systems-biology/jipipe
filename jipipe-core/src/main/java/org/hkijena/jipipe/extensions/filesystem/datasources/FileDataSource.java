@@ -16,6 +16,8 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -73,7 +75,7 @@ public class FileDataSource extends JIPipeAlgorithm {
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(new FileData(fileName), progressInfo);
+        getFirstOutputSlot().addData(new FileData(fileName), JIPipeDataContext.create(this), progressInfo);
     }
 
     /**

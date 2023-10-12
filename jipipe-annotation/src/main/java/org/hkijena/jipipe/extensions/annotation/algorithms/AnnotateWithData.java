@@ -66,6 +66,7 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
                 annotationMergeStrategy,
                 dataAnnotationList,
                 dataAnnotationMergeMode,
+                dataBatch.createNewContext(),
                 progressInfo);
     }
 

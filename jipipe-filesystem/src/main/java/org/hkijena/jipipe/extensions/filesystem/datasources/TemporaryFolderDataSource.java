@@ -4,6 +4,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
@@ -37,7 +39,7 @@ public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        getFirstOutputSlot().addData(new FileData(isUseScratchDirectory() ? getNewScratch() : RuntimeSettings.generateTempDirectory(getBaseName())), progressInfo);
+        getFirstOutputSlot().addData(new FileData(isUseScratchDirectory() ? getNewScratch() : RuntimeSettings.generateTempDirectory(getBaseName())), JIPipeDataContext.create(this), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Base name", description = "Optional string that will be put into the directory name.")

@@ -17,6 +17,8 @@ import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -80,7 +82,7 @@ public class FolderListDataSource extends JIPipeAlgorithm {
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
         for (Path folderPath : folderPaths) {
-            getFirstOutputSlot().addData(new FolderData(folderPath), progressInfo);
+            getFirstOutputSlot().addData(new FolderData(folderPath), JIPipeDataContext.create(this), progressInfo);
         }
     }
 

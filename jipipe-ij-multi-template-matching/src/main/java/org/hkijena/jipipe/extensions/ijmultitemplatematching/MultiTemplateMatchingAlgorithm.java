@@ -200,7 +200,9 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
                             textAnnotations,
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             dataAnnotations,
-                            JIPipeDataAnnotationMergeMode.OverwriteExisting, progressInfo);
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                            dataBatch.createNewContext(),
+                            progressInfo);
                 }
 
                 dataBatch.addOutputData("Matched templates", matchedTemplates, progressInfo);

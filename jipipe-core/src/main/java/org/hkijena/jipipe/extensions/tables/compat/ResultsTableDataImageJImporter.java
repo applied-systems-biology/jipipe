@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -22,7 +23,7 @@ public class ResultsTableDataImageJImporter implements ImageJDataImporter {
         JIPipeDataTable dataTable = new JIPipeDataTable(ResultsTableData.class);
         if (objects != null && !objects.isEmpty()) {
             for (Object object : objects) {
-                dataTable.addData(new ResultsTableData((ResultsTable) object), new JIPipeProgressInfo());
+                dataTable.addData(new ResultsTableData((ResultsTable) object), new JIPipeMutableDataContext(), new JIPipeProgressInfo());
             }
         } else {
             String tableName = StringUtils.orElse(parameters.getName(), "Results");
@@ -35,7 +36,7 @@ public class ResultsTableDataImageJImporter implements ImageJDataImporter {
                     resultsTable = ((TextWindow) frame).getResultsTable();
                 }
             }
-            dataTable.addData(new ResultsTableData((ResultsTable) resultsTable.clone()), new JIPipeProgressInfo());
+            dataTable.addData(new ResultsTableData((ResultsTable) resultsTable.clone()), new JIPipeMutableDataContext(), new JIPipeProgressInfo());
         }
         return dataTable;
     }

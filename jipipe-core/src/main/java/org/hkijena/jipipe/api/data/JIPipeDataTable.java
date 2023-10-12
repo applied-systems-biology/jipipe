@@ -888,7 +888,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param value        The data
      * @param annotations  Optional annotations
      * @param progressInfo progress for data storage
+     * @deprecated use the overload with the context
      */
+    @Deprecated
     public synchronized void addData(JIPipeData value, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
         addData(value, annotations, mergeStrategy, null, progressInfo);
     }
@@ -939,9 +941,21 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      *
      * @param value        Data
      * @param progressInfo progress for data storage
+     * @deprecated use the overload with the context
      */
+    @Deprecated
     public synchronized void addData(JIPipeData value, JIPipeProgressInfo progressInfo) {
         addData(value, Collections.emptyList(), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+    }
+
+    /**
+     * Adds a data row
+     *
+     * @param value        Data
+     * @param progressInfo progress for data storage
+     */
+    public synchronized void addData(JIPipeData value, JIPipeDataContext context, JIPipeProgressInfo progressInfo) {
+        addData(value, Collections.emptyList(), JIPipeTextAnnotationMergeMode.Merge, context, progressInfo);
     }
 
     /**
@@ -1159,7 +1173,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
      * @param progressInfo the progress info
+     * @deprecated use the overload with the context
      */
+    @Deprecated
     public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy, JIPipeProgressInfo progressInfo) {
         addData(virtualData, annotations, mergeStrategy, null, progressInfo);
     }
@@ -1318,7 +1334,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
      * @param progressInfo  the progress info
+     * @deprecated use the overload with the context
      */
+    @Deprecated
     public void addData(JIPipeDataItemStore virtualData, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
                         List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         addData(virtualData, annotations, mergeStrategy, dataAnnotations, dataAnnotationMergeStrategy, null, progressInfo);
@@ -1360,7 +1378,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param annotations   the annotations
      * @param mergeStrategy merge strategy
      * @param progressInfo the progress info
+     * @deprecated use the overload with the context
      */
+    @Deprecated
     public void addData(JIPipeData data, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
                         List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         addData(data, annotations, mergeStrategy, dataAnnotations, dataAnnotationMergeStrategy, null, progressInfo);

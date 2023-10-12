@@ -48,6 +48,7 @@ public class DataBatchSlicer extends JIPipeMergingAlgorithm {
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        getFirstInputSlot().getDataContext(row).branch(this),
                         progressInfo);
             }
         }

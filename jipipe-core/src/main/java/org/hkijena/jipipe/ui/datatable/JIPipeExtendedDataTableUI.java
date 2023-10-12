@@ -393,6 +393,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             dataTable.getDataAnnotations(modelRow),
                             JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                            dataTable.getDataContext(modelRow),
                             new JIPipeProgressInfo());
                 }
             }

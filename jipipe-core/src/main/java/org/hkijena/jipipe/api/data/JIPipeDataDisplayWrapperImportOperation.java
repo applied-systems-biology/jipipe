@@ -102,7 +102,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
         @Override
         public void run() {
             JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), dataType, progressInfo);
-            outputTable.addData(data, metadataRow.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            outputTable.addData(data, metadataRow.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, metadataRow.getDataContext(), progressInfo);
         }
 
         public JIPipeDataTable getOutputTable() {

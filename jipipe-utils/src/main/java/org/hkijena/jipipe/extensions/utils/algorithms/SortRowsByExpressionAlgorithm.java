@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.utils.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -103,7 +104,13 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
             annotations.clear();
             annotations.addAll(getFirstInputSlot().getTextAnnotations(row));
             annotations.addAll(parameterAnnotations);
-            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class, progressInfo), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class, progressInfo),
+                    annotations,
+                    JIPipeTextAnnotationMergeMode.Merge,
+                    getFirstInputSlot().getDataAnnotations(row),
+                    JIPipeDataAnnotationMergeMode.Merge,
+                    getFirstInputSlot().getDataContext(row).branch(this),
+                    progressInfo);
         }
     }
 

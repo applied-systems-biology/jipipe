@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
@@ -114,7 +115,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
             List<JIPipeTextAnnotation> annotationList = row.getTextAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
             JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, storageFolder), trueDataType.getDataClass(), progressInfo);
-            tempSlot.addData(data, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, slotProgressInfo);
+            tempSlot.addData(data, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting,  row.getDataContext(), slotProgressInfo);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 try {

@@ -66,6 +66,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                        getFirstInputSlot().getDataContext(row).branch(this),
                         progressInfo);
             }
             --available;

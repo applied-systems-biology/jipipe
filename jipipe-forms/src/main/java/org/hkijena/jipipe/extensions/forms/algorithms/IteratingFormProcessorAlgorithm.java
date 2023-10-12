@@ -241,6 +241,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                                     inputSlot.getDataAnnotations(row),
                                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                                    inputSlot.getDataContext(row).branch(this),
                                     progressInfo);
                         }
                     }
@@ -253,6 +254,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             forms.getDataAnnotations(row),
                             JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                            forms.getDataContext(row).branch(this),
                             progressInfo);
                 }
             }

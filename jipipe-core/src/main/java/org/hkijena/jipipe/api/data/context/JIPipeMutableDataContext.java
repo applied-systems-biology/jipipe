@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.data.context;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import java.util.HashSet;
 import java.util.Objects;
@@ -9,11 +10,31 @@ import java.util.Set;
 import java.util.UUID;
 
 public class JIPipeMutableDataContext implements JIPipeDataContext {
+    private String source;
     private String id;
     private Set<String> predecessors = new HashSet<>();
 
     public JIPipeMutableDataContext() {
-        this.id = "/" + UUID.randomUUID();
+        this.id = "local://" + UUID.randomUUID();
+    }
+    public JIPipeMutableDataContext(String source) {
+        this.source = source;
+        this.id = "local://" + UUID.randomUUID();
+    }
+
+    public JIPipeMutableDataContext(JIPipeGraphNode source) {
+        this(source.getUUIDInParentGraph().toString());
+    }
+
+    @JsonGetter("source")
+    @Override
+    public String getSource() {
+        return source;
+    }
+
+    @JsonSetter("source")
+    public void setSource(String source) {
+        this.source = source;
     }
 
     @Override

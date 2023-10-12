@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
@@ -153,6 +154,7 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
 
         // Export the projects
         List<Path> exportedModelPaths = new ArrayList<>();
+        List<JIPipeDataContext> exportedModelContexts = new ArrayList<>();
         for (int i = 0; i < projectInputSlot.getRowCount(); i++) {
             JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting project", i, projectInputSlot.getRowCount());
             IlastikModelData project = projectInputSlot.getData(i, IlastikModelData.class, exportProgress);
@@ -178,12 +180,15 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
                     }
                 }
             }
+
             exportedModelPaths.add(exportedPath);
+            exportedModelContexts.add(projectInputSlot.getDataContext(i));
         }
 
         // Export images
         List<Path> exportedImagePaths = new ArrayList<>();
         List<Path> exportedSegmentationImagePaths = new ArrayList<>();
+        List<JIPipeDataContext> exportedImageContexts = new ArrayList<>();
         for (int i = 0; i < imageInputSlot.getRowCount(); i++) {
             {
                 JIPipeProgressInfo exportProgress = progressInfo.resolveAndLog("Exporting input image", i, imageInputSlot.getRowCount());
@@ -192,7 +197,9 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
                 Path exportedPath = workDirectory.resolve("img_" + i + ".h5");
                 Hdf5.writeDataset(exportedPath.toFile(), "data", (ImgPlus) dataset.getImgPlus(), 1, DEFAULT_AXES, value -> {
                 });
+
                 exportedImagePaths.add(exportedPath);
+                exportedImageContexts.add(imageInputSlot.getDataContext(i));
             }
             {
                 JIPipeDataAnnotation dataAnnotation = segmentationImageDataAnnotation.queryFirst(imageInputSlot.getDataAnnotations(i));
@@ -253,6 +260,7 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
                     textAnnotations.addAll(projectInputSlot.getTextAnnotations(modelIndex));
                     List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>(imageInputSlot.getDataAnnotations(imageIndex));
                     dataAnnotations.addAll(projectInputSlot.getDataAnnotations(modelIndex));
+                    JIPipeDataContext newContext = JIPipeDataContext.create(this, exportedModelContexts.get(modelIndex), exportedImageContexts.get(imageIndex));
 
                     JIPipeDataSlot outputImageSlot = getOutputSlot(exportSource);
                     if (outputImageSlot != null) {
@@ -263,7 +271,13 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
                         ImagePlus imagePlus = ImageJFunctions.wrap(dataset, exportSource);
                         ImageJUtils.calibrate(imagePlus, ImageJCalibrationMode.MinMax, 0, 0);
 
-                        outputImageSlot.addData(new ImagePlusData(imagePlus), textAnnotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, imageProgress);
+                        outputImageSlot.addData(new ImagePlusData(imagePlus),
+                                textAnnotations,
+                                JIPipeTextAnnotationMergeMode.Merge,
+                                dataAnnotations,
+                                JIPipeDataAnnotationMergeMode.Merge,
+                                newContext,
+                                imageProgress);
                     }
 
                     // Extract features
@@ -271,7 +285,13 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
                         Path tablePath = modelResultPath.resolve("features__" + inputImagePath.getFileName().toString() + ".csv");
                         imageProgress.log("Extracting result: " + tablePath);
                         ResultsTableData tableData = ResultsTableData.fromCSV(tablePath);
-                        getOutputSlot(OUTPUT_SLOT_FEATURES.getName()).addData(tableData, textAnnotations, JIPipeTextAnnotationMergeMode.Merge, dataAnnotations, JIPipeDataAnnotationMergeMode.Merge, imageProgress);
+                        getOutputSlot(OUTPUT_SLOT_FEATURES.getName()).addData(tableData,
+                                textAnnotations,
+                                JIPipeTextAnnotationMergeMode.Merge,
+                                dataAnnotations,
+                                JIPipeDataAnnotationMergeMode.Merge,
+                                newContext,
+                                imageProgress);
                     }
                 }
             }

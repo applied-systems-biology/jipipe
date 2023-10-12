@@ -61,6 +61,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     getFirstInputSlot().getDataAnnotations(row),
                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
+                    dataBatch.createNewContext(),
                     progressInfo);
         }
         exporterType.getInstance().exportData(dataTable, exportParameters, progressInfo);

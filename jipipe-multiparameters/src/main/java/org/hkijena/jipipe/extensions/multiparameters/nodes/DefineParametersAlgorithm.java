@@ -16,6 +16,8 @@ package org.hkijena.jipipe.extensions.multiparameters.nodes;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -69,7 +71,7 @@ public class DefineParametersAlgorithm extends JIPipeAlgorithm {
         for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
             result.getParameterData().put(entry.getKey(), entry.getValue().get(Object.class));
         }
-        getFirstOutputSlot().addData(result, progressInfo);
+        getFirstOutputSlot().addData(result, JIPipeDataContext.create(this), progressInfo);
     }
 
     @Override

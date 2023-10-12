@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -63,7 +65,7 @@ public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
                 ParameterTable.ParameterColumn column = parameterTable.getColumn(col);
                 data.getParameterData().put(column.getKey(), parameterTable.getValueAt(row, col));
             }
-            outputSlot.addData(data, progressInfo);
+            outputSlot.addData(data, JIPipeDataContext.create(this), progressInfo);
         }
     }
 

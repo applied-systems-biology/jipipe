@@ -49,7 +49,10 @@ public enum JIPipeDataAnnotationMergeMode {
                 } else {
                     JIPipeDataTable mergedDataAnnotationsData = new JIPipeDataTable(JIPipeData.class);
                     for (JIPipeDataAnnotation value : values) {
-                        mergedDataAnnotationsData.addData(value.getVirtualData(), Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting, new JIPipeProgressInfo());
+                        mergedDataAnnotationsData.addData(value.getVirtualData(),
+                                Collections.emptyList(),
+                                JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                                new JIPipeProgressInfo());
                     }
                     result.add(new JIPipeDataAnnotation(name, mergedDataAnnotationsData));
                 }
