@@ -45,6 +45,8 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
     private final MessagePanel messagePanel = new MessagePanel();
     private Map<Integer, Map<String, Map<String, JIPipeDataTable>>> resultMap = Collections.emptyMap();
 
+    private JScrollPane scrollPane;
+
     public DataTracerUI(JIPipeProjectWorkbench workbench, JIPipeGraphNode targetNode, String targetSlotName, UUID targetNodeUUID, JIPipeDataTable targetTable, int targetTableRow) {
         super(workbench);
         this.targetNode = targetNode;
@@ -77,7 +79,7 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
         initializeToolbar(toolBar);
 
         contentPanel.setLayout(new GridBagLayout());
-        JScrollPane scrollPane = new JScrollPane(contentPanel);
+        scrollPane = new JScrollPane(contentPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(10);
         add(scrollPane, BorderLayout.CENTER);
     }
@@ -97,6 +99,7 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
         contentPanel.removeAll();
         List<Integer> levels = resultMap.keySet().stream().sorted().collect(Collectors.toList());
         int numRows = 0;
+        JPanel level0Panel = null;
         for (int i = 0; i < levels.size(); i++) {
             int level = levels.get(i);
             if(i != 0) {
@@ -117,7 +120,12 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
             Map<String, Map<String, JIPipeDataTable>> nodes = resultMap.get(level);
             JPanel levelPanel = new JPanel();
 
+            if(level == 0) {
+                level0Panel = levelPanel;
+            }
+
 //            int tableCount = 0;
+
             for (Map.Entry<String, Map<String, JIPipeDataTable>> nodeEntry : nodes.entrySet()) {
                 String nodeUUID = nodeEntry.getKey();
                 for (Map.Entry<String, JIPipeDataTable> outputSlotEntry : nodeEntry.getValue().entrySet()) {
@@ -163,6 +171,13 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
                     "The trace function cannot follow data if predecessors are missing. Use 'Cache intermediate results' instead of 'Update cache'.",
                     true,
                     true);
+        }
+
+        if(level0Panel != null) {
+            JPanel finalLevel0Panel = level0Panel;
+            SwingUtilities.invokeLater(() -> {
+                scrollPane.getVerticalScrollBar().setValue(finalLevel0Panel.getY());
+            });
         }
     }
 

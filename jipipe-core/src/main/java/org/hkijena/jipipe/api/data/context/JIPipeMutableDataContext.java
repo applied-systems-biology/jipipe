@@ -23,7 +23,7 @@ public class JIPipeMutableDataContext implements JIPipeDataContext {
     }
 
     public JIPipeMutableDataContext(JIPipeGraphNode source) {
-        this(source.getUUIDInParentGraph().toString());
+        this(source.getUUIDInParentGraph() != null ? source.getUUIDInParentGraph().toString() : null);
     }
 
     @JsonGetter("source")

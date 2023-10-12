@@ -322,7 +322,13 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
      * @return the new context
      */
     public JIPipeDataContext createNewContext() {
-        JIPipeMutableDataContext context = new JIPipeMutableDataContext(node.getUUIDInParentGraph().toString());
+        JIPipeMutableDataContext context;
+        if(node != null) {
+            context = new JIPipeMutableDataContext(node);
+        }
+        else {
+            context = new JIPipeMutableDataContext();
+        }
         for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
             for (Integer row : entry.getValue()) {
                 JIPipeDataContext predecessorContext = entry.getKey().getDataContext(row);
