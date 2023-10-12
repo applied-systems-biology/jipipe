@@ -225,6 +225,8 @@ public class DataBatchAssistantTableModel implements TableModel {
     }
 
     public void updateRenderedPreviews() {
+        if(scrollPane == null)
+            return;
         JViewport viewport = scrollPane.getViewport();
         for (int row = 0; row < previewCache.size(); row++) {
             Component component = previewCache.get(row);
