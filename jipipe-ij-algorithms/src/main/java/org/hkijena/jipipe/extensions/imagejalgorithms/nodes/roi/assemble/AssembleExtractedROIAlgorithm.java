@@ -94,11 +94,11 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
                 Rectangle bounds = xyAnchor.getRectangle(new Point(x, y), roiImage.getImage().getWidth(), roiImage.getImage().getHeight());
                 ImageProcessor roiProcessor = convertedRoiImage.getProcessor();
                 ImageJUtils.forEachIndexedZCTSlice(targetImage.getImage(), (processor, index) -> {
-                    if (finalZ != 0 && finalZ != index.getZ())
+                    if (finalZ != 0 && finalZ != (index.getZ() + 1))
                         return;
-                    if (finalC != 0 && finalC != index.getC())
+                    if (finalC != 0 && finalC != (index.getC() + 1))
                         return;
-                    if (finalT != 0 && finalT != index.getT())
+                    if (finalT != 0 && finalT != (index.getT() + 1))
                         return;
                     processor.setColor(Color.WHITE);
                     processor.setRoi(bounds);
