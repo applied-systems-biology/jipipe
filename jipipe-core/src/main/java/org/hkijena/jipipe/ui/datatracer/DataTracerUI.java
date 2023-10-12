@@ -158,7 +158,7 @@ public class DataTracerUI extends JIPipeProjectWorkbenchPanel implements JIPipeR
                 0));
 
         messagePanel.clear();
-        if(numRows <= 1) {
+        if(numRows <= 1 && !targetNode.getInputSlots().isEmpty()) {
             messagePanel.addMessage(MessagePanel.MessageType.InfoLight,
                     "The trace function cannot follow data if predecessors are missing. Use 'Cache intermediate results' instead of 'Update cache'.",
                     true,
