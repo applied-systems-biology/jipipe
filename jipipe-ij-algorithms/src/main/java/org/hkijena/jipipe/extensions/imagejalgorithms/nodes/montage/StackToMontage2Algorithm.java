@@ -43,8 +43,7 @@ import java.util.List;
 /**
  * Implementation of {@link ij.plugin.MontageMaker}
  */
-@JIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage. " +
-        "Please note that additional variables are available in the label generation expressions (see parameter 'Limit to slices' for a list)")
+@JIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage. ")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)

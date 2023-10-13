@@ -10,15 +10,13 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.ScaleMode;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.TransformScale2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -29,10 +27,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -86,11 +82,39 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             String autoName = inputEntry.annotationList.stream().sorted(Comparator.comparing(JIPipeTextAnnotation::getName))
                     .map(JIPipeTextAnnotation::getValue).collect(Collectors.joining("_"));
             variables.set("default_label", autoName);
+            Map<ImageSliceIndex, String> labels = new HashMap<>();
 
-            String label = StringUtils.nullToEmpty(labelExpression.evaluateToString(variables));
-            String sortLabel = getSortingLabelExpression().isEnabled() ? StringUtils.nullToEmpty(getSortingLabelExpression().getContent().evaluateToString(variables)) : label;
+            ImagePlus img = inputEntry.getImagePlus();
+            variables.putIfAbsent("width", img.getWidth());
+            variables.putIfAbsent("height", img.getHeight());
+            variables.putIfAbsent("size_d", img.getNDimensions());
+            variables.putIfAbsent("size_c", img.getNChannels());
+            variables.putIfAbsent("size_z", img.getNSlices());
+            variables.putIfAbsent("size_t", img.getNFrames());
+            boolean overrideC = !variables.containsKey("c");
+            boolean overrideZ = !variables.containsKey("z");
+            boolean overrideT = !variables.containsKey("t");
+            for (int c = 0; c < img.getNChannels(); c++) {
+                if(overrideC) {
+                    variables.set("c", c);
+                }
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    if(overrideZ) {
+                        variables.set("z", z);
+                    }
+                    for (int t = 0; t < img.getNFrames(); t++) {
+                        if(overrideT) {
+                            variables.set("t", t);
+                        }
+                        labels.put(new ImageSliceIndex(c,z,t), StringUtils.nullToEmpty(labelExpression.evaluateToString(variables)));
+                    }
+                }
+            }
 
-            LabelledImage labelledImage = new LabelledImage(inputEntry.imagePlus, label, sortLabel);
+            String sortLabel = getSortingLabelExpression().isEnabled() ? StringUtils.nullToEmpty(getSortingLabelExpression().getContent().evaluateToString(variables)) :
+                    labels.getOrDefault(new ImageSliceIndex(0,0,0), "");
+
+            LabelledImage labelledImage = new LabelledImage(inputEntry.imagePlus, labels, sortLabel);
             labelledImages.add(labelledImage);
         }
 
@@ -152,9 +176,11 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             for(LabelledImage labelledImage : labelledImages) {
                 maxImageWidth = Math.max(labelledImage.getImagePlus().getWidth(), maxImageWidth);
                 maxImageHeight = Math.max(labelledImage.getImagePlus().getHeight(), maxImageHeight);
-                if(labelParameters.drawLabel && !StringUtils.isNullOrEmpty(labelledImage.label)) {
+                if(labelParameters.drawLabel) {
                     assert labelFontMetrics != null;
-                    maxLabelWidth = Math.max(labelFontMetrics.stringWidth(labelledImage.label), maxLabelWidth);
+                    for (Map.Entry<ImageSliceIndex, String> entry : labelledImage.labels.entrySet()) {
+                        maxLabelWidth = Math.max(labelFontMetrics.stringWidth(entry.getValue()), maxLabelWidth);
+                    }
                 }
             }
             ExpressionVariables variables = new ExpressionVariables();
@@ -223,6 +249,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         }, progressInfo.resolve("Prepare canvas"));
 
         for (int i = 0; i < labelledImages.size(); i++) {
+            LabelledImage labelledImage = labelledImages.get(i);
             JIPipeProgressInfo mergingProgress = progressInfo.resolveAndLog("Merging", i, labelledImages.size());
             int col = i % nColumns;
             int row = i / nColumns;
@@ -259,7 +286,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             }
 
             // Write image
-            ImagePlus rawImage = labelledImages.get(i).getImagePlus();
+            ImagePlus rawImage = labelledImage.getImagePlus();
             ImagePlus processedImage;
             if(imageParameters.avoidScaling && rawImage.getWidth() <= imageWidth && rawImage.getHeight() <= imageHeight) {
                 // No processing needed
@@ -299,13 +326,20 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             }, mergingProgress.resolve("Copy image"));
 
             // Draw label
-            String label = labelledImages.get(i).label;
-            if(labelParameters.drawLabel && !StringUtils.isNullOrEmpty(label) && labelFont != null) {
+            if(labelParameters.drawLabel && labelFont != null) {
                 Rectangle drawArea = new Rectangle(imgX, row * gridHeight + canvasParameters.borderSize, imageWidth, imageHeight + labelBorder);
                 Font lf = labelFont;
+                FontMetrics finalLabelFontMetrics = labelFontMetrics;
                 ImageJUtils.forEachIndexedZCTSlice(processedImage, (sourceIp, index) -> {
                     ImageProcessor targetIp = ImageJUtils.getSliceZero(targetImage, index);
                     targetIp.setRoi((Roi) null);
+                    String label = labelledImage.labels.get(index);
+                    if(labelParameters.limitWithEllipsis) {
+                        label = StringUtils.limitWithEllipsis(label, drawArea.width, finalLabelFontMetrics);
+                    }
+                    else {
+                        label = StringUtils.limitWithoutEllipsis(label, drawArea.width, finalLabelFontMetrics);
+                    }
                     ImageJUtils.drawAnchoredStringLabel(targetIp,
                             label,
                             drawArea,
@@ -349,8 +383,10 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Label", description = "Expression that generates the labels. Applied per image.")
     @JIPipeParameter(value = "label-expression", important = true, uiOrder = -100)
+    @ExpressionParameterSettings(hint = "per image slice")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
+    @ExpressionParameterSettingsVariable(fromClass = Image5DSliceIndexExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getLabelExpression() {
         return labelExpression;
     }
@@ -364,6 +400,8 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("sorting-label-expression")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
+    @ExpressionParameterSettings(hint = "per image")
+    @ExpressionParameterSettingsVariable(fromClass = Image5DSliceIndexExpressionParameterVariableSource.class)
     public OptionalDefaultExpressionParameter getSortingLabelExpression() {
         return sortingLabelExpression;
     }
@@ -692,12 +730,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
 
     public static class LabelledImage {
         private final ImagePlus imagePlus;
-        private final String label;
+        private final Map<ImageSliceIndex, String> labels;
         private final String sortLabel;
 
-        public LabelledImage(ImagePlus imagePlus, String label, String sortLabel) {
+        public LabelledImage(ImagePlus imagePlus, Map<ImageSliceIndex, String> labels, String sortLabel) {
             this.imagePlus = imagePlus;
-            this.label = label;
+            this.labels = labels;
             this.sortLabel = sortLabel;
         }
 
@@ -705,8 +743,8 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
             return imagePlus;
         }
 
-        public String getLabel() {
-            return label;
+        public Map<ImageSliceIndex, String> getLabels() {
+            return labels;
         }
 
         public String getSortLabel() {
