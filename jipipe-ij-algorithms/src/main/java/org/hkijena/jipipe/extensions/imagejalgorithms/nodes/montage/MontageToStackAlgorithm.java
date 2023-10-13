@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
+package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.montage;
 
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DDat
  * Implementation of {@link ij.plugin.MontageMaker}
  */
 @JIPipeDocumentation(name = "Montage to stack", description = "Slices an image montage into a stack.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Montage to Stack...")

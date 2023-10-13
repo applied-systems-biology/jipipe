@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
-import com.google.common.eventbus.EventBus;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
@@ -428,10 +427,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
+        super.onParameterChanged(event);
         if (event.getSource() == slotConfiguration) {
             getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
-        } else if (event.getSource() != this) {
-            getParameterChangedEventEmitter().emit(event);
         }
     }
 
@@ -987,43 +985,6 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         }
 
         return result;
-    }
-
-    /**
-     * Registers a sub-parameter instance to pass {@link JIPipeParameterCollection.ParameterStructureChangedEvent} via this algorithm's {@link EventBus}
-     *
-     * @param subParameter the sub-parameter
-     */
-    public void registerSubParameter(JIPipeParameterCollection subParameter) {
-        subParameter.getParameterChangedEventEmitter().subscribeWeak(this);
-        subParameter.getParameterStructureChangedEventEmitter().subscribeWeak(this);
-        subParameter.getParameterUIChangedEventEmitter().subscribeWeak(this);
-    }
-
-    /**
-     * Triggered when the parameter structure of this algorithm was changed
-     *
-     * @param event generated event
-     */
-    @Override
-    public void onParameterStructureChanged(ParameterStructureChangedEvent event) {
-        if (event.getVisitors().contains(this))
-            return;
-        event.getVisitors().add(this);
-        getParameterStructureChangedEventEmitter().emit(event);
-    }
-
-    /**
-     * Triggered when the parameter UI structure of this algorithm was changed
-     *
-     * @param event generated event
-     */
-    @Override
-    public void onParameterUIChanged(ParameterUIChangedEvent event) {
-        if (event.getVisitors().contains(this))
-            return;
-        event.getVisitors().add(this);
-        getParameterUIChangedEventEmitter().emit(event);
     }
 
     /**

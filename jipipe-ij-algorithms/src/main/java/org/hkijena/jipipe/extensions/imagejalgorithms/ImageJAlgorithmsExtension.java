@@ -69,6 +69,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.metadata.RemoveImage
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.metadata.SetImageMetadataFromTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.misc.RenderJIPipeProjectAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.montage.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.morphology.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.noise.AddNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.noise.AddSaltAndPepperNoise2DAlgorithm;
@@ -1017,10 +1018,12 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-dimensions-zproject", ZProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
         registerNodeType("ij1-dimensions-zproject-2", NewZProjectorAlgorithm.class, UIUtils.getIconURLFromResources("actions/layer-bottom.png"));
         registerNodeType("ij1-dimensions-stack2montage", StackToMontageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
+        registerNodeType("ij1-dimensions-stack2montage-v2", StackToMontage2Algorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-montage2stack", MontageToStackAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-reorder", ReorderDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-dimensions-stack-combine", StackCombinerAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-dimensions-inpput2montage", InputImagesToMontage.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
+        registerNodeType("ij1-dimensions-input2montage-v2", InputImagesToMontage2.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-reslice", ResliceAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
         registerNodeType("ij1-dimensions-merge-2d-to-hyperstack", Merge2DToHyperstackAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-dimensions-reorder-hyperstack-slices", ReorderHyperstackSlicesExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));

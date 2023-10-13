@@ -300,6 +300,10 @@ public class ColorUtils {
         return new Color(v, v, v);
     }
 
+    public static boolean isGreyscale(Color color) {
+        return color.getRed() == color.getGreen() && color.getGreen() == color.getBlue();
+    }
+
     public static Color invertRGBA(Color color) {
         return new Color(~color.getRGB());
     }

@@ -141,7 +141,6 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
         ImageProcessor ipNew;
 
         for (int i = 1; i <= nFrames; i++) {
-            IJ.showProgress((double) i / nFrames);
             ipNew = ipOld.createProcessor(wNew, hNew);
             ipNew.setColor(backgroundColor);
             ipNew.fill();

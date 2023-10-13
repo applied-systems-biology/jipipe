@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
 
-@JIPipeDocumentation(name = "Convert to LAB colors", description = "Converts an image into an LAB image or re-interprets existing image channels as LAB.")
+@JIPipeDocumentation(name = "Convert color image to LAB colors", description = "Converts an image into an LAB image or re-interprets existing image channels as LAB. " +
+        "Please note that this node is designed for color images.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorLABData.class, slotName = "Output")

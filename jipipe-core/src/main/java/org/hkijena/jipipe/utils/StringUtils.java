@@ -53,6 +53,22 @@ public class StringUtils {
         return "...";
     }
 
+    /**
+     * If the string is longer than maxWidth, limit it to fit within maxWidth
+     * with an ellipsis (...). Will always return at least the string "..."
+     */
+    public static String limitWithoutEllipsis(String str, int maxWidth, FontMetrics metrics) {
+        int strWidth = metrics.stringWidth(str);
+        if (strWidth <= maxWidth)
+            return str;
+        for (int len = str.length() - 1; len > 0; len--) {
+            String subStr = str.substring(0, len);
+            if (metrics.stringWidth(subStr) <= maxWidth)
+                return subStr;
+        }
+        return "";
+    }
+
     public static String removeDuplicateDelimiters(String string, String delimiter) {
         while (string.contains(delimiter + delimiter)) {
             string = string.replace(delimiter + delimiter, delimiter);

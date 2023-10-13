@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.dimensions;
+package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.montage;
 
 import ij.CompositeImage;
 import ij.IJ;
@@ -23,6 +23,7 @@ import ij.plugin.RGBStackMerge;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
@@ -41,11 +42,13 @@ import java.awt.*;
 /**
  * Implementation of {@link ij.plugin.MontageMaker}
  */
-@JIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage.")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeDocumentation(name = "Stack to montage", description = "Converts an image stack into a montage. Deprecated. Use the algorithm with the same name.")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Montage")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage... (of stacks)")
+@JIPipeHidden
+@Deprecated
 public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalIntegerParameter rows = new OptionalIntegerParameter();

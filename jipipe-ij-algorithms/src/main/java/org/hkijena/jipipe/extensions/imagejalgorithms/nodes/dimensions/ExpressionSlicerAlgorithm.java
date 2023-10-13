@@ -14,11 +14,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Image5DSliceIndexExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndices;
@@ -204,7 +203,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generate Z slices", description = "Expression that is executed for each Z/C/T slice and generates an array of slice indices (or a single slice index) that " +
             "determine which Z indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-z")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettings(variableSource = Image5DSliceIndexExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
@@ -220,7 +219,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generate channel slices", description = "Expression that is executed for each Z/C/T slice and generates an array of slice indices (or a single slice index) that " +
             "determine which C indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-c")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettings(variableSource = Image5DSliceIndexExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
@@ -236,7 +235,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generate frame slices", description = "Expression that is executed for each Z/C/T slice and generates an array of slice indices (or a single slice index) that " +
             "determine which T indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-t")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettings(variableSource = Image5DSliceIndexExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
@@ -326,19 +325,4 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotateT = annotateT;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
-        @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
-            Set<ExpressionParameterVariable> result = new HashSet<>();
-            result.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
-            result.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
-            result.add(new ExpressionParameterVariable("Image Z slices", "The number of Z slices in the image", "size_z"));
-            result.add(new ExpressionParameterVariable("Image channels", "The number of channel (C) slices in the image", "size_c"));
-            result.add(new ExpressionParameterVariable("Image frames", "The number of frames (T) in the image", "size_t"));
-            result.add(new ExpressionParameterVariable("Z coordinate", "The Z coordinate within the image (first index is zero)", "z"));
-            result.add(new ExpressionParameterVariable("Channel coordinate", "The channel (C) coordinate within the image (first index is zero)", "c"));
-            result.add(new ExpressionParameterVariable("Frame coordinate", "The frame (T) coordinate within the image (first index is zero)", "t"));
-            return result;
-        }
-    }
 }

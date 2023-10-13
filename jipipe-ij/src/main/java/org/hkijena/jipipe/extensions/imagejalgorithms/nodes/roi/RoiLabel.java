@@ -50,7 +50,7 @@ public enum RoiLabel {
         if (this == None)
             return;
         String label = createLabel(roi, roiIndex);
-        ImageJUtils.drawStringLabel(imp, ip, label, r, foreground, background, font, drawBackground);
+        ImageJUtils.drawCenteredStringLabel(imp, ip, label, r, foreground, background, font, drawBackground);
     }
 
     /**

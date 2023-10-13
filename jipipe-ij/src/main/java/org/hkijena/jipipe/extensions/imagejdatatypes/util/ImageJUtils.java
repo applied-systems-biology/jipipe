@@ -2135,7 +2135,7 @@ public class ImageJUtils {
         assertImageDimensions(image, 5);
     }
 
-    public static void drawStringLabel(ImagePlus imp, ImageProcessor ip, String label, Rectangle r, Color foreground, Color background, Font font, boolean drawBackground) {
+    public static void drawCenteredStringLabel(ImagePlus imp, ImageProcessor ip, String label, Rectangle r, Color foreground, Color background, Font font, boolean drawBackground) {
         int size = font.getSize();
         ImageCanvas ic = imp.getCanvas();
         if (ic != null) {
@@ -2154,6 +2154,67 @@ public class ImageJUtils {
         if (drawBackground) {
             ip.setColor(background);
             ip.setRoi(x - 1, y - h + 2, w + 1, h - 3);
+            ip.fill();
+            ip.resetRoi();
+        }
+        ip.setColor(foreground);
+        ip.drawString(label, x, y);
+    }
+
+    public static void drawAnchoredStringLabel(ImageProcessor ip, String label, Rectangle availableSpace, Color foreground, Color background, Font font, boolean drawBackground, Anchor anchor) {
+        int fontSize = font.getSize();
+        ip.setFont(new Font(font.getName(), font.getStyle(), fontSize));
+        int stringWidth = ip.getStringWidth(label);
+        final int x,y;
+        int m = drawBackground ? 1 : 0;
+        int fsc = Math.max(fontSize / 2, 6);
+        FontMetrics metrics = ip.getFontMetrics();
+        int h = metrics.getHeight();
+
+        switch (anchor) {
+            case TopLeft:
+                x = availableSpace.x + m;
+                y = availableSpace.y + m + h - 2;
+                break;
+            case TopCenter:
+                x = availableSpace.x + availableSpace.width / 2 - stringWidth / 2;
+                y = availableSpace.y + m + h - 2;
+                break;
+            case TopRight:
+                x = availableSpace.x + availableSpace.width - stringWidth - m;
+                y = availableSpace.y + m + h - 2;
+                break;
+            case CenterLeft:
+                x = availableSpace.x + m;
+                y = availableSpace.y + availableSpace.height / 2 + fsc;
+                break;
+            case CenterCenter:
+                x = availableSpace.x + availableSpace.width / 2 - stringWidth / 2;
+                y = availableSpace.y + availableSpace.height / 2 + fsc;
+                break;
+            case CenterRight:
+                x = availableSpace.x + availableSpace.width - stringWidth - m;
+                y = availableSpace.y + availableSpace.height / 2 + fsc;
+                break;
+            case BottomLeft:
+                x = availableSpace.x + m;
+                y = availableSpace.y + availableSpace.height - 1 - m;
+                break;
+            case BottomCenter:
+                x = availableSpace.x + availableSpace.width / 2 - stringWidth / 2;
+                y = availableSpace.y + availableSpace.height - 1 - m;
+                break;
+            case BottomRight:
+                x = availableSpace.x + availableSpace.width - stringWidth - m;
+                y = availableSpace.y + availableSpace.height - 1 - m;
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+
+        if (drawBackground) {
+            ip.setColor(background);
+            ip.setRoi(x - 1, y - h + 2, stringWidth + 1, h - 3);
             ip.fill();
             ip.resetRoi();
         }

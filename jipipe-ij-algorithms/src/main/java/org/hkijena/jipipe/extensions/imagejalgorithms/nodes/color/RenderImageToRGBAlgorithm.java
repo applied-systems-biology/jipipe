@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nType", aliasName = "RGB Color")
+@JIPipeNodeAlias(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors\nConvert", aliasName = "Convert image to RGB colors (Render)")
 public class RenderImageToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public RenderImageToRGBAlgorithm(JIPipeNodeInfo info) {
         super(info);
