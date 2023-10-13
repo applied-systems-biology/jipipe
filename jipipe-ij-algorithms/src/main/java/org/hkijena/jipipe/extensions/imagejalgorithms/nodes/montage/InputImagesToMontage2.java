@@ -64,7 +64,10 @@ public class InputImagesToMontage2 extends JIPipeMergingAlgorithm {
             List<JIPipeTextAnnotation> textAnnotations = getFirstInputSlot().getTextAnnotations(row);
             inputEntries.add(new MontageCreator.InputEntry(img, textAnnotations, new ExpressionVariables()));
         }
-        ImagePlus montage = montageCreator.createMontage(inputEntries, new ExpressionVariables(), progressInfo);
+        ImagePlus montage = montageCreator.createMontage(inputEntries,
+                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
+                new ExpressionVariables(),
+                progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }
 

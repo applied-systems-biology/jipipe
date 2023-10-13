@@ -46,8 +46,8 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     private OptionalIntegerParameter forceNumColumns = new OptionalIntegerParameter();
     private boolean forceRGB = false;
     private boolean rgbUseRender = true;
-    private OptionalIntegerParameter forceImageWidth = new OptionalIntegerParameter(false, 128);
-    private OptionalIntegerParameter forceImageHeight = new OptionalIntegerParameter(false, 128);
+    private DefaultExpressionParameter tileWidth = new DefaultExpressionParameter("MAX(max_image_width, max_label_width)");
+    private DefaultExpressionParameter tileHeight = new DefaultExpressionParameter("max_image_height");
     private final CanvasParameters canvasParameters;
     private final LabelParameters labelParameters;
     private final ImageParameters imageParameters;
@@ -64,8 +64,8 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.sortingLabelExpression = new OptionalDefaultExpressionParameter(other.sortingLabelExpression);
         this.forceNumRows = new OptionalIntegerParameter(other.forceNumRows);
         this.forceNumColumns = new OptionalIntegerParameter(other.forceNumColumns);
-        this.forceImageWidth = new OptionalIntegerParameter(other.forceImageWidth);
-        this.forceImageHeight = new OptionalIntegerParameter(other.forceImageHeight);
+        this.tileWidth = new DefaultExpressionParameter(other.tileWidth);
+        this.tileHeight = new DefaultExpressionParameter(other.tileHeight);
         this.canvasParameters = new CanvasParameters(other.canvasParameters);
         this.labelParameters = new LabelParameters(other.labelParameters);
         this.imageParameters = new ImageParameters(other.imageParameters);
@@ -74,7 +74,7 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         registerSubParameters(canvasParameters, labelParameters, imageParameters);
     }
 
-    public ImagePlus createMontage(List<InputEntry> inputEntries, ExpressionVariables additionalVariables, JIPipeProgressInfo progressInfo) {
+    public ImagePlus createMontage(List<InputEntry> inputEntries, List<JIPipeTextAnnotation> annotations, ExpressionVariables additionalVariables, JIPipeProgressInfo progressInfo) {
         List<LabelledImage> labelledImages = new ArrayList<>();
 
         for (InputEntry inputEntry : inputEntries) {
@@ -146,13 +146,28 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         int gridWidth;
         int gridHeight;
         {
-            int largestImageWidth = forceImageWidth.isEnabled() ? forceImageWidth.getContent() : labelledImages.stream().map(img -> img.getImagePlus().getWidth()).max(Comparator.naturalOrder()).orElse(0);
-            int largestImageHeight = forceImageHeight.isEnabled() ? forceImageHeight.getContent() : labelledImages.stream().map(img -> img.getImagePlus().getHeight()).max(Comparator.naturalOrder()).orElse(0);
+            int maxImageWidth = 0;
+            int maxImageHeight = 0;
+            int maxLabelWidth = 0;
+            for(LabelledImage labelledImage : labelledImages) {
+                maxImageWidth = Math.max(labelledImage.getImagePlus().getWidth(), maxImageWidth);
+                maxImageHeight = Math.max(labelledImage.getImagePlus().getHeight(), maxImageHeight);
+                if(labelParameters.drawLabel && !StringUtils.isNullOrEmpty(labelledImage.label)) {
+                    assert labelFontMetrics != null;
+                    maxLabelWidth = Math.max(labelFontMetrics.stringWidth(labelledImage.label), maxLabelWidth);
+                }
+            }
+            ExpressionVariables variables = new ExpressionVariables();
+            variables.putAnnotations(annotations);
+            variables.put("max_image_width", maxImageWidth);
+            variables.put("max_image_height", maxImageHeight);
+            variables.put("max_label_width", maxLabelWidth);
 
-            imageWidth = largestImageWidth;
-            imageHeight = largestImageHeight;
-            gridWidth = largestImageWidth;
-            gridHeight = largestImageHeight;
+            imageWidth = this.tileWidth.evaluateToInteger(variables);
+            imageHeight = this.tileHeight.evaluateToInteger(variables);
+
+            gridWidth = imageWidth;
+            gridHeight = imageHeight;
 
             // Top/Bottom label border
             if(labelParameters.drawLabel && labelParameters.avoidLabelOnImage) {
@@ -272,10 +287,9 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
                 processedImage = ImageJUtils.convertToBitDepthIfNeeded(processedImage, consensusBitDepth);
             }
 
-            Rectangle finalRect = canvasParameters.canvasAnchor.placeInside(new Rectangle(0, 0, imageWidth, imageHeight), new Rectangle(0,
-                    0,
-                    processedImage.getWidth(),
-                    processedImage.getHeight()));
+            Rectangle finalRect = canvasParameters.canvasAnchor.placeInside(
+                    new Rectangle(0, 0, processedImage.getWidth(), processedImage.getHeight()),
+                    new Rectangle(0, 0, imageWidth, imageHeight));
 
             // Draw image
             ImageJUtils.forEachIndexedZCTSlice(processedImage, (sourceIp, index) -> {
@@ -333,8 +347,8 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         this.forceRGB = forceRGB;
     }
 
-    @JIPipeDocumentation(name = "Label generator", description = "Expression that generates the labels. Applied per image.")
-    @JIPipeParameter("label-expression")
+    @JIPipeDocumentation(name = "Label", description = "Expression that generates the labels. Applied per image.")
+    @JIPipeParameter(value = "label-expression", important = true, uiOrder = -100)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
     public DefaultExpressionParameter getLabelExpression() {
@@ -393,26 +407,33 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
         return labelParameters;
     }
 
-    @JIPipeDocumentation(name = "Force image width", description = "Forces the width of images")
-    @JIPipeParameter("force-image-width")
-    public OptionalIntegerParameter getForceImageWidth() {
-        return forceImageWidth;
+    @JIPipeDocumentation(name = "Tile width", description = "Expression that determines the width of the tiles")
+    @JIPipeParameter("tile-width")
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
+    @ExpressionParameterSettingsVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
+    @ExpressionParameterSettingsVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
+    public DefaultExpressionParameter getTileWidth() {
+        return tileWidth;
     }
 
-    @JIPipeParameter("force-image-width")
-    public void setForceImageWidth(OptionalIntegerParameter forceImageWidth) {
-        this.forceImageWidth = forceImageWidth;
+    @JIPipeParameter("tile-width")
+    public void setTileWidth(DefaultExpressionParameter tileWidth) {
+        this.tileWidth = tileWidth;
     }
 
-    @JIPipeDocumentation(name = "Force image height", description = "Forces the height of images")
-    @JIPipeParameter("force-image-height")
-    public OptionalIntegerParameter getForceImageHeight() {
-        return forceImageHeight;
+    @JIPipeDocumentation(name = "Tile height", description = "Expression that determines the height of the tiles")
+    @JIPipeParameter("tile-height")
+    @ExpressionParameterSettingsVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
+    @ExpressionParameterSettingsVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
+    @ExpressionParameterSettingsVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
+    public DefaultExpressionParameter getTileHeight() {
+        return tileHeight;
     }
 
-    @JIPipeParameter("force-image-height")
-    public void setForceImageHeight(OptionalIntegerParameter forceImageHeight) {
-        this.forceImageHeight = forceImageHeight;
+    @JIPipeParameter("tile-height")
+    public void setTileHeight(DefaultExpressionParameter tileHeight) {
+        this.tileHeight = tileHeight;
     }
 
     @JIPipeDocumentation(name = "Images", description = "Settings related to the scaling of images")

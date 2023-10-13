@@ -88,7 +88,10 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
             }
         }, progressInfo);
 
-        ImagePlus montage = montageCreator.createMontage(inputEntries, new ExpressionVariables(), progressInfo);
+        ImagePlus montage = montageCreator.createMontage(inputEntries,
+                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
+                new ExpressionVariables(),
+                progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }
 
