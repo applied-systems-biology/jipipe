@@ -46,16 +46,9 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
     private final JIPipe jiPipe;
     private final BiMap<String, Sheet> registeredSheets = HashBiMap.create();
     private boolean isLoading = false;
-    private final ApplicationSettingsSavedEventEmitter applicationSettingsSavedEventEmitter = new ApplicationSettingsSavedEventEmitter();
-
 
     public JIPipeSettingsRegistry(JIPipe jiPipe) {
-
         this.jiPipe = jiPipe;
-    }
-
-    public ApplicationSettingsSavedEventEmitter getApplicationSettingsSavedEventEmitter() {
-        return applicationSettingsSavedEventEmitter;
     }
 
     /**
@@ -161,14 +154,13 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
      *
      * @param file the file path
      */
-    public synchronized void save(Path file) {
+    public void save(Path file) {
         ObjectNode objectNode = JsonUtils.getObjectMapper().getNodeFactory().objectNode();
         for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
             objectNode.set(entry.getKey(), JsonUtils.getObjectMapper().convertValue(entry.getValue().get(Object.class), JsonNode.class));
         }
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(file.toFile(), objectNode);
-            applicationSettingsSavedEventEmitter.emit(new ApplicationSettingsSavedEvent(this, file));
         } catch (IOException e) {
             IJ.handleException(e);
             e.printStackTrace();
@@ -178,7 +170,7 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
     /**
      * Saves the settings to the default settings file
      */
-    public synchronized void save() {
+    public void save() {
         save(getPropertyFile());
     }
 
@@ -283,26 +275,4 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
         }
     }
 
-    public static class ApplicationSettingsSavedEvent extends AbstractJIPipeEvent {
-        private final Path settingsFile;
-        public ApplicationSettingsSavedEvent(Object source, Path settingsFile) {
-            super(source);
-            this.settingsFile = settingsFile;
-        }
-
-        public Path getSettingsFile() {
-            return settingsFile;
-        }
-    }
-
-    public interface ApplicationSettingsSavedEventListener {
-        void onApplicationSettingsSaved(ApplicationSettingsSavedEvent event);
-    }
-
-    public static class ApplicationSettingsSavedEventEmitter extends JIPipeEventEmitter<ApplicationSettingsSavedEvent, ApplicationSettingsSavedEventListener> {
-        @Override
-        protected void call(ApplicationSettingsSavedEventListener applicationSettingsSavedEventListener, ApplicationSettingsSavedEvent event) {
-            applicationSettingsSavedEventListener.onApplicationSettingsSaved(event);
-        }
-    }
 }

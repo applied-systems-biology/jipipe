@@ -87,7 +87,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * UI around an {@link JIPipeProject}
  */
-public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipeService.ExtensionRegisteredEventListener, JIPipeSettingsRegistry.ApplicationSettingsSavedEventListener {
+public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipeService.ExtensionRegisteredEventListener {
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
@@ -129,7 +129,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         initialize(showIntroduction, isNewProject);
         project.getCompartmentRemovedEventEmitter().subscribe(this);
         JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeWeak(this);
-        JIPipe.getInstance().getSettingsRegistry().getApplicationSettingsSavedEventEmitter().subscribeWeak(this);
 
         validatePlugins(true);
 
@@ -1066,8 +1065,4 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 
-    @Override
-    public void onApplicationSettingsSaved(JIPipeSettingsRegistry.ApplicationSettingsSavedEvent event) {
-        sendStatusBarText("Saved application settings to " + event.getSettingsFile());
-    }
 }
