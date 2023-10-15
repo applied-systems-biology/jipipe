@@ -1411,7 +1411,9 @@ public class JIPipe extends AbstractService implements JIPipeService {
     public static void exitLater(int exitCode) {
         JIPipe.getSettings().save();
         Timer timer = new Timer(500, e -> {
-            System.exit(exitCode);
+//            System.exit(exitCode);
+            // Context introduces a shutdown hook that causes a deadlock
+            Runtime.getRuntime().halt(exitCode);
         });
         timer.start();
     }
