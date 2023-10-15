@@ -161,7 +161,7 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
      *
      * @param file the file path
      */
-    public void save(Path file) {
+    public synchronized void save(Path file) {
         ObjectNode objectNode = JsonUtils.getObjectMapper().getNodeFactory().objectNode();
         for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
             objectNode.set(entry.getKey(), JsonUtils.getObjectMapper().convertValue(entry.getValue().get(Object.class), JsonNode.class));
@@ -178,7 +178,7 @@ public class JIPipeSettingsRegistry extends AbstractJIPipeParameterCollection im
     /**
      * Saves the settings to the default settings file
      */
-    public void save() {
+    public synchronized void save() {
         save(getPropertyFile());
     }
 
