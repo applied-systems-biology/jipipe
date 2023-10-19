@@ -51,7 +51,7 @@ public class SingleIterationStepCheckerAlgorithm extends JIPipeIteratingAlgorith
             }
             iterationStepIndexAnnotation.addAnnotationIfEnabled(annotationList, String.valueOf(iterationContext.getCurrentIterationStepIndex()));
 
-            getInputSlot(inputSlot.getName()).addData(inputData,
+            getOutputSlot(inputSlot.getName()).addData(inputData,
                     annotationList,
                     JIPipeTextAnnotationMergeMode.Merge,
                     inputSlot.getDataAnnotations(row),
