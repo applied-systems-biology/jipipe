@@ -207,7 +207,7 @@ public class DataTracerDataTableUI extends JIPipeWorkbenchPanel implements JIPip
 
             // Trace
             if(getWorkbench() instanceof JIPipeProjectWorkbench) {
-                popupMenu.add(UIUtils.createMenuItem("Trace",
+                popupMenu.add(UIUtils.createMenuItem("Trace ...",
                         "Allows to trace how the selected data was generated",
                         UIUtils.getIconFromResources("actions/footsteps.png"),
                         () -> traceData(dataTable.getDataContext(modelRow).getId())));

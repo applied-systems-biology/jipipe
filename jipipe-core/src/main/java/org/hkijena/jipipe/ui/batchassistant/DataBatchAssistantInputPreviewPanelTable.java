@@ -242,8 +242,8 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
             }
         }));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Trace data", "Allows to trace how the selected data was generated", UIUtils.getIconFromResources("actions/footsteps.png"), this::traceSelectedData));
-        popupMenu.add(UIUtils.createMenuItem("Display data", "Displays the selected data", UIUtils.getIconFromResources("actions/search.png"), this::displaySelectedData));
+        popupMenu.add(UIUtils.createMenuItem("Trace data ...", "Allows to trace how the selected data was generated", UIUtils.getIconFromResources("actions/footsteps.png"), this::traceSelectedData));
+        popupMenu.add(UIUtils.createMenuItem("Display data ...", "Displays the selected data", UIUtils.getIconFromResources("actions/search.png"), this::displaySelectedData));
 
     }
 

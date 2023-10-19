@@ -31,10 +31,10 @@ public class VersionUtils {
     /**
      * The current version of JIPipe according to the Maven-proved information
      *
-     * @return the version string or '1.81.0' if none is available
+     * @return the version string or '2.0.0' if none is available
      */
     public static String getJIPipeVersion() {
-        return StringUtils.orElse(CoreExtension.class.getPackage().getImplementationVersion(), "1.81.0");
+        return StringUtils.orElse(CoreExtension.class.getPackage().getImplementationVersion(), "2.0.0");
     }
 
     /**

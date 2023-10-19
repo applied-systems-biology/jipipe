@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
@@ -26,8 +27,10 @@ import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDispla
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.datatracer.DataTracerUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -35,6 +38,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
+import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
@@ -108,7 +112,13 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(Box.createHorizontalGlue());
 
-        if (dataAnnotationStores.size() > 0) {
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            JButton traceButton = new JButton("Trace ...", UIUtils.getIconFromResources("actions/footsteps.png"));
+            traceButton.addActionListener(e -> traceData());
+            add(traceButton);
+        }
+
+        if (!dataAnnotationStores.isEmpty()) {
             dataAnnotationsButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
             JPopupMenu menu = UIUtils.addPopupMenuToButton(dataAnnotationsButton);
 
@@ -162,18 +172,24 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                 copyAnnotationValueItem.addActionListener(e -> UIUtils.copyToClipboard(annotation.getValue()));
                 entryMenu.add(copyAnnotationValueItem);
 
+                String filterExpression = annotation.getName() + " == " + "\"" + MacroUtils.escapeString(annotation.getValue()) + "\"";
+                JMenuItem copyAnnotationAsFilter = new JMenuItem("Copy as filter", UIUtils.getIconFromResources("actions/filter.png"));
+                copyAnnotationAsFilter.addActionListener(e -> UIUtils.copyToClipboard(filterExpression));
+                entryMenu.add(copyAnnotationAsFilter);
+
                 annotationMenu.add(entryMenu);
             }
             add(textAnnotationsButton);
         }
 
-        JButton copyButton = new JButton("Copy string", UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyButton.setToolTipText("Copies the string representation");
-        copyButton.addActionListener(e -> copyString());
-        add(copyButton);
-
         JButton exportButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
         JPopupMenu exportMenu = UIUtils.addPopupMenuToButton(exportButton);
+
+        exportMenu.add(UIUtils.createMenuItem("Copy string representation",
+                "Copies the string representation of the data",
+                UIUtils.getIconFromResources("actions/edit-copy.png"),
+                this::copyString));
+        exportMenu.addSeparator();
 
         JMenuItem exportToFolderItem = new JMenuItem("Export to folder", UIUtils.getIconFromResources("actions/browser-download.png"));
         exportToFolderItem.setToolTipText("Saves the data to a folder. If multiple files are present, the names will be generated according to the selected name.");
@@ -212,6 +228,14 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                 }
                 add(menuButton);
             }
+        }
+    }
+
+    private void traceData() {
+        if(dataTableStore.isPresent()) {
+            JIPipeDataTable dataTable = dataTableStore.get();
+            JIPipeDataContext dataContext = dataTable.getDataContext(row);
+            DataTracerUI.openWindow((JIPipeProjectWorkbench) getWorkbench(), dataContext.getId());
         }
     }
 
