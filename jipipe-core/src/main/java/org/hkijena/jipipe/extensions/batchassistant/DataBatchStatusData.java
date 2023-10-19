@@ -27,6 +27,9 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
 
     private ResultsTableData perSlotStatus = new ResultsTableData();
     private boolean statusValid = false;
+
+    private int numIncomplete = 0;
+    private int numMerging = 0;
     private String statusMessage;
 
     public DataBatchStatusData() {
@@ -37,6 +40,8 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         this.perSlotStatus = new ResultsTableData(other.perSlotStatus);
         this.statusValid = other.statusValid;
         this.statusMessage = other.statusMessage;
+        this.numIncomplete = other.numIncomplete;
+        this.numMerging = other.numMerging;
     }
 
     public static DataBatchStatusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -102,5 +107,25 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
     @JsonSetter("status-message")
     public void setStatusMessage(String statusMessage) {
         this.statusMessage = statusMessage;
+    }
+
+    @JsonGetter("num-incomplete")
+    public int getNumIncomplete() {
+        return numIncomplete;
+    }
+
+    @JsonSetter("num-incomplete")
+    public void setNumIncomplete(int numIncomplete) {
+        this.numIncomplete = numIncomplete;
+    }
+
+    @JsonGetter("num-merging")
+    public int getNumMerging() {
+        return numMerging;
+    }
+
+    @JsonSetter("num-merging")
+    public void setNumMerging(int numMerging) {
+        this.numMerging = numMerging;
     }
 }

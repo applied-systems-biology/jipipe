@@ -14,9 +14,6 @@ import java.awt.*;
 public class DataBatchAssistantBatchPanel extends JIPipeProjectWorkbenchPanel {
 
     private final DataBatchAssistantUI dataBatchAssistantUI;
-    private JLabel batchPreviewNumberLabel;
-    private JLabel batchPreviewMissingLabel;
-    private JLabel batchPreviewDuplicateLabel;
     private DataBatchAssistantDataTableUI batchTable;
 
     public DataBatchAssistantBatchPanel(JIPipeProjectWorkbench workbench, DataBatchAssistantUI dataBatchAssistantUI) {
@@ -27,20 +24,6 @@ public class DataBatchAssistantBatchPanel extends JIPipeProjectWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JToolBar batchPreviewOverview = new JToolBar();
-
-        batchPreviewNumberLabel = new JLabel();
-        batchPreviewOverview.add(batchPreviewNumberLabel);
-        batchPreviewOverview.add(Box.createHorizontalGlue());
-
-        batchPreviewMissingLabel = new JLabel("Missing items found!", UIUtils.getIconFromResources("emblems/warning.png"), JLabel.LEFT);
-        batchPreviewOverview.add(batchPreviewMissingLabel);
-
-        batchPreviewDuplicateLabel = new JLabel("Multiple items per batch", UIUtils.getIconFromResources("emblems/emblem-information.png"), JLabel.LEFT);
-        batchPreviewOverview.add(batchPreviewDuplicateLabel);
-
-        batchPreviewOverview.setFloatable(false);
-//        add(batchPreviewOverview, BorderLayout.NORTH);
 
         FormPanel.GroupHeaderPanel groupHeaderPanel = new FormPanel.GroupHeaderPanel("Preview iteration steps", UIUtils.getIconFromResources("actions/format-list-ordered.png"), 4);
         groupHeaderPanel.addColumn(UIUtils.createBalloonHelpButton("The node will be executed for each of the following steps (1 step per row). Please review if the data is assigned as expected."));

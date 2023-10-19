@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.ui.batchassistant;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -71,6 +73,8 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
     private FormPanel rowUIList;
     private DataBatchAssistantTableModel dataTableModel;
     private JScrollPane scrollPane;
+    private int numRowsWithIncomplete = 0;
+    private int numRowsWithMerging = 0;
 
     /**
      * @param workbenchUI the workbench UI
@@ -92,6 +96,17 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
 
     public void setDataTable(JIPipeDataTable dataTable) {
         this.dataTable = dataTable;
+        this.numRowsWithIncomplete = 0;
+        this.numRowsWithMerging = 0;
+        for (int row = 0; row < dataTable.getRowCount(); row++) {
+            DataBatchStatusData data = dataTable.getData(row, DataBatchStatusData.class, new JIPipeProgressInfo());
+            if(data.getNumIncomplete() > 0) {
+                ++numRowsWithIncomplete;
+            }
+            if(data.getNumMerging() > 0) {
+                ++numRowsWithMerging;
+            }
+        }
         reloadTable();
     }
 
@@ -195,7 +210,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
 
         JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
         openReferenceWindowItem.addActionListener(e -> {
-            String name = "Data batches: " + getDataTable().getDisplayName();
+            String name = "Iteration steps: " + getDataTable().getDisplayName();
             getWorkbench().getDocumentTabPane().addTab(name,
                     UIUtils.getIconFromResources("actions/database.png"),
                     new DataBatchAssistantDataTableUI(getWorkbench(), getDataTable()),
@@ -311,14 +326,32 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
     private void showDataRows(int[] selectedRows) {
         rowUIList.clear();
 
-        JLabel infoLabel = new JLabel();
-        infoLabel.setText(dataTable.getRowCount() + " rows" + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
-        infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        rowUIList.addWideToForm(infoLabel, null);
+        {
+            JLabel infoLabel = new JLabel();
+            infoLabel.setText(dataTable.getRowCount() + " iteration steps" + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
+            infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            rowUIList.addWideToForm(infoLabel, null);
+        }
+
+        if(numRowsWithIncomplete > 0) {
+            JLabel warningLabel = new JLabel(numRowsWithIncomplete == 1 ? "1 step with missing data" : numRowsWithIncomplete + " steps with missing data",
+                    UIUtils.getIconFromResources("emblems/warning.png"),
+                    JLabel.LEFT);
+            warningLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            rowUIList.addWideToForm(warningLabel);
+        }
+
+        if(numRowsWithMerging > 0) {
+            JLabel infoLabel = new JLabel(numRowsWithIncomplete == 1 ? "1 step with multiple data per slot" : numRowsWithIncomplete + " steps with multiple data per slot",
+                    UIUtils.getIconFromResources("emblems/emblem-information.png"),
+                    JLabel.LEFT);
+            infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            rowUIList.addWideToForm(infoLabel);
+        }
 
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JLabel nameLabel = new JLabel("Data batch " + row);
+            JLabel nameLabel = new JLabel("Iteration step " + row);
             JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), new WeakStore<>(dataTable), row);
             rowUI.getDataAnnotationsButton().setText("Slots ...");
             rowUI.getDataAnnotationsButton().setIcon(UIUtils.getIconFromResources("data-types/slot.png"));

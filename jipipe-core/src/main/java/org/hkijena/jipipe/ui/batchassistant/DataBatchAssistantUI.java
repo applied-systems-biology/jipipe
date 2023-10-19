@@ -192,8 +192,8 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
             List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(batch.getMergedTextAnnotations().values());
             List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
 
-            boolean hasEmpty = false;
-            boolean hasMultiple = false;
+            int numIncomplete = 0;
+            int numMerging = 0;
             DataBatchStatusData statusData = new DataBatchStatusData();
 
             for (JIPipeDataSlot inputSlot : algorithm.getDataInputSlots()) {
@@ -202,10 +202,10 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
                 JIPipeData singletonData;
                 if (dataList.isEmpty()) {
                     singletonData = new StringData("Empty");
-                    hasEmpty = true;
+                    ++numIncomplete;
 
                     status.put("Slot", inputSlot.getName());
-                    status.put("Status", "Slot contains no data!");
+                    status.put("Status", "Slot has no data!");
                 } else if (dataList.size() == 1) {
                     singletonData = new JIPipeWeakDataReferenceData(dataList.get(0));
 
@@ -217,7 +217,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
                         list.addData(new JIPipeWeakDataReferenceData(datum), progressInfo);
                     }
                     singletonData = list;
-                    hasMultiple = true;
+                    ++numMerging;
 
                     status.put("Slot", inputSlot.getName());
                     status.put("Status", "Slot contains " + dataList.size() + " items");
@@ -232,8 +232,10 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
 //            if (hasMultiple)
 //                batchPreviewDuplicateLabel.setVisible(true);
 
-            statusData.setStatusValid(!hasEmpty);
-            statusData.setStatusMessage(hasEmpty ? "Missing data!" : (hasMultiple ? "Multiple data per slot" : "One data per slot"));
+            statusData.setStatusValid(numIncomplete <= 0);
+            statusData.setStatusMessage(numIncomplete > 0 ? "Missing data!" : (numMerging > 0 ? "Multiple data per slot" : "One data per slot"));
+            statusData.setNumIncomplete(numIncomplete);
+            statusData.setNumMerging(numMerging);
 
             dataTable.addData(statusData,
                     textAnnotations,

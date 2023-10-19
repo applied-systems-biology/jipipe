@@ -290,6 +290,8 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new IsInfiniteFunction());
         registerExpressionFunction(new JavaScriptFunction());
         registerExpressionFunction(new JythonScriptFunction());
+        registerExpressionFunction(new SliceBeforeFunction());
+        registerExpressionFunction(new SliceAfterFunction());
     }
 
     @Override
