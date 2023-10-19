@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
@@ -55,8 +56,8 @@ public class RoiToCentroidAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData inputRoi = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData inputRoi = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         ROIListData outputRoi = new ROIListData();
         for (Roi roi : inputRoi) {
             Point2D centroid = ROIListData.getCentroidDouble(roi);
@@ -64,6 +65,6 @@ public class RoiToCentroidAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             roi1.setPosition(roi.getCPosition(), roi.getZPosition(), roi.getTPosition());
             outputRoi.add(roi1);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputRoi, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputRoi, progressInfo);
     }
 }

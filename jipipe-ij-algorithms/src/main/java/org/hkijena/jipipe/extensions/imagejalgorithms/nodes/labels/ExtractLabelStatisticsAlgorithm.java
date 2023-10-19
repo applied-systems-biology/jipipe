@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
@@ -53,11 +54,11 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus labels = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus labels = iterationStep.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus reference;
-        if (dataBatch.getInputRow("Image") >= 0) {
-            reference = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        if (iterationStep.getInputRow("Image") >= 0) {
+            reference = iterationStep.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
         } else {
             reference = labels;
         }
@@ -74,7 +75,7 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             result.addRows(forRoi);
         }, progressInfo);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available. The calibration of the reference image is preferred.")

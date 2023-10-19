@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -76,8 +77,8 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData rois = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         countAnnotation.addAnnotationIfEnabled(annotations, rois.size() + "");
 
@@ -130,7 +131,7 @@ public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAl
         lineColorAnnotation.addAnnotationIfEnabled(annotations, lineColors);
         lineWidthAnnotation.addAnnotationIfEnabled(annotations, lineWidths);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), rois, annotations, annotationMergeStrategy, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), rois, annotations, annotationMergeStrategy, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotate with list size", description = "Adds the size of the ROI list as annotation")

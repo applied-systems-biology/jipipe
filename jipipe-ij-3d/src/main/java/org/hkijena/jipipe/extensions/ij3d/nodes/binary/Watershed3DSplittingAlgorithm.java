@@ -16,7 +16,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
@@ -52,9 +53,9 @@ public class Watershed3DSplittingAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData("Input", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
-        ImagePlus seedsImage = ImageJUtils.unwrap(dataBatch.getInputData("Seeds", ImagePlusGreyscaleMaskData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+        ImagePlus seedsImage = ImageJUtils.unwrap(iterationStep.getInputData("Seeds", ImagePlusGreyscaleMaskData.class, progressInfo));
 
         Map<ImageSliceIndex, ImageProcessor> labelMap = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> edtMap = new HashMap<>();
@@ -105,10 +106,10 @@ public class Watershed3DSplittingAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImagePlus outputLabels = ImageJUtils.mergeMappedSlices(labelMap);
         outputLabels.copyScale(inputImage);
-        dataBatch.addOutputData("Labels", new ImagePlusGreyscaleData(outputLabels), progressInfo);
+        iterationStep.addOutputData("Labels", new ImagePlusGreyscaleData(outputLabels), progressInfo);
         ImagePlus outputEDT = ImageJUtils.mergeMappedSlices(edtMap);
         outputEDT.copyScale(inputImage);
-        dataBatch.addOutputData("Distance transform", new ImagePlusGreyscaleData(outputEDT), progressInfo);
+        iterationStep.addOutputData("Distance transform", new ImagePlusGreyscaleData(outputEDT), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Radius (pixel)")

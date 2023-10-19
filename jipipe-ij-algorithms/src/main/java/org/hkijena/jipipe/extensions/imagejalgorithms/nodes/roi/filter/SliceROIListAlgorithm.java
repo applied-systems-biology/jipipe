@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -64,13 +65,13 @@ public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ROIListData inputRois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+        ROIListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
 
         ROIListData outputRois = new ROIListData();
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         List<Integer> indices = selectedIndices.getIntegers(0, inputRois.size() - 1, variables);
         for (int roiIndex : indices) {
@@ -81,7 +82,7 @@ public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             outputRois.add(roi);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Selected indices", description = "The output will only contain the ROI indices specified in by the value. For example, the value '0' returns the first ROI. A value of '0-4' returns the top 5 items.")

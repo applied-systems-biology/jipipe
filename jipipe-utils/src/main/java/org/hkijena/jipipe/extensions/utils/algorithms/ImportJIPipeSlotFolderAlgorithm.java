@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -70,13 +71,13 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JIPipeOutputData outputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
         Path dataFolder = outputData.toPath().resolve(getCompartmentId()).resolve(getNodeId()).resolve(getSlotName());
         if (ignoreInputTextAnnotations)
-            dataBatch.setMergedTextAnnotations(new HashMap<>());
+            iterationStep.setMergedTextAnnotations(new HashMap<>());
         if (ignoreInputDataAnnotations)
-            dataBatch.setMergedDataAnnotations(new HashMap<>());
+            iterationStep.setMergedDataAnnotations(new HashMap<>());
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),
@@ -89,7 +90,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             List<JIPipeTextAnnotation> textAnnotationList = ignoreImportedTextAnnotations ? Collections.emptyList() : dataTable.getTextAnnotations(row);
             List<JIPipeDataAnnotation> dataAnnotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : dataTable.getDataAnnotations(row);
-            dataBatch.addOutputData(getFirstOutputSlot(),
+            iterationStep.addOutputData(getFirstOutputSlot(),
                     dataTable.getData(row, JIPipeData.class, progressInfo),
                     textAnnotationList,
                     textAnnotationMergeMode,

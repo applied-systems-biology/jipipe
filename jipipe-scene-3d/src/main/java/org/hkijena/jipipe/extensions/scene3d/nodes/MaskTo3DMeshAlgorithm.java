@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
@@ -101,8 +102,8 @@ public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
         progressInfo.log("Marching cubes ...");
         float[] vertices = MarchingCubes.marchingCubes(imp, 0, 0, 0, 0, physicalSizes, forceMeshLengthUnit, meshLengthUnit);
         progressInfo.log("Calculating normals ...");
@@ -114,6 +115,6 @@ public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         meshObject.setColor(meshColor);
         Scene3DData scene3DData = new Scene3DData();
         scene3DData.add(meshObject);
-        dataBatch.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
     }
 }

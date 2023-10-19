@@ -14,7 +14,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -51,10 +52,10 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = importerType.getInstance().importData(null, importParameters, progressInfo);
         for (int i = 0; i < dataTable.getRowCount(); i++) {
-            dataBatch.addOutputData(getFirstOutputSlot(),
+            iterationStep.addOutputData(getFirstOutputSlot(),
                     dataTable.getDataItemStore(i),
                     dataTable.getTextAnnotations(i),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,

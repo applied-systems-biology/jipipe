@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -81,21 +82,21 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeData data = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("data_string", "" + data);
         variableSet.set("data_type", JIPipeDataInfo.getInstance(data.getClass()).getId());
-        variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
+        variableSet.set("row", iterationStep.getInputSlotRows().get(getFirstInputSlot()));
         Object result = expression.evaluate(variableSet);
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         if (result != null && writeToAnnotation.isEnabled()) {
             annotationList.add(writeToAnnotation.createAnnotation(result.toString()));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, writeToAnnotationMergeStrategy, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, writeToAnnotationMergeStrategy, progressInfo);
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

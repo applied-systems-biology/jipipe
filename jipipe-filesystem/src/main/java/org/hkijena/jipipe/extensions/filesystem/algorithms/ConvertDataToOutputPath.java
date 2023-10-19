@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 
@@ -50,9 +51,9 @@ public class ConvertDataToOutputPath extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot sourceSlot : getParentGraph().getInputIncomingSourceSlots(getFirstInputSlot())) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(sourceSlot.getSlotStoragePath()), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(sourceSlot.getSlotStoragePath()), progressInfo);
         }
     }
 

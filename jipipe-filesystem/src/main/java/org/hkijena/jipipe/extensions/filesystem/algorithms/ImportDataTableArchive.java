@@ -26,7 +26,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -67,14 +68,14 @@ public class ImportDataTableArchive extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path archiveFile = dataBatch.getInputData("Archive", FileData.class, progressInfo).toPath();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Path archiveFile = iterationStep.getInputData("Archive", FileData.class, progressInfo).toPath();
         try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, archiveFile)) {
             JIPipeDataTable dataTable = JIPipeDataTable.importData(storage, progressInfo.resolve("Import"));
             for (int row = 0; row < dataTable.getRowCount(); row++) {
                 List<JIPipeTextAnnotation> textAnnotationList = ignoreImportedTextAnnotations ? Collections.emptyList() : dataTable.getTextAnnotations(row);
                 List<JIPipeDataAnnotation> dataAnnotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : dataTable.getDataAnnotations(row);
-                dataBatch.addOutputData(getFirstOutputSlot(),
+                iterationStep.addOutputData(getFirstOutputSlot(),
                         dataTable.getData(row, JIPipeData.class, progressInfo),
                         textAnnotationList,
                         textAnnotationMergeMode,

@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -49,16 +50,16 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ExpressionVariables parameters = new ExpressionVariables();
-        parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
+        parameters.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
 
         // Create result image
         ImagePlus result;
-        if (dataBatch.getInputRow("Reference") >= 0) {
-            ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
+        if (iterationStep.getInputRow("Reference") >= 0) {
+            ImagePlus reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
             result = IJ.createHyperStack("Labels",
                     reference.getWidth(),
                     reference.getHeight(),
@@ -139,7 +140,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "ROI to label function", description = "Expression that converts a ROI into its numeric label index. Must return a number. If disabled, each ROI is assigned its own label.")

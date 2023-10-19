@@ -16,7 +16,8 @@ package org.hkijena.jipipe.extensions.omero.nodes.datasources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -44,9 +45,9 @@ public class OMEROGroupReferenceDataSource extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         for (Long projectId : groupIds) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new OMEROProjectReferenceData(projectId), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new OMEROProjectReferenceData(projectId), progressInfo);
         }
     }
 

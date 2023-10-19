@@ -26,11 +26,11 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -47,7 +47,7 @@ import java.util.*;
 /**
  * An algorithm that wraps another algorithm graph
  */
-public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeDataBatchAlgorithm {
+public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private JIPipeGraph wrappedGraph;
     private GraphWrapperAlgorithmInput algorithmInput;
@@ -55,7 +55,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     private IOSlotWatcher ioSlotWatcher;
     private boolean preventUpdateSlots = false;
     private IterationMode iterationMode = IterationMode.PassThrough;
-    private JIPipeMergingAlgorithmDataBatchGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings();
+    private JIPipeMergingAlgorithmIterationStepGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings();
 
     /**
      * @param info         the info
@@ -74,7 +74,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     public GraphWrapperAlgorithm(GraphWrapperAlgorithm other) {
         super(other);
         this.iterationMode = other.iterationMode;
-        this.batchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings(other.batchGenerationSettings);
+        this.batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.batchGenerationSettings);
         setWrappedGraph(new JIPipeGraph(other.wrappedGraph));
     }
 
@@ -166,15 +166,15 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             runWithDataPassThrough(progressInfo);
             return;
         }
-        List<JIPipeMultiDataBatch> dataBatches = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
-        for (int i = 0; i < dataBatches.size(); i++) {
-            JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, dataBatches.size());
-            JIPipeMultiDataBatch dataBatch = dataBatches.get(i);
+        List<JIPipeMultiIterationStep> iterationSteps = generateDataBatchesGenerationResult(getDataInputSlots(), progressInfo).getDataBatches();
+        for (int i = 0; i < iterationSteps.size(); i++) {
+            JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, iterationSteps.size());
+            JIPipeMultiIterationStep iterationStep = iterationSteps.get(i);
 
             // Iterate through own input slots and pass them to the equivalents in group input
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
-                for (Integer row : dataBatch.getInputRows(inputSlot)) {
+                for (Integer row : iterationStep.getInputRows(inputSlot)) {
                     groupInputSlot.addData(inputSlot.getDataItemStore(row),
                             inputSlot.getTextAnnotations(row),
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
@@ -293,28 +293,28 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     }
 
     @Override
-    public JIPipeDataBatchGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
         return batchGenerationSettings;
     }
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
-            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
+            JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
                 for (int row = 0; row < inputSlot.getRowCount(); row++) {
-                    dataBatch.addInputData(inputSlot, row);
+                    iterationStep.addInputData(inputSlot, row);
                 }
             }
 
             // Generate result object
             JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
-            result.setDataBatches(dataBatch);
+            result.setDataBatches(iterationStep);
 
             return result;
 
         } else {
-            JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
+            JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
             builder.setNode(this);
             builder.setApplyMerging(iterationMode == IterationMode.MergingDataBatch);
             builder.setSlots(slots);
@@ -323,36 +323,36 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                     batchGenerationSettings.getCustomColumns());
             builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
             builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
-            List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
-            dataBatches.sort(Comparator.naturalOrder());
+            List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
+            iterationSteps.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new ExpressionVariables())) : null;
             if (withLimit) {
                 progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-                List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
-                for (int i = 0; i < dataBatches.size(); i++) {
+                List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
+                for (int i = 0; i < iterationSteps.size(); i++) {
                     if (allowedIndices.contains(i)) {
-                        limitedBatches.add(dataBatches.get(i));
+                        limitedBatches.add(iterationSteps.get(i));
                     }
                 }
-                dataBatches = limitedBatches;
+                iterationSteps = limitedBatches;
             }
-            List<JIPipeMultiDataBatch> incomplete = new ArrayList<>();
-            for (JIPipeMultiDataBatch dataBatch : dataBatches) {
-                if (dataBatch.isIncomplete()) {
-                    incomplete.add(dataBatch);
-                    progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+            List<JIPipeMultiIterationStep> incomplete = new ArrayList<>();
+            for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
+                if (iterationStep.isIncomplete()) {
+                    incomplete.add(iterationStep);
+                    progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + iterationStep);
                 }
             }
             if (!incomplete.isEmpty() && batchGenerationSettings.isSkipIncompleteDataSets()) {
                 progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
-                dataBatches.removeAll(incomplete);
+                iterationSteps.removeAll(incomplete);
             }
 
             // Generate result object
             JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
-            result.setDataBatches(dataBatches);
+            result.setDataBatches(iterationSteps);
             result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 
             return result;
@@ -415,7 +415,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         }
     }
 
-    public JIPipeMergingAlgorithmDataBatchGenerationSettings getBatchGenerationSettings() {
+    public JIPipeMergingAlgorithmIterationStepGenerationSettings getBatchGenerationSettings() {
         return batchGenerationSettings;
     }
 

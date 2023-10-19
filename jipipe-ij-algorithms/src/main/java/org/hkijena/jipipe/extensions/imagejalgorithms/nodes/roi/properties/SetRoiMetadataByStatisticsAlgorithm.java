@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -98,13 +99,13 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = new ROIListData(dataBatch.getInputData("ROI", ROIListData.class, progressInfo));
-        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData rois = new ROIListData(iterationStep.getInputData("ROI", ROIListData.class, progressInfo));
+        ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
         ExpressionVariables variableSet = new ExpressionVariables();
-        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
         customVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
 
         // Obtain statistics
@@ -148,7 +149,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
             ImageJUtils.setRoiProperties(roi, roiProperties);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Clear properties before write", description = "If enabled, all existing ROI properties are deleted before writing the new properties")

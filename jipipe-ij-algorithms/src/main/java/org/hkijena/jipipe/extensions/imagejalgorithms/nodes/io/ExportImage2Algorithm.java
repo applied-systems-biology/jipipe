@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -60,9 +61,9 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -74,8 +75,8 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
                 getProjectDirectory(),
                 projectDataDirs,
                 inputData.toString(),
-                dataBatch.getInputRow(getFirstInputSlot()),
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                iterationStep.getInputRow(getFirstInputSlot()),
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
 
         ImagePlus image = inputData.getImage();
         Path outputFile;
@@ -119,7 +120,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
                 throw new UnsupportedOperationException();
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
     @JIPipeDocumentation(name = "File format", description = "The file format that should be used. " +

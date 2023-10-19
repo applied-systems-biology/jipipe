@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -56,12 +57,12 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JsonData data = dataBatch.getInputData(getFirstInputSlot(), JsonData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JsonData data = iterationStep.getInputData(getFirstInputSlot(), JsonData.class, progressInfo);
         DocumentContext documentContext = JsonPath.parse(data.getData());
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         List<TableColumn> columns = new ArrayList<>();
 
@@ -86,7 +87,7 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
         columns = columnNormalization.normalize(columns);
         ResultsTableData resultsTableData = new ResultsTableData(columns);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")

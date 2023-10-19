@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -61,12 +62,12 @@ public class RelativizeByParameter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        FolderData inputFolder = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         if (parentPath == null || parentPath.toString().isEmpty())
-            dataBatch.addOutputData(getFirstOutputSlot(), inputFolder, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), inputFolder, progressInfo);
         else
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(parentPath.relativize(inputFolder.toPath())), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new PathData(parentPath.relativize(inputFolder.toPath())), progressInfo);
     }
 
     /**

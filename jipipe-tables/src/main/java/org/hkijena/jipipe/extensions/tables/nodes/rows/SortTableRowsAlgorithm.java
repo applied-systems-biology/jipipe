@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
@@ -71,11 +72,11 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
         if (sortOrderList.isEmpty()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate(progressInfo), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), input.duplicate(progressInfo), progressInfo);
             return;
         }
         Comparator<Integer> comparator = getRowComparator(sortOrderList.get(0), input);
@@ -93,7 +94,7 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         sortedRows.sort(comparator);
 
         ResultsTableData output = input.getRows(sortedRows);
-        dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
     private Comparator<Integer> getRowComparator(StringQueryExpressionAndSortOrderPairParameter pair, ResultsTableData input) {

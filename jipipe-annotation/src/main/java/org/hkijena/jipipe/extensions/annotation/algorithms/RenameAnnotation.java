@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -70,18 +71,18 @@ public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-        for (JIPipeTextAnnotation annotation : ImmutableList.copyOf(dataBatch.getMergedTextAnnotations().values())) {
+        for (JIPipeTextAnnotation annotation : ImmutableList.copyOf(iterationStep.getMergedTextAnnotations().values())) {
             for (StringQueryExpressionAndStringPairParameter renamingItem : renamingItems) {
                 if (renamingItem.getKey().test(annotation.getName())) {
                     annotations.add(new JIPipeTextAnnotation(renamingItem.getValue(), annotation.getValue()));
-                    dataBatch.getMergedTextAnnotations().remove(annotation.getName());
+                    iterationStep.getMergedTextAnnotations().remove(annotation.getName());
                 }
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(),
-                dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo),
+        iterationStep.addOutputData(getFirstOutputSlot(),
+                iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo),
                 annotations,
                 annotationMergeStrategy,
                 progressInfo);

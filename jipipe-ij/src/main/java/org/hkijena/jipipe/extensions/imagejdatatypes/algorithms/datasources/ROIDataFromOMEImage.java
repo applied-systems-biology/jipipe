@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -49,11 +50,11 @@ public class ROIDataFromOMEImage extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        OMEImageData omeImageData = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        OMEImageData omeImageData = iterationStep.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
         if (omeImageData.getRois() != null)
-            dataBatch.addOutputData(getFirstOutputSlot(), omeImageData.getRois(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), omeImageData.getRois(), progressInfo);
         else
-            dataBatch.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);
     }
 }

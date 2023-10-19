@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -88,14 +89,14 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Map<ImagePlus, String> labelledImages = new HashMap<>();
         Map<ImagePlus, String> sortingLabels = new HashMap<>();
-        for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
+        for (int row : iterationStep.getInputRows(getFirstInputSlot())) {
             labelledImages.put(getFirstInputSlot().getData(row, ImagePlus2DData.class, progressInfo).getImage(),
                     labelGenerator.generateName(getFirstInputSlot(), row, new HashSet<>()));
         }
-        for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
+        for (int row : iterationStep.getInputRows(getFirstInputSlot())) {
             sortingLabels.put(getFirstInputSlot().getData(row, ImagePlus2DData.class, progressInfo).getImage(),
                     sortingLabelGenerator.generateName(getFirstInputSlot(), row, new HashSet<>()));
         }
@@ -107,7 +108,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
         // Equalize canvas
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         List<ImagePlus> equalized = canvasEqualizer.equalize(input, variables);
 
         // Determine number of rows & columns
@@ -128,7 +129,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
         }
 
         ImagePlus result = makeMontage2(equalized, labels, columns, rows, scale, borderWidth);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     /**

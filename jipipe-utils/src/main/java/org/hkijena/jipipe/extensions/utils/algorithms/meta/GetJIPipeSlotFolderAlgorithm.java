@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -64,10 +65,10 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeOutputData outputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JIPipeOutputData outputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeOutputData.class, progressInfo);
         Path slotPath = outputData.toPath().resolve(compartmentId).resolve(nodeId).resolve(slotName);
-        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(slotPath), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(slotPath), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Node alias ID", description = "The unique identifier of the node that contains the output. You can either use the 'Set output slot' button to auto-configure this value or look up the node ID in the help of the node. " +

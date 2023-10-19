@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
@@ -45,11 +46,11 @@ public class PushDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeDataTable inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeDataTable.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JIPipeDataTable inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeDataTable.class, progressInfo);
         JIPipeDataTable outputData = new JIPipeDataTable(inputData, true, progressInfo);
-        List<JIPipeTextAnnotation> textAnnotationList = new ArrayList<>(textAnnotationFilter.queryAll(dataBatch.getMergedTextAnnotations().values()));
-        List<JIPipeDataAnnotation> dataAnnotationList = new ArrayList<>(dataAnnotationFilter.queryAll(dataBatch.getMergedDataAnnotations().values()));
+        List<JIPipeTextAnnotation> textAnnotationList = new ArrayList<>(textAnnotationFilter.queryAll(iterationStep.getMergedTextAnnotations().values()));
+        List<JIPipeDataAnnotation> dataAnnotationList = new ArrayList<>(dataAnnotationFilter.queryAll(iterationStep.getMergedDataAnnotations().values()));
 
         for (int row = 0; row < outputData.getRowCount(); row++) {
 
@@ -71,7 +72,7 @@ public class PushDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
 
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Text annotation filter", description = "Allows to filter only specific text annotations. Set to false to completely ignore all text annotations.")

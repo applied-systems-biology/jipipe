@@ -26,7 +26,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
@@ -84,8 +85,8 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = iterationStep.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo).getImage();
 
         // Get all indices and group them
         List<ImageSliceIndex> allIndices = new ArrayList<>();
@@ -117,7 +118,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
         parameters.set("num_c", img.getNChannels());
         parameters.set("num_t", img.getNFrames());
 
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
 
@@ -134,7 +135,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
                 ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
-                ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
+                ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, iterationStep, index, indexProgress);
                 ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
             }
 
@@ -165,7 +166,7 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
             ++currentIndexBatch;
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), outputAnnotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), outputAnnotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Get statistics from ...", description = "Determines where the algorithm is applied to.")

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
@@ -34,24 +34,24 @@ import java.util.stream.Collectors;
  * Browser for a Data batch, similar to the cache browser
  */
 public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
-    private final JIPipeMultiDataBatch dataBatch;
+    private final JIPipeMultiIterationStep iterationStep;
     private JSplitPane splitPane;
     private DataBatchTree tree;
 
     /**
      * @param workbenchUI the workbench
-     * @param dataBatch   the data batch
+     * @param iterationStep   the data batch
      */
-    public DataBatchBrowserUI(JIPipeWorkbench workbenchUI, JIPipeMultiDataBatch dataBatch) {
+    public DataBatchBrowserUI(JIPipeWorkbench workbenchUI, JIPipeMultiIterationStep iterationStep) {
         super(workbenchUI);
-        this.dataBatch = dataBatch;
+        this.iterationStep = iterationStep;
         initialize();
         showCurrentlySelectedNode();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        tree = new DataBatchTree(getWorkbench(), dataBatch);
+        tree = new DataBatchTree(getWorkbench(), iterationStep);
 
         splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, tree,
                 new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
@@ -73,13 +73,13 @@ public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
     }
 
     private void showAllDataSlots() {
-        showDataSlots(new ArrayList<>(dataBatch.getInputSlotRows().keySet()));
+        showDataSlots(new ArrayList<>(iterationStep.getInputSlotRows().keySet()));
     }
 
     private void showDataSlots(List<JIPipeDataSlot> slots) {
         List<JIPipeDataTable> filtered = new ArrayList<>();
         for (JIPipeDataSlot slot : slots) {
-            filtered.add(slot.slice(dataBatch.getInputRows(slot)));
+            filtered.add(slot.slice(iterationStep.getInputRows(slot)));
         }
         JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getWorkbench(), filtered.stream().map(OwningStore::new).collect(Collectors.toList()), false);
         splitPane.setRightComponent(ui);
@@ -87,7 +87,7 @@ public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
-        JIPipeDataTable filtered = dataSlot.slice(dataBatch.getInputSlotRows().get(dataSlot));
+        JIPipeDataTable filtered = dataSlot.slice(iterationStep.getInputSlotRows().get(dataSlot));
         JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getWorkbench(), new OwningStore<>(filtered), true);
         splitPane.setRightComponent(ui);
         revalidate();

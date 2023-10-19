@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -67,16 +68,16 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData currentData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
-        ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData currentData = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ImagePlus reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
         Rectangle bounds = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         for (Margin margin : rectangles) {
             currentData.add(new ShapeRoi(margin.getInsideArea(bounds, variables)));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), currentData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), currentData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Rectangles", description = "List of rectangles")

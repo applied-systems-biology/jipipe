@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
@@ -81,9 +82,9 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusGreyscaleData inputImage = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo);
-        ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusGreyscaleData inputImage = iterationStep.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo);
+        ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         if (inputRois == null || inputRois.isEmpty()) {
             inputRois = new ROIListData();
             inputRois.add(new ShapeRoi(new Rectangle(0, 0, inputImage.getWidth(), inputImage.getHeight())));
@@ -103,7 +104,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ResultsTableData outputResults = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
         roiStatisticsAlgorithm.clearSlotData();
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +

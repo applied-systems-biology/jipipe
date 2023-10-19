@@ -27,7 +27,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -77,9 +78,9 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         if (applyPerSlice) {
-            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+            ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 TDoubleDoubleMap histogram;
                 if (imp instanceof ColorProcessor) {
@@ -92,15 +93,15 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
                 }
                 ResultsTableData resultsTable = toResultsTable(histogram);
                 if (!StringUtils.isNullOrEmpty(sliceAnnotation)) {
-                    dataBatch.addOutputData(getFirstOutputSlot(), resultsTable,
+                    iterationStep.addOutputData(getFirstOutputSlot(), resultsTable,
                             Collections.singletonList(new JIPipeTextAnnotation(sliceAnnotation, "slice=" + index)), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                 } else {
-                    dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
+                    iterationStep.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
                 }
             }, progressInfo);
         } else {
             final TDoubleDoubleMap histogram = new TDoubleDoubleHashMap();
-            ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+            ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
             ImageJUtils.forEachSlice(inputData.getImage(), imp -> {
                 TDoubleDoubleMap sliceHistogram;
                 if (imp instanceof ColorProcessor) {
@@ -113,10 +114,10 @@ public class HistogramGenerator extends JIPipeSimpleIteratingAlgorithm {
             if (normalize) {
                 TDoubleDoubleMap normalizedHistogram = normalizeHistogram(histogram);
                 ResultsTableData resultsTable = toResultsTable(normalizedHistogram);
-                dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
             } else {
                 ResultsTableData resultsTable = toResultsTable(histogram);
-                dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
             }
         }
     }

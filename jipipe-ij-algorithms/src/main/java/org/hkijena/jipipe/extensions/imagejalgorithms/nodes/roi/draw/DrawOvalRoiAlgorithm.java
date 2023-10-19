@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -54,21 +55,21 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
         // Generate variables
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         // Collect target and reference
-        ROIListData target = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+        ROIListData target = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         if (target == null) {
             target = new ROIListData();
         } else {
             target = new ROIListData(target);
         }
         Rectangle reference;
-        ImagePlusData referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+        ImagePlusData referenceImage = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
         if (referenceImage != null) {
             reference = new Rectangle(0, 0, referenceImage.getWidth(), referenceImage.getHeight());
         } else {
@@ -88,7 +89,7 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Output
-        dataBatch.addOutputData(getFirstOutputSlot(), target, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
 
     @JIPipeDocumentation(name = "ROI properties", description = "Use the following settings to customize the generated ROI")

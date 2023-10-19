@@ -3,7 +3,8 @@ package org.hkijena.jipipe.extensions.filesystem.datasources;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -77,7 +78,7 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         AtomicBoolean windowOpened = new AtomicBoolean(true);
         List<Path> pathList = new ArrayList<>();
         Object lock = new Object();
@@ -131,7 +132,7 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
         }
 
         for (Path path : pathList) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(path), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new PathData(path), progressInfo);
         }
     }
 }

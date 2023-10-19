@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.cachetree.JIPipeCacheStateTreeCellRenderer;
@@ -33,17 +33,17 @@ import java.util.Set;
  * Displays a tree that contains data stored in a data batch
  */
 public class DataBatchTree extends JIPipeWorkbenchPanel {
-    private final JIPipeMultiDataBatch dataBatch;
+    private final JIPipeMultiIterationStep iterationStep;
     private JScrollPane treeScollPane;
     private JTree tree;
 
     /**
      * @param workbenchUI Workbench ui
-     * @param dataBatch   the data batch
+     * @param iterationStep   the data batch
      */
-    public DataBatchTree(JIPipeWorkbench workbenchUI, JIPipeMultiDataBatch dataBatch) {
+    public DataBatchTree(JIPipeWorkbench workbenchUI, JIPipeMultiIterationStep iterationStep) {
         super(workbenchUI);
-        this.dataBatch = dataBatch;
+        this.iterationStep = iterationStep;
         initialize();
         refreshTree();
     }
@@ -56,7 +56,7 @@ public class DataBatchTree extends JIPipeWorkbenchPanel {
 
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
 
-        for (Map.Entry<JIPipeDataSlot, Set<Integer>> slotEntry : dataBatch.getInputSlotRows().entrySet()) {
+        for (Map.Entry<JIPipeDataSlot, Set<Integer>> slotEntry : iterationStep.getInputSlotRows().entrySet()) {
             DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(slotEntry.getKey());
             root.add(slotNode);
         }

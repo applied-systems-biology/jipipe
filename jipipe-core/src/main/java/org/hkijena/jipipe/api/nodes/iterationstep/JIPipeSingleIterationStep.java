@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.databatch;
+package org.hkijena.jipipe.api.nodes.iterationstep;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
  * Wraps a set of input and output slots that belong together
  * This can be used for convenience
  */
-public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipeSingleDataBatch> {
+public class JIPipeSingleIterationStep implements JIPipeIterationStep, Comparable<JIPipeSingleIterationStep> {
     private final JIPipeGraphNode node;
     private final Map<JIPipeDataSlot, Integer> inputSlotRows;
     private Map<String, JIPipeTextAnnotation> mergedAnnotations = new HashMap<>();
@@ -41,7 +41,7 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
      *
      * @param node The algorithm
      */
-    public JIPipeSingleDataBatch(JIPipeGraphNode node) {
+    public JIPipeSingleIterationStep(JIPipeGraphNode node) {
         this.node = node;
         this.inputSlotRows = new HashMap<>();
     }
@@ -51,7 +51,7 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
      *
      * @param other the original
      */
-    public JIPipeSingleDataBatch(JIPipeSingleDataBatch other) {
+    public JIPipeSingleIterationStep(JIPipeSingleIterationStep other) {
         this.node = other.node;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.mergedAnnotations = new HashMap<>(other.mergedAnnotations);
@@ -490,7 +490,7 @@ public class JIPipeSingleDataBatch implements JIPipeDataBatch, Comparable<JIPipe
     }
 
     @Override
-    public int compareTo(JIPipeSingleDataBatch o) {
+    public int compareTo(JIPipeSingleIterationStep o) {
         Set<String> annotationKeySet = new HashSet<>(mergedAnnotations.keySet());
         annotationKeySet.addAll(o.mergedAnnotations.keySet());
         List<String> annotationKeys = new ArrayList<>(annotationKeySet);

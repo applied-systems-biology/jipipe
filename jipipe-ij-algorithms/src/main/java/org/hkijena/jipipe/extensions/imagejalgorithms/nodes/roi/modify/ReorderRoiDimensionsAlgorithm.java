@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -38,8 +39,8 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = new ROIListData(dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData rois = new ROIListData(iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo));
 
         for (Roi roi : rois) {
             int depth = roi.getZPosition();
@@ -77,7 +78,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
             roi.setPosition(newChannels, newDepth, newFrames);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Copy Z to ...", description = "Determines how the Z dimension is re-mapped.")

@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
@@ -29,8 +30,8 @@ public class MeasureSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        SpotsCollectionData spotsCollectionData = dataBatch.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        SpotsCollectionData spotsCollectionData = iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         ResultsTableData tableData = new ResultsTableData();
         if (spotsCollectionData instanceof TrackCollectionData) {
             TrackCollectionData trackCollectionData = (TrackCollectionData) spotsCollectionData;
@@ -62,6 +63,6 @@ public class MeasureSpotsNode extends JIPipeSimpleIteratingAlgorithm {
                 }
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), tableData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), tableData, progressInfo);
     }
 }

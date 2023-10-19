@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -42,10 +43,10 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData targetImageData = dataBatch.getInputData("Target", ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData targetImageData = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
         ImagePlus output = targetImageData.getDuplicateImage();
-        ImagePlus src = dataBatch.getInputData("Source", targetImageData.getClass(), progressInfo).getImage();
+        ImagePlus src = iterationStep.getInputData("Source", targetImageData.getClass(), progressInfo).getImage();
 
         if (src.getWidth() != output.getWidth() || src.getHeight() != output.getHeight() || src.getStackSize() != output.getStackSize()) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
@@ -55,7 +56,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         ImageJUtils.forEachIndexedZCTSlice(output, (ip, index) -> {
-            ImageProcessor mask = getMask(dataBatch, index, progressInfo);
+            ImageProcessor mask = getMask(iterationStep, index, progressInfo);
             ImageProcessor srcProcessor = ImageJUtils.getSliceZero(src, index);
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
@@ -66,7 +67,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }, progressInfo);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(output), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(output), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Overwrite", description = "Determines where pixels are overwritten.")
@@ -81,15 +82,15 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
-    public ImageProcessor getMask(JIPipeSingleDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
+    public ImageProcessor getMask(JIPipeSingleIterationStep iterationStep, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
-                ImagePlusData img = dataBatch.getInputData("Target", ImagePlusData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
                 return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
             }
             case InsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Target", ImagePlusData.class, progressInfo);
+                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
                 } else {
@@ -98,8 +99,8 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }
             case OutsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Target", ImagePlusData.class, progressInfo);
+                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
                 } else {
@@ -110,7 +111,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }
             case InsideMask: {
-                ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
+                ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 if (mask.getStackSize() > 1) {
                     return mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask));
                 } else {
@@ -118,7 +119,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }
             case OutsideMask: {
-                ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
+                ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 ImageProcessor processor;
                 if (mask.getStackSize() > 1) {
                     processor = mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask)).duplicate();

@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -54,8 +55,8 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        XMLData data = dataBatch.getInputData(getFirstInputSlot(), XMLData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        XMLData data = iterationStep.getInputData(getFirstInputSlot(), XMLData.class, progressInfo);
         Document document = XmlUtils.readFromString(data.getData());
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
 
@@ -65,7 +66,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
         }
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String path = entry.getxPath().evaluateToString(variables);
             String annotationName = entry.getAnnotationName().evaluateToString(variables);
@@ -74,7 +75,7 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
             annotationList.add(new JIPipeTextAnnotation(annotationName, annotationValue));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")

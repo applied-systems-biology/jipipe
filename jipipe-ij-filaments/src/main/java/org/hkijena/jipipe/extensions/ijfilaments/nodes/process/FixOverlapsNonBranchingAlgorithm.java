@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -210,13 +211,13 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Filaments3DData inputData = dataBatch.getInputData("Input", Filaments3DData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Filaments3DData inputData = iterationStep.getInputData("Input", Filaments3DData.class, progressInfo);
         Filaments3DData outputData = new Filaments3DData(inputData);
 
         ImagePlus mask;
         if (enforceEdgesWithinMask) {
-            ImagePlusGreyscaleMaskData maskData = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo);
+            ImagePlusGreyscaleMaskData maskData = iterationStep.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo);
             if (maskData != null) {
                 mask = maskData.getImage();
             } else {
@@ -228,7 +229,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
         Map<FilamentVertex, Integer> components = outputData.findComponentIds();
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customExpressionVariables.writeToVariables(variables, true, "custom", true, "custom");
 
         // Find the existing endpoints
@@ -350,7 +351,7 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
 
         progressInfo.log("Successfully created " + successes + " edges.");
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     public static class EdgeCandidate implements Comparable<EdgeCandidate> {

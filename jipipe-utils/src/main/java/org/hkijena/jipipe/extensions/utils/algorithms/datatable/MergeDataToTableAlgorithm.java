@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 
 @JIPipeDocumentation(name = "Merge into data tables", description = "Creates data batches from the incoming data and merges them into data table data. " +
@@ -27,9 +28,9 @@ public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
-        for (int row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
+        for (int row : iterationStep.getInputSlotRows().get(getFirstInputSlot())) {
             dataTable.addData(getFirstInputSlot().getDataItemStore(row),
                     getFirstInputSlot().getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
@@ -38,6 +39,6 @@ public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
                     getFirstInputSlot().getDataContext(row).branch(this),
                     progressInfo);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), dataTable, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), dataTable, progressInfo);
     }
 }

@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -59,7 +60,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> rawImages = new ArrayList<>();
         if (onlyActiveImage) {
             ImagePlus img = WindowManager.getCurrentImage();
@@ -79,7 +80,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
         for (ImagePlus rawImage : rawImages) {
             ImageQueryExpressionVariableSource.buildVariablesSet(rawImage, variableSet);
             if (imageFilters.test(variableSet)) {
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate(progressInfo), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate(progressInfo), progressInfo);
             }
         }
     }

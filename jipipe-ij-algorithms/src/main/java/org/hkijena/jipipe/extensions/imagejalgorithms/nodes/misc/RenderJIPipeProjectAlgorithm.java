@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -48,16 +49,16 @@ public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         try {
-            JIPipeProject project = JIPipeProject.loadProject(dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath(),
+            JIPipeProject project = JIPipeProject.loadProject(iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath(),
                     new UnspecifiedValidationReportContext(),
                     new JIPipeValidationReport(),
                     new JIPipeNotificationInbox());
             RenderPipelineRun run = new RenderPipelineRun(project, null, settings);
             run.setProgressInfo(progressInfo.detachProgress().resolve("Render"));
             run.run();
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DColorRGBData(new ImagePlus("Render", new ColorProcessor(run.getOutputImage()))), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus2DColorRGBData(new ImagePlus("Render", new ColorProcessor(run.getOutputImage()))), progressInfo);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

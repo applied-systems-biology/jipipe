@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -57,8 +58,8 @@ public class ColumnToStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData table = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
         int columnCount = table.getColumnCount();
         for (int col = 0; col < columnCount; col++) {
             String columnName = table.getColumnName(col);
@@ -70,7 +71,7 @@ public class ColumnToStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 table.addColumn(columnName, new StringArrayTableColumn(data, columnName), true);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), table, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be converted. ")

@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -52,17 +53,17 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+        ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         ROIListData result = new ROIListData();
         ExpressionVariables variables = new ExpressionVariables();
         ROIListData tmp = new ROIListData();
 
         if (includeAnnotations) {
-            for (JIPipeTextAnnotation value : dataBatch.getMergedTextAnnotations().values()) {
+            for (JIPipeTextAnnotation value : iterationStep.getMergedTextAnnotations().values()) {
                 variables.set(value.getName(), value.getValue());
             }
         }
@@ -97,7 +98,7 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
             result.add(copy);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Expression", description = "The expression is executed per ROI.")

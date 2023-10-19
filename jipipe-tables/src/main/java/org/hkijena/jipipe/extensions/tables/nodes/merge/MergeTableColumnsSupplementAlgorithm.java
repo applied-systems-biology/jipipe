@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -75,12 +76,12 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData inputTarget = new ResultsTableData(dataBatch.getInputData("Target", ResultsTableData.class, progressInfo));
-        ResultsTableData inputSource = new ResultsTableData(dataBatch.getInputData("Source", ResultsTableData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData inputTarget = new ResultsTableData(iterationStep.getInputData("Target", ResultsTableData.class, progressInfo));
+        ResultsTableData inputSource = new ResultsTableData(iterationStep.getInputData("Source", ResultsTableData.class, progressInfo));
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         // Choose the reference columns
         List<String> selectedReferenceColumns = referenceColumns.queryAll(new ArrayList<>(Sets.union(new HashSet<>(inputTarget.getColumnNames()), new HashSet<>(inputSource.getColumnNames()))), variables);
@@ -134,7 +135,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
             outputTable.addRows(merged);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
     private Map<String, ResultsTableData> splitTableByCondition(ResultsTableData data, List<String> selectedReferenceColumns, String dummyConditionLabel) {

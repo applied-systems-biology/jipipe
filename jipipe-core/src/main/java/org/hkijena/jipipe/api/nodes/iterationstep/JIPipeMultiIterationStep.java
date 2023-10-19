@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.databatch;
+package org.hkijena.jipipe.api.nodes.iterationstep;
 
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 
 /**
  * Wraps a set of input and output slots that belong together.
- * This is a less restricted variant of {@link JIPipeSingleDataBatch} used by {@link JIPipeMergingAlgorithm}
+ * This is a less restricted variant of {@link JIPipeSingleIterationStep} used by {@link JIPipeMergingAlgorithm}
  */
-public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeMultiDataBatch> {
+public class JIPipeMultiIterationStep implements JIPipeIterationStep, Comparable<JIPipeMultiIterationStep> {
     private final JIPipeGraphNode node;
     private final Map<JIPipeDataSlot, Set<Integer>> inputSlotRows;
     private Map<String, JIPipeTextAnnotation> mergedTextAnnotations = new HashMap<>();
@@ -43,7 +43,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
      *
      * @param node The algorithm
      */
-    public JIPipeMultiDataBatch(JIPipeGraphNode node) {
+    public JIPipeMultiIterationStep(JIPipeGraphNode node) {
         this.node = node;
         this.inputSlotRows = new HashMap<>();
     }
@@ -53,7 +53,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
      *
      * @param other the original
      */
-    public JIPipeMultiDataBatch(JIPipeMultiDataBatch other) {
+    public JIPipeMultiIterationStep(JIPipeMultiIterationStep other) {
         this.node = other.node;
         this.inputSlotRows = new HashMap<>(other.inputSlotRows);
         this.mergedTextAnnotations = new HashMap<>(other.mergedTextAnnotations);
@@ -683,7 +683,7 @@ public class JIPipeMultiDataBatch implements JIPipeDataBatch, Comparable<JIPipeM
     }
 
     @Override
-    public int compareTo(JIPipeMultiDataBatch o) {
+    public int compareTo(JIPipeMultiIterationStep o) {
         Set<String> annotationKeySet = new HashSet<>(mergedTextAnnotations.keySet());
         annotationKeySet.addAll(o.mergedTextAnnotations.keySet());
         List<String> annotationKeys = new ArrayList<>(annotationKeySet);

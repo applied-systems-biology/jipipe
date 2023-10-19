@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -179,10 +179,10 @@ public class PathFormData extends ParameterFormData {
     }
 
     @Override
-    public void loadData(JIPipeMultiDataBatch dataBatch) {
+    public void loadData(JIPipeMultiIterationStep iterationStep) {
         if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeTextAnnotation annotation =
-                    dataBatch.getMergedTextAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
+                    iterationStep.getMergedTextAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
             if (annotation != null) {
                 value = Paths.get(annotation.getValue());
@@ -191,9 +191,9 @@ public class PathFormData extends ParameterFormData {
     }
 
     @Override
-    public void writeData(JIPipeMultiDataBatch dataBatch) {
+    public void writeData(JIPipeMultiIterationStep iterationStep) {
         if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
-            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedTextAnnotations(),
+            annotationIOSettings.getAnnotationMergeStrategy().mergeInto(iterationStep.getMergedTextAnnotations(),
                     Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(StringUtils.nullToEmpty(value))));
         }
     }

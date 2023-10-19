@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
@@ -41,9 +42,9 @@ public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = new ROIListData(dataBatch.getInputData("ROI", ROIListData.class, progressInfo));
-        ResultsTableData metadata = dataBatch.getInputData("Metadata", ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData rois = new ROIListData(iterationStep.getInputData("ROI", ROIListData.class, progressInfo));
+        ResultsTableData metadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
         TableColumn indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata);
 
         for (int i = 0; i < indexColumn.getRows(); i++) {
@@ -63,7 +64,7 @@ public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJUtils.setRoiProperties(roi, properties);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Ignore missing ROI indices", description = "If enabled, missing ROI indices are ignored (a log message is written)")

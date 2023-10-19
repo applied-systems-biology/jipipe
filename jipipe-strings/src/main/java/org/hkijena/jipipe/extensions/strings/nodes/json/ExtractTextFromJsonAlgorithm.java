@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -39,17 +40,17 @@ public class ExtractTextFromJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JsonData data = dataBatch.getInputData(getFirstInputSlot(), JsonData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JsonData data = iterationStep.getInputData(getFirstInputSlot(), JsonData.class, progressInfo);
         DocumentContext documentContext = JsonPath.parse(data.getData());
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         String path = jsonPath.evaluateToString(variables);
         String value = StringUtils.nullToEmpty(documentContext.read(path));
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new StringData(value), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new StringData(value), progressInfo);
     }
 
     @JIPipeDocumentation(name = "JSON path", description = "An expression that returns the JsonPath of the JSON entries. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")

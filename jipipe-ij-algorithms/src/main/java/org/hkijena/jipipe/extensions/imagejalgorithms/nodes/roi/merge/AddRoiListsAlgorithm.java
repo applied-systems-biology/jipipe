@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
@@ -51,14 +52,14 @@ public class AddRoiListsAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ROIListData result = new ROIListData();
-        for (ROIListData rois : dataBatch.getInputData("Target", ROIListData.class, progressInfo)) {
+        for (ROIListData rois : iterationStep.getInputData("Target", ROIListData.class, progressInfo)) {
             result.mergeWith(rois);
         }
-        for (ROIListData rois : dataBatch.getInputData("Source", ROIListData.class, progressInfo)) {
+        for (ROIListData rois : iterationStep.getInputData("Source", ROIListData.class, progressInfo)) {
             result.mergeWith(rois);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 }

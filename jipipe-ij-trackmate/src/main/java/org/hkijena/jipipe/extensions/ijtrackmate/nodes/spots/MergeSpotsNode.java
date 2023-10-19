@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 
@@ -41,12 +42,12 @@ public class MergeSpotsNode extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<SpotsCollectionData> spotCollections = dataBatch.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        List<SpotsCollectionData> spotCollections = iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         if (spotCollections.isEmpty())
             return;
         if (spotCollections.size() == 1) {
-            dataBatch.addOutputData(getFirstOutputSlot(), spotCollections.get(0), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), spotCollections.get(0), progressInfo);
             return;
         }
         SpotsCollectionData newCollection = new SpotsCollectionData(spotCollections.get(0));
@@ -57,6 +58,6 @@ public class MergeSpotsNode extends JIPipeMergingAlgorithm {
                 newCollection.getSpots().add(spot, frame);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), newCollection, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), newCollection, progressInfo);
     }
 }

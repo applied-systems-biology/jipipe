@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -92,12 +93,12 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> inputImages = new ArrayList<>();
         Map<JIPipeDataSlot, ImageBlendLayer> channelMap = new HashMap<>();
         Map<JIPipeDataSlot, ImagePlus> channelInputMap = new HashMap<>();
         for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
-            ImagePlus image = dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage();
+            ImagePlus image = iterationStep.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage();
 
             if (image.getType() != ImagePlus.COLOR_RGB) {
                 if (renderGreyscaleImages) {
@@ -146,7 +147,7 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }, progressInfo);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(resultImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(resultImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Layers", description = "Modify here how the images (layers) are merged. The order is determined by the priority value (lower values indicating a bottom layer) and if equal by the order of input slots.")

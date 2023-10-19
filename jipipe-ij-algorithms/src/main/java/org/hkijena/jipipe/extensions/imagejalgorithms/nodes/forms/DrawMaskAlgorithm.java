@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -66,27 +66,27 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
             return;
 
         // Get back the data batches
-        List<JIPipeMultiDataBatch> dataBatches;
+        List<JIPipeMultiIterationStep> iterationSteps;
 
         // No input slots -> Nothing to do
         if (getDataInputSlotCount() == 0) {
             return;
         } else if (getDataInputSlotCount() == 1) {
-            dataBatches = new ArrayList<>();
+            iterationSteps = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 if (progressInfo.isCancelled())
                     break;
-                JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
-                dataBatch.setInputData(getFirstInputSlot(), row);
-                dataBatch.addMergedTextAnnotations(parameterAnnotations, getDataBatchGenerationSettings().getAnnotationMergeStrategy());
-                dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(row), getDataBatchGenerationSettings().getAnnotationMergeStrategy());
-                dataBatches.add(dataBatch);
+                JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
+                iterationStep.setInputData(getFirstInputSlot(), row);
+                iterationStep.addMergedTextAnnotations(parameterAnnotations, getDataBatchGenerationSettings().getAnnotationMergeStrategy());
+                iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(row), getDataBatchGenerationSettings().getAnnotationMergeStrategy());
+                iterationSteps.add(iterationStep);
             }
         } else {
-            dataBatches = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
+            iterationSteps = generateDataBatchesGenerationResult(getNonParameterInputSlots(), progressInfo).getDataBatches();
         }
 
-        runForm(dataBatches, progressInfo);
+        runForm(iterationSteps, progressInfo);
     }
 
     @Override
@@ -99,22 +99,22 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         return true;
     }
 
-    private void runForm(List<JIPipeMultiDataBatch> dataBatches, JIPipeProgressInfo progressInfo) {
-        if (dataBatches.isEmpty()) {
+    private void runForm(List<JIPipeMultiIterationStep> iterationSteps, JIPipeProgressInfo progressInfo) {
+        if (iterationSteps.isEmpty()) {
             progressInfo.log("No data batches selected (according to limit). Skipping.");
             return;
         }
 
         // Make all non-generated outputs unique
-        for (int row = 0; row < dataBatches.size(); row++) {
-            if (!dataBatches.get(row).isIncomplete()) {
+        for (int row = 0; row < iterationSteps.size(); row++) {
+            if (!iterationSteps.get(row).isIncomplete()) {
                 ImagePlusData imagePlusData = getFirstOutputSlot().getData(row, ImagePlusData.class, progressInfo);
                 imagePlusData.makeUnique();
             }
         }
 
         // Create the form
-        JIPipeDataSlot formsSlot = JIPipeDataSlot.createSingletonSlot(new MaskDrawerFormData(dataBatches, this), this);
+        JIPipeDataSlot formsSlot = JIPipeDataSlot.createSingletonSlot(new MaskDrawerFormData(iterationSteps, this), this);
         formsSlot.addTextAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw mask"), true);
 
         // Form user input
@@ -129,7 +129,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
             SwingUtilities.invokeLater(() -> {
                 try {
                     JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
-                    FormsDialog dialog = new FormsDialog(workbench, dataBatches, formsSlot, "Tab");
+                    FormsDialog dialog = new FormsDialog(workbench, iterationSteps, formsSlot, "Tab");
                     dialog.setTitle(getName());
                     dialog.setSize(1024, 768);
                     dialog.setLocationRelativeTo(workbench.getWindow());
@@ -179,9 +179,9 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
     }
 
     @Override
-    protected void runGenerator(JIPipeMultiDataBatch dataBatch, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
+    protected void runGenerator(JIPipeMultiIterationStep iterationStep, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot referenceSlot = getInputSlot("Reference");
-        ImagePlus referenceImage = dataBatch.getInputData(referenceSlot, ImagePlusData.class, progressInfo).get(0).getImage();
+        ImagePlus referenceImage = iterationStep.getInputData(referenceSlot, ImagePlusData.class, progressInfo).get(0).getImage();
         int width = referenceImage.getWidth();
         int height = referenceImage.getHeight();
         int sizeC = referenceImage.getNChannels();
@@ -194,7 +194,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         if (overwriteSizeT.isEnabled())
             sizeT = overwriteSizeT.getContent();
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 8);
-        dataBatch.addOutputData(outputSlot, new ImagePlusData(img), progressInfo);
+        iterationStep.addOutputData(outputSlot, new ImagePlusData(img), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Overwrite number of slices (Z)", description = "Number of generated Z slices.")

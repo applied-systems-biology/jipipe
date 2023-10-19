@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -72,20 +73,20 @@ public class FilterPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         // Expression parameters from annotations
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             expressionVariables.set(annotation.getName(), annotation.getValue());
         }
 
-        PathData inputData = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
+        PathData inputData = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         JIPipeOutputDataSlot firstOutputSlot = getFirstOutputSlot();
         Path inputPath = inputData.toPath();
         if (!canOutput(inputPath))
             return;
         if (filters.test(inputPath, expressionVariables)) {
-            dataBatch.addOutputData(firstOutputSlot, inputData, progressInfo);
+            iterationStep.addOutputData(firstOutputSlot, inputData, progressInfo);
         }
     }
 

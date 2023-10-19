@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -86,8 +87,8 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData inputData = (ROIListData) iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> entry : inputData.groupByReferenceImage().entrySet()) {
                 if (entry.getKey().isPresent()) {
@@ -100,15 +101,15 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
                             reference.getNSlices(),
                             reference.getNFrames());
                     entry.getValue().drawMask(drawOutline, drawFilledOutline, lineThickness, target);
-                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(target), progressInfo);
+                    iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(target), progressInfo);
                 } else {
                     ImagePlus result = entry.getValue().toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
-                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+                    iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
                 }
             }
         } else {
             ImagePlus result = inputData.toMask(imageArea, drawOutline, drawFilledOutline, lineThickness);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
     }
 

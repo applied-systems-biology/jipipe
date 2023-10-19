@@ -30,7 +30,8 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -125,24 +126,24 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> images = new ArrayList<>();
         List<ImagePlus> templates = new ArrayList<>();
         Map<ImagePlus, Integer> templateSourceRows = new HashMap<>();
         ROIListData mergedSearchRois = new ROIListData();
 
-        for (ImagePlusData image : dataBatch.getInputData("Image", ImagePlusData.class, progressInfo)) {
+        for (ImagePlusData image : iterationStep.getInputData("Image", ImagePlusData.class, progressInfo)) {
             images.add(image.getImage());
         }
         // Each template has its own index
-        for (Integer row : dataBatch.getInputRows("Template")) {
+        for (Integer row : iterationStep.getInputRows("Template")) {
             ImagePlus duplicateImage = getInputSlot("Template").getData(row, ImagePlusData.class, progressInfo).getDuplicateImage();
             duplicateImage.setTitle("" + templates.size());
             templates.add(duplicateImage);
             templateSourceRows.put(duplicateImage, row);
         }
         if (restrictToROI) {
-            for (ROIListData roi : dataBatch.getInputData("ROI", ROIListData.class, progressInfo)) {
+            for (ROIListData roi : iterationStep.getInputData("ROI", ROIListData.class, progressInfo)) {
                 mergedSearchRois.addAll(roi);
             }
         }
@@ -174,12 +175,12 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             pythonInterpreter.set("progress", progressInfo.resolve("Image", i, images.size()));
             pythonInterpreter.exec(SCRIPT);
 
-            dataBatch.addOutputData("ROI", detectedROIs, progressInfo);
-            dataBatch.addOutputData("Measurements", measurements, progressInfo);
+            iterationStep.addOutputData("ROI", detectedROIs, progressInfo);
+            iterationStep.addOutputData("Measurements", measurements, progressInfo);
 
             if (assembleTemplates) {
                 ImagePlus assembled = assembleTemplates(image, templates, measurements, progressInfo.resolveAndLog("Assemble templates", i, images.size()));
-                dataBatch.addOutputData("Assembled templates", new ImagePlusData(assembled), progressInfo);
+                iterationStep.addOutputData("Assembled templates", new ImagePlusData(assembled), progressInfo);
             }
             if (outputMatchedTemplates) {
                 JIPipeDataTable matchedTemplates = new JIPipeDataTable(ImagePlus2DData.class);
@@ -201,11 +202,11 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             dataAnnotations,
                             JIPipeDataAnnotationMergeMode.OverwriteExisting,
-                            dataBatch.createNewContext(),
+                            iterationStep.createNewContext(),
                             progressInfo);
                 }
 
-                dataBatch.addOutputData("Matched templates", matchedTemplates, progressInfo);
+                iterationStep.addOutputData("Matched templates", matchedTemplates, progressInfo);
             }
         }
 

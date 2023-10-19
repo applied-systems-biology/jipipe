@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -63,14 +64,14 @@ public class FilterByAnnotationIfElse extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ExpressionVariables variables = new ExpressionVariables();
         customVariables.writeToVariables(variables, true, "custom.", true, "custom");
-        JIPipeData data = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
-        if (filter.test(dataBatch.getMergedTextAnnotations().values(), data.toString(), variables)) {
-            dataBatch.addOutputData("Matched", data, progressInfo);
+        JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
+        if (filter.test(iterationStep.getMergedTextAnnotations().values(), data.toString(), variables)) {
+            iterationStep.addOutputData("Matched", data, progressInfo);
         } else {
-            dataBatch.addOutputData("Unmatched", data, progressInfo);
+            iterationStep.addOutputData("Unmatched", data, progressInfo);
         }
     }
 

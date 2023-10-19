@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
@@ -52,8 +53,8 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JIPipeData inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -65,16 +66,16 @@ public class ExportDataByParameter2 extends JIPipeSimpleIteratingAlgorithm {
                 getProjectDirectory(),
                 projectDataDirs,
                 inputData.toString(),
-                dataBatch.getInputRow(getFirstInputSlot()),
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                iterationStep.getInputRow(getFirstInputSlot()),
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
         PathUtils.ensureParentDirectoriesExist(outputPath);
 
         if (forceName) {
             inputData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath.getParent()), outputPath.getFileName().toString(), true, progressInfo);
-            dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(outputPath.getParent()), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(outputPath.getParent()), progressInfo);
         } else {
             inputData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), "data", false, progressInfo);
-            dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(outputPath), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(outputPath), progressInfo);
         }
 
     }

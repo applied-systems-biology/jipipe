@@ -27,7 +27,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -95,8 +96,8 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ImagePlus originalImg = inputData.getImage();
         ImagePlus img;
         Rectangle crop = null;
@@ -104,7 +105,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             img = inputData.getDuplicateImage();
         } else {
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             ImageQueryExpressionVariableSource.buildVariablesSet(originalImg, variables);
 
             int left = (int) (addBorder2DAlgorithm.getMarginLeft().evaluateToNumber(variables));
@@ -114,7 +115,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
             crop = new Rectangle(left, top, originalImg.getWidth(), originalImg.getHeight());
             addBorder2DAlgorithm.clearSlotData();
-            addBorder2DAlgorithm.getFirstInputSlot().addData(inputData, new ArrayList<>(dataBatch.getMergedTextAnnotations().values()), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            addBorder2DAlgorithm.getFirstInputSlot().addData(inputData, new ArrayList<>(iterationStep.getMergedTextAnnotations().values()), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             addBorder2DAlgorithm.run(progressInfo.resolve("Add border"));
             img = addBorder2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
             addBorder2DAlgorithm.clearSlotData();
@@ -140,7 +141,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus result = new ImagePlus(operation.toString(), outputStack);
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
         result.copyScale(img);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Operation", description = "The morphological operation. Following operations are supported: " +

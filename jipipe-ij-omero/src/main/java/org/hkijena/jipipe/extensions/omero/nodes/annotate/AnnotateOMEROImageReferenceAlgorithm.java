@@ -12,7 +12,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -66,7 +67,7 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
@@ -93,7 +94,7 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
                     annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(imageData.getId())));
                 }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(imageData, environment), annotations, annotationMergeMode, rowProgress);
+                iterationStep.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(imageData, environment), annotations, annotationMergeMode, rowProgress);
             }
         }
     }

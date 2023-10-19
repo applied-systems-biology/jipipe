@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -83,14 +84,14 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Set<Integer> inputRows = dataBatch.getInputRows(getFirstInputSlot());
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Set<Integer> inputRows = iterationStep.getInputRows(getFirstInputSlot());
         List<Integer> sortedInputRows;
         if (!StringUtils.isNullOrEmpty(counterAnnotation)) {
             JIPipeTextAnnotation defaultCounter = new JIPipeTextAnnotation(counterAnnotation, "");
             sortedInputRows = inputRows.stream().sorted(Comparator.comparing(row ->
                     getFirstInputSlot().getTextAnnotationOr(row, counterAnnotation, defaultCounter))).collect(Collectors.toList());
-            dataBatch.removeMergedTextAnnotation(counterAnnotation);
+            iterationStep.removeMergedTextAnnotation(counterAnnotation);
         } else {
             sortedInputRows = new ArrayList<>(inputRows);
         }
@@ -112,7 +113,7 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
             resultImage.setDimensions(1, 1, resultImage.getNSlices());
         }
         resultImage.copyScale(firstSlice);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Slice index annotation",

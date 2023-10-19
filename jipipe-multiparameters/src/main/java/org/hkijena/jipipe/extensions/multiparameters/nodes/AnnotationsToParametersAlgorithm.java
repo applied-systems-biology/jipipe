@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterlessSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -61,10 +62,10 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ParametersData data = new ParametersData();
         for (Map.Entry<String, JIPipeParameterAccess> entry : extractedParameters.getParameters().entrySet()) {
-            JIPipeTextAnnotation annotation = dataBatch.getMergedTextAnnotation(entry.getKey());
+            JIPipeTextAnnotation annotation = iterationStep.getMergedTextAnnotation(entry.getKey());
             if (annotation != null) {
                 try {
                     Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(annotation.getValue());
@@ -92,6 +93,6 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
                 data.getParameterData().put(entry.getKey(), value);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 }

@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -51,15 +52,15 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        if (dataBatch.getInputRows(getFirstInputSlot()).isEmpty()) {
+        if (iterationStep.getInputRows(getFirstInputSlot()).isEmpty()) {
             progressInfo.log("No inputs. Skipping.");
             return;
         }
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         Map<ImagePlusData, ImageSliceIndex> sliceMappings = new IdentityHashMap<>();
 
         progressInfo.log("Collecting target slice locations ...");
@@ -69,7 +70,7 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
         int minZ = Integer.MAX_VALUE;
         int minC = Integer.MAX_VALUE;
         int minT = Integer.MAX_VALUE;
-        for (int inputRow : dataBatch.getInputRows(getFirstInputSlot())) {
+        for (int inputRow : iterationStep.getInputRows(getFirstInputSlot())) {
 
             // use the original annotations
             for (JIPipeTextAnnotation textAnnotation : getFirstInputSlot().getTextAnnotations(inputRow)) {
@@ -135,7 +136,7 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
         outputImage.setDimensions(cRemapping.size(), zRemapping.size(), tRemapping.size());
         outputImage.copyScale(referenceImage.getImage());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Assign 2D slice to Z location", description = "Expression that returns the expected Z location of the slice")

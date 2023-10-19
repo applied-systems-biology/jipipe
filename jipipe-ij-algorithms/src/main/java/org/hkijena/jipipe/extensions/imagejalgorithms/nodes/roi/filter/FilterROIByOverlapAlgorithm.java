@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -101,14 +102,14 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ROIListData roi1_original = dataBatch.getInputData("ROI 1", ROIListData.class, progressInfo);
-        ROIListData roi2_original = dataBatch.getInputData("ROI 2", ROIListData.class, progressInfo);
+        ROIListData roi1_original = iterationStep.getInputData("ROI 1", ROIListData.class, progressInfo);
+        ROIListData roi2_original = iterationStep.getInputData("ROI 2", ROIListData.class, progressInfo);
 
         ImagePlus referenceImage = null;
         {
-            ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+            ImagePlusData reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
             if (reference != null) {
                 referenceImage = reference.getDuplicateImage(); // Measurements tend to break the image
             }
@@ -126,7 +127,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                     getOutputSlot("ROI 1"),
                     referenceImage,
                     roi1Settings,
-                    dataBatch,
+                    iterationStep,
                     progressInfo.resolveAndLog("ROI 1 filtering"));
         }
         if (roi2Settings.isEnabled()) {
@@ -139,12 +140,12 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                     getOutputSlot("ROI 2"),
                     referenceImage,
                     roi2Settings,
-                    dataBatch,
+                    iterationStep,
                     progressInfo.resolveAndLog("ROI 2 filtering"));
         }
     }
 
-    private void applyFiltering(ROIListData first, ROIListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private void applyFiltering(ROIListData first, ROIListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         boolean withFiltering = !StringUtils.isNullOrEmpty(settings.getOverlapFilter().getExpression());
         ExpressionVariables variableSet = new ExpressionVariables();
         ROIListData temp = new ROIListData();
@@ -152,7 +153,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : iterationStep.getMergedTextAnnotations().entrySet()) {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variableSet.set("annotations", annotations);
@@ -216,7 +217,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Finished. Save to output
-        dataBatch.addOutputData(outputSlot, result, progressInfo);
+        iterationStep.addOutputData(outputSlot, result, progressInfo);
     }
 
     private void putMeasurementsIntoVariable(Roi first, String firstPrefix, Roi second, String secondPrefix, ExpressionVariables variableSet, Roi overlap, ImagePlus referenceImage, ROIListData temp, boolean measureInPhysicalUnits) {

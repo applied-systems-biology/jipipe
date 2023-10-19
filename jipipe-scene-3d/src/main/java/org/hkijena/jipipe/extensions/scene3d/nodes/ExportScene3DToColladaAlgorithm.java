@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -64,7 +65,7 @@ public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             if (relativeToProjectDir && getProjectDirectory() != null) {
@@ -77,7 +78,7 @@ public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Generate the path
-        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), iterationStep.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         // If absolute -> use the path, otherwise use output directory
         if (generatedPath.isAbsolute()) {
@@ -86,7 +87,7 @@ public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
             outputPath = outputPath.resolve(generatedPath);
         }
 
-        Scene3DData scene3DData = dataBatch.getInputData(getFirstInputSlot(), Scene3DData.class, progressInfo);
+        Scene3DData scene3DData = iterationStep.getInputData(getFirstInputSlot(), Scene3DData.class, progressInfo);
         Path outputFile = PathUtils.ensureExtension(outputPath, ".dae");
 
         Scene3DToColladaExporter scene3DToColladaExporter = new Scene3DToColladaExporter(scene3DData, outputFile);
@@ -94,7 +95,7 @@ public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {
         scene3DToColladaExporter.setProgressInfo(progressInfo.resolve("Export DAE"));
         scene3DToColladaExporter.run();
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +

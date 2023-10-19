@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.ui.datatable;
 
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
@@ -37,14 +37,14 @@ import java.util.List;
  * Panel that displays a data batch table
  */
 public class JIPipeSimpleDataBatchTableUI extends JPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
-    private List<JIPipeMultiDataBatch> dataBatchList;
+    private List<JIPipeMultiIterationStep> iterationStepList;
     private JXTable table;
     private JScrollPane scrollPane;
     private SearchTextField searchTextField;
     private JIPipeSimpleDataBatchTableModel dataTableModel;
 
-    public JIPipeSimpleDataBatchTableUI(List<JIPipeMultiDataBatch> dataBatchList) {
-        this.dataBatchList = dataBatchList;
+    public JIPipeSimpleDataBatchTableUI(List<JIPipeMultiIterationStep> iterationStepList) {
+        this.iterationStepList = iterationStepList;
         initialize();
         reloadTable();
     }
@@ -57,8 +57,8 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel implements JIPipeParame
         return table;
     }
 
-    public List<JIPipeMultiDataBatch> getDataBatchList() {
-        return dataBatchList;
+    public List<JIPipeMultiIterationStep> getDataBatchList() {
+        return iterationStepList;
     }
 
     public JIPipeSimpleDataBatchTableModel getDataTable() {
@@ -97,7 +97,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel implements JIPipeParame
     }
 
     private void reloadTable() {
-        dataTableModel = new JIPipeSimpleDataBatchTableModel(table, dataBatchList, WeakStore.class);
+        dataTableModel = new JIPipeSimpleDataBatchTableModel(table, iterationStepList, WeakStore.class);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
@@ -120,7 +120,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel implements JIPipeParame
 
     public void dispose() {
         try {
-            dataBatchList = new ArrayList<>();
+            iterationStepList = new ArrayList<>();
             dataTableModel = null;
             table.setModel(new DefaultTableModel());
         } catch (Throwable e) {

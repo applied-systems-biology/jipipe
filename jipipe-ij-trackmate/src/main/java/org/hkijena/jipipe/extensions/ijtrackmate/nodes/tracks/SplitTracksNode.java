@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -38,12 +39,12 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        TrackCollectionData oldTrackCollectionData = new TrackCollectionData(dataBatch.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        TrackCollectionData oldTrackCollectionData = new TrackCollectionData(iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo));
         oldTrackCollectionData.computeTrackFeatures(progressInfo.resolve("Compute features"));
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         variables.set("n_tracks", oldTrackCollectionData.getTrackModel().nTracks(true));
         int index = 0;
         Set<Integer> trackIds = oldTrackCollectionData.getTrackModel().trackIDs(true);
@@ -67,7 +68,7 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
             for (NamedTextAnnotationGeneratorExpression expression : annotationGenerator) {
                 annotations.add(expression.generateTextAnnotation(annotations, variables));
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), newTrackCollectionData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), newTrackCollectionData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
 
     }

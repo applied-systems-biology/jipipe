@@ -29,8 +29,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -85,7 +85,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
     public DataBatchAssistantUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode algorithm, Runnable runUpdatePredecessorCache) {
         super(workbenchUI);
         this.algorithm = (JIPipeAlgorithm) algorithm;
-        this.batchSettings = ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface();
+        this.batchSettings = ((JIPipeIterationStepAlgorithm) algorithm).getGenerationSettingsInterface();
         this.runUpdatePredecessorCache = runUpdatePredecessorCache;
         this.batchPanel = new DataBatchAssistantBatchPanel(workbenchUI, this);
         this.inputPreviewPanel = new DataBatchAssistantInputPreviewPanel(workbenchUI, this);
@@ -176,10 +176,10 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         calculatePreviewQueue.enqueue(run);
     }
 
-    private void displayBatches(JIPipeDataBatchGenerationResult dataBatchGenerationResult, JIPipeGraphNode algorithm) {
+    private void displayBatches(JIPipeDataBatchGenerationResult iterationStepGenerationResult, JIPipeGraphNode algorithm) {
         messagePanel.clear();
         batchPanel.setDataTable(new JIPipeDataTable(DataBatchStatusData.class));
-        inputPreviewPanel.highlightResults(dataBatchGenerationResult);
+        inputPreviewPanel.highlightResults(iterationStepGenerationResult);
 
 //        batchPreviewNumberLabel.setText(batches.size() + " batches");
 //        batchPreviewMissingLabel.setVisible(false);
@@ -188,7 +188,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-        for (JIPipeMultiDataBatch batch : dataBatchGenerationResult.getDataBatches()) {
+        for (JIPipeMultiIterationStep batch : iterationStepGenerationResult.getDataBatches()) {
             List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(batch.getMergedTextAnnotations().values());
             List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
 
@@ -267,7 +267,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
         JPanel panel = new JPanel(new BorderLayout());
 
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
-                ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface(),
+                ((JIPipeIterationStepAlgorithm) algorithm).getGenerationSettingsInterface(),
                 null,
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_NO_UI | ParameterPanel.NO_EMPTY_GROUP_HEADERS);
         toggleParameterPanelAdvancedMode(parameterPanel, SHOW_ADVANCED_SETTINGS);
@@ -429,7 +429,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel implements
 
         @Override
         public void run() {
-            result = ((JIPipeDataBatchAlgorithm) algorithm).generateDataBatchesGenerationResult(algorithm.getDataInputSlots(), getProgressInfo());
+            result = ((JIPipeIterationStepAlgorithm) algorithm).generateDataBatchesGenerationResult(algorithm.getDataInputSlots(), getProgressInfo());
             if (result == null) {
                 result = new JIPipeDataBatchGenerationResult();
             }

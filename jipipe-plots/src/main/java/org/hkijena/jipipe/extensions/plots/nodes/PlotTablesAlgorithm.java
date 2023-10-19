@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -93,7 +94,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
         Map<String, PlotColumn> plotColumns = new HashMap<>();
         for (PlotColumn column : plotMetadata.columns()) {
@@ -102,7 +103,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
         PlotData plot = (PlotData) plotTypeParameters.duplicate(progressInfo);
         int seriesCounter = 0;
-        for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
+        for (int row : iterationStep.getInputRows(getFirstInputSlot())) {
 
             ResultsTableData inputData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
             ResultsTableData seriesTable = new ResultsTableData();
@@ -128,13 +129,13 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
             seriesCounter += 1;
             if (seriesCounter >= plotMetadata.maxSeriesCount()) {
                 progressInfo.log("Maximum number of series was reached (maximum is " + plotMetadata.maxSeriesCount() + "!). Creating a new plot.");
-                dataBatch.addOutputData(getFirstOutputSlot(), plot, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), plot, progressInfo);
                 plot = (PlotData) plotTypeParameters.duplicate(progressInfo);
                 seriesCounter = 0;
             }
         }
         if (!plot.getSeries().isEmpty()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), plot, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), plot, progressInfo);
         }
     }
 

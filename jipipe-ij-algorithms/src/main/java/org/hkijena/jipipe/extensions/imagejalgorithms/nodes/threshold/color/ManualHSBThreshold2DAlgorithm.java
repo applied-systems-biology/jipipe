@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.BlackToWhiteTrackBackground;
@@ -66,8 +67,8 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorHSBData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusColorHSBData.class, progressInfo).getImage();
         ImagePlus result = IJ.createHyperStack(img.getTitle() + " thresholded",
                 img.getWidth(),
                 img.getHeight(),
@@ -109,7 +110,7 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         minBrightnessThresholdAnnotation.addAnnotationIfEnabled(annotations, "" + minB);
         maxBrightnessThresholdAnnotation.addAnnotationIfEnabled(annotations, "" + maxB);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result), annotations, thresholdAnnotationStrategy, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(result), annotations, thresholdAnnotationStrategy, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Hue threshold", description = "Thresholds the hue channel (Channel 1)")

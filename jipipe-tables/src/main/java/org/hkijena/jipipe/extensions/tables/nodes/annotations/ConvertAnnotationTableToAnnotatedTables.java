@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -62,8 +63,8 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        AnnotationTableData inputData = dataBatch.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        AnnotationTableData inputData = iterationStep.getInputData(getFirstInputSlot(), AnnotationTableData.class, progressInfo);
         HashSet<String> annotationColumns = new HashSet<>(inputData.getColumnNames());
         TableColumn mergedColumn = inputData.getMergedColumn(annotationColumns, ", ", "=");
         for (Map.Entry<String, ResultsTableData> entry : inputData.splitBy(mergedColumn).entrySet()) {
@@ -72,7 +73,7 @@ public class ConvertAnnotationTableToAnnotatedTables extends JIPipeSimpleIterati
             if (!keepAnnotationColumns) {
                 data.removeColumns(annotationColumns);
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), data, annotationTableData.getAnnotations(0), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), data, annotationTableData.getAnnotations(0), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

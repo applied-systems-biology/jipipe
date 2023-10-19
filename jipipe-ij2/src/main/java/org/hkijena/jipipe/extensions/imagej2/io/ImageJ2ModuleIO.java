@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.imagej2.io;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
@@ -44,24 +44,24 @@ public interface ImageJ2ModuleIO extends Service {
      * Transfers data from JIPipe into the module
      *
      * @param node         the JIPipe node
-     * @param dataBatch    the data batch
+     * @param iterationStep    the data batch
      * @param moduleItem   the module item
      * @param module       the module
      * @param progressInfo the progress info
      * @return if successful
      */
-    boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeSingleDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
+    boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeSingleIterationStep iterationStep, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
 
     /**
      * Transfers data from JIPipe from the module
      *
      * @param node                   the JIPipe node
-     * @param dataBatch              the data batch
+     * @param iterationStep              the data batch
      * @param moduleOutputParameters the module output parameters
      * @param moduleItem             the module item
      * @param module                 the module
      * @param progressInfo           the progress info
      * @return if successful
      */
-    boolean transferToJIPipe(ImageJ2OpNode node, JIPipeSingleDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
+    boolean transferToJIPipe(ImageJ2OpNode node, JIPipeSingleIterationStep iterationStep, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
 }

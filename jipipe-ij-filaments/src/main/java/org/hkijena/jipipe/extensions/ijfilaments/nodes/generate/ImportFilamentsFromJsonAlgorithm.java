@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -27,9 +28,9 @@ public class ImportFilamentsFromJsonAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path path = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Path path = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
         Filaments3DData graph = JsonUtils.readFromFile(path, Filaments3DData.class);
-        dataBatch.addOutputData(getFirstOutputSlot(), graph, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), graph, progressInfo);
     }
 }

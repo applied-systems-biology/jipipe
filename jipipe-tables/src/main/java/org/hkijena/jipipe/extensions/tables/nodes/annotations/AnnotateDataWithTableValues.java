@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -45,13 +46,13 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeData data = dataBatch.getInputData("Data", JIPipeData.class, progressInfo);
-        ResultsTableData tableData = dataBatch.getInputData("Table", ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JIPipeData data = iterationStep.getInputData("Data", JIPipeData.class, progressInfo);
+        ResultsTableData tableData = iterationStep.getInputData("Table", ResultsTableData.class, progressInfo);
 
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         for (int col = 0; col < tableData.getColumnCount(); col++) {
             variables.set(tableData.getColumnName(col), tableData.getColumnReference(col).getDataAsObjectList());
         }
@@ -62,7 +63,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
             annotationList.add(new JIPipeTextAnnotation(name, value));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotation merge mode", description = "Determines how generated annotations are merged with existing annotations")

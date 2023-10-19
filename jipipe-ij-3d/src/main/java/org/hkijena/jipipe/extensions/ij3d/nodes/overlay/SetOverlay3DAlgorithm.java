@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -25,11 +26,11 @@ public class SetOverlay3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo).shallowCopy();
-        ROI3DListData rois = dataBatch.getInputData("ROI", ROI3DListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).shallowCopy();
+        ROI3DListData rois = iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo);
         img.removeOverlaysOfType(ROI3DListData.class);
         img.addOverlay(rois);
-        dataBatch.addOutputData(getFirstOutputSlot(), img, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), img, progressInfo);
     }
 }

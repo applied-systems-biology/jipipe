@@ -29,7 +29,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -105,7 +106,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ImagePlus[] images = new ImagePlus[ChannelColor.values().length];
         ImagePlus firstImage = null;
         for (int i = 0; i < ChannelColor.values().length; ++i) {
@@ -113,7 +114,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
                 ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
-                    images[i] = new ImagePlusGreyscaleData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage()).getImage();
+                    images[i] = new ImagePlusGreyscaleData(iterationStep.getInputData(entry.getKey(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage()).getImage();
                     if (firstImage == null)
                         firstImage = images[i];
                 }
@@ -227,7 +228,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp2), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp2), progressInfo);
     }
 
     private ImagePlus mergeUsingRGBProjection(ImagePlus imp, ImagePlus[] images, boolean createComposite) {

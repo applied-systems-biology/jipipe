@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -76,10 +77,10 @@ public class ExportImageDirectorySlotAlgorithm extends JIPipeIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot imageSlot = getInputSlot("Input");
 
-        Path outputDirectory = dataBatch.getInputData("Output directory", FolderData.class, progressInfo).toPath();
+        Path outputDirectory = iterationStep.getInputData("Output directory", FolderData.class, progressInfo).toPath();
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
@@ -88,7 +89,7 @@ public class ExportImageDirectorySlotAlgorithm extends JIPipeIteratingAlgorithm 
         }
 
         // Generate the path
-        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), iterationStep.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         // If absolute -> use the path, otherwise use output directory
         if (generatedPath.isAbsolute()) {
@@ -97,7 +98,7 @@ public class ExportImageDirectorySlotAlgorithm extends JIPipeIteratingAlgorithm 
             outputPath = outputPath.resolve(generatedPath);
         }
 
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+        ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         Path outputFile;
         switch (fileFormat) {
             case JPEG: {
@@ -134,7 +135,7 @@ public class ExportImageDirectorySlotAlgorithm extends JIPipeIteratingAlgorithm 
                 throw new UnsupportedOperationException();
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
     @JIPipeDocumentation(name = "File name generation", description = "Following settings control how the output file names are generated from metadata columns.")

@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -32,9 +33,9 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FileData modelFileData = dataBatch.getInputData("Model file", FileData.class, progressInfo);
-        FileData dataFileData = dataBatch.getInputData("Data file", FileData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        FileData modelFileData = iterationStep.getInputData("Model file", FileData.class, progressInfo);
+        FileData dataFileData = iterationStep.getInputData("Data file", FileData.class, progressInfo);
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             WekaSegmentation segmentation = new WekaSegmentation(processing3D);
             if (dataFileData != null) {
@@ -42,7 +43,7 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
             }
             segmentation.loadClassifier(modelFileData.getPath());
             WekaModelData modelData = new WekaModelData(segmentation);
-            dataBatch.addOutputData(getFirstOutputSlot(), modelData, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), modelData, progressInfo);
         }
 
     }

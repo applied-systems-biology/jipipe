@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -85,7 +86,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             if (relativeToProjectDir && getProjectDirectory() != null) {
@@ -98,7 +99,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Generate the path
-        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), iterationStep.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         // If absolute -> use the path, otherwise use output directory
         if (generatedPath.isAbsolute()) {
@@ -107,7 +108,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
             outputPath = outputPath.resolve(generatedPath);
         }
 
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+        ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         Path outputFile;
         switch (fileFormat) {
             case JPEG: {
@@ -144,7 +145,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
                 throw new UnsupportedOperationException();
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +

@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -39,9 +40,9 @@ public class SpotDetectorNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus image = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
-        SpotDetectorData spotDetectorData = dataBatch.getInputData("Spot detector", SpotDetectorData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
+        SpotDetectorData spotDetectorData = iterationStep.getInputData("Spot detector", SpotDetectorData.class, progressInfo);
 
         Model model = new Model();
         model.setLogger(new JIPipeLogger(progressInfo.resolve("TrackMate")));
@@ -71,7 +72,7 @@ public class SpotDetectorNode extends JIPipeIteratingAlgorithm {
                     trackMate.getErrorMessage()));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new SpotsCollectionData(model, settings, image), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new SpotsCollectionData(model, settings, image), progressInfo);
     }
 
     @Override

@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
@@ -31,8 +32,8 @@ public class ROI3DCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData inputData = dataBatch.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
         ROI3DListData outputData = new ROI3DListData(inputData);
         switch (operation) {
             case LogicalAnd:
@@ -47,7 +48,7 @@ public class ROI3DCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             default:
                 throw new UnsupportedOperationException("Unsupported: " + operation);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Operation", description = "The operation to apply on the list of ROI")

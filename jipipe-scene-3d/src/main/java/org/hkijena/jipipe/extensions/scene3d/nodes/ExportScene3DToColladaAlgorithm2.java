@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
@@ -39,8 +40,8 @@ public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Scene3DData scene3DData = dataBatch.getInputData(getFirstInputSlot(), Scene3DData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Scene3DData scene3DData = iterationStep.getInputData(getFirstInputSlot(), Scene3DData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -52,8 +53,8 @@ public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
                 getProjectDirectory(),
                 projectDataDirs,
                 scene3DData.toString(),
-                dataBatch.getInputRow(getFirstInputSlot()),
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                iterationStep.getInputRow(getFirstInputSlot()),
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
 
         Path outputFile = PathUtils.ensureExtension(outputPath, ".dae");
         PathUtils.ensureParentDirectoriesExist(outputPath);
@@ -63,7 +64,7 @@ public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
         scene3DToColladaExporter.setProgressInfo(progressInfo.resolve("Export DAE"));
         scene3DToColladaExporter.run();
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
     }
 
     @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")

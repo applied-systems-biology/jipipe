@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -35,8 +36,8 @@ public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData output = new ResultsTableData();
         output.addRows(input.getRowCount());
         ExpressionVariables variableSet = new ExpressionVariables();
@@ -51,7 +52,7 @@ public class ModifyTableColumnNamesAlgorithm extends JIPipeSimpleIteratingAlgori
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Renaming expression", description = "Determines how each column should be renamed. There is a variable 'value' available " +

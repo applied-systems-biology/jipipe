@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -147,10 +148,10 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         ImageQueryExpressionVariableSource.buildVariablesSet(img, variables);
 
         int left = (int) (marginLeft.evaluateToNumber(variables));
@@ -177,7 +178,7 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         ImagePlus withBorder = addBorder(img, left, top, right, bottom, borderMode, colorGreyscale, colorRGB, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(withBorder), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(withBorder), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Mode", description = "Determines how border values are generated")

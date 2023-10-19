@@ -31,7 +31,8 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -194,10 +195,10 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         backupWindows();
         try {
-            prepareInputData(dataBatch, progressInfo);
+            prepareInputData(iterationStep, progressInfo);
 
             // Add delay
             if (exportDelay > 0) {
@@ -212,14 +213,14 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             StringBuilder finalCode = new StringBuilder();
             // Inject annotations
             finalCode.append("function getJIPipeAnnotation(key) {\n");
-            for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
+            for (Map.Entry<String, JIPipeTextAnnotation> entry : iterationStep.getMergedTextAnnotations().entrySet()) {
                 finalCode.append("if (key == \"").append(MacroUtils.escapeString(entry.getKey())).append("\") { return \"").append(MacroUtils.escapeString(entry.getValue().getValue())).append("\"; }\n");
             }
             finalCode.append("return \"\";\n");
             finalCode.append("}\n\n");
             // Inject annotations
             finalCode.append("function getJIPipeTextAnnotation(key) {\n");
-            for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
+            for (Map.Entry<String, JIPipeTextAnnotation> entry : iterationStep.getMergedTextAnnotations().entrySet()) {
                 finalCode.append("if (key == \"").append(MacroUtils.escapeString(entry.getKey())).append("\") { return \"").append(MacroUtils.escapeString(entry.getValue().getValue())).append("\"; }\n");
             }
             finalCode.append("return \"\";\n");
@@ -261,7 +262,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
             // Inject path data
             for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
-                JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo);
+                JIPipeData data = iterationStep.getInputData(inputSlot, JIPipeData.class, progressInfo);
                 if (data instanceof PathData) {
                     if (!MacroUtils.isValidVariableName(inputSlot.getName()))
                         throw new IllegalArgumentException("Invalid variable name " + inputSlot.getName());
@@ -290,7 +291,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
                     }
                 }
 
-                passOutputData(dataBatch, progressInfo);
+                passOutputData(iterationStep, progressInfo);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -300,7 +301,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void passOutputData(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private void passOutputData(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
             Object configuration = outputFromImageJImporters.get(outputSlot.getName()).get(Object.class);
             ImageJDataImporter importer;
@@ -319,7 +320,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             progressInfo.log("Importing data from ImageJ into " + outputSlot.getName() + " via " + parameters);
             JIPipeDataTable imported = importer.importData(null, parameters, progressInfo);
             for (int row = 0; row < imported.getRowCount(); row++) {
-                dataBatch.addOutputData(outputSlot, imported.getData(row, JIPipeData.class, progressInfo).duplicate(progressInfo), progressInfo);
+                iterationStep.addOutputData(outputSlot, imported.getData(row, JIPipeData.class, progressInfo).duplicate(progressInfo), progressInfo);
             }
 
             // Workaround bug: Not closing all outputs
@@ -367,14 +368,14 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     /**
      * Loads input data, so it can be discovered by ImageJ
      */
-    private void prepareInputData(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private void prepareInputData(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
 //        long imageInputSlotCount = getInputSlots().stream().filter(slot -> JIPipeMultichannelImageData.class.isAssignableFrom(slot.getAcceptedDataType())).count();
         initiallyOpenedImages.clear();
         for (int i = 0; i < WindowManager.getImageCount(); ++i) {
             initiallyOpenedImages.add(WindowManager.getImage(i + 1));
         }
         for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
-            JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo);
+            JIPipeData data = iterationStep.getInputData(inputSlot, JIPipeData.class, progressInfo);
             Object configuration = inputToImageJExporters.get(inputSlot.getName()).get(Object.class);
             ImageJExportParameters parameters = new ImageJExportParameters(true, false, false, inputSlot.getName());
             ImageJDataExporter exporter;

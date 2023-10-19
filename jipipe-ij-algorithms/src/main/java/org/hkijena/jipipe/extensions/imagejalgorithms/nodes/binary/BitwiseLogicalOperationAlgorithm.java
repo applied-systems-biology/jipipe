@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -38,9 +39,9 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData("Input 1", ImagePlusGreyscale8UData.class, progressInfo).getDuplicateImage();
-        ImagePlus second = dataBatch.getInputData("Input 2", ImagePlusGreyscale8UData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = iterationStep.getInputData("Input 1", ImagePlusGreyscale8UData.class, progressInfo).getDuplicateImage();
+        ImagePlus second = iterationStep.getInputData("Input 2", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         if (!ImageJUtils.imagesHaveSameSize(img, second)) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),
@@ -77,7 +78,7 @@ public class BitwiseLogicalOperationAlgorithm extends JIPipeIteratingAlgorithm {
         } else {
             throw new UnsupportedOperationException();
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(img), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(img), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Operation", description = "The operation that is applied to each pair of bits.")

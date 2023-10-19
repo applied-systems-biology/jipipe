@@ -12,7 +12,8 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -61,8 +62,8 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         if (targetDimension == HyperstackDimension.Channel) {
             for (int c = 0; c < img.getNChannels(); c++) {
                 JIPipeProgressInfo stackProgressInfo = progressInfo.resolveAndLog("Output channel", c, img.getNChannels());
@@ -88,7 +89,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                             continue;
                         }
                     }
-                    dataBatch.addOutputData(outputSlot, new ImagePlusData(stackOutput), annotationList, annotationMergeStrategy, stackProgressInfo);
+                    iterationStep.addOutputData(outputSlot, new ImagePlusData(stackOutput), annotationList, annotationMergeStrategy, stackProgressInfo);
                 }
             }
         } else if (targetDimension == HyperstackDimension.Depth) {
@@ -116,7 +117,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                             continue;
                         }
                     }
-                    dataBatch.addOutputData(outputSlot, new ImagePlusData(stackOutput), annotationList, annotationMergeStrategy, stackProgressInfo);
+                    iterationStep.addOutputData(outputSlot, new ImagePlusData(stackOutput), annotationList, annotationMergeStrategy, stackProgressInfo);
                 }
             }
         } else if (targetDimension == HyperstackDimension.Frame) {
@@ -144,7 +145,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                             continue;
                         }
                     }
-                    dataBatch.addOutputData(outputSlot, new ImagePlusData(stackOutput), annotationList, annotationMergeStrategy, stackProgressInfo);
+                    iterationStep.addOutputData(outputSlot, new ImagePlusData(stackOutput), annotationList, annotationMergeStrategy, stackProgressInfo);
                 }
             }
         }

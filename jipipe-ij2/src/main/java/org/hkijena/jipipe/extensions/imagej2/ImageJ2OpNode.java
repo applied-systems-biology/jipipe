@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -80,12 +81,12 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ParametersData moduleOutputParameters = new ParametersData();
 
         // Copy from JIPipe
         for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getInputModuleIO().entrySet()) {
-            entry.getValue().transferFromJIPipe(this, dataBatch, entry.getKey(), moduleInstance, progressInfo);
+            entry.getValue().transferFromJIPipe(this, iterationStep, entry.getKey(), moduleInstance, progressInfo);
         }
 
         // Run the initializer function
@@ -101,10 +102,10 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
 
         // Copy back to JIPipe
         for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getOutputModuleIO().entrySet()) {
-            entry.getValue().transferToJIPipe(this, dataBatch, moduleOutputParameters, entry.getKey(), moduleInstance, progressInfo);
+            entry.getValue().transferToJIPipe(this, iterationStep, moduleOutputParameters, entry.getKey(), moduleInstance, progressInfo);
         }
         if (getModuleNodeInfo().hasParameterDataOutputSlot()) {
-            dataBatch.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName(), moduleOutputParameters, progressInfo);
+            iterationStep.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName(), moduleOutputParameters, progressInfo);
         }
     }
 

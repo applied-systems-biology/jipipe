@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
@@ -58,11 +59,11 @@ public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        TrackCollectionData spotsCollectionData = dataBatch.getInputData("Tracks", TrackCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        TrackCollectionData spotsCollectionData = iterationStep.getInputData("Tracks", TrackCollectionData.class, progressInfo);
         ImagePlus reference;
         {
-            ImagePlusData data = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
+            ImagePlusData data = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
             if (data != null) {
                 reference = data.getImage();
             } else {
@@ -86,7 +87,7 @@ public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
         ImagePlus result = new ImagePlus("Track visualization", targetStack);
         ImageJUtils.copyHyperstackDimensions(reference, result);
         result.copyScale(reference);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Track visualization", description = "The following settings control how tracks are visualized")

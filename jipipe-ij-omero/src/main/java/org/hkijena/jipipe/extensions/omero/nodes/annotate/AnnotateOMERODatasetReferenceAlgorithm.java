@@ -12,7 +12,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -66,13 +67,13 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
 
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
-            long datasetId = dataBatch.getInputData(getFirstInputSlot(), OMERODatasetReferenceData.class, progressInfo).getDatasetId();
+            long datasetId = iterationStep.getInputData(getFirstInputSlot(), OMERODatasetReferenceData.class, progressInfo).getDatasetId();
             DatasetData datasetData = gateway.getDataset(datasetId, -1);
             SecurityContext context = new SecurityContext(datasetData.getGroupId());
 
@@ -92,7 +93,7 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
                 annotations.add(new JIPipeTextAnnotation(idAnnotation.getContent(), String.valueOf(datasetData.getId())));
             }
 
-            dataBatch.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetData, environment), annotations, annotationMergeMode, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetData, environment), annotations, annotationMergeMode, progressInfo);
         }
     }
 

@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -49,8 +50,8 @@ public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusGreyscaleMaskData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
         ROIListData result = new ROIListData();
         ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
             ImageProcessor ip2 = ip.duplicate();
@@ -64,7 +65,7 @@ public class MaskToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 result.add(roi);
             }
         }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Threshold", description = "Pixel values equal or higher to this value are added to the ROI.")

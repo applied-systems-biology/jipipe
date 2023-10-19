@@ -16,7 +16,8 @@ package org.hkijena.jipipe.extensions.tables.nodes;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -66,7 +67,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = new ResultsTableData();
         table.addRows(generatedRows);
         ExpressionVariables variableSet = new ExpressionVariables();
@@ -87,7 +88,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
                 table.setValueAt(value, row, columnId);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), table, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
     @Override

@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
@@ -49,8 +50,8 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData outputROI = new ROI3DListData(dataBatch.getInputData("Input", ROI3DListData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData outputROI = new ROI3DListData(iterationStep.getInputData("Input", ROI3DListData.class, progressInfo));
 
         for (int row = 0; row < outputROI.size(); row++) {
             ROI3D roi = outputROI.get(row);
@@ -88,7 +89,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputROI, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputROI, progressInfo);
     }
 
     @JIPipeDocumentation(name = "ROI name", description = "If true, override the ROI name")

@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -68,16 +69,16 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
         // Collect target and reference
-        ROIListData target = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+        ROIListData target = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         if (target == null) {
             target = new ROIListData();
         } else {
             target = new ROIListData(target);
         }
-        ImagePlus imp = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getDuplicateImage();
+        ImagePlus imp = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getDuplicateImage();
 
         ScaleBarGenerator generator = new ScaleBarGenerator(imp);
         Calibration cal = imp.getCalibration();
@@ -93,7 +94,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Render text
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         if (!generator.getConfig().isHideText()) {
             variables.set("unit", cal.getXUnit());
@@ -123,7 +124,7 @@ public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
         for (Roi roi : scaleBarOverlay) {
             target.add(roi);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), target, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
 
 

@@ -16,7 +16,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
@@ -73,9 +74,9 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus markersImage = ImageJUtils.unwrap(dataBatch.getInputData("Markers", ImagePlusGreyscaleMaskData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus markersImage = ImageJUtils.unwrap(iterationStep.getInputData("Markers", ImagePlusGreyscaleMaskData.class, progressInfo));
         ImagePlus outputImage = IJ3DUtils.forEach3DIn5DGenerate(inputImage, (ih, index, ctProgress) -> {
             ArrayList<Point3D> point3Ds = null;
             if (markersImage != null) {
@@ -114,7 +115,7 @@ public class IterativeThreshold3DAlgorithm extends JIPipeIteratingAlgorithm {
 
             return ImageHandler.wrap(res);
         }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 
     private void applyFilter(ImagePlus duplicate, JIPipeProgressInfo ctProgress) {

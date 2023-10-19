@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -44,8 +45,8 @@ public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        XMLData data = dataBatch.getInputData(getFirstInputSlot(), XMLData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        XMLData data = iterationStep.getInputData(getFirstInputSlot(), XMLData.class, progressInfo);
         Document document = XmlUtils.readFromString(data.getData());
 
         Map<String, String> namespaces = new HashMap<>();
@@ -54,12 +55,12 @@ public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         }
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         String path = xPath.evaluateToString(variables);
         String text = XmlUtils.extractStringFromXPath(document, path, namespaces);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new StringData(text), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new StringData(text), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Namespace map", description = "Allows to map namespaces to shortcuts for more convenient access")

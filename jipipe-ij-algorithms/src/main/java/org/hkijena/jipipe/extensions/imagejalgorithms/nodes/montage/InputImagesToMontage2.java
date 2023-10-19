@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -57,18 +58,18 @@ public class InputImagesToMontage2 extends JIPipeMergingAlgorithm {
 
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<MontageCreator.InputEntry> inputEntries = new ArrayList<>();
-        for (Integer row : dataBatch.getInputRows(getFirstInputSlot())) {
+        for (Integer row : iterationStep.getInputRows(getFirstInputSlot())) {
             ImagePlus img = getFirstInputSlot().getData(row, ImagePlusData.class, progressInfo).getImage();
             List<JIPipeTextAnnotation> textAnnotations = getFirstInputSlot().getTextAnnotations(row);
             inputEntries.add(new MontageCreator.InputEntry(img, textAnnotations, new ExpressionVariables()));
         }
         ImagePlus montage = montageCreator.createMontage(inputEntries,
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()),
                 new ExpressionVariables(),
                 progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Montage", description = "General montage settings")

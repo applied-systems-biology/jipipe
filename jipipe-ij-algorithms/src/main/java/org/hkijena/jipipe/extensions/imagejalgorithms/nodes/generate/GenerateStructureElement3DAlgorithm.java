@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -71,7 +72,7 @@ public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAl
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         // Size of the strel image (little bit larger than strel)
         Strel3D strel = element.fromRadius(radius);
         int[] dim = strel.getSize();
@@ -92,7 +93,7 @@ public class GenerateStructureElement3DAlgorithm extends JIPipeSimpleIteratingAl
 
         // Display strel image
         ImagePlus strelDisplay = new ImagePlus("Structuring Element", strelImageStack);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleMaskData(strelDisplay), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleMaskData(strelDisplay), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")

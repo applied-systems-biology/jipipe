@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -51,17 +52,17 @@ public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path path = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Path path = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         String hdf5Path_ = hdf5Path.evaluateToString(variables);
 
         ImgPlus dataset = Hdf5.readDataset(path.toFile(), hdf5Path_, ImgUtils.toImagejAxes(axes));
         ImagePlus imagePlus = ImageJFunctions.wrap(dataset, path.getFileName().toString());
         ImageJUtils.calibrate(imagePlus, calibrationParameters.getCalibrationMode(), calibrationParameters.getCustomMin(), calibrationParameters.getCustomMax());
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Axes", description = "The order of the axes. Allowed values are X, Y, Z, C, and T")

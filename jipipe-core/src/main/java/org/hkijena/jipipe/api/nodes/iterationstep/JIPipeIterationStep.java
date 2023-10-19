@@ -1,12 +1,10 @@
-package org.hkijena.jipipe.api.nodes.databatch;
+package org.hkijena.jipipe.api.nodes.iterationstep;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 
-import java.util.Map;
 import java.util.Set;
 
-public interface JIPipeDataBatch {
+public interface JIPipeIterationStep {
     /**
      * Returns the referenced indices of given input slot name
      * @param slotName the slot name

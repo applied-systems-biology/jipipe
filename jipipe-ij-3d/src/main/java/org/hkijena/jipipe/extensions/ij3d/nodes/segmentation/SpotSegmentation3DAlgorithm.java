@@ -7,7 +7,8 @@ import mcib3d.image3d.processing.FastFilters3D;
 import mcib3d.image3d.segment.*;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -53,9 +54,9 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus spotsImage = dataBatch.getInputData("Spots", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus seedsImage = ImageJUtils.unwrap(dataBatch.getInputData("Seeds", ImagePlusGreyscaleMaskData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus spotsImage = iterationStep.getInputData("Spots", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus seedsImage = ImageJUtils.unwrap(iterationStep.getInputData("Seeds", ImagePlusGreyscaleMaskData.class, progressInfo));
 
         Map<ImageSliceIndex, ImageProcessor> labelMap = new HashMap<>();
         IJ3DUtils.forEach3DIn5DIO(spotsImage, (spots3D, index, ctProgress) -> {
@@ -108,7 +109,7 @@ public abstract class SpotSegmentation3DAlgorithm extends JIPipeIteratingAlgorit
 
         ImagePlus outputLabels = ImageJUtils.mergeMappedSlices(labelMap);
         outputLabels.copyScale(spotsImage);
-        dataBatch.addOutputData("Labels", new ImagePlusGreyscaleData(outputLabels), progressInfo);
+        iterationStep.addOutputData("Labels", new ImagePlusGreyscaleData(outputLabels), progressInfo);
     }
 
     protected abstract LocalThresholder createThresholder();

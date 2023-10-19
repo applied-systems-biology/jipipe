@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -64,20 +65,20 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        long projectId = dataBatch.getInputData(getFirstInputSlot(), OMEROProjectReferenceData.class, progressInfo).getProjectId();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        long projectId = iterationStep.getInputData(getFirstInputSlot(), OMEROProjectReferenceData.class, progressInfo).getProjectId();
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         progressInfo.log("Connecting to " + environment);
 
         // Generate tags and kv-pairs
         Set<String> tags = new HashSet<>();
         Map<String, String> kvPairs = new HashMap<>();
-        keyValuePairExporter.createKeyValuePairs(kvPairs, dataBatch.getMergedTextAnnotations().values());
-        tagExporter.createTags(tags, dataBatch.getMergedTextAnnotations().values());
+        keyValuePairExporter.createKeyValuePairs(kvPairs, iterationStep.getMergedTextAnnotations().values());
+        tagExporter.createTags(tags, iterationStep.getMergedTextAnnotations().values());
 
         // Generate name
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         String datasetName = nameGenerator.evaluateToString(variables);
 
         try(OMEROGateway gateway = new OMEROGateway(environment.toLoginCredentials(), progressInfo)) {
@@ -96,7 +97,7 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             progressInfo.log("Attaching tags ...");
             gateway.attachTags(tags, datasetData, securityContext);
 
-            dataBatch.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetData, environment), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetData, environment), progressInfo);
         } catch (DSOutOfServiceException | DSAccessException | ServerError e) {
             throw new RuntimeException(e);
         }

@@ -12,11 +12,11 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
@@ -33,10 +33,10 @@ import java.util.List;
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
-public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBatchAlgorithm {
+public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private GraphWrapperAlgorithm.IterationMode iterationMode = GraphWrapperAlgorithm.IterationMode.IteratingDataBatch;
-    private JIPipeMergingAlgorithmDataBatchGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings();
+    private JIPipeMergingAlgorithmIterationStepGenerationSettings batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings();
 
     public LoopStartNode(JIPipeNodeInfo info) {
         super(info);
@@ -47,7 +47,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
     public LoopStartNode(LoopStartNode other) {
         super(other);
         this.iterationMode = other.iterationMode;
-        this.batchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings(other.batchGenerationSettings);
+        this.batchGenerationSettings = new JIPipeMergingAlgorithmIterationStepGenerationSettings(other.batchGenerationSettings);
     }
 
     @JIPipeDocumentation(name = "Iteration mode", description = "Determines how the loop is iterated:" +
@@ -71,32 +71,32 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
-    public JIPipeMergingAlgorithmDataBatchGenerationSettings getBatchGenerationSettings() {
+    public JIPipeMergingAlgorithmIterationStepGenerationSettings getBatchGenerationSettings() {
         return batchGenerationSettings;
     }
 
     @Override
-    public JIPipeDataBatchGenerationSettings getGenerationSettingsInterface() {
+    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
         return batchGenerationSettings;
     }
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == GraphWrapperAlgorithm.IterationMode.PassThrough) {
-            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
+            JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
             for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
                 for (int row = 0; row < inputSlot.getRowCount(); row++) {
-                    dataBatch.addInputData(inputSlot, row);
+                    iterationStep.addInputData(inputSlot, row);
                 }
             }
 
             // Generate result object
             JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
-            result.setDataBatches(dataBatch);
+            result.setDataBatches(iterationStep);
 
             return result;
         } else {
-            JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
+            JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
             builder.setNode(this);
             builder.setApplyMerging(iterationMode == GraphWrapperAlgorithm.IterationMode.MergingDataBatch);
             builder.setSlots(slots);
@@ -106,36 +106,36 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
             builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
             builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
             builder.setForceFlowGraphSolver(batchGenerationSettings.isForceFlowGraphSolver());
-            List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
-            dataBatches.sort(Comparator.naturalOrder());
+            List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
+            iterationSteps.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new ExpressionVariables())) : null;
             if (withLimit) {
                 progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-                List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
-                for (int i = 0; i < dataBatches.size(); i++) {
+                List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
+                for (int i = 0; i < iterationSteps.size(); i++) {
                     if (allowedIndices.contains(i)) {
-                        limitedBatches.add(dataBatches.get(i));
+                        limitedBatches.add(iterationSteps.get(i));
                     }
                 }
-                dataBatches = limitedBatches;
+                iterationSteps = limitedBatches;
             }
-            List<JIPipeMultiDataBatch> incomplete = new ArrayList<>();
-            for (JIPipeMultiDataBatch dataBatch : dataBatches) {
-                if (dataBatch.isIncomplete()) {
-                    incomplete.add(dataBatch);
-                    progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+            List<JIPipeMultiIterationStep> incomplete = new ArrayList<>();
+            for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
+                if (iterationStep.isIncomplete()) {
+                    incomplete.add(iterationStep);
+                    progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + iterationStep);
                 }
             }
             if (!incomplete.isEmpty() && batchGenerationSettings.isSkipIncompleteDataSets()) {
                 progressInfo.log("[WARN] SKIPPING INCOMPLETE DATA BATCHES AS REQUESTED");
-                dataBatches.removeAll(incomplete);
+                iterationSteps.removeAll(incomplete);
             }
 
             // Generate result object
             JIPipeDataBatchGenerationResult result = new JIPipeDataBatchGenerationResult();
-            result.setDataBatches(dataBatches);
+            result.setDataBatches(iterationSteps);
             result.setReferenceTextAnnotationColumns(builder.getReferenceColumns());
 
             return result;

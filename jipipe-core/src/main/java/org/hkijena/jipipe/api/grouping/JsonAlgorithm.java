@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.utils.ParameterUtils;
 
@@ -122,7 +122,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
-    public JIPipeMergingAlgorithmDataBatchGenerationSettings getBatchGenerationSettings() {
+    public JIPipeMergingAlgorithmIterationStepGenerationSettings getBatchGenerationSettings() {
         return super.getBatchGenerationSettings();
     }
 

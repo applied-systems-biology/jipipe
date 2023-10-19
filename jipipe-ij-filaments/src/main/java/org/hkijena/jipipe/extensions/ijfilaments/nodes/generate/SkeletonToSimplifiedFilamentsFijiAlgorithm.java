@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -68,14 +69,14 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus skeleton = dataBatch.getInputData("Skeleton", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus skeleton = iterationStep.getInputData("Skeleton", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
         Roi excludeRoi = null;
         ImagePlus referenceImage = null;
 
         // Get the excluded ROI
         if (pruneEndsMethod == AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod.ExcludeROI) {
-            ROIListData roi = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+            ROIListData roi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
             if (roi != null && !roi.isEmpty()) {
                 if (roi.size() == 1)
                     excludeRoi = roi.get(0);
@@ -89,7 +90,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
 
         // Get reference image
         if (pruneCyclesMethod == AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod.LowestIntensityBranch || pruneCyclesMethod == AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod.LowestIntensityVoxel) {
-            ImagePlus3DGreyscale8UData imageData = dataBatch.getInputData("Reference", ImagePlus3DGreyscale8UData.class, progressInfo);
+            ImagePlus3DGreyscale8UData imageData = iterationStep.getInputData("Reference", ImagePlus3DGreyscale8UData.class, progressInfo);
             if (imageData != null) {
                 referenceImage = imageData.getImage();
             }
@@ -132,7 +133,7 @@ public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingA
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), filamentsData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), filamentsData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Prune cycles method", description = "Allows the selection of a method to prune possible loops in the skeleton")

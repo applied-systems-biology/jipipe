@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -41,12 +42,12 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData rois = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
 
         ExpressionVariables parameters = new ExpressionVariables();
         if (includeAnnotations) {
-            for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 parameters.set(annotation.getName(), annotation.getValue());
             }
         }
@@ -57,9 +58,9 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         parameters.set("width", bounds.width);
         parameters.set("height", bounds.height);
         if (filter.test(parameters)) {
-            dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
         } else if (outputEmptyLists) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ROIListData(), progressInfo);
         }
     }
 

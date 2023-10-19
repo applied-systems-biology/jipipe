@@ -17,7 +17,8 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -48,7 +49,7 @@ public class CreateSpotDetectorNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Map<String, Object> settings = new HashMap<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
             String settingsKey = nodeInfo.getSettingsToParameterMap().inverse().get(entry.getKey());
@@ -57,7 +58,7 @@ public class CreateSpotDetectorNode extends JIPipeSimpleIteratingAlgorithm {
             settings.put(settingsKey, settingValue);
         }
         SpotDetectorData spotDetectorData = new SpotDetectorData(nodeInfo.getSpotDetectorFactory(), settings);
-        dataBatch.addOutputData(getFirstOutputSlot(), spotDetectorData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), spotDetectorData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Spot detector settings")

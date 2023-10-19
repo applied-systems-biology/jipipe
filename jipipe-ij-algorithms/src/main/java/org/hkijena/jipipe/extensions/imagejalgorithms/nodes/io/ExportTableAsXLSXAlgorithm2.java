@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
@@ -53,7 +54,7 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -66,7 +67,7 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
                 projectDataDirs,
                 null,
                 -1,
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
         outputPath = PathUtils.ensureExtension(outputPath, ".xlsx");
         PathUtils.ensureParentDirectoriesExist(outputPath);
 
@@ -75,7 +76,7 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
 
             // Collect the sheets
             Map<String, ResultsTableData> sheets = new HashMap<>();
-            for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
+            for (int row : iterationStep.getInputRows(getFirstInputSlot())) {
                 ResultsTableData tableData = getFirstInputSlot().getData(row, ResultsTableData.class, progressInfo);
 
                 ExpressionVariables variables = new ExpressionVariables();
@@ -91,8 +92,8 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
             List<String> sortedSheets = new ArrayList<>();
             {
                 ExpressionVariables variables = new ExpressionVariables();
-                variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-                variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting));
+                variables.putAnnotations(iterationStep.getMergedTextAnnotations());
+                variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(iterationStep.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting));
                 variables.set("sheet_names", new ArrayList<>(sheets.keySet()));
                 Object result = orderExpression.evaluate(variables);
                 if (result instanceof String) {
@@ -119,7 +120,7 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
 
             // Save outputs
             workbook.write(Files.newOutputStream(outputPath));
-            dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

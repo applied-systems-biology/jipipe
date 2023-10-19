@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -96,10 +97,10 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
 
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+        ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         ROIListData outputData = new ROIListData();
 
@@ -136,7 +137,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
         }
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         int topN = (int) selection.apply(data.size(), variables);
         if (autoClamp) {
             topN = Math.min(topN, data.size());
@@ -153,7 +154,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
             outputData.add(roi);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Sort order", description = "Allows you to determine by which measurement columns to sort by. You can order by multiple columns " +

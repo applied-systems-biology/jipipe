@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
@@ -39,8 +40,8 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData inputData = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -52,8 +53,8 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
                 getProjectDirectory(),
                 projectDataDirs,
                 inputData.toString(),
-                dataBatch.getInputRow(getFirstInputSlot()),
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                iterationStep.getInputRow(getFirstInputSlot()),
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
         PathUtils.ensureParentDirectoriesExist(outputPath);
 
         if (exportAsROIFile && inputData.size() > 1) {
@@ -68,11 +69,11 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
                 }
                 Path path = PathUtils.ensureExtension(outputPath.getParent().resolve(roiName), ".roi");
                 ROIListData.saveSingleRoi(roi, path);
-                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(path), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new FileData(path), progressInfo);
             }
         } else {
             outputPath = inputData.saveToRoiOrZip(outputPath);
-            dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
         }
     }
 

@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -45,8 +46,8 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        String targetedAnnotationName = annotationNameQuery.queryFirst(dataBatch.getMergedDataAnnotations().keySet(), new ExpressionVariables());
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        String targetedAnnotationName = annotationNameQuery.queryFirst(iterationStep.getMergedDataAnnotations().keySet(), new ExpressionVariables());
         if (targetedAnnotationName == null) {
             if (ignoreMissingAnnotations)
                 return;
@@ -54,22 +55,22 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
                     new GraphNodeValidationReportContext(this),
                     "Could not find data annotation matching '" + annotationNameQuery.getExpression() + "'",
                     "The node tried to find a data annotation that matches the expression '" + annotationNameQuery.getExpression() + "', but none did match. Following were available: " +
-                            String.join(", ", dataBatch.getMergedTextAnnotations().keySet()),
+                            String.join(", ", iterationStep.getMergedTextAnnotations().keySet()),
                     "Check if the expression is correct or enable 'Ignore missing annotations'"));
         }
-        JIPipeDataAnnotation dataAnnotation = dataBatch.getMergedDataAnnotation(targetedAnnotationName);
+        JIPipeDataAnnotation dataAnnotation = iterationStep.getMergedDataAnnotation(targetedAnnotationName);
         if (!keepOtherDataAnnotations) {
-            dataBatch.getMergedTextAnnotations().clear();
-            dataBatch.addMergedDataAnnotation(dataAnnotation, JIPipeDataAnnotationMergeMode.OverwriteExisting);
+            iterationStep.getMergedTextAnnotations().clear();
+            iterationStep.addMergedDataAnnotation(dataAnnotation, JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
         if (!keepCurrentAnnotation) {
-            dataBatch.removeMergedDataAnnotation(targetedAnnotationName);
+            iterationStep.removeMergedDataAnnotation(targetedAnnotationName);
         }
         if (annotateWithCurrentData.isEnabled()) {
-            dataBatch.addMergedDataAnnotation(new JIPipeDataAnnotation(annotateWithCurrentData.getContent(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo)),
+            iterationStep.addMergedDataAnnotation(new JIPipeDataAnnotation(annotateWithCurrentData.getContent(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo)),
                     JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), dataAnnotation.getData(JIPipeData.class, progressInfo), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), dataAnnotation.getData(JIPipeData.class, progressInfo), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Extracted data annotation", description = "Determines which annotation is extracted. If multiple match, the first matching annotation column is used. ")

@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -71,8 +72,8 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
 
         if (inputData.getImage().hasImageStack()) {
@@ -85,12 +86,12 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
             ImagePlus result = new ImagePlus("CLAHE", stack);
             result.setDimensions(inputData.getImage().getNChannels(), inputData.getImage().getNSlices(), inputData.getImage().getNFrames());
             result.copyScale(inputData.getImage());
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         } else {
             ImagePlus result = inputData.getDuplicateImage();
             clahe.run(result, blockRadius, bins, maxSlope, null, true);
             result.copyScale(inputData.getImage());
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
     }
 

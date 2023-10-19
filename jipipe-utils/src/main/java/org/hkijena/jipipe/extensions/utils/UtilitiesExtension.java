@@ -36,6 +36,8 @@ import org.hkijena.jipipe.extensions.utils.algorithms.*;
 import org.hkijena.jipipe.extensions.utils.algorithms.datatable.*;
 import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByCountAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByPercentageAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps.MultiIterationStepCheckerAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps.SingleIterationStepCheckerAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.meta.GetJIPipeSlotFolderAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.meta.JIPipeProjectParameterDefinition;
 import org.hkijena.jipipe.extensions.utils.algorithms.meta.PathsToJIPipeProjectParametersAlgorithm;
@@ -113,7 +115,7 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("select-data-table-rows", SelectDataTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("run-expression", RunExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("generate-placeholder-for-missing-data", UsePlaceholderForMissingDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/glob.png"));
-        registerNodeType("data-batch-slicer", DataBatchSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("data-batch-slicer", IterationStepSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("data-slicer", DataSlicer.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("distribute-data", DistributeDataRandomlyByPercentageAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
         registerNodeType("distribute-data-by-count", DistributeDataRandomlyByCountAlgorithm.class, UIUtils.getIconURLFromResources("actions/distribute-randomize.png"));
@@ -124,6 +126,9 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("sleep", SleepAlgorithm.class, UIUtils.getIconURLFromResources("actions/clock.png"));
         registerNodeType("duplicate", DuplicateDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-duplicate.png"));
+
+        registerNodeType("check-iteration-step-single", SingleIterationStepCheckerAlgorithm.class, UIUtils.getIconURLFromResources("actions/package.png"));
+        registerNodeType("check-iteration-step-multi", MultiIterationStepCheckerAlgorithm.class, UIUtils.getIconURLFromResources("actions/package.png"));
 
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);

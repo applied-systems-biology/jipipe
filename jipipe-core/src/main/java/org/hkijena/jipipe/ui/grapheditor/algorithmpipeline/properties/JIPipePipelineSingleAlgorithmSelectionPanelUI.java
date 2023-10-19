@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
 import org.hkijena.jipipe.extensions.nodetemplate.AddTemplateContextMenuAction;
@@ -92,7 +92,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
             tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                     () -> slotEditorUI,
                     DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
-            if (node instanceof JIPipeDataBatchAlgorithm) {
+            if (node instanceof JIPipeIterationStepAlgorithm) {
                 batchAssistantTabContent = new JPanel(new BorderLayout());
                 tabbedPane.registerSingletonTab("DATA_BATCHES", "Input management", UIUtils.getIconFromResources("actions/package.png"),
                         () -> batchAssistantTabContent,
@@ -138,10 +138,10 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                         DocumentTabPane.CloseMode.withoutCloseButton,
                         DocumentTabPane.SingletonTabMode.Present);
             }
-            if (node instanceof JIPipeDataBatchAlgorithm) {
+            if (node instanceof JIPipeIterationStepAlgorithm) {
                 tabbedPane.addTab("Input management",
                         UIUtils.getIconFromResources("actions/package.png"),
-                        new ParameterPanel(getWorkbench(), ((JIPipeDataBatchAlgorithm) node).getGenerationSettingsInterface(), null, ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING),
+                        new ParameterPanel(getWorkbench(), ((JIPipeIterationStepAlgorithm) node).getGenerationSettingsInterface(), null, ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING),
                         DocumentTabPane.CloseMode.withoutCloseButton);
             }
         }
@@ -270,7 +270,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 cacheBrowserTabContent.add(browserUI, BorderLayout.CENTER);
             }
         }
-        if (node instanceof JIPipeDataBatchAlgorithm) {
+        if (node instanceof JIPipeIterationStepAlgorithm) {
             if (batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
                 if (batchAssistantTabContent.getComponentCount() == 0) {
                     DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), node,
@@ -390,7 +390,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 catch (IllegalArgumentException ignored) {
                 }
             } else if (showBatchAssistant) {
-                if (node instanceof JIPipeDataBatchAlgorithm) {
+                if (node instanceof JIPipeIterationStepAlgorithm) {
                     SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(batchAssistantTabContent));
                 }
             }

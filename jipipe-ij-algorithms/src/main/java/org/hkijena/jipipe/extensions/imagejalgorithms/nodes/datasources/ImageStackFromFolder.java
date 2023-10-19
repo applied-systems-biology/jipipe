@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -63,6 +64,8 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
     private IntegerRange slicesToImport = new IntegerRange();
     private boolean ignoreInvalidSlices = false;
 
+    private boolean forceNativeImport = false;
+
     /**
      * @param info algorithm info
      */
@@ -84,6 +87,18 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         this.filterExpression = new PathQueryExpression(other.filterExpression);
         this.slicesToImport = new IntegerRange(other.slicesToImport);
         this.ignoreInvalidSlices = other.ignoreInvalidSlices;
+        this.forceNativeImport = other.forceNativeImport;
+    }
+
+    @JIPipeDocumentation(name = "Force native ImageJ importer", description = "If enabled, always use the native ImageJ file importer, even if the file looks like it can only be read by Bio-Formats")
+    @JIPipeParameter("force-native-import")
+    public boolean isForceNativeImport() {
+        return forceNativeImport;
+    }
+
+    @JIPipeParameter("force-native-import")
+    public void setForceNativeImport(boolean forceNativeImport) {
+        this.forceNativeImport = forceNativeImport;
     }
 
     @JIPipeDocumentation(name = "Remove LUT", description = "If enabled, remove the LUT information if present")
@@ -98,8 +113,8 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Path inputFolder = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         try {
             progressInfo.log("Looking for files in " + inputFolder);
             List<Path> inputFiles = Files.list(inputFolder).filter(filterExpression).collect(Collectors.toList());
@@ -128,7 +143,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             for (int i = 0; i < inputFiles.size(); i++) {
                 Path file = inputFiles.get(i);
                 JIPipeProgressInfo fileProgress = progressInfo.resolveAndLog(file.getFileName().toString(), i, inputFiles.size());
-                ImagePlus image = ImagePlusFromFile.readImageFrom(file, fileProgress);
+                ImagePlus image = ImagePlusFromFile.readImageFrom(file, forceNativeImport, fileProgress);
                 images.add(image);
             }
 
@@ -155,7 +170,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             } else if (outputDimension == HyperstackDimension.Frame) {
                 merged.setDimensions(1, 1, merged.getNSlices());
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(generatedImageType.getInfo().getDataClass(), merged), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), JIPipe.createData(generatedImageType.getInfo().getDataClass(), merged), progressInfo);
 
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -72,8 +73,8 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         FileFormat format = fileFormat;
         if (format == FileFormat.Auto) {
             if (UIUtils.EXTENSION_FILTER_CSV.accept(fileData.toPath().toFile())) {
@@ -89,12 +90,12 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
         switch (format) {
             case CSV: {
                 ResultsTableData tableData = ResultsTableData.fromCSV(fileData.toPath());
-                dataBatch.addOutputData(getFirstOutputSlot(), tableData, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), tableData, progressInfo);
             }
             break;
             case TSV: {
                 ResultsTableData tableData = ResultsTableData.fromCSV(fileData.toPath(), "\t");
-                dataBatch.addOutputData(getFirstOutputSlot(), tableData, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), tableData, progressInfo);
             }
             break;
             case XLSX: {
@@ -116,7 +117,7 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
                         continue;
                     List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
                     sheetNameAnnotation.addAnnotationIfEnabled(annotationList, sheetName);
-                    dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+                    iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
                 }
             }
             break;

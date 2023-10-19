@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -68,9 +69,9 @@ public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<TableColumn> columnList = new ArrayList<>();
-        List<ResultsTableData> inputTables = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+        List<ResultsTableData> inputTables = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         int nRow = 0;
         for (ResultsTableData tableData : inputTables) {
             nRow = Math.max(nRow, tableData.getRowCount());
@@ -93,7 +94,7 @@ public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {
             existing.add(name);
             outputData.addColumn(name, column, true);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Row normalization", description = "Determines how missing column values are handled if the input tables have different numbers of rows. " +

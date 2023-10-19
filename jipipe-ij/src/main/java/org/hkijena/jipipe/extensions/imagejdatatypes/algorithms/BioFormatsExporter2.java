@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
@@ -59,8 +60,8 @@ public class BioFormatsExporter2 extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        OMEImageData inputData = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        OMEImageData inputData = iterationStep.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -72,8 +73,8 @@ public class BioFormatsExporter2 extends JIPipeSimpleIteratingAlgorithm {
                 getProjectDirectory(),
                 projectDataDirs,
                 inputData.toString(),
-                dataBatch.getInputRow(getFirstInputSlot()),
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                iterationStep.getInputRow(getFirstInputSlot()),
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
 
         // Postprocess path
         outputPath = PathUtils.ensureExtension(outputPath, ".ome.tif", "ome.tiff");
@@ -81,7 +82,7 @@ public class BioFormatsExporter2 extends JIPipeSimpleIteratingAlgorithm {
 
         OMEImageData.OMEExport(inputData, outputPath, exporterSettings);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")

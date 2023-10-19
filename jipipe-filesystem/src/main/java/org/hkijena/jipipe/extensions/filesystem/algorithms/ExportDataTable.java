@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -48,8 +49,8 @@ public class ExportDataTable extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path outputDirectory = dataBatch.getInputData("Path", PathData.class, progressInfo).get(0).toPath();
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Path outputDirectory = iterationStep.getInputData("Path", PathData.class, progressInfo).get(0).toPath();
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             outputDirectory = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
         }
@@ -60,9 +61,9 @@ public class ExportDataTable extends JIPipeMergingAlgorithm {
                 throw new RuntimeException(e);
             }
         }
-        JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output", ""), this, getInputSlot("Data"), progressInfo);
+        JIPipeDataSlot batchSlot = iterationStep.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output", ""), this, getInputSlot("Data"), progressInfo);
         batchSlot.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputDirectory), progressInfo);
-        dataBatch.addOutputData("Path", new PathData(outputDirectory), progressInfo);
+        iterationStep.addOutputData("Path", new PathData(outputDirectory), progressInfo);
     }
 }
 

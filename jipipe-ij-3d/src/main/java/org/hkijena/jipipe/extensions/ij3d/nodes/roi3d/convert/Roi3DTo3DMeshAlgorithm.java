@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
@@ -113,8 +114,8 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData rois = dataBatch.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
         Scene3DData scene3DData = new Scene3DData();
         for (int i = 0; i < rois.size(); i++) {
             ROI3D roi3D = rois.get(i);
@@ -123,6 +124,6 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             geometry.setName(StringUtils.nullToEmpty(meshNamePrefix) + StringUtils.nullToEmpty(geometry.getName()));
             scene3DData.add(geometry);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
     }
 }

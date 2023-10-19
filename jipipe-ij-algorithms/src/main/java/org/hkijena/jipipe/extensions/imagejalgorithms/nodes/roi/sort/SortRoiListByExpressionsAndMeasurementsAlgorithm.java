@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -55,16 +56,16 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+        ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         ExpressionVariables parameters = new ExpressionVariables();
         ROIListData tmp = new ROIListData();
 
         if (includeAnnotations) {
-            parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
+            parameters.putAnnotations(iterationStep.getMergedTextAnnotations());
         }
         customFilterVariables.writeToVariables(parameters, true, "custom.", true, "custom");
 
@@ -98,7 +99,7 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
             outputRois.sort(Comparator.comparing(sortKeys::get, NaturalOrderComparator.INSTANCE).reversed());
         else
             outputRois.sort(Comparator.comparing(sortKeys::get, NaturalOrderComparator.INSTANCE));
-        dataBatch.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Expression", description = "The expression is executed per ROI.")

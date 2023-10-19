@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -50,13 +51,13 @@ public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorith
 
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JsonData data = dataBatch.getInputData(getFirstInputSlot(), JsonData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JsonData data = iterationStep.getInputData(getFirstInputSlot(), JsonData.class, progressInfo);
         DocumentContext documentContext = JsonPath.parse(data.getData());
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String path = entry.getJsonPath().evaluateToString(variables);
             String annotationName = entry.getAnnotationName().evaluateToString(variables);
@@ -65,7 +66,7 @@ public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorith
             annotationList.add(new JIPipeTextAnnotation(annotationName, annotationValue));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")

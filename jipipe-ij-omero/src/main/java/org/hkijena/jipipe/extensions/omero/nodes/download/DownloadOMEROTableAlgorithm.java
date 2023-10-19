@@ -27,7 +27,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -80,9 +81,9 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
-        OMEROImageReferenceData imageReferenceData = dataBatch.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
+        OMEROImageReferenceData imageReferenceData = iterationStep.getInputData(getFirstInputSlot(), OMEROImageReferenceData.class, progressInfo);
         try (OMEROGateway gateway = new OMEROGateway(environment.toLoginCredentials(), progressInfo)) {
             TablesFacility tablesFacility = gateway.getGateway().getFacility(TablesFacility.class);
             ImageData imageData = gateway.getImage(imageReferenceData.getImageId(), -1);
@@ -102,7 +103,7 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 } catch (DSOutOfServiceException | DSAccessException e) {
                     throw new RuntimeException(e);
                 }
-                dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -54,12 +54,12 @@ public class GroupHeaderFormData extends ParameterFormData {
     }
 
     @Override
-    public void loadData(JIPipeMultiDataBatch dataBatch) {
+    public void loadData(JIPipeMultiIterationStep iterationStep) {
 
     }
 
     @Override
-    public void writeData(JIPipeMultiDataBatch dataBatch) {
+    public void writeData(JIPipeMultiIterationStep iterationStep) {
 
     }
 

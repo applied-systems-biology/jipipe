@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.ManualThreshold8U2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -65,14 +66,14 @@ public class BinarizeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ManualThreshold8U2DAlgorithm algorithm = JIPipe.createNode(ManualThreshold8U2DAlgorithm.class);
         if (!invert)
             algorithm.setThreshold(new IntNumberRangeParameter(1, 256));
         else
             algorithm.setThreshold(new IntNumberRangeParameter(256, 1));
-        algorithm.getFirstInputSlot().addData(dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo), progressInfo);
+        algorithm.getFirstInputSlot().addData(iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo), progressInfo);
         algorithm.run(progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscaleMaskData.class, progressInfo), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), algorithm.getFirstOutputSlot().getData(0, ImagePlusGreyscaleMaskData.class, progressInfo), progressInfo);
     }
 }

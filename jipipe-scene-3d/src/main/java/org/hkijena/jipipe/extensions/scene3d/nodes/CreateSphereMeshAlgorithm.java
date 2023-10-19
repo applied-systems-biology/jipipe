@@ -3,7 +3,8 @@ package org.hkijena.jipipe.extensions.scene3d.nodes;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -32,10 +33,10 @@ public class CreateSphereMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Scene3DData scene3DData = new Scene3DData();
         scene3DData.add(new Scene3DSphereGeometry(getGeometry()));
-        dataBatch.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), scene3DData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Sphere parameters", description = "The following settings allow to determine the properties of the sphere")

@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
@@ -138,15 +139,15 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
         int sx = img.getWidth();
         int sy = img.getHeight();
 
         ExpressionVariables variables = new ExpressionVariables();
-        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getMergedTextAnnotations().values());
+        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, iterationStep.getMergedTextAnnotations().values());
 
         if (xAxis.isEnabled() && yAxis.isEnabled()) {
             variables.set("x", sx);
@@ -167,7 +168,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         if (avoidUnnecessaryScaling && img.getWidth() == sx && img.getHeight() == sy) {
             progressInfo.log("Image already has the target size. No scaling needed.");
-            dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         } else {
             if (img.hasImageStack()) {
                 ImageStack result = new ImageStack(sx, sy, img.getStackSize());
@@ -180,12 +181,12 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 ImagePlusData resized = new ImagePlusData(new ImagePlus("Resized", result));
                 resized.getImage().setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
                 resized.getImage().copyScale(img);
-                dataBatch.addOutputData(getFirstOutputSlot(), resized, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), resized, progressInfo);
             } else {
                 ImageProcessor resized = scaleProcessor(img.getProcessor(), sx, sy, interpolationMethod, interpolationMethod != InterpolationMethod.None, scaleMode, anchor, background);
                 ImagePlus result = new ImagePlus("Resized", resized);
                 result.copyScale(img);
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
             }
         }
     }

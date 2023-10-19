@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -35,9 +36,9 @@ public class SetImageMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus imagePlus = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
-        ResultsTableData metadata = dataBatch.getInputData("Metadata", ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus imagePlus = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
+        ResultsTableData metadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
 
         if (metadata.getRowCount() > 0) {
             Map<String, String> properties = clearBeforeWrite ? new HashMap<>() : ImageJUtils.getImageProperties(imagePlus);
@@ -47,7 +48,7 @@ public class SetImageMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
             ImageJUtils.setImageProperties(imagePlus, properties);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Clear properties before write", description = "If enabled, all existing ROI properties are deleted before writing the new properties")

@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.*;
@@ -49,12 +50,12 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        TrackCollectionData trackCollectionData = dataBatch.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        TrackCollectionData trackCollectionData = iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
         ImagePlus image = trackCollectionData.getImage();
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         variables.set("n_tracks", trackCollectionData.getTrackModel().nTracks(true));
 
         int index = 0;
@@ -129,7 +130,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
             for (NamedTextAnnotationGeneratorExpression expression : annotationGenerator) {
                 annotations.add(expression.generateTextAnnotation(annotations, variables));
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), rois, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), rois, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             ++index;
         }
     }

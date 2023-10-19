@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -94,16 +94,16 @@ public abstract class FormData extends AbstractJIPipeParameterCollection impleme
     /**
      * This method is called by the form processor nodes on loading data into this form.
      *
-     * @param dataBatch the data batch
+     * @param iterationStep the data batch
      */
-    public abstract void loadData(JIPipeMultiDataBatch dataBatch);
+    public abstract void loadData(JIPipeMultiIterationStep iterationStep);
 
     /**
      * This method should write any changes into the data batch
      *
-     * @param dataBatch the data batch
+     * @param iterationStep the data batch
      */
-    public abstract void writeData(JIPipeMultiDataBatch dataBatch);
+    public abstract void writeData(JIPipeMultiIterationStep iterationStep);
 
     /**
      * Loads metadata from JSON

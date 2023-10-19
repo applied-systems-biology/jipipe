@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -71,11 +72,11 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<Integer> selectedRows = new ArrayList<>();
         ExpressionVariables variableSet = new ExpressionVariables();
-        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
         customExpressionVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
         variableSet.set("num_rows", input.getRowCount());
         variableSet.set("num_cols", input.getColumnCount());
@@ -100,7 +101,7 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         ResultsTableData output = input.getRows(selectedRows);
-        dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Filters", description = "Allows you to select how to filter the values. " +

@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 
 import java.nio.file.Path;
@@ -58,6 +60,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     private OptionalAnnotationNameParameter titleAnnotation = new OptionalAnnotationNameParameter();
     private boolean removeLut = false;
     private boolean removeOverlay = false;
+    private boolean forceNativeImport = false;
 
     /**
      * @param info algorithm info
@@ -78,19 +81,20 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         this.titleAnnotation = new OptionalAnnotationNameParameter(other.titleAnnotation);
         this.removeLut = other.removeLut;
         this.removeOverlay = other.removeOverlay;
+        this.forceNativeImport = other.forceNativeImport;
     }
 
     /**
      * Loads an image from a file path
      *
-     * @param fileName     the image file name
-     * @param progressInfo progress
+     * @param fileName           the image file name
+     * @param forceNativeImport forces the native IJ.open command. otherwise, Bio-Formats might be used
+     * @param progressInfo       progress
      * @return the generated data
      */
-    public static ImagePlus readImageFrom(Path fileName, JIPipeProgressInfo progressInfo) {
+    public static ImagePlus readImageFrom(Path fileName, boolean forceNativeImport, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
-        String fileNameString = fileName.getFileName().toString();
-        if (fileNameString.endsWith(".ome.tiff") || fileNameString.endsWith(".ome.tif") || fileNameString.endsWith(".czi")) {
+        if (!forceNativeImport && !CoreImageJUtils.supportsNativeImport(fileName)) {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
@@ -117,6 +121,17 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         return image;
     }
 
+    @JIPipeDocumentation(name = "Force native ImageJ importer", description = "If enabled, always use the native ImageJ file importer, even if the file looks like it can only be read by Bio-Formats")
+    @JIPipeParameter("force-native-import")
+    public boolean isForceNativeImport() {
+        return forceNativeImport;
+    }
+
+    @JIPipeParameter("force-native-import")
+    public void setForceNativeImport(boolean forceNativeImport) {
+        this.forceNativeImport = forceNativeImport;
+    }
+
     @JIPipeDocumentation(name = "Remove overlays", description = "If enabled, remove overlay ROIs from the imported image")
     @JIPipeParameter("remove-overlay")
     public boolean isRemoveOverlay() {
@@ -140,10 +155,10 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         ImagePlusData outputData;
-        ImagePlus image = readImageFrom(fileData.toPath(), progressInfo);
+        ImagePlus image = readImageFrom(fileData.toPath(), forceNativeImport, progressInfo);
         if (removeLut) {
             ImageJUtils.removeLUT(image, null);
         }
@@ -155,7 +170,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
         if (titleAnnotation.isEnabled()) {
             annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), outputData.getImage().getTitle()));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Title annotation", description = "Optional annotation type where the image title is written.")

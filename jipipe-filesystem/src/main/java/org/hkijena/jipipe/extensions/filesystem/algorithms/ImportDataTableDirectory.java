@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -68,12 +69,12 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         if (ignoreInputTextAnnotations)
-            dataBatch.setMergedTextAnnotations(new HashMap<>());
+            iterationStep.setMergedTextAnnotations(new HashMap<>());
         if (ignoreInputDataAnnotations)
-            dataBatch.setMergedDataAnnotations(new HashMap<>());
-        Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
+            iterationStep.setMergedDataAnnotations(new HashMap<>());
+        Path dataFolder = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new GraphNodeValidationReportContext(this),
@@ -86,7 +87,7 @@ public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             List<JIPipeTextAnnotation> textAnnotationList = ignoreImportedTextAnnotations ? Collections.emptyList() : dataTable.getTextAnnotations(row);
             List<JIPipeDataAnnotation> dataAnnotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : dataTable.getDataAnnotations(row);
-            dataBatch.addOutputData(getFirstOutputSlot(),
+            iterationStep.addOutputData(getFirstOutputSlot(),
                     dataTable.getData(row, JIPipeData.class, progressInfo),
                     textAnnotationList,
                     textAnnotationMergeMode,

@@ -29,7 +29,8 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -97,8 +98,8 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImagePlus[] split;
         if (!imp.isComposite() && imp.getType() != ImagePlus.COLOR_RGB) {
             imp = new CompositeImage(imp);
@@ -138,7 +139,7 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             channelIndexAnnotation.addAnnotationIfEnabled(annotations, channelIndex + "");
             channelNameAnnotation.addAnnotationIfEnabled(annotations, slotName);
 
-            dataBatch.addOutputData(outputSlot, new ImagePlusData(split[channelIndex]), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(outputSlot, new ImagePlusData(split[channelIndex]), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

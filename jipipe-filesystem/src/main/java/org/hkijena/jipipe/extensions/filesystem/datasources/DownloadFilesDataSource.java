@@ -4,7 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -38,7 +39,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         for (String urlString : urls) {
             try {
                 if (urlString.isEmpty()) {
@@ -54,7 +55,7 @@ public class DownloadFilesDataSource extends JIPipeSimpleIteratingAlgorithm {
                 Path targetFile = getNewScratch().resolve(fileName);
                 WebUtils.download(url, targetFile, getDisplayName(), progressInfo);
 
-                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(targetFile), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new FileData(targetFile), progressInfo);
             } catch (MalformedURLException e) {
                 throw new JIPipeValidationRuntimeException(e,
                         "Invalid URL!",

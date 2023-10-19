@@ -12,7 +12,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
@@ -63,9 +64,9 @@ public class FastKeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlg
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus keyImage = dataBatch.getInputData("Threshold", ImagePlusGreyscale32FData.class, progressInfo).getImage();
-        ImagePlus valueImage = dataBatch.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus keyImage = iterationStep.getInputData("Threshold", ImagePlusGreyscale32FData.class, progressInfo).getImage();
+        ImagePlus valueImage = iterationStep.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         TDoubleObjectHashMap<TFloatList> bucketedValues = new TDoubleObjectHashMap<>();
 
         if (!ImageJUtils.imagesHaveSameSize(keyImage, valueImage)) {
@@ -164,7 +165,7 @@ public class FastKeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlg
             outputTable.setValueAt(background, row, outputBackgroundColumnIndex);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")

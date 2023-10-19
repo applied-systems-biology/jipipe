@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -49,9 +50,9 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-        PathData pathData = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
+        PathData pathData = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
 
         try {
             Path path = pathData.toPath();
@@ -119,7 +120,7 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
             lastModifiedTime.addAnnotationIfEnabled(annotations, "Error");
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), pathData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), pathData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotate with file name", description = "If enabled, a file/directory name annotation is created")

@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -77,7 +78,7 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
@@ -86,7 +87,7 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Generate the path
-        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), iterationStep.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         // If absolute -> use the path, otherwise use output directory
         if (generatedPath.isAbsolute()) {
@@ -100,10 +101,10 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
         PathUtils.ensureParentDirectoriesExist(outputPath);
 
 
-        OMEImageData input = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
+        OMEImageData input = iterationStep.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
         OMEImageData.OMEExport(input, outputPath, exporterSettings);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")

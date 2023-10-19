@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -47,11 +48,11 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        StringData data = dataBatch.getInputData(getFirstInputSlot(), StringData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        StringData data = iterationStep.getInputData(getFirstInputSlot(), StringData.class, progressInfo);
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         List<TableColumn> columns = new ArrayList<>();
 
@@ -73,7 +74,7 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         columns = columnNormalization.normalize(columns);
         ResultsTableData resultsTableData = new ResultsTableData(columns);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns.")

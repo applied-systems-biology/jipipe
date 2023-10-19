@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -97,13 +98,13 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getImage();
 
         Rectangle imageArea = new Rectangle(0, 0, img.getWidth(), img.getHeight());
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         Rectangle cropped = roi.getInsideArea(imageArea, variables);
         if (cropped == null || cropped.width == 0 || cropped.height == 0) {
             throw new JIPipeValidationRuntimeException(new NullPointerException("Cropped rectangle is null or empty!"),
@@ -122,7 +123,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ImagePlus croppedImg = crop(progressInfo, img, cropped);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), progressInfo);
     }
 
     @JIPipeDocumentation(name = "ROI", description = "Defines the area to crop.")

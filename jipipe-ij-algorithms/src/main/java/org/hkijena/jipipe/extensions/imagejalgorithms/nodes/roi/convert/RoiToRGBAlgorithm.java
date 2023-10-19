@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.RoiLabel;
@@ -123,9 +124,9 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
-        ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Image", ImagePlusData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData rois = (ROIListData) iterationStep.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Image", ImagePlusData.class, progressInfo));
 
         if (reference == null) {
             reference = rois.createBlankCanvas("empty", BitDepth.ColorRGB);
@@ -150,7 +151,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (magnification == 1.0 && !preferRenderViaOverlay) {
             ImagePlus result = drawer.draw(reference, rois, progressInfo);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         } else {
             rois = new ROIListData(rois);
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(reference, magnification);
@@ -170,7 +171,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             ImagePlus result = new ImagePlus("ROI", targetStack);
             ImageJUtils.copyHyperstackDimensions(reference, result);
             result.copyScale(reference);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
 
     }

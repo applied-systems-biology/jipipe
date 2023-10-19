@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGro
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
@@ -316,7 +316,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
             "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
-    public JIPipeMergingAlgorithmDataBatchGenerationSettings getBatchGenerationSettings() {
+    public JIPipeMergingAlgorithmIterationStepGenerationSettings getBatchGenerationSettings() {
         return super.getBatchGenerationSettings();
     }
 

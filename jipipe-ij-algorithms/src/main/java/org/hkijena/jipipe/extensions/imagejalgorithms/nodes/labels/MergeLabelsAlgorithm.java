@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -47,11 +48,11 @@ public class MergeLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
         if (rois.isEmpty()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(inputImage), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(inputImage), progressInfo);
             return;
         }
         if (rois.size() > 1) {
@@ -62,6 +63,6 @@ public class MergeLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         outputImage.setTitle(inputImage.getTitle());
         LabelImages.mergeLabels(outputImage, rois.get(0), false);
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 }

@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -39,11 +40,11 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        PathData input = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        PathData input = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         ExpressionVariables variables = new ExpressionVariables();
         if (accessAnnotations) {
-            for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
         }
@@ -52,9 +53,9 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
         PathFilterExpressionParameterVariableSource.buildFor(input.toPath(), variables);
         Object result = expression.evaluate(variables);
         if (result instanceof String) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.nullToEmpty(result))), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.nullToEmpty(result))), progressInfo);
         } else if (result instanceof Path) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData((Path) result), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new PathData((Path) result), progressInfo);
         } else {
             progressInfo.log("Expression generated value '" + result + "', which is not a string. Dropping this data.");
         }

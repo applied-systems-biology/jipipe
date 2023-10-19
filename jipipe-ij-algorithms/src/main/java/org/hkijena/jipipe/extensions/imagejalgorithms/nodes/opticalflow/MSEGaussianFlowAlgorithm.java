@@ -12,7 +12,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
@@ -120,8 +121,8 @@ public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlus3DGreyscale32FData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus imp = iterationStep.getInputData(getFirstInputSlot(), ImagePlus3DGreyscale32FData.class, progressInfo).getImage();
         ImageStack seq = imp.getStack();
         int outputSize = 2 * seq.getSize() - 2;
         if (addLastIdentityField)
@@ -179,7 +180,7 @@ public class MSEGaussianFlowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageJUtils.calibrate(impFlowVectors, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus4DGreyscale32FData(impFlowVectors), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus4DGreyscale32FData(impFlowVectors), progressInfo);
     }
 
     public void opticFlow(

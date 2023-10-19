@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -46,27 +47,27 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeData target = dataBatch.getInputData("Target", JIPipeData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JIPipeData target = iterationStep.getInputData("Target", JIPipeData.class, progressInfo);
 
         ExpressionVariables variables = new ExpressionVariables();
         customVariables.writeToVariables(variables, true, "custom.", true, "custom");
 
         // Remove annotations from target (via original annotations)
-        Map<String, String> targetAnnotationMap = JIPipeTextAnnotation.annotationListToMap(dataBatch.getOriginalTextAnnotations("Target"), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+        Map<String, String> targetAnnotationMap = JIPipeTextAnnotation.annotationListToMap(iterationStep.getOriginalTextAnnotations("Target"), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         variables.set("target.annotations", targetAnnotationMap);
         for (Map.Entry<String, String> entry : targetAnnotationMap.entrySet()) {
             variables.set("name", entry.getValue());
             variables.set("value", entry.getValue());
             if (removeExistingAnnotationsFilter.test(variables)) {
-                dataBatch.removeMergedTextAnnotation(entry.getKey());
+                iterationStep.removeMergedTextAnnotation(entry.getKey());
             }
         }
 
         // Overwrite
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-        variables.set("target.annotations", JIPipeTextAnnotation.annotationListToMap(dataBatch.getOriginalTextAnnotations("Source"), JIPipeTextAnnotationMergeMode.OverwriteExisting));
-        for (JIPipeTextAnnotation originalAnnotation : dataBatch.getOriginalTextAnnotations("Source")) {
+        variables.set("target.annotations", JIPipeTextAnnotation.annotationListToMap(iterationStep.getOriginalTextAnnotations("Source"), JIPipeTextAnnotationMergeMode.OverwriteExisting));
+        for (JIPipeTextAnnotation originalAnnotation : iterationStep.getOriginalTextAnnotations("Source")) {
             variables.set("name", originalAnnotation.getName());
             variables.set("source.value", originalAnnotation.getValue());
             variables.set("target.value", targetAnnotationMap.getOrDefault(originalAnnotation.getName(), null));
@@ -75,7 +76,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), target, annotations, mergeMode, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), target, annotations, mergeMode, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Remove existing annotations", description = "Expression that determines whether an existing annotation is removed. Set to <code>false</code> to not remove existing annotations.")

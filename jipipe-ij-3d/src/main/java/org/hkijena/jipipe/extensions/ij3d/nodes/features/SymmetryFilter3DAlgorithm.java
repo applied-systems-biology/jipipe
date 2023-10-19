@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
@@ -54,8 +55,8 @@ public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         Map<ImageSliceIndex, ImageProcessor> edgeMap = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> binMap = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> binEdgeMap = new HashMap<>();
@@ -93,11 +94,11 @@ public class SymmetryFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         symmetry.copyScale(inputImage);
         symmetrySmoothed.copyScale(inputImage);
         edge.copyScale(inputImage);
-        dataBatch.addOutputData("Edges", new ImagePlusGreyscaleData(edge), progressInfo);
-        dataBatch.addOutputData("Symmetry", new ImagePlusGreyscaleData(symmetry), progressInfo);
-        dataBatch.addOutputData("Symmetry smoothed", new ImagePlusGreyscaleData(symmetrySmoothed), progressInfo);
-        dataBatch.addOutputData("Bin", new ImagePlusGreyscaleData(bin), progressInfo);
-        dataBatch.addOutputData("BinEdge", new ImagePlusGreyscaleData(binEdge), progressInfo);
+        iterationStep.addOutputData("Edges", new ImagePlusGreyscaleData(edge), progressInfo);
+        iterationStep.addOutputData("Symmetry", new ImagePlusGreyscaleData(symmetry), progressInfo);
+        iterationStep.addOutputData("Symmetry smoothed", new ImagePlusGreyscaleData(symmetrySmoothed), progressInfo);
+        iterationStep.addOutputData("Bin", new ImagePlusGreyscaleData(bin), progressInfo);
+        iterationStep.addOutputData("BinEdge", new ImagePlusGreyscaleData(binEdge), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Alpha", description = "The smoothing in canny edge detection, the smaller the value, the smoother the edges.")

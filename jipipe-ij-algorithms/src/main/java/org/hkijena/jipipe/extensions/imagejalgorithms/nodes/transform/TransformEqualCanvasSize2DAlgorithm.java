@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
@@ -57,16 +58,16 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
         int wNew = 0;
         int hNew = 0;
-        for (ImagePlusData image : dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {
+        for (ImagePlusData image : iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {
             wNew = Math.max(image.getImage().getWidth(), wNew);
             hNew = Math.max(image.getImage().getHeight(), hNew);
         }
 
-        for (ImagePlusData image : dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {
+        for (ImagePlusData image : iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {
             ImagePlus imp = image.getImage();
             int wOld = imp.getWidth();
             int hOld = imp.getHeight();
@@ -124,12 +125,12 @@ public class TransformEqualCanvasSize2DAlgorithm extends JIPipeMergingAlgorithm 
                 ImagePlus resultImage = new ImagePlus("Expanded", expandStack(imp.getStack(), wNew, hNew, xOff, yOff));
                 resultImage.setDimensions(imp.getNChannels(), imp.getNSlices(), imp.getNFrames());
                 resultImage.copyScale(imp);
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
             } else {
                 ImagePlus resultImage = new ImagePlus("Expanded", expandImage(imp.getProcessor(), wNew, hNew, xOff, yOff));
                 resultImage.setDimensions(imp.getNChannels(), imp.getNSlices(), imp.getNFrames());
                 resultImage.copyScale(imp);
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
             }
         }
     }

@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -90,12 +91,12 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Map<Integer, ROIListData> groupedROIs = new HashMap<>();
         for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
             if (inputSlot.acceptsTrivially(ROIListData.class)) {
                 int klass = classAssignment.getValue(inputSlot.getName(), Integer.class);
-                ROIListData list = dataBatch.getInputData(inputSlot, ROIListData.class, progressInfo);
+                ROIListData list = iterationStep.getInputData(inputSlot, ROIListData.class, progressInfo);
 
                 if (list == null)
                     continue;
@@ -117,7 +118,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Apply the training
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
-            ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus3DData.class, progressInfo).getDuplicateImage();
+            ImagePlus trainingImage = iterationStep.getInputData("Image", ImagePlus3DData.class, progressInfo).getDuplicateImage();
             WekaSegmentation wekaSegmentation = new WekaSegmentation(true);
             wekaSegmentation.setTrainingImage(trainingImage);
             wekaSegmentation.setClassifier((AbstractClassifier) classifier);
@@ -143,7 +144,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
                 throw new RuntimeException("Weka training failed!");
             }
 
-            dataBatch.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);
+            iterationStep.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);
         }
     }
 

@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -52,13 +53,13 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         Map<ImageSliceIndex, ImageProcessor> slices = ImageJUtils.splitIntoSlices(inputImage);
         Map<ImageProcessor, ImageSliceIndex> newSliceIndices = new IdentityHashMap<>();
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customVariables.writeToVariables(variables, true, "custom.", true, "custom");
         variables.set("width", inputImage.getWidth());
         variables.set("height", inputImage.getHeight());
@@ -100,7 +101,7 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
         ImagePlus resultImage = ImageJUtils.combineSlices(sliceMapping);
         resultImage.copyScale(inputImage);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "New slice location", description = "Expression that returns an array with the new Z, channel, and frame location (zero-based) of the slice. " +

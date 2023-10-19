@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -58,8 +59,8 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData inputTable = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData inputTable = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         TDoubleObjectHashMap<TDoubleList> bucketedValues = new TDoubleObjectHashMap<>();
 
         // Copy the buckets
@@ -79,7 +80,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
 
         // Setup values
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         // Integrate buckets
         TDoubleDoubleMap integratedValues = new TDoubleDoubleHashMap();
@@ -130,7 +131,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
             outputTable.setValueAt(value, row, outputValueColumnIndex);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")

@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -86,11 +87,11 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         CLIJ2 clij2 = CLIJ2.getInstance();
         PythonInterpreter pythonInterpreter = new PythonInterpreter();
         pythonInterpreter.set("clij2", clij2);
-        pythonInterpreter.set("data_batch", dataBatch);
+        pythonInterpreter.set("data_batch", iterationStep);
         PyDictionary inputSlotMap = new PyDictionary();
         PyDictionary outputSlotMap = new PyDictionary();
         for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
@@ -124,7 +125,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
 
         // Fetch parameters (data)
         for (Map.Entry<String, JIPipeInputDataSlot> entry : getInputSlotMap().entrySet()) {
-            clParameters.put(entry.getKey(), dataBatch.getInputData(entry.getValue(), CLIJImageData.class, progressInfo).getImage());
+            clParameters.put(entry.getKey(), iterationStep.getInputData(entry.getValue(), CLIJImageData.class, progressInfo).getImage());
         }
         PyDictionary clOutputBuffersDict = pythonInterpreter.get("cl_output_buffers", PyDictionary.class);
         for (Object key : clOutputBuffersDict.keySet()) {
@@ -147,7 +148,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
 
         // Extract outputs
         for (Map.Entry<String, JIPipeOutputDataSlot> entry : getOutputSlotMap().entrySet()) {
-            dataBatch.addOutputData(entry.getKey(), new CLIJImageData((ClearCLBuffer) clParameters.get(entry.getKey())), progressInfo);
+            iterationStep.addOutputData(entry.getKey(), new CLIJImageData((ClearCLBuffer) clParameters.get(entry.getKey())), progressInfo);
         }
     }
 

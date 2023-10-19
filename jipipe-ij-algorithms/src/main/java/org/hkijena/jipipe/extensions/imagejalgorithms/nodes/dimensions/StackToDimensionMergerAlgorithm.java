@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -92,10 +93,10 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
         List<ImagePlus> inputImages = new ArrayList<>();
-        for (ImagePlusData data : dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {
+        for (ImagePlusData data : iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {
             inputImages.add(data.getImage());
         }
         inputImages = ImageJUtils.convertToConsensusBitDepthIfNeeded(inputImages);
@@ -103,7 +104,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
         if (inputImages.isEmpty())
             return;
         if (inputImages.size() == 1) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(inputImages.get(0)), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(inputImages.get(0)), progressInfo);
             return;
         }
         if (!ImageJUtils.imagesHaveSameSize(inputImages)) {
@@ -142,6 +143,6 @@ public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
         // Merge
         ImagePlus resultImage = ImageJUtils.combineSlices(indexMappings);
         resultImage.copyScale(inputImages.get(0));
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 }

@@ -27,7 +27,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood2D;
@@ -132,8 +133,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusGreyscaleMaskData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
 
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             // Update the analyzer to extract the measurements we want
@@ -198,8 +199,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                         roi.setImage(roiReferenceImage);
                     }
 
-                    dataBatch.addOutputData("ROI", rois, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-                    dataBatch.addOutputData("Measurements", new ResultsTableData(table), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                    iterationStep.addOutputData("ROI", rois, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                    iterationStep.addOutputData("Measurements", new ResultsTableData(table), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                 }, progressInfo);
             } else {
                 ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
@@ -245,8 +246,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                     mergedROI.mergeWith(rois);
                 }, progressInfo);
 
-                dataBatch.addOutputData("ROI", mergedROI, progressInfo);
-                dataBatch.addOutputData("Measurements", mergedResultsTable, progressInfo);
+                iterationStep.addOutputData("ROI", mergedROI, progressInfo);
+                iterationStep.addOutputData("Measurements", mergedResultsTable, progressInfo);
             }
         }
     }

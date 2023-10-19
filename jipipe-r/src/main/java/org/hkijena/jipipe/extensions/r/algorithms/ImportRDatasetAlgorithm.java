@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -86,7 +87,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Path tempFile = RuntimeSettings.generateTempFile("jipipe-r", ".csv");
         String code = "library(datasets)\n" +
                 "write.csv(" + dataset.variableName + ", row.names = FALSE, file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
@@ -94,7 +95,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() : RExtensionSettings.getInstance().getEnvironment(),
                 progressInfo);
         ResultsTableData resultsTableData = ResultsTableData.fromCSV(tempFile);
-        dataBatch.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), resultsTableData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Dataset", description = "Determines which data set should be imported")

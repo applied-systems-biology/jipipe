@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
@@ -65,9 +66,9 @@ public class ErodedVolumeFraction3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData("Input", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
-        ImagePlus maskImage = ImageJUtils.unwrap(dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+        ImagePlus maskImage = ImageJUtils.unwrap(iterationStep.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo));
         ImagePlus outputImage = IJ3DUtils.forEach3DIn5DGenerate(inputImage, (img, index, ctProgress) -> {
             ctProgress.log("Computing Distance Map (EDT) ...");
             ImageFloat r = EDT.run(img, threshold, inverse, 0);
@@ -91,6 +92,6 @@ public class ErodedVolumeFraction3DAlgorithm extends JIPipeIteratingAlgorithm {
             }
             return r2;
         }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 }

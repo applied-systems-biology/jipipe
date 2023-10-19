@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
@@ -49,9 +50,9 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus image = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
-        WekaModelData modelData = dataBatch.getInputData("Model", WekaModelData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
+        WekaModelData modelData = iterationStep.getInputData("Model", WekaModelData.class, progressInfo);
         WekaSegmentation segmentation = modelData.getSegmentation();
 
         TileImage2DAlgorithm tileImage2DAlgorithm = JIPipe.createNode(TileImage2DAlgorithm.class);
@@ -122,7 +123,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
             }, progressInfo);
         }
 
-        dataBatch.addOutputData("Classified image", new ImagePlusData(new ImagePlus("Classified", stack)), progressInfo);
+        iterationStep.addOutputData("Classified image", new ImagePlusData(new ImagePlus("Classified", stack)), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Generate tiles", description = "The following settings allow the generation of tiles to save memory.")

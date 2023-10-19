@@ -12,9 +12,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithmDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithmIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -34,7 +34,7 @@ import java.util.*;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", autoCreate = true)
 public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
-    private JIPipeIteratingAlgorithmDataBatchGenerationSettings tableMergeSettings = new JIPipeIteratingAlgorithmDataBatchGenerationSettings();
+    private JIPipeIteratingAlgorithmIterationStepGenerationSettings tableMergeSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings();
     private boolean discardExistingAnnotations = false;
 
     /**
@@ -55,7 +55,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
     public AnnotateWithAnnotationTable(AnnotateWithAnnotationTable other) {
         super(other);
         this.discardExistingAnnotations = other.discardExistingAnnotations;
-        this.tableMergeSettings = new JIPipeIteratingAlgorithmDataBatchGenerationSettings(other.tableMergeSettings);
+        this.tableMergeSettings = new JIPipeIteratingAlgorithmIterationStepGenerationSettings(other.tableMergeSettings);
         registerSubParameter(tableMergeSettings);
     }
 
@@ -64,12 +64,12 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
     @JIPipeParameter(value = "table-merge-settings",
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/connector-orthogonal.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/connector-orthogonal.png")
-    public JIPipeIteratingAlgorithmDataBatchGenerationSettings getTableMergeSettings() {
+    public JIPipeIteratingAlgorithmIterationStepGenerationSettings getTableMergeSettings() {
         return tableMergeSettings;
     }
 
-    private List<JIPipeMultiDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
+    private List<JIPipeMultiIterationStep> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+        JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setNode(this);
         builder.setApplyMerging(false);
         builder.setSlots(slots);
@@ -80,30 +80,30 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         builder.setAnnotationMatchingMethod(tableMergeSettings.getAnnotationMatchingMethod());
         builder.setForceFlowGraphSolver(tableMergeSettings.isForceFlowGraphSolver());
         builder.setForceFlowGraphSolver(tableMergeSettings.isForceFlowGraphSolver());
-        List<JIPipeMultiDataBatch> dataBatches = builder.build(progressInfo);
-        dataBatches.sort(Comparator.naturalOrder());
+        List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
+        iterationSteps.sort(Comparator.naturalOrder());
         boolean withLimit = tableMergeSettings.getLimit().isEnabled();
         IntegerRange limit = tableMergeSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, iterationSteps.size(), new ExpressionVariables())) : null;
         if (withLimit) {
             progressInfo.log("[INFO] Applying limit to all data batches. Allowed indices are " + Ints.join(", ", allowedIndices.toArray()));
-            List<JIPipeMultiDataBatch> limitedBatches = new ArrayList<>();
-            for (int i = 0; i < dataBatches.size(); i++) {
+            List<JIPipeMultiIterationStep> limitedBatches = new ArrayList<>();
+            for (int i = 0; i < iterationSteps.size(); i++) {
                 if (allowedIndices.contains(i)) {
-                    limitedBatches.add(dataBatches.get(i));
+                    limitedBatches.add(iterationSteps.get(i));
                 }
             }
-            dataBatches = limitedBatches;
+            iterationSteps = limitedBatches;
         }
-        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
-            if (dataBatch.isIncomplete()) {
-                progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + dataBatch);
+        for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
+            if (iterationStep.isIncomplete()) {
+                progressInfo.log("[WARN] INCOMPLETE DATA BATCH FOUND: " + iterationStep);
             }
         }
         if (tableMergeSettings.isSkipIncompleteDataSets()) {
-            dataBatches.removeIf(JIPipeMultiDataBatch::isIncomplete);
+            iterationSteps.removeIf(JIPipeMultiIterationStep::isIncomplete);
         }
-        return dataBatches;
+        return iterationSteps;
     }
 
     @Override
@@ -128,12 +128,12 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         }
 
         // Group the data by annotations
-        List<JIPipeMultiDataBatch> mergingDataBatches = generateDataBatchesDryRun(Arrays.asList(dataInputSlot, dummy), progressInfo);
-        for (JIPipeMultiDataBatch dataBatch : mergingDataBatches) {
-            Set<Integer> dataRows = dataBatch.getInputRows("Data");
+        List<JIPipeMultiIterationStep> mergingDataBatches = generateDataBatchesDryRun(Arrays.asList(dataInputSlot, dummy), progressInfo);
+        for (JIPipeMultiIterationStep iterationStep : mergingDataBatches) {
+            Set<Integer> dataRows = iterationStep.getInputRows("Data");
             if (dataRows == null)
                 continue;
-            Set<Integer> metadataRows = dataBatch.getInputRows(dummy);
+            Set<Integer> metadataRows = iterationStep.getInputRows(dummy);
 
             Map<String, JIPipeTextAnnotation> newAnnotations = new HashMap<>();
             for (int row : metadataRows) {

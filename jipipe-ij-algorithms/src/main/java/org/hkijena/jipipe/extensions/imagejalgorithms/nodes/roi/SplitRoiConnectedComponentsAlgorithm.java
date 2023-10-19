@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -85,8 +86,8 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData input = (ROIListData) dataBatch.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData input = (ROIListData) iterationStep.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
         DefaultUndirectedGraph<Integer, DefaultEdge> graph = new DefaultUndirectedGraph<>(DefaultEdge.class);
         for (int i = 0; i < input.size(); i++) {
             // Add to graph
@@ -102,7 +103,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : iterationStep.getMergedTextAnnotations().entrySet()) {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variableSet.set("annotations", annotations);
@@ -111,7 +112,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         ImagePlus referenceImage = null;
         if (withFiltering) {
             // Generate measurements
-            ImagePlusData referenceImageData = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+            ImagePlusData referenceImageData = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
             if (referenceImageData != null) {
                 referenceImage = referenceImageData.getImage();
                 // This is needed, as measuring messes with the image
@@ -251,9 +252,9 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
                 rois.add(input.get(index));
             }
             if (componentNameAnnotation.isEnabled()) {
-                dataBatch.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeTextAnnotation(componentNameAnnotation.getContent(), outputIndex + "")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), rois, Collections.singletonList(new JIPipeTextAnnotation(componentNameAnnotation.getContent(), outputIndex + "")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             } else {
-                dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
             }
             ++outputIndex;
         }

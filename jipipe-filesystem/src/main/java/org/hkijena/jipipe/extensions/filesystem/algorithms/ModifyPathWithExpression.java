@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -36,18 +37,18 @@ public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path path = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo).toPath();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Path path = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo).toPath();
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         variables.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
         variables.set("path", StringUtils.nullToEmpty(path));
 
         Object result = expression.evaluate(variables);
         if (result != null) {
             Path outputPath = Paths.get(StringUtils.nullToEmpty(result));
-            dataBatch.addOutputData(getFirstOutputSlot(), new PathData(outputPath), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new PathData(outputPath), progressInfo);
         }
     }
 

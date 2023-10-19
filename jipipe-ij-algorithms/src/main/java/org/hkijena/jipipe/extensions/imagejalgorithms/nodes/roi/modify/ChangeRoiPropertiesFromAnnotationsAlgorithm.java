@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -82,8 +83,8 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData data = (ROIListData) iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
         for (int i = 0; i < data.size(); i++) {
             Roi roi = data.get(i);
             double x;
@@ -100,38 +101,38 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
             c = roi.getCPosition();
             t = roi.getTPosition();
             if (positionX.isEnabled())
-                x = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(positionX.getContent()).getValue());
+                x = NumberUtils.createDouble(iterationStep.getMergedTextAnnotation(positionX.getContent()).getValue());
             if (positionY.isEnabled())
-                y = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(positionY.getContent()).getValue());
+                y = NumberUtils.createDouble(iterationStep.getMergedTextAnnotation(positionY.getContent()).getValue());
             if (positionZ.isEnabled())
-                z = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(positionZ.getContent()).getValue()).intValue();
+                z = NumberUtils.createDouble(iterationStep.getMergedTextAnnotation(positionZ.getContent()).getValue()).intValue();
             if (positionC.isEnabled())
-                c = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(positionC.getContent()).getValue()).intValue();
+                c = NumberUtils.createDouble(iterationStep.getMergedTextAnnotation(positionC.getContent()).getValue()).intValue();
             if (positionT.isEnabled())
-                t = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(positionT.getContent()).getValue()).intValue();
+                t = NumberUtils.createDouble(iterationStep.getMergedTextAnnotation(positionT.getContent()).getValue()).intValue();
             roi.setPosition(c, z, t);
             roi.setLocation(x, y);
             if (fillColor.isEnabled())
-                roi.setFillColor(ColorUtils.parseColor(dataBatch.getMergedTextAnnotation(fillColor.getContent()).getValue()));
+                roi.setFillColor(ColorUtils.parseColor(iterationStep.getMergedTextAnnotation(fillColor.getContent()).getValue()));
             if (lineColor.isEnabled())
-                roi.setStrokeColor(ColorUtils.parseColor(dataBatch.getMergedTextAnnotation(lineColor.getContent()).getValue()));
+                roi.setStrokeColor(ColorUtils.parseColor(iterationStep.getMergedTextAnnotation(lineColor.getContent()).getValue()));
             if (lineWidth.isEnabled())
-                roi.setStrokeWidth(NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(lineWidth.getContent()).getValue()));
+                roi.setStrokeWidth(NumberUtils.createDouble(iterationStep.getMergedTextAnnotation(lineWidth.getContent()).getValue()));
             if (roiName.isEnabled())
-                roi.setName(dataBatch.getMergedTextAnnotation(roiName.getContent()).getValue());
+                roi.setName(iterationStep.getMergedTextAnnotation(roiName.getContent()).getValue());
             if (this.scaleX.isEnabled())
-                scaleX = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(this.scaleX.getContent()).getValue());
+                scaleX = NumberUtils.createDouble(iterationStep.getMergedTextAnnotation(this.scaleX.getContent()).getValue());
             if (this.scaleY.isEnabled())
-                scaleY = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(this.scaleY.getContent()).getValue());
+                scaleY = NumberUtils.createDouble(iterationStep.getMergedTextAnnotation(this.scaleY.getContent()).getValue());
             if (this.centerScale.isEnabled())
-                centerScale = BooleanUtils.toBoolean(dataBatch.getMergedTextAnnotation(this.centerScale.getContent()).getValue());
+                centerScale = BooleanUtils.toBoolean(iterationStep.getMergedTextAnnotation(this.centerScale.getContent()).getValue());
             if (scaleX != 1.0 || scaleY != 1.0) {
                 roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
                 data.set(i, roi);
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Location (X)", description = "The X location. The annotation value is converted to an integer.")

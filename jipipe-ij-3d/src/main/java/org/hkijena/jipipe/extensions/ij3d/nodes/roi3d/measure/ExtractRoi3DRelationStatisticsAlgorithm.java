@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
@@ -48,10 +49,10 @@ public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData roi1List = dataBatch.getInputData("ROI 1", ROI3DListData.class, progressInfo);
-        ROI3DListData roi2List = dataBatch.getInputData("ROI 2", ROI3DListData.class, progressInfo);
-        ImageHandler imageHandler = IJ3DUtils.wrapImage(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData roi1List = iterationStep.getInputData("ROI 1", ROI3DListData.class, progressInfo);
+        ROI3DListData roi2List = iterationStep.getInputData("ROI 2", ROI3DListData.class, progressInfo);
+        ImageHandler imageHandler = IJ3DUtils.wrapImage(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
         ResultsTableData outputResults = new ResultsTableData();
 
         IJ3DUtils.measureRoi3dRelation(imageHandler,
@@ -67,7 +68,7 @@ public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
                 outputResults,
                 progressInfo.resolve("Measure ROI"));
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI located at different channels are compared")

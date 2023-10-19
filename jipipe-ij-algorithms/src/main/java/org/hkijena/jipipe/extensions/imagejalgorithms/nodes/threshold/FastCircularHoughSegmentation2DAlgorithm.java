@@ -28,7 +28,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
@@ -162,8 +163,8 @@ public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIterat
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack maskStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ImageStack houghStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ResultsTableData measurements = new ResultsTableData();
@@ -184,9 +185,9 @@ public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIterat
         mask.copyScale(img);
         hough.copyScale(img);
 
-        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(mask), progressInfo);
-        dataBatch.addOutputData("Accumulator", new ImagePlusGreyscaleData(hough), progressInfo);
-        dataBatch.addOutputData("Measurements", measurements, progressInfo);
+        iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(mask), progressInfo);
+        iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(hough), progressInfo);
+        iterationStep.addOutputData("Measurements", measurements, progressInfo);
     }
 
     private void applyHough(ImageProcessor imp, ImageStack maskStack, ImageStack houghStack, ResultsTableData measurements, JIPipeProgressInfo progressInfo) {

@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.ROI2DRelationMeasurement;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood3D;
@@ -289,15 +289,15 @@ public class ImageJAlgorithmUtils {
         }
     }
 
-    public static ImageProcessor getMaskProcessorFromMaskOrROI(ImageROITargetArea targetArea, JIPipeSingleDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
+    public static ImageProcessor getMaskProcessorFromMaskOrROI(ImageROITargetArea targetArea, JIPipeSingleIterationStep iterationStep, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
-                ImagePlusData img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
                 return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
             }
             case InsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
+                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
                 } else {
@@ -306,8 +306,8 @@ public class ImageJAlgorithmUtils {
                 }
             }
             case OutsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
+                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
                 } else {
@@ -318,7 +318,7 @@ public class ImageJAlgorithmUtils {
                 }
             }
             case InsideMask: {
-                ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
+                ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 if (mask.getStackSize() > 1) {
                     return mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask));
                 } else {
@@ -326,7 +326,7 @@ public class ImageJAlgorithmUtils {
                 }
             }
             case OutsideMask: {
-                ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
+                ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 ImageProcessor processor;
                 if (mask.getStackSize() > 1) {
                     processor = mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask)).duplicate();
@@ -340,15 +340,15 @@ public class ImageJAlgorithmUtils {
         throw new UnsupportedOperationException();
     }
 
-    public static ImagePlus getMaskFromMaskOrROI(ImageROITargetArea targetArea, JIPipeSingleDataBatch dataBatch, String imageSlotName, JIPipeProgressInfo progressInfo) {
+    public static ImagePlus getMaskFromMaskOrROI(ImageROITargetArea targetArea, JIPipeSingleIterationStep iterationStep, String imageSlotName, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
-                ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 return ImageROITargetArea.createWhiteMask(img.getImage());
             }
             case InsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
+                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
                 } else {
@@ -356,8 +356,8 @@ public class ImageJAlgorithmUtils {
                 }
             }
             case OutsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
+                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
                 } else {
@@ -369,13 +369,13 @@ public class ImageJAlgorithmUtils {
                 }
             }
             case InsideMask: {
-                ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
-                ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
+                ImagePlusData img = iterationStep.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
+                ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
             case OutsideMask: {
-                ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
-                ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getDuplicateImage();
+                ImagePlusData img = iterationStep.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
+                ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getDuplicateImage();
                 ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                     ip.invert();
                 }, progressInfo.resolve("Invert mask"));

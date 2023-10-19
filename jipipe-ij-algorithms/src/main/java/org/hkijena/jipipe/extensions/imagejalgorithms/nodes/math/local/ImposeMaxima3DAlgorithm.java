@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
@@ -57,13 +58,13 @@ public class ImposeMaxima3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData("Input", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
-        ImagePlus maximaImage = dataBatch.getInputData("Maxima", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
+        ImagePlus maximaImage = iterationStep.getInputData("Maxima", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
 
         ImageStack resultStack = MinimaAndMaxima3D.imposeMaxima(inputImage.getStack(), maximaImage.getStack());
         ImagePlus outputImage = new ImagePlus("Imposed maxima", resultStack);
         outputImage.copyScale(inputImage);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(outputImage), progressInfo);
     }
 }

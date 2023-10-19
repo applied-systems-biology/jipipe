@@ -18,7 +18,8 @@ import omero.gateway.model.DatasetData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -51,7 +52,7 @@ public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
@@ -59,7 +60,7 @@ public class OMERODatasetReferenceDataSource extends JIPipeSimpleIteratingAlgori
             for (Long datasetId : datasetIds) {
                 progressInfo.log("Reading info about dataset ID=" + datasetId);
                 DatasetData dataset = gateway.getDataset(datasetId, -1);
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(dataset, environment), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(dataset, environment), progressInfo);
             }
         }
     }

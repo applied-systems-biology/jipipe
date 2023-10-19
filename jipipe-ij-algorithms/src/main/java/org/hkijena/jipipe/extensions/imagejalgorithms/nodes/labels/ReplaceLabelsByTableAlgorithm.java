@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -105,9 +106,9 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus outputImage = dataBatch.getInputData("Labels", ImagePlusGreyscale32FData.class, progressInfo).getDuplicateImage();
-        ResultsTableData mappingsTable = dataBatch.getInputData("Mappings", ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus outputImage = iterationStep.getInputData("Labels", ImagePlusGreyscale32FData.class, progressInfo).getDuplicateImage();
+        ResultsTableData mappingsTable = iterationStep.getInputData("Mappings", ResultsTableData.class, progressInfo);
 
         TFloatFloatMap mapping = new TFloatFloatHashMap();
         TableColumn mappingOld = oldLabelColumn.pickOrGenerateColumn(mappingsTable);
@@ -120,7 +121,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         float defaultMapping;
         if (missingValueReplacement.isEnabled()) {
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             defaultMapping = missingValueReplacement.getContent().evaluateToFloat(variables);
         } else {
             defaultMapping = 0;
@@ -142,6 +143,6 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }, progressInfo);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(outputImage), progressInfo);
     }
 }

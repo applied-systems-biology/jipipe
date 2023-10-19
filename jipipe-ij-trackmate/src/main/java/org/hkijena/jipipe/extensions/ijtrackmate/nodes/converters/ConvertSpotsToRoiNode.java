@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -48,13 +49,13 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        SpotsCollectionData data = dataBatch.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        SpotsCollectionData data = iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         variables.set("n_spots", data.getSpots().getNSpots(true));
         ROIListData rois = spotsToROIList(data, variables);
-        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
     public ROIListData spotsToROIList(SpotsCollectionData spotsCollectionData, ExpressionVariables variables) {

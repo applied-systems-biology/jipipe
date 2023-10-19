@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -31,9 +32,9 @@ public class SetVertexPhysicalSizeFromImageAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Filaments3DData filaments = new Filaments3DData(dataBatch.getInputData("Filaments", Filaments3DData.class, progressInfo));
-        ImagePlus img = dataBatch.getInputData("Intensity", ImagePlusGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Filaments3DData filaments = new Filaments3DData(iterationStep.getInputData("Filaments", Filaments3DData.class, progressInfo));
+        ImagePlus img = iterationStep.getInputData("Intensity", ImagePlusGreyscaleData.class, progressInfo).getImage();
         Calibration calibration = img.getCalibration();
         for (FilamentVertex vertex : filaments.vertexSet()) {
             vertex.setPhysicalVoxelSizeX(new Quantity(1, Quantity.UNIT_PIXELS));
@@ -53,6 +54,6 @@ public class SetVertexPhysicalSizeFromImageAlgorithm extends JIPipeIteratingAlgo
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), filaments, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), filaments, progressInfo);
     }
 }

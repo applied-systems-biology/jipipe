@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
@@ -36,8 +37,8 @@ public class ExportROI3DAlgorithm2 extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData inputData = dataBatch.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -49,15 +50,15 @@ public class ExportROI3DAlgorithm2 extends JIPipeIteratingAlgorithm {
                 getProjectDirectory(),
                 projectDataDirs,
                 inputData.toString(),
-                dataBatch.getInputRow(getFirstInputSlot()),
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                iterationStep.getInputRow(getFirstInputSlot()),
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
 
 
         PathUtils.ensureParentDirectoriesExist(outputPath);
-        ROI3DListData rois = dataBatch.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+        ROI3DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
 
         rois.save(outputPath);
-        dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
     }
 
     @JIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")

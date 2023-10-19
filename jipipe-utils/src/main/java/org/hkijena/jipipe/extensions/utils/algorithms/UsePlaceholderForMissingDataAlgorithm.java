@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -35,12 +35,12 @@ public class UsePlaceholderForMissingDataAlgorithm extends JIPipeMissingDataGene
     }
 
     @Override
-    protected void runGenerator(JIPipeMultiDataBatch dataBatch, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
-        if (dataBatch.getInputRows("Reference").isEmpty())
+    protected void runGenerator(JIPipeMultiIterationStep iterationStep, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
+        if (iterationStep.getInputRows("Reference").isEmpty())
             return;
         JIPipeDataSlot placeholderSlot = getInputSlot("Placeholder");
         for (int row = 0; row < placeholderSlot.getRowCount(); row++) {
-            dataBatch.addOutputData(outputSlot, placeholderSlot.getDataItemStore(row), placeholderSlot.getTextAnnotations(row), placeholderAnnotationMergeStrategy, progressInfo);
+            iterationStep.addOutputData(outputSlot, placeholderSlot.getDataItemStore(row), placeholderSlot.getTextAnnotations(row), placeholderAnnotationMergeStrategy, progressInfo);
         }
     }
 

@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -71,12 +72,12 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData roiList = dataBatch.getInputData("Input", ROI3DListData.class, progressInfo);
-        ImageHandler imageHandler = IJ3DUtils.wrapImage(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData roiList = iterationStep.getInputData("Input", ROI3DListData.class, progressInfo);
+        ImageHandler imageHandler = IJ3DUtils.wrapImage(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customFilterVariables.writeToVariables(variables, true, "custom", true, "custom");
 
         ResultsTableData measurements = new ResultsTableData();
@@ -138,7 +139,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
             for (Integer index : connectedSet) {
                 componentList.add(roiList.get(index));
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), componentList, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), componentList, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

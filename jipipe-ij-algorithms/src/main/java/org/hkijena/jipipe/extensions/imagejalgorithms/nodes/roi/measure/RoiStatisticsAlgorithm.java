@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -88,11 +89,11 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData roi = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        ImagePlus reference = getReferenceImage(dataBatch, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData roi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlus reference = getReferenceImage(iterationStep, progressInfo);
         if (roi.isEmpty()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ResultsTableData(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ResultsTableData(), progressInfo);
             return;
         }
         Map<ImageSliceIndex, List<Roi>> grouped = roi.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
@@ -104,14 +105,14 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
                 annotations.add(new JIPipeTextAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
             }
 
-            dataBatch.addOutputData(getFirstOutputSlot(), result, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), result, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 
-    private ImagePlus getReferenceImage(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private ImagePlus getReferenceImage(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         ImagePlus reference = null;
         {
-            ImagePlusData data = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+            ImagePlusData data = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
             if (data != null) {
                 reference = data.getDuplicateImage();
             }

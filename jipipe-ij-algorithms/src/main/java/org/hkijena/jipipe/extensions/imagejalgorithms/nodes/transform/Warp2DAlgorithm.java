@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -121,9 +122,9 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
-        ImagePlus vectorField = dataBatch.getInputData("Vector field", ImagePlusGreyscale32FData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
+        ImagePlus vectorField = iterationStep.getInputData("Vector field", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         ImagePlus result = IJ.createHyperStack(img.getTitle() + " warped",
                 img.getWidth(),
                 img.getHeight(),
@@ -255,6 +256,6 @@ public class Warp2DAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }, progressInfo);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 }

@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -98,18 +99,18 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus channel1Img = dataBatch.getInputData("Channel 1", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
-        ImagePlus channel2Img = dataBatch.getInputData("Channel 2", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus channel1Img = iterationStep.getInputData("Channel 1", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
+        ImagePlus channel2Img = iterationStep.getInputData("Channel 2", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         channel2Img = ImageJUtils.convertToSameTypeIfNeeded(channel2Img, channel1Img, true);
         ImagePlus maskImg = null;
         if (inputMasks) {
-            ImagePlusGreyscaleMaskData data = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo);
+            ImagePlusGreyscaleMaskData data = iterationStep.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo);
             if (data != null) {
                 maskImg = data.getDuplicateImage();
             }
         } else {
-            ROIListData data = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+            ROIListData data = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
             if (data != null) {
                 data = new ROIListData(data);
                 data.flatten();
@@ -142,7 +143,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
             }
         }
         if (outputWarnings) {
-            dataBatch.addOutputData("Warnings", new StringData(warnings.toString()), progressInfo);
+            iterationStep.addOutputData("Warnings", new StringData(warnings.toString()), progressInfo);
         }
 
         // Collect results table
@@ -155,7 +156,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
                 resultsTableData.setValueAt(valueResult.isNumber ? valueResult.number : valueResult.value, row, valueResult.name);
             }
         }
-        dataBatch.addOutputData("Results", resultsTableData, progressInfo);
+        iterationStep.addOutputData("Results", resultsTableData, progressInfo);
 
         for (CustomColoc2.ColocResult result : list) {
 
@@ -186,7 +187,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
                     List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                     histogramNameAnnotation.addAnnotationIfEnabled(annotations, name);
                     ResultsTableData tableData = histogramToTable(histogram2D);
-                    dataBatch.addOutputData("Histograms", tableData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                    iterationStep.addOutputData("Histograms", tableData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                 }
             }
 
@@ -205,7 +206,7 @@ public class Coloc2Node extends JIPipeIteratingAlgorithm {
 
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 plotNameAnnotation.addAnnotationIfEnabled(annotations, name);
-                dataBatch.addOutputData("Plots", new ImagePlusData(wrapped), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                iterationStep.addOutputData("Plots", new ImagePlusData(wrapped), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
         }
     }

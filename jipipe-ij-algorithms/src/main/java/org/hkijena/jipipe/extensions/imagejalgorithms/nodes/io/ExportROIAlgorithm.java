@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -65,7 +66,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
             if (relativeToProjectDir && getProjectDirectory() != null) {
@@ -78,7 +79,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Generate subfolder
-        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), iterationStep.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         // If absolute -> use the path, otherwise use output directory
         if (generatedPath.isAbsolute()) {
@@ -88,7 +89,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         }
         PathUtils.ensureParentDirectoriesExist(outputPath);
 
-        ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+        ROIListData rois = iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
 
         if (exportAsROIFile && rois.size() > 1) {
             Set<String> existing = new HashSet<>();
@@ -102,11 +103,11 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
                 }
                 Path path = PathUtils.ensureExtension(outputPath.getParent().resolve(roiName), ".roi");
                 ROIListData.saveSingleRoi(roi, path);
-                dataBatch.addOutputData(getFirstOutputSlot(), new FileData(path), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new FileData(path), progressInfo);
             }
         } else {
             outputPath = rois.saveToRoiOrZip(outputPath);
-            dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);
         }
     }
 

@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -62,11 +63,11 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        SpotsCollectionData spotsCollectionData = dataBatch.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        SpotsCollectionData spotsCollectionData = iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         SpotCollection oldCollection = spotsCollectionData.getSpots();
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customVariables.writeToVariables(variables, true, "custom.", true, "custom");
         variables.set("n_spots", oldCollection.getNSpots(true));
         int index = 0;
@@ -106,7 +107,7 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
             SpotCollection newCollection = new SpotCollection();
             newCollection.add(spot, spot.getFeature(Spot.FRAME).intValue());
             newSpotsCollectionData.getModel().setSpots(newCollection, true);
-            dataBatch.addOutputData(getFirstOutputSlot(), newSpotsCollectionData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), newSpotsCollectionData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             ++index;
         }
     }

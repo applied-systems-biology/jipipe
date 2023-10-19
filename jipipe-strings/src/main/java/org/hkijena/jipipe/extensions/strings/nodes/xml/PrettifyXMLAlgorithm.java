@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.strings.XMLData;
@@ -31,10 +32,10 @@ public class PrettifyXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        String xml = dataBatch.getInputData(getFirstInputSlot(), XMLData.class, progressInfo).getData();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        String xml = iterationStep.getInputData(getFirstInputSlot(), XMLData.class, progressInfo).getData();
         String transformed = XmlUtils.prettyPrint(xml, indent, ignoreDeclaration);
-        dataBatch.addOutputData(getFirstOutputSlot(), new XMLData(transformed), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new XMLData(transformed), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Indent", description = "The indent of a level")

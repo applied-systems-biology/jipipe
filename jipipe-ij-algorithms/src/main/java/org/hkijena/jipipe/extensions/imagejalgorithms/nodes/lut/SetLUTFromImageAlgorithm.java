@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -57,9 +58,9 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData data = dataBatch.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo);
-        ImagePlusData lutData = dataBatch.getInputData("LUT", ImagePlus2DColorRGBData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData data = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo);
+        ImagePlusData lutData = iterationStep.getInputData("LUT", ImagePlus2DColorRGBData.class, progressInfo);
         if (duplicateImage)
             data = (ImagePlusData) data.duplicate(progressInfo);
         data.ensureComposite();
@@ -68,11 +69,11 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
         Set<Integer> channels = new HashSet<>();
         if (restrictToChannels.isEnabled()) {
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             channels.addAll(restrictToChannels.getContent().getIntegers(0, data.getNChannels() - 1, variables));
         }
         ImageJUtils.setLut(image, lut, channels);
-        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Duplicate image", description = "As the LUT modification does not change any image data, you can disable creating a duplicate.")

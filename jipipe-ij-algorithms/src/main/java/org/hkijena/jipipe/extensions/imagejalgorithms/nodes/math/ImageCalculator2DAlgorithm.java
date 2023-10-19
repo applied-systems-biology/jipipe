@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -97,15 +98,15 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ImagePlus leftOperand = null;
         ImagePlus rightOperand = null;
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
             if (operand == Operand.LeftOperand) {
-                leftOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo).getImage();
+                leftOperand = iterationStep.getInputData(entry.getKey(), ImagePlusData.class, progressInfo).getImage();
             } else if (operand == Operand.RightOperand) {
-                rightOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo).getImage();
+                rightOperand = iterationStep.getInputData(entry.getKey(), ImagePlusData.class, progressInfo).getImage();
             }
         }
 
@@ -136,7 +137,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand, rightOperand);
         img.copyScale(leftOperand);
         img.setDimensions(leftOperand.getNChannels(), leftOperand.getNSlices(), leftOperand.getNFrames());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
 

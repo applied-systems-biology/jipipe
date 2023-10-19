@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
@@ -52,14 +53,14 @@ public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         // Setup parameters
         ArrayList<String> selectedFeatureNames = featureSettings.getTrainingFeatures().getValues().stream().map(WekaFeature2D::name).collect(Collectors.toCollection(ArrayList::new));
         Classifier classifier = (new WekaClassifierParameter(getClassifierSettings().getClassifier())).getClassifier(); // This will make a copy of the classifier
 
         // Apply the training
-        ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus2DData.class, progressInfo).getDuplicateImage();
-        ImagePlus labelImage = dataBatch.getInputData("Labels", ImagePlus2DGreyscaleData.class, progressInfo).getDuplicateImage();
+        ImagePlus trainingImage = iterationStep.getInputData("Image", ImagePlus2DData.class, progressInfo).getDuplicateImage();
+        ImagePlus labelImage = iterationStep.getInputData("Labels", ImagePlus2DGreyscaleData.class, progressInfo).getDuplicateImage();
 
         int numLabels = LabelImages.findAllLabels(labelImage).length;
         if (labelImage.getProcessor().getStats().min == 0) {
@@ -88,7 +89,7 @@ public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
                 throw new RuntimeException("Weka training failed!");
             }
 
-            dataBatch.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);
+            iterationStep.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);
         }
     }
 

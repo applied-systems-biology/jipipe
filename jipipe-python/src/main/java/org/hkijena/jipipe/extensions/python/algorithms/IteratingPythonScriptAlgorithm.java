@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -133,7 +134,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 
         // Install the adapter that provides the JIPipe API
@@ -143,12 +144,12 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         PythonUtils.parametersToPython(code, scriptParameters);
 
         // Add annotations
-        PythonUtils.annotationsToPython(code, dataBatch.getMergedTextAnnotations().values());
+        PythonUtils.annotationsToPython(code, iterationStep.getMergedTextAnnotations().values());
 
         Path workDirectory = getNewScratch();
 
         // Install input slots
-        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, dataBatch, this, getDataInputSlots(), workDirectory, progressInfo);
+        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, iterationStep, this, getDataInputSlots(), workDirectory, progressInfo);
 
         // Install output slots
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);
@@ -165,7 +166,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
                 Collections.emptyList(), progressInfo);
 
         // Extract outputs
-        PythonUtils.extractOutputs(dataBatch, outputSlotPaths, getOutputSlots(), annotationMergeStrategy, progressInfo);
+        PythonUtils.extractOutputs(iterationStep, outputSlotPaths, getOutputSlots(), annotationMergeStrategy, progressInfo);
 
         // Clean up
         if (cleanUpAfterwards) {

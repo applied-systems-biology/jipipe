@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
@@ -38,8 +39,8 @@ public class ExtractROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData rois = dataBatch.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
         ResultsTableData table = new ResultsTableData();
         for (int i = 0; i < rois.size(); i++) {
             ROI3D roi = rois.get(i);
@@ -55,7 +56,7 @@ public class ExtractROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorith
                 table.setValueAt(entry.getValue(), row, entry.getKey());
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), table, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Add ROI name", description = "If enabled, add a column with the ROI name")

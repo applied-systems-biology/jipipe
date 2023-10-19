@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -78,8 +79,8 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
@@ -89,7 +90,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             annotationZ.addAnnotationIfEnabled(annotationList, "" + index.getZ());
             ImagePlus resultImage = new ImagePlus("slice=" + index, ip);
             resultImage.copyScale(img);
-            dataBatch.addOutputData(getFirstOutputSlot(),
+            iterationStep.addOutputData(getFirstOutputSlot(),
                     new ImagePlus2DData(resultImage),
                     annotationList,
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,

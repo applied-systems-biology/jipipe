@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 
@@ -53,8 +54,8 @@ public class ExtractFileName extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        PathData inputFolder = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new PathData(inputFolder.toPath().getFileName()), progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        PathData inputFolder = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new PathData(inputFolder.toPath().getFileName()), progressInfo);
     }
 }

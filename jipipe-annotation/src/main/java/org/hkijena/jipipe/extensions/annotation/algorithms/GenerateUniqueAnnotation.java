@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -63,13 +64,13 @@ public class GenerateUniqueAnnotation extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
-            JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
+            JIPipeData inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
             String discriminator = !StringUtils.isNullOrEmpty(baseName) ? baseName + " " : "";
-            discriminator += "[" + dataBatch.getInputSlotRows().get(getFirstInputSlot()) + "]";
-            dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, discriminator), annotationMergeStrategy);
-            dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
+            discriminator += "[" + iterationStep.getInputSlotRows().get(getFirstInputSlot()) + "]";
+            iterationStep.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, discriminator), annotationMergeStrategy);
+            iterationStep.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }
 

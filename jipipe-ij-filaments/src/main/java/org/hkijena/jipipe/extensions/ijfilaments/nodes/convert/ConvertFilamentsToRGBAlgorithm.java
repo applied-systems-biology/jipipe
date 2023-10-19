@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
@@ -59,9 +60,9 @@ public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Filaments3DData filaments3DData = dataBatch.getInputData("Input", Filaments3DData.class, progressInfo);
-        ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Filaments3DData filaments3DData = iterationStep.getInputData("Input", Filaments3DData.class, progressInfo);
+        ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
         if (reference == null) {
             reference = filaments3DData.createBlankCanvas("Image", BitDepth.ColorRGB);
         } else if (!drawOverReference) {
@@ -76,6 +77,6 @@ public class ConvertFilamentsToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJUtils.forEachIndexedZCTSlice(reference, (ip, index) -> {
             filamentsDrawer.drawFilamentsOnProcessor(filaments3DData, (ColorProcessor) ip, index.getZ(), index.getC(), index.getT());
         }, progressInfo);
-        dataBatch.addOutputData("Output", new ImagePlusColorRGBData(reference), progressInfo);
+        iterationStep.addOutputData("Output", new ImagePlusColorRGBData(reference), progressInfo);
     }
 }

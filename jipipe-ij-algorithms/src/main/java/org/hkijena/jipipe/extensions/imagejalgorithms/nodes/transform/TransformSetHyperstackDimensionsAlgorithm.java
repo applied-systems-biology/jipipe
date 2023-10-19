@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -44,10 +45,10 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ExpressionVariables variables = new ExpressionVariables();
-        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, image, dataBatch.getMergedTextAnnotations().values());
+        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, image, iterationStep.getMergedTextAnnotations().values());
 
         int z = (int) zAxis.evaluateToNumber(variables);
         int c = (int) cAxis.evaluateToNumber(variables);
@@ -55,7 +56,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
 
         ImagePlus outputImage = ImageJUtils.ensureSize(image, c, z, t, copySlices);
         outputImage.setCalibration(image.getCalibration());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Z axis", description = "Expression that returns the size of the Z axis")

@@ -29,7 +29,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -106,8 +107,8 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
 
         // If we have a grayscale image then we can just skip everything
         if (image.getNChannels() == 1 && image.getType() != ImagePlus.COLOR_256 && image.getType() != ImagePlus.COLOR_RGB) {
@@ -134,7 +135,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 if (annotateWithChannelIndex) {
                     annotations.add(new JIPipeTextAnnotation(annotationColumnChannelIndex, "" + channelIndex));
                 }
-                dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                iterationStep.addOutputData(slotName, new ImagePlusGreyscaleData(image), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             }
             return;
         }
@@ -203,7 +204,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
 
             ImagePlus output = new ImagePlus(image.getTitle() + " C=" + channelIndex, stack);
-            dataBatch.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(slotName, new ImagePlusGreyscaleData(output), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

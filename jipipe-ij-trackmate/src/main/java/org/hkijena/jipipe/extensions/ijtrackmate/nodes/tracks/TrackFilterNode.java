@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -41,13 +42,13 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        TrackCollectionData trackCollectionData = (TrackCollectionData) new TrackCollectionData(dataBatch.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo)).duplicate(progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        TrackCollectionData trackCollectionData = (TrackCollectionData) new TrackCollectionData(iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo)).duplicate(progressInfo);
 
         trackCollectionData.computeTrackFeatures(progressInfo.resolve("Compute features"));
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customVariables.writeToVariables(variables, true, "custom.", true, "custom");
 
         // Define all.* variables
@@ -84,7 +85,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
                 trackCollectionData.getModel().setTrackVisibility(trackID, false);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), trackCollectionData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), trackCollectionData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Filter", description = "The expression is executed per track. If it returns TRUE, the track is kept.")

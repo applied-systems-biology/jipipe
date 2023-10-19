@@ -27,7 +27,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -101,14 +102,14 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ROIListData roiInput = null;
         ImagePlus maskInput = null;
         ExpressionVariables parameters = new ExpressionVariables();
 
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
 
@@ -121,11 +122,11 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         switch (sourceArea) {
             case InsideRoi:
             case OutsideRoi:
-                roiInput = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+                roiInput = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
                 break;
             case InsideMask:
             case OutsideMask:
-                maskInput = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+                maskInput = iterationStep.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
                 break;
         }
 
@@ -159,7 +160,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
                 String result = thresholdCombinationExpression.evaluate(variableSet) + "";
                 annotations.add(thresholdAnnotation.createAnnotation(result));
             }
-            dataBatch.addOutputData(getFirstOutputSlot(),
+            iterationStep.addOutputData(getFirstOutputSlot(),
                     new ImagePlusGreyscaleMaskData(img),
                     annotations,
                     JIPipeTextAnnotationMergeMode.Merge,
@@ -186,7 +187,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJUtils.forEachSlice(img, ip -> {
                 ip.threshold(threshold);
             }, progressInfo);
-            dataBatch.addOutputData(getFirstOutputSlot(),
+            iterationStep.addOutputData(getFirstOutputSlot(),
                     new ImagePlusGreyscaleMaskData(img),
                     annotations,
                     JIPipeTextAnnotationMergeMode.Merge,
@@ -221,7 +222,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJUtils.forEachSlice(img, ip -> {
                 ip.threshold(threshold);
             }, progressInfo);
-            dataBatch.addOutputData(getFirstOutputSlot(),
+            iterationStep.addOutputData(getFirstOutputSlot(),
                     new ImagePlusGreyscaleMaskData(img),
                     annotations,
                     thresholdAnnotationStrategy,

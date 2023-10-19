@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -39,16 +40,16 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
-        for (String name : ImmutableList.copyOf(dataBatch.getMergedDataAnnotations().keySet())) {
+        for (String name : ImmutableList.copyOf(iterationStep.getMergedDataAnnotations().keySet())) {
             if (nameFilter.test(name)) {
-                annotationList.add(new JIPipeTextAnnotation(name, dataBatch.getMergedDataAnnotation(name).getVirtualData().getStringRepresentation()));
+                annotationList.add(new JIPipeTextAnnotation(name, iterationStep.getMergedDataAnnotation(name).getVirtualData().getStringRepresentation()));
                 if (!keepDataAnnotations)
-                    dataBatch.getMergedTextAnnotations().remove(name);
+                    iterationStep.getMergedTextAnnotations().remove(name);
             }
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), annotationList, annotationMergeStrategy, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), annotationList, annotationMergeStrategy, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Keep data annotations", description = "If enabled, data annotations are not deleted after converting them to a string annotation.")

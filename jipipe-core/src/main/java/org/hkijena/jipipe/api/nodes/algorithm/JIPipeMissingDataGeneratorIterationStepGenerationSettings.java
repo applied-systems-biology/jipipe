@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -29,7 +29,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 /**
  * Groups data batch generation settings
  */
-public class JIPipeMissingDataGeneratorDataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
+public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
     private JIPipeColumMatching dataSetMatching = JIPipeColumMatching.PrefixHashUnion;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
@@ -40,10 +40,10 @@ public class JIPipeMissingDataGeneratorDataBatchGenerationSettings extends Abstr
     private boolean forceFlowGraphSolver = false;
 
 
-    public JIPipeMissingDataGeneratorDataBatchGenerationSettings() {
+    public JIPipeMissingDataGeneratorIterationStepGenerationSettings() {
     }
 
-    public JIPipeMissingDataGeneratorDataBatchGenerationSettings(JIPipeMissingDataGeneratorDataBatchGenerationSettings other) {
+    public JIPipeMissingDataGeneratorIterationStepGenerationSettings(JIPipeMissingDataGeneratorIterationStepGenerationSettings other) {
         this.dataSetMatching = other.dataSetMatching;
         this.customColumns = new StringQueryExpression(other.customColumns);
         this.limit = new OptionalIntegerRange(other.limit);

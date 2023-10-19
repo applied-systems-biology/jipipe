@@ -12,7 +12,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -58,8 +59,8 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputMask = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputMask = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ROIListData outputROI = new ROIListData();
         ResultsTableData outputTable = new ResultsTableData();
         outputTable.addNumericColumn("Image Z");
@@ -74,7 +75,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         outputTable.addNumericColumn("Line Score");
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         ImageStack outputMaskStack = new ImageStack(inputMask.getWidth(), inputMask.getHeight(), inputMask.getStackSize());
         final ImageStack[] outputAccumulatorStack = {null};
@@ -153,10 +154,10 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImageJUtils.copyHyperstackDimensions(inputMask, outputMask);
         outputMask.copyScale(inputMask);
 
-        dataBatch.addOutputData("Lines", outputROI, progressInfo);
-        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), progressInfo);
-        dataBatch.addOutputData("Accumulator", new ImagePlusGreyscaleData(new ImagePlus("Accumulator", outputAccumulatorStack[0])), progressInfo);
-        dataBatch.addOutputData("Results", outputTable, progressInfo);
+        iterationStep.addOutputData("Lines", outputROI, progressInfo);
+        iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), progressInfo);
+        iterationStep.addOutputData("Accumulator", new ImagePlusGreyscaleData(new ImagePlus("Accumulator", outputAccumulatorStack[0])), progressInfo);
+        iterationStep.addOutputData("Results", outputTable, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Select top N lines", description = "If enabled, only the top N lines according to their scores are selected.")

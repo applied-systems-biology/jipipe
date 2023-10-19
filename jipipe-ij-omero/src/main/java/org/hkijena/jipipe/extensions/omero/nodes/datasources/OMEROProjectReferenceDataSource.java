@@ -18,7 +18,8 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -51,7 +52,7 @@ public class OMEROProjectReferenceDataSource extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
@@ -59,7 +60,7 @@ public class OMEROProjectReferenceDataSource extends JIPipeSimpleIteratingAlgori
             for (Long projectId : projectIds) {
                 progressInfo.log("Reading info about project ID=" + projectId);
                 ProjectData projectData = gateway.getProject(projectId, -1);
-                dataBatch.addOutputData(getFirstOutputSlot(), new OMEROProjectReferenceData(projectData, environment), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new OMEROProjectReferenceData(projectData, environment), progressInfo);
             }
         }
     }

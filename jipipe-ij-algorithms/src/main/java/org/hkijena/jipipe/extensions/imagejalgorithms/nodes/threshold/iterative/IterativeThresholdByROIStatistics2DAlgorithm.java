@@ -13,7 +13,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -103,11 +104,11 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData("Input", ImagePlusGreyscale8UData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData("Input", ImagePlusGreyscale8UData.class, progressInfo).getImage();
         ImagePlus referenceImage;
         {
-            ImagePlusGreyscaleData referenceData = dataBatch.getInputData("Reference", ImagePlusGreyscaleData.class, progressInfo);
+            ImagePlusGreyscaleData referenceData = iterationStep.getInputData("Reference", ImagePlusGreyscaleData.class, progressInfo);
             if (referenceData != null) {
                 referenceImage = referenceData.getImage();
             } else {
@@ -119,7 +120,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         List<Integer> thresholds;
         {
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             customFilterVariables.writeToVariables(variables, true, "custom.", true, "custom");
             thresholds = this.thresholds.getIntegers(0, 255, variables);
         }
@@ -129,13 +130,13 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         ExpressionVariables thresholdCriteriaVariables = new ExpressionVariables();
         ExpressionVariables accumulationVariables = new ExpressionVariables();
 
-        roiFilterVariables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        roiFilterVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customFilterVariables.writeToVariables(roiFilterVariables, true, "custom.", true, "custom");
 
-        thresholdCriteriaVariables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        thresholdCriteriaVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customFilterVariables.writeToVariables(thresholdCriteriaVariables, true, "custom.", true, "custom");
 
-        accumulationVariables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        accumulationVariables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customFilterVariables.writeToVariables(accumulationVariables, true, "custom.", true, "custom");
 
         // Do we optimize?
@@ -181,7 +182,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (!detectedThresholds.isEmpty()) {
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             customFilterVariables.writeToVariables(variables, true, "custom.", true, "custom");
             variables.set("thresholds", detectedThresholds);
             Number combined = (Number) thresholdCombinationExpression.evaluate(variables);
@@ -196,8 +197,8 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         ImageJUtils.copyHyperstackDimensions(inputImage, outputMask);
 
         // Write to output
-        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), annotations, thresholdAnnotationStrategy, progressInfo);
-        dataBatch.addOutputData("ROI", outputROI, annotations, thresholdAnnotationStrategy, progressInfo);
+        iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(outputMask), annotations, thresholdAnnotationStrategy, progressInfo);
+        iterationStep.addOutputData("ROI", outputROI, annotations, thresholdAnnotationStrategy, progressInfo);
     }
 
     private ThresholdingResult applyThreshold(ImageProcessor inputIp, ImageProcessor referenceIp, int threshold, ExpressionVariables roiFilterVariables, ExpressionVariables thresholdCriteriaVariables, ExpressionVariables accumulationVariables, JIPipeProgressInfo progressInfo) {

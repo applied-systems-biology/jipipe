@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
@@ -31,9 +32,9 @@ public class ImageToTableColumnAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData target = dataBatch.getInputData("Target", ResultsTableData.class, progressInfo);
-        FloatProcessor processor = (FloatProcessor) dataBatch.getInputData("Image", ImagePlus2DGreyscale32FData.class, progressInfo).getImage().getProcessor();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData target = iterationStep.getInputData("Target", ResultsTableData.class, progressInfo);
+        FloatProcessor processor = (FloatProcessor) iterationStep.getInputData("Image", ImagePlus2DGreyscale32FData.class, progressInfo).getImage().getProcessor();
         if (target == null) {
             target = new ResultsTableData();
             target.addRows(processor.getHeight());
@@ -45,7 +46,7 @@ public class ImageToTableColumnAlgorithm extends JIPipeIteratingAlgorithm {
         for (int i = 0; i < rowsToCopy; i++) {
             target.setValueAt(processor.getf(i), i, columnIndex);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), target, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), target, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Target/Generated column", description = "The table column where the values will be written. Existing values will be overwritten. If the column does not exist, a new one will be generated.")

@@ -16,18 +16,18 @@ package org.hkijena.jipipe.api.nodes.algorithm;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-public class JIPipeSingleIterationAlgorithmDataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
+public class JIPipeSingleIterationAlgorithmIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
 
-    public JIPipeSingleIterationAlgorithmDataBatchGenerationSettings() {
+    public JIPipeSingleIterationAlgorithmIterationStepGenerationSettings() {
     }
 
-    public JIPipeSingleIterationAlgorithmDataBatchGenerationSettings(JIPipeSingleIterationAlgorithmDataBatchGenerationSettings other) {
+    public JIPipeSingleIterationAlgorithmIterationStepGenerationSettings(JIPipeSingleIterationAlgorithmIterationStepGenerationSettings other) {
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
     }

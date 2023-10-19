@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.TableCellValueQueryExpression;
@@ -53,8 +54,8 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData tableData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData tableData = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         Multimap<String, String> annotationsToGenerate = HashMultimap.create();
         for (int row = 0; row < tableData.getRowCount(); row++) {
             for (int col = 0; col < tableData.getColumnCount(); col++) {
@@ -72,7 +73,7 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
             }
             annotationList.addAll(rowMergingStrategy.merge(forName));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), tableData, annotationList, annotationMergeStrategy, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), tableData, annotationList, annotationMergeStrategy, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Row merging strategy", description = "Important if the rows of the selected columns have different values. Determines how they are merged. " +

@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -71,16 +72,16 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData inputTable = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData inputTable = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData outputTable;
         if (!ignoreEmptyTables || inputTable.getRowCount() > 0) {
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             variables.set("num_rows", inputTable.getRowCount());
             variables.set("num_cols", inputTable.getColumnCount());
             variables.set("column_names", inputTable.getColumnNames());
-            variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting));
+            variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(iterationStep.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting));
 
             // Calculate counters
             double counterMin = Double.POSITIVE_INFINITY;
@@ -160,7 +161,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         } else {
             outputTable = inputTable;
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
     private void addNewRowForCounter(double newCounter, int counterColumn, ExpressionVariables variables, ResultsTableData outputTable) {

@@ -16,7 +16,8 @@ package org.hkijena.jipipe.extensions.utils.algorithms.meta;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -66,7 +67,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         JIPipeValidationReport report = new JIPipeValidationReport();
         JIPipeProject project;
         try {
@@ -86,7 +87,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Set parameters
-        ParametersData parameters = dataBatch.getInputData(getFirstInputSlot(), ParametersData.class, progressInfo);
+        ParametersData parameters = iterationStep.getInputData(getFirstInputSlot(), ParametersData.class, progressInfo);
         {
             JIPipeProjectInfoParameters pipelineParameters = project.getPipelineParameters();
             JIPipeParameterTree infoParameterTree = new JIPipeParameterTree(pipelineParameters);
@@ -133,7 +134,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         run.run();
 
         // Add output data
-        dataBatch.addOutputData(getFirstOutputSlot(), new JIPipeOutputData(rowStoragePath), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new JIPipeOutputData(rowStoragePath), progressInfo);
     }
 
     @Override

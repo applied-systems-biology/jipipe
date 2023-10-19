@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -45,10 +46,10 @@ public class ResultsTableToGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        String title = dataBatch.getMergedTextAnnotations().values().stream().map(a -> a.getName() + "=" + a.getValue()).collect(Collectors.joining(", "));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData inputData = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+        String title = iterationStep.getMergedTextAnnotations().values().stream().map(a -> a.getName() + "=" + a.getValue()).collect(Collectors.joining(", "));
         ((ResultsTableData) inputData.duplicate(progressInfo)).getTable().show(title);
-        dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
     }
 }

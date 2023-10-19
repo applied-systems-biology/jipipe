@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -113,10 +114,10 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ImagePlusGreyscaleData roi1_original = dataBatch.getInputData("Labels 1", ImagePlusGreyscaleData.class, progressInfo);
-        ImagePlusGreyscaleData roi2_original = dataBatch.getInputData("Labels 2", ImagePlusGreyscaleData.class, progressInfo);
+        ImagePlusGreyscaleData roi1_original = iterationStep.getInputData("Labels 1", ImagePlusGreyscaleData.class, progressInfo);
+        ImagePlusGreyscaleData roi2_original = iterationStep.getInputData("Labels 2", ImagePlusGreyscaleData.class, progressInfo);
 
         if (labels1Settings.isEnabled()) {
             ImagePlus roi1 = roi1_original.getDuplicateImage();
@@ -126,7 +127,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                     "Label2",
                     getOutputSlot("Labels 1"),
                     labels1Settings,
-                    dataBatch,
+                    iterationStep,
                     progressInfo.resolveAndLog("Labels 1 filtering"));
         }
         if (labels2Settings.isEnabled()) {
@@ -137,20 +138,20 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                     "Label1",
                     getOutputSlot("Labels 2"),
                     labels2Settings,
-                    dataBatch,
+                    iterationStep,
                     progressInfo.resolveAndLog("Labels 2 filtering"));
         }
     }
 
     private void applyFiltering(ImagePlus targetLabels, ImagePlus otherLabels, String targetPrefix, String otherPrefix,
-                                JIPipeOutputDataSlot outputSlot, LabelFilterSettings settings, JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+                                JIPipeOutputDataSlot outputSlot, LabelFilterSettings settings, JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         boolean withExpression = !StringUtils.isNullOrEmpty(settings.overlapFilter.getExpression());
         ByteProcessor overlap = new ByteProcessor(targetLabels.getWidth(), targetLabels.getHeight());
         ExpressionVariables variables = new ExpressionVariables();
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : iterationStep.getMergedTextAnnotations().entrySet()) {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variables.set("annotations", annotations);
@@ -289,7 +290,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJUtils.setSliceZero(targetLabels, outputProcessor, index);
         }, progressInfo);
 
-        dataBatch.addOutputData(outputSlot, new ImagePlusGreyscaleData(targetLabels), progressInfo);
+        iterationStep.addOutputData(outputSlot, new ImagePlusGreyscaleData(targetLabels), progressInfo);
     }
 
     private void calculateOverlap(ByteProcessor overlap, ImageProcessor labels1, ImageProcessor labels2, int label1, int label2) {

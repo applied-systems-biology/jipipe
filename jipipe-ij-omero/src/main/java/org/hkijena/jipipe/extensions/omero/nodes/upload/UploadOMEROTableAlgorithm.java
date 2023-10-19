@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -66,9 +67,9 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        long imageId = dataBatch.getInputData("Target", OMEROImageReferenceData.class, progressInfo).getImageId();
-        ResultsTableData resultsTableData = dataBatch.getInputData("Tables", ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        long imageId = iterationStep.getInputData("Target", OMEROImageReferenceData.class, progressInfo).getImageId();
+        ResultsTableData resultsTableData = iterationStep.getInputData("Tables", ResultsTableData.class, progressInfo);
         OMEROCredentialsEnvironment credentials = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
 
         // Determine file name
@@ -82,8 +83,8 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
                     getProjectDirectory(),
                     getProjectDataDirs(),
                     resultsTableData.toString(),
-                    dataBatch.getInputRow("Tables"),
-                    new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                    iterationStep.getInputRow("Tables"),
+                    new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
             fileName = outputPath.getFileName().toString();
         }
 
@@ -96,7 +97,7 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
             TableData tableData = OMEROUtils.tableToOMERO(resultsTableData);
             tableData = tablesFacility.addTable(context, imageData, fileName, tableData);
 
-            dataBatch.addOutputData(getFirstOutputSlot(), new OMEROAnnotationReferenceData(tableData.getOriginalFileId()), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new OMEROAnnotationReferenceData(tableData.getOriginalFileId()), progressInfo);
 
         } catch (ExecutionException | DSAccessException | DSOutOfServiceException e) {
             throw new RuntimeException(e);

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeCustomAnnotationMatchingExpressionVariables;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -32,22 +32,25 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
-public class JIPipeMergingAlgorithmDataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
+/**
+ * Groups data batch generation settings
+ */
+public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
     private JIPipeColumMatching columnMatching = JIPipeColumMatching.PrefixHashUnion;
     private boolean skipIncompleteDataSets = false;
     private StringQueryExpression customColumns = new StringQueryExpression();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
+    private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
-    private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
-    private boolean forceFlowGraphSolver = false;
-    private boolean forceNAIsAny = false;
 
-    public JIPipeMergingAlgorithmDataBatchGenerationSettings() {
+    private boolean forceFlowGraphSolver = false;
+
+    public JIPipeIteratingAlgorithmIterationStepGenerationSettings() {
     }
 
-    public JIPipeMergingAlgorithmDataBatchGenerationSettings(JIPipeMergingAlgorithmDataBatchGenerationSettings other) {
+    public JIPipeIteratingAlgorithmIterationStepGenerationSettings(JIPipeIteratingAlgorithmIterationStepGenerationSettings other) {
         this.columnMatching = other.columnMatching;
         this.skipIncompleteDataSets = other.skipIncompleteDataSets;
         this.customColumns = new StringQueryExpression(other.customColumns);
@@ -57,19 +60,6 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings extends AbstractJ
         this.customAnnotationMatching = new DefaultExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
         this.forceFlowGraphSolver = other.forceFlowGraphSolver;
-        this.forceNAIsAny = other.forceNAIsAny;
-    }
-
-    @JIPipeDocumentation(name = "Force NA is ANY (if available)", description = "If enabled, missing annotations are considered as ANY (and thus merged with other data) even if there is only one input. " +
-            "Currently only works for the dictionary solver.")
-    @JIPipeParameter("force-na-is-any")
-    public boolean isForceNAIsAny() {
-        return forceNAIsAny;
-    }
-
-    @JIPipeParameter("force-na-is-any")
-    public void setForceNAIsAny(boolean forceNAIsAny) {
-        this.forceNAIsAny = forceNAIsAny;
     }
 
     @JIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
@@ -135,7 +125,7 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings extends AbstractJ
             if (getAnnotationMatchingMethod() != JIPipeTextAnnotationMatchingMethod.CustomExpression)
                 return false;
         }
-        return JIPipeDataBatchGenerationSettings.super.isParameterUIVisible(tree, access);
+        return JIPipeIterationStepGenerationSettings.super.isParameterUIVisible(tree, access);
     }
 
     @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
@@ -166,18 +156,6 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings extends AbstractJ
 
     }
 
-    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if data sets that " +
-            "define different values for the same annotation columns are encountered.")
-    @JIPipeParameter("annotation-merge-strategy")
-    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
-        return annotationMergeStrategy;
-    }
-
-    @JIPipeParameter("annotation-merge-strategy")
-    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
-        this.annotationMergeStrategy = annotationMergeStrategy;
-    }
-
     @JIPipeDocumentation(name = "Merge same data annotation values", description = "Determines which strategy is applied if different values for the same data annotation columns are encountered.")
     @JIPipeParameter("data-annotation-merge-strategy")
     public JIPipeDataAnnotationMergeMode getDataAnnotationMergeStrategy() {
@@ -187,6 +165,17 @@ public class JIPipeMergingAlgorithmDataBatchGenerationSettings extends AbstractJ
     @JIPipeParameter("data-annotation-merge-strategy")
     public void setDataAnnotationMergeStrategy(JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
         this.dataAnnotationMergeStrategy = dataAnnotationMergeStrategy;
+    }
+
+    @JIPipeDocumentation(name = "Merge same annotation values", description = "Determines which strategy is applied if different values for the same annotation columns are encountered.")
+    @JIPipeParameter("annotation-merge-strategy")
+    public JIPipeTextAnnotationMergeMode getAnnotationMergeStrategy() {
+        return annotationMergeStrategy;
+    }
+
+    @JIPipeParameter("annotation-merge-strategy")
+    public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
+        this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
     @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")

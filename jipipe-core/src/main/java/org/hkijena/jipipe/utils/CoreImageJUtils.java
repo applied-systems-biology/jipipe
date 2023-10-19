@@ -14,6 +14,7 @@
 
 package org.hkijena.jipipe.utils;
 
+import ij.IJ;
 import net.imagej.updater.FilesCollection;
 import org.scijava.util.AppUtils;
 
@@ -26,5 +27,30 @@ public class CoreImageJUtils {
         final File imagejRoot = imagejDirProperty != null ? new File(imagejDirProperty) :
                 AppUtils.getBaseDirectory("ij.dir", FilesCollection.class, "updater");
         return imagejRoot.toPath();
+    }
+
+    public static boolean supportsNativeImport(Path path) {
+        String fileNameString = path.getFileName().toString().toLowerCase();
+        // tiff, dicom, fits, pgm, jpeg, bmp, gif
+        if(fileNameString.endsWith(".tiff") || fileNameString.endsWith(".tif")) {
+            return !fileNameString.endsWith(".ome.tif") && !fileNameString.endsWith(".ome.tiff");
+        }
+        if(fileNameString.endsWith(".dcm")) {
+            return true;
+        }
+        if(fileNameString.endsWith(".pgm")) {
+            return true;
+        }
+        if(fileNameString.endsWith(".jpg") || fileNameString.endsWith(".jpeg")) {
+            return true;
+        }
+        if(fileNameString.endsWith(".bmp")) {
+            return true;
+        }
+        if(fileNameString.endsWith(".gif")) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -23,22 +24,22 @@ import java.util.HashSet;
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter")
-public class DataBatchSlicer extends JIPipeMergingAlgorithm {
+public class IterationStepSlicer extends JIPipeMergingAlgorithm {
 
     private IntegerRange sliceRange = new IntegerRange("0");
 
-    public DataBatchSlicer(JIPipeNodeInfo info) {
+    public IterationStepSlicer(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public DataBatchSlicer(DataBatchSlicer other) {
+    public IterationStepSlicer(IterationStepSlicer other) {
         super(other);
         this.sliceRange = new IntegerRange(other.sliceRange);
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ArrayList<Integer> rows = new ArrayList<>(dataBatch.getInputRows(getFirstInputSlot()));
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ArrayList<Integer> rows = new ArrayList<>(iterationStep.getInputRows(getFirstInputSlot()));
         HashSet<Integer> indices = new HashSet<>(sliceRange.getIntegers(0, rows.size(), new ExpressionVariables()));
         for (int i = 0; i < rows.size(); i++) {
             if (indices.contains(i)) {

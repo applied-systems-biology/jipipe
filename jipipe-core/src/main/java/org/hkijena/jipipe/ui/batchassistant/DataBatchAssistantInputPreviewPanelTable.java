@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.sources.JIPipeWeakDataTableDataSource;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
 import org.hkijena.jipipe.ui.datatracer.DataTracerUI;
@@ -44,8 +44,8 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
     private boolean hasLimitedData;
     private final JXTable table = new JXTable();
     private final DefaultTableModel model = new DefaultTableModel();
-    private JIPipeDataBatchGenerationResult dataBatchGenerationResult;
-    private final Multimap<Integer, Integer> dataBatchMapping = HashMultimap.create();
+    private JIPipeDataBatchGenerationResult iterationStepGenerationResult;
+    private final Multimap<Integer, Integer> iterationStepMapping = HashMultimap.create();
 
     public DataBatchAssistantInputPreviewPanelTable(DataBatchAssistantInputPreviewPanel previewPanel, JIPipeInputDataSlot inputSlot, boolean shouldLimitData) {
         this.previewPanel = previewPanel;
@@ -286,17 +286,17 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
         }
     }
 
-    public void highlightResults(JIPipeDataBatchGenerationResult dataBatchGenerationResult) {
+    public void highlightResults(JIPipeDataBatchGenerationResult iterationStepGenerationResult) {
 
-        this.dataBatchGenerationResult = dataBatchGenerationResult;
+        this.iterationStepGenerationResult = iterationStepGenerationResult;
 
         // Generate data batch mapping
-        this.dataBatchMapping.clear();
-        List<JIPipeMultiDataBatch> dataBatches = dataBatchGenerationResult.getDataBatches();
-        for (int dataBatchIndex = 0; dataBatchIndex < dataBatches.size(); dataBatchIndex++) {
-            JIPipeMultiDataBatch dataBatch = dataBatches.get(dataBatchIndex);
-            for (Integer inputRow : dataBatch.getInputRows(inputSlot.getName())) {
-                dataBatchMapping.put(inputRow, dataBatchIndex);
+        this.iterationStepMapping.clear();
+        List<JIPipeMultiIterationStep> iterationSteps = iterationStepGenerationResult.getDataBatches();
+        for (int iterationStepIndex = 0; iterationStepIndex < iterationSteps.size(); iterationStepIndex++) {
+            JIPipeMultiIterationStep iterationStep = iterationSteps.get(iterationStepIndex);
+            for (Integer inputRow : iterationStep.getInputRows(inputSlot.getName())) {
+                iterationStepMapping.put(inputRow, iterationStepIndex);
             }
         }
 
@@ -328,17 +328,17 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
             setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
             setIcon(null);
 
-            int dataBatchIndex = -1;
+            int iterationStepIndex = -1;
             Collection<Integer> indices = null;
-            if (previewPanelTable.dataBatchMapping != null && table.getModel().getColumnCount() > 0) {
+            if (previewPanelTable.iterationStepMapping != null && table.getModel().getColumnCount() > 0) {
                 Object obj = table.getModel().getValueAt(table.convertRowIndexToView(row), 0);
                 if(obj instanceof JIPipeWeakDataTableDataSource) {
                     JIPipeWeakDataTableDataSource dataSource = (JIPipeWeakDataTableDataSource) obj;
-                    indices = previewPanelTable.dataBatchMapping.get(dataSource.getRow());
+                    indices = previewPanelTable.iterationStepMapping.get(dataSource.getRow());
                     if (indices.size() > 1) {
-                        dataBatchIndex = Integer.MAX_VALUE;
+                        iterationStepIndex = Integer.MAX_VALUE;
                     } else if (indices.size() == 1) {
-                        dataBatchIndex = indices.iterator().next();
+                        iterationStepIndex = indices.iterator().next();
                     }
                 }
             }
@@ -348,14 +348,14 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
                 JIPipeTextAnnotation textAnnotation = (JIPipeTextAnnotation) value;
 
                 String columnName = table.getColumnName(column);
-                if (previewPanelTable.dataBatchGenerationResult != null && previewPanelTable.dataBatchGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
+                if (previewPanelTable.iterationStepGenerationResult != null && previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                     setBackground(COLOR_HIGHLIGHT_CELL);
                     setFont(new Font(Font.DIALOG, Font.BOLD, 12));
                 }
                 setText(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(textAnnotation.getValue())));
 
-                if(dataBatchIndex >= 0 && dataBatchIndex != Integer.MAX_VALUE) {
-                    setForeground(Color.getHSBColor(1.0f * dataBatchIndex / previewPanelTable.dataBatchGenerationResult.getDataBatches().size(), 0.6f, 0.5f));
+                if(iterationStepIndex >= 0 && iterationStepIndex != Integer.MAX_VALUE) {
+                    setForeground(Color.getHSBColor(1.0f * iterationStepIndex / previewPanelTable.iterationStepGenerationResult.getDataBatches().size(), 0.6f, 0.5f));
                 }
 
             } else if (value instanceof JIPipeWeakDataTableDataSource) {
@@ -375,14 +375,14 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
                     }
                 }
                 else {
-                    if (dataBatchIndex == Integer.MAX_VALUE) {
+                    if (iterationStepIndex == Integer.MAX_VALUE) {
                         setIcon(UIUtils.getIconInvertedFromResources("actions/go-right.png"));
                         setForeground(Color.BLUE);
                         setText(indices.stream().sorted().map(Object::toString).collect(Collectors.joining(", ")));
-                    } else if (dataBatchIndex >= 0) {
+                    } else if (iterationStepIndex >= 0) {
                         setIcon(UIUtils.getIconInvertedFromResources("actions/go-right.png"));
-                        setText(String.valueOf(dataBatchIndex));
-                        setBackground(Color.getHSBColor(1.0f * dataBatchIndex / previewPanelTable.dataBatchGenerationResult.getDataBatches().size(), 0.3f, 0.7f));
+                        setText(String.valueOf(iterationStepIndex));
+                        setBackground(Color.getHSBColor(1.0f * iterationStepIndex / previewPanelTable.iterationStepGenerationResult.getDataBatches().size(), 0.3f, 0.7f));
                         setForeground(Color.WHITE);
                     } else {
                         setForeground(Color.LIGHT_GRAY);
@@ -392,7 +392,7 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
 
             } else {
                 String columnName = table.getColumnName(column);
-                if (previewPanelTable.dataBatchGenerationResult != null && previewPanelTable.dataBatchGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
+                if (previewPanelTable.iterationStepGenerationResult != null && previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                     setBackground(COLOR_HIGHLIGHT_CELL);
                     setFont(new Font(Font.DIALOG, Font.BOLD, 12));
                 }
@@ -438,8 +438,8 @@ public class DataBatchAssistantInputPreviewPanelTable extends JPanel {
 
             Component component = defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
 
-            if (previewPanelTable.dataBatchGenerationResult != null &&
-                    previewPanelTable.dataBatchGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
+            if (previewPanelTable.iterationStepGenerationResult != null &&
+                    previewPanelTable.iterationStepGenerationResult.getReferenceTextAnnotationColumns().contains(columnName)) {
                 component.setBackground(COLOR_HIGHLIGHT);
                 component.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
             } else {

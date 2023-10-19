@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterlessSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
@@ -36,13 +37,13 @@ public class ParametersToAnnotationsAlgorithm extends JIPipeParameterlessSimpleI
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ParametersData data = dataBatch.getInputData(getFirstInputSlot(), ParametersData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ParametersData data = iterationStep.getInputData(getFirstInputSlot(), ParametersData.class, progressInfo);
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         for (Map.Entry<String, Object> entry : data.getParameterData().entrySet()) {
             annotationList.add(new JIPipeTextAnnotation(entry.getKey(), JsonUtils.toJsonString(entry.getValue())));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Merge existing annotations", description = "Determines how existing annotations are merged")

@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.databatch;
+package org.hkijena.jipipe.api.nodes.iterationstep;
 
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -23,13 +23,13 @@ import java.util.List;
 /**
  * Methods shared across all {@link JIPipeAlgorithm} that generate data batches
  */
-public interface JIPipeDataBatchAlgorithm {
+public interface JIPipeIterationStepAlgorithm {
     /**
      * Returns the batch generation settings as interface
      *
      * @return batch generation settings as interface
      */
-    JIPipeDataBatchGenerationSettings getGenerationSettingsInterface();
+    JIPipeIterationStepGenerationSettings getGenerationSettingsInterface();
 
     /**
      * Generates data batches.
@@ -51,7 +51,7 @@ public interface JIPipeDataBatchAlgorithm {
      * @return the batches
      */
     @Deprecated
-    default List<JIPipeMultiDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    default List<JIPipeMultiIterationStep> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         return generateDataBatchesGenerationResult(slots, progressInfo).getDataBatches();
     }
 }

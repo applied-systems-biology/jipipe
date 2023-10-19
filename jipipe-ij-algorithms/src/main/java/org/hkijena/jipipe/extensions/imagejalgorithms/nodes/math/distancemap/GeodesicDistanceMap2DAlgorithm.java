@@ -26,7 +26,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.binary.Image_8_16_32_Filter;
@@ -114,9 +115,9 @@ public class GeodesicDistanceMap2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus markerImage = dataBatch.getInputData(getInputSlot("Marker"), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
-        ImagePlus maskImage = dataBatch.getInputData(getInputSlot("Mask"), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus markerImage = iterationStep.getInputData(getInputSlot("Marker"), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+        ImagePlus maskImage = iterationStep.getInputData(getInputSlot("Mask"), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
         ImageStack stack = new ImageStack(markerImage.getWidth(), markerImage.getHeight(), markerImage.getStackSize());
 
@@ -140,6 +141,6 @@ public class GeodesicDistanceMap2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus outputImage = new ImagePlus("GDM", stack);
         outputImage.setDimensions(markerImage.getNChannels(), markerImage.getNSlices(), markerImage.getNFrames());
         outputImage.copyScale(markerImage);
-        dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), JIPipe.createData(outputType.getInfo().getDataClass(), outputImage), progressInfo);
     }
 }

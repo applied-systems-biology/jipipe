@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -38,10 +39,10 @@ public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = new ROIListData(dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData rois = new ROIListData(iterationStep.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo));
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         for (Roi roi : rois) {
             Map<String, String> map = ImageJUtils.getRoiProperties(roi);
             Set<String> toRemove = new HashSet<>();
@@ -60,7 +61,7 @@ public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             }
             ImageJUtils.setRoiProperties(roi, map);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Filter", description = "This expression is executed per ROI property and should return <code>true</code> if the property should be removed")

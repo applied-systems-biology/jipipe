@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -88,10 +89,10 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, 32);
         ExpressionVariables variableSet = new ExpressionVariables();
-        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
         variableSet.set("width", width);
         variableSet.set("height", height);
         variableSet.set("num_z", sizeZ);
@@ -186,7 +187,7 @@ public class GenerateVectorFromMathExpression extends JIPipeSimpleIteratingAlgor
 
         ImageJUtils.calibrate(img, ImageJCalibrationMode.AutomaticImageJ, 0, 0);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
     private void generateAndWriteVectorResults(ExpressionVariables variableSet, List<ImageProcessor> resultProcessors, int y, int x) {

@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.extensions.forms.FormsExtension;
@@ -34,35 +34,35 @@ public class FormsDialog extends JFrame {
     private static final String TAB_ISSUES_DETECTED = "Issues detected";
     private final JIPipeWorkbench workbench;
     private final String tabAnnotation;
-    private final List<JIPipeMultiDataBatch> dataBatchList;
-    private final List<JIPipeDataSlot> dataBatchForms = new ArrayList<>();
+    private final List<JIPipeMultiIterationStep> iterationStepList;
+    private final List<JIPipeDataSlot> iterationStepForms = new ArrayList<>();
     private final JIPipeDataSlot originalForms;
     private final DocumentTabPane tabPane = new DocumentTabPane(true);
-    private final List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
+    private final List<DataBatchStatus> iterationStepStatuses = new ArrayList<>();
     private final JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
     private final JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
     private final JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
     private final JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
     private final MarkdownDocument documentation;
     private boolean cancelled = false;
-    private JIPipeSimpleDataBatchTableUI dataBatchTableUI;
+    private JIPipeSimpleDataBatchTableUI iterationStepTableUI;
     private String lastTab = "";
 
-    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMultiDataBatch> dataBatchList, JIPipeDataSlot originalForms, String tabAnnotation) {
+    public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMultiIterationStep> iterationStepList, JIPipeDataSlot originalForms, String tabAnnotation) {
         this.originalForms = originalForms;
         setIconImage(UIUtils.getJIPipeIcon128());
         this.workbench = workbench;
-        this.dataBatchList = dataBatchList;
+        this.iterationStepList = iterationStepList;
         this.tabAnnotation = tabAnnotation;
         this.documentation = MarkdownDocument.fromResourceURL(FormsExtension.class.getResource("/org/hkijena/jipipe/extensions/forms/form-dialog-documentation.md"),
                 true, new HashMap<>());
 
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         // We need to make copies of the FormData objects, as they are mutable
-        for (int i = 0; i < dataBatchList.size(); ++i) {
+        for (int i = 0; i < iterationStepList.size(); ++i) {
             JIPipeDataSlot copy = createFormsInstanceFor(i, progressInfo);
-            dataBatchForms.add(copy);
-            dataBatchStatuses.add(DataBatchStatus.Unvisited);
+            iterationStepForms.add(copy);
+            iterationStepStatuses.add(DataBatchStatus.Unvisited);
         }
 
         // Initialize UI
@@ -73,14 +73,14 @@ public class FormsDialog extends JFrame {
     @Override
     public void dispose() {
         super.dispose();
-        dataBatchTableUI.dispose();
+        iterationStepTableUI.dispose();
     }
 
     private JIPipeDataSlot createFormsInstanceFor(int index, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot copy = originalForms.getInfo().createInstance(originalForms.getNode());
         for (int row = 0; row < originalForms.getRowCount(); row++) {
             FormData formCopy = (FormData) originalForms.getData(row, FormData.class, progressInfo).duplicate(progressInfo);
-            formCopy.loadData(dataBatchList.get(index));
+            formCopy.loadData(iterationStepList.get(index));
             copy.addData(formCopy,
                     originalForms.getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
@@ -95,15 +95,15 @@ public class FormsDialog extends JFrame {
     private void gotoNextBatch() {
         if (!checkCurrentBatch())
             return;
-        if (dataBatchList.size() > 0) {
-            dataBatchTableUI.resetSearch();
-            JXTable table = dataBatchTableUI.getTable();
+        if (iterationStepList.size() > 0) {
+            iterationStepTableUI.resetSearch();
+            JXTable table = iterationStepTableUI.getTable();
             int row = table.getSelectedRow();
             if (row == -1) {
                 table.getSelectionModel().setSelectionInterval(0, 0);
             } else {
                 row = table.convertRowIndexToModel(row);
-                row = (row + 1) % dataBatchList.size();
+                row = (row + 1) % iterationStepList.size();
                 row = table.convertRowIndexToView(row);
                 table.getSelectionModel().setSelectionInterval(row, row);
             }
@@ -111,7 +111,7 @@ public class FormsDialog extends JFrame {
     }
 
     private boolean checkCurrentBatch() {
-        JXTable table = dataBatchTableUI.getTable();
+        JXTable table = iterationStepTableUI.getTable();
         int row = table.getSelectedRow();
         if (row == -1) {
             return true;
@@ -144,9 +144,9 @@ public class FormsDialog extends JFrame {
     private void gotoPreviousBatch() {
         if (!checkCurrentBatch())
             return;
-        if (dataBatchList.size() > 0) {
-            dataBatchTableUI.resetSearch();
-            JXTable table = dataBatchTableUI.getTable();
+        if (iterationStepList.size() > 0) {
+            iterationStepTableUI.resetSearch();
+            JXTable table = iterationStepTableUI.getTable();
             int row = table.getSelectedRow();
             if (row == -1) {
                 table.getSelectionModel().setSelectionInterval(0, 0);
@@ -154,7 +154,7 @@ public class FormsDialog extends JFrame {
                 row = table.convertRowIndexToModel(row);
                 --row;
                 if (row < 0)
-                    row = dataBatchList.size() - 1;
+                    row = iterationStepList.size() - 1;
                 row = table.convertRowIndexToView(row);
                 table.getSelectionModel().setSelectionInterval(row, row);
             }
@@ -164,10 +164,10 @@ public class FormsDialog extends JFrame {
     private void initialize() {
         JPanel contentPanel = new JPanel(new BorderLayout());
 
-        dataBatchTableUI = new JIPipeSimpleDataBatchTableUI(dataBatchList);
-        dataBatchTableUI.getTable().setDefaultRenderer(Integer.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
-        dataBatchTableUI.getTable().setDefaultRenderer(String.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, tabPane, AutoResizeSplitPane.RATIO_1_TO_3);
+        iterationStepTableUI = new JIPipeSimpleDataBatchTableUI(iterationStepList);
+        iterationStepTableUI.getTable().setDefaultRenderer(Integer.class, new DataBatchStatusTableCellRenderer(iterationStepStatuses));
+        iterationStepTableUI.getTable().setDefaultRenderer(String.class, new DataBatchStatusTableCellRenderer(iterationStepStatuses));
+        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, iterationStepTableUI, tabPane, AutoResizeSplitPane.RATIO_1_TO_3);
         contentPanel.add(splitPane, BorderLayout.CENTER);
 
         initializeBottomBar(contentPanel);
@@ -182,11 +182,11 @@ public class FormsDialog extends JFrame {
             }
         });
 
-        dataBatchTableUI.getTable().getSelectionModel().addListSelectionListener(e -> {
-            int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+        iterationStepTableUI.getTable().getSelectionModel().addListSelectionListener(e -> {
+            int selectedRow = iterationStepTableUI.getTable().getSelectedRow();
             closeAllTabsAndRememberLast();
             if (selectedRow != -1) {
-                selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
+                selectedRow = iterationStepTableUI.getTable().convertRowIndexToModel(selectedRow);
                 switchToDataBatchUI(selectedRow);
             }
         });
@@ -201,20 +201,20 @@ public class FormsDialog extends JFrame {
 
     private void switchToDataBatchUI(int selectedRow) {
 
-        boolean wasVisitedBefore = dataBatchStatuses.get(selectedRow) != DataBatchStatus.Unvisited;
+        boolean wasVisitedBefore = iterationStepStatuses.get(selectedRow) != DataBatchStatus.Unvisited;
         visitedButton.setSelected(true);
 
         updateVisitedStatuses();
 
         // Set the status
-        dataBatchStatuses.set(selectedRow, DataBatchStatus.Visited);
-        dataBatchTableUI.getTable().repaint();
+        iterationStepStatuses.set(selectedRow, DataBatchStatus.Visited);
+        iterationStepTableUI.getTable().repaint();
         updateBottomBarStats();
 
         // Create preview tab
         tabPane.addTab("View data",
                 UIUtils.getIconFromResources("actions/zoom.png"),
-                new DataBatchBrowserUI(getWorkbench(), dataBatchList.get(selectedRow)),
+                new DataBatchBrowserUI(getWorkbench(), iterationStepList.get(selectedRow)),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
@@ -237,7 +237,7 @@ public class FormsDialog extends JFrame {
         // Create settings tabs
         Map<String, List<Integer>> groupedByTabName = new HashMap<>();
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
+        JIPipeDataSlot formsForRow = iterationStepForms.get(selectedRow);
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
             String tab = formsForRow.getTextAnnotationOr(row, tabAnnotation, new JIPipeTextAnnotation(tabAnnotation, "General")).getValue();
             List<Integer> rowList = groupedByTabName.getOrDefault(tab, null);
@@ -295,7 +295,7 @@ public class FormsDialog extends JFrame {
 
     private JIPipeValidationReport getReportForDataBatch(int selectedRow, JIPipeProgressInfo progressInfo) {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
+        JIPipeDataSlot formsForRow = iterationStepForms.get(selectedRow);
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
             FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
             String name = formData.toString();
@@ -310,30 +310,30 @@ public class FormsDialog extends JFrame {
 
     private void updateVisitedStatuses() {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        for (int i = 0; i < dataBatchList.size(); i++) {
-            if (dataBatchStatuses.get(i) == DataBatchStatus.Visited) {
+        for (int i = 0; i < iterationStepList.size(); i++) {
+            if (iterationStepStatuses.get(i) == DataBatchStatus.Visited) {
                 JIPipeValidationReport report = new JIPipeValidationReport();
-                for (int row = 0; row < dataBatchForms.get(i).getRowCount(); row++) {
-                    FormData formData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
+                for (int row = 0; row < iterationStepForms.get(i).getRowCount(); row++) {
+                    FormData formData = iterationStepForms.get(i).getData(row, FormData.class, progressInfo);
                     formData.reportValidity(new CustomValidationReportContext("Form " + row), report);
                     if (!report.isValid()) {
-                        dataBatchStatuses.set(i, DataBatchStatus.Invalid);
+                        iterationStepStatuses.set(i, DataBatchStatus.Invalid);
                         break;
                     }
                 }
                 if (report.isValid()) {
-                    dataBatchStatuses.set(i, DataBatchStatus.Visited);
+                    iterationStepStatuses.set(i, DataBatchStatus.Visited);
                 }
             }
         }
-        dataBatchTableUI.getTable().repaint();
+        iterationStepTableUI.getTable().repaint();
     }
 
     private void updateBottomBarStats() {
         int visited = 0;
         int unvisited = 0;
         int invalid = 0;
-        for (DataBatchStatus status : dataBatchStatuses) {
+        for (DataBatchStatus status : iterationStepStatuses) {
             switch (status) {
                 case Invalid:
                     ++invalid;
@@ -398,7 +398,7 @@ public class FormsDialog extends JFrame {
 
         JMenuItem applyToAllRemainingButton = new JMenuItem("All data remaining batches", UIUtils.getIconFromResources("actions/dialog-layers.png"));
         applyToAllRemainingButton.addActionListener(e -> {
-            if (dataBatchStatuses.stream().noneMatch(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Unvisited)) {
+            if (iterationStepStatuses.stream().noneMatch(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Unvisited)) {
                 JOptionPane.showMessageDialog(this,
                         "There are no remaining unvisited data batches.",
                         "Apply to all remaining batches",
@@ -430,11 +430,11 @@ public class FormsDialog extends JFrame {
                     "Reset 'Reviewed' status only",
                     JOptionPane.YES_NO_OPTION,
                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-                for (int i = 0; i < dataBatchStatuses.size(); i++) {
-                    dataBatchStatuses.set(i, DataBatchStatus.Unvisited);
+                for (int i = 0; i < iterationStepStatuses.size(); i++) {
+                    iterationStepStatuses.set(i, DataBatchStatus.Unvisited);
                 }
                 visitedButton.setSelected(false);
-                dataBatchTableUI.getTable().repaint();
+                iterationStepTableUI.getTable().repaint();
                 updateBottomBarStats();
             }
         });
@@ -496,14 +496,14 @@ public class FormsDialog extends JFrame {
     }
 
     private void resetAllBatches(boolean onlyUnvisited) {
-        for (int i = 0; i < dataBatchList.size(); ++i) {
-            if (onlyUnvisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
+        for (int i = 0; i < iterationStepList.size(); ++i) {
+            if (onlyUnvisited && iterationStepStatuses.get(i) != DataBatchStatus.Unvisited)
                 continue;
             resetDataBatch(i);
         }
         updateVisitedStatuses();
         updateBottomBarStats();
-        dataBatchTableUI.getTable().repaint();
+        iterationStepTableUI.getTable().repaint();
     }
 
     private void resetDataBatch(int i) {
@@ -512,7 +512,7 @@ public class FormsDialog extends JFrame {
         JIPipeDataSlot copy = originalForms.getInfo().createInstance(originalForms.getNode());
         for (int row = 0; row < tmpCopy.getRowCount(); row++) {
             FormData src = tmpCopy.getData(row, FormData.class, progressInfo);
-            FormData target = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
+            FormData target = iterationStepForms.get(i).getData(row, FormData.class, progressInfo);
             if (target.isUsingCustomReset()) {
                 target.customReset();
                 copy.addData(target,
@@ -532,20 +532,20 @@ public class FormsDialog extends JFrame {
                         progressInfo);
             }
         }
-        dataBatchForms.set(i, copy);
-        dataBatchStatuses.set(i, DataBatchStatus.Unvisited);
+        iterationStepForms.set(i, copy);
+        iterationStepStatuses.set(i, DataBatchStatus.Unvisited);
     }
 
     private void resetCurrentBatch() {
-        int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+        int selectedRow = iterationStepTableUI.getTable().getSelectedRow();
         if (selectedRow != -1) {
-            selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
+            selectedRow = iterationStepTableUI.getTable().convertRowIndexToModel(selectedRow);
         } else {
             return;
         }
         resetDataBatch(selectedRow);
         updateBottomBarStats();
-        dataBatchTableUI.getTable().repaint();
+        iterationStepTableUI.getTable().repaint();
         closeAllTabsAndRememberLast();
         switchToDataBatchUI(selectedRow);
     }
@@ -553,9 +553,9 @@ public class FormsDialog extends JFrame {
     private void applyCurrentSettingsToAll(boolean includingVisited) {
         if (!checkCurrentBatch())
             return;
-        int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+        int selectedRow = iterationStepTableUI.getTable().getSelectedRow();
         if (selectedRow != -1) {
-            selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
+            selectedRow = iterationStepTableUI.getTable().convertRowIndexToModel(selectedRow);
         } else {
             return;
         }
@@ -563,19 +563,19 @@ public class FormsDialog extends JFrame {
         boolean encounteredImmutable = false;
         JIPipeValidationReport report = new JIPipeValidationReport();
 
-        JIPipeDataSlot forms = dataBatchForms.get(selectedRow);
+        JIPipeDataSlot forms = iterationStepForms.get(selectedRow);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        for (int i = 0; i < dataBatchList.size(); i++) {
+        for (int i = 0; i < iterationStepList.size(); i++) {
             if (i == selectedRow)
                 continue;
-            if (!includingVisited && dataBatchStatuses.get(i) != DataBatchStatus.Unvisited)
+            if (!includingVisited && iterationStepStatuses.get(i) != DataBatchStatus.Unvisited)
                 continue;
 
             // Just copy the form
             JIPipeDataSlot copy = forms.getInfo().createInstance(forms.getNode());
             for (int row = 0; row < forms.getRowCount(); row++) {
                 FormData srcData = forms.getData(row, FormData.class, progressInfo);
-                FormData targetData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
+                FormData targetData = iterationStepForms.get(i).getData(row, FormData.class, progressInfo);
                 if (!targetData.isImmutable()) {
                     if (targetData.isUsingCustomCopy())
                         targetData.customCopy(srcData, new CustomValidationReportContext("Item " + (i + 1)), report);
@@ -589,8 +589,8 @@ public class FormsDialog extends JFrame {
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         progressInfo);
             }
-            dataBatchForms.set(i, copy);
-            dataBatchStatuses.set(i, DataBatchStatus.Visited);
+            iterationStepForms.set(i, copy);
+            iterationStepStatuses.set(i, DataBatchStatus.Visited);
         }
         updateVisitedStatuses();
         updateBottomBarStats();
@@ -605,23 +605,23 @@ public class FormsDialog extends JFrame {
     }
 
     private void toggleBatchVisited() {
-        int selectedRow = dataBatchTableUI.getTable().getSelectedRow();
+        int selectedRow = iterationStepTableUI.getTable().getSelectedRow();
         if (selectedRow != -1) {
-            selectedRow = dataBatchTableUI.getTable().convertRowIndexToModel(selectedRow);
+            selectedRow = iterationStepTableUI.getTable().convertRowIndexToModel(selectedRow);
             if (visitedButton.isSelected()) {
-                dataBatchStatuses.set(selectedRow, DataBatchStatus.Visited);
+                iterationStepStatuses.set(selectedRow, DataBatchStatus.Visited);
             } else {
-                dataBatchStatuses.set(selectedRow, DataBatchStatus.Unvisited);
+                iterationStepStatuses.set(selectedRow, DataBatchStatus.Unvisited);
             }
             updateBottomBarStats();
-            dataBatchTableUI.getTable().repaint();
+            iterationStepTableUI.getTable().repaint();
         }
     }
 
     private void finishDialog() {
         updateVisitedStatuses();
-        long unvisited = dataBatchStatuses.stream().filter(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Unvisited).count();
-        long invalid = dataBatchStatuses.stream().filter(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Invalid).count();
+        long unvisited = iterationStepStatuses.stream().filter(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Unvisited).count();
+        long invalid = iterationStepStatuses.stream().filter(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Invalid).count();
         if (unvisited > 0) {
             if (JOptionPane.showConfirmDialog(FormsDialog.this,
                     "There are " + unvisited + " data batches that are not marked as reviewed. Do you want to continue, anyway?",
@@ -646,7 +646,7 @@ public class FormsDialog extends JFrame {
 
     private void cancelDialog() {
         updateVisitedStatuses();
-        if (dataBatchStatuses.stream().allMatch(dataBatchStatus -> dataBatchStatus == DataBatchStatus.Visited)) {
+        if (iterationStepStatuses.stream().allMatch(iterationStepStatus -> iterationStepStatus == DataBatchStatus.Visited)) {
             cancelled = false;
             dispose();
         } else {
@@ -670,6 +670,6 @@ public class FormsDialog extends JFrame {
     }
 
     public List<JIPipeDataSlot> getDataBatchForms() {
-        return dataBatchForms;
+        return iterationStepForms;
     }
 }

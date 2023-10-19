@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.RoiLabel;
@@ -114,8 +115,8 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus reference = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus reference = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ROIListData rois = new ROIListData();
         if (reference.getOverlay() != null) {
             rois.addAll(Arrays.asList(reference.getOverlay().toArray()));
@@ -140,7 +141,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (magnification == 1.0 && !preferRenderViaOverlay) {
             ImagePlus result = drawer.draw(reference, rois, progressInfo);
             result.setOverlay(null);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         } else {
             rois = new ROIListData(rois);
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(reference, magnification);
@@ -160,7 +161,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageJUtils.copyHyperstackDimensions(reference, result);
             result.copyScale(reference);
             result.setOverlay(null);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
 
     }

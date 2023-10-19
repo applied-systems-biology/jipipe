@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
@@ -57,8 +58,8 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus maskImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus maskImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
         if (!blackBackground) {
             maskImage = ImageJUtils.duplicate(maskImage);
@@ -115,7 +116,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         }, progressInfo);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), roiList, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), roiList, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Neighborhood", description = "Determines which neighborhood is used to find connected components.")

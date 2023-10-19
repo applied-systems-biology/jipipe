@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -96,13 +97,13 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData inputRois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
         ExpressionVariables variableSet = new ExpressionVariables();
-        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variableSet.putAnnotations(iterationStep.getMergedTextAnnotations());
         customFilterVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
 
         // Obtain statistics
@@ -144,7 +145,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         if (!outputData.isEmpty() || outputEmptyLists) {
-            dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
         }
     }
 

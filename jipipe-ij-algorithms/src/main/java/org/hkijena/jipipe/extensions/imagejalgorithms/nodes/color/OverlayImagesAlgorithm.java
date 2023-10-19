@@ -29,7 +29,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -109,12 +110,12 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> inputImages = new ArrayList<>();
         Map<JIPipeDataSlot, Channel> channelMap = new HashMap<>();
         Map<JIPipeDataSlot, ImagePlus> channelInputMap = new HashMap<>();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            ImagePlus image = ((ImagePlusData) dataBatch.getInputData(inputSlot, inputSlot.getAcceptedDataType(), progressInfo)).getImage();
+            ImagePlus image = ((ImagePlusData) iterationStep.getInputData(inputSlot, inputSlot.getAcceptedDataType(), progressInfo)).getImage();
             if (image.getType() != ImagePlus.COLOR_RGB) {
                 image = ImageJUtils.convertToGreyscale8UIfNeeded(image);
             }
@@ -202,7 +203,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }, progressInfo);
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(resultImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(resultImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Channels", description = "Modify here how channels are merged. Please note that the color setting has no effect on RGB images.")

@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
@@ -46,9 +47,9 @@ public class TrackingNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        SpotsCollectionData spotsCollectionData = dataBatch.getInputData("Spots", SpotsCollectionData.class, progressInfo);
-        SpotTrackerData spotTrackerData = dataBatch.getInputData("Spot tracker", SpotTrackerData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        SpotsCollectionData spotsCollectionData = iterationStep.getInputData("Spots", SpotsCollectionData.class, progressInfo);
+        SpotTrackerData spotTrackerData = iterationStep.getInputData("Spot tracker", SpotTrackerData.class, progressInfo);
         final SpotTracker tracker = spotTrackerData.getTrackerFactory().create(spotsCollectionData.getSpots(), spotTrackerData.getSettings());
         tracker.setNumThreads(numThreads);
         tracker.setLogger(new JIPipeLogger(progressInfo.resolve("TrackMate")));
@@ -58,6 +59,6 @@ public class TrackingNode extends JIPipeIteratingAlgorithm {
             throw new RuntimeException("Error while tracking: " + tracker.getErrorMessage());
         TrackCollectionData trackCollectionData = new TrackCollectionData(spotsCollectionData);
         trackCollectionData.getModel().setTracks(tracker.getResult(), true);
-        dataBatch.addOutputData(getFirstOutputSlot(), trackCollectionData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), trackCollectionData, progressInfo);
     }
 }

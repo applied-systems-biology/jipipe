@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -53,7 +54,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ExpressionVariables variableSet = new ExpressionVariables();
         for (Window window : WindowManager.getAllNonImageWindows()) {
             if (window instanceof TextWindow) {
@@ -63,7 +64,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
                     variableSet.set("title", title);
                     if (titleFilterExpression.test(variableSet)) {
                         ResultsTableData tableData = new ResultsTableData(resultsTable);
-                        dataBatch.addOutputData(getFirstOutputSlot(), tableData.duplicate(progressInfo), progressInfo);
+                        iterationStep.addOutputData(getFirstOutputSlot(), tableData.duplicate(progressInfo), progressInfo);
                     }
                 }
             }

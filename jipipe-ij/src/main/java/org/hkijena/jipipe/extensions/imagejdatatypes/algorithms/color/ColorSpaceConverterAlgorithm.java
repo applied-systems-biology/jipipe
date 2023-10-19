@@ -5,7 +5,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -47,13 +48,13 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData input = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData input = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus image = input.getImage();
         if (image.getType() != ImagePlus.COLOR_RGB || reinterpret) {
             // Convert to RGB via native method or reinterpretation method
             ImagePlusData outputData = JIPipe.createData(outputDataType, image);
-            dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
             return;
         }
 
@@ -63,6 +64,6 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
         image = input.getDuplicateImage();
         outputColorSpace.convert(image, inputColorSpace, progressInfo.resolve("Converting between color spaces"));
         ImagePlusData outputData = JIPipe.createData(outputDataType, image);
-        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 }

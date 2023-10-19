@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
@@ -41,13 +42,13 @@ public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeDataTable inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeDataTable.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        JIPipeDataTable inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeDataTable.class, progressInfo);
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         numRowsAnnotation.addAnnotationIfEnabled(annotationList, inputData.getRowCount() + "");
         numTextAnnotationColumns.addAnnotationIfEnabled(annotationList, inputData.getTextAnnotationColumns().size() + "");
         numDataAnnotationColumns.addAnnotationIfEnabled(annotationList, inputData.getDataAnnotationColumns().size() + "");
-        dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotationList, mergeMode, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), inputData, annotationList, mergeMode, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotate with number of rows", description = "If enabled, annotate the data table with its number of rows")

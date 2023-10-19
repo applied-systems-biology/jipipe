@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.Neighborhood2D;
@@ -69,9 +70,9 @@ public class MorphologicalReconstruction3DAlgorithm extends JIPipeIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus markerImage = dataBatch.getInputData("Marker", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
-        ImagePlus maskImage = dataBatch.getInputData("Mask", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus markerImage = iterationStep.getInputData("Marker", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
+        ImagePlus maskImage = iterationStep.getInputData("Mask", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
         maskImage = ImageJUtils.ensureEqualSize(maskImage, markerImage, true);
 
         ImageStack resultImage;
@@ -82,6 +83,6 @@ public class MorphologicalReconstruction3DAlgorithm extends JIPipeIteratingAlgor
 
         ImagePlus outputImage = new ImagePlus("Reconstructed", resultImage);
         outputImage.copyScale(markerImage);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(outputImage), progressInfo);
     }
 }

@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
 
@@ -26,14 +27,14 @@ public class MergeROI3DAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<ROI3DListData> inputData = dataBatch.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        List<ROI3DListData> inputData = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
         if (!inputData.isEmpty()) {
             ROI3DListData outputData = new ROI3DListData();
             for (ROI3DListData data : inputData) {
                 outputData.addAll(data);
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
         }
     }
 }

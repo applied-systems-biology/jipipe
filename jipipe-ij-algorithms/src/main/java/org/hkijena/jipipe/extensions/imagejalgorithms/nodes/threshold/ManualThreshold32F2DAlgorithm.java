@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -84,8 +85,8 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo);
         ImagePlus inputImage = inputData.getDuplicateImage();
         ImagePlus outputImage = IJ.createHyperStack(inputImage.getTitle() + " Thresholded",
                 inputImage.getWidth(),
@@ -115,7 +116,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
         if (maxThresholdAnnotation.isEnabled()) {
             annotations.add(maxThresholdAnnotation.createAnnotation("" + maxThreshold));
         }
-        dataBatch.addOutputData(getFirstOutputSlot(),
+        iterationStep.addOutputData(getFirstOutputSlot(),
                 new ImagePlusGreyscaleMaskData(outputImage),
                 annotations,
                 thresholdAnnotationStrategy,

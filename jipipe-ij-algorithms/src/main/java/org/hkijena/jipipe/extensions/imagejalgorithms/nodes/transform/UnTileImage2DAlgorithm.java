@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -55,7 +56,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         int width = 0;
         int height = 0;
         int nSlices = 0;
@@ -64,7 +65,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
         int bitDepth = 0;
         progressInfo.log("Analyzing annotations ...");
         Map<ImagePlus, Point> imageLocations = new IdentityHashMap<>();
-        for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
+        for (int row : iterationStep.getInputRows(getFirstInputSlot())) {
             Map<String, String> annotations = JIPipeTextAnnotation.annotationListToMap(getFirstInputSlot().getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting);
             ImagePlus tile = getFirstInputSlot().getData(row, ImagePlusData.class, progressInfo).getImage();
 
@@ -145,7 +146,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
             mergedImage.copyScale(tile);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(mergedImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(mergedImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Use original X location", description = "If enabled, use the annotation that contains the original X location. Currently mandatory.")

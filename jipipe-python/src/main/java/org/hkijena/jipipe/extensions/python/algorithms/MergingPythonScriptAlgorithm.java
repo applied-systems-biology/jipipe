@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -132,7 +133,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 
         // Install the adapter that provides the JIPipe API
@@ -142,12 +143,12 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         PythonUtils.parametersToPython(code, scriptParameters);
 
         // Add annotations
-        PythonUtils.annotationsToPython(code, dataBatch.getMergedTextAnnotations().values());
+        PythonUtils.annotationsToPython(code, iterationStep.getMergedTextAnnotations().values());
 
         Path workDirectory = getNewScratch();
 
         // Install input slots
-        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, dataBatch, this, getDataInputSlots(), workDirectory, progressInfo);
+        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, iterationStep, this, getDataInputSlots(), workDirectory, progressInfo);
 
         // Install output slots
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);
@@ -164,7 +165,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
                 Collections.emptyList(), progressInfo);
 
         // Extract outputs
-        PythonUtils.extractOutputs(dataBatch, outputSlotPaths, getOutputSlots(), annotationMergeStrategy, progressInfo);
+        PythonUtils.extractOutputs(iterationStep, outputSlotPaths, getOutputSlots(), annotationMergeStrategy, progressInfo);
 
         // Clean up
         if (cleanUpAfterwards) {

@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -99,15 +100,15 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData roi1List = dataBatch.getInputData("ROI 1", ROI3DListData.class, progressInfo);
-        ROI3DListData roi2List = dataBatch.getInputData("ROI 2", ROI3DListData.class, progressInfo);
-        ImageHandler imageHandler = IJ3DUtils.wrapImage(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData roi1List = iterationStep.getInputData("ROI 1", ROI3DListData.class, progressInfo);
+        ROI3DListData roi2List = iterationStep.getInputData("ROI 2", ROI3DListData.class, progressInfo);
+        ImageHandler imageHandler = IJ3DUtils.wrapImage(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
         if (roi1Settings.isEnabled()) {
 
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             customVariables.writeToVariables(variables, true, "custom.", true, "custom");
 
             ROI3DListData copy1 = new ROI3DListData();
@@ -115,12 +116,12 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             copy1.addAll(roi1List);
             copy2.addAll(roi2List);
             ROI3DListData filtered = applyFilter(copy1, copy2, roi1Settings, imageHandler, variables, progressInfo.resolve("Filter ROI 1"));
-            dataBatch.addOutputData("ROI 1", filtered, progressInfo);
+            iterationStep.addOutputData("ROI 1", filtered, progressInfo);
         }
         if (roi2Settings.isEnabled()) {
 
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             customVariables.writeToVariables(variables, true, "custom.", true, "custom");
 
             ROI3DListData copy1 = new ROI3DListData();
@@ -128,7 +129,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             copy1.addAll(roi1List);
             copy2.addAll(roi2List);
             ROI3DListData filtered = applyFilter(copy2, copy1, roi2Settings, imageHandler, variables, progressInfo.resolve("Filter ROI 2"));
-            dataBatch.addOutputData("ROI 1", filtered, progressInfo);
+            iterationStep.addOutputData("ROI 1", filtered, progressInfo);
         }
     }
 

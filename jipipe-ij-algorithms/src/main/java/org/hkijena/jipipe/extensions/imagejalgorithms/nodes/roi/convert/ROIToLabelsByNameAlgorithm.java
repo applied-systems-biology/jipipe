@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -57,16 +58,16 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ExpressionVariables parameters = new ExpressionVariables();
-        parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
+        parameters.putAnnotations(iterationStep.getMergedTextAnnotations());
 
-        ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
 
         // Create result image
         ImagePlus result;
-        if (dataBatch.getInputRow("Reference") >= 0) {
-            ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
+        if (iterationStep.getInputRow("Reference") >= 0) {
+            ImagePlus reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
             result = IJ.createHyperStack("Labels",
                     reference.getWidth(),
                     reference.getHeight(),
@@ -155,7 +156,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Draw outline", description = "If enabled, the label value is drawn as outline")

@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -44,7 +45,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         if (getInputSlots().isEmpty())
             return;
         Map<String, Integer> countMap = new HashMap<>();
@@ -52,7 +53,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
             countMap.put(entry.getKey(), entry.getValue().get(Integer.class));
         }
         // Generate random order
-        List<Integer> availableRows = new ArrayList<>(dataBatch.getInputRows("Input"));
+        List<Integer> availableRows = new ArrayList<>(iterationStep.getInputRows("Input"));
         Collections.shuffle(availableRows);
         for (Integer row : availableRows) {
             if (countMap.isEmpty())

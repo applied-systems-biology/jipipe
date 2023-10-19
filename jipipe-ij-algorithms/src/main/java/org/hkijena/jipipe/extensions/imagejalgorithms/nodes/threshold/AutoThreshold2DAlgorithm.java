@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -96,9 +97,9 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
-            ImagePlusData inputData = dataBatch.getInputData("Input", ImagePlusGreyscale8UData.class, progressInfo);
+            ImagePlusData inputData = iterationStep.getInputData("Input", ImagePlusGreyscale8UData.class, progressInfo);
             ImagePlus img = inputData.getDuplicateImage();
             ROIListData roiInput = null;
             ImagePlus maskInput = null;
@@ -107,11 +108,11 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             switch (sourceArea) {
                 case InsideRoi:
                 case OutsideRoi:
-                    roiInput = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+                    roiInput = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
                     break;
                 case InsideMask:
                 case OutsideMask:
-                    maskInput = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+                    maskInput = iterationStep.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
                     break;
             }
 
@@ -141,7 +142,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     String result = thresholdCombinationExpression.evaluate(variableSet) + "";
                     annotations.add(thresholdAnnotation.createAnnotation(result));
                 }
-                dataBatch.addOutputData(getFirstOutputSlot(),
+                iterationStep.addOutputData(getFirstOutputSlot(),
                         new ImagePlusGreyscaleMaskData(img),
                         annotations,
                         JIPipeTextAnnotationMergeMode.Merge,
@@ -170,7 +171,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                 ImageJUtils.forEachSlice(img, ip -> {
                     ip.threshold(threshold);
                 }, progressInfo);
-                dataBatch.addOutputData(getFirstOutputSlot(),
+                iterationStep.addOutputData(getFirstOutputSlot(),
                         new ImagePlusGreyscaleMaskData(img),
                         annotations,
                         JIPipeTextAnnotationMergeMode.Merge,
@@ -203,7 +204,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                 ImageJUtils.forEachSlice(img, ip -> {
                     ip.threshold(threshold);
                 }, progressInfo);
-                dataBatch.addOutputData(getFirstOutputSlot(),
+                iterationStep.addOutputData(getFirstOutputSlot(),
                         new ImagePlusGreyscaleMaskData(img),
                         annotations,
                         thresholdAnnotationStrategy,

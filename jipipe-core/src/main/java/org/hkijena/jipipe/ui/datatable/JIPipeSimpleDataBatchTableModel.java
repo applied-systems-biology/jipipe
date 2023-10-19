@@ -17,7 +17,7 @@ package org.hkijena.jipipe.ui.datatable;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -34,7 +34,7 @@ import java.util.*;
  */
 public class JIPipeSimpleDataBatchTableModel implements TableModel {
 
-    private final List<JIPipeMultiDataBatch> dataBatchList;
+    private final List<JIPipeMultiIterationStep> iterationStepList;
     private final List<String> inputSlotNames = new ArrayList<>();
     private final List<String> annotationColumns = new ArrayList<>();
     private final Map<String, List<Component>> previews = new HashMap<>();
@@ -42,16 +42,16 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
     private final JTable table;
     private JScrollPane scrollPane;
 
-    public JIPipeSimpleDataBatchTableModel(JTable table, List<JIPipeMultiDataBatch> dataBatchList, Class<? extends Store> storeClass) {
+    public JIPipeSimpleDataBatchTableModel(JTable table, List<JIPipeMultiIterationStep> iterationStepList, Class<? extends Store> storeClass) {
         this.table = table;
-        this.dataBatchList = dataBatchList;
+        this.iterationStepList = iterationStepList;
 
 
         Set<String> inputSlotNameSet = new HashSet<>();
         Set<String> annotationColumnSet = new HashSet<>();
-        for (JIPipeMultiDataBatch dataBatch : dataBatchList) {
+        for (JIPipeMultiIterationStep iterationStep : iterationStepList) {
             Map<String, Store<JIPipeDataItemStore>> previewMap = new HashMap<>();
-            for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : dataBatch.getInputSlotRows().entrySet()) {
+            for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : iterationStep.getInputSlotRows().entrySet()) {
                 inputSlotNameSet.add(entry.getKey().getName());
                 // We just preview any data available
                 if (entry.getValue().size() > 0) {
@@ -60,7 +60,7 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
                                     entry.getKey().getDataItemStore(entry.getValue().iterator().next())));
                 }
             }
-            annotationColumnSet.addAll(dataBatch.getMergedTextAnnotations().keySet());
+            annotationColumnSet.addAll(iterationStep.getMergedTextAnnotations().keySet());
             previewedData.add(previewMap);
         }
 
@@ -69,7 +69,7 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
 
         for (String name : inputSlotNameSet) {
             List<Component> previewsForSlot = new ArrayList<>();
-            for (int i = 0; i < dataBatchList.size(); i++) {
+            for (int i = 0; i < iterationStepList.size(); i++) {
                 previewsForSlot.add(null);
             }
             previews.put(name, previewsForSlot);
@@ -78,7 +78,7 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
 
     @Override
     public int getRowCount() {
-        return dataBatchList.size();
+        return iterationStepList.size();
     }
 
     @Override
@@ -133,7 +133,7 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
             return preview;
         } else {
             String column = annotationColumns.get(columnIndex - 1 - inputSlotNames.size());
-            JIPipeTextAnnotation annotation = dataBatchList.get(rowIndex).getMergedTextAnnotations().getOrDefault(column, null);
+            JIPipeTextAnnotation annotation = iterationStepList.get(rowIndex).getMergedTextAnnotations().getOrDefault(column, null);
             if (annotation != null)
                 return annotation.getValue();
             else

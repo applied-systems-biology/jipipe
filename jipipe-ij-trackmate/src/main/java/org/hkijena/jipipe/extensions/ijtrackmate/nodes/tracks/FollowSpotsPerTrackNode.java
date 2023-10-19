@@ -26,7 +26,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
@@ -72,9 +73,9 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus sourceImage = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
-        TrackCollectionData data = dataBatch.getInputData("Tracks", TrackCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus sourceImage = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
+        TrackCollectionData data = iterationStep.getInputData("Tracks", TrackCollectionData.class, progressInfo);
         Calibration calibration = data.getImage().getCalibration();
 
         final Rectangle imageArea = new Rectangle(0, 0, sourceImage.getWidth(), sourceImage.getHeight());
@@ -184,7 +185,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 
             }
 
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(targetImage), annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(targetImage), annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

@@ -26,7 +26,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -96,14 +97,14 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus skeleton = dataBatch.getInputData("Skeleton", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus skeleton = iterationStep.getInputData("Skeleton", ImagePlus3DGreyscaleMaskData.class, progressInfo).getImage();
         Roi excludeRoi = null;
         ImagePlus referenceImage = null;
 
         // Get the excluded ROI
         if (pruneEndsMethod == EndRemovalMethod.ExcludeROI) {
-            ROIListData roi = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+            ROIListData roi = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
             if (roi != null && !roi.isEmpty()) {
                 if (roi.size() == 1)
                     excludeRoi = roi.get(0);
@@ -117,7 +118,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Get reference image
         if (pruneCyclesMethod == CycleRemovalMethod.LowestIntensityBranch || pruneCyclesMethod == CycleRemovalMethod.LowestIntensityVoxel) {
-            ImagePlus3DGreyscale8UData imageData = dataBatch.getInputData("Reference", ImagePlus3DGreyscale8UData.class, progressInfo);
+            ImagePlus3DGreyscale8UData imageData = iterationStep.getInputData("Reference", ImagePlus3DGreyscale8UData.class, progressInfo);
             if (imageData != null) {
                 referenceImage = imageData.getImage();
             }
@@ -130,20 +131,20 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         // Extract Skeletons
         if (outputParameters.isOutputSkeletonTable()) {
             ResultsTable skeletonsTable = calculateSkeletonTable(result);
-            dataBatch.addOutputData("Skeletons", new ResultsTableData(skeletonsTable), progressInfo);
+            iterationStep.addOutputData("Skeletons", new ResultsTableData(skeletonsTable), progressInfo);
         }
 
         // Extract Branches
         if (outputParameters.isOutputBranchTable()) {
             ResultsTable branchesTable = calculateBranchesTable(skeleton, analyzeSkeleton, result);
-            dataBatch.addOutputData("Branches", new ResultsTableData(branchesTable), progressInfo);
+            iterationStep.addOutputData("Branches", new ResultsTableData(branchesTable), progressInfo);
         }
 
         // Extract Tagged skeletons
         if (outputParameters.isOutputTaggedSkeletons()) {
             ImagePlus taggedSkeletons = generateTaggedSkeletons(skeleton, analyzeSkeleton);
             ImageJUtils.copyHyperstackDimensions(skeleton, taggedSkeletons);
-            dataBatch.addOutputData("Tagged skeletons", new ImagePlusGreyscale8UData(taggedSkeletons), progressInfo);
+            iterationStep.addOutputData("Tagged skeletons", new ImagePlusGreyscale8UData(taggedSkeletons), progressInfo);
         }
 
         // Extract Labels
@@ -151,7 +152,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             ImagePlus labeledSkeletons = new ImagePlus("Labeled skeletons", analyzeSkeleton.getLabeledSkeletons());
             IJ.run(labeledSkeletons, "Fire", null);
             ImageJUtils.copyHyperstackDimensions(skeleton, labeledSkeletons);
-            dataBatch.addOutputData("Labels", new ImagePlusGreyscale32FData(labeledSkeletons), progressInfo);
+            iterationStep.addOutputData("Labels", new ImagePlusGreyscale32FData(labeledSkeletons), progressInfo);
         }
 
         // Extract Largest shortest paths
@@ -159,7 +160,7 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
             ImagePlus largestShortestPaths = generateShortPathImage(skeleton, analyzeSkeleton);
             IJ.run(largestShortestPaths, "Fire", null);
             ImageJUtils.copyHyperstackDimensions(skeleton, largestShortestPaths);
-            dataBatch.addOutputData("Largest shortest paths", new ImagePlusGreyscale8UData(largestShortestPaths), progressInfo);
+            iterationStep.addOutputData("Largest shortest paths", new ImagePlusGreyscale8UData(largestShortestPaths), progressInfo);
         }
     }
 

@@ -5,7 +5,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -50,15 +50,15 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
-    public ImageProcessor getMask(JIPipeSingleDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
+    public ImageProcessor getMask(JIPipeSingleIterationStep iterationStep, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {
         switch (targetArea) {
             case WholeImage: {
-                ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo);
                 return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
             }
             case InsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
+                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
                 } else {
@@ -67,8 +67,8 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
                 }
             }
             case OutsideRoi: {
-                ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-                ImagePlusData img = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo);
+                ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
+                ImagePlusData img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
                 } else {
@@ -79,7 +79,7 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
                 }
             }
             case InsideMask: {
-                ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
+                ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 if (mask.getStackSize() > 1) {
                     return mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask));
                 } else {
@@ -87,7 +87,7 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
                 }
             }
             case OutsideMask: {
-                ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
+                ImagePlus mask = iterationStep.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
                 ImageProcessor processor;
                 if (mask.getStackSize() > 1) {
                     processor = mask.getStack().getProcessor(sliceIndex.zeroSliceIndexToOneStackIndex(mask)).duplicate();

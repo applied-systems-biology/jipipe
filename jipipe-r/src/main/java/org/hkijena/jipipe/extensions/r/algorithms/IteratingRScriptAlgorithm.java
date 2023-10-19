@@ -13,7 +13,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -145,14 +146,14 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 
         // Add user variables
         RUtils.parametersToR(code, variables);
 
         // Add annotations
-        RUtils.textAnnotationsToR(code, dataBatch.getMergedTextAnnotations().values());
+        RUtils.textAnnotationsToR(code, iterationStep.getMergedTextAnnotations().values());
 
         Path workDirectory = getNewScratch();
 
@@ -166,7 +167,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeInputDataSlot dummy = (JIPipeInputDataSlot) dataBatch.toDummySlot(slot.getInfo(), this, slot, progressInfo);
+            JIPipeInputDataSlot dummy = (JIPipeInputDataSlot) iterationStep.toDummySlot(slot.getInfo(), this, slot, progressInfo);
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
             dummySlots.add(dummy);
@@ -206,7 +207,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
                 JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStoragePath), dataInfo.getDataClass(), progressInfo);
-                dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
+                iterationStep.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }
 

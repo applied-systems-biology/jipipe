@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -75,9 +76,9 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData image = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
-        ROIListData rois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
+        ROIListData rois = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
 
         ImageJUtils.forEachIndexedZCTSlice(image.getImage(), (processor, index) -> {
             for (Roi roi : rois) {
@@ -106,7 +107,7 @@ public class ExtractFromROIAlgorithm extends JIPipeIteratingAlgorithm {
                     annotationZ.addAnnotationIfEnabled(annotations, "" + roi.getZPosition());
                     annotationC.addAnnotationIfEnabled(annotations, "" + roi.getCPosition());
                     annotationT.addAnnotationIfEnabled(annotations, "" + roi.getTPosition());
-                    dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), annotations, annotationMergeStrategy, progressInfo);
+                    iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), annotations, annotationMergeStrategy, progressInfo);
                 }
             }
 

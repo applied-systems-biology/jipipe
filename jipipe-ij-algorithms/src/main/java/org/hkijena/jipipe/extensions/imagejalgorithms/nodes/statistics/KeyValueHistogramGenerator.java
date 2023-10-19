@@ -13,7 +13,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -70,9 +71,9 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus keyImage = dataBatch.getInputData("Key", ImagePlusGreyscale32FData.class, progressInfo).getImage();
-        ImagePlus valueImage = dataBatch.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus keyImage = iterationStep.getInputData("Key", ImagePlusGreyscale32FData.class, progressInfo).getImage();
+        ImagePlus valueImage = iterationStep.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
 
         ROIListData roiInput = null;
         ImagePlus maskInput = null;
@@ -80,11 +81,11 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         switch (sourceArea) {
             case InsideRoi:
             case OutsideRoi:
-                roiInput = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+                roiInput = iterationStep.getInputData("ROI", ROIListData.class, progressInfo);
                 break;
             case InsideMask:
             case OutsideMask:
-                maskInput = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+                maskInput = iterationStep.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
                 break;
         }
 
@@ -129,7 +130,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
 
         // Setup values
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         // Integrate buckets
         progressInfo.log("Integrating " + bucketedValues.size() + " buckets ...");
@@ -184,7 +185,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
             outputTable.setValueAt(value, row, outputValueColumnIndex);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
     private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {

@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -52,8 +53,8 @@ public class TrackSchemeRendererNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        TrackCollectionData trackCollectionData = dataBatch.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        TrackCollectionData trackCollectionData = iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
         try {
             TrackScheme[] buffer = new TrackScheme[1];
             SwingUtilities.invokeAndWait(() -> {
@@ -70,7 +71,7 @@ public class TrackSchemeRendererNode extends JIPipeSimpleIteratingAlgorithm {
 //                graphComponent.setSize(graphComponent.getHorizontalScrollBar().getMaximum(), graphComponent.getVerticalScrollBar().getMaximum());
                 BufferedImage image = mxCellRenderer.createBufferedImage(graphComponent.getGraph(), null, 1, Color.WHITE, graphComponent.isAntiAlias(), null, graphComponent.getCanvas());
 //                BufferedImage image1 = ScreenImage.createImage(graphComponent);
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(new ImagePlus("Track Scheme", image)), progressInfo);
+                iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(new ImagePlus("Track Scheme", image)), progressInfo);
             });
         } catch (InterruptedException | InvocationTargetException e) {
             throw new RuntimeException(e);

@@ -26,7 +26,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -80,9 +81,9 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        OMEImageData imageData = dataBatch.getInputData("Images", OMEImageData.class, progressInfo);
-        long datasetId = dataBatch.getInputData("Target dataset", OMERODatasetReferenceData.class, progressInfo).getDatasetId();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        OMEImageData imageData = iterationStep.getInputData("Images", OMEImageData.class, progressInfo);
+        long datasetId = iterationStep.getInputData("Target dataset", OMERODatasetReferenceData.class, progressInfo).getDatasetId();
 
         // Export image
         Path tmpDirectory = getNewScratch();
@@ -95,8 +96,8 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
                     getProjectDirectory(),
                     getProjectDataDirs(),
                     imageData.toString(),
-                    dataBatch.getInputRow("Images"),
-                    new ArrayList<>(dataBatch.getMergedTextAnnotations().values()));
+                    iterationStep.getInputRow("Images"),
+                    new ArrayList<>(iterationStep.getMergedTextAnnotations().values()));
             fileName = outputPath.getFileName().toString();
         }
         Path imagePath = PathUtils.ensureExtension(tmpDirectory.resolve(fileName), ".ome.tif", ".ome.tiff");
@@ -107,8 +108,8 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
         Set<String> tags = new HashSet<>();
         Map<String, String> kvPairs = new HashMap<>();
 
-        keyValuePairExporter.createKeyValuePairs(kvPairs, dataBatch.getMergedTextAnnotations().values());
-        tagExporter.createTags(tags,  dataBatch.getMergedTextAnnotations().values());
+        keyValuePairExporter.createKeyValuePairs(kvPairs, iterationStep.getMergedTextAnnotations().values());
+        tagExporter.createTags(tags,  iterationStep.getMergedTextAnnotations().values());
 
         // Upload to OMERO
         OMEROCredentialsEnvironment environment = overrideCredentials.getContentOrDefault(OMEROSettings.getInstance().getDefaultCredentials());
@@ -121,7 +122,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeIteratingAlgorithm {
                 List<Long> imageIds = uploader.upload(imagePath, tags, kvPairs, gateway, progressInfo);
                 for (Long imageId : imageIds) {
                     ImageData uploadedImageData = gateway.getImage(imageId, -1);
-                    dataBatch.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(uploadedImageData, environment), progressInfo);
+                    iterationStep.addOutputData(getFirstOutputSlot(), new OMEROImageReferenceData(uploadedImageData, environment), progressInfo);
                 }
             } catch (DSOutOfServiceException | DSAccessException | ServerError e) {
                 throw new RuntimeException(e);

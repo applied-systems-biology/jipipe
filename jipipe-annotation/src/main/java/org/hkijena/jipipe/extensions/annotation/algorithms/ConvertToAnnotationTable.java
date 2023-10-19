@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
@@ -63,8 +64,8 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Set<Integer> inputDataRows = dataBatch.getInputRows(getFirstInputSlot());
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        Set<Integer> inputDataRows = iterationStep.getInputRows(getFirstInputSlot());
 
         AnnotationTableData output = new AnnotationTableData();
         int dataColumn = addDataToString.isEnabled() ? output.addColumn(addDataToString.getContent(), true) : -1;
@@ -84,9 +85,9 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         }
 
         if (removeOutputAnnotations)
-            dataBatch.getMergedTextAnnotations().clear();
+            iterationStep.getMergedTextAnnotations().clear();
 
-        dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
 
     }
 

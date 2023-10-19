@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
@@ -43,12 +44,12 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        SpotsCollectionData spotsCollectionData = new SpotsCollectionData(dataBatch.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        SpotsCollectionData spotsCollectionData = new SpotsCollectionData(iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo));
         SpotCollection newCollection = new SpotCollection();
         SpotCollection oldCollection = spotsCollectionData.getSpots();
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customVariables.writeToVariables(variables, true, "custom.", true, "custom");
         variables.set("n_spots", oldCollection.getNSpots(true));
         int index = 0;
@@ -85,7 +86,7 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
             }
         }
         spotsCollectionData.getModel().setSpots(newCollection, true);
-        dataBatch.addOutputData(getFirstOutputSlot(), spotsCollectionData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), spotsCollectionData, progressInfo);
         ++index;
     }
 

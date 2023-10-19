@@ -11,7 +11,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -131,7 +132,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         CLIJCommandNodeInfo info = (CLIJCommandNodeInfo) getInfo();
 
         // Prepare inputs
@@ -149,14 +150,14 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 int argIndex = info.getInputSlotToArgIndexMap().get(inputSlot.getName());
                 if (!avoidGPUMemory) {
-                    CLIJImageData imageData = dataBatch.getInputData(inputSlot, CLIJImageData.class, progressInfo);
+                    CLIJImageData imageData = iterationStep.getInputData(inputSlot, CLIJImageData.class, progressInfo);
                     if (info.getIoInputSlots().contains(inputSlot.getName())) {
                         imageData = (CLIJImageData) imageData.duplicate(progressInfo);
                         outputs.put(inputSlot.getName(), imageData.getImage());
                     }
                     args[argIndex] = imageData.getImage();
                 } else {
-                    ImagePlusData cpuImageData = dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo);
+                    ImagePlusData cpuImageData = iterationStep.getInputData(inputSlot, ImagePlusData.class, progressInfo);
                     CLIJ2 clij = CLIJ2.getInstance();
                     if (info.getIoInputSlots().contains(inputSlot.getName())) {
                         outputs.put(inputSlot.getName(), clij.push(cpuImageData.getImage()));
@@ -199,9 +200,9 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                 ClearCLBuffer buffer = outputs.get(outputSlot.getName());
                 CLIJImageData imageData = new CLIJImageData(buffer);
                 if (!avoidGPUMemory) {
-                    dataBatch.addOutputData(outputSlot, imageData, progressInfo);
+                    iterationStep.addOutputData(outputSlot, imageData, progressInfo);
                 } else {
-                    dataBatch.addOutputData(outputSlot, imageData.pull(), progressInfo);
+                    iterationStep.addOutputData(outputSlot, imageData.pull(), progressInfo);
                 }
             }
 
@@ -216,7 +217,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                     Object value = args[columnInfo.getArgIndex()];
                     resultsTableData.setValueAt(value, 0, columnInfo.getName());
                 }
-                dataBatch.addOutputData("Results table", resultsTableData, progressInfo);
+                iterationStep.addOutputData("Results table", resultsTableData, progressInfo);
             }
         } finally {
             // Close inputs and outputs

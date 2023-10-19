@@ -9,7 +9,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -48,7 +49,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         Path inputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "inputs");
         Path outputPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "outputs");
@@ -57,13 +58,13 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Save all inputs
         for (JIPipeDataSlot slot : getDataInputSlots()) {
-            JIPipeDataTable dummy = slot.slice(Collections.singletonList(dataBatch.getInputRow(slot)));
+            JIPipeDataTable dummy = slot.slice(Collections.singletonList(iterationStep.getInputRow(slot)));
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, inputPath.resolve(slot.getName())), progressInfo.resolve("Save inputs"));
         }
 
         // Run process
         ExpressionVariables variables = new ExpressionVariables();
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : iterationStep.getMergedTextAnnotations().entrySet()) {
             variables.set(entry.getKey(), entry.getValue().getValue());
         }
         variables.set("input_folder", inputPath.toString());
@@ -78,7 +79,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Extract outputs
         if (outputOutputFolder) {
-            dataBatch.addOutputData("Output folder", new FolderData(outputPath), progressInfo);
+            iterationStep.addOutputData("Output folder", new FolderData(outputPath), progressInfo);
         }
 
         for (JIPipeDataSlot slot : getOutputSlots()) {
@@ -88,7 +89,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
             if (Files.exists(slotPath.resolve("data-table.json"))) {
                 JIPipeDataTable loaded = JIPipeDataTable.importData(new JIPipeFileSystemReadDataStorage(progressInfo, slotPath), progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
                 for (int i = 0; i < loaded.getRowCount(); i++) {
-                    dataBatch.addOutputData(slot.getName(), loaded.getData(i, slot.getAcceptedDataType(), progressInfo), progressInfo);
+                    iterationStep.addOutputData(slot.getName(), loaded.getData(i, slot.getAcceptedDataType(), progressInfo), progressInfo);
                 }
             } else {
                 progressInfo.log("Unable to load slot from " + slotPath + ": No data-table.json");

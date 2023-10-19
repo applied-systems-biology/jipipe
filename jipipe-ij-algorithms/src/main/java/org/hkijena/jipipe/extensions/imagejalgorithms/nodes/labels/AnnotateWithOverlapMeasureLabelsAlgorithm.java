@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
@@ -142,9 +143,9 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus sourceImage = dataBatch.getInputData("Image 1", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
-        ImagePlus targetImage = dataBatch.getInputData("Image 2", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus sourceImage = iterationStep.getInputData("Image 1", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
+        ImagePlus targetImage = iterationStep.getInputData("Image 2", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
 
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
 
@@ -178,7 +179,7 @@ public class AnnotateWithOverlapMeasureLabelsAlgorithm extends JIPipeIteratingAl
             falsePositiveErrorAnnotation.addAnnotationIfEnabled(annotations, LabelImages.getFalsePositiveError(sourceImage, targetImage) + "");
         }
 
-        dataBatch.addOutputData("Image 1", new ImagePlus3DGreyscaleData(sourceImage), annotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
-        dataBatch.addOutputData("Image 2", new ImagePlus3DGreyscaleData(targetImage), annotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        iterationStep.addOutputData("Image 1", new ImagePlus3DGreyscaleData(sourceImage), annotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        iterationStep.addOutputData("Image 2", new ImagePlus3DGreyscaleData(targetImage), annotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
     }
 }

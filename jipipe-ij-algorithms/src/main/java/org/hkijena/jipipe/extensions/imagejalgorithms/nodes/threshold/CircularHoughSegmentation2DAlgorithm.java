@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Hough_Circle;
@@ -145,8 +146,8 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
         ResultsTableData measurements = new ResultsTableData();
 
@@ -187,8 +188,8 @@ public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingA
         result.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
         result.copyScale(img);
 
-        dataBatch.addOutputData("Mask", new ImagePlusGreyscaleMaskData(result), progressInfo);
-        dataBatch.addOutputData("Measurements", measurements, progressInfo);
+        iterationStep.addOutputData("Mask", new ImagePlusGreyscaleMaskData(result), progressInfo);
+        iterationStep.addOutputData("Measurements", measurements, progressInfo);
     }
 
     @JIPipeParameter("min-radius")

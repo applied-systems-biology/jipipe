@@ -14,14 +14,14 @@ public class DataBatchAssistantInputPreviewPanel extends JIPipeWorkbenchPanel {
 
     private static boolean SHOW_ALL_INPUT_DATA = true;
 
-    private final DataBatchAssistantUI dataBatchAssistantUI;
+    private final DataBatchAssistantUI iterationStepAssistantUI;
     private final JCheckBox showAllInputsCheck = new JCheckBox("Show all");
     private final FormPanel contentPanel = new FormPanel(FormPanel.WITH_SCROLLING);
     private JIPipeDataBatchGenerationResult lastResults;
 
-    public DataBatchAssistantInputPreviewPanel(JIPipeWorkbench workbench, DataBatchAssistantUI dataBatchAssistantUI) {
+    public DataBatchAssistantInputPreviewPanel(JIPipeWorkbench workbench, DataBatchAssistantUI iterationStepAssistantUI) {
         super(workbench);
-        this.dataBatchAssistantUI = dataBatchAssistantUI;
+        this.iterationStepAssistantUI = iterationStepAssistantUI;
         initialize();
     }
 
@@ -50,7 +50,7 @@ public class DataBatchAssistantInputPreviewPanel extends JIPipeWorkbenchPanel {
 
     public void updateStatus() {
         contentPanel.clear();
-        for (JIPipeInputDataSlot inputSlot : dataBatchAssistantUI.getAlgorithm().getInputSlots()) {
+        for (JIPipeInputDataSlot inputSlot : iterationStepAssistantUI.getAlgorithm().getInputSlots()) {
             contentPanel.addWideToForm(new DataBatchAssistantInputPreviewPanelTable(this, inputSlot, !showAllInputsCheck.isSelected()));
         }
         contentPanel.addVerticalGlue();
@@ -58,11 +58,11 @@ public class DataBatchAssistantInputPreviewPanel extends JIPipeWorkbenchPanel {
     }
 
     public DataBatchAssistantUI getDataBatchAssistantUI() {
-        return dataBatchAssistantUI;
+        return iterationStepAssistantUI;
     }
 
-    public void highlightResults(JIPipeDataBatchGenerationResult dataBatchGenerationResult) {
-        lastResults = dataBatchGenerationResult;
+    public void highlightResults(JIPipeDataBatchGenerationResult iterationStepGenerationResult) {
+        lastResults = iterationStepGenerationResult;
         applyHighlight();
     }
 

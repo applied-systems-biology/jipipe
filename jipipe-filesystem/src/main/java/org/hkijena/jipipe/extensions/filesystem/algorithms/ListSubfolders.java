@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -78,15 +79,15 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
         // Expression parameters from annotations
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             expressionVariables.set(annotation.getName(), annotation.getValue());
         }
 
-        FolderData inputFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
+        FolderData inputFolder = iterationStep.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
         Path inputPath = inputFolder.toPath();
         if (!StringUtils.isNullOrEmpty(subFolder)) {
             inputPath = inputPath.resolve(subFolder);
@@ -104,7 +105,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
                 stream = Files.list(inputPath).filter(Files::isDirectory);
             for (Path file : stream.collect(Collectors.toList())) {
                 if (filters.test(file, expressionVariables)) {
-                    dataBatch.addOutputData(getFirstOutputSlot(), new FileData(file), progressInfo);
+                    iterationStep.addOutputData(getFirstOutputSlot(), new FileData(file), progressInfo);
                 }
             }
         } catch (IOException e) {

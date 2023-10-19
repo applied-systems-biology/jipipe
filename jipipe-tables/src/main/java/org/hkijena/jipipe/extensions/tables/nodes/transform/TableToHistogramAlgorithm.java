@@ -12,7 +12,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -59,11 +60,11 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData inputTable = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData inputTable = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         TableColumn inputColumn = this.inputColumn.pickOrGenerateColumn(inputTable);
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
 
         // Calculate output column names
         String outputBinMinColumName = outputColumnBinMin.evaluateToString(variables);
@@ -78,7 +79,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         if (inputColumn.getRows() == 0) {
             progressInfo.log("Input table is empty! Skipping.");
-            dataBatch.addOutputData(getFirstOutputSlot(), dummyTable, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), dummyTable, progressInfo);
             return;
         }
 
@@ -97,7 +98,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         if (uniqueFilteredInputColumnValues.isEmpty()) {
             progressInfo.log("All values were filtered! Skipping.");
-            dataBatch.addOutputData(getFirstOutputSlot(), dummyTable, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), dummyTable, progressInfo);
             return;
         }
 
@@ -190,7 +191,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             outputTable.setValueAt(binCounts[i], i, outputBinCountColumName);
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Input column", description = "The column to be used for creating a histogram")

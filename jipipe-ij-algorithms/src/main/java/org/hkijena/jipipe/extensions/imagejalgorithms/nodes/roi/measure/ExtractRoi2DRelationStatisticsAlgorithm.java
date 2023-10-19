@@ -6,7 +6,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.ROI2DRelationMeasurementSetParameter;
@@ -43,10 +44,10 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData roi1List = dataBatch.getInputData("ROI 1", ROIListData.class, progressInfo);
-        ROIListData roi2List = dataBatch.getInputData("ROI 2", ROIListData.class, progressInfo);
-        ImagePlus reference = ImageJUtils.unwrap(dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo));
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData roi1List = iterationStep.getInputData("ROI 1", ROIListData.class, progressInfo);
+        ROIListData roi2List = iterationStep.getInputData("ROI 2", ROIListData.class, progressInfo);
+        ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
         ResultsTableData outputResults = new ResultsTableData();
 
         ImageJAlgorithmUtils.measureROIRelation(reference,
@@ -60,7 +61,7 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
                 outputResults,
                 progressInfo.resolve("Measure ROI"));
 
-        dataBatch.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), outputResults, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Only measure if objects co-localize", description = "If enabled, only co-localizing objects are measured")

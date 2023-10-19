@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -42,12 +43,12 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<TrackCollectionData> spotCollections = dataBatch.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        List<TrackCollectionData> spotCollections = iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
         if (spotCollections.isEmpty())
             return;
         if (spotCollections.size() == 1) {
-            dataBatch.addOutputData(getFirstOutputSlot(), spotCollections.get(0), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), spotCollections.get(0), progressInfo);
             return;
         }
         TrackCollectionData newCollection = new TrackCollectionData(spotCollections.get(0));
@@ -73,6 +74,6 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
             }
             newCollection.getModel().endUpdate();
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), newCollection, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), newCollection, progressInfo);
     }
 }

@@ -24,10 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeDataBatchGenerationSettings;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.*;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
@@ -46,10 +43,10 @@ import java.util.concurrent.Future;
  * This is a simplified version of {@link JIPipeIteratingAlgorithm} that assumes that there is only one or zero input slots.
  * An error is thrown if there are more than one input slots.
  */
-public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipeAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
+public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipeAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeIterationStepAlgorithm {
 
     private boolean parallelizationEnabled = true;
-    private DataBatchGenerationSettings dataBatchGenerationSettings = new DataBatchGenerationSettings();
+    private IterationStepGenerationSettings iterationStepGenerationSettings = new IterationStepGenerationSettings();
 
     /**
      * Creates a new instance
@@ -59,7 +56,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
      */
     public JIPipeParameterlessSimpleIteratingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
-        registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(iterationStepGenerationSettings);
     }
 
     /**
@@ -69,7 +66,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
      */
     public JIPipeParameterlessSimpleIteratingAlgorithm(JIPipeNodeInfo info) {
         super(info, null);
-        registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(iterationStepGenerationSettings);
     }
 
     /**
@@ -79,9 +76,9 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
      */
     public JIPipeParameterlessSimpleIteratingAlgorithm(JIPipeParameterlessSimpleIteratingAlgorithm other) {
         super(other);
-        this.dataBatchGenerationSettings = new DataBatchGenerationSettings(other.dataBatchGenerationSettings);
+        this.iterationStepGenerationSettings = new IterationStepGenerationSettings(other.iterationStepGenerationSettings);
         this.parallelizationEnabled = other.parallelizationEnabled;
-        registerSubParameter(dataBatchGenerationSettings);
+        registerSubParameter(iterationStepGenerationSettings);
     }
 
     @Override
@@ -100,12 +97,12 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         if (getInputSlots().isEmpty()) {
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
-            JIPipeSingleDataBatch dataBatch = new JIPipeSingleDataBatch(this);
-            runIteration(dataBatch, slotProgress);
+            JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
+            runIteration(iterationStep, new JIPipeMutableIterationContext(row), slotProgress);
         } else {
 
-            boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
-            IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+            boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
+            IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
             TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new ExpressionVariables())) : null;
 
             if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
@@ -115,10 +112,10 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
-                    JIPipeSingleDataBatch dataBatch = new JIPipeSingleDataBatch(this);
-                    dataBatch.setInputData(getFirstInputSlot(), i);
-                    dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
-                    runIteration(dataBatch, slotProgress);
+                    JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
+                    iterationStep.setInputData(getFirstInputSlot(), i);
+                    iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+                    runIteration(iterationStep, new JIPipeMutableIterationContext(i), slotProgress);
                 }
             } else {
                 List<Runnable> tasks = new ArrayList<>();
@@ -130,10 +127,10 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         if (progressInfo.isCancelled())
                             return;
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
-                        JIPipeSingleDataBatch dataBatch = new JIPipeSingleDataBatch(this);
-                        dataBatch.setInputData(getFirstInputSlot(), rowIndex);
-                        dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
-                        runIteration(dataBatch, slotProgress);
+                        JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
+                        iterationStep.setInputData(getFirstInputSlot(), rowIndex);
+                        iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
+                        runIteration(iterationStep, new JIPipeMutableIterationContext(rowIndex), slotProgress);
                     });
                 }
                 progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));
@@ -163,10 +160,11 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     /**
      * Runs code on one data row
      *
-     * @param dataBatch    The data interface
-     * @param progressInfo the progress info from the run
+     * @param iterationStep    The data interface
+     * @param iterationContext The iteration context
+     * @param progressInfo     the progress info from the run
      */
-    protected abstract void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo);
+    protected abstract void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo);
 
     @Override
     public boolean supportsParallelization() {
@@ -196,13 +194,13 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     @JIPipeDocumentation(name = "Input management", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
-    public DataBatchGenerationSettings getDataBatchGenerationSettings() {
-        return dataBatchGenerationSettings;
+    public IterationStepGenerationSettings getDataBatchGenerationSettings() {
+        return iterationStepGenerationSettings;
     }
 
     @Override
-    public JIPipeDataBatchGenerationSettings getGenerationSettingsInterface() {
-        return dataBatchGenerationSettings;
+    public JIPipeIterationStepGenerationSettings getGenerationSettingsInterface() {
+        return iterationStepGenerationSettings;
     }
 
     @Override
@@ -223,19 +221,19 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
 
     @Override
     public JIPipeDataBatchGenerationResult generateDataBatchesGenerationResult(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
-        List<JIPipeMultiDataBatch> batches = new ArrayList<>();
+        List<JIPipeMultiIterationStep> batches = new ArrayList<>();
         JIPipeDataSlot slot = slots.get(0);
-        boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
-        IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
+        boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
+        IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
         TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, slot.getRowCount(), new ExpressionVariables())) : null;
         for (int i = 0; i < slot.getRowCount(); i++) {
             if (withLimit && !allowedIndices.contains(i))
                 continue;
-            JIPipeMultiDataBatch dataBatch = new JIPipeMultiDataBatch(this);
-            dataBatch.addInputData(slot, i);
-            dataBatch.addMergedTextAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
-            dataBatch.addMergedDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeMode.MergeTables);
-            batches.add(dataBatch);
+            JIPipeMultiIterationStep iterationStep = new JIPipeMultiIterationStep(this);
+            iterationStep.addInputData(slot, i);
+            iterationStep.addMergedTextAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+            iterationStep.addMergedDataAnnotations(slot.getDataAnnotations(i), JIPipeDataAnnotationMergeMode.MergeTables);
+            batches.add(iterationStep);
         }
 
         // Generate result object
@@ -245,13 +243,13 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
         return result;
     }
 
-    public static class DataBatchGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeDataBatchGenerationSettings {
+    public static class IterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
         private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
 
-        public DataBatchGenerationSettings() {
+        public IterationStepGenerationSettings() {
         }
 
-        public DataBatchGenerationSettings(DataBatchGenerationSettings other) {
+        public IterationStepGenerationSettings(IterationStepGenerationSettings other) {
             this.limit = new OptionalIntegerRange(other.limit);
         }
 

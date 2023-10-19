@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -79,9 +79,9 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
     }
 
     @Override
-    protected void runGenerator(JIPipeMultiDataBatch dataBatch, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
+    protected void runGenerator(JIPipeMultiIterationStep iterationStep, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot referenceSlot = getInputSlot("Reference");
-        for (Integer inputRow : dataBatch.getInputRows(referenceSlot)) {
+        for (Integer inputRow : iterationStep.getInputRows(referenceSlot)) {
             progressInfo.log("Row " + inputRow);
             ImagePlus referenceImage = referenceSlot.getData(inputRow, ImagePlusData.class, progressInfo).getImage();
             int width = referenceImage.getWidth();
@@ -105,7 +105,7 @@ public class GenerateMissingZeroImage extends JIPipeMissingDataGeneratorAlgorith
 
             ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, bitDepth);
 
-            dataBatch.addOutputData(outputSlot, new ImagePlusData(img), progressInfo);
+            iterationStep.addOutputData(outputSlot, new ImagePlusData(img), progressInfo);
             if (generateOnePerBatch)
                 break;
         }

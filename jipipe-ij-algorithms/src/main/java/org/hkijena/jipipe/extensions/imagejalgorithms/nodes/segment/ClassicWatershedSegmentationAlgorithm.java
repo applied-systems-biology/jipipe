@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
@@ -52,8 +53,8 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData("Image", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData("Image", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         double hMin, hMax;
         if (customHMin.isEnabled()) {
             hMin = customHMin.getContent();
@@ -77,16 +78,16 @@ public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgori
         }
         if (applyPerSlice) {
             ImagePlus resultImage = ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
-                ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, progressInfo);
+                ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, iterationStep, index, progressInfo);
                 return Watershed.computeWatershed(new ImagePlus("raw", ip), new ImagePlus("mask", mask), connectivity.getNativeValue2D(), hMin, hMax).getProcessor();
             }, progressInfo);
             resultImage.copyScale(resultImage);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
         } else {
-            ImagePlus mask = ImageJAlgorithmUtils.getMaskFromMaskOrROI(targetArea, dataBatch, "Image", progressInfo);
+            ImagePlus mask = ImageJAlgorithmUtils.getMaskFromMaskOrROI(targetArea, iterationStep, "Image", progressInfo);
             ImagePlus resultImage = Watershed.computeWatershed(inputImage, mask, inputImage.getStackSize() == 1 ? connectivity.getNativeValue2D() : connectivity.getNativeValue3D(), hMin, hMax);
             resultImage.copyScale(inputImage);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
         }
     }
 

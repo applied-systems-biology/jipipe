@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
@@ -38,9 +39,9 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROI3DListData roi = dataBatch.getInputData("ROI", ROI3DListData.class, progressInfo);
-        ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROI3DListData roi = iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo);
+        ImagePlusData reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
         ImageHandler referenceHandler;
         if (reference == null) {
             referenceHandler = null;
@@ -48,7 +49,7 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             referenceHandler = ImageHandler.wrap(reference.getImage());
         }
         ResultsTableData result = roi.measure(referenceHandler, measurements.getNativeValue(), measureInPhysicalUnits, "", progressInfo.resolve("Measure 3D objects"));
-        dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements to generate")

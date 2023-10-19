@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -107,7 +108,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
         return orderAssignment;
     }
 
-    private List<ImagePlus> getOrderedInputImages(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    private List<ImagePlus> getOrderedInputImages(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> inputImages = new ArrayList<>();
         Map<JIPipeDataSlot, Integer> orderMap = new HashMap<>();
         for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
@@ -116,7 +117,7 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
         orderMap.values().stream().distinct().sorted(Comparator.naturalOrder()).forEach(orderIndex -> {
             for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
                 if (orderMap.get(inputSlot).equals(orderIndex)) {
-                    inputImages.add(dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage());
+                    inputImages.add(iterationStep.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage());
                 }
             }
         });
@@ -124,15 +125,15 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        List<ImagePlus> inputImages = getOrderedInputImages(dataBatch, progressInfo);
+        List<ImagePlus> inputImages = getOrderedInputImages(iterationStep, progressInfo);
         inputImages = ImageJUtils.convertToConsensusBitDepthIfNeeded(inputImages);
 
         if (inputImages.isEmpty())
             return;
         if (inputImages.size() == 1) {
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(inputImages.get(0)), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(inputImages.get(0)), progressInfo);
             return;
         }
         if (!ImageJUtils.imagesHaveSameSize(inputImages)) {
@@ -171,6 +172,6 @@ public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
         // Merge
         ImagePlus resultImage = ImageJUtils.combineSlices(indexMappings);
         resultImage.copyScale(inputImages.get(0));
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(resultImage), progressInfo);
     }
 }

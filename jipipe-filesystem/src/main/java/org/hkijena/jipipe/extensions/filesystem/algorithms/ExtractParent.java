@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -58,13 +59,13 @@ public class ExtractParent extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        PathData inputFolder = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        PathData inputFolder = iterationStep.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         Path result = inputFolder.toPath();
         for (int i = 0; i < order; i++) {
             result = result.getParent();
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new FolderData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Select N-th parent", description = "Determines which N-th parent is chosen. For example the 2nd parent of /a/b/c is 'a'. " +

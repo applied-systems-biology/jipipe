@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
@@ -56,8 +57,8 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus skeleton = dataBatch.getInputData("Skeleton", ImagePlusData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus skeleton = iterationStep.getInputData("Skeleton", ImagePlusData.class, progressInfo).getImage();
         Filaments3DData filamentsData = new Filaments3DData();
 
         Calibration calibration = skeleton.getCalibration();
@@ -118,7 +119,7 @@ public class SkeletonToFilaments2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         filamentsData.removeSelfEdges();
 
-        dataBatch.addOutputData(getFirstOutputSlot(), filamentsData, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), filamentsData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Zero Z voxel size (2D)", description = "Sets the calibration parameters so that the filament is only present in two dimensions by setting the Z voxel size to zero. If not set and filaments are present in 2D only, issues regarding calibrated lengths might arise.")

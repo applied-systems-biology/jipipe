@@ -8,7 +8,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -51,8 +52,8 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        List<JIPipeTextAnnotation> combinedAnnotations = annotationFilter.queryAll(dataBatch.getMergedTextAnnotations().values());
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        List<JIPipeTextAnnotation> combinedAnnotations = annotationFilter.queryAll(iterationStep.getMergedTextAnnotations().values());
 
         String combinedValue;
         {
@@ -65,12 +66,12 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
         if (annotationRemovalMode != AnnotationRemovalMode.Keep) {
             for (JIPipeTextAnnotation annotation : combinedAnnotations) {
-                dataBatch.getMergedTextAnnotations().remove(annotation.getName());
+                iterationStep.getMergedTextAnnotations().remove(annotation.getName());
             }
         }
         if (annotationRemovalMode == AnnotationRemovalMode.Rename) {
             Set<String> existing = new HashSet<>();
-            for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
                 existing.add(annotation.getName());
             }
             ExpressionVariables variables = new ExpressionVariables();
@@ -79,12 +80,12 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 String newName = StringUtils.makeUniqueString(renameFunction.generate(variables), " ", existing);
                 existing.add(newName);
 
-                dataBatch.getMergedTextAnnotations().put(newName, new JIPipeTextAnnotation(newName, annotation.getValue()));
+                iterationStep.getMergedTextAnnotations().put(newName, new JIPipeTextAnnotation(newName, annotation.getValue()));
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(),
-                dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo),
+        iterationStep.addOutputData(getFirstOutputSlot(),
+                iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo),
                 Collections.singletonList(new JIPipeTextAnnotation(generatedAnnotationName, combinedValue)),
                 JIPipeTextAnnotationMergeMode.OverwriteExisting,
                 progressInfo);

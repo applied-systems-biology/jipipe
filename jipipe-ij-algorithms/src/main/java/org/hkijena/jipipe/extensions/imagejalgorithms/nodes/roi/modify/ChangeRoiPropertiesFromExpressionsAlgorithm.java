@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -117,12 +118,12 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData inputRois = (ROIListData) dataBatch.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
-        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ROIListData inputRois = (ROIListData) iterationStep.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         customFilterVariables.writeToVariables(variables, true, "custom.", true, "custom");
 
         // Obtain statistics
@@ -211,7 +212,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), inputRois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), inputRois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Location (X)", description = "The X location. The annotation value is converted to an integer.")

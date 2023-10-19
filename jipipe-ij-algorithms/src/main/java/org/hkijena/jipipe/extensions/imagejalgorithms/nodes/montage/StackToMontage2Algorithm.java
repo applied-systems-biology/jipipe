@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -70,12 +71,12 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         List<MontageCreator.InputEntry> inputEntries = new ArrayList<>();
-        ImagePlus stack = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+        ImagePlus stack = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImageJUtils.forEachIndexedZCTSlice(stack, (ip, index) -> {
             ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            variables.putAnnotations(iterationStep.getMergedTextAnnotations());
             Image5DSliceIndexExpressionParameterVariableSource.apply(variables, stack, index);
 
             if(sliceFilter.test(variables)) {
@@ -88,10 +89,10 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo);
 
         ImagePlus montage = montageCreator.createMontage(inputEntries,
-                new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
+                new ArrayList<>(iterationStep.getMergedTextAnnotations().values()),
                 new ExpressionVariables(),
                 progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(montage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Montage", description = "General montage settings")

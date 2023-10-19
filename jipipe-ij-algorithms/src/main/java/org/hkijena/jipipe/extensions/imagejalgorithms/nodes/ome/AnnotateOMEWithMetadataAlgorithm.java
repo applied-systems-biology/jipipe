@@ -7,7 +7,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -44,19 +45,19 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        OMEImageData data = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        OMEImageData data = iterationStep.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         for (Entry entry : entries.mapToCollection(Entry.class)) {
             String annotationName = entry.getAnnotationName().evaluateToString(variables);
             String annotationValue = StringUtils.nullToEmpty(entry.getAccessor().evaluateToString(data.getMetadata()));
             annotationList.add(new JIPipeTextAnnotation(annotationName, annotationValue));
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeMode, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -38,14 +38,14 @@ import java.util.Set;
 public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
 
     private final JIPipeGraphNode node;
-    private final JIPipeMultiDataBatch batch;
+    private final JIPipeMultiIterationStep batch;
 
     /**
      * @param workbenchUI The workbench UI
      * @param node        the node
      * @param batch       the batch to be displayed
      */
-    public DataBatchUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode node, JIPipeMultiDataBatch batch) {
+    public DataBatchUI(JIPipeProjectWorkbench workbenchUI, JIPipeGraphNode node, JIPipeMultiIterationStep batch) {
         super(workbenchUI);
         this.node = node;
         this.batch = batch;
@@ -55,10 +55,10 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
     private void initialize() {
         setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, true));
         setLayout(new BorderLayout());
-        JLabel dataBatchName = new JLabel("Data batch");
-        dataBatchName.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        dataBatchName.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
-        add(dataBatchName, BorderLayout.NORTH);
+        JLabel iterationStepName = new JLabel("Data batch");
+        iterationStepName.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        iterationStepName.setFont(new Font(Font.DIALOG, Font.BOLD, 16));
+        add(iterationStepName, BorderLayout.NORTH);
 
         FormPanel metaDataList = new FormPanel(null, FormPanel.NONE);
         for (JIPipeTextAnnotation annotation : batch.getMergedTextAnnotations().values()) {

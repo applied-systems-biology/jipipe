@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatchBuilder;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.strings.StringData;
 import org.junit.jupiter.api.BeforeAll;
@@ -55,11 +55,11 @@ public class BatchGenerationTests {
         slot1.addData(new StringData("A"), Collections.singletonList(new JIPipeTextAnnotation("C1", "A")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("B"), Collections.singletonList(new JIPipeTextAnnotation("C1", "B")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("C"), Collections.singletonList(new JIPipeTextAnnotation("C1", "C")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
+        JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode.Merge);
         builder.setReferenceColumns(new HashSet<>(Collections.singletonList("C1")));
         builder.setSlots(Collections.singletonList(slot1));
-        List<JIPipeMultiDataBatch> batches = builder.build(new JIPipeProgressInfo());
+        List<JIPipeMultiIterationStep> batches = builder.build(new JIPipeProgressInfo());
         assertEquals(3, batches.size());
     }
 
@@ -77,11 +77,11 @@ public class BatchGenerationTests {
         slot1.addData(new StringData("C"), Collections.singletonList(new JIPipeTextAnnotation("C1", "C")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot2.addData(new StringData("N"), Collections.singletonList(new JIPipeTextAnnotation("C2", "N")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
 
-        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
+        JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode.Merge);
         builder.setReferenceColumns(new HashSet<>(Collections.singletonList("C1")));
         builder.setSlots(Arrays.asList(slot1, slot2));
-        List<JIPipeMultiDataBatch> batches = builder.build(new JIPipeProgressInfo());
+        List<JIPipeMultiIterationStep> batches = builder.build(new JIPipeProgressInfo());
         assertEquals(3, batches.size());
     }
 
@@ -96,11 +96,11 @@ public class BatchGenerationTests {
         slot1.addData(new StringData("A"), Arrays.asList(new JIPipeTextAnnotation("C1", "A"), new JIPipeTextAnnotation("C2", "X")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("B"), Arrays.asList(new JIPipeTextAnnotation("C1", "B"), new JIPipeTextAnnotation("C2", "Y")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("C"), Arrays.asList(new JIPipeTextAnnotation("C1", "C"), new JIPipeTextAnnotation("C3", "Z")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
+        JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode.Merge);
         builder.setReferenceColumns(new HashSet<>(Arrays.asList("C1", "C2")));
         builder.setSlots(Collections.singletonList(slot1));
-        List<JIPipeMultiDataBatch> batches = builder.build(new JIPipeProgressInfo());
+        List<JIPipeMultiIterationStep> batches = builder.build(new JIPipeProgressInfo());
         assertEquals(3, batches.size());
     }
 
@@ -121,11 +121,11 @@ public class BatchGenerationTests {
         slot2.addData(new StringData("B"), Arrays.asList(new JIPipeTextAnnotation("C1", "B"), new JIPipeTextAnnotation("C2", "Y")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot2.addData(new StringData("C"), Arrays.asList(new JIPipeTextAnnotation("C1", "C"), new JIPipeTextAnnotation("C3", "Z")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
 
-        JIPipeMultiDataBatchBuilder builder = new JIPipeMultiDataBatchBuilder();
+        JIPipeMultiIterationStepGenerator builder = new JIPipeMultiIterationStepGenerator();
         builder.setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode.Merge);
         builder.setReferenceColumns(new HashSet<>(Arrays.asList("C1", "C2")));
         builder.setSlots(Arrays.asList(slot1, slot2));
-        List<JIPipeMultiDataBatch> batches = builder.build(new JIPipeProgressInfo());
+        List<JIPipeMultiIterationStep> batches = builder.build(new JIPipeProgressInfo());
         assertEquals(3, batches.size());
     }
 }

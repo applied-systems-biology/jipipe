@@ -16,7 +16,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -204,7 +205,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -212,7 +213,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         List<Path> customModelPaths = new ArrayList<>();
 //        Path customSizeModelPath = null;
         if (getModel() == CellposeModel.Custom) {
-            List<CellposeModelData> models = dataBatch.getInputData(INPUT_PRETRAINED_MODEL.getName(), CellposeModelData.class, progressInfo);
+            List<CellposeModelData> models = iterationStep.getInputData(INPUT_PRETRAINED_MODEL.getName(), CellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 CellposeModelData modelData = models.get(i);
                 Path customModelPath = workDirectory.resolve(i + "_" + modelData.getName());
@@ -224,7 +225,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
                 customModelPaths.add(customModelPath);
             }
 
-//            List<CellposeSizeModelData> sizeModels = dataBatch.getInputData("Size model", CellposeSizeModelData.class, progressInfo);
+//            List<CellposeSizeModelData> sizeModels = iterationStep.getInputData("Size model", CellposeSizeModelData.class, progressInfo);
 //            if (sizeModels.size() > 1) {
 //                throw new UserFriendlyRuntimeException("Only 1 size model supported!",
 //                        "Only one size model is supported!",
@@ -252,7 +253,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         List<CellposeImageInfo> runWith3D = new ArrayList<>();
 
         // Save input images
-        saveInputImages(dataBatch, progressInfo.resolve("Export input images"), io2DPath, io3DPath, runWith2D, runWith3D);
+        saveInputImages(iterationStep, progressInfo.resolve("Export input images"), io2DPath, io3DPath, runWith2D, runWith3D);
 
         // Run Cellpose
         if (!runWith2D.isEmpty()) {
@@ -301,10 +302,10 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Fetch the data from the directory
         for (CellposeImageInfo imageInfo : runWith2D) {
-            extractDataFromInfo(dataBatch, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            extractDataFromInfo(iterationStep, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
         }
         for (CellposeImageInfo imageInfo : runWith3D) {
-            extractDataFromInfo(dataBatch, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+            extractDataFromInfo(iterationStep, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
         }
 
         // Cleanup
@@ -313,7 +314,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    private void extractDataFromInfo(JIPipeMultiDataBatch dataBatch, CellposeImageInfo imageInfo, Path ioPath, JIPipeProgressInfo progressInfo) {
+    private void extractDataFromInfo(JIPipeMultiIterationStep iterationStep, CellposeImageInfo imageInfo, Path ioPath, JIPipeProgressInfo progressInfo) {
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(imageInfo.sourceRow));
         if (diameterAnnotation.isEnabled()) {
             progressInfo.log("Reading info ...");
@@ -336,32 +337,32 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
                 }
                 rois.addAll(sliceRoi);
             }
-            dataBatch.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            iterationStep.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputFlowsD()) {
             progressInfo.log("Reading Flows d ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_dz_dy_dx.tif", true, progressInfo);
-            dataBatch.addOutputData(OUTPUT_FLOWS_D.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            iterationStep.addOutputData(OUTPUT_FLOWS_D.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputFlowsXY()) {
             progressInfo.log("Reading Flows XY ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_rgb.tif", false, progressInfo);
-            dataBatch.addOutputData(OUTPUT_FLOWS_XY.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            iterationStep.addOutputData(OUTPUT_FLOWS_XY.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputFlowsZ()) {
             progressInfo.log("Reading Flows Z ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_z.tif", false, progressInfo);
-            dataBatch.addOutputData(OUTPUT_FLOWS_Z.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            iterationStep.addOutputData(OUTPUT_FLOWS_Z.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputLabels()) {
             progressInfo.log("Reading labels ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_labels.tif", false, progressInfo);
-            dataBatch.addOutputData(OUTPUT_LABELS.getName(), new ImagePlusGreyscaleData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            iterationStep.addOutputData(OUTPUT_LABELS.getName(), new ImagePlusGreyscaleData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (segmentationOutputSettings.isOutputProbabilities()) {
             progressInfo.log("Reading probabilities ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_probabilities.tif", false, progressInfo);
-            dataBatch.addOutputData(OUTPUT_PROBABILITIES.getName(), new ImagePlusGreyscale32FData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            iterationStep.addOutputData(OUTPUT_PROBABILITIES.getName(), new ImagePlusGreyscale32FData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
     }
 
@@ -511,8 +512,8 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
                 CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo);
     }
 
-    private void saveInputImages(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {
-        for (int row : dataBatch.getInputRows("Input")) {
+    private void saveInputImages(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path io2DPath, Path io3DPath, List<CellposeImageInfo> runWith2D, List<CellposeImageInfo> runWith3D) {
+        for (int row : iterationStep.getInputRows("Input")) {
             JIPipeProgressInfo rowProgress = progressInfo.resolve("Data row " + row);
 
             ImagePlus img = getInputSlot("Input").getData(row, ImagePlusData.class, rowProgress).getImage();

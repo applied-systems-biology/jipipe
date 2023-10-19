@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -66,11 +67,11 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData input = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ResultsTableData input = (ResultsTableData) iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
         for (StringQueryExpressionAndStringQueryPairParameter renamingEntry : renamingEntries) {
             String oldName = renamingEntry.getKey().queryFirst(input.getColumnNames(), new ExpressionVariables());
-            String newName = renamingEntry.getValue().queryFirst(dataBatch.getMergedTextAnnotations().keySet(), new ExpressionVariables());
+            String newName = renamingEntry.getValue().queryFirst(iterationStep.getMergedTextAnnotations().keySet(), new ExpressionVariables());
             if (oldName == null) {
                 if (ignoreMissingColumns)
                     continue;
@@ -88,10 +89,10 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
                                 + "', but the annotation was not found.",
                         "Please check if there is a matching annotation.");
             }
-            newName = dataBatch.getMergedTextAnnotation(newName).getValue();
+            newName = iterationStep.getMergedTextAnnotation(newName).getValue();
             input.renameColumn(oldName, newName);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), input, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), input, progressInfo);
     }
 
     @Override

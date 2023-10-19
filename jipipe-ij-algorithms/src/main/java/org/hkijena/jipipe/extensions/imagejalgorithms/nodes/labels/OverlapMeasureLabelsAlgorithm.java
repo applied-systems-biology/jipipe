@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.OverlapStatistics;
@@ -76,9 +77,9 @@ public class OverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus sourceImage = dataBatch.getInputData("Image 1", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
-        ImagePlus targetImage = dataBatch.getInputData("Image 2", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus sourceImage = iterationStep.getInputData("Image 1", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
+        ImagePlus targetImage = iterationStep.getInputData("Image 2", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
 
         ResultsBuilder rb = new ResultsBuilder();
         ResultsTable totalTable = new ResultsTable();
@@ -122,7 +123,7 @@ public class OverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         rb.getResultsTable().setPrecision(6);
-        dataBatch.addOutputData("Total", new ResultsTableData(totalTable), progressInfo);
-        dataBatch.addOutputData("Per label", new ResultsTableData(rb.getResultsTable()), progressInfo);
+        iterationStep.addOutputData("Total", new ResultsTableData(totalTable), progressInfo);
+        iterationStep.addOutputData("Per label", new ResultsTableData(rb.getResultsTable()), progressInfo);
     }
 }

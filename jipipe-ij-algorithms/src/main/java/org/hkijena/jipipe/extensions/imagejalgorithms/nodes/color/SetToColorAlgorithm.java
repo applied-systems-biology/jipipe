@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SimpleImageAndRoiIteratingAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -49,12 +50,12 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus image = dataBatch.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getDuplicateImage();
         image = ImageJUtils.channelsToRGB(image);
         if (image.getType() == ImagePlus.COLOR_RGB) {
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
-                ImageProcessor roi = getMask(dataBatch, index, progressInfo);
+                ImageProcessor roi = getMask(iterationStep, index, progressInfo);
                 ColorProcessor colorProcessor = (ColorProcessor) ip;
                 ip.resetRoi();
                 colorProcessor.setColor(color);
@@ -63,13 +64,13 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
         } else {
             double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
-                ImageProcessor roi = getMask(dataBatch, index, progressInfo);
+                ImageProcessor roi = getMask(iterationStep, index, progressInfo);
                 ip.resetRoi();
                 ip.setValue(value);
                 ip.fill(roi);
             }, progressInfo);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Color", description = "The color of each pixel.")

@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
@@ -58,11 +59,11 @@ public class SpotsToRGBNode extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        SpotsCollectionData spotsCollectionData = dataBatch.getInputData("Spots", SpotsCollectionData.class, progressInfo);
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        SpotsCollectionData spotsCollectionData = iterationStep.getInputData("Spots", SpotsCollectionData.class, progressInfo);
         ImagePlus reference;
         {
-            ImagePlusData data = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
+            ImagePlusData data = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
             if (data != null) {
                 reference = data.getImage();
             } else {
@@ -86,7 +87,7 @@ public class SpotsToRGBNode extends JIPipeIteratingAlgorithm {
         ImagePlus result = new ImagePlus("Spots visualization", targetStack);
         ImageJUtils.copyHyperstackDimensions(reference, result);
         result.copyScale(reference);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Spot visualization", description = "The following settings control how spots are visualized")

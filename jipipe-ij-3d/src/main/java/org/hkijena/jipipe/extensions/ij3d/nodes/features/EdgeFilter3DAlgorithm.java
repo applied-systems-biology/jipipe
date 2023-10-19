@@ -10,7 +10,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
@@ -44,8 +45,8 @@ public class EdgeFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         Map<ImageSliceIndex, ImageProcessor> edgeXMap = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> edgeYMap = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> edgeZMap = new HashMap<>();
@@ -69,10 +70,10 @@ public class EdgeFilter3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         edgeY.copyScale(inputImage);
         edgeZ.copyScale(inputImage);
         edge.copyScale(inputImage);
-        dataBatch.addOutputData("Edges", new ImagePlusGreyscaleData(edge), progressInfo);
-        dataBatch.addOutputData("Edges X", new ImagePlusGreyscaleData(edgeX), progressInfo);
-        dataBatch.addOutputData("Edges Y", new ImagePlusGreyscaleData(edgeY), progressInfo);
-        dataBatch.addOutputData("Edges Z", new ImagePlusGreyscaleData(edgeZ), progressInfo);
+        iterationStep.addOutputData("Edges", new ImagePlusGreyscaleData(edge), progressInfo);
+        iterationStep.addOutputData("Edges X", new ImagePlusGreyscaleData(edgeX), progressInfo);
+        iterationStep.addOutputData("Edges Y", new ImagePlusGreyscaleData(edgeY), progressInfo);
+        iterationStep.addOutputData("Edges Z", new ImagePlusGreyscaleData(edgeZ), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Alpha", description = "The smoothing in canny edge detection, the smaller the value, the smoother the edges.")

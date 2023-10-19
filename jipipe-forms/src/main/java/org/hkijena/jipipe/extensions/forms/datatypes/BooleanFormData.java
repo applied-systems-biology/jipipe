@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeReflectionParameterAccess;
@@ -108,10 +108,10 @@ public class BooleanFormData extends ParameterFormData {
     }
 
     @Override
-    public void loadData(JIPipeMultiDataBatch dataBatch) {
+    public void loadData(JIPipeMultiIterationStep iterationStep) {
         if (annotationIOSettings.getInputAnnotation().isEnabled()) {
             JIPipeTextAnnotation annotation =
-                    dataBatch.getMergedTextAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
+                    iterationStep.getMergedTextAnnotations().getOrDefault(annotationIOSettings.getInputAnnotation().getContent(),
                             null);
             if (annotation != null) {
                 String value = StringUtils.nullToEmpty(annotation.getValue());
@@ -132,16 +132,16 @@ public class BooleanFormData extends ParameterFormData {
     }
 
     @Override
-    public void writeData(JIPipeMultiDataBatch dataBatch) {
+    public void writeData(JIPipeMultiIterationStep iterationStep) {
         if (annotationIOSettings.getOutputAnnotation().isEnabled()) {
             if (value) {
                 if (trueString.isEnabled()) {
-                    annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedTextAnnotations(),
+                    annotationIOSettings.getAnnotationMergeStrategy().mergeInto(iterationStep.getMergedTextAnnotations(),
                             Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(trueString.getContent())));
                 }
             } else {
                 if (falseString.isEnabled()) {
-                    annotationIOSettings.getAnnotationMergeStrategy().mergeInto(dataBatch.getMergedTextAnnotations(),
+                    annotationIOSettings.getAnnotationMergeStrategy().mergeInto(iterationStep.getMergedTextAnnotations(),
                             Collections.singletonList(annotationIOSettings.getOutputAnnotation().createAnnotation(falseString.getContent())));
                 }
             }

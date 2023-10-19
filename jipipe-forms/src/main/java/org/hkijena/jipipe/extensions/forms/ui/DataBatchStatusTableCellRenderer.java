@@ -9,15 +9,15 @@ import java.util.List;
 
 public class DataBatchStatusTableCellRenderer extends JLabel implements TableCellRenderer {
 
-    private final List<DataBatchStatus> dataBatchStatuses;
+    private final List<DataBatchStatus> iterationStepStatuses;
     private final Color colorInvalidSelected;
     private final Color colorInvalid;
     private final Color colorUnvisited;
 
-    public DataBatchStatusTableCellRenderer(List<DataBatchStatus> dataBatchStatuses) {
+    public DataBatchStatusTableCellRenderer(List<DataBatchStatus> iterationStepStatuses) {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        this.dataBatchStatuses = dataBatchStatuses;
+        this.iterationStepStatuses = iterationStepStatuses;
         this.colorInvalidSelected = getColorInvalidSelected();
         this.colorInvalid = getColorInvalid();
         this.colorUnvisited = getColorUnvisited();
@@ -54,7 +54,7 @@ public class DataBatchStatusTableCellRenderer extends JLabel implements TableCel
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         setText("" + value);
-        DataBatchStatus status = dataBatchStatuses.get(table.convertRowIndexToModel(row));
+        DataBatchStatus status = iterationStepStatuses.get(table.convertRowIndexToModel(row));
         if (isSelected) {
             if (status == DataBatchStatus.Invalid)
                 setBackground(colorInvalidSelected);

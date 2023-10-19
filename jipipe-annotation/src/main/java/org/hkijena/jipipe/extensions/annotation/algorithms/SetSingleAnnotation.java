@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -66,20 +67,20 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : iterationStep.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
-        variableSet.set("data_string", getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
-        variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
-        variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
+        variableSet.set("data_string", getFirstInputSlot().getDataItemStore(iterationStep.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
+        variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getDataItemStore(iterationStep.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
+        variableSet.set("row", iterationStep.getInputSlotRows().get(getFirstInputSlot()));
         variableSet.set("num_rows", getFirstInputSlot().getRowCount());
         String name = StringUtils.nullToEmpty(annotationName.generate(variableSet));
         String value = StringUtils.nullToEmpty(annotationValue.generate(variableSet));
-        dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(name, value), annotationMergeStrategy);
-        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
+        iterationStep.addMergedTextAnnotation(new JIPipeTextAnnotation(name, value), annotationMergeStrategy);
+        iterationStep.addOutputData(getFirstOutputSlot(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. ")

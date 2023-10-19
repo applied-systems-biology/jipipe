@@ -14,7 +14,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -392,7 +393,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
         // Prepare folders
         Path workDirectory = getNewScratch();
@@ -411,7 +412,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         JIPipeProgressInfo extractProgress = progressInfo.resolveAndLog("Extract input images");
         boolean dataIs3D = false;
         AtomicInteger imageCounter = new AtomicInteger(0);
-        for (Integer row : dataBatch.getInputRows("Training data")) {
+        for (Integer row : iterationStep.getInputRows("Training data")) {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
             ImagePlus raw = getInputSlot("Training data")
                     .getData(row, ImagePlus3DData.class, rowProgress).getImage();
@@ -424,7 +425,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
 
             saveImagesToPath(trainingDir, imageCounter, rowProgress, raw, mask);
         }
-        for (Integer row : dataBatch.getInputRows("Test data")) {
+        for (Integer row : iterationStep.getInputRows("Test data")) {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
             ImagePlus raw = getInputSlot("Test data")
                     .getData(row, ImagePlus3DData.class, rowProgress).getImage();
@@ -440,7 +441,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         // Extract model if custom
         Path customModelPath = null;
         if (pretrainedModel == CellposePretrainedModel.Custom) {
-            Set<Integer> pretrainedModelRows = dataBatch.getInputRows("Pretrained model");
+            Set<Integer> pretrainedModelRows = iterationStep.getInputRows("Pretrained model");
             if (pretrainedModelRows.size() != 1) {
                 throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         new GraphNodeValidationReportContext(this),
@@ -448,7 +449,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
                         "You can only provide one pretrained model per data batch for training.",
                         "Ensure that only one pretrained model is in a data batch."));
             }
-            CellposeModelData modelData = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo).get(0);
+            CellposeModelData modelData = iterationStep.getInputData("Pretrained model", CellposeModelData.class, progressInfo).get(0);
             customModelPath = workDirectory.resolve(modelData.getName());
             try {
                 Files.write(customModelPath, modelData.getData());
@@ -469,7 +470,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         arguments.add("--dir");
         arguments.add(trainingDir.toAbsolutePath().toString());
 
-        if (!dataBatch.getInputRows("Test data").isEmpty()) {
+        if (!iterationStep.getInputRows("Test data").isEmpty()) {
             arguments.add("--test_dir");
             arguments.add(testDir.toAbsolutePath().toString());
         }
@@ -559,13 +560,13 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         Path modelsPath = trainingDir.resolve("models");
         Path generatedModelFile = findModelFile(modelsPath);
         CellposeModelData modelData = new CellposeModelData(generatedModelFile);
-        dataBatch.addOutputData("Model", modelData, progressInfo);
+        iterationStep.addOutputData("Model", modelData, progressInfo);
 
         // Extract size model
         if (trainSizeModel) {
             Path generatedSizeModelFile = findSizeModelFile(modelsPath);
             CellposeSizeModelData sizeModelData = new CellposeSizeModelData(generatedSizeModelFile);
-            dataBatch.addOutputData("Size model", sizeModelData, progressInfo);
+            iterationStep.addOutputData("Size model", sizeModelData, progressInfo);
         }
 
         if (cleanUpAfterwards) {

@@ -11,9 +11,9 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -173,7 +173,7 @@ public class PythonUtils {
         }
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeSingleDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeSingleIterationStep iterationStep, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
@@ -183,7 +183,7 @@ public class PythonUtils {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot, progressInfo);
+            JIPipeDataSlot dummy = iterationStep.toDummySlot(slot.getInfo(), node, slot, progressInfo);
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
@@ -208,7 +208,7 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeMultiDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeMultiIterationStep iterationStep, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
@@ -218,7 +218,7 @@ public class PythonUtils {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot, progressInfo);
+            JIPipeDataSlot dummy = iterationStep.toDummySlot(slot.getInfo(), node, slot, progressInfo);
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
@@ -237,7 +237,7 @@ public class PythonUtils {
         runPython(codeFilePath, environment, libraryPaths, progressInfo);
     }
 
-    public static void extractOutputs(JIPipeSingleDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(JIPipeSingleIterationStep iterationStep, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
@@ -245,12 +245,12 @@ public class PythonUtils {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
                 JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStoragePath), dataInfo.getDataClass(), progressInfo);
-                dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
+                iterationStep.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }
     }
 
-    public static void extractOutputs(JIPipeMultiDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(JIPipeMultiIterationStep iterationStep, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
@@ -258,7 +258,7 @@ public class PythonUtils {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
                 JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStoragePath), dataInfo.getDataClass(), progressInfo);
-                dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
+                iterationStep.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }
     }

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.api;
 
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 
 import java.util.*;
 
@@ -8,15 +8,15 @@ import java.util.*;
  * Result of a data batch generation run
  */
 public class JIPipeDataBatchGenerationResult {
-    private List<JIPipeMultiDataBatch> dataBatches = new ArrayList<>();
+    private List<JIPipeMultiIterationStep> iterationSteps = new ArrayList<>();
     private Set<String> referenceTextAnnotationColumns = new HashSet<>();
 
-    public List<JIPipeMultiDataBatch> getDataBatches() {
-        return dataBatches;
+    public List<JIPipeMultiIterationStep> getDataBatches() {
+        return iterationSteps;
     }
 
-    public void setDataBatches(List<JIPipeMultiDataBatch> dataBatches) {
-        this.dataBatches = dataBatches;
+    public void setDataBatches(List<JIPipeMultiIterationStep> iterationSteps) {
+        this.iterationSteps = iterationSteps;
     }
 
     public Set<String> getReferenceTextAnnotationColumns() {
@@ -27,10 +27,10 @@ public class JIPipeDataBatchGenerationResult {
         this.referenceTextAnnotationColumns = referenceTextAnnotationColumns;
     }
 
-    public void setDataBatches(JIPipeMultiDataBatch... dataBatches) {
-        this.dataBatches = new ArrayList<>();
-        for (JIPipeMultiDataBatch dataBatch : dataBatches) {
-            this.dataBatches.add(dataBatch);
+    public void setDataBatches(JIPipeMultiIterationStep... iterationSteps) {
+        this.iterationSteps = new ArrayList<>();
+        for (JIPipeMultiIterationStep iterationStep : iterationSteps) {
+            this.iterationSteps.add(iterationStep);
         }
     }
 }

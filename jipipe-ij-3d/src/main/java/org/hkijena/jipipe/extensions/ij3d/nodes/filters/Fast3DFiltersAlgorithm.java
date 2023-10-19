@@ -14,7 +14,8 @@ import mcib_plugins.Filter3D.Filter3Dmean;
 import mcib_plugins.Filter3D.Filter3Dmin;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -51,8 +52,8 @@ public abstract class Fast3DFiltersAlgorithm extends JIPipeSimpleIteratingAlgori
     protected abstract int getFilterIndex();
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         int radiusX = (int) kernelX.convertToPixels(ImageJUtils.getPixelSizeX(inputImage)).getValue();
         int radiusY = (int) kernelY.convertToPixels(ImageJUtils.getPixelSizeY(inputImage)).getValue();
         int radiusZ = (int) kernelZ.convertToPixels(ImageJUtils.getPixelSizeZ(inputImage)).getValue();
@@ -78,7 +79,7 @@ public abstract class Fast3DFiltersAlgorithm extends JIPipeSimpleIteratingAlgori
                 }
             }
         }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Radius (X)", description = "Radius of the ellipsoidal kernel in the X direction")

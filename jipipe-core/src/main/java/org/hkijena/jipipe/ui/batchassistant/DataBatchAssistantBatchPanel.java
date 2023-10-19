@@ -13,12 +13,12 @@ import java.awt.*;
 
 public class DataBatchAssistantBatchPanel extends JIPipeProjectWorkbenchPanel {
 
-    private final DataBatchAssistantUI dataBatchAssistantUI;
+    private final DataBatchAssistantUI iterationStepAssistantUI;
     private DataBatchAssistantDataTableUI batchTable;
 
-    public DataBatchAssistantBatchPanel(JIPipeProjectWorkbench workbench, DataBatchAssistantUI dataBatchAssistantUI) {
+    public DataBatchAssistantBatchPanel(JIPipeProjectWorkbench workbench, DataBatchAssistantUI iterationStepAssistantUI) {
         super(workbench);
-        this.dataBatchAssistantUI = dataBatchAssistantUI;
+        this.iterationStepAssistantUI = iterationStepAssistantUI;
         initialize();
     }
 
@@ -36,7 +36,7 @@ public class DataBatchAssistantBatchPanel extends JIPipeProjectWorkbenchPanel {
     }
 
     public DataBatchAssistantUI getDataBatchAssistantUI() {
-        return dataBatchAssistantUI;
+        return iterationStepAssistantUI;
     }
 
     public void setDataTable(JIPipeDataTable dataTable) {

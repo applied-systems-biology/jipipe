@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -58,13 +59,13 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ROIListData rois = dataBatch.getInputData("Input", ROIListData.class, progressInfo);
-        ImagePlusData imagePlusData = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+        ROIListData rois = iterationStep.getInputData("Input", ROIListData.class, progressInfo);
+        ImagePlusData imagePlusData = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         ExpressionVariables variables = new ExpressionVariables();
-        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.putAnnotations(iterationStep.getMergedTextAnnotations());
         if (imagePlusData != null) {
             variables.set("width", imagePlusData.getImage().getWidth());
             variables.set("height", imagePlusData.getImage().getHeight());
@@ -80,7 +81,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         rois = rois.rotate(finalAngle, new Point2D.Double(finalCenterX, finalCenterY));
 
-        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Angle (in °)", description = "The angle of the rotation in degrees")

@@ -25,7 +25,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -68,12 +69,12 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot targetImageSlot = getInputSlot("Target");
         JIPipeDataSlot roiSlot = getInputSlot("ROI");
-        for (Integer targetImageRow : dataBatch.getInputRows(targetImageSlot)) {
+        for (Integer targetImageRow : iterationStep.getInputRows(targetImageSlot)) {
             ImagePlusData targetImage = (ImagePlusData) targetImageSlot.getData(targetImageRow, ImagePlusData.class, progressInfo).duplicate(progressInfo);
-            for (Integer roiImageRow : dataBatch.getInputRows(roiSlot)) {
+            for (Integer roiImageRow : iterationStep.getInputRows(roiSlot)) {
                 ImagePlusData roiImage = roiSlot.getData(roiImageRow, ImagePlusData.class, progressInfo);
                 ImagePlus convertedRoiImage = ImageJUtils.convertToSameTypeIfNeeded(roiImage.getImage(), targetImage.getImage(), doScaling);
                 Map<String, String> annotationMap = JIPipeTextAnnotation.annotationListToMap(roiSlot.getTextAnnotations(roiImageRow), JIPipeTextAnnotationMergeMode.OverwriteExisting);
@@ -107,7 +108,7 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
                     processor.insert(roiProcessor, bounds.x, bounds.y);
                 }, progressInfo);
             }
-            dataBatch.addOutputData(getFirstOutputSlot(), targetImage, progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), targetImage, progressInfo);
         }
     }
 

@@ -14,7 +14,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeMultiDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -197,16 +198,16 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
     }
 
     @Override
-    protected void runIteration(JIPipeMultiDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
 
-        ImmutableList<Integer> inputRowList = ImmutableList.copyOf(dataBatch.getInputRows("Input"));
+        ImmutableList<Integer> inputRowList = ImmutableList.copyOf(iterationStep.getInputRows("Input"));
         Path workDirectory = getNewScratch();
 
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
         Path customSizeModelPath = null;
         if (segmentationModelSettings.getModel() == CellposeModel.Custom) {
-            List<CellposeModelData> models = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo);
+            List<CellposeModelData> models = iterationStep.getInputData("Pretrained model", CellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 CellposeModelData modelData = models.get(i);
                 Path customModelPath = workDirectory.resolve(i + "_" + modelData.getName());
@@ -218,7 +219,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
                 customModelPaths.add(customModelPath);
             }
 
-            List<CellposeSizeModelData> sizeModels = dataBatch.getInputData("Size model", CellposeSizeModelData.class, progressInfo);
+            List<CellposeSizeModelData> sizeModels = iterationStep.getInputData("Size model", CellposeSizeModelData.class, progressInfo);
             if (sizeModels.size() > 1) {
                 throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         new GraphNodeValidationReportContext(this),
@@ -381,7 +382,7 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
             }
 
             // Extract outputs
-            CellposeUtils.extractCellposeOutputs(dataBatch,
+            CellposeUtils.extractCellposeOutputs(iterationStep,
                     progressInfo,
                     outputRoiOutlinePaths.get(i),
                     outputLabelsPaths.get(i),

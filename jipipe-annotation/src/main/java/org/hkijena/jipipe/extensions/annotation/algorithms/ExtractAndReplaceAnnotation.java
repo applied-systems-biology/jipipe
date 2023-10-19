@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.databatch.JIPipeSingleDataBatch;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.api.functions.StringPatternExtractionFunction;
@@ -62,17 +63,17 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @Override
-    protected void runIteration(JIPipeSingleDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         for (StringPatternExtractionFunction function : functions) {
-            JIPipeTextAnnotation inputAnnotation = dataBatch.getMergedTextAnnotation(function.getInput());
+            JIPipeTextAnnotation inputAnnotation = iterationStep.getMergedTextAnnotation(function.getInput());
             if (inputAnnotation == null)
                 continue;
             String newValue = function.getParameter().apply(inputAnnotation.getValue());
             if (newValue == null)
                 continue;
-            dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(function.getOutput(), newValue), annotationMergeStrategy);
+            iterationStep.addMergedTextAnnotation(new JIPipeTextAnnotation(function.getOutput(), newValue), annotationMergeStrategy);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Functions", description = "The functions that allow you to extract and replace annotation values. " +
