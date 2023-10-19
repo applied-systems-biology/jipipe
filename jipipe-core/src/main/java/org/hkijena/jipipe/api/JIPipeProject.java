@@ -20,10 +20,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
@@ -33,6 +30,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
@@ -599,6 +597,17 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         generator.writeNumberField("jipipe:project-format-version", CURRENT_PROJECT_FORMAT_VERSION);
         generator.writeObjectField("metadata", metadata);
         generator.writeObjectField("dependencies", getSimplifiedMinimalDependencies());
+
+        List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
+        for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
+            graphNode.getExternalEnvironments(externalEnvironments);
+        }
+        generator.writeArrayFieldStart("external-environments");
+        for (JIPipeEnvironment environment : Sets.newHashSet(externalEnvironments)) {
+            generator.writeObject(environment);
+        }
+        generator.writeEndArray();
+
         if (!getAdditionalMetadata().isEmpty()) {
             generator.writeObjectFieldStart("additional-metadata");
             for (Map.Entry<String, Object> entry : getAdditionalMetadata().entrySet()) {

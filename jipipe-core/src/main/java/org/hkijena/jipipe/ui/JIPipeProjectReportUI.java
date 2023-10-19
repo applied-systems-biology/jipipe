@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.ui;
 
+import com.google.common.collect.Sets;
 import com.google.common.escape.Escaper;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
@@ -241,7 +242,7 @@ public class JIPipeProjectReportUI extends JIPipeProjectWorkbenchPanel implement
                 stringBuilder.append("<h3>External environments</h3>");
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Type</th><th>Name</th><th>Version</th><th>Source/URL</th></tr>");
-                for (JIPipeEnvironment externalEnvironment : externalEnvironments) {
+                for (JIPipeEnvironment externalEnvironment : Sets.newHashSet(externalEnvironments)) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td>").append(escaper.escape(externalEnvironment.getClass().getSimpleName())).append("</td>");
                     stringBuilder.append("<td><strong>").append(escaper.escape(externalEnvironment.getName())).append("</strong></td>");
