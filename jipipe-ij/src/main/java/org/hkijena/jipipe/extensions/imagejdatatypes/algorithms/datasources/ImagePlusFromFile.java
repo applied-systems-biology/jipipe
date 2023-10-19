@@ -94,7 +94,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      */
     public static ImagePlus readImageFrom(Path fileName, boolean forceNativeImport, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
-        if (!forceNativeImport && !CoreImageJUtils.supportsNativeImport(fileName)) {
+        if (!forceNativeImport && !CoreImageJUtils.supportsNativeImageImport(fileName)) {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);

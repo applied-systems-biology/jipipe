@@ -14,7 +14,7 @@
 
 package org.hkijena.jipipe.utils;
 
-import ij.IJ;
+import ij.io.Opener;
 import net.imagej.updater.FilesCollection;
 import org.scijava.util.AppUtils;
 
@@ -29,28 +29,23 @@ public class CoreImageJUtils {
         return imagejRoot.toPath();
     }
 
-    public static boolean supportsNativeImport(Path path) {
-        String fileNameString = path.getFileName().toString().toLowerCase();
-        // tiff, dicom, fits, pgm, jpeg, bmp, gif
-        if(fileNameString.endsWith(".tiff") || fileNameString.endsWith(".tif")) {
-            return !fileNameString.endsWith(".ome.tif") && !fileNameString.endsWith(".ome.tiff");
+    public static boolean supportsNativeImageImport(Path path) {
+        Opener opener = new Opener();
+        int fileType = opener.getFileType(path.toAbsolutePath().toString());
+        switch (fileType) {
+            case Opener.TIFF:
+            case Opener.TIFF_AND_DICOM:
+            case Opener.JPEG:
+            case Opener.GIF:
+            case Opener.DICOM:
+            case Opener.PGM:
+            case Opener.PNG:
+            case Opener.FITS:
+            case Opener.AVI:
+            case Opener.BMP:
+                return true;
+            default:
+                return false;
         }
-        if(fileNameString.endsWith(".dcm")) {
-            return true;
-        }
-        if(fileNameString.endsWith(".pgm")) {
-            return true;
-        }
-        if(fileNameString.endsWith(".jpg") || fileNameString.endsWith(".jpeg")) {
-            return true;
-        }
-        if(fileNameString.endsWith(".bmp")) {
-            return true;
-        }
-        if(fileNameString.endsWith(".gif")) {
-            return true;
-        }
-
-        return false;
     }
 }
