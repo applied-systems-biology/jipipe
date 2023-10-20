@@ -37,6 +37,7 @@ import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
@@ -180,6 +181,17 @@ public class UIUtils {
             balloonTip.refreshLocation();
             balloonTip.setVisible(true);
         });
+    }
+
+    public static JButton createPopupHelpButton(String text) {
+        JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
+        UIUtils.makeFlat25x25(helpButton);
+        helpButton.addActionListener(e -> {
+            MarkdownDocument document = new MarkdownDocument(text);
+            MarkdownReader.showDialog(document, false, "Info", SwingUtilities.getWindowAncestor(helpButton), false);
+        });
+        helpButton.setOpaque(false);
+        return helpButton;
     }
 
     public static JButton createBalloonHelpButton(String text) {
@@ -2019,6 +2031,8 @@ public class UIUtils {
 
         return String.join("+", keyNames);
     }
+
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

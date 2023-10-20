@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDataBatchGenerationResult;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -68,7 +69,7 @@ public class DataBatchAssistantInputPreviewPanel extends JIPipeWorkbenchPanel {
 
     private void applyHighlight() {
         if(lastResults != null) {
-            for (FormPanel.FormPanelEntry entry : contentPanel.getEntries()) {
+            for (FormPanel.FormPanelEntry entry : ImmutableList.copyOf(contentPanel.getEntries())) {
                 Component component = entry.getContent();
                 if (component instanceof DataBatchAssistantInputPreviewPanelTable) {
                     ((DataBatchAssistantInputPreviewPanelTable) component).highlightResults(lastResults);

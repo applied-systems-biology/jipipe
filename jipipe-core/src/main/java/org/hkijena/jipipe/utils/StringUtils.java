@@ -37,6 +37,15 @@ public class StringUtils {
 
     }
 
+    public static String formatPluralS(int count, String labelSingular) {
+        if(count == 1) {
+            return count + " " + labelSingular;
+        }
+        else {
+            return count + " " + labelSingular + "s";
+        }
+    }
+
     /**
      * If the string is longer than maxWidth, limit it to fit within maxWidth
      * with an ellipsis (...). Will always return at least the string "..."
