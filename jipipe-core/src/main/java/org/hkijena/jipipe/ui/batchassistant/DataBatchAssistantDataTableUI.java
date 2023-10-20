@@ -73,7 +73,8 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
     private FormPanel rowUIList;
     private DataBatchAssistantTableModel dataTableModel;
     private JScrollPane scrollPane;
-    private int numRowsWithIncomplete = 0;
+    private int numRowsWithIncompleteRequired = 0;
+    private int numRowsWithIncompleteOptional = 0;
     private int numRowsWithMerging = 0;
 
     /**
@@ -96,12 +97,16 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
 
     public void setDataTable(JIPipeDataTable dataTable) {
         this.dataTable = dataTable;
-        this.numRowsWithIncomplete = 0;
+        this.numRowsWithIncompleteRequired = 0;
+        this.numRowsWithIncompleteOptional = 0;
         this.numRowsWithMerging = 0;
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             DataBatchStatusData data = dataTable.getData(row, DataBatchStatusData.class, new JIPipeProgressInfo());
-            if(data.getNumIncomplete() > 0) {
-                ++numRowsWithIncomplete;
+            if(data.getNumIncompleteRequired() > 0) {
+                ++numRowsWithIncompleteRequired;
+            }
+            if(data.getNumIncompleteOptional() > 0) {
+                ++numRowsWithIncompleteOptional;
             }
             if(data.getNumMerging() > 0) {
                 ++numRowsWithMerging;
@@ -333,20 +338,41 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
             rowUIList.addWideToForm(infoLabel, null);
         }
 
-        if(numRowsWithIncomplete > 0) {
-            JLabel warningLabel = new JLabel(numRowsWithIncomplete == 1 ? "1 step with missing data" : numRowsWithIncomplete + " steps with missing data",
+        if(numRowsWithIncompleteRequired > 0) {
+            JLabel warningLabel = new JLabel(numRowsWithIncompleteRequired == 1 ? "1 step with missing data" : numRowsWithIncompleteRequired + " steps with missing data",
                     UIUtils.getIconFromResources("emblems/warning.png"),
                     JLabel.LEFT);
             warningLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            rowUIList.addWideToForm(warningLabel);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(warningLabel, BorderLayout.CENTER);
+            panel.add(UIUtils.createBalloonHelpButton("There are iteration steps where slots are not assigned a data item. " +
+                    "Please check the annotations in the 'Input data' section to find out why this is the case."), BorderLayout.EAST);
+            rowUIList.addWideToForm(panel);
+        }
+
+        if(numRowsWithIncompleteOptional > 0) {
+            JLabel warningLabel = new JLabel(numRowsWithIncompleteOptional == 1 ? "1 step with missing optional data" : numRowsWithIncompleteOptional + " steps with missing optional data",
+                    UIUtils.getIconFromResources("emblems/emblem-important.png"),
+                    JLabel.LEFT);
+            warningLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(warningLabel, BorderLayout.CENTER);
+            panel.add(UIUtils.createBalloonHelpButton("There are iteration steps where optional slots are not assigned a data item. " +
+                    "Optional slots do not necessarily need an input, but if this message is unexpected, please " +
+                    "check the annotations in the 'Input data' section to find out why this is the case."), BorderLayout.EAST);
+            rowUIList.addWideToForm(panel);
         }
 
         if(numRowsWithMerging > 0) {
-            JLabel infoLabel = new JLabel(numRowsWithIncomplete == 1 ? "1 step with multiple data per slot" : numRowsWithIncomplete + " steps with multiple data per slot",
+            JLabel infoLabel = new JLabel(numRowsWithIncompleteRequired == 1 ? "1 step with multiple data per slot" : numRowsWithIncompleteRequired + " steps with multiple data per slot",
                     UIUtils.getIconFromResources("emblems/emblem-information.png"),
                     JLabel.LEFT);
             infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            rowUIList.addWideToForm(infoLabel);
+            JPanel panel = new JPanel(new BorderLayout());
+            panel.add(infoLabel, BorderLayout.CENTER);
+            panel.add(UIUtils.createBalloonHelpButton("There are iteration steps multiple data items are assigned to one slot. " +
+                    "If this is unexpected, please check the annotations in the 'Input data' section to find out why this is the case."), BorderLayout.EAST);
+            rowUIList.addWideToForm(panel);
         }
 
         for (int viewRow : selectedRows) {

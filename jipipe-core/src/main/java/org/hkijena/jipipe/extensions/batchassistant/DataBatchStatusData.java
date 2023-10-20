@@ -28,7 +28,8 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
     private ResultsTableData perSlotStatus = new ResultsTableData();
     private boolean statusValid = false;
 
-    private int numIncomplete = 0;
+    private int numIncompleteRequired = 0;
+    private int numIncompleteOptional = 0;
     private int numMerging = 0;
     private String statusMessage;
 
@@ -40,7 +41,8 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         this.perSlotStatus = new ResultsTableData(other.perSlotStatus);
         this.statusValid = other.statusValid;
         this.statusMessage = other.statusMessage;
-        this.numIncomplete = other.numIncomplete;
+        this.numIncompleteRequired = other.numIncompleteRequired;
+        this.numIncompleteOptional = other.numIncompleteOptional;
         this.numMerging = other.numMerging;
     }
 
@@ -109,14 +111,24 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         this.statusMessage = statusMessage;
     }
 
-    @JsonGetter("num-incomplete")
-    public int getNumIncomplete() {
-        return numIncomplete;
+    @JsonGetter("num-incomplete-required")
+    public int getNumIncompleteRequired() {
+        return numIncompleteRequired;
     }
 
-    @JsonSetter("num-incomplete")
-    public void setNumIncomplete(int numIncomplete) {
-        this.numIncomplete = numIncomplete;
+    @JsonSetter("num-incomplete-required")
+    public void setNumIncompleteRequired(int numIncompleteRequired) {
+        this.numIncompleteRequired = numIncompleteRequired;
+    }
+
+    @JsonGetter("num-incomplete-optional")
+    public int getNumIncompleteOptional() {
+        return numIncompleteOptional;
+    }
+
+    @JsonSetter("num-incomplete-optional")
+    public void setNumIncompleteOptional(int numIncompleteOptional) {
+        this.numIncompleteOptional = numIncompleteOptional;
     }
 
     @JsonGetter("num-merging")
