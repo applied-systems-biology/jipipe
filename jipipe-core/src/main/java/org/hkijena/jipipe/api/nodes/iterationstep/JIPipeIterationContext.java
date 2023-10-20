@@ -6,4 +6,10 @@ public interface JIPipeIterationContext {
      * @return the index of the current step
      */
     int getCurrentIterationStepIndex();
+
+    /**
+     * Number of available iteration steps
+     * @return the number of iteration steps
+     */
+    int getNumIterationSteps();
 }

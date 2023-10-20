@@ -178,7 +178,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
         // Execute the workload
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
-
+        final int numIterationSteps = iterationSteps.size();
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || iterationSteps.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
@@ -188,7 +188,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 if (isPassThrough()) {
                     runPassThrough(slotProgress, iterationSteps.get(i));
                 } else {
-                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i), slotProgress);
+                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), slotProgress);
                 }
             }
         } else {
@@ -204,7 +204,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, iterationSteps.get(iterationStepIndex));
                     } else {
-                        runIteration(iterationSteps.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex), slotProgress);
+                        runIteration(iterationSteps.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), slotProgress);
                     }
                 });
             }

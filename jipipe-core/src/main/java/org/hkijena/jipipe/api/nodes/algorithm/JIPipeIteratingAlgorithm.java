@@ -318,11 +318,12 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 if (isPassThrough()) {
                     runPassThrough(slotProgress, iterationSteps.get(i));
                 } else {
-                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i), slotProgress);
+                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), slotProgress);
                 }
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
+            final int numIterationSteps = iterationSteps.size();
             for (int i = 0; i < iterationSteps.size(); i++) {
                 int iterationStepIndex = i;
                 JIPipeParameterTree finalTree = tree;
@@ -335,7 +336,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, finalDataBatches.get(iterationStepIndex));
                     } else {
-                        runIteration(finalDataBatches.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex), slotProgress);
+                        runIteration(finalDataBatches.get(iterationStepIndex), new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), slotProgress);
                     }
                 });
             }

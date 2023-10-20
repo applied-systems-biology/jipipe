@@ -167,12 +167,13 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                             "Try to switch to the 'Data batches' tab to preview how data is split into batches."));
         }
 
+        final int numIterationSteps = iterationSteps.size();
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1) {
             for (int i = 0; i < iterationSteps.size(); i++) {
                 if (progressInfo.isCancelled())
                     return;
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
-                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i), slotProgress);
+                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), slotProgress);
             }
         } else {
             List<Runnable> tasks = new ArrayList<>();
@@ -182,7 +183,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                     if (progressInfo.isCancelled())
                         return;
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, iterationSteps.size());
-                    runIteration(iterationSteps.get(rowIndex), new JIPipeMutableIterationContext(rowIndex), slotProgress);
+                    runIteration(iterationSteps.get(rowIndex), new JIPipeMutableIterationContext(rowIndex, numIterationSteps), slotProgress);
                 });
             }
             progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));

@@ -98,7 +98,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
-            runIteration(iterationStep, new JIPipeMutableIterationContext(row), slotProgress);
+            runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), slotProgress);
         } else {
 
             boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
@@ -115,7 +115,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                     JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
                     iterationStep.setInputData(getFirstInputSlot(), i);
                     iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
-                    runIteration(iterationStep, new JIPipeMutableIterationContext(i), slotProgress);
+                    runIteration(iterationStep, new JIPipeMutableIterationContext(i, getFirstInputSlot().getRowCount()), slotProgress);
                 }
             } else {
                 List<Runnable> tasks = new ArrayList<>();
@@ -130,7 +130,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
                         JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
                         iterationStep.setInputData(getFirstInputSlot(), rowIndex);
                         iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
-                        runIteration(iterationStep, new JIPipeMutableIterationContext(rowIndex), slotProgress);
+                        runIteration(iterationStep, new JIPipeMutableIterationContext(rowIndex, getFirstInputSlot().getRowCount()), slotProgress);
                     });
                 }
                 progressInfo.log(String.format("Running %d batches (batch size %d) in parallel. Available threads = %d", tasks.size(), getParallelizationBatchSize(), getThreadPool().getMaxThreads()));

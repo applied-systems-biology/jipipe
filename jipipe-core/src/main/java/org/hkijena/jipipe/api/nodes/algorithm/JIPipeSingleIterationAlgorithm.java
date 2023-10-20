@@ -165,7 +165,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             if (isPassThrough()) {
                 runPassThrough(slotProgress, iterationStep);
             } else {
-                runIteration(iterationStep, new JIPipeMutableIterationContext(row), slotProgress);
+                runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), slotProgress);
             }
             return;
         }
@@ -184,7 +184,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             if (isPassThrough()) {
                 runPassThrough(slotProgress, iterationSteps.get(i));
             } else {
-                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i), slotProgress);
+                runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), slotProgress);
             }
         }
     }

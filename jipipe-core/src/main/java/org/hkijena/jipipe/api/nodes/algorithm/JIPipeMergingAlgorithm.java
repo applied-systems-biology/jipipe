@@ -212,7 +212,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             if (isPassThrough()) {
                 runPassThrough(slotProgress, iterationStep);
             } else {
-                runIteration(iterationStep, new JIPipeMutableIterationContext(0), slotProgress);
+                runIteration(iterationStep, new JIPipeMutableIterationContext(0, 1), slotProgress);
             }
             return;
         }
@@ -249,6 +249,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
 
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
+        final int numIterationSteps = iterationSteps.size();
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || iterationSteps.size() <= 1 || hasAdaptiveParameters) {
             for (int i = 0; i < iterationSteps.size(); i++) {
@@ -259,7 +260,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 if (isPassThrough()) {
                     runPassThrough(slotProgress, iterationSteps.get(i));
                 } else {
-                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i), slotProgress);
+                    runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, numIterationSteps), slotProgress);
                 }
             }
         } else {
@@ -276,7 +277,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                     if (isPassThrough()) {
                         runPassThrough(slotProgress, iterationStep);
                     } else {
-                        runIteration(iterationStep, new JIPipeMutableIterationContext(iterationStepIndex), slotProgress);
+                        runIteration(iterationStep, new JIPipeMutableIterationContext(iterationStepIndex, numIterationSteps), slotProgress);
                     }
                 });
             }

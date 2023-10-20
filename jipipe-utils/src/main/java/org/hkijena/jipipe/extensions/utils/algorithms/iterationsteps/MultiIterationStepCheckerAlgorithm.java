@@ -9,13 +9,17 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIOSlotConfiguration;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeAlias;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,9 +27,10 @@ import java.util.List;
 @JIPipeDocumentation(name = "Check iteration steps (multiple data per slot)", description = "Pass multiple inputs through this node to check if iteration steps are correctly created and filter out incomplete steps. " +
         "This node is designed for creating iteration steps where multiple data items can be assigned to an iteration step input slot.")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Iteration steps")
+@JIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Filter\nLimit to iteration steps (multiple data per slot)")
 public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
     private boolean keepOriginalAnnotations = true;
-
+    private OptionalIntegerRange limitToIterationStepIndices = new OptionalIntegerRange(new IntegerRange("0-10"), false);
     private OptionalAnnotationNameParameter iterationStepIndexAnnotation = new OptionalAnnotationNameParameter("Iteration step", false);
     public MultiIterationStepCheckerAlgorithm(JIPipeNodeInfo info) {
         super(info, new JIPipeIOSlotConfiguration());
@@ -35,10 +40,19 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
         super(other);
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
         this.iterationStepIndexAnnotation = new OptionalAnnotationNameParameter(other.iterationStepIndexAnnotation);
+        this.limitToIterationStepIndices = new OptionalIntegerRange(other.limitToIterationStepIndices);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
+        if(limitToIterationStepIndices.isEnabled()) {
+            List<Integer> allowedIndices = limitToIterationStepIndices.getContent().getIntegers(0, iterationContext.getNumIterationSteps(),
+                    new ExpressionVariables().putAnnotations(iterationStep.getMergedTextAnnotations()));
+            if(!allowedIndices.contains(iterationContext.getCurrentIterationStepIndex())) {
+                progressInfo.log("Iteration step filtered out. Skipping.");
+                return;
+            }
+        }
         for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
             for (int row : iterationStep.getInputRows(inputSlot)) {
                 JIPipeData inputData = inputSlot.getData(row, JIPipeData.class, progressInfo);
@@ -82,5 +96,16 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("iteration-step-index-annotation")
     public void setIterationStepIndexAnnotation(OptionalAnnotationNameParameter iterationStepIndexAnnotation) {
         this.iterationStepIndexAnnotation = iterationStepIndexAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Limit to iteration step indices", description = "If enabled, only outputs data for iteration steps that are within the index limit")
+    @JIPipeParameter("limit-to-iteration-step-indices")
+    public OptionalIntegerRange getLimitToIterationStepIndices() {
+        return limitToIterationStepIndices;
+    }
+
+    @JIPipeParameter("limit-to-iteration-step-indices")
+    public void setLimitToIterationStepIndices(OptionalIntegerRange limitToIterationStepIndices) {
+        this.limitToIterationStepIndices = limitToIterationStepIndices;
     }
 }

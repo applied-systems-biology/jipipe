@@ -25,37 +25,46 @@ public class ExpressionVariables extends HashMap<String, Object> {
      *
      * @param variableName The variable name
      * @param value        The variable value (null to remove a variable from the set).
+     * @return this
      */
-    public void set(String variableName, Object value) {
+    public ExpressionVariables set(String variableName, Object value) {
         this.put(variableName, value);
+        return this;
     }
 
     /**
      * Puts annotations into the variables
+     *
      * @param mergedTextAnnotations the annotations
      */
-    public void putAnnotations(Map<String, JIPipeTextAnnotation> mergedTextAnnotations) {
+    public ExpressionVariables putAnnotations(Map<String, JIPipeTextAnnotation> mergedTextAnnotations) {
         for (Entry<String, JIPipeTextAnnotation> entry : mergedTextAnnotations.entrySet()) {
             put(entry.getKey(), entry.getValue().getValue());
         }
+        return this;
     }
 
     /**
      * Puts annotations into the variables
+     *
      * @param textAnnotations the annotations
+     * @return this
      */
-    public void putAnnotations(List<JIPipeTextAnnotation> textAnnotations) {
+    public ExpressionVariables putAnnotations(List<JIPipeTextAnnotation> textAnnotations) {
         for (JIPipeTextAnnotation textAnnotation : textAnnotations) {
             put(textAnnotation.getName(), textAnnotation.getValue());
         }
+        return this;
     }
 
     /**
      * Puts the project-related directories into the variables
-     * @param projectDir the project dir
+     *
+     * @param projectDir      the project dir
      * @param projectDataDirs project data dirs
+     * @return this
      */
-    public void putProjectDirectories(Path projectDir, Map<String, Path> projectDataDirs) {
+    public ExpressionVariables putProjectDirectories(Path projectDir, Map<String, Path> projectDataDirs) {
         if (StringUtils.isNullOrEmpty(projectDir)) {
             projectDir = Paths.get("");
         }
@@ -71,5 +80,6 @@ public class ExpressionVariables extends HashMap<String, Object> {
             }
         }
         set("project_data_dirs", projectDataDirs_);
+        return this;
     }
 }
