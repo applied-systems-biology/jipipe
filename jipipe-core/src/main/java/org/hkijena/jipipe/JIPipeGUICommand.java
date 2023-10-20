@@ -14,6 +14,8 @@
 package org.hkijena.jipipe;
 
 import net.imagej.ImageJ;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -121,6 +123,10 @@ public class JIPipeGUICommand implements Command {
                 if (!JIPipeNotificationInbox.getInstance().isEmpty()) {
                     SwingUtilities.invokeLater(() -> {
                         if (!JIPipeNotificationInbox.getInstance().isEmpty()) {
+                            for (JIPipeNotification notification : JIPipeNotificationInbox.getInstance().getNotifications()) {
+                                JIPipe.getInstance().getProgressInfo().log("Notification was triggered: " + notification.toString());
+                            }
+
                             WorkbenchNotificationInboxUI inboxUI = new WorkbenchNotificationInboxUI(window.getProjectUI());
                             JFrame frame = new JFrame();
                             frame.setTitle("JIPipe - Notifications");

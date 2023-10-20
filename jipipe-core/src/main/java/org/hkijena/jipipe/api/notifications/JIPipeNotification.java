@@ -86,7 +86,7 @@ public class JIPipeNotification implements Comparable<JIPipeNotification> {
 
     @Override
     public String toString() {
-        return "Notification @ " + getDateTime() + ": " + getHeading();
+        return "Notification [" + id + "] @ " + getDateTime() + ": " + getHeading();
     }
 
     public String getId() {
