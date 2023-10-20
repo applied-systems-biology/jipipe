@@ -28,10 +28,11 @@ import java.util.Map;
 
 public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
 
-    private final Module moduleInstance;
+    private final Module referenceModuleInstance;
     private final JIPipeDynamicParameterCollection moduleParameters;
     private final Map<String, ModuleItem<?>> parameterToModuleItemAssignment = new HashMap<>();
     private final Map<ModuleItem<?>, String> moduleItemToParameterAssignment = new IdentityHashMap<>();
+    private final Map<ModuleItem<?>, Object> moduleItemDefaults = new IdentityHashMap<>();
 
     public ImageJ2OpNode(JIPipeNodeInfo info) {
         super(info, createSlotConfiguration(info));
@@ -42,22 +43,24 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         OpInfo opInfo = opNodeInfo.getOpInfo();
         OpService opService = opNodeInfo.getContext().getService(OpService.class);
         ModuleService moduleService = opNodeInfo.getContext().getService(ModuleService.class);
-        this.moduleInstance = moduleService.createModule(opInfo.cInfo());
-        Op op = (Op) moduleInstance.getDelegateObject();
+        this.referenceModuleInstance = moduleService.createModule(opInfo.cInfo());
+        Op op = (Op) referenceModuleInstance.getDelegateObject();
         op.setEnvironment(opService);
 
         // Install the module IOs
         for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : opNodeInfo.getInputModuleIO().entrySet()) {
             entry.getValue().install(this, entry.getKey());
+            moduleItemDefaults.put(entry.getKey(), entry.getKey().getValue(referenceModuleInstance));
         }
         for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : opNodeInfo.getOutputModuleIO().entrySet()) {
             entry.getValue().install(this, entry.getKey());
+            moduleItemDefaults.put(entry.getKey(), entry.getKey().getValue(referenceModuleInstance));
         }
     }
 
     public ImageJ2OpNode(ImageJ2OpNode other) {
         super(other);
-        this.moduleInstance = other.getModuleInstance();
+        this.referenceModuleInstance = other.getReferenceModuleInstance();
         this.moduleParameters = new JIPipeDynamicParameterCollection(other.moduleParameters);
         this.moduleItemToParameterAssignment.putAll(other.moduleItemToParameterAssignment);
         this.parameterToModuleItemAssignment.putAll(other.parameterToModuleItemAssignment);
@@ -82,30 +85,47 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
-        ParametersData moduleOutputParameters = new ParametersData();
+        try {
+            ParametersData moduleOutputParameters = new ParametersData();
 
-        // Copy from JIPipe
-        for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getInputModuleIO().entrySet()) {
-            entry.getValue().transferFromJIPipe(this, iterationStep, entry.getKey(), moduleInstance, progressInfo);
-        }
+            // Create new module instance
+            ImageJ2OpNodeInfo opNodeInfo = getModuleNodeInfo();
+            OpInfo opInfo = opNodeInfo.getOpInfo();
+            OpService opService = opNodeInfo.getContext().getService(OpService.class);
+            ModuleService moduleService = opNodeInfo.getContext().getService(ModuleService.class);
+            Module moduleInstance = moduleService.createModule(opInfo.cInfo());
+            Op op = (Op) moduleInstance.getDelegateObject();
+            op.setEnvironment(opService);
 
-        // Run the initializer function
-        if (moduleInstance.getDelegateObject() instanceof Initializable) {
-            ((Initializable) moduleInstance.getDelegateObject()).initialize();
-        }
-        if (moduleInstance.getDelegateObject() instanceof net.imagej.ops.Initializable) {
-            ((net.imagej.ops.Initializable) moduleInstance.getDelegateObject()).initialize();
-        }
+            // Copy from JIPipe
+            for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getInputModuleIO().entrySet()) {
+                entry.getValue().transferFromJIPipe(this, iterationStep, entry.getKey(), moduleInstance, progressInfo);
+            }
 
-        // Run operation
-        moduleInstance.run();
+            // Run the initializer function
+            if (moduleInstance.getDelegateObject() instanceof Initializable) {
+                ((Initializable) moduleInstance.getDelegateObject()).initialize();
+            }
+            if (moduleInstance.getDelegateObject() instanceof net.imagej.ops.Initializable) {
+                ((net.imagej.ops.Initializable) moduleInstance.getDelegateObject()).initialize();
+            }
 
-        // Copy back to JIPipe
-        for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getOutputModuleIO().entrySet()) {
-            entry.getValue().transferToJIPipe(this, iterationStep, moduleOutputParameters, entry.getKey(), moduleInstance, progressInfo);
+            // Run operation
+            moduleInstance.run();
+
+            // Copy back to JIPipe
+            for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getOutputModuleIO().entrySet()) {
+                entry.getValue().transferToJIPipe(this, iterationStep, moduleOutputParameters, entry.getKey(), moduleInstance, progressInfo);
+            }
+            if (getModuleNodeInfo().hasParameterDataOutputSlot()) {
+                iterationStep.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName(), moduleOutputParameters, progressInfo);
+            }
         }
-        if (getModuleNodeInfo().hasParameterDataOutputSlot()) {
-            iterationStep.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName(), moduleOutputParameters, progressInfo);
+        finally {
+            for (Map.Entry<ModuleItem<?>, Object> entry : moduleItemDefaults.entrySet()) {
+                ModuleItem item = entry.getKey();
+                item.setValue(referenceModuleInstance, entry.getValue());
+            }
         }
     }
 
@@ -129,7 +149,7 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         return moduleParameters;
     }
 
-    public Module getModuleInstance() {
-        return moduleInstance;
+    public Module getReferenceModuleInstance() {
+        return referenceModuleInstance;
     }
 }

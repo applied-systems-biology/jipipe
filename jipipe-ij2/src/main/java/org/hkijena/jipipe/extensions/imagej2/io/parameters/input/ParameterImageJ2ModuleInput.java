@@ -37,7 +37,7 @@ public abstract class ParameterImageJ2ModuleInput<ModuleType, JIPipeType> extend
                     node.getModuleParameters().getParameters().keySet());
             String parameterName = WordUtils.capitalize(String.join(" ", org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(moduleItem.getName())));
             node.addParameterForModuleItem(parameterKey, parameterName, moduleItem.getDescription(), getJIPipeParameterClass(), moduleItem);
-            Object result = moduleItem.getValue(node.getModuleInstance());
+            Object result = moduleItem.getValue(node.getReferenceModuleInstance());
             if (result != null && getModuleClass().isAssignableFrom(result.getClass())) {
                 node.getModuleParameters().get(parameterKey).set(convertFromModuleToJIPipe((ModuleType) result));
             }
