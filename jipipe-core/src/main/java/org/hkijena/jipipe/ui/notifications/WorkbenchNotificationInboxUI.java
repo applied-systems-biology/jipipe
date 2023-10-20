@@ -23,6 +23,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel implement
     private final FormPanel dismissedNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final FormPanel hiddenNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final List<JIPipeNotification> dismissedNotifications = new ArrayList<>();
+    private boolean hasNotifications = false;
 
     /**
      * @param workbench the workbench
@@ -38,10 +39,15 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel implement
         getWorkbench().getNotificationInbox().getDismissedEventEmitter().subscribeWeak(this);
     }
 
+    public boolean isHasNotifications() {
+        return hasNotifications;
+    }
+
     public void updateNotifications() {
         notificationsPanel.clear();
         dismissedNotificationsPanel.clear();
         hiddenNotificationsPanel.clear();
+        hasNotifications = false;
 
         Set<JIPipeNotification> notificationSet = new TreeSet<>();
         if (NotificationUISettings.getInstance().isEnableNotifications()) {
@@ -51,7 +57,6 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel implement
 
         Set<String> blockedIds = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
 
-        boolean hasNotifications = false;
         for (JIPipeNotification notification : notificationSet) {
             if (blockedIds.contains(notification.getId())) {
                 hiddenNotificationsPanel.addWideToForm(new WorkbenchNotificationUI(this,
