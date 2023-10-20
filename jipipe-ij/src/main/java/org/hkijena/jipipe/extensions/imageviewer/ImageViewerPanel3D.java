@@ -324,7 +324,7 @@ public class ImageViewerPanel3D extends JPanel implements JIPipeWorkbenchAccess,
         if (enableSideBarButton.isSelected()) {
             JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT,
                     viewerPanel,
-                    tabPane, AutoResizeSplitPane.RATIO_3_TO_1);
+                    tabPane, new AutoResizeSplitPane.DynamicSidebarRatio(450, false));
             add(splitPane, BorderLayout.CENTER);
             currentContentPanel = splitPane;
         } else {

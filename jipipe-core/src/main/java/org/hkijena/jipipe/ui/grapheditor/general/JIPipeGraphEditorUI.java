@@ -218,7 +218,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private void initialize() {
         setLayout(new BorderLayout());
         int splitPaneSplit = isFlagSet(FLAGS_SPLIT_PANE_VERTICAL) ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT;
-        double splitPaneRatio = isFlagSet(FLAGS_SPLIT_PANE_RATIO_1_1) ? AutoResizeSplitPane.RATIO_1_TO_1 : AutoResizeSplitPane.RATIO_3_TO_1;
+        AutoResizeSplitPane.Ratio splitPaneRatio;
+        if (isFlagSet(FLAGS_SPLIT_PANE_RATIO_1_1)) {
+            splitPaneRatio = new AutoResizeSplitPane.FixedRatio(AutoResizeSplitPane.RATIO_1_TO_1);
+        } else {
+            splitPaneRatio = new AutoResizeSplitPane.DynamicSidebarRatio();
+        }
         splitPane = new AutoResizeSplitPane(splitPaneSplit, splitPaneRatio);
 
         canvasUI.fullRedraw();
