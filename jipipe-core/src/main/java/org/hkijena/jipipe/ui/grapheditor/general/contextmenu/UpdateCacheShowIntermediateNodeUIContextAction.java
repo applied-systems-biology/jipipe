@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -54,7 +55,9 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
             ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeGraphNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(true, false)));
         } else {
             // Batch mode (enqueue)
-            for (JIPipeGraphNodeUI nodeUI : selection) {
+            ImmutableList<JIPipeGraphNodeUI> list = ImmutableList.copyOf(selection);
+            for (int i = 0; i < list.size() - 1; i++) {
+                JIPipeGraphNodeUI nodeUI = list.get(i);
                 JIPipeGraphNode node = nodeUI.getNode();
                 JIPipeProject project = node.getParentGraph().getProject();
                 if (node instanceof JIPipeProjectCompartment) {
@@ -70,6 +73,10 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
                     JIPipeRunnerQueue.getInstance().enqueue(run);
                 }
             }
+
+            // For the last one, switch to UI
+            JIPipeGraphNodeUI ui = list.get(list.size() - 1);
+            ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeGraphNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(true, false)));
         }
     }
 
