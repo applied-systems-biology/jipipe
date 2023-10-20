@@ -1979,9 +1979,11 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 stringBuilder.append("<ul>");
                 for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
                     for (JIPipeDataSlot sourceSlot : getInputIncomingSourceSlots(inputSlot)) {
-                        int sourceNodeIndex = nodeIndices.get(sourceSlot.getNode().getUUIDInParentGraph());
-                        stringBuilder.append("<li>").append("Input \"").append(inputSlot.getName()).append("\" of node #").append(index).append(" receives data from output \"")
-                                .append(sourceSlot.getName()).append("\" of node #").append(sourceNodeIndex).append("</li>\n");
+                        int sourceNodeIndex = nodeIndices.getOrDefault(sourceSlot.getNode().getUUIDInParentGraph(), -1);
+                        if(sourceNodeIndex != -1) {
+                            stringBuilder.append("<li>").append("Input \"").append(inputSlot.getName()).append("\" of node #").append(index).append(" receives data from output \"")
+                                    .append(sourceSlot.getName()).append("\" of node #").append(sourceNodeIndex).append("</li>\n");
+                        }
                     }
                 }
                 stringBuilder.append("</ul>");
