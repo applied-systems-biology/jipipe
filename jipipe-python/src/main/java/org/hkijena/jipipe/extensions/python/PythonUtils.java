@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.python;
 
 import org.apache.commons.exec.*;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;

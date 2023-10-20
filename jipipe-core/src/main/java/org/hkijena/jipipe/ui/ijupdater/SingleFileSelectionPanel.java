@@ -3,7 +3,7 @@ package org.hkijena.jipipe.ui.ijupdater;
 import com.google.common.collect.ImmutableList;
 import net.imagej.updater.FileObject;
 import net.imagej.updater.GroupAction;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;

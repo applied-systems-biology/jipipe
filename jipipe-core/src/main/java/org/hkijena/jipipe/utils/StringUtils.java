@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import com.google.common.html.HtmlEscapers;
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
