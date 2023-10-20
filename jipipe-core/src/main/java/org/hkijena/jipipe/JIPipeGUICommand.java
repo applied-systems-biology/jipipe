@@ -15,7 +15,6 @@ package org.hkijena.jipipe;
 
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
-import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -120,41 +119,39 @@ public class JIPipeGUICommand implements Command {
 
             // Show notifications
             if (NotificationUISettings.getInstance().isShowNotificationsAfterFirstStart()) {
-                if (!JIPipeNotificationInbox.getInstance().isEmpty()) {
+                if (!JIPipeNotificationInbox.getInstance().hasNotifications()) {
                     SwingUtilities.invokeLater(() -> {
-                        if (!JIPipeNotificationInbox.getInstance().isEmpty()) {
-                            for (JIPipeNotification notification : JIPipeNotificationInbox.getInstance().getNotifications()) {
-                                JIPipe.getInstance().getProgressInfo().log("Notification was triggered: " + notification.toString());
-                            }
-
-                            WorkbenchNotificationInboxUI inboxUI = new WorkbenchNotificationInboxUI(window.getProjectUI());
-                            JFrame frame = new JFrame();
-                            frame.setTitle("JIPipe - Notifications");
-                            frame.setIconImage(UIUtils.getJIPipeIcon128());
-
-
-                            JPanel panel = new JPanel(new BorderLayout());
-                            panel.add(inboxUI, BorderLayout.CENTER);
-
-                            JCheckBox showMessageCheckbox = new JCheckBox("Show notifications on JIPipe startup");
-                            showMessageCheckbox.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-                            showMessageCheckbox.setSelected(true);
-                            showMessageCheckbox.addActionListener(e -> NotificationUISettings.getInstance().setShowNotificationsAfterFirstStart(showMessageCheckbox.isSelected()));
-                            panel.add(showMessageCheckbox, BorderLayout.SOUTH);
-
-                            JIPipeNotificationInbox.getInstance().getUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
-                                if (JIPipeNotificationInbox.getInstance().isEmpty()) {
-                                    frame.setVisible(false);
-                                }
-                            });
-
-                            frame.setContentPane(panel);
-
-                            frame.pack();
-                            frame.setSize(new Dimension(1024, 768));
-                            frame.setLocationRelativeTo(null);
-                            frame.setVisible(true);
+                        for (JIPipeNotification notification : JIPipeNotificationInbox.getInstance().getNotifications()) {
+                            JIPipe.getInstance().getProgressInfo().log("Notification was triggered: " + notification.toString());
                         }
+
+                        WorkbenchNotificationInboxUI inboxUI = new WorkbenchNotificationInboxUI(window.getProjectUI());
+                        JFrame frame = new JFrame();
+                        frame.setTitle("JIPipe - Notifications");
+                        frame.setIconImage(UIUtils.getJIPipeIcon128());
+
+
+                        JPanel panel = new JPanel(new BorderLayout());
+                        panel.add(inboxUI, BorderLayout.CENTER);
+
+                        JCheckBox showMessageCheckbox = new JCheckBox("Show notifications on JIPipe startup");
+                        showMessageCheckbox.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+                        showMessageCheckbox.setSelected(true);
+                        showMessageCheckbox.addActionListener(e -> NotificationUISettings.getInstance().setShowNotificationsAfterFirstStart(showMessageCheckbox.isSelected()));
+                        panel.add(showMessageCheckbox, BorderLayout.SOUTH);
+
+                        JIPipeNotificationInbox.getInstance().getUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+                            if (JIPipeNotificationInbox.getInstance().isEmpty()) {
+                                frame.setVisible(false);
+                            }
+                        });
+
+                        frame.setContentPane(panel);
+
+                        frame.pack();
+                        frame.setSize(new Dimension(1024, 768));
+                        frame.setLocationRelativeTo(null);
+                        frame.setVisible(true);
                     });
                 }
             }

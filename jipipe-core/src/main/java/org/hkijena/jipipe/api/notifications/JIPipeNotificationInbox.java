@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.api.notifications;
 
 import com.google.common.collect.ImmutableList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 
-import java.util.Collections;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * A list of notifications that has not yet been reviewed
@@ -94,6 +94,22 @@ public class JIPipeNotificationInbox {
         if (inbox == this)
             return;
         inbox.dismissedEventEmitter.subscribeLambda((emitter, event) -> inbox.dismiss(event.notification.getId()));
+    }
+
+    public boolean hasNotifications() {
+        Set<String> blocked = new HashSet<>();
+        if(JIPipe.isInstantiated()) {
+            NotificationUISettings settings = NotificationUISettings.getInstance();
+            if(settings != null) {
+                blocked.addAll(settings.getBlockedNotifications());
+            }
+        }
+        for (JIPipeNotification notification : notifications) {
+            if(!blocked.contains(notification.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public interface PushedEventListener {
