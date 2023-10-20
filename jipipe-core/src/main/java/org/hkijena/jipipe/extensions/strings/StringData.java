@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.strings;
 
 import com.google.common.base.Charsets;
-import org.apache.commons.lang.CharSetUtils;
+import org.apache.commons.lang3.CharSetUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;

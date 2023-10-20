@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.utils;
 
-import org.apache.commons.lang.reflect.ConstructorUtils;
-import org.apache.commons.lang.reflect.MethodUtils;
+import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.apache.commons.lang3.reflect.MethodUtils;
 
 import java.lang.reflect.*;
 import java.net.URL;
