@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -50,29 +51,32 @@ public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeGraphNodeUI> selection) {
-        if (selection.size() == 1) {
-            // Classic mode (via UI)
-            JIPipeGraphNodeUI ui = selection.iterator().next();
-            ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeGraphNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false, false)));
-        } else {
-            // Batch mode (enqueue)
-            for (JIPipeGraphNodeUI nodeUI : selection) {
-                JIPipeGraphNode node = nodeUI.getNode();
-                JIPipeProject project = node.getParentGraph().getProject();
-                if (node instanceof JIPipeProjectCompartment) {
-                    node = ((JIPipeProjectCompartment) node).getOutputNode();
-                }
-                if (node instanceof JIPipeAlgorithm || node.getInfo().isRunnable()) {
-                    QuickRunSettings settings = new QuickRunSettings();
-                    settings.setSaveToDisk(false);
-                    settings.setStoreToCache(true);
-                    settings.setStoreIntermediateResults(false);
-                    settings.setExcludeSelected(false);
-                    QuickRun run = new QuickRun(project, node, settings);
-                    JIPipeRunnerQueue.getInstance().enqueue(run);
-                }
+        ImmutableList<JIPipeGraphNodeUI> list = ImmutableList.copyOf(selection);
+        if(list.isEmpty()) {
+            return;
+        }
+
+        // Batch mode (enqueue)
+        for (int i = 0; i < list.size() - 1; i++) {
+            JIPipeGraphNodeUI nodeUI = list.get(i);
+            JIPipeGraphNode node = nodeUI.getNode();
+            JIPipeProject project = node.getParentGraph().getProject();
+            if (node instanceof JIPipeProjectCompartment) {
+                node = ((JIPipeProjectCompartment) node).getOutputNode();
+            }
+            if (node instanceof JIPipeAlgorithm || node.getInfo().isRunnable()) {
+                QuickRunSettings settings = new QuickRunSettings();
+                settings.setSaveToDisk(false);
+                settings.setStoreToCache(true);
+                settings.setStoreIntermediateResults(false);
+                settings.setExcludeSelected(false);
+                QuickRun run = new QuickRun(project, node, settings);
+                JIPipeRunnerQueue.getInstance().enqueue(run);
             }
         }
+        // Send last one to UI
+        JIPipeGraphNodeUI ui = list.get(list.size() - 1);
+        ui.getNodeUIActionRequestedEventEmitter().emit(new JIPipeGraphNodeUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false, false)));
     }
 
     @Override
