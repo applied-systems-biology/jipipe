@@ -64,7 +64,7 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
                     QuickRunSettings settings = new QuickRunSettings();
                     settings.setSaveToDisk(false);
                     settings.setStoreToCache(true);
-                    settings.setStoreIntermediateResults(false);
+                    settings.setStoreIntermediateResults(true);
                     settings.setExcludeSelected(false);
                     QuickRun run = new QuickRun(project, node, settings);
                     JIPipeRunnerQueue.getInstance().enqueue(run);
