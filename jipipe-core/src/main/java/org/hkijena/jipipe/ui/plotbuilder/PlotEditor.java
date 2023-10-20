@@ -137,7 +137,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         openButton.addActionListener(e -> openPlot());
         plotReader.getToolBar().add(openButton, 0);
 
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, sideBar, AutoResizeSplitPane.RATIO_3_TO_1);
+        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, plotReader, sideBar, new AutoResizeSplitPane.DynamicSidebarRatio());
         add(splitPane, BorderLayout.CENTER);
     }
 

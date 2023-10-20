@@ -91,7 +91,7 @@ public class FlexContentPanel extends JPanel {
         }
         JComponent centerPanel;
         if (sideBar != null && sideBarVisible) {
-            centerPanel = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, contentPanel, sideBar, AutoResizeSplitPane.RATIO_3_TO_1);
+            centerPanel = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, contentPanel, sideBar, new AutoResizeSplitPane.DynamicSidebarRatio(450, false));
         } else {
             centerPanel = contentPanel;
         }

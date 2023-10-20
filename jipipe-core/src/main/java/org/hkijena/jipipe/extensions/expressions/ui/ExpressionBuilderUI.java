@@ -227,7 +227,7 @@ public class ExpressionBuilderUI extends JPanel {
         searchField.addActionListener(e -> rebuildPalette());
 
         // Main panel
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, contentPanel, commandPanel, AutoResizeSplitPane.RATIO_3_TO_1);
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, contentPanel, commandPanel, new AutoResizeSplitPane.DynamicSidebarRatio());
         add(splitPane, BorderLayout.CENTER);
     }
 
