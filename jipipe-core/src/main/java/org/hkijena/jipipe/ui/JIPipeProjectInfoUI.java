@@ -92,6 +92,8 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         refreshHeaderText();
         refreshTechnicalInfo();
         refreshHeaderButtons();
+        projectParametersPanel.reloadForm();
+        projectDirectoriesPanel.reloadForm();
     }
 
     private void refreshHeaderText() {
