@@ -73,10 +73,10 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
             new UpdateCacheNodeUIContextAction(),
             new UpdateCacheShowIntermediateNodeUIContextAction(),
+            new UpdateCacheOnlyPredecessorsNodeUIContextAction(),
             NodeUIContextAction.SEPARATOR,
             new RunAndShowResultsNodeUIContextAction(),
             new RunAndShowIntermediateResultsNodeUIContextAction(),
-            new UpdateCacheOnlyPredecessorsNodeUIContextAction(),
             NodeUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
