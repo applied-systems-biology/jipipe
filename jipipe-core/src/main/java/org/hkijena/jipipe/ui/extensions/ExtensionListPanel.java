@@ -32,18 +32,7 @@ import java.util.*;
 
 public class ExtensionListPanel extends JIPipeWorkbenchPanel {
 
-    public static final Paint GRADIENT_TOP = new LinearGradientPaint(0,
-            0,
-            0,
-            64,
-            new float[]{0f, 1f},
-            new Color[]{UIManager.getColor("Panel.background"), ColorUtils.setAlpha(UIManager.getColor("Panel.background"), 0)});
-    public static final Paint GRADIENT_BOTTOM = new LinearGradientPaint(0,
-            0,
-            0,
-            64,
-            new float[]{0f, 1f},
-            new Color[]{ColorUtils.setAlpha(UIManager.getColor("Panel.background"), 0), UIManager.getColor("Panel.background")});
+    public static final int MIN_VISIBLE_ITEMS = 30;
 
     private final JIPipeModernPluginManagerUI pluginManagerUI;
     private final Deque<JIPipeExtension> infiniteScrollingQueue = new ArrayDeque<>();
@@ -96,7 +85,7 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
 
     private void updateInfiniteScroll() {
         JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
-        if ((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 100)) && !infiniteScrollingQueue.isEmpty()) {
+        if ((listPanel.getComponentCount() < MIN_VISIBLE_ITEMS || !scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 100)) && !infiniteScrollingQueue.isEmpty()) {
             JIPipeExtension value = infiniteScrollingQueue.removeFirst();
             ExtensionItemPanel panel = new ExtensionItemPanel(pluginManagerUI, value);
             listPanel.add(panel);
