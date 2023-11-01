@@ -104,7 +104,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "First color", description = "The color assigned to zero values.")
-    @JIPipeParameter("first-color")
+    @JIPipeParameter(value = "first-color", uiOrder = -100)
     public Color getFirstColor() {
         return firstColor;
     }
@@ -115,7 +115,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Second color", description = "The color assigned to maximum values.")
-    @JIPipeParameter("second-color")
+    @JIPipeParameter(value = "second-color", uiOrder = -99)
     public Color getSecondColor() {
         return secondColor;
     }
