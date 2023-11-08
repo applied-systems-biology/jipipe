@@ -60,10 +60,10 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
             float[] pixels = (float[]) ip.getPixels();
 
             if(equalizeFrequencies) {
-                uniformBinning(pixels);
+                equalizedBinning(pixels);
             }
             else {
-                equalizedBinning(pixels);
+                uniformBinning(pixels);
             }
         }, progressInfo);
 
