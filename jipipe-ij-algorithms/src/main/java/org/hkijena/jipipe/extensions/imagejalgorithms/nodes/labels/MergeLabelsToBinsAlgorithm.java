@@ -49,6 +49,7 @@ public class MergeLabelsToBinsAlgorithm extends JIPipeIteratingAlgorithm {
         this.numBins = other.numBins;
         this.excludeZero = other.excludeZero;
         this.sortOrder = other.sortOrder;
+        this.equalizeFrequencies = other.equalizeFrequencies;
     }
 
     @Override
