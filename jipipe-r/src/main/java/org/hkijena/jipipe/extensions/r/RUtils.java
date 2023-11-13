@@ -190,9 +190,13 @@ public class RUtils {
                 "count <- length(JIPipe.OutputSlots.Table[[slot]][[\"rows\"]]);" +
                 "result <- file.path(JIPipe.OutputSlotFolders[[slot]], count); " +
                 "dir.create(result); " +
+                "annotations.serialized <- list();" +
+                "for(key in names(annotations)) {" +
+                "annotations.serialized[[length(annotations.serialized)+1]] <- list(name=key, value=annotations[[key]]);" +
+                "};" +
                 "data.type <- JIPipe.OutputSlots.Table[[slot]][[\"data-type\"]]; " +
                 ".GlobalEnv$JIPipe.OutputSlots.Table[[slot]][[\"rows\"]][[count + 1]] <- list(index=count, " +
-                "annotations=annotations, " +
+                "annotations=annotations.serialized, " +
                 "\"true-data-type\"=data.type); " +
                 "return(result);" +
                 "}\n");
