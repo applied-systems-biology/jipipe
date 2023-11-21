@@ -453,7 +453,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         });
         zoomButton.setBorder(null);
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(zoomButton);
-        for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
+        for (double zoom = 0.1; zoom <= 3; zoom += 0.25) {
             JMenuItem changeZoomItem = new JMenuItem((int) (zoom * 100) + "%", UIUtils.getIconFromResources("actions/zoom.png"));
             double finalZoom = zoom;
             changeZoomItem.addActionListener(e -> canvasUI.setZoom(finalZoom));

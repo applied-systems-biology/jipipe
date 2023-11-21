@@ -93,9 +93,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public static final Color COLOR_HIGHLIGHT_GREEN = new Color(0, 128, 0);
     public static final Stroke STROKE_UNIT = new BasicStroke(1);
     public static final Stroke STROKE_UNIT_COMMENT = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
-    public static final Stroke STROKE_DEFAULT = new BasicStroke(4);
-    public static final Stroke STROKE_DEFAULT_BORDER = new BasicStroke(6);
-    public static final Stroke STROKE_HIGHLIGHT = new BasicStroke(8);
     public static final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND, 0, new float[]{5}, 0);
     public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
     public static final Stroke STROKE_COMMENT = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
@@ -195,6 +192,21 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         initializeHotkeys();
         updateAssets();
+    }
+
+    public Stroke getStrokeHighlight() {
+        int width = (int) Math.max(1, zoom * 8);
+        return new BasicStroke(width);
+    }
+
+    public Stroke getStrokeDefault() {
+        int width = (int) Math.max(1, zoom * 4);
+        return  new BasicStroke(width);
+    }
+
+    public Stroke getStrokeDefaultBorder() {
+        int width = (int) Math.max(1, zoom * 4) + 2;
+        return new BasicStroke(width);
     }
 
     public Color getImprovedStrokeBackgroundColor() {
@@ -1869,6 +1881,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         Graphics2D g = (Graphics2D) graphics;
 
+        final Stroke strokeDefault = getStrokeDefault();
+        final Stroke strokeDefaultBorder = getStrokeDefaultBorder();
+        final Stroke strokeHighlight = getStrokeHighlight();
 
         // Draw the annotations and shadows
         boolean finalDrawShadows = settings.isDrawNodeShadows();
@@ -1920,12 +1935,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
-            paintOutsideEdges(g, false, Color.DARK_GRAY, STROKE_DEFAULT, STROKE_DEFAULT_BORDER);
+            paintOutsideEdges(g, false, Color.DARK_GRAY, strokeDefault, strokeDefaultBorder);
 
         // Main edge drawing
         lastDisplayedMainEdges = paintEdges(g,
-                STROKE_DEFAULT,
-                STROKE_DEFAULT_BORDER,
+                strokeDefault,
+                strokeDefaultBorder,
                 STROKE_COMMENT,
                 false,
                 false,
@@ -1937,13 +1952,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         // Outside edges drawing
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges()) {
-            paintOutsideEdges(g, true, Color.DARK_GRAY, STROKE_HIGHLIGHT, null);
+            paintOutsideEdges(g, true, Color.DARK_GRAY, strokeHighlight, null);
         }
 
         // Selected edges drawing
         if (!selection.isEmpty()) {
             paintEdges(g,
-                    STROKE_HIGHLIGHT,
+                    strokeHighlight,
                     null,
                     STROKE_COMMENT_HIGHLIGHT,
                     true,
@@ -1970,7 +1985,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     private void paintDisconnectHighlight(Graphics2D g) {
         if (disconnectHighlight != null) {
-            g.setStroke(STROKE_HIGHLIGHT);
+            g.setStroke(getStrokeHighlight());
             g.setColor(Color.RED);
             if (disconnectHighlight.getTarget().getSlot().isInput()) {
                 Set<JIPipeDataSlot> sources = disconnectHighlight.getSources();
@@ -2023,7 +2038,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     private void paintConnectHighlight(Graphics2D g) {
         if (connectHighlight != null) {
-            g.setStroke(STROKE_HIGHLIGHT);
+            g.setStroke(getStrokeHighlight());
             g.setColor(COLOR_HIGHLIGHT_GREEN);
             if (connectHighlight.getTarget().getSlot().isInput()) {
                 JIPipeDataSlot source = connectHighlight.getSource().getSlot();
@@ -2072,7 +2087,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     private void paintCurrentlyDraggedConnection(Graphics2D g) {
         if (currentConnectionDragSourceDragged && currentConnectionDragSource != null) {
-            g.setStroke(STROKE_HIGHLIGHT);
+            g.setStroke(getStrokeHighlight());
             PointRange sourcePoint;
             PointRange targetPoint = null;
 
@@ -3157,11 +3172,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     public void zoomOut() {
-        setZoom(Math.max(0.5, zoom - 0.05));
+        setZoom(Math.max(0.1, zoom - 0.05));
     }
 
     public void zoomIn() {
-        setZoom(Math.min(2, zoom + 0.05));
+        setZoom(Math.min(3, zoom + 0.05));
     }
 
     public JScrollPane getScrollPane() {
