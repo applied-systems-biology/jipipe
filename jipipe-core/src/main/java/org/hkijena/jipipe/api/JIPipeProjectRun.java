@@ -253,7 +253,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
             for (int i = 0; i < preprocessorNodes.size(); i++) {
                 JIPipeGraphNode node = preprocessorNodes.get(i);
                 progressInfo.setProgress(i);
-                JIPipeProgressInfo subProgress = progressInfo.resolve(node.getName());
+                JIPipeProgressInfo subProgress = progressInfo.resolve(node.getDisplayName());
                 if (!executedAlgorithms.contains(node)) {
                     runNode(executedAlgorithms, node, subProgress);
                 }
@@ -292,7 +292,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
 //            }
 
             // Let algorithms provide sub-progress
-            JIPipeProgressInfo subProgress = progressInfo.resolve(slot.getNode().getName());
+            JIPipeProgressInfo subProgress = progressInfo.resolve(slot.getNode().getDisplayName());
 
             if (slot.isInput()) {
                 // Copy data from source
@@ -410,7 +410,7 @@ public class JIPipeProjectRun implements JIPipeRunnable, JIPipeGraphGCHelper.Slo
             JIPipeGraphNode node = additionalAlgorithms.get(index);
             int absoluteIndex = index + preprocessorNodes.size() + traversedSlots.size() - 1;
             progressInfo.setProgress(absoluteIndex);
-            JIPipeProgressInfo subProgress = progressInfo.resolve(node.getName());
+            JIPipeProgressInfo subProgress = progressInfo.resolve(node.getDisplayName());
             runNode(executedAlgorithms, node, subProgress);
         }
 

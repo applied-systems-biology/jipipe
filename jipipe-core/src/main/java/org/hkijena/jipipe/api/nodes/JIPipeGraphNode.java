@@ -1102,7 +1102,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public String getDisplayName() {
         String compartment = getCompartmentDisplayName();
-        return getName() + (!StringUtils.isNullOrEmpty(compartment) ? " in compartment '" + compartment + "'" : "");
+        if(!StringUtils.isNullOrEmpty(compartment)) {
+            return compartment + "/"  + getName();
+        }
+        else {
+            return getName();
+        }
     }
 
     /**
