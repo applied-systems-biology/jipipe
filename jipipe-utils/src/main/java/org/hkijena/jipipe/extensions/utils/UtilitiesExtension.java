@@ -36,6 +36,7 @@ import org.hkijena.jipipe.extensions.utils.algorithms.*;
 import org.hkijena.jipipe.extensions.utils.algorithms.datatable.*;
 import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByCountAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.distribute.DistributeDataRandomlyByPercentageAlgorithm;
+import org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps.CrasherAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps.MultiIterationStepCheckerAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.iterationsteps.SingleIterationStepCheckerAlgorithm;
 import org.hkijena.jipipe.extensions.utils.algorithms.meta.GetJIPipeSlotFolderAlgorithm;
@@ -129,6 +130,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("check-iteration-step-single", SingleIterationStepCheckerAlgorithm.class, UIUtils.getIconURLFromResources("actions/package.png"));
         registerNodeType("check-iteration-step-multi", MultiIterationStepCheckerAlgorithm.class, UIUtils.getIconURLFromResources("actions/package.png"));
+
+        registerNodeType("crasher-on-input", CrasherAlgorithm.class, UIUtils.getIconURLFromResources("actions/error.png"));
 
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
