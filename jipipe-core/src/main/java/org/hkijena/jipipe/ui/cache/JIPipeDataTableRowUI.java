@@ -385,8 +385,8 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     public void handleDefaultActionOrDisplayDataAnnotation(int dataAnnotationColumn) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            if (dataAnnotationColumn >= 0 && dataAnnotationColumn < dataTable.getDataAnnotationColumns().size()) {
-                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(getRow(), dataTable.getDataAnnotationColumns().get(dataAnnotationColumn));
+            if (dataAnnotationColumn >= 0 && dataAnnotationColumn < dataTable.getDataAnnotationColumnNames().size()) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(getRow(), dataTable.getDataAnnotationColumnNames().get(dataAnnotationColumn));
                 JIPipeDataDisplayOperation operation = getMainOperation(dataAnnotation.getDataClass());
                 runDisplayOperation(operation, dataAnnotation);
             } else {

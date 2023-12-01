@@ -220,7 +220,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
                 if (dataTable != null) {
                     if (multiDataAnnotationColumn >= 0) {
                         String name = multiSlotTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
-                        dataAnnotationColumn = dataTable.getDataAnnotationColumns().indexOf(name);
+                        dataAnnotationColumn = dataTable.getDataAnnotationColumnNames().indexOf(name);
                     }
                 }
             } else {
@@ -585,7 +585,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel impleme
             int dataAnnotationColumn = -1;
             if (multiDataAnnotationColumn >= 0) {
                 String name = multiSlotTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
-                dataAnnotationColumn = slot.getDataAnnotationColumns().indexOf(name);
+                dataAnnotationColumn = slot.getDataAnnotationColumnNames().indexOf(name);
             }
             JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), slotStore, row);
             rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);

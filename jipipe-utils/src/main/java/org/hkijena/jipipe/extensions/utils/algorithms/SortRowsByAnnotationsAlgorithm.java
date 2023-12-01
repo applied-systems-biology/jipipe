@@ -40,7 +40,7 @@ public class SortRowsByAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm
 
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        Set<String> unMatchedAnnotationNames = new HashSet<>(getFirstInputSlot().getTextAnnotationColumns());
+        Set<String> unMatchedAnnotationNames = new HashSet<>(getFirstInputSlot().getTextAnnotationColumnNames());
         List<String> annotationOrder = new ArrayList<>();
         Map<String, SortOrder> annotationOrderSortOrder = new HashMap<>();
 

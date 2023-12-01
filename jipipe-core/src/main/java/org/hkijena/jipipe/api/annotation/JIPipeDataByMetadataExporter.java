@@ -179,8 +179,8 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
      */
     public String generateName(JIPipeDataTable dataTable, int row, Set<String> existingMetadata) {
         ExpressionVariables parameters = new ExpressionVariables();
-        for (int col = 0; col < dataTable.getTextAnnotationColumns().size(); col++) {
-            String metadataKey = dataTable.getTextAnnotationColumns().get(col);
+        for (int col = 0; col < dataTable.getTextAnnotationColumnNames().size(); col++) {
+            String metadataKey = dataTable.getTextAnnotationColumnNames().get(col);
             JIPipeTextAnnotation metadataValue = dataTable.getTextAnnotationOr(row, metadataKey, null);
             if (metadataValue == null)
                 continue;
@@ -234,8 +234,8 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
      */
     public Path generatePath(JIPipeDataTable dataTable, int row, Set<String> existingMetadata) {
         ExpressionVariables parameters = new ExpressionVariables();
-        for (int col = 0; col < dataTable.getTextAnnotationColumns().size(); col++) {
-            String metadataKey = dataTable.getTextAnnotationColumns().get(col);
+        for (int col = 0; col < dataTable.getTextAnnotationColumnNames().size(); col++) {
+            String metadataKey = dataTable.getTextAnnotationColumnNames().get(col);
             JIPipeTextAnnotation metadataValue = dataTable.getTextAnnotationOr(row, metadataKey, null);
             if (metadataValue == null)
                 continue;

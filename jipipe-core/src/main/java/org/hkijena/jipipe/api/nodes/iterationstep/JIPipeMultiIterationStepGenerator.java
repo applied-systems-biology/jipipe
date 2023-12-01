@@ -139,7 +139,7 @@ public class JIPipeMultiIterationStepGenerator {
     public Set<String> getInputAnnotationByFilter(StringQueryExpression expression) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot slot : slots.values()) {
-            result.addAll(slot.getTextAnnotationColumns());
+            result.addAll(slot.getTextAnnotationColumnNames());
         }
         return new HashSet<>(expression.queryAll(result, new ExpressionVariables()));
     }
@@ -147,7 +147,7 @@ public class JIPipeMultiIterationStepGenerator {
     public Set<String> getInputAnnotationColumnIntersection(String prefix) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot inputSlot : slots.values()) {
-            Set<String> filtered = inputSlot.getTextAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
+            Set<String> filtered = inputSlot.getTextAnnotationColumnNames().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
             if (result.isEmpty()) {
                 result.addAll(filtered);
             } else {
@@ -160,7 +160,7 @@ public class JIPipeMultiIterationStepGenerator {
     public Set<String> getInputAnnotationColumnUnion(String prefix) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot inputSlot : slots.values()) {
-            Set<String> filtered = inputSlot.getTextAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
+            Set<String> filtered = inputSlot.getTextAnnotationColumnNames().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
             result.addAll(filtered);
         }
         return result;

@@ -60,7 +60,7 @@ public class DataTracerTableModel implements TableModel {
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 previewCache.add(null);
             }
-            for (String annotationColumn : dataTable.getDataAnnotationColumns()) {
+            for (String annotationColumn : dataTable.getDataAnnotationColumnNames()) {
                 List<Component> componentList = new ArrayList<>();
                 for (int i = 0; i < dataTable.getRowCount(); i++) {
                     componentList.add(null);
@@ -97,8 +97,8 @@ public class DataTracerTableModel implements TableModel {
     public int toAnnotationColumnIndex(int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 3)
-                return columnIndex - dataTable.getDataAnnotationColumns().size() - 3;
+            if (columnIndex >= dataTable.getDataAnnotationColumnNames().size() + 3)
+                return columnIndex - dataTable.getDataAnnotationColumnNames().size() - 3;
             else
                 return -1;
         } else {
@@ -115,7 +115,7 @@ public class DataTracerTableModel implements TableModel {
     public int toDataAnnotationColumnIndex(int columnIndex) {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            if (columnIndex < dataTable.getDataAnnotationColumns().size() + 3 && (columnIndex - 3) < dataTable.getDataAnnotationColumns().size()) {
+            if (columnIndex < dataTable.getDataAnnotationColumnNames().size() + 3 && (columnIndex - 3) < dataTable.getDataAnnotationColumnNames().size()) {
                 return columnIndex - 3;
             } else {
                 return -1;
@@ -139,7 +139,7 @@ public class DataTracerTableModel implements TableModel {
     public int getColumnCount() {
         JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
-            return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 3;
+            return dataTable.getTextAnnotationColumnNames().size() + dataTable.getDataAnnotationColumnNames().size() + 3;
         } else {
             return 3;
         }
@@ -155,9 +155,9 @@ public class DataTracerTableModel implements TableModel {
         else if (columnIndex == 2)
             return "String representation";
         else if (toDataAnnotationColumnIndex(columnIndex) != -1 && dataTable != null) {
-            return "$" + dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
+            return "$" + dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(columnIndex));
         } else if (dataTable != null) {
-            return dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
+            return dataTable.getTextAnnotationColumnNames().get(toAnnotationColumnIndex(columnIndex));
         } else {
             return "NA";
         }
@@ -214,7 +214,7 @@ public class DataTracerTableModel implements TableModel {
                 }
             else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
                 revalidatePreviewCache();
-                String dataAnnotationName = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
+                String dataAnnotationName = dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(columnIndex));
                 Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
                 if (preview == null) {
                     JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowIndex, dataAnnotationName);

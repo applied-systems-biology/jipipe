@@ -75,11 +75,11 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
      */
     public void add(JIPipeProject project, Store<JIPipeDataTable> dataTableStore) {
         JIPipeDataTable dataTable = dataTableStore.get();
-        for (String annotationColumn : dataTable.getTextAnnotationColumns()) {
+        for (String annotationColumn : dataTable.getTextAnnotationColumnNames()) {
             if (!textAnnotationColumns.contains(annotationColumn))
                 textAnnotationColumns.add(annotationColumn);
         }
-        for (String annotationColumn : dataTable.getDataAnnotationColumns()) {
+        for (String annotationColumn : dataTable.getDataAnnotationColumnNames()) {
             if (!dataAnnotationColumns.contains(annotationColumn))
                 dataAnnotationColumns.add(annotationColumn);
         }
@@ -102,7 +102,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
             rowList.add(i);
             previewCache.add(null);
         }
-        for (String dataAnnotationColumn : dataTable.getDataAnnotationColumns()) {
+        for (String dataAnnotationColumn : dataTable.getDataAnnotationColumnNames()) {
             List<Component> dataAnnotationPreviews = dataAnnotationPreviewCache.getOrDefault(dataAnnotationColumn, null);
             if (dataAnnotationPreviews == null) {
                 dataAnnotationPreviews = new ArrayList<>();

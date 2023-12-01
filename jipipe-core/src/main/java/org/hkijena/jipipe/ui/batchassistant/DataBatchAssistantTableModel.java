@@ -54,7 +54,7 @@ public class DataBatchAssistantTableModel implements TableModel {
         for (int i = 0; i < dataTable.getRowCount(); i++) {
             previewCache.add(null);
         }
-        for (String annotationColumn : dataTable.getDataAnnotationColumns()) {
+        for (String annotationColumn : dataTable.getDataAnnotationColumnNames()) {
             List<Component> componentList = new ArrayList<>();
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 componentList.add(null);
@@ -88,8 +88,8 @@ public class DataBatchAssistantTableModel implements TableModel {
      * @return relative annotation column index, or -1
      */
     public int toAnnotationColumnIndex(int columnIndex) {
-        if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 2)
-            return columnIndex - dataTable.getDataAnnotationColumns().size() - 2;
+        if (columnIndex >= dataTable.getDataAnnotationColumnNames().size() + 2)
+            return columnIndex - dataTable.getDataAnnotationColumnNames().size() - 2;
         else
             return -1;
     }
@@ -101,7 +101,7 @@ public class DataBatchAssistantTableModel implements TableModel {
      * @return relative data annotation column index, or -1
      */
     public int toDataAnnotationColumnIndex(int columnIndex) {
-        if (columnIndex < dataTable.getDataAnnotationColumns().size() + 2 && (columnIndex - 2) < dataTable.getDataAnnotationColumns().size()) {
+        if (columnIndex < dataTable.getDataAnnotationColumnNames().size() + 2 && (columnIndex - 2) < dataTable.getDataAnnotationColumnNames().size()) {
             return columnIndex - 2;
         } else {
             return -1;
@@ -115,7 +115,7 @@ public class DataBatchAssistantTableModel implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 2;
+        return dataTable.getTextAnnotationColumnNames().size() + dataTable.getDataAnnotationColumnNames().size() + 2;
     }
 
     @Override
@@ -125,9 +125,9 @@ public class DataBatchAssistantTableModel implements TableModel {
         else if (columnIndex == 1)
             return "Status";
         else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
-            return "Slot: " + dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
+            return "Slot: " + dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(columnIndex));
         } else {
-            return dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
+            return dataTable.getTextAnnotationColumnNames().get(toAnnotationColumnIndex(columnIndex));
         }
     }
 
@@ -168,7 +168,7 @@ public class DataBatchAssistantTableModel implements TableModel {
             return preview;
         } else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             revalidatePreviewCache();
-            String dataAnnotationName = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
+            String dataAnnotationName = dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(columnIndex));
             Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
             if (preview == null) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowIndex, dataAnnotationName);

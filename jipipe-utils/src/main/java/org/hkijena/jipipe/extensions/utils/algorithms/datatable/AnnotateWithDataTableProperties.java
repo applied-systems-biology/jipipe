@@ -46,8 +46,8 @@ public class AnnotateWithDataTableProperties extends JIPipeSimpleIteratingAlgori
         JIPipeDataTable inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeDataTable.class, progressInfo);
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         numRowsAnnotation.addAnnotationIfEnabled(annotationList, inputData.getRowCount() + "");
-        numTextAnnotationColumns.addAnnotationIfEnabled(annotationList, inputData.getTextAnnotationColumns().size() + "");
-        numDataAnnotationColumns.addAnnotationIfEnabled(annotationList, inputData.getDataAnnotationColumns().size() + "");
+        numTextAnnotationColumns.addAnnotationIfEnabled(annotationList, inputData.getTextAnnotationColumnNames().size() + "");
+        numDataAnnotationColumns.addAnnotationIfEnabled(annotationList, inputData.getDataAnnotationColumnNames().size() + "");
         iterationStep.addOutputData(getFirstOutputSlot(), inputData, annotationList, mergeMode, progressInfo);
     }
 

@@ -13,15 +13,11 @@
 
 package org.hkijena.jipipe.extensions.expressions.variables;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 
 import java.util.*;
 
@@ -37,7 +33,7 @@ public class TextAnnotationsExpressionParameterVariableSource implements Express
             variables.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             for (Map.Entry<UUID, Map<String, JIPipeDataTable>> uuidMapEntry : predecessorNodeCache.entrySet()) {
                 for (Map.Entry<String, JIPipeDataTable> dataTableEntry : uuidMapEntry.getValue().entrySet()) {
-                    for (String annotationColumn : dataTableEntry.getValue().getTextAnnotationColumns()) {
+                    for (String annotationColumn : dataTableEntry.getValue().getTextAnnotationColumnNames()) {
                         variables.add(new ExpressionParameterVariable(annotationColumn + " (Cached annotation)",
                                 "The text annotation \"" + annotationColumn + "\". Automatically detected from cached predecessor nodes.",
                                 annotationColumn));

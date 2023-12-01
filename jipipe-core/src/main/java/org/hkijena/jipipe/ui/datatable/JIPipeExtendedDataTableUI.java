@@ -596,8 +596,8 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
         public int toAnnotationColumnIndex(int columnIndex) {
             JIPipeDataTable dataTable = dataTableStore.get();
             if (dataTable != null) {
-                if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
-                    return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
+                if (columnIndex >= dataTable.getDataAnnotationColumnNames().size() + 4)
+                    return columnIndex - dataTable.getDataAnnotationColumnNames().size() - 4;
                 else
                     return -1;
             } else {
@@ -614,7 +614,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
         public int toDataAnnotationColumnIndex(int columnIndex) {
             JIPipeDataTable dataTable = dataTableStore.get();
             if (dataTable != null) {
-                if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
+                if (columnIndex < dataTable.getDataAnnotationColumnNames().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumnNames().size()) {
                     return columnIndex - 4;
                 } else {
                     return -1;
@@ -633,7 +633,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else if (toDataAnnotationColumnIndex(modelColumn) != -1) {
                 if (dataTable != null) {
-                    String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
+                    String info = dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                             UIUtils.getIconFromResources("data-types/data-annotation.png"),
                             info);
@@ -644,8 +644,8 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel implements J
             } else {
                 if (dataTable != null) {
                     int annotationColumnIndex = toAnnotationColumnIndex(modelColumn);
-                    if (annotationColumnIndex < dataTable.getTextAnnotationColumns().size()) {
-                        String info = dataTable.getTextAnnotationColumns().get(annotationColumnIndex);
+                    if (annotationColumnIndex < dataTable.getTextAnnotationColumnNames().size()) {
+                        String info = dataTable.getTextAnnotationColumnNames().get(annotationColumnIndex);
                         String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                                 UIUtils.getIconFromResources("data-types/annotation.png"),
                                 info);

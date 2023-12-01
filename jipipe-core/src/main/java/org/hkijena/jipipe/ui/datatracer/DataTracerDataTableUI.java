@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
@@ -31,16 +30,12 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataExporterRun;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
-import org.hkijena.jipipe.ui.components.search.ExtendedDataTableSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeAnnotationTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -326,8 +321,8 @@ public class DataTracerDataTableUI extends JIPipeWorkbenchPanel implements JIPip
         public int toAnnotationColumnIndex(int columnIndex) {
             JIPipeDataTable dataTable = dataTableStore.get();
             if (dataTable != null) {
-                if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 3)
-                    return columnIndex - dataTable.getDataAnnotationColumns().size() - 3;
+                if (columnIndex >= dataTable.getDataAnnotationColumnNames().size() + 3)
+                    return columnIndex - dataTable.getDataAnnotationColumnNames().size() - 3;
                 else
                     return -1;
             } else {
@@ -344,7 +339,7 @@ public class DataTracerDataTableUI extends JIPipeWorkbenchPanel implements JIPip
         public int toDataAnnotationColumnIndex(int columnIndex) {
             JIPipeDataTable dataTable = dataTableStore.get();
             if (dataTable != null) {
-                if (columnIndex < dataTable.getDataAnnotationColumns().size() + 3 && (columnIndex - 3) < dataTable.getDataAnnotationColumns().size()) {
+                if (columnIndex < dataTable.getDataAnnotationColumnNames().size() + 3 && (columnIndex - 3) < dataTable.getDataAnnotationColumnNames().size()) {
                     return columnIndex - 3;
                 } else {
                     return -1;
@@ -363,7 +358,7 @@ public class DataTracerDataTableUI extends JIPipeWorkbenchPanel implements JIPip
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else if (toDataAnnotationColumnIndex(modelColumn) != -1) {
                 if (dataTable != null) {
-                    String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
+                    String info = dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                             UIUtils.getIconFromResources("data-types/data-annotation.png"),
                             info);
@@ -374,8 +369,8 @@ public class DataTracerDataTableUI extends JIPipeWorkbenchPanel implements JIPip
             } else {
                 if (dataTable != null) {
                     int annotationColumnIndex = toAnnotationColumnIndex(modelColumn);
-                    if (annotationColumnIndex < dataTable.getTextAnnotationColumns().size()) {
-                        String info = dataTable.getTextAnnotationColumns().get(annotationColumnIndex);
+                    if (annotationColumnIndex < dataTable.getTextAnnotationColumnNames().size()) {
+                        String info = dataTable.getTextAnnotationColumnNames().get(annotationColumnIndex);
                         String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                                 UIUtils.getIconFromResources("data-types/annotation.png"),
                                 info);

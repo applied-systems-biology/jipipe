@@ -536,8 +536,8 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
         public int toAnnotationColumnIndex(int columnIndex) {
             JIPipeDataTable dataTable = dataTableStore.get();
             if (dataTable != null) {
-                if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 2)
-                    return columnIndex - dataTable.getDataAnnotationColumns().size() - 2;
+                if (columnIndex >= dataTable.getDataAnnotationColumnNames().size() + 2)
+                    return columnIndex - dataTable.getDataAnnotationColumnNames().size() - 2;
                 else
                     return -1;
             } else {
@@ -554,7 +554,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
         public int toDataAnnotationColumnIndex(int columnIndex) {
             JIPipeDataTable dataTable = dataTableStore.get();
             if (dataTable != null) {
-                if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 2) < dataTable.getDataAnnotationColumns().size()) {
+                if (columnIndex < dataTable.getDataAnnotationColumnNames().size() + 4 && (columnIndex - 2) < dataTable.getDataAnnotationColumnNames().size()) {
                     return columnIndex - 2;
                 } else {
                     return -1;
@@ -573,7 +573,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
             } else if (toDataAnnotationColumnIndex(modelColumn) != -1) {
                 JIPipeDataTable dataTable = dataTableStore.get();
                 if (dataTable != null) {
-                    String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
+                    String info = dataTable.getDataAnnotationColumnNames().get(toDataAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                             UIUtils.getIconFromResources("data-types/slot.png"),
                             info);
@@ -584,7 +584,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel implemen
             } else {
                 JIPipeDataTable dataTable = dataTableStore.get();
                 if (dataTable != null) {
-                    String info = dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(modelColumn));
+                    String info = dataTable.getTextAnnotationColumnNames().get(toAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                             UIUtils.getIconFromResources("data-types/annotation.png"),
                             info);

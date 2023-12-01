@@ -253,7 +253,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         int dataAnnotationColumn = -1;
         if (multiDataAnnotationColumn >= 0) {
             String name = mergedDataTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
-            dataAnnotationColumn = slot.getDataAnnotationColumns().indexOf(name);
+            dataAnnotationColumn = slot.getDataAnnotationColumnNames().indexOf(name);
         }
         ui.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
     }
