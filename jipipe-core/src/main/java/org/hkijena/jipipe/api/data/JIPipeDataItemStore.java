@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.data.Store;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.WeakHashMap;
+import java.util.concurrent.locks.StampedLock;
 
 /**
  * Manages virtual data
@@ -27,6 +28,8 @@ import java.util.WeakHashMap;
  * Please note that the temporary data is not automatically cleaned up by finalize()! Please call close() to remove any files.
  */
 public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPipeData> {
+
+    private final StampedLock stampedLock = new StampedLock();
     private final Class<? extends JIPipeData> dataClass;
     private final String stringRepresentation;
     private final WeakHashMap<Object, Boolean> users = new WeakHashMap<>();
@@ -51,8 +54,9 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
      * @return the copy
      */
     public JIPipeDataItemStore duplicate(JIPipeProgressInfo progressInfo) {
-        if (closed)
+        if (closed) {
             throw new IllegalStateException("The data object is already destroyed (use-after-free)");
+        }
         JIPipeData data = getData(progressInfo).duplicate(progressInfo);
         return new JIPipeDataItemStore(data);
     }
@@ -74,10 +78,15 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
      * @param <T>          the output type
      * @return the output data
      */
-    public synchronized <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
-        JIPipeData data = getData(progressInfo);
-        data = JIPipe.getDataTypes().convert(data, klass, progressInfo);
-        return (T) data;
+    public <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
+        long stamp = stampedLock.readLock();
+        try {
+            JIPipeData data = getData_(progressInfo);
+            data = JIPipe.getDataTypes().convert(data, klass, progressInfo);
+            return (T) data;
+        } finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     /**
@@ -86,11 +95,26 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
      * @param progressInfo the progress info
      * @return the data
      */
-    public synchronized JIPipeData getData(JIPipeProgressInfo progressInfo) {
+    protected JIPipeData getData_(JIPipeProgressInfo progressInfo) {
         if (closed) {
             throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         }
         return data;
+    }
+
+    /**
+     * Gets the currently stored data
+     *
+     * @param progressInfo the progress info
+     * @return the data
+     */
+    public JIPipeData getData(JIPipeProgressInfo progressInfo) {
+        long stamp = stampedLock.readLock();
+        try {
+            return getData_(progressInfo);
+        } finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     public String getStringRepresentation() {
@@ -109,8 +133,13 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
      *
      * @param obj the object
      */
-    public synchronized void addUser(Object obj) {
-        users.put(obj, true);
+    public void addUser(Object obj) {
+        long stamp = stampedLock.writeLock();
+        try {
+            users.put(obj, true);
+        } finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     /**
@@ -118,8 +147,13 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
      *
      * @param obj the object
      */
-    public synchronized void removeUser(Object obj) {
-        users.remove(obj);
+    public void removeUser(Object obj) {
+        long stamp = stampedLock.writeLock();
+        try {
+            users.remove(obj);
+        } finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     /**
@@ -127,24 +161,39 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
      *
      * @return if the data has no users
      */
-    public synchronized boolean canClose() {
-        return users.isEmpty();
+    public boolean canClose() {
+        long stamp = stampedLock.readLock();
+        try {
+            return users.isEmpty();
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     @Override
-    public synchronized void close() throws IOException {
-        if (closed)
-            return;
-        closed = true;
-        if (data != null) {
-            data.close();
+    public void close() throws IOException {
+        long stamp = stampedLock.writeLock();
+        try {
+            if (closed)
+                return;
+            closed = true;
+            if (data != null) {
+                data.close();
+            }
+            data = null;
+            users.clear();
         }
-        data = null;
-        users.clear();
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     @Override
     public JIPipeData get() {
+        if (closed) {
+            throw new IllegalStateException("The data object is already destroyed (use-after-free)");
+        }
         return data;
     }
 
