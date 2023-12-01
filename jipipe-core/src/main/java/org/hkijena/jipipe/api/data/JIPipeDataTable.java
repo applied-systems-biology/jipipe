@@ -1173,7 +1173,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @deprecated use addDataFromTable instead
      */
     @Deprecated
-    public synchronized void addFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
+    public void addFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
         addDataFromTable(table, progressInfo);
     }
 
@@ -1183,7 +1183,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param table        the source table
      * @param progressInfo the progress
      */
-    public synchronized void addDataFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
+    public void addDataFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
         int rowCount = table.getRowCount();
         for (int row = 0; row < rowCount; row++) {
             JIPipeProgressInfo addDataProgress = progressInfo.resolveAndLog("Add data from table", row, rowCount);

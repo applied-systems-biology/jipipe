@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 
 /**
@@ -16,6 +17,7 @@ import java.util.function.BiConsumer;
  */
 public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> implements Disposable {
 
+    private final StampedLock stampedLock = new StampedLock();
     private final List<Subscriber<Event, Listener>> subscribers = new ArrayList<>();
     private final Map<Listener, Subscriber<Event, Listener>> listenerSubscriberMap = new IdentityHashMap<>();
     private final AtomicInteger emittingDepth = new AtomicInteger(0);
@@ -26,8 +28,12 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         if (disposed) {
             throw new UnsupportedOperationException("Event emitter is disposed!");
         }
-        synchronized (subscribers) {
+        long stamp = stampedLock.writeLock();
+        try {
             subscribers.add(subscriber);
+        }
+        finally {
+            stampedLock.unlock(stamp);
         }
     }
 
@@ -35,8 +41,12 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         if (disposed) {
             throw new UnsupportedOperationException("Event emitter is disposed!");
         }
-        synchronized (subscribers) {
+        long stamp = stampedLock.writeLock();
+        try {
             subscribers.remove(subscriber);
+        }
+        finally {
+            stampedLock.unlock(stamp);
         }
     }
 
@@ -67,7 +77,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         }
     }
 
-    public synchronized void emit(Event event) {
+    public void emit(Event event) {
         if (disposed) {
             throw new UnsupportedOperationException("Event emitter is disposed!");
         }
@@ -75,26 +85,28 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
             event.setEmitter(this);
         }
         boolean needsGC = false;
-        synchronized (subscribers) {
-            synchronized (subscribers) {
-                for (int i = 0; i < subscribers.size(); i++) {
-                    if (i < subscribers.size()) {
-                        Subscriber<Event, Listener> subscriber = subscribers.get(i);
-                        if (subscriber.isPresent()) {
-                            try {
-                                subscriber.call(this, event);
-                            } catch (Throwable e) {
-                                e.printStackTrace();
-                            }
-                            if (subscriber.requestGCImmediatelyAfterCall()) {
-                                needsGC = true;
-                            }
-                        } else {
+        long stamp = stampedLock.readLock();
+        try {
+            for (int i = 0; i < subscribers.size(); i++) {
+                if (i < subscribers.size()) {
+                    Subscriber<Event, Listener> subscriber = subscribers.get(i);
+                    if (subscriber.isPresent()) {
+                        try {
+                            subscriber.call(this, event);
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                        }
+                        if (subscriber.requestGCImmediatelyAfterCall()) {
                             needsGC = true;
                         }
+                    } else {
+                        needsGC = true;
                     }
                 }
             }
+        }
+        finally {
+            stampedLock.unlock(stamp);
         }
         if (needsGC) {
             gc();
@@ -104,8 +116,12 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
     protected abstract void call(Listener listener, Event event);
 
     public void gc() {
-        synchronized (subscribers) {
+        long stamp = stampedLock.writeLock();
+        try {
             subscribers.removeIf(l -> !l.isPresent());
+        }
+        finally {
+            stampedLock.unlock(stamp);
         }
     }
 
