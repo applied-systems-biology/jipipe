@@ -21,12 +21,15 @@ import org.scijava.Cancelable;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 
 /**
  * This object is available inside a {@link JIPipeRunnable} and contains methods to report progress, logs, and request cancellation.
  */
 public class JIPipeProgressInfo implements Cancelable {
+
+    private final StampedLock stampedLock;
     private AtomicBoolean cancelled = new AtomicBoolean();
     private AtomicInteger progress = new AtomicInteger(0);
     private AtomicInteger maxProgress = new AtomicInteger(1);
@@ -41,9 +44,11 @@ public class JIPipeProgressInfo implements Cancelable {
 
     public JIPipeProgressInfo() {
         this.statusUpdatedEventEmitter = new StatusUpdatedEventEmitter();
+        this.stampedLock = new StampedLock();
     }
 
     public JIPipeProgressInfo(JIPipeProgressInfo other) {
+        this.stampedLock = other.stampedLock;
         this.statusUpdatedEventEmitter = other.statusUpdatedEventEmitter;
         this.cancelled = other.cancelled;
         this.progress = other.progress;
@@ -55,12 +60,24 @@ public class JIPipeProgressInfo implements Cancelable {
         this.cancelReason = other.cancelReason;
     }
 
-    public synchronized void clearLog() {
-        log.setLength(0);
+    public void clearLog() {
+        long stamp = stampedLock.writeLock();
+        try {
+            log.setLength(0);
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
-    public synchronized void incrementProgress() {
-        progress.getAndIncrement();
+    public void incrementProgress() {
+        long stamp = stampedLock.writeLock();
+        try {
+            progress.getAndIncrement();
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     public StatusUpdatedEventEmitter getStatusUpdatedEventEmitter() {
@@ -110,7 +127,7 @@ public class JIPipeProgressInfo implements Cancelable {
         cancelled.set(true);
     }
 
-    public synchronized StringBuilder getLog() {
+    public StringBuilder getLog() {
         return log;
     }
 
@@ -127,20 +144,26 @@ public class JIPipeProgressInfo implements Cancelable {
      *
      * @param message the message
      */
-    public synchronized void log(String message) {
-        if (detachedProgress)
-            log.append("SUB ");
-        log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend);
-        boolean needsSeparator = !StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message);
-        if (needsSeparator)
-            log.append(" | ");
-        log.append(" ").append(message);
-        log.append("\n");
-        StatusUpdatedEvent event = new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message);
-        if (logToStdOut.get()) {
-            System.out.println(event.render());
+    public void log(String message) {
+        long stamp = stampedLock.writeLock();
+        try {
+            if (detachedProgress)
+                log.append("SUB ");
+            log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend);
+            boolean needsSeparator = !StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message);
+            if (needsSeparator)
+                log.append(" | ");
+            log.append(" ").append(message);
+            log.append("\n");
+            StatusUpdatedEvent event = new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message);
+            if (logToStdOut.get()) {
+                System.out.println(event.render());
+            }
+            statusUpdatedEventEmitter.emit(event);
         }
-        statusUpdatedEventEmitter.emit(event);
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     /**
@@ -157,12 +180,18 @@ public class JIPipeProgressInfo implements Cancelable {
      *
      * @return progress info with the same properties as the current one, but with a detached progress
      */
-    public synchronized JIPipeProgressInfo detachProgress() {
-        JIPipeProgressInfo result = new JIPipeProgressInfo(this);
-        result.detachedProgress = true;
-        result.progress = new AtomicInteger(this.progress.get());
-        result.maxProgress = new AtomicInteger(this.maxProgress.get());
-        return result;
+    public JIPipeProgressInfo detachProgress() {
+        long stamp = stampedLock.readLock();
+        try {
+            JIPipeProgressInfo result = new JIPipeProgressInfo(this);
+            result.detachedProgress = true;
+            result.progress = new AtomicInteger(this.progress.get());
+            result.maxProgress = new AtomicInteger(this.maxProgress.get());
+            return result;
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     /**
@@ -171,13 +200,19 @@ public class JIPipeProgressInfo implements Cancelable {
      * @param logPrepend the category
      * @return progress info with the same properties as the current one, but with messages prepended
      */
-    public synchronized JIPipeProgressInfo resolve(String logPrepend) {
-        JIPipeProgressInfo result = new JIPipeProgressInfo(this);
-        if (StringUtils.isNullOrEmpty(result.logPrepend))
-            result.logPrepend = logPrepend;
-        else
-            result.logPrepend = result.logPrepend + " | " + logPrepend;
-        return result;
+    public JIPipeProgressInfo resolve(String logPrepend) {
+        long stamp = stampedLock.readLock();
+        try {
+            JIPipeProgressInfo result = new JIPipeProgressInfo(this);
+            if (StringUtils.isNullOrEmpty(result.logPrepend))
+                result.logPrepend = logPrepend;
+            else
+                result.logPrepend = result.logPrepend + " | " + logPrepend;
+            return result;
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     /**
@@ -189,7 +224,7 @@ public class JIPipeProgressInfo implements Cancelable {
      * @param size  size of the index operation
      * @return progress info with the same properties as the current one, but with messages prepended
      */
-    public synchronized JIPipeProgressInfo resolve(String text, int index, int size) {
+    public JIPipeProgressInfo resolve(String text, int index, int size) {
         return resolve(text + " " + (index + 1) + "/" + size);
     }
 
@@ -199,7 +234,7 @@ public class JIPipeProgressInfo implements Cancelable {
      * @param logPrepend the category
      * @return progress info with the same properties as the current one, but with messages prepended
      */
-    public synchronized JIPipeProgressInfo resolveAndLog(String logPrepend) {
+    public JIPipeProgressInfo resolveAndLog(String logPrepend) {
         JIPipeProgressInfo resolve = resolve(logPrepend);
         resolve.log("");
         return resolve;
@@ -214,7 +249,7 @@ public class JIPipeProgressInfo implements Cancelable {
      * @param size  size of the index operation
      * @return progress info with the same properties as the current one, but with messages prepended
      */
-    public synchronized JIPipeProgressInfo resolveAndLog(String text, int index, int size) {
+    public JIPipeProgressInfo resolveAndLog(String text, int index, int size) {
         return resolveAndLog(text + " " + (index + 1) + "/" + size);
     }
 
