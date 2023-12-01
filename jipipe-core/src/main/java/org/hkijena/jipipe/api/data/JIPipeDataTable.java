@@ -102,9 +102,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         Path storagePath = storage.getFileSystemPath();
         JIPipeDataTableMetadata dataTableMetadata = JIPipeDataTableMetadata.loadFromJson(storagePath.resolve("data-table.json"));
         Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTableMetadata.getAcceptedDataTypeId());
+        int rowCount = dataTableMetadata.getRowCount();
         JIPipeDataTable dataTable = new JIPipeDataTable(acceptedDataType);
-        for (int i = 0; i < dataTableMetadata.getRowCount(); i++) {
-            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTableMetadata.getRowCount());
+        for (int i = 0; i < rowCount; i++) {
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, rowCount);
             JIPipeDataTableMetadataRow row = dataTableMetadata.getRowList().get(i);
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
@@ -175,6 +176,14 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         } finally {
             stampedLock.unlock(stamp);
         }
+    }
+
+    /**
+     * NOT THREAD-SAFE
+     * @return the number of rows
+     */
+    protected int getRowCount_() {
+        return dataArray.size();
     }
 
     @Override
@@ -503,7 +512,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         long stamp = stampedLock.readLock();
         try {
             List<T> result = new ArrayList<>();
-            for (int row = 0; row < getRowCount(); row++) {
+            for (int row = 0; row < getRowCount_(); row++) {
                 result.add(JIPipe.getDataTypes().convert(dataArray.get(row).getData(progressInfo), dataClass, progressInfo));
             }
             return result;
@@ -833,7 +842,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         long stamp = stampedLock.readLock();
         try {
             List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
-            for (int row = 0; row < getRowCount(); row++) {
+            for (int row = 0; row < getRowCount_(); row++) {
                 for (String dataAnnotationColumn : getDataAnnotationColumnNames()) {
                     JIPipeDataItemStore virtualDataAnnotation = getDataAnnotationItemStore(row, dataAnnotationColumn);
                     if (virtualDataAnnotation != null) {
@@ -909,7 +918,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         List<JIPipeTextAnnotation> result = new ArrayList<>();
         long stamp = stampedLock.readLock();
         try {
-            for (int row = 0; row < getRowCount(); row++) {
+            for (int row = 0; row < getRowCount_(); row++) {
                 for (String info : textAnnotationColumnNames) {
                     List<JIPipeTextAnnotation> columnData = getTextAnnotationColumnArray_(info);
                     if (columnData != null && row < columnData.size()) {
@@ -973,13 +982,14 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     protected List<JIPipeTextAnnotation> getOrCreateTextAnnotationColumnArray_(String columnName) {
         ArrayList<JIPipeTextAnnotation> arrayList = textAnnotationArrays.getOrDefault(columnName, null);
-        if (arrayList == null || arrayList.size() < getRowCount()) {
+        int rowCount = getRowCount_();
+        if (arrayList == null || arrayList.size() < rowCount) {
             if (arrayList == null) {
                 textAnnotationColumnNames.add(columnName);
                 arrayList = new ArrayList<>();
                 textAnnotationArrays.put(columnName, arrayList);
             }
-            while (arrayList.size() < getRowCount()) {
+            while (arrayList.size() < rowCount) {
                 arrayList.add(null);
             }
         }
@@ -996,13 +1006,14 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     protected List<JIPipeDataItemStore> getOrCreateDataAnnotationColumnArray_(String columnName) {
         ArrayList<JIPipeDataItemStore> arrayList = dataAnnotationsArrays.getOrDefault(columnName, null);
-        if (arrayList == null || arrayList.size() < getRowCount()) {
+        int rowCount = getRowCount_();
+        if (arrayList == null || arrayList.size() < rowCount) {
             if (arrayList == null) {
                 dataAnnotationColumnNames.add(columnName);
                 arrayList = new ArrayList<>();
                 dataAnnotationsArrays.put(columnName, arrayList);
             }
-            while (arrayList.size() < getRowCount()) {
+            while (arrayList.size() < rowCount) {
                 arrayList.add(null);
             }
         }
@@ -1059,7 +1070,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             dataContextsArray.add(context != null ? context : new JIPipeMutableDataContext());
             for (JIPipeTextAnnotation annotation : annotations) {
                 List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnArray_(annotation.getName());
-                annotationArray.set(getRowCount() - 1, annotation);
+                annotationArray.set(getRowCount_() - 1, annotation);
             }
             fireChangedEvent(new TableModelEvent(this));
         } finally {
@@ -1090,7 +1101,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         long stamp = stampedLock.writeLock();
         try {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnArray_(annotation.getName());
-            for (int i = 0; i < getRowCount(); ++i) {
+            int rowCount = getRowCount_();
+            for (int i = 0; i < rowCount; ++i) {
                 if (!overwrite && annotationArray.get(i) != null)
                     continue;
                 annotationArray.set(i, annotation);
@@ -1172,8 +1184,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param progressInfo the progress
      */
     public synchronized void addDataFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
-        for (int row = 0; row < table.getRowCount(); row++) {
-            JIPipeProgressInfo addDataProgress = progressInfo.resolveAndLog("Add data from table", row, table.getRowCount());
+        int rowCount = table.getRowCount();
+        for (int row = 0; row < rowCount; row++) {
+            JIPipeProgressInfo addDataProgress = progressInfo.resolveAndLog("Add data from table", row, rowCount);
             addData(table.getDataItemStore(row),
                     table.getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
@@ -1216,13 +1229,14 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         // Save data
         long stamp = stampedLock.readLock();
         try {
-            for (int row = 0; row < getRowCount(); ++row) {
+            int rowCount = getRowCount_();
+            for (int row = 0; row < rowCount; ++row) {
                 JIPipeDataTableMetadataRow rowMetadata = new JIPipeDataTableMetadataRow();
                 rowMetadata.setIndex(row);
                 rowMetadata.setTrueDataType(JIPipe.getDataTypes().getIdOf(getDataItemStore(row).getDataClass()));
                 rowMetadata.setTextAnnotations(getTextAnnotations(row));
                 rowMetadata.setDataContext(getDataContext(row));
-                JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
+                JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, rowCount);
                 exportDataRow_(storage, row, previewSizes, rowProgress);
                 for (JIPipeDataAnnotation dataAnnotation : getDataAnnotations(row)) {
                     JIPipeProgressInfo dataAnnotationProgress = rowProgress.resolveAndLog("Data annotation '" + dataAnnotation.getName() + "'");
@@ -1322,8 +1336,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void addDataFromSlot(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {
         String text = "Copying data from " + sourceSlot.getDisplayName() + " to " + getDisplayName();
-        for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
-            progressInfo.resolveAndLog(text, row, sourceSlot.getRowCount());
+        int rowCount = sourceSlot.getRowCount();
+        for (int row = 0; row < rowCount; ++row) {
+            progressInfo.resolveAndLog(text, row, rowCount);
             addData(sourceSlot.getDataItemStore(row), sourceSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge, sourceSlot.getDataContext(row), progressInfo);
 
             // Copy data annotations
@@ -1364,7 +1379,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             dataContextsArray.add(context != null ? context : new JIPipeMutableDataContext());
             for (JIPipeTextAnnotation annotation : annotations) {
                 List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnArray_(annotation.getName());
-                annotationArray.set(getRowCount() - 1, annotation);
+                annotationArray.set(getRowCount_() - 1, annotation);
             }
         } finally {
             stampedLock.unlock(stamp);
@@ -1426,8 +1441,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public void convert(Class<? extends JIPipeData> dataClass, JIPipeProgressInfo progressInfo) {
         long stamp = stampedLock.writeLock();
         try {
-            for (int row = 0; row < getRowCount(); row++) {
-                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Convert", row, getRowCount());
+            int rowCount = getRowCount_();
+            for (int row = 0; row < rowCount; row++) {
+                JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Convert", row, rowCount);
                 JIPipeDataItemStore virtualData = getDataItemStore(row);
                 if (!dataClass.isAssignableFrom(virtualData.getDataClass())) {
                     JIPipeData converted = JIPipe.getDataTypes().convert(virtualData.getData(rowProgress), dataClass, progressInfo);
@@ -1509,7 +1525,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         AnnotationTableData output = new AnnotationTableData();
         int dataColumn = withDataAsString ? output.addColumn(StringUtils.makeUniqueString("String representation", "_", getTextAnnotationColumnNames()), true) : -1;
         int row = 0;
-        for (int sourceRow = 0; sourceRow < getRowCount(); ++sourceRow) {
+        int rowCount = getRowCount();
+        for (int sourceRow = 0; sourceRow < rowCount; ++sourceRow) {
             output.addRow();
             if (dataColumn >= 0)
                 output.setValueAt(getDataItemStore(row).getStringRepresentation(), row, dataColumn);
@@ -1548,10 +1565,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             virtualData.addUser(this);
             for (JIPipeTextAnnotation annotation : annotations) {
                 List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnArray_(annotation.getName());
-                annotationArray.set(getRowCount() - 1, annotation);
+                annotationArray.set(getRowCount_() - 1, annotation);
             }
             for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
-                setDataAnnotationItemStore_(getRowCount() - 1, annotation.getName(), annotation.getVirtualData());
+                setDataAnnotationItemStore_(getRowCount_() - 1, annotation.getName(), annotation.getVirtualData());
             }
         } finally {
             stampedLock.unlock(stamp);
@@ -1598,10 +1615,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             virtualData.addUser(this);
             for (JIPipeTextAnnotation annotation : annotations) {
                 List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnArray_(annotation.getName());
-                annotationArray.set(getRowCount() - 1, annotation);
+                annotationArray.set(getRowCount_() - 1, annotation);
             }
             for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
-                setDataAnnotationItemStore_(getRowCount() - 1, annotation.getName(), annotation.getVirtualData());
+                setDataAnnotationItemStore_(getRowCount_() - 1, annotation.getName(), annotation.getVirtualData());
             }
         } finally {
             stampedLock.unlock(stamp);
