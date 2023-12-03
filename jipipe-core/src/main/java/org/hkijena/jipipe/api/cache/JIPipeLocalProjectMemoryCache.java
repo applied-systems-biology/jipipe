@@ -9,6 +9,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.util.*;
+import java.util.concurrent.locks.StampedLock;
 
 public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
@@ -39,6 +40,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
     private DefaultDirectedGraph<UUID, DefaultEdge> currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
     private int currentSize = 0;
     private boolean ignoreNodeFunctionalEquals = false;
+    private final StampedLock stampedLock = new StampedLock();
 
     public JIPipeLocalProjectMemoryCache(JIPipeProject project) {
         this.project = project;
@@ -61,34 +63,40 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     @Override
     public void store(JIPipeGraphNode graphNode, UUID nodeUUID, JIPipeDataTable data, String outputName, JIPipeProgressInfo progressInfo) {
-        JIPipeGraphNode projectNode = project.getGraph().getNodeByUUID(nodeUUID);
-        if (projectNode == null) {
-            progressInfo.log("Refusing to cache node " + nodeUUID + " (" + graphNode.getDisplayName() + ") --> Not in project anymore!");
-            return;
+        long stamp = stampedLock.writeLock();
+        try {
+            JIPipeGraphNode projectNode = project.getGraph().getNodeByUUID(nodeUUID);
+            if (projectNode == null) {
+                progressInfo.log("Refusing to cache node " + nodeUUID + " (" + graphNode.getDisplayName() + ") --> Not in project anymore!");
+                return;
+            }
+
+            // Store the current state for comparison and update the predecessor graph
+            JIPipeGraphNode graphNodeDuplicate = graphNode.duplicate();
+            currentNodeStates.put(nodeUUID, graphNodeDuplicate);
+            putNodeIntoGraph_(projectNode, progressInfo);
+
+            // Store the data
+            Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(nodeUUID, null);
+            if (slotMap == null) {
+                slotMap = new HashMap<>();
+                cachedOutputSlots.put(nodeUUID, slotMap);
+            }
+            JIPipeDataTable dataTableCopy = new JIPipeOutputDataSlot(new JIPipeDataSlotInfo(data.getAcceptedDataType(), JIPipeSlotType.Output, outputName, ""), projectNode);
+            dataTableCopy.addDataFromTable(data, progressInfo);
+            slotMap.put(outputName, dataTableCopy);
+            progressInfo.log("Stored " + data.getRowCount() + " into " + nodeUUID + "/" + outputName);
+
+            updateSize_();
+            storedEventEmitter.emit(new StoredEvent(this, nodeUUID, data, outputName));
+            modifiedEventEmitter.emit(new ModifiedEvent(this));
         }
-
-        // Store the current state for comparison and update the predecessor graph
-        JIPipeGraphNode graphNodeDuplicate = graphNode.duplicate();
-        currentNodeStates.put(nodeUUID, graphNodeDuplicate);
-        putNodeIntoGraph(projectNode, progressInfo);
-
-        // Store the data
-        Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(nodeUUID, null);
-        if (slotMap == null) {
-            slotMap = new HashMap<>();
-            cachedOutputSlots.put(nodeUUID, slotMap);
+        finally {
+            stampedLock.unlock(stamp);
         }
-        JIPipeDataTable dataTableCopy = new JIPipeOutputDataSlot(new JIPipeDataSlotInfo(data.getAcceptedDataType(), JIPipeSlotType.Output, outputName, ""), projectNode);
-        dataTableCopy.addDataFromTable(data, progressInfo);
-        slotMap.put(outputName, dataTableCopy);
-        progressInfo.log("Stored " + data.getRowCount() + " into " + nodeUUID + "/" + outputName);
-
-        updateSize();
-        storedEventEmitter.emit(new StoredEvent(this, nodeUUID, data, outputName));
-        modifiedEventEmitter.emit(new ModifiedEvent(this));
     }
 
-    private Set<UUID> getDirectParentNodeUUIDs(JIPipeGraphNode graphNode) {
+    private Set<UUID> getDirectParentNodeUUIDs_(JIPipeGraphNode graphNode) {
         Set<UUID> inputUUIDs = new HashSet<>();
         for (JIPipeInputDataSlot inputSlot : graphNode.getInputSlots()) {
             Set<JIPipeDataSlot> inputIncomingSourceSlots = graphNode.getParentGraph().getInputIncomingSourceSlots(inputSlot);
@@ -101,12 +109,12 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         return inputUUIDs;
     }
 
-    private void putNodeIntoGraph(JIPipeGraphNode projectNode, JIPipeProgressInfo progressInfo) {
+    private void putNodeIntoGraph_(JIPipeGraphNode projectNode, JIPipeProgressInfo progressInfo) {
         UUID uuid = projectNode.getUUIDInParentGraph();
         currentNodeStatePredecessorGraph.addVertex(uuid);
 
         // Store the direct parent UUIDs for later comparison
-        Set<UUID> inputUUIDs = getDirectParentNodeUUIDs(projectNode);
+        Set<UUID> inputUUIDs = getDirectParentNodeUUIDs_(projectNode);
         currentNodeStateInputs.put(uuid, inputUUIDs);
 
         // Store all existing predecessors
@@ -126,7 +134,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             if (!currentNodeStatePredecessorGraph.containsVertex(predecessorUUID)) {
                 progressInfo.log("Register predecessor " + predecessorUUID + " of " + uuid);
                 currentNodeStatePredecessorGraph.addVertex(predecessorUUID);
-                putNodeIntoGraph(project.getGraph().getNodeByUUID(predecessorUUID), progressInfo);
+                putNodeIntoGraph_(project.getGraph().getNodeByUUID(predecessorUUID), progressInfo);
             }
 
             currentNodeStates.put(predecessorUUID, predecessorAlgorithm.duplicate());
@@ -150,7 +158,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
      *
      * @return if nodes were removed
      */
-    private boolean removeInvalidNodeStates(JIPipeProgressInfo progressInfo) {
+    private boolean removeInvalidNodeStates_(JIPipeProgressInfo progressInfo) {
         boolean updated = false;
         if (ignoreNodeFunctionalEquals) {
             progressInfo.log("Node functional states (functionallyEquals) will be ignored for the removal of invalid node states");
@@ -162,16 +170,16 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             // Remove deleted node
             if (currentNode == null) {
                 updated = true;
-                removeAndInvalidateNodeCache(uuid, progressInfo);
+                removeAndInvalidateNodeCache_(uuid, progressInfo);
                 progressInfo.log("Removed invalid node state for " + uuid + " [node deleted]");
                 continue;
             }
 
             // Check inputs
-            Set<UUID> directParentNodeUUIDs = getDirectParentNodeUUIDs(currentNode);
+            Set<UUID> directParentNodeUUIDs = getDirectParentNodeUUIDs_(currentNode);
             if (!Objects.equals(directParentNodeUUIDs, currentNodeStateInputs.get(uuid))) {
                 updated = true;
-                removeAndInvalidateNodeCache(uuid, progressInfo);
+                removeAndInvalidateNodeCache_(uuid, progressInfo);
                 progressInfo.log("Removed invalid node state for " + uuid + " [inputs changed]");
                 continue;
             }
@@ -181,7 +189,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             if (slotMap != null) {
                 if (slotMap.isEmpty()) {
                     updated = true;
-                    removeAndInvalidateNodeCache(uuid, progressInfo);
+                    removeAndInvalidateNodeCache_(uuid, progressInfo);
                     progressInfo.log("Removed invalid node state for " + uuid + " [empty slot map]");
                     continue;
                 }
@@ -190,7 +198,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             if (!ignoreNodeFunctionalEquals) {
                 if (currentNode == null || !currentNode.functionallyEquals(cachedNode)) {
                     updated = true;
-                    removeAndInvalidateNodeCache(uuid, progressInfo);
+                    removeAndInvalidateNodeCache_(uuid, progressInfo);
                     progressInfo.log("Removed invalid node state for " + uuid);
                 }
             }
@@ -211,7 +219,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
      *
      * @return if nodes were removed
      */
-    private boolean pruneGraph(JIPipeProgressInfo progressInfo) {
+    private boolean pruneGraph_(JIPipeProgressInfo progressInfo) {
         boolean modified;
         boolean updated = false;
         Set<UUID> availablePredecessors = new HashSet<>();
@@ -227,7 +235,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
                 }
                 Set<UUID> expectedPredecessors = expectedNodePredecessors.getOrDefault(uuid, null);
                 if (!expectedPredecessors.equals(availablePredecessors)) {
-                    removeAndInvalidateNodeCache(uuid, progressInfo);
+                    removeAndInvalidateNodeCache_(uuid, progressInfo);
 
                     modified = true;
                     updated = true;
@@ -241,7 +249,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         return updated;
     }
 
-    private void removeAndInvalidateNodeCache(UUID uuid, JIPipeProgressInfo progressInfo) {
+    private void removeAndInvalidateNodeCache_(UUID uuid, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeDataTable> dataTableMap = cachedOutputSlots.getOrDefault(uuid, null);
         if (dataTableMap != null && !dataTableMap.isEmpty()) {
             int items = 0;
@@ -259,46 +267,67 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     @Override
     public Map<String, JIPipeDataTable> query(JIPipeGraphNode graphNode, UUID nodeUUID, JIPipeProgressInfo progressInfo) {
-        return cachedOutputSlots.getOrDefault(nodeUUID, Collections.emptyMap());
+        long stamp = stampedLock.readLock();
+        try {
+            return cachedOutputSlots.getOrDefault(nodeUUID, Collections.emptyMap());
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     @Override
     public void clearOutdated(JIPipeProgressInfo progressInfo) {
-        boolean updated;
-        updated = removeInvalidNodeStates(progressInfo);
-        updated |= pruneGraph(progressInfo);
-        if (updated) {
-            updateSize();
-            clearedEventEmitter.emit(new ClearedEvent(this, null));
-            modifiedEventEmitter.emit(new ModifiedEvent(this));
+        long stamp = stampedLock.writeLock();
+        try {
+            boolean updated;
+            updated = removeInvalidNodeStates_(progressInfo);
+            updated |= pruneGraph_(progressInfo);
+            if (updated) {
+                updateSize_();
+                clearedEventEmitter.emit(new ClearedEvent(this, null));
+                modifiedEventEmitter.emit(new ModifiedEvent(this));
+            }
+        } finally {
+            stampedLock.unlock(stamp);
         }
     }
 
     @Override
     public void clearAll(JIPipeProgressInfo progressInfo) {
-        cachedOutputSlots.clear();
-        currentNodeStates.clear();
-        expectedNodePredecessors.clear();
-        currentNodeStateInputs.clear();
-        currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        long stamp = stampedLock.writeLock();
+        try {
+            cachedOutputSlots.clear();
+            currentNodeStates.clear();
+            expectedNodePredecessors.clear();
+            currentNodeStateInputs.clear();
+            currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
-        updateSize();
-        clearedEventEmitter.emit(new ClearedEvent(this, null));
-        modifiedEventEmitter.emit(new ModifiedEvent(this));
+            updateSize_();
+            clearedEventEmitter.emit(new ClearedEvent(this, null));
+            modifiedEventEmitter.emit(new ModifiedEvent(this));
+        } finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     @Override
     public void clearAll(UUID nodeUUID, boolean invalidateChildren, JIPipeProgressInfo progressInfo) {
-        if (invalidateChildren) {
-            removeAndInvalidateNodeCache(nodeUUID, progressInfo);
-        } else {
-            // Only remove the data
-            cachedOutputSlots.remove(nodeUUID);
-        }
+        long stamp = stampedLock.writeLock();
+        try {
+            if (invalidateChildren) {
+                removeAndInvalidateNodeCache_(nodeUUID, progressInfo);
+            } else {
+                // Only remove the data
+                cachedOutputSlots.remove(nodeUUID);
+            }
 
-        updateSize();
-        clearedEventEmitter.emit(new ClearedEvent(this, nodeUUID));
-        modifiedEventEmitter.emit(new ModifiedEvent(this));
+            updateSize_();
+            clearedEventEmitter.emit(new ClearedEvent(this, nodeUUID));
+            modifiedEventEmitter.emit(new ModifiedEvent(this));
+        } finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     @Override
@@ -316,7 +345,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         return String.format("Local memory cache [%d items] { %d vertices, %d edges }", size(), currentNodeStatePredecessorGraph.vertexSet().size(), currentNodeStatePredecessorGraph.edgeSet().size());
     }
 
-    private void updateSize() {
+    private void updateSize_() {
         currentSize = 0;
         for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeEntry : cachedOutputSlots.entrySet()) {
             for (JIPipeDataTable dataTable : nodeEntry.getValue().values()) {
@@ -333,10 +362,15 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
      * @param progressInfo the progress
      */
     public void softClear(UUID uuid, JIPipeProgressInfo progressInfo) {
-        Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(uuid, null);
-        if (slotMap != null) {
-            progressInfo.log("Soft-clear node " + uuid);
-            slotMap.clear();
+        long stamp = stampedLock.writeLock();
+        try {
+            Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(uuid, null);
+            if (slotMap != null) {
+                progressInfo.log("Soft-clear node " + uuid);
+                slotMap.clear();
+            }
+        } finally {
+            stampedLock.unlock(stamp);
         }
     }
 }
