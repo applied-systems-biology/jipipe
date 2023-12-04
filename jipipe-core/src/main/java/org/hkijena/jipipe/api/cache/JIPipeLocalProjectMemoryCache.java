@@ -86,14 +86,14 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             dataTableCopy.addDataFromTable(data, progressInfo);
             slotMap.put(outputName, dataTableCopy);
             progressInfo.log("Stored " + data.getRowCount() + " into " + nodeUUID + "/" + outputName);
-
-            updateSize_();
-            storedEventEmitter.emit(new StoredEvent(this, nodeUUID, data, outputName));
-            modifiedEventEmitter.emit(new ModifiedEvent(this));
         }
         finally {
             stampedLock.unlock(stamp);
         }
+
+        updateSize_();
+        storedEventEmitter.emit(new StoredEvent(this, nodeUUID, data, outputName));
+        modifiedEventEmitter.emit(new ModifiedEvent(this));
     }
 
     private Set<UUID> getDirectParentNodeUUIDs_(JIPipeGraphNode graphNode) {
@@ -279,17 +279,17 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
     @Override
     public void clearOutdated(JIPipeProgressInfo progressInfo) {
         long stamp = stampedLock.writeLock();
+        boolean updated;
         try {
-            boolean updated;
             updated = removeInvalidNodeStates_(progressInfo);
             updated |= pruneGraph_(progressInfo);
-            if (updated) {
-                updateSize_();
-                clearedEventEmitter.emit(new ClearedEvent(this, null));
-                modifiedEventEmitter.emit(new ModifiedEvent(this));
-            }
         } finally {
             stampedLock.unlock(stamp);
+        }
+        if (updated) {
+            updateSize_();
+            clearedEventEmitter.emit(new ClearedEvent(this, null));
+            modifiedEventEmitter.emit(new ModifiedEvent(this));
         }
     }
 
@@ -302,13 +302,13 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             expectedNodePredecessors.clear();
             currentNodeStateInputs.clear();
             currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
-
-            updateSize_();
-            clearedEventEmitter.emit(new ClearedEvent(this, null));
-            modifiedEventEmitter.emit(new ModifiedEvent(this));
         } finally {
             stampedLock.unlock(stamp);
         }
+
+        updateSize_();
+        clearedEventEmitter.emit(new ClearedEvent(this, null));
+        modifiedEventEmitter.emit(new ModifiedEvent(this));
     }
 
     @Override
@@ -321,13 +321,13 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
                 // Only remove the data
                 cachedOutputSlots.remove(nodeUUID);
             }
-
-            updateSize_();
-            clearedEventEmitter.emit(new ClearedEvent(this, nodeUUID));
-            modifiedEventEmitter.emit(new ModifiedEvent(this));
         } finally {
             stampedLock.unlock(stamp);
         }
+
+        updateSize_();
+        clearedEventEmitter.emit(new ClearedEvent(this, nodeUUID));
+        modifiedEventEmitter.emit(new ModifiedEvent(this));
     }
 
     @Override

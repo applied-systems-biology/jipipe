@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.events;
 
+import com.google.common.collect.ImmutableList;
 import org.scijava.Disposable;
 
 import java.lang.ref.WeakReference;
@@ -86,27 +87,26 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         }
         boolean needsGC = false;
         long stamp = stampedLock.readLock();
+        List<Subscriber<Event, Listener>> subscribers_;
         try {
-            for (int i = 0; i < subscribers.size(); i++) {
-                if (i < subscribers.size()) {
-                    Subscriber<Event, Listener> subscriber = subscribers.get(i);
-                    if (subscriber.isPresent()) {
-                        try {
-                            subscriber.call(this, event);
-                        } catch (Throwable e) {
-                            e.printStackTrace();
-                        }
-                        if (subscriber.requestGCImmediatelyAfterCall()) {
-                            needsGC = true;
-                        }
-                    } else {
-                        needsGC = true;
-                    }
-                }
-            }
+           subscribers_ = ImmutableList.copyOf(subscribers);
         }
         finally {
             stampedLock.unlock(stamp);
+        }
+        for (Subscriber<Event, Listener> subscriber : subscribers_) {
+            if (subscriber.isPresent()) {
+                try {
+                    subscriber.call(this, event);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+                if (subscriber.requestGCImmediatelyAfterCall()) {
+                    needsGC = true;
+                }
+            } else {
+                needsGC = true;
+            }
         }
         if (needsGC) {
             gc();
