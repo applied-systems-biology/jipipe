@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -48,6 +49,7 @@ import java.util.Objects;
 public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     private boolean enabled = true;
     private boolean passThrough = false;
+    private RuntimePartitionReferenceParameter runtimePartition = new RuntimePartitionReferenceParameter();
     private JIPipeFixedThreadPool threadPool;
 
     /**
@@ -148,7 +150,17 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     @JIPipeParameter("jipipe:algorithm:enabled")
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
 
+    @JIPipeDocumentation(name = "Runtime partition", description = "Allows to move the node into a different runtime partition, which determine how the workload is executed.")
+    @JIPipeParameter(value = "jipipe:runtime-partition", pinned = true)
+    public RuntimePartitionReferenceParameter getRuntimePartition() {
+        return runtimePartition;
+    }
+
+    @JIPipeParameter("jipipe:runtime-partition")
+    public void setRuntimePartition(RuntimePartitionReferenceParameter runtimePartition) {
+        this.runtimePartition = runtimePartition;
     }
 
     @JIPipeDocumentation(name = "Pass through", description = "If enabled, the algorithm will pass the input data directly to the output data without any processing. " +

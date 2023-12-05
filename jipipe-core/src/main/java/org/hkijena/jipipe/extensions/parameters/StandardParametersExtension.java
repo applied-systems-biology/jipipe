@@ -26,6 +26,8 @@ import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
+import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
+import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameterEditorUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.nodetemplate.JIPipeNodeTemplateParameterEditorUI;
@@ -663,6 +665,11 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Parameter type",
                 "A parameter type",
                 JIPipeParameterTypeInfoRefParameterEditorUI.class);
+        registerParameterType("runtime-partition-reference",
+                RuntimePartitionReferenceParameter.class,
+                "Runtime partition",
+                "A reference to a project runtime partition",
+                RuntimePartitionReferenceParameterEditorUI.class);
 
         // Icon types
         registerParameterType("algorithm-type-icon",
