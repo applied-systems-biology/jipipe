@@ -17,6 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -35,6 +37,7 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
  * Wrapper around {@link ij.process.ImageProcessor}
  */
 @JIPipeDocumentation(name = "Create empty image", description = "Creates a new image that is black.")
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotations", autoCreate = true, optional = true, description = "Optional annotations that can be referenced in the expression")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
