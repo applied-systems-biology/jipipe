@@ -7,6 +7,7 @@ public enum ROI2DRelationMeasurement {
     Includes(8),
     IncludesBox(16),
     DistanceCenter(256),
+    PolygonDistanceStats(512),
     IntersectionStats(32768),
     CurrentStats(65536),
     OtherStats(131072);
@@ -38,6 +39,8 @@ public enum ROI2DRelationMeasurement {
                 return "Bounding box includes (0/1)";
             case DistanceCenter:
                 return "Distance center (2D)";
+            case PolygonDistanceStats:
+                return "Polygon distance (2D) min/max/avg";
             case IntersectionStats:
                 return "Intersection object statistics";
             case CurrentStats:

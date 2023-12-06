@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
+import gnu.trove.list.TDoubleList;
+import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
@@ -500,6 +502,48 @@ public class ImageJAlgorithmUtils {
                 roi1Center.y /= reference.getCalibration().pixelHeight;
             }
             target.setValueAt(roi1Center.distance(roi2Center), row, columnPrefix + "DistanceCenter");
+        }
+        if(ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.PolygonDistanceStats)) {
+            FloatPolygon roi1p = roi1.getFloatPolygon();
+            FloatPolygon roi2p = roi2.getFloatPolygon();
+            TDoubleList distances = new TDoubleArrayList();
+            for (int i = 0; i < roi1p.npoints; i++) {
+                double sd = Double.POSITIVE_INFINITY;
+                float x1 = roi1p.xpoints[i];
+                float y1 = roi1p.ypoints[i];
+                for (int j = 0; j < roi2p.npoints; j++) {
+                    float x2 = roi2p.xpoints[j];
+                    float y2 = roi2p.ypoints[j];
+                    double d = Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
+                    if(d < sd) {
+                        sd = d;
+                    }
+                }
+
+                if(!Double.isInfinite(sd)) {
+                    distances.add(Math.sqrt(sd));
+                }
+            }
+
+            double[] arr = distances.toArray();
+            double min = Double.POSITIVE_INFINITY;
+            double max = Double.NEGATIVE_INFINITY;
+            double avg = Double.NaN;
+            double sum = 0;
+            if(arr.length > 0) {
+                for (int i = 0; i < arr.length; i++) {
+                    sum += arr[i];
+                    min = Math.min(arr[i], min);
+                    max = Math.max(arr[i], max);
+                }
+                avg = sum / arr.length;
+            }
+
+            target.setValueAt(min, row, columnPrefix + "PolygonDistanceMin");
+            target.setValueAt(max, row, columnPrefix + "PolygonDistanceMax");
+            target.setValueAt(avg, row, columnPrefix + "PolygonDistanceAvg");
+            target.setValueAt(sum, row, columnPrefix + "PolygonDistanceSum");
+            target.setValueAt(arr.length, row, columnPrefix + "PolygonDistanceNumDistances");
         }
         if (ROI2DRelationMeasurement.includes(measurements, ROI2DRelationMeasurement.IntersectionStats)) {
             Roi intersection = ImageJUtils.intersectROI(roi1, roi2);
