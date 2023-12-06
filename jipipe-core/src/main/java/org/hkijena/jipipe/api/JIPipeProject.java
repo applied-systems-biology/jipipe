@@ -103,6 +103,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
 
         // Init default partitions
         this.defaultRuntimePartition.setName("Default");
+        this.defaultRuntimePartition.getColor().setEnabled(false);
         {
             JIPipeRuntimePartition fileSystemPartition = new JIPipeRuntimePartition();
             fileSystemPartition.setName("Filesystem");
