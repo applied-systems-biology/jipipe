@@ -32,6 +32,7 @@ import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -125,38 +126,39 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
         }
 
         removeAll();
-        JPanel setupPanel = new JPanel(new BorderLayout());
-        ParameterPanel formPanel = new ParameterPanel(getProjectWorkbench(),
+
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
+        AutoResizeSplitPane splitPane1 = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM, AutoResizeSplitPane.RATIO_1_TO_1);
+        DocumentTabPane tabPane = new DocumentTabPane();
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(tabPane, BorderLayout.CENTER);
+
+        MessagePanel messagePanel = new MessagePanel();
+
+        splitPane.setLeftComponent(centerPanel);
+        splitPane.setRightComponent(splitPane1);
+        splitPane.applyRatio();
+
+        splitPane1.setTopComponent(messagePanel);
+        splitPane1.setBottomComponent(new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/run.md", new HashMap<>())));
+        splitPane1.applyRatio();
+
+        JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("actions/run-build.png"));
+        runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+        runButton.addActionListener(e -> runNow());
+        messagePanel.addMessage(MessagePanel.MessageType.Success, "Please review the settings on the left-hand side. Then proceed to click the following button.", false, false, runButton);
+        messagePanel.addMessage(MessagePanel.MessageType.Gray, "Please note that a copy of the project was created. Feel free to schedule multiple runs with different pipeline configurations.", true, false);
+
+
+        // General settings tab
+        tabPane.addTab("General", UIUtils.getIconFromResources("actions/configure.png"), new ParameterPanel(getProjectWorkbench(),
                 run.getConfiguration(),
-                MarkdownDocument.fromPluginResource("documentation/run.md", new HashMap<>()),
-                ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
+               new MarkdownDocument(),
+                ParameterPanel.WITH_SCROLLING), DocumentTabPane.CloseMode.withoutCloseButton);
 
         Set<JIPipeGraphNode> algorithmsWithMissingInput = getProjectWorkbench().getProject().getGraph().getDeactivatedNodes(true);
         if (!algorithmsWithMissingInput.isEmpty()) {
-            formPanel.removeLastRow();
-            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Skipped algorithms", UIUtils.getIconFromResources("emblems/warning.png"));
-            headerPanel.getDescriptionArea().setVisible(true);
-            headerPanel.getDescriptionArea().setText("There are algorithms that will not be executed, as they are missing input data or are deactivated. " +
-                    "If this is not intended, please check if the listed algorithms have all input slots connected and the affected algorithms are activated.");
-
-            DefaultTableModel model = new DefaultTableModel();
-            model.setColumnIdentifiers(new Object[]{"Compartment", "Algorithm name"});
-            for (JIPipeGraphNode algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(JIPipeGraphNode::getCompartmentDisplayName))
-                    .collect(Collectors.toList())) {
-                model.addRow(new Object[]{
-                        StringUtils.createIconTextHTMLTable(algorithm.getCompartmentDisplayName(),
-                                ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png")),
-                        algorithm.getName()
-                });
-            }
-            JXTable table = new JXTable(model);
-            table.packAll();
-            table.setSortOrder(0, SortOrder.ASCENDING);
-            UIUtils.fitRowHeights(table);
-            JPanel panel = new JPanel(new BorderLayout());
-            panel.add(table, BorderLayout.CENTER);
-            panel.add(table.getTableHeader(), BorderLayout.NORTH);
-            formPanel.addWideToForm(panel, null);
+            createSkippedNodesPanel(messagePanel, tabPane, algorithmsWithMissingInput);
         }
 
         Set<JIPipeDataSlot> heavyIntermediateOutputs = getProject().getHeavyIntermediateAlgorithmOutputSlots();
@@ -164,40 +166,67 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
             node.getOutputSlots().forEach(heavyIntermediateOutputs::remove);
         }
         if (!heavyIntermediateOutputs.isEmpty()) {
-            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Large intermediate results",
-                    UIUtils.getIconFromResources("emblems/warning.png"));
-            headerPanel.getDescriptionArea().setVisible(true);
-            headerPanel.getDescriptionArea().setText("There are algorithms that look like that they only generate intermediate results, but generate potentially large amounts of data that would all be saved to the hard drive. " +
-                    "You can deselect these outputs in the following list to disable saving outputs for them. They will still be executed, but their results will not be saved to the hard drive.");
-            createOutputsManagerPanel(formPanel, heavyIntermediateOutputs);
+            createLargeIntermediateResultsPanel(messagePanel, tabPane, heavyIntermediateOutputs);
         }
         Set<JIPipeDataSlot> remainingOutputs = getProject().getGraph().getSlotNodes().stream().filter(slot -> slot.getSlotType() == JIPipeSlotType.Output).collect(Collectors.toSet());
         if (!remainingOutputs.isEmpty()) {
-            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Saved results",
-                    UIUtils.getIconFromResources("emblems/emblem-information.png"));
-            headerPanel.getDescriptionArea().setVisible(true);
-            headerPanel.getDescriptionArea().setText("The following list contains all outputs that will be saved to the hard drive. Uncheck an item to exclude saving the output. Please note that dedicated exporter nodes will still write their data, as it is independent of the automated storage.");
-            createOutputsManagerPanel(formPanel, remainingOutputs);
+            createWrittenResultsPanel(tabPane, remainingOutputs);
         }
 
-        formPanel.addVerticalGlue();
-        setupPanel.add(formPanel, BorderLayout.CENTER);
+        add(splitPane, BorderLayout.CENTER);
 
-        MessagePanel messagePanel = new MessagePanel();
-
-        JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("actions/run-build.png"));
-        runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
-        runButton.addActionListener(e -> runNow());
-        messagePanel.addMessage(MessagePanel.MessageType.Success, "Please review the settings below. Then proceed to click the following button.", false, false, runButton);
-        messagePanel.addMessage(MessagePanel.MessageType.Info, "Please note that a copy of the project was created. Feel free to schedule multiple runs with different pipeline configurations.", true, false);
-
-        formPanel.getStaticContentPanel().add(messagePanel, BorderLayout.NORTH);
-
-        add(setupPanel, BorderLayout.CENTER);
+        messagePanel.addVerticalGlue();
         revalidate();
     }
 
-    private void createOutputsManagerPanel(ParameterPanel formPanel, Set<JIPipeDataSlot> outputSlots) {
+    private void createWrittenResultsPanel(DocumentTabPane tabPane, Set<JIPipeDataSlot> remainingOutputs) {
+        FormPanel infoPanel = new FormPanel(FormPanel.WITH_SCROLLING);
+        tabPane.addTab("Written results", UIUtils.getIconFromResources("actions/save.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        createOutputsManagerPanel(infoPanel, remainingOutputs);
+        infoPanel.addVerticalGlue();
+    }
+
+    private void createLargeIntermediateResultsPanel(MessagePanel messagePanel, DocumentTabPane tabPane, Set<JIPipeDataSlot> heavyIntermediateOutputs) {
+        FormPanel infoPanel = new FormPanel(FormPanel.WITH_SCROLLING);
+        messagePanel.addMessage(MessagePanel.MessageType.Gray,
+                "There are nodes that generate large intermediate results. Please go to the 'Performance optimization' tab if you want to disable writing the outputs to the cache/hard drive.",
+                true,
+                false);
+        tabPane.addTab("Performance optimization", UIUtils.getIconFromResources("actions/speedometer.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+        createOutputsManagerPanel(infoPanel, heavyIntermediateOutputs);
+        infoPanel.addVerticalGlue();
+    }
+
+    private void createSkippedNodesPanel(MessagePanel messagePanel, DocumentTabPane tabPane, Set<JIPipeGraphNode> algorithmsWithMissingInput) {
+        JPanel infoPanel = new JPanel(new BorderLayout());
+        messagePanel.addMessage(MessagePanel.MessageType.Warning,
+                "Not all nodes can be executed, which may or may not be intended. Please review the 'Skipped nodes' tab.",
+                true,
+                false);
+        tabPane.addTab("Skipped nodes", UIUtils.getIconFromResources("emblems/warning.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+
+        DefaultTableModel model = new DefaultTableModel();
+        model.setColumnIdentifiers(new Object[]{"Compartment", "Node name"});
+        for (JIPipeGraphNode algorithm : algorithmsWithMissingInput.stream().sorted(Comparator.comparing(JIPipeGraphNode::getCompartmentDisplayName))
+                .collect(Collectors.toList())) {
+            model.addRow(new Object[]{
+                    StringUtils.createIconTextHTMLTable(algorithm.getCompartmentDisplayName(),
+                            ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png")),
+                    algorithm.getName()
+            });
+        }
+        JXTable table = new JXTable(model);
+        table.packAll();
+        table.setSortOrder(0, SortOrder.ASCENDING);
+        UIUtils.fitRowHeights(table);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(table, BorderLayout.CENTER);
+        panel.add(table.getTableHeader(), BorderLayout.NORTH);
+
+        infoPanel.add(new JScrollPane(table), BorderLayout.CENTER);
+    }
+
+    private void createOutputsManagerPanel(FormPanel formPanel, Set<JIPipeDataSlot> outputSlots) {
         if (!outputSlots.isEmpty()) {
 
             List<JCheckBox> checkBoxes = new ArrayList<>();

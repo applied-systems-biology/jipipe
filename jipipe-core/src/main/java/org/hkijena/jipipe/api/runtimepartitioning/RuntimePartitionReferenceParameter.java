@@ -3,8 +3,10 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import java.util.Objects;
+
 public class RuntimePartitionReferenceParameter {
-    private int index = 0;
+    private int index = -1;
 
     public RuntimePartitionReferenceParameter() {
     }
@@ -20,5 +22,18 @@ public class RuntimePartitionReferenceParameter {
     @JsonSetter("index")
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        RuntimePartitionReferenceParameter that = (RuntimePartitionReferenceParameter) o;
+        return index == that.index;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(index);
     }
 }

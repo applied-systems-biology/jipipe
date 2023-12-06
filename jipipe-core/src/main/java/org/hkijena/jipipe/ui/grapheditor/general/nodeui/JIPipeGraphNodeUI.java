@@ -370,13 +370,14 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
     protected void updateColors() {
         // Border colors (partitioning)
-        int partition = 0;
+        int partition = -1;
         if (node instanceof JIPipeAlgorithm) {
             partition = ((JIPipeAlgorithm) node).getRuntimePartition().getIndex();
         }
-        if (partition == 0) {
+        if (partition < 0) {
             this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
         }
+        nodeBufferInvalid = true;
     }
 
     protected void updateAssets() {
