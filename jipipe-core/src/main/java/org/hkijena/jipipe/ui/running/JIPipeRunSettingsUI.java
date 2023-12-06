@@ -238,23 +238,25 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                 for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                     if (outputSlots.contains(outputSlot)) {
                         int row = checkBoxes.size();
-                        JCheckBox checkBox = new JCheckBox(outputSlot.getDisplayName(), true);
+                        JCheckBox checkBox = new JCheckBox(outputSlot.getName(), true);
                         checkBox.addActionListener(e -> {
                             JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
                             runAlgorithm.getOutputSlot(outputSlot.getName()).getInfo().setSaveOutputs(checkBox.isSelected());
                         });
                         JLabel compartmentLabel = new JLabel(node.getCompartmentDisplayName(),
                                 UIUtils.getIconFromResources("data-types/graph-compartment.png"), JLabel.LEFT);
-                        contentPanel.add(new JLabel(JIPipe.getNodes().getIconFor(node.getInfo())), new GridBagConstraints() {
+                        JLabel nodeLabel = new JLabel(node.getName(), JIPipe.getNodes().getIconFor(node.getInfo()), JLabel.LEFT);
+                        contentPanel.add(nodeLabel, new GridBagConstraints() {
                             {
-                                gridx = 0;
+                                gridx = 1;
                                 gridy = row;
+                                fill = GridBagConstraints.HORIZONTAL;
                                 insets = UIUtils.UI_PADDING;
                             }
                         });
                         contentPanel.add(checkBox, new GridBagConstraints() {
                             {
-                                gridx = 1;
+                                gridx = 2;
                                 gridy = row;
                                 weightx = 1;
                                 fill = GridBagConstraints.HORIZONTAL;
@@ -263,10 +265,11 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel implements 
                         });
                         contentPanel.add(compartmentLabel, new GridBagConstraints() {
                             {
-                                gridx = 2;
+                                gridx = 0;
                                 gridy = row;
                                 insets = UIUtils.UI_PADDING;
                                 anchor = GridBagConstraints.WEST;
+                                fill = GridBagConstraints.HORIZONTAL;
                             }
                         });
                         checkBoxes.add(checkBox);
