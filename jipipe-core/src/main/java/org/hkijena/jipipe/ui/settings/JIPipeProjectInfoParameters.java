@@ -19,12 +19,13 @@ import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventLis
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.ui.JIPipeProjectOverviewUI;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Additional metadata that provides parameter references for {@link org.hkijena.jipipe.ui.JIPipeProjectInfoUI}
+ * Additional metadata that provides parameter references for {@link JIPipeProjectOverviewUI}
  */
 public class JIPipeProjectInfoParameters extends AbstractJIPipeParameterCollection implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 

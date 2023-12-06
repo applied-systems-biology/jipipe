@@ -13,14 +13,19 @@
 
 package org.hkijena.jipipe.ui;
 
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.ImageFrame;
 import org.hkijena.jipipe.ui.components.html.ExtendedHTMLEditorKit;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.SizeFitMode;
@@ -37,12 +42,13 @@ import java.util.HashMap;
 /**
  * UI that gives an overview of a pipeline (shows parameters, etc.)
  */
-public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
+public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JTextPane descriptionReader;
-    private final ParameterPanel projectParametersPanel;
 
-    private final ParameterPanel projectDirectoriesPanel;
+    private final ParameterPanel projectSettingsParametersPanel;
+    private final ParameterPanel userParametersPanel;
+    private final ParameterPanel userDirectoriesPanel;
     private final JScrollPane descriptionReaderScrollPane;
     private JTextField licenseInfo;
     private JTextField projectName;
@@ -60,7 +66,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
      *
      * @param workbenchUI The workbench UI
      */
-    public JIPipeProjectInfoUI(JIPipeProjectWorkbench workbenchUI) {
+    public JIPipeProjectOverviewUI(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
         descriptionReader = new JTextPane();
         descriptionReader.setContentType("text/html");
@@ -68,18 +74,25 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         descriptionReader.setEditable(false);
         UIUtils.registerHyperlinkHandler(descriptionReader);
         descriptionReaderScrollPane = new JScrollPane(descriptionReader);
-        projectParametersPanel = new ParameterPanel(getWorkbench(),
+
+        projectSettingsParametersPanel = new ParameterPanel(getWorkbench(),
+                new JIPipeParameterTree(getProject().getMetadata()),
+                MarkdownDocument.fromPluginResource("documentation/project-settings.md", new HashMap<>()),
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.DOCUMENTATION_BELOW);
+        userParametersPanel = new ParameterPanel(getWorkbench(),
                 getProject().getPipelineParameters(),
                 MarkdownDocument.fromPluginResource("documentation/project-info-parameters.md", new HashMap<>()),
                 ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING
                         | ParameterPanel.NO_EMPTY_GROUP_HEADERS | ParameterPanel.WITH_DOCUMENTATION |
                         ParameterPanel.DOCUMENTATION_BELOW);
-        projectDirectoriesPanel = new ParameterPanel(getWorkbench(),
+        userDirectoriesPanel = new ParameterPanel(getWorkbench(),
                 getProject().getMetadata().getDirectories(),
                 MarkdownDocument.fromPluginResource("documentation/project-info-directories.md", new HashMap<>()),
                 ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING
                         | ParameterPanel.NO_EMPTY_GROUP_HEADERS | ParameterPanel.WITH_DOCUMENTATION |
                         ParameterPanel.DOCUMENTATION_BELOW);
+
+
         initialize();
         refreshAll();
         getProject().getMetadata().getParameterChangedEventEmitter().subscribeWeak(this);
@@ -92,8 +105,8 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         refreshHeaderText();
         refreshTechnicalInfo();
         refreshHeaderButtons();
-        projectParametersPanel.reloadForm();
-        projectDirectoriesPanel.reloadForm();
+        userParametersPanel.reloadForm();
+        userDirectoriesPanel.reloadForm();
     }
 
     private void refreshHeaderText() {
@@ -162,30 +175,106 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
     private void initialize() {
         setLayout(new BorderLayout());
 
+        initializeUserParametersPanel();
+        initializeUserDirectoriesPanel();
+        initializeGeneralSettingsParametersPanel();
         initializeHeaderPanel();
 
         descriptionReaderScrollPane.setBorder(null);
-        projectParametersPanel.getScrollPane().setBorder(null);
+        userParametersPanel.getScrollPane().setBorder(null);
 
         DocumentTabPane tabPane = new DocumentTabPane(true);
+        tabPane.addTab("User parameters",
+                UIUtils.getIconFromResources("actions/wrench.png"),
+                userParametersPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        tabPane.addTab("User directories",
+                UIUtils.getIconFromResources("actions/stock_folder-copy.png"),
+                userDirectoriesPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
         tabPane.addTab("Bookmarks",
                 UIUtils.getIconFromResources("actions/bookmark.png"),
                 new BookmarkListPanel(getWorkbench(), getProject().getGraph(), null),
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
-        tabPane.addTab("Parameters",
+        tabPane.addTab("Settings",
                 UIUtils.getIconFromResources("actions/wrench.png"),
-                projectParametersPanel,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
-        tabPane.addTab("User directories",
-                UIUtils.getIconFromResources("actions/stock_folder-copy.png"),
-                projectDirectoriesPanel,
+                projectSettingsParametersPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, AutoResizeSplitPane.RATIO_3_TO_1);
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    private void initializeGeneralSettingsParametersPanel() {
+        projectSettingsParametersPanel.setCustomIsParameterCollectionVisible((tree, collection) -> {
+            if(collection == getProject().getMetadata().getDirectories()) {
+                return false;
+            }
+            return true;
+        });
+        projectSettingsParametersPanel.setCustomIsParameterVisible((tree, parameter) -> {
+            if (parameter.getKey().contains("template"))
+                return false;
+            if (parameter.getKey().equals("thumbnail"))
+                return false;
+//            if (parameter.getKey().equals("update-site-dependencies"))
+//                return false;
+            return !parameter.isHidden();
+        });
+    }
+
+    private void initializeUserDirectoriesPanel() {
+        // Nothing yet
+    }
+
+    private void initializeUserParametersPanel() {
+        JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+        editButton.setToolTipText("Configures the list of available pipeline parameters.");
+        userParametersPanel.getToolBar().add(editButton);
+        editButton.addActionListener(e -> editUserParameters());
+    }
+
+    private void editUserParameters() {
+        GraphNodeParameterReferenceGroupCollection copy = new GraphNodeParameterReferenceGroupCollection(getProject().getPipelineParameters().getExportedParameters());
+        copy.setGraph(getProject().getGraph());
+        GraphNodeParameterReferenceGroupCollectionEditorUI graphNodeParameterReferenceGroupCollectionEditorUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(),
+                copy,
+                MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
+                false);
+
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this));
+        dialog.setTitle("Edit user parameters");
+        dialog.setIconImage(UIUtils.getJIPipeIcon128());
+        dialog.setModal(true);
+        JPanel contentPane = new JPanel(new BorderLayout());
+        dialog.setContentPane(contentPane);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> dialog.setVisible(false));
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("Save", UIUtils.getIconFromResources("actions/save.png"));
+        confirmButton.addActionListener(e -> {
+            getProject().getPipelineParameters().setExportedParameters(copy);
+            dialog.setVisible(false);
+            userParametersPanel.reloadForm();
+        });
+        buttonPanel.add(confirmButton);
+
+        contentPane.add(graphNodeParameterReferenceGroupCollectionEditorUI, BorderLayout.CENTER);
+        contentPane.add(buttonPanel, BorderLayout.SOUTH);
+        dialog.pack();
+        dialog.setSize(1024,768);
+        dialog.setLocationRelativeTo(getProjectWorkbench().getWindow());
+        dialog.setVisible(true);
     }
 
     @Override
@@ -305,11 +394,11 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel implements 
         refreshButton.addActionListener(e -> refreshAll());
         toolBar.add(refreshButton);
 
-        JButton openSettingsButton = new JButton("Edit metadata", UIUtils.getIconFromResources("actions/edit.png"));
+        JButton openSettingsButton = new JButton("Application settings", UIUtils.getIconFromResources("actions/open-in-new-window.png"));
         openSettingsButton.setOpaque(false);
         openSettingsButton.setBackground(new Color(0, 0, 0, 0));
-        openSettingsButton.setToolTipText("Opens the project settings that allow you to change this page.");
-        openSettingsButton.addActionListener(e -> getProjectWorkbench().getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_PROJECT_SETTINGS));
+        openSettingsButton.setToolTipText("Opens the JIPipe application settings dialog");
+        openSettingsButton.addActionListener(e -> getProjectWorkbench().openApplicationSettings(null));
         toolBar.add(openSettingsButton);
 
         topPanel.add(toolBar, BorderLayout.SOUTH);

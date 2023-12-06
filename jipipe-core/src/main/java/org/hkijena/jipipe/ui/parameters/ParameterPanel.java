@@ -88,6 +88,7 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
     private final boolean withSearchBar;
     private final boolean withoutLabelSeparation;
     private final boolean allowCollapse;
+    private final JToolBar toolBar = new JToolBar();
 
     private boolean onlyPinned;
     private final SearchTextField searchField = new SearchTextField();
@@ -270,7 +271,6 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
 
     private void initialize() {
         if (withSearchBar) {
-            JToolBar toolBar = new JToolBar();
             toolBar.setFloatable(false);
 
             searchField.addActionListener(e -> refreshForm());
@@ -278,6 +278,10 @@ public class ParameterPanel extends FormPanel implements Contextual, Disposable,
 
             add(toolBar, BorderLayout.NORTH);
         }
+    }
+
+    public JToolBar getToolBar() {
+        return toolBar;
     }
 
     public boolean isOnlyPinned() {

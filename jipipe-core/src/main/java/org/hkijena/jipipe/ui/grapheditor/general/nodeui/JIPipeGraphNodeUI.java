@@ -25,7 +25,10 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmInput;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithmOutput;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -85,7 +88,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     private final JIPipeGraphCanvasUI graphCanvasUI;
     private final JIPipeGraphNode node;
     private final Color nodeFillColor;
-    private final Color nodeBorderColor;
+    private Color nodeBorderColor;
     private final Color highlightedNodeBorderColor;
     private final LinearGradientPaint nodeDisabledPaint;
     private final LinearGradientPaint nodePassThroughPaint;
@@ -175,7 +178,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
         // Generate colors, icons
         this.nodeIcon = JIPipe.getNodes().getIconFor(node.getInfo()).getImage();
         this.nodeFillColor = UIUtils.getFillColorFor(node.getInfo());
-        this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
+        this.nodeBorderColor = Color.BLACK;
         this.highlightedNodeBorderColor = UIUtils.DARK_THEME ? new Color(0xBBBBBF) : new Color(0x444444);
         this.slotFillColor = UIManager.getColor("Panel.background");
         this.slotParametersFillColor = ColorUtils.mix(slotFillColor, nodeFillColor, 0.5);
@@ -234,6 +237,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     }
 
     public void updateView(boolean assets, boolean slots, boolean size) {
+        updateColors();
         if (assets) {
             updateAssets();
         }
@@ -364,6 +368,17 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
         }
     }
 
+    protected void updateColors() {
+        // Border colors (partitioning)
+        int partition = 0;
+        if (node instanceof JIPipeAlgorithm) {
+            partition = ((JIPipeAlgorithm) node).getRuntimePartition().getIndex();
+        }
+        if (partition == 0) {
+            this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
+        }
+    }
+
     protected void updateAssets() {
         // Update fonts
         zoomedMainFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(12 * zoom));
@@ -429,6 +444,9 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
             invalidateAndRepaint(false, true);
         } else if (event.getSource() instanceof JIPipeDataSlotInfo) {
             updateView(false, true, true);
+        } else if (event.getSource() == node && "jipipe:algorithm:runtime-partition".equals(event.getKey())) {
+            updateColors();
+            invalidateAndRepaint(true, false);
         }
     }
 
@@ -1132,7 +1150,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        if(e.getClickCount() == 1) {
+        if (e.getClickCount() == 1) {
             if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea || currentActiveArea instanceof JIPipeNodeUISlotActiveArea && SwingUtilities.isRightMouseButton(e)) {
                 JIPipeNodeUISlotActiveArea slotState;
                 if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea) {
@@ -1151,8 +1169,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
                 openRunNodeMenu(e);
                 e.consume();
             }
-        }
-        else {
+        } else {
             if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea || currentActiveArea instanceof JIPipeNodeUISlotActiveArea && SwingUtilities.isLeftMouseButton(e)) {
                 JIPipeNodeUISlotActiveArea slotState;
                 if (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea) {
@@ -1162,11 +1179,10 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
                 } else {
                     return;
                 }
-                if(slotState.isInput()) {
+                if (slotState.isInput()) {
                     e.consume();
                     openInputAlgorithmFinder(slotState.getSlot());
-                }
-                else {
+                } else {
                     e.consume();
                     openOutputAlgorithmFinder(slotState.getSlot());
                 }

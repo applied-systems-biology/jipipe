@@ -74,7 +74,7 @@ public class AutoResizeSplitPane extends JSplitPane {
         applyRatio();
     }
 
-    private void applyRatio() {
+    public void applyRatio() {
         setDividerLocation(ratio.apply(getWidth()));
     }
 

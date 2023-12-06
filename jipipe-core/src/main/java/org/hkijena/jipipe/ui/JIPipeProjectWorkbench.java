@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -36,7 +35,6 @@ import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
-import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.RecentProjectsMenu;
 import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -62,7 +60,6 @@ import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
-import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -92,7 +89,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
     public static final String TAB_COMPARTMENT_EDITOR = "COMPARTMENT_EDITOR";
-    public static final String TAB_PROJECT_SETTINGS = "PROJECT_SETTINGS";
     public static final String TAB_PLUGIN_MANAGER = "PLUGIN_MANAGER";
     public static final String TAB_VALIDITY_CHECK = "VALIDITY_CHECK";
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
@@ -217,7 +213,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         documentTabPane.registerSingletonTab(TAB_PROJECT_OVERVIEW,
                 "Project overview",
                 UIUtils.getIconFromResources("actions/help-info.png"),
-                () -> new JIPipeProjectInfoUI(this),
+                () -> new JIPipeProjectOverviewUI(this),
                 (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) ? DocumentTabPane.SingletonTabMode.Present : DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_LICENSE,
                 "License",
@@ -228,11 +224,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
                 "Compartments",
                 UIUtils.getIconFromResources("actions/graph-compartments.png"),
                 () -> new JIPipeCompartmentsGraphEditorUI(this),
-                DocumentTabPane.SingletonTabMode.Hidden);
-        documentTabPane.registerSingletonTab(TAB_PROJECT_SETTINGS,
-                "Project settings",
-                UIUtils.getIconFromResources("actions/wrench.png"),
-                () -> new JIPipeProjectSettingsUI(this),
                 DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PLUGIN_MANAGER,
                 "Plugin manager",
@@ -512,12 +503,6 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         editCompartmentsButton.addActionListener(e -> openCompartmentEditor());
         projectMenu.add(editCompartmentsButton);
 
-        JMenuItem openProjectSettingsButton = new JMenuItem("Project settings", UIUtils.getIconFromResources("actions/wrench.png"));
-        openProjectSettingsButton.setToolTipText("Opens the project settings");
-        openProjectSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
-        openProjectSettingsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_SETTINGS));
-        projectMenu.add(openProjectSettingsButton);
-
         JMenuItem openApplicationSettingsButton = new JMenuItem("Application settings", UIUtils.getIconFromResources("apps/jipipe.png"));
         openApplicationSettingsButton.setToolTipText("Opens the application settings");
         openApplicationSettingsButton.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
@@ -526,8 +511,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
 
         projectMenu.addSeparator();
 
-        JMenuItem projectInfo = new JMenuItem("Project overview", UIUtils.getIconFromResources("actions/help-info.png"));
+        JMenuItem projectInfo = new JMenuItem("Project settings/overview", UIUtils.getIconFromResources("actions/wrench.png"));
         projectInfo.setToolTipText("Opens the project overview");
+        projectInfo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         projectInfo.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
         projectMenu.add(projectInfo);
 
@@ -610,6 +596,13 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
 
         menu.add(Box.createHorizontalGlue());
 
+        // Overview link
+        JButton openProjectOverviewButton = new JButton("Info & Settings", UIUtils.getIconFromResources("actions/configure.png"));
+        openProjectOverviewButton.setToolTipText("Opens the project info & settings tab or jumps to the existing tab if it is already open.");
+        openProjectOverviewButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
+        UIUtils.setStandardButtonBorder(openProjectOverviewButton);
+        menu.add(openProjectOverviewButton);
+
         // Compartments link
         JButton openCompartmentsButton = new JButton("Compartments", UIUtils.getIconFromResources("actions/graph-compartments.png"));
         openCompartmentsButton.setToolTipText("Opens the compartment editor if it was closed or switches to the existing tab if it is currently open.");
@@ -686,15 +679,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         add(menu, BorderLayout.NORTH);
     }
 
-    public void openApplicationSettings(String navigateToNode) {
+    public void openApplicationSettings(String navigateToCategory) {
         JDialog dialog = new JDialog(getWindow());
         dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         dialog.setTitle("JIPipe - Application settings");
         dialog.setModal(true);
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
         JIPipeApplicationSettingsUI applicationSettingsUI = new JIPipeApplicationSettingsUI(this);
-        if (navigateToNode != null) {
-            applicationSettingsUI.selectNode(navigateToNode);
+        if (navigateToCategory != null) {
+            applicationSettingsUI.selectNode(navigateToCategory);
         }
         UIUtils.addEscapeListener(dialog);
         JPanel contentPanel = new JPanel(new BorderLayout(8,8));

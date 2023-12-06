@@ -34,7 +34,7 @@ import java.util.Set;
  * Generic parameter for {@link ListParameter}
  */
 public class ListParameterEditorUI extends JIPipeParameterEditorUI {
-    private final JLabel emptyLabel = UIUtils.createInfoLabel("This list is empty", "Click <i>Add</i> to add a new item.");
+    private final JLabel emptyLabel = UIUtils.createInfoLabel("This list is empty", "Click <i>Add</i> to insert a new item.");
     private final List<EntryComponents> entryComponentsList = new ArrayList<>();
     private final Set<EntryComponents> selectedEntryComponents = new HashSet<>();
     private final JToggleButton reorderModeButton = new JToggleButton("Reorder", UIUtils.getIconFromResources("actions/object-order-lower.png"));

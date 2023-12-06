@@ -153,12 +153,12 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @JIPipeDocumentation(name = "Runtime partition", description = "Allows to move the node into a different runtime partition, which determine how the workload is executed.")
-    @JIPipeParameter(value = "jipipe:runtime-partition", pinned = true)
+    @JIPipeParameter(value = "jipipe:algorithm:runtime-partition", pinned = true)
     public RuntimePartitionReferenceParameter getRuntimePartition() {
         return runtimePartition;
     }
 
-    @JIPipeParameter("jipipe:runtime-partition")
+    @JIPipeParameter("jipipe:algorithm:runtime-partition")
     public void setRuntimePartition(RuntimePartitionReferenceParameter runtimePartition) {
         this.runtimePartition = runtimePartition;
     }
