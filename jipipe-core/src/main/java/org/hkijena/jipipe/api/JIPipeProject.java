@@ -38,17 +38,17 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.extensions.expressions.functions.math.RandomFunction;
+import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
-import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.ParameterUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
@@ -82,6 +82,8 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
     private final CompartmentRemovedEventEmitter compartmentRemovedEventEmitter = new CompartmentRemovedEventEmitter();
     private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
+    private JIPipeRuntimePartition defaultRuntimePartition = new JIPipeRuntimePartition();
+    private List<JIPipeRuntimePartition> extraRuntimePartitions = new ArrayList<>();
     private Map<String, Object> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private boolean isCleaningUp;
@@ -98,6 +100,16 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         this.graph.attach(JIPipeGraphType.Project);
         this.compartmentGraph.attach(JIPipeProject.class, this);
         this.compartmentGraph.attach(JIPipeGraphType.ProjectCompartments);
+
+        // Init default partitions
+        this.defaultRuntimePartition.setName("Default");
+        {
+            JIPipeRuntimePartition fileSystemPartition = new JIPipeRuntimePartition();
+            fileSystemPartition.setName("Filesystem");
+            fileSystemPartition.setDescription(new HTMLText("Pre-defined partition useful for separating off filesystem operations"));
+            fileSystemPartition.setColor(new OptionalColorParameter(new Color(0x194919), true));
+            this.extraRuntimePartitions.add(fileSystemPartition);
+        }
 
         compartmentGraph.getGraphChangedEventEmitter().subscribe(this);
     }
@@ -597,6 +609,10 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
         generator.writeNumberField("jipipe:project-format-version", CURRENT_PROJECT_FORMAT_VERSION);
         generator.writeObjectField("metadata", metadata);
         generator.writeObjectField("dependencies", getSimplifiedMinimalDependencies());
+        generator.writeObjectFieldStart("runtime-partitions");
+        generator.writeObjectField("default", defaultRuntimePartition);
+        generator.writeObjectField("extra", extraRuntimePartitions);
+        generator.writeEndObject();
 
         List<JIPipeEnvironment> externalEnvironments = new ArrayList<>();
         for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
@@ -646,6 +662,30 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
 
             if (jsonNode.has("metadata")) {
                 metadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(jsonNode.get("metadata"));
+            }
+
+            if (jsonNode.has("runtime-partitions")) {
+                JsonNode sub = jsonNode.get("runtime-partitions");
+                if (sub.has("default")) {
+                    try {
+                        defaultRuntimePartition = JsonUtils.getObjectMapper().readerFor(JIPipeRuntimePartition.class).readValue(sub.get("default"));
+                    } catch (Exception e) {
+                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(), "Error loading default runtime partition",
+                                "The default runtime partition could not be loaded.", "Check if the file was corrupted."));
+                        e.printStackTrace();
+                    }
+                }
+                if (sub.has("extra")) {
+                    try {
+                        TypeReference<List<JIPipeRuntimePartition>> typeReference = new TypeReference<List<JIPipeRuntimePartition>>() {
+                        };
+                        extraRuntimePartitions = JsonUtils.getObjectMapper().readerFor(typeReference).readValue(sub.get("extra"));
+                    } catch (Exception e) {
+                        report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, new UnspecifiedValidationReportContext(), "Error loading extra runtime partitions",
+                                "The extra runtime partitions could not be loaded.", "Check if the file was corrupted."));
+                        e.printStackTrace();
+                    }
+                }
             }
 
             // Deserialize additional metadata
@@ -901,15 +941,16 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
 
     /**
      * Gets a description of the project as text
+     *
      * @param stringBuilder the string builder
-     * @param headingLevel the heading level
+     * @param headingLevel  the heading level
      */
     public void getTextDescription(StringBuilder stringBuilder, int headingLevel) {
 
         Map<UUID, Integer> compartmentIndices = new HashMap<>();
         Map<UUID, Integer> nodeIndices = new HashMap<>();
         for (JIPipeGraphNode node : compartmentGraph.traverse()) {
-            if(node instanceof JIPipeProjectCompartment) {
+            if (node instanceof JIPipeProjectCompartment) {
                 UUID uuid = node.getUUIDInParentGraph();
                 compartmentIndices.put(uuid, compartmentIndices.size() + 1);
                 stringBuilder.append("<h").append(headingLevel).append(">Compartment C").append(compartmentIndices.get(uuid)).append(" \"").append(node.getName()).append("\"</h").append(headingLevel).append(">\n\n");
@@ -918,7 +959,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
                 for (JIPipeDataSlot sourceSlot : compartmentGraph.getInputIncomingSourceSlots(node.getFirstInputSlot())) {
                     JIPipeGraphNode sourceNode = sourceSlot.getNode();
                     UUID sourceUUID = sourceNode.getUUIDInParentGraph();
-                    if(sourceNode instanceof JIPipeProjectCompartment) {
+                    if (sourceNode instanceof JIPipeProjectCompartment) {
                         stringBuilder.append("<li>The \"").append(node.getName()).append("\" compartment (C").append(compartmentIndices.get(uuid)).append(") receives data from the \"")
                                 .append(sourceNode.getName()).append("\" compartment (C").append(compartmentIndices.get(sourceUUID)).append(")").append("</li>\n");
                     }
@@ -931,6 +972,61 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
 
             }
         }
+    }
+
+    /**
+     * Returns a runtime partition with the specific index
+     *
+     * @param index the index. if negative, the default partition is returned.
+     * @return the partition. will not be null (fallback to the default partition of needed)
+     */
+    public JIPipeRuntimePartition getRuntimePartition(int index) {
+        if(index < 0 || index >= extraRuntimePartitions.size()) {
+            return defaultRuntimePartition;
+        }
+        return extraRuntimePartitions.get(index);
+    }
+
+    public JIPipeRuntimePartition getDefaultRuntimePartition() {
+        return defaultRuntimePartition;
+    }
+
+    public List<JIPipeRuntimePartition> getExtraRuntimePartitions() {
+        return Collections.unmodifiableList(extraRuntimePartitions);
+    }
+
+    public void addExtraRuntimePartition() {
+        JIPipeRuntimePartition partition = new JIPipeRuntimePartition();
+        partition.setName("Partition " + extraRuntimePartitions.size());
+
+        // Find a proper hue
+        Set<Integer> usedHues = new HashSet<>();
+        if(defaultRuntimePartition.getColor().isEnabled()) {
+            float[] hsb = Color.RGBtoHSB(defaultRuntimePartition.getColor().getContent().getRed(),
+                    defaultRuntimePartition.getColor().getContent().getGreen(),
+                    defaultRuntimePartition.getColor().getContent().getBlue(),
+                    null);
+            usedHues.add(Math.round(hsb[0] * 10));
+        }
+        for (JIPipeRuntimePartition runtimePartition : extraRuntimePartitions) {
+            float[] hsb = Color.RGBtoHSB(runtimePartition.getColor().getContent().getRed(),
+                    runtimePartition.getColor().getContent().getGreen(),
+                    runtimePartition.getColor().getContent().getBlue(),
+                    null);
+            usedHues.add(Math.round(hsb[0] * 10));
+        }
+        if(usedHues.size() >= 9) {
+            for (int i = 0; i < 10; i++) {
+                if(!usedHues.contains(i)) {
+                    partition.setColor(new OptionalColorParameter(Color.getHSBColor(i / 10.0f, 0.65f, 0.29f), true));
+                }
+            }
+        }
+        else {
+            partition.setColor(new OptionalColorParameter(Color.getHSBColor(RandomFunction.RANDOM.nextFloat(), 0.65f, 0.29f), true));
+        }
+
+        extraRuntimePartitions.add(partition);
     }
 
     public interface CompartmentAddedEventListener {

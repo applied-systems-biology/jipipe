@@ -95,7 +95,7 @@ public class FormPanel extends JXPanel {
     private final boolean withDocumentation;
     private final boolean documentationHasUI;
     private final List<GroupHeaderPanel> groupHeaderPanels = new ArrayList<>();
-    private JPanel staticContentPanel;
+    private final JPanel staticContentPanel;
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;

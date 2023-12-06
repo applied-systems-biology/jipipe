@@ -12,7 +12,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeExternalEnvironmentRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.icons.MonochromeColorIcon;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
@@ -110,9 +113,17 @@ public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterE
     @Override
     public void reload() {
         RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
-//        nameLabel.setIcon(parameter.getIcon());
-//        nameLabel.setText(parameter.getName());
-//        pathLabel.setText(StringUtils.orElse(parameter.getInfo(), "<Nothing set>"));
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            int index = parameter.getIndex();
+            JIPipeRuntimePartition partition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartition(index);
+            nameLabel.setIcon(partition.getColor().isEnabled() ? new SolidColorIcon(16, 16, partition.getColor().getContent()) : UIUtils.getIconFromResources("actions/runtime-partition.png"));
+            nameLabel.setText(index < 0 ? StringUtils.orElse(partition.getName(), "Default") : StringUtils.orElse(partition.getName(), "Partition " + index));
+        }
+        else {
+            int index = parameter.getIndex();
+            nameLabel.setIcon(UIUtils.getIconFromResources("actions/runtime-partition.png"));
+            nameLabel.setText(index < 0 ? "Default" : "Partition " + index);
+        }
     }
 
     @Override

@@ -49,6 +49,7 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
     private final ParameterPanel projectSettingsParametersPanel;
     private final ParameterPanel userParametersPanel;
     private final ParameterPanel userDirectoriesPanel;
+    private final FormPanel runtimePartitionsPanel;
     private final JScrollPane descriptionReaderScrollPane;
     private JTextField licenseInfo;
     private JTextField projectName;
@@ -58,7 +59,6 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
     private JButton openWebsiteButton;
     private JButton copyCitationButton;
     private JButton copyDependencyCitationsButton;
-
     private JButton showAcknowledgedAuthorsButton;
 
     /**
@@ -91,7 +91,9 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
                 ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING
                         | ParameterPanel.NO_EMPTY_GROUP_HEADERS | ParameterPanel.WITH_DOCUMENTATION |
                         ParameterPanel.DOCUMENTATION_BELOW);
-
+        runtimePartitionsPanel = new FormPanel( MarkdownDocument.fromPluginResource("documentation/project-info-runtime-partitions.md", new HashMap<>()),
+                FormPanel.WITH_SCROLLING  | FormPanel.WITH_DOCUMENTATION |
+                FormPanel.DOCUMENTATION_BELOW);
 
         initialize();
         refreshAll();
@@ -175,6 +177,7 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
     private void initialize() {
         setLayout(new BorderLayout());
 
+        initializeRuntimePartitionsPanel();
         initializeUserParametersPanel();
         initializeUserDirectoriesPanel();
         initializeGeneralSettingsParametersPanel();
@@ -184,14 +187,19 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
         userParametersPanel.getScrollPane().setBorder(null);
 
         DocumentTabPane tabPane = new DocumentTabPane(true);
-        tabPane.addTab("User parameters",
+        tabPane.addTab("Parameters",
                 UIUtils.getIconFromResources("actions/wrench.png"),
                 userParametersPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
-        tabPane.addTab("User directories",
+        tabPane.addTab("Directories",
                 UIUtils.getIconFromResources("actions/stock_folder-copy.png"),
                 userDirectoriesPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton,
+                false);
+        tabPane.addTab("Partitions",
+                UIUtils.getIconFromResources("actions/runtime-partition.png"),
+                runtimePartitionsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
         tabPane.addTab("Bookmarks",
@@ -207,6 +215,10 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, descriptionReaderScrollPane, tabPane, new AutoResizeSplitPane.DynamicSidebarRatio(600, false));
         add(splitPane, BorderLayout.CENTER);
+    }
+
+    private void initializeRuntimePartitionsPanel() {
+
     }
 
     private void initializeGeneralSettingsParametersPanel() {
