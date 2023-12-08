@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
@@ -111,26 +112,30 @@ public class JIPipeRuntimePartitionListEditor extends JIPipeProjectWorkbenchPane
     private void editSelectedItem() {
         JIPipeRuntimePartition value = jList.getSelectedValue();
         if(value != null) {
-            JIPipeRuntimePartition copy = new JIPipeRuntimePartition(value);
-            if(ParameterPanel.showDialog(getWorkbench(),
-                    copy,
-                    MarkdownDocument.fromPluginResource("documentation/project-info-runtime-partitions-editor.md"),
-                    "Edit runtime partition",
-                    ParameterPanel.DEFAULT_DIALOG_FLAGS)) {
-                value.setTo(copy);
-                refresh();
+            editRuntimePartition(getWorkbench(), value);
+            refresh();
+        }
+    }
 
-                // Go and update existing graph editors
-                for (DocumentTabPane.DocumentTab tab : getWorkbench().getDocumentTabPane().getTabs()) {
-                    if(tab.getContent() instanceof JIPipeGraphEditorUI) {
-                        JIPipeGraphCanvasUI canvasUI = ((JIPipeGraphEditorUI) tab.getContent()).getCanvasUI();
-                        for (JIPipeGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
-                            ui.updateView(false, false, false);
-                        }
+    public static void editRuntimePartition(JIPipeWorkbench workbench, JIPipeRuntimePartition value) {
+        JIPipeRuntimePartition copy = new JIPipeRuntimePartition(value);
+        if(ParameterPanel.showDialog(workbench,
+                copy,
+                MarkdownDocument.fromPluginResource("documentation/project-info-runtime-partitions-editor.md"),
+                "Edit runtime partition",
+                ParameterPanel.DEFAULT_DIALOG_FLAGS)) {
+            value.setTo(copy);
+
+            // Go and update existing graph editors
+            for (DocumentTabPane.DocumentTab tab : workbench.getDocumentTabPane().getTabs()) {
+                if(tab.getContent() instanceof JIPipeGraphEditorUI) {
+                    JIPipeGraphCanvasUI canvasUI = ((JIPipeGraphEditorUI) tab.getContent()).getCanvasUI();
+                    for (JIPipeGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
+                        ui.updateView(false, false, false);
                     }
                 }
-
             }
+
         }
     }
 

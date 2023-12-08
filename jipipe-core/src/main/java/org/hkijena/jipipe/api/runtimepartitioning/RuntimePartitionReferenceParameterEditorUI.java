@@ -1,25 +1,21 @@
 package org.hkijena.jipipe.api.runtimepartitioning;
 
-import org.hkijena.jipipe.JIPipe;
+import jdk.nashorn.internal.scripts.JO;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.settings.JIPipeRuntimePartitionListEditor;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
 
@@ -65,33 +61,37 @@ public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterE
         configureButton.setToolTipText("Edit/select/install environment");
         UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadInstallMenu);
         buttonPanel.add(configureButton);
-
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if(!e.isConsumed()) {
-                    e.consume();
-                    editEnvironment();
-                }
-            }
-        });
     }
 
     private void reloadInstallMenu() {
         configureMenu.removeAll();
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            configureMenu.add(UIUtils.createMenuItem("Edit current", "Edits the current partition", UIUtils.getIconFromResources("actions/edit.png"), this::editCurrentPartition));
+            configureMenu.addSeparator();
+            RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
+            int index = parameter.getIndex();
+            JIPipeRuntimePartition currentPartition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions().get(index);
+            JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
+            for (JIPipeRuntimePartition runtimePartition : runtimePartitions.toList()) {
+                if(currentPartition == runtimePartition) {
+
+                }
+            }
+        }
+        else {
+            JMenuItem menuItem = new JMenuItem("Not available");
+            menuItem.setEnabled(false);
+            configureMenu.add(menuItem);
+        }
     }
 
-    private void editEnvironment() {
-        Class<?> fieldClass = getParameterAccess().getFieldClass();
-        JIPipeParameterTypeInfo typeInfo = JIPipe.getInstance().getParameterTypeRegistry().getInfoByFieldClass(fieldClass);
-        JIPipeEnvironment parameter = (JIPipeEnvironment) typeInfo.duplicate(getParameter(JIPipeEnvironment.class));
-        boolean result = ParameterPanel.showDialog(getWorkbench(),
-                parameter,
-                null,
-                "Edit environment",
-                ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
-        if (result) {
-            setParameter(parameter, true);
+    private void editCurrentPartition() {
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
+            RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
+            JIPipeRuntimePartition runtimePartition = runtimePartitions.get(parameter.getIndex());
+            JIPipeRuntimePartitionListEditor.editRuntimePartition(getWorkbench(), runtimePartition);
+            reload();
         }
     }
 
