@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui;
+package org.hkijena.jipipe.ui.settings;
 
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
@@ -19,11 +19,15 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.ImageFrame;
 import org.hkijena.jipipe.ui.components.html.ExtendedHTMLEditorKit;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -37,6 +41,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -49,7 +54,7 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
     private final ParameterPanel projectSettingsParametersPanel;
     private final ParameterPanel userParametersPanel;
     private final ParameterPanel userDirectoriesPanel;
-    private final FormPanel runtimePartitionsPanel;
+    private final JPanel runtimePartitionsPanel;
     private final JScrollPane descriptionReaderScrollPane;
     private JTextField licenseInfo;
     private JTextField projectName;
@@ -91,9 +96,7 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
                 ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING
                         | ParameterPanel.NO_EMPTY_GROUP_HEADERS | ParameterPanel.WITH_DOCUMENTATION |
                         ParameterPanel.DOCUMENTATION_BELOW);
-        runtimePartitionsPanel = new FormPanel( MarkdownDocument.fromPluginResource("documentation/project-info-runtime-partitions.md", new HashMap<>()),
-                FormPanel.WITH_SCROLLING  | FormPanel.WITH_DOCUMENTATION |
-                FormPanel.DOCUMENTATION_BELOW);
+        runtimePartitionsPanel = new JPanel(new BorderLayout());
 
         initialize();
         refreshAll();
@@ -218,7 +221,11 @@ public class JIPipeProjectOverviewUI extends JIPipeProjectWorkbenchPanel impleme
     }
 
     private void initializeRuntimePartitionsPanel() {
-
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM,
+                new JIPipeRuntimePartitionListEditor(getProjectWorkbench()),
+                new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/project-info-runtime-partitions.md")),
+                AutoResizeSplitPane.RATIO_3_TO_1);
+        runtimePartitionsPanel.add(splitPane, BorderLayout.CENTER);
     }
 
     private void initializeGeneralSettingsParametersPanel() {

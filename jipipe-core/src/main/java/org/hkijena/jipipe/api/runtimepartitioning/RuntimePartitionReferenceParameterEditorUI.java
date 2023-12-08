@@ -2,25 +2,17 @@ package org.hkijena.jipipe.api.runtimepartitioning;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.registries.JIPipeExternalEnvironmentRegistry;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.icons.MonochromeColorIcon;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -28,8 +20,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
-import java.util.Objects;
 
 public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
 
@@ -115,14 +105,14 @@ public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterE
         RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
         if(getWorkbench() instanceof JIPipeProjectWorkbench) {
             int index = parameter.getIndex();
-            JIPipeRuntimePartition partition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartition(index);
+            JIPipeRuntimePartition partition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions().get(index);
             nameLabel.setIcon(partition.getColor().isEnabled() ? new SolidColorIcon(16, 16, partition.getColor().getContent()) : UIUtils.getIconFromResources("actions/runtime-partition.png"));
-            nameLabel.setText(index < 0 ? StringUtils.orElse(partition.getName(), "Default") : StringUtils.orElse(partition.getName(), "Partition " + index));
+            nameLabel.setText(index <= 0 ? StringUtils.orElse(partition.getName(), "Default") : StringUtils.orElse(partition.getName(), "Partition " + index));
         }
         else {
             int index = parameter.getIndex();
             nameLabel.setIcon(UIUtils.getIconFromResources("actions/runtime-partition.png"));
-            nameLabel.setText(index < 0 ? "Default" : "Partition " + index);
+            nameLabel.setText(index <= 0 ? "Default" : "Partition " + index);
         }
     }
 

@@ -83,6 +83,16 @@ public class MarkdownDocument {
      * Loads a document from the JIPipe plugin resources
      *
      * @param internalPath                resource path. Relative to JIPipe resources
+     * @return the document
+     */
+    public static MarkdownDocument fromPluginResource(String internalPath) {
+        return fromPluginResource(internalPath, new HashMap<>());
+    }
+
+    /**
+     * Loads a document from the JIPipe plugin resources
+     *
+     * @param internalPath                resource path. Relative to JIPipe resources
      * @param additionalResourceProtocols Additional protocols. The key is the name of the protocol, while the value sets the resource loader class
      * @return the document
      */

@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventLis
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.ui.JIPipeProjectOverviewUI;
 
 import java.util.HashMap;
 import java.util.Map;

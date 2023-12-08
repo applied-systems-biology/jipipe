@@ -60,6 +60,7 @@ import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
+import org.hkijena.jipipe.ui.settings.JIPipeProjectOverviewUI;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;

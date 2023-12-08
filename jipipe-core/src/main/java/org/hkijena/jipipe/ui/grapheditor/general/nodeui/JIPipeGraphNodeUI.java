@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -370,11 +371,20 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
 
     protected void updateColors() {
         // Border colors (partitioning)
-        int partition = -1;
-        if (node instanceof JIPipeAlgorithm) {
-            partition = ((JIPipeAlgorithm) node).getRuntimePartition().getIndex();
+        int partition = 0;
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            if (node instanceof JIPipeAlgorithm) {
+                partition = ((JIPipeAlgorithm) node).getRuntimePartition().getIndex();
+            }
+            JIPipeRuntimePartition runtimePartition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions().get(partition);
+            if(runtimePartition.getColor().isEnabled()) {
+                this.nodeBorderColor = runtimePartition.getColor().getContent();
+            }
+            else {
+                this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
+            }
         }
-        if (partition < 0) {
+         else {
             this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
         }
         nodeBufferInvalid = true;

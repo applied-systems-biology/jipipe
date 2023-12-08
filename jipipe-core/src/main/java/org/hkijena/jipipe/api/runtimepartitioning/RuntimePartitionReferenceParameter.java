@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import java.util.Objects;
 
 public class RuntimePartitionReferenceParameter {
-    private int index = -1;
+    private int index = 0;
 
     public RuntimePartitionReferenceParameter() {
     }

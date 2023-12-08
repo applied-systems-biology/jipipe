@@ -30,6 +30,13 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         registerSubParameter(outputSettings);
     }
 
+    public void setTo(JIPipeRuntimePartition other) {
+        this.name = other.name;
+        this.description = new HTMLText(other.description);
+        this.color = new OptionalColorParameter(other.color);
+        this.outputSettings.setTo(other.outputSettings);
+    }
+
     @JIPipeDocumentation(name = "Name", description = "Name of the partition")
     @JIPipeParameter(value = "name", pinned = true, uiOrder = -100)
     @JsonGetter("name")
@@ -92,6 +99,11 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
             this.exportHeavyData = other.exportHeavyData;
         }
 
+        public void setTo(OutputSettings other) {
+            this.exportLightweightData = other.exportLightweightData;
+            this.exportHeavyData = other.exportHeavyData;
+        }
+
         @JIPipeDocumentation(name = "Auto-export lightweight data", description = "If enabled, save data that is generally small, e.g., tables, 2D ROI, or text files.")
         @JIPipeParameter("export-lightweight-data")
         @JsonGetter("export-lightweight-data")
@@ -117,5 +129,6 @@ public class JIPipeRuntimePartition extends AbstractJIPipeParameterCollection {
         public void setExportHeavyData(boolean exportHeavyData) {
             this.exportHeavyData = exportHeavyData;
         }
+
     }
 }

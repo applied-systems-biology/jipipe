@@ -64,6 +64,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.locks.StampedLock;
 import java.util.stream.Collectors;
 
 /**
@@ -159,6 +160,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private Rectangle currentResizeOperationStartProperties;
     private Anchor currentResizeOperationAnchor;
     private boolean mouseIsEntered;
+    private final StampedLock stampedLock = new StampedLock();
+    private boolean disposed;
 
     /**
      * Creates a new UI
@@ -247,6 +250,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void dispose() {
+        this.disposed = true;
         graph.getGraphChangedEventEmitter().unsubscribe(this);
         graph.getNodeConnectedEventEmitter().unsubscribe(this);
         for (JIPipeGraphNodeUI nodeUI : nodeUIs.values()) {
@@ -795,9 +799,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 //        autoPlaceCloseToLocation(ui, new Point(minX, minY));
         int minX = 0;
         int minY = 0;
-        if (getGraphEditorCursor() != null) {
-            minX = getGraphEditorCursor().x;
-            minY = getGraphEditorCursor().y;
+        Point cursor = getGraphEditorCursor();
+        if (cursor != null) {
+            minX = cursor.x;
+            minY = cursor.y;
         }
         ui.moveToClosestGridPoint(new Point(minX, minY), force, true);
         if (graphEditorUI != null) {
@@ -1200,9 +1205,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 value.moveToClosestGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
             }
         }
-        if (graphEditCursor != null) {
-            graphEditCursor.x += ex;
-            graphEditCursor.y += ey;
+        Point cursor = getGraphEditorCursor();
+        if (cursor != null) {
+            cursor.x += ex;
+            cursor.y += ey;
         }
         if (getParent() != null)
             getParent().revalidate();
@@ -1228,10 +1234,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 value.moveToGridLocation(gridLocation, true, true);
             }
         }
-        if (graphEditCursor != null) {
+        Point cursor = getGraphEditorCursor();
+        if (cursor != null) {
             Point realLeftTop = viewMode.gridToRealLocation(new Point(gridLeft, gridTop), zoom);
-            graphEditCursor.x = Math.round(graphEditCursor.x + realLeftTop.x);
-            graphEditCursor.y = Math.round(graphEditCursor.y + realLeftTop.y);
+            cursor.x = Math.round(cursor.x + realLeftTop.x);
+            cursor.y = Math.round(cursor.y + realLeftTop.y);
         }
 //        if (getParent() != null)
 //            getParent().revalidate();
@@ -2162,6 +2169,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+
+        if(disposed) {
+            return;
+        }
+
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHints(desktopRenderingHints);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -2228,10 +2240,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         // Draw cursor over the components
-        if (graphEditCursor != null && renderCursor) {
+        Point cursor = getGraphEditorCursor();
+        if (cursor != null && renderCursor) {
             g.drawImage(cursorImage.getImage(),
-                    graphEditCursor.x - cursorImage.getIconWidth() / 2,
-                    graphEditCursor.y - cursorImage.getIconHeight() / 2,
+                    cursor.x - cursorImage.getIconWidth() / 2,
+                    cursor.y - cursorImage.getIconHeight() / 2,
                     null);
         }
 
@@ -3013,9 +3026,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     public Point getGraphEditorCursor() {
-        if (graphEditCursor == null)
-            graphEditCursor = new Point(0, 0);
-        return graphEditCursor;
+//        if(System.identityHashCode(this) == 1274726433) {
+//            System.out.println("wtdf");
+//        }
+        long stamp = stampedLock.readLock();
+//        System.out.println("is: " + graphEditCursor + " in " + System.identityHashCode(this));
+        try {
+            if (graphEditCursor == null)
+                return new Point(0, 0);
+            return new Point(graphEditCursor.x, graphEditCursor.y);
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     /**
@@ -3079,8 +3102,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         repaint(50);
     }
 
-    public synchronized void setGraphEditCursor(Point graphEditCursor) {
-        this.graphEditCursor = graphEditCursor;
+    public void setGraphEditCursor(Point graphEditCursor) {
+        long stamp = stampedLock.writeLock();
+        try {
+            this.graphEditCursor = graphEditCursor != null ? new Point(graphEditCursor.x, graphEditCursor.y) : new Point();
+        }
+        finally {
+            stampedLock.unlock(stamp);
+        }
     }
 
     public void selectAll() {
@@ -3111,8 +3140,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         updateAssets();
 
         // Zoom the cursor
-        double normalizedCursorX = getGraphEditorCursor().x / oldZoom;
-        double normalizedCursorY = getGraphEditorCursor().y / oldZoom;
+        Point cursor = getGraphEditorCursor();
+        double normalizedCursorX = cursor.x / oldZoom;
+        double normalizedCursorY = cursor.y / oldZoom;
         setGraphEditCursor(new Point((int) Math.round(normalizedCursorX * zoom), (int) Math.round(normalizedCursorY * zoom)));
 
         // Zoom nodes
@@ -3201,6 +3231,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void onGraphChanged(JIPipeGraph.GraphChangedEvent event) {
+
+        if(disposed) {
+            return;
+        }
+
         // Update the location of existing nodes
         for (JIPipeGraphNodeUI ui : nodeUIs.values()) {
             ui.moveToStoredGridLocation(true);
@@ -3212,6 +3247,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void onNodeConnected(JIPipeGraph.NodeConnectedEvent event) {
+
+        if(disposed) {
+            return;
+        }
+
         JIPipeGraphNodeUI sourceNode = nodeUIs.getOrDefault(event.getSource().getNode(), null);
         JIPipeGraphNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
 
@@ -3228,7 +3268,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 return;
             }
 
-            Point cursorBackup = graphEditCursor;
+            Point cursorBackup = getGraphEditorCursor();
             try {
                 setGraphEditCursor(new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight()));
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
@@ -3244,6 +3284,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void onNodeUIActionRequested(JIPipeGraphNodeUI.NodeUIActionRequestedEvent event) {
+
+        if(disposed) {
+            return;
+        }
+
         if (event.getAction() instanceof OpenContextMenuAction) {
             if (event.getUi() != null) {
                 openContextMenu(getLastMousePosition());
