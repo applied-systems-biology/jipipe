@@ -105,7 +105,7 @@ public class JIPipeProject implements JIPipeValidatable, JIPipeGraph.GraphChange
             JIPipeRuntimePartition fileSystemPartition = new JIPipeRuntimePartition();
             fileSystemPartition.setName("Filesystem");
             fileSystemPartition.setDescription(new HTMLText("Pre-defined partition useful for separating off filesystem operations"));
-            fileSystemPartition.setColor(new OptionalColorParameter(new Color(0x194919), true));
+            fileSystemPartition.setColor(new OptionalColorParameter(new Color(0x36A336), true));
             this.runtimePartitions.add(fileSystemPartition);
         }
 

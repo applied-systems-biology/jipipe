@@ -133,6 +133,7 @@ public class JIPipeRuntimePartitionListEditor extends JIPipeProjectWorkbenchPane
                     for (JIPipeGraphNodeUI ui : canvasUI.getNodeUIs().values()) {
                         ui.updateView(false, false, false);
                     }
+                    canvasUI.repaintLowLag();
                 }
             }
 

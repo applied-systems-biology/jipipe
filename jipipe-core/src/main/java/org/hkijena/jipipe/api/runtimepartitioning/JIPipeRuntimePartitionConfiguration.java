@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.extensions.expressions.functions.math.RandomFunction;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.*;
 import java.util.List;
@@ -138,5 +141,14 @@ public class JIPipeRuntimePartitionConfiguration {
             nameText = StringUtils.orElse(value.getName(), "Unnamed");
         }
         return nameText + " (Partition " + idx + ")";
+    }
+
+    public Icon getIcon(JIPipeRuntimePartition runtimePartition) {
+        if(runtimePartition.getColor().isEnabled()) {
+            return new SolidColorIcon(16, 16, runtimePartition.getColor().getContent());
+        }
+        else {
+            return UIUtils.getIconFromResources("actions/runtime-partition.png");
+        }
     }
 }

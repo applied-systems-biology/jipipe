@@ -15,7 +15,10 @@ package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeAdaptiveParametersAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -384,14 +387,21 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         settings.setStoreIntermediateResults(storeIntermediateOutputs);
         boolean success = testBenchSetupUI.tryAutoRun(showResults, settings, testBench -> {
             if (showCache) {
-                try {
-                    SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));
-                }
-                catch (IllegalArgumentException ignored) {
-                }
+                SwingUtilities.invokeLater(() -> {
+                    try {
+                        tabbedPane.switchToContent(cacheBrowserTabContent);
+                    } catch (IllegalArgumentException ignored) {
+                    }
+                });
+
             } else if (showBatchAssistant) {
                 if (node instanceof JIPipeIterationStepAlgorithm) {
-                    SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(batchAssistantTabContent));
+                    SwingUtilities.invokeLater(() -> {
+                        try {
+                            tabbedPane.switchToContent(batchAssistantTabContent);
+                        } catch (IllegalArgumentException ignored) {
+                        }
+                    });
                 }
             }
         });

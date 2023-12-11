@@ -20,20 +20,26 @@ import gnu.trove.map.TIntObjectMap;
 import gnu.trove.map.hash.TIntObjectHashMap;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
+import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
+import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
@@ -1428,7 +1434,64 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 item.setEnabled(false);
             menu.add(item);
         }
+
+        // Node partitioning menus
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
+
+            // Algorithms
+            if (selection.stream().anyMatch(ui -> ui.getNode() instanceof JIPipeAlgorithm)) {
+                menu.addSeparator();
+                JMenu partitionMenu = new JMenu("Move to partition ...");
+                for (JIPipeRuntimePartition runtimePartition : runtimePartitions.toList()) {
+                    JMenuItem item = new JMenuItem(runtimePartitions.getFullName(runtimePartition), runtimePartitions.getIcon(runtimePartition));
+                    item.addActionListener(e -> partitionSelectedAlgorithms(runtimePartition));
+                    item.setToolTipText("Partitions all selected nodes to '" + runtimePartitions.getFullName(runtimePartition) + "'");
+                    partitionMenu.add(item);
+                }
+                menu.add(partitionMenu);
+            }
+
+            // Compartments
+            if (selection.stream().anyMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
+                menu.addSeparator();
+                JMenu partitionMenu = new JMenu("Move contents to partition ...");
+                for (JIPipeRuntimePartition runtimePartition : runtimePartitions.toList()) {
+                    JMenuItem item = new JMenuItem(runtimePartitions.getFullName(runtimePartition), runtimePartitions.getIcon(runtimePartition));
+                    item.addActionListener(e -> partitionSelectedAlgorithms(runtimePartition));
+                    item.setToolTipText("Partitions the contained nodes to '" + runtimePartitions.getFullName(runtimePartition) + "'");
+                    partitionMenu.add(item);
+                }
+                menu.add(partitionMenu);
+            }
+        }
+
         menu.show(this, point.x, point.y);
+    }
+
+    private void partitionSelectedAlgorithms(JIPipeRuntimePartition runtimePartition) {
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
+            int newIndex = runtimePartitions.indexOf(runtimePartition);
+            if(newIndex == -1) {
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Unable to find selected partition!", "Partition nodes", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            for (JIPipeGraphNodeUI nodeUI : selection) {
+                if (nodeUI.getNode() instanceof JIPipeAlgorithm) {
+                    ((JIPipeAlgorithm) nodeUI.getNode()).getRuntimePartition().setIndex(newIndex);
+                    nodeUI.updateView(false, false, false);
+                } else if (nodeUI.getNode() instanceof JIPipeProjectCompartment) {
+                    UUID uuid = ((JIPipeProjectCompartment) nodeUI.getNode()).getProjectCompartmentUUID();
+                    for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
+                        if(graphNode instanceof JIPipeAlgorithm && Objects.equals(uuid, graphNode.getCompartmentUUIDInParentGraph())) {
+                            ((JIPipeAlgorithm) graphNode).getRuntimePartition().setIndex(newIndex);
+                            graphNode.getParameterChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterChangedEvent(graphNode, "jipipe:algorithm:runtime-partition"));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Override

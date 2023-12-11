@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.runtimepartitioning;
 
-import jdk.nashorn.internal.scripts.JO;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -59,11 +58,11 @@ public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterE
                 BorderFactory.createEmptyBorder(4, 3, 4, 3)));
         configureButton.setOpaque(true);
         configureButton.setToolTipText("Edit/select/install environment");
-        UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadInstallMenu);
+        UIUtils.addReloadablePopupMenuToButton(configureButton, configureMenu, this::reloadConfigMenu);
         buttonPanel.add(configureButton);
     }
 
-    private void reloadInstallMenu() {
+    private void reloadConfigMenu() {
         configureMenu.removeAll();
         if(getWorkbench() instanceof JIPipeProjectWorkbench) {
             configureMenu.add(UIUtils.createMenuItem("Edit current", "Edits the current partition", UIUtils.getIconFromResources("actions/edit.png"), this::editCurrentPartition));
@@ -73,15 +72,30 @@ public class RuntimePartitionReferenceParameterEditorUI extends JIPipeParameterE
             JIPipeRuntimePartition currentPartition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions().get(index);
             JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
             for (JIPipeRuntimePartition runtimePartition : runtimePartitions.toList()) {
+                JMenuItem menuItem = new JMenuItem(runtimePartitions.getFullName(runtimePartition), runtimePartitions.getIcon(runtimePartition));
                 if(currentPartition == runtimePartition) {
-
+                    menuItem.setEnabled(false);
                 }
+                menuItem.addActionListener(e -> switchPartition(runtimePartition));
+                configureMenu.add(menuItem);
             }
         }
         else {
             JMenuItem menuItem = new JMenuItem("Not available");
             menuItem.setEnabled(false);
             configureMenu.add(menuItem);
+        }
+    }
+
+    private void switchPartition(JIPipeRuntimePartition runtimePartition) {
+        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
+            JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions();
+            int newIndex = runtimePartitions.indexOf(runtimePartition);
+            if(newIndex != -1) {
+                parameter.setIndex(newIndex);
+                setParameter(parameter, true);
+            }
         }
     }
 
