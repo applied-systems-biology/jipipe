@@ -1483,7 +1483,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     nodeUI.updateView(false, false, false);
                 } else if (nodeUI.getNode() instanceof JIPipeProjectCompartment) {
                     UUID uuid = ((JIPipeProjectCompartment) nodeUI.getNode()).getProjectCompartmentUUID();
-                    for (JIPipeGraphNode graphNode : getGraph().getGraphNodes()) {
+                    for (JIPipeGraphNode graphNode : ((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph().getGraphNodes()) {
                         if(graphNode instanceof JIPipeAlgorithm && Objects.equals(uuid, graphNode.getCompartmentUUIDInParentGraph())) {
                             ((JIPipeAlgorithm) graphNode).getRuntimePartition().setIndex(newIndex);
                             graphNode.getParameterChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterChangedEvent(graphNode, "jipipe:algorithm:runtime-partition"));
