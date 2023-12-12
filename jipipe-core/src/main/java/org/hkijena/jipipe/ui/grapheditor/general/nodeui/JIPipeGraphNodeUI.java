@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.general.nodeui;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -93,9 +94,9 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     private final Color highlightedNodeBorderColor;
     private final LinearGradientPaint nodeDisabledPaint;
     private final LinearGradientPaint nodePassThroughPaint;
-    private final Color slotFillColor;
-    private final Color buttonFillColor;
-    private final Color buttonFillColorDarker;
+    private Color slotFillColor;
+    private Color buttonFillColor;
+    private Color buttonFillColorDarker;
     private final boolean slotsInputsEditable;
     private final boolean slotsOutputsEditable;
     private final Map<String, JIPipeNodeUISlotActiveArea> inputSlotMap = new HashMap<>();
@@ -179,7 +180,7 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
         // Generate colors, icons
         this.nodeIcon = JIPipe.getNodes().getIconFor(node.getInfo()).getImage();
         this.nodeFillColor = UIUtils.getFillColorFor(node.getInfo());
-        this.nodeBorderColor = Color.BLACK;
+        this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
         this.highlightedNodeBorderColor = UIUtils.DARK_THEME ? new Color(0xBBBBBF) : new Color(0x444444);
         this.slotFillColor = UIManager.getColor("Panel.background");
         this.slotParametersFillColor = ColorUtils.mix(slotFillColor, nodeFillColor, 0.5);
@@ -372,22 +373,31 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
     protected void updateColors() {
         // Border colors (partitioning)
         int partition = 0;
-        if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             if (node instanceof JIPipeAlgorithm) {
                 partition = ((JIPipeAlgorithm) node).getRuntimePartition().getIndex();
             }
             JIPipeRuntimePartition runtimePartition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions().get(partition);
-            if(runtimePartition.getColor().isEnabled()) {
-                this.nodeBorderColor = runtimePartition.getColor().getContent();
+            if (runtimePartition.getColor().isEnabled()) {
+//                this.nodeBorderColor = runtimePartition.getColor().getContent();
+                this.slotFillColor =  runtimePartition.getColor().getContent();
+            } else {
+//                this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
+                this.slotFillColor = UIManager.getColor("Panel.background");
             }
-            else {
-                this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
-            }
+        } else {
+            this.slotFillColor = UIManager.getColor("Panel.background");
+//            this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
         }
-         else {
-            this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
-        }
+
+        this.buttonFillColor = ColorUtils.multiplyHSB(slotFillColor, 1, 1, 0.95f);
+        this.buttonFillColorDarker = ColorUtils.multiplyHSB(slotFillColor, 1, 1, 0.85f);
+
         nodeBufferInvalid = true;
+        repaint(50);
+        if (SystemUtils.IS_OS_LINUX) {
+            Toolkit.getDefaultToolkit().sync();
+        }
     }
 
     protected void updateAssets() {
