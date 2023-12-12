@@ -377,6 +377,11 @@ public class JIPipeGraphNodeUI extends JIPipeWorkbenchPanel implements MouseList
             if (node instanceof JIPipeAlgorithm) {
                 partition = ((JIPipeAlgorithm) node).getRuntimePartition().getIndex();
             }
+            else if(node instanceof JIPipeProjectCompartment) {
+                // Color after output
+                JIPipeCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getOutputNode();
+                partition = outputNode.getRuntimePartition().getIndex();
+            }
             JIPipeRuntimePartition runtimePartition = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getRuntimePartitions().get(partition);
             if (runtimePartition.getColor().isEnabled()) {
 //                this.nodeBorderColor = runtimePartition.getColor().getContent();

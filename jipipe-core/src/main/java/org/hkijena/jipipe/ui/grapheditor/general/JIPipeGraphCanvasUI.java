@@ -1489,6 +1489,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                             graphNode.getParameterChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterChangedEvent(graphNode, "jipipe:algorithm:runtime-partition"));
                         }
                     }
+                    nodeUI.updateView(false, false, false);
                 }
             }
         }
