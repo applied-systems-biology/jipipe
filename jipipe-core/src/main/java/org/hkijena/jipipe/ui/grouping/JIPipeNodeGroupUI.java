@@ -19,6 +19,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Disposable;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ import java.util.List;
  * Editor for a {@link org.hkijena.jipipe.api.grouping.NodeGroup}
  * Contains a {@link JIPipePipelineGraphEditorUI} instance that allows editing the compartment's content
  */
-public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
+public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel implements Disposable {
 
     private NodeGroup nodeGroup;
     private JIPipePipelineGraphEditorUI graphUI;
@@ -88,6 +89,13 @@ public class JIPipeNodeGroupUI extends JIPipeWorkbenchPanel {
         setLayout(new BorderLayout());
         graphUI = new JIPipePipelineGraphEditorUI(getWorkbench(), nodeGroup.getWrappedGraph(), null);
         add(graphUI, BorderLayout.CENTER);
+    }
+
+
+    @Override
+    public void dispose() {
+        Disposable.super.dispose();
+        graphUI.dispose();
     }
 
     /**
