@@ -67,7 +67,7 @@ public class CollectBackupsRun extends AbstractJIPipeRunnable {
                             getProgressInfo().log(e.toString());
                         }
                     }
-                } else if (Files.isRegularFile(sessionPath) && sessionPath.endsWith(".jip")) {
+                } else if (Files.isRegularFile(sessionPath) && sessionPath.getFileName().toString().endsWith(".jip")) {
                     try {
                         // Legacy backup
                         getProgressInfo().log("Adding legacy backup " + sessionPath);
