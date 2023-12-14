@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
@@ -173,7 +174,7 @@ public class UIUtils {
         balloonTip.setVisible(false);
 
         JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/window-close.png"));
-        closeButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         closeButton.setOpaque(false);
 
         balloonTip.setCloseButton(closeButton, false);
@@ -1415,6 +1416,41 @@ public class UIUtils {
     }
 
     /**
+     * Gets an integer by dialog
+     *
+     * @param parent     parent component
+     * @param title      title
+     * @param message    message
+     * @param initialMin initial minimum value
+     * @param initialMax initial maximum value
+     * @param min        minimum value
+     * @param max        maximum value
+     * @return the selected double or null if cancelled
+     */
+    public static Optional<double[]> getMinMaxByDialog(Component parent, String title, String message, double initialMin, double initialMax, double min, double max) {
+        JSpinner spinnerMin = new JSpinner(new SpinnerNumberModel(initialMin, min, max, 1));
+        JSpinner spinnerMax = new JSpinner(new SpinnerNumberModel(initialMax, min, max, 1));
+
+        FormPanel formPanel = new FormPanel(FormPanel.NONE);
+        formPanel.addToForm(spinnerMin, new JLabel("Min"));
+        formPanel.addToForm(spinnerMax, new JLabel("Max"));
+
+        int result = JOptionPane.showOptionDialog(
+                parent,
+                new Object[]{message, formPanel},
+                title,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            return Optional.of(new double[]{((SpinnerNumberModel) spinnerMin.getModel()).getNumber().doubleValue(),
+                    ((SpinnerNumberModel) spinnerMax.getModel()).getNumber().doubleValue()});
+        }
+        return Optional.empty();
+    }
+
+    /**
      * Continuously asks for an unique string
      *
      * @param parent       parent component
@@ -2031,7 +2067,6 @@ public class UIUtils {
 
         return String.join("+", keyNames);
     }
-
 
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

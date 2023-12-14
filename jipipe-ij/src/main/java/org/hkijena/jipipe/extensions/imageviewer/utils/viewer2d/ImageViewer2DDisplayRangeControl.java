@@ -44,6 +44,8 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
     private boolean isUpdating = false;
     private double customMin;
     private double customMax;
+
+    private ImageJCalibrationMode mode = ImageJCalibrationMode.Custom;
     private double minSelectableValue;
     private double maxSelectableValue;
 
@@ -73,52 +75,68 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
         slider.addMultiThumbListener(this);
     }
 
+    public double getCurrentMin() {
+        return (minSelectableValue + slider.getModel().getThumbAt(0).getPosition() * (maxSelectableValue - minSelectableValue));
+    }
+
+    public double getCurrentMax() {
+        return (minSelectableValue + slider.getModel().getThumbAt(1).getPosition() * (maxSelectableValue - minSelectableValue));
+    }
+
+    public double getMinSelectableValue() {
+        return minSelectableValue;
+    }
+
+    public double getMaxSelectableValue() {
+        return maxSelectableValue;
+    }
+
     private void initializeToolbar() {
         JPanel toolbar = new JPanel();
         toolbar.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
         toolbar.setLayout(new BoxLayout(toolbar, BoxLayout.X_AXIS));
 
-        JButton setMinButton = new JButton("set min");
-        setMinButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        setMinButton.addActionListener(e -> {
-            if (calibrationPlugin.getCurrentImagePlus().getImage() != null) {
-                double value = (minSelectableValue + slider.getModel().getThumbAt(0).getPosition() * (maxSelectableValue - minSelectableValue));
-                Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
-                        "Set min display value",
-                        "Please enter the new value:",
-                        value,
-                        minSelectableValue,
-                        maxSelectableValue);
-                if (newValue.isPresent()) {
-                    float position = (float) ((newValue.get() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
-                    slider.getModel().getThumbAt(0).setPosition(Math.max(0, Math.min(position, 1)));
-                    applyCustomCalibration();
-                }
-            }
-        });
-        toolbar.add(Box.createHorizontalStrut(2));
-        toolbar.add(setMinButton);
-
-        JButton setMaxButton = new JButton("set max");
-        setMaxButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
-        setMaxButton.addActionListener(e -> {
-            if (calibrationPlugin.getCurrentImagePlus().getImage() != null) {
-                double value = (minSelectableValue + slider.getModel().getThumbAt(1).getPosition() * (maxSelectableValue - minSelectableValue));
-                Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
-                        "Set max display value",
-                        "Please enter the new value:",
-                        value,
-                        minSelectableValue,
-                        maxSelectableValue);
-                if (newValue.isPresent()) {
-                    float position = (float) ((newValue.get() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
-                    slider.getModel().getThumbAt(1).setPosition(Math.max(0, Math.min(position, 1)));
-                    applyCustomCalibration();
-                }
-            }
-        });
-        toolbar.add(Box.createHorizontalStrut(2));
-        toolbar.add(setMaxButton);
+//        JButton setMinButton = new JButton("set min");
+//        setMinButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+//        setMinButton.addActionListener(e -> {
+//            if (calibrationPlugin.getCurrentImagePlus().getImage() != null) {
+//                double value = (minSelectableValue + slider.getModel().getThumbAt(0).getPosition() * (maxSelectableValue - minSelectableValue));
+//                Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
+//                        "Set min display value",
+//                        "Please enter the new value:",
+//                        value,
+//                        minSelectableValue,
+//                        maxSelectableValue);
+//                if (newValue.isPresent()) {
+//                    float position = (float) ((newValue.get() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
+//                    slider.getModel().getThumbAt(0).setPosition(Math.max(0, Math.min(position, 1)));
+//                    applyCustomCalibration();
+//                }
+//            }
+//        });
+//        toolbar.add(Box.createHorizontalStrut(2));
+//        toolbar.add(setMinButton);
+//
+//        JButton setMaxButton = new JButton("set max");
+//        setMaxButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+//        setMaxButton.addActionListener(e -> {
+//            if (calibrationPlugin.getCurrentImagePlus().getImage() != null) {
+//                double value = (minSelectableValue + slider.getModel().getThumbAt(1).getPosition() * (maxSelectableValue - minSelectableValue));
+//                Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
+//                        "Set max display value",
+//                        "Please enter the new value:",
+//                        value,
+//                        minSelectableValue,
+//                        maxSelectableValue);
+//                if (newValue.isPresent()) {
+//                    float position = (float) ((newValue.get() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
+//                    slider.getModel().getThumbAt(1).setPosition(Math.max(0, Math.min(position, 1)));
+//                    applyCustomCalibration();
+//                }
+//            }
+//        });
+//        toolbar.add(Box.createHorizontalStrut(2));
+//        toolbar.add(setMaxButton);
 
         toolbar.add(Box.createHorizontalGlue());
 
@@ -135,7 +153,6 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
     }
 
     public void updateFromCurrentSlice(boolean clearCustom) {
-        ImageJCalibrationMode selectedCalibration = getCalibrationPlugin().getSelectedCalibration();
         ImagePlus currentImage = getCalibrationPlugin().getCurrentImagePlus();
 
         // Selectable value update
@@ -181,13 +198,13 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
         }
 
         // Calibratrion update
-        if (clearCustom || selectedCalibration != ImageJCalibrationMode.Custom) {
+        if (clearCustom || mode != ImageJCalibrationMode.Custom) {
             isUpdating = true;
             ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
             if (currentImage != null && currentSlice != null) {
-                if (selectedCalibration != ImageJCalibrationMode.Custom) {
+                if (mode != ImageJCalibrationMode.Custom) {
                     double[] calibration = ImageJUtils.calculateCalibration(currentSlice,
-                            selectedCalibration,
+                            mode,
                             minSelectableValue,
                             maxSelectableValue,
                             getCalibrationPlugin().getViewerPanel2D().getCurrentSliceStats());
@@ -219,7 +236,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
         applyCustomCalibration();
     }
 
-    private void applyCustomCalibration() {
+    public void applyCustomCalibration() {
         if (!isUpdating) {
             double min = minSelectableValue;
             double max = maxSelectableValue;
@@ -234,7 +251,7 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
             customMin = min + diff * posMin;
             customMax = min + diff * posMax;
 //            calibrationPlugin.disableAutoCalibration();
-            calibrationPlugin.setSelectedCalibration(ImageJCalibrationMode.Custom);
+//            calibrationPlugin.setSelectedCalibration(ImageJCalibrationMode.Custom);
         }
     }
 
@@ -260,6 +277,14 @@ public class ImageViewer2DDisplayRangeControl extends JPanel implements ThumbLis
         slider.getModel().getThumbAt(0).setPosition((float) positionMin);
         slider.getModel().getThumbAt(1).setPosition((float) positionMax);
         slider.repaint();
+    }
+
+    public ImageJCalibrationMode getMode() {
+        return mode;
+    }
+
+    public void setMode(ImageJCalibrationMode mode) {
+        this.mode = mode;
     }
 
     public enum DisplayRangeStop {

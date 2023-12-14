@@ -144,7 +144,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
                 // C-project the stack
                 ImagePlus extractedImp = new ImagePlus("stack", extracted);
-                ImagePlus projected = ZProjector.run(extractedImp, method.toString());
+                ImagePlus projected = ZProjector.run(extractedImp, method.getNativeValue());
 
                 resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(c, z, 0, newChannels, newDepth, newFrames));
             }
@@ -187,7 +187,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
                 // Z-project the stack
                 ImagePlus extractedImp = new ImagePlus("stack", extracted);
-                ImagePlus projected = ZProjector.run(extractedImp, method.toString());
+                ImagePlus projected = ZProjector.run(extractedImp, method.getNativeValue());
 
                 resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(c, 0, t, newChannels, newDepth, newFrames));
             }
@@ -230,7 +230,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
                 // C-project the stack
                 ImagePlus extractedImp = new ImagePlus("stack", extracted);
-                ImagePlus projected = ZProjector.run(extractedImp, method.toString());
+                ImagePlus projected = ZProjector.run(extractedImp, method.getNativeValue());
 
                 resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(0, z, t, newChannels, newDepth, newFrames));
             }

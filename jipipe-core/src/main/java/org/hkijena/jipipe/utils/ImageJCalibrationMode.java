@@ -14,26 +14,28 @@
 package org.hkijena.jipipe.utils;
 
 public enum ImageJCalibrationMode {
-    AutomaticImageJ(0, 0),
-    MinMax(0, 0),
-    Custom(0, 0),
-    Depth8Bit(0, 255),
-    Depth10Bit(0, 1023),
-    Depth12Bit(0, 4095),
-    Depth14Bit(0, 16383),
-    Depth15Bit(0, 32767),
-    Depth16Bit(0, 65535),
-    Unit(0, 1),
-    UnitAroundZero(-1, 1);
+    AutomaticImageJ(0, 0, "Auto"),
+    MinMax(0, 0, "Min-Max"),
+    Custom(0, 0, "Custom"),
+    Depth8Bit(0, 255, "8-bit"),
+    Depth10Bit(0, 1023, "10-bit"),
+    Depth12Bit(0, 4095, "12-bit"),
+    Depth14Bit(0, 16383, "14-bit"),
+    Depth15Bit(0, 32767, "15-bit"),
+    Depth16Bit(0, 65535, "16-bit"),
+    Unit(0, 1, "[0, 1]"),
+    UnitAroundZero(-1, 1, "[-1, 1]");
 
     private final double min;
     private final double max;
 
-    ImageJCalibrationMode(double min, double max) {
+    private final String shortName;
+
+    ImageJCalibrationMode(double min, double max, String shortName) {
         this.min = min;
         this.max = max;
+        this.shortName = shortName;
     }
-
 
     @Override
     public String toString() {
@@ -79,5 +81,9 @@ public enum ImageJCalibrationMode {
 
     public double getMax() {
         return max;
+    }
+
+    public String getShortName() {
+        return shortName;
     }
 }

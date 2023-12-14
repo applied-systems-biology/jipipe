@@ -18,12 +18,15 @@ import ij.plugin.ZProjector;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeAlias;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -149,6 +152,16 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * Available transformation functions
      */
     public enum Method {
-        AverageIntensity, MaxIntensity, MinIntensity, SumSlices, StandardDeviation, Median
+        AverageIntensity("av"), MaxIntensity("max"), MinIntensity("min"), SumSlices("sum"), StandardDeviation("sd"), Median("median");
+
+        private final String nativeValue;
+
+        Method(String nativeValue) {
+            this.nativeValue = nativeValue;
+        }
+
+        public String getNativeValue() {
+            return nativeValue;
+        }
     }
 }
