@@ -28,10 +28,11 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
+import org.hkijena.jipipe.extensions.settings.BackupSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
+import org.hkijena.jipipe.ui.backups.BackupManagerPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
@@ -431,14 +432,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         projectMenu.add(new RecentProjectsMenu("Recent projects", UIUtils.getIconFromResources("actions/clock.png"), (JIPipeProjectWindow) getWindow()));
 
         JMenuItem restoreMenuItem = new JMenuItem("Restore backup ...", UIUtils.getIconFromResources("actions/reload.png"));
-        restoreMenuItem.setToolTipText("Restores an automatically created backup (auto-save)");
-        restoreMenuItem.addActionListener(e -> AutoSaveSettings.getInstance().openRestoreMenu(this));
+        restoreMenuItem.setToolTipText("Restores an automatically created backup");
+        restoreMenuItem.addActionListener(e -> BackupManagerPanel.openNewWindow(this));
         projectMenu.add(restoreMenuItem);
-
-        JMenuItem cleanBackupsItem = new JMenuItem("Remove duplicate backups ...", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        cleanBackupsItem.setToolTipText("Removes duplicate or missing backup files");
-        cleanBackupsItem.addActionListener(e -> AutoSaveSettings.getInstance().removeDuplicateBackups(this));
-        projectMenu.add(cleanBackupsItem);
 
         projectMenu.addSeparator();
 

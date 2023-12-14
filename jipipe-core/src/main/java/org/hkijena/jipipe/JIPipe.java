@@ -840,50 +840,6 @@ public class JIPipe extends AbstractService implements JIPipeService {
 
         // Check the backups
         progressInfo.setProgress(7);
-        progressInfo.log("Checking backups ...");
-        AutoSaveSettings autoSaveSettings = AutoSaveSettings.getInstance();
-        List<Path> invalidBackups = new ArrayList<>();
-        {
-            long lastTime = System.currentTimeMillis();
-            long maxDifference = Math.max(0, autoSaveSettings.getMaxBackupCheckTimeSeconds() * 1000);
-            for (Path path : autoSaveSettings.getLastBackups()) {
-                if (!Files.exists(path)) {
-                    invalidBackups.add(path);
-                }
-                long currentTime = System.currentTimeMillis();
-                long timeDifference = currentTime - lastTime;
-                if (maxDifference > 0 && timeDifference > maxDifference) {
-
-                    progressInfo.log("Backup checking was cancelled. The time of " + (timeDifference / 1000.0) + " exceeded " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s");
-
-                    // Create notification
-                    JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:check-backup-max-time-exceeded");
-                    notification.setHeading("Checking backups took very long");
-                    notification.setDescription("Checking the backups took " + (timeDifference / 1000.0) + "s, which is higher than the limit of " + autoSaveSettings.getMaxBackupCheckTimeSeconds() + "s.\n\n" +
-                            "You might want to clean your backups by cleaning duplicate backups. If this does not help, you can also open the backup directory manually.\n\n" +
-                            "The limit can be changed by navigating to Project/Application settings/General/Backup/Maximum backup checking time (s)");
-                    notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the message", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {
-                    }));
-                    notification.getActions().add(new JIPipeNotificationAction("Remove duplicate backups", "Opens a tool to detect and remove duplicate backups", UIUtils.getIconFromResources("actions/clear-brush.png"),
-                            workbench -> AutoSaveSettings.getInstance().removeDuplicateBackups(workbench)));
-                    notification.getActions().add(new JIPipeNotificationAction("Open backup directory", "Opens the directory that contains the backups", UIUtils.getIconFromResources("actions/folder-open.png"),
-                            workbench -> {
-                                try {
-                                    Desktop.getDesktop().open(autoSaveSettings.getCurrentSavePath().toFile());
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }));
-                    JIPipeNotificationInbox.getInstance().push(notification);
-                    break;
-                }
-            }
-        }
-
-//        autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
-        if (!invalidBackups.isEmpty()) {
-            autoSaveSettings.getLastBackups().removeAll(invalidBackups);
-        }
 
         progressInfo.setProgress(8);
         progressInfo.log("JIPipe loading finished");

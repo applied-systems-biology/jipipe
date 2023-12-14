@@ -39,14 +39,14 @@ public class RecentProjectsListPanel extends JIPipeProjectWorkbenchPanel impleme
                     Path value = recentProjectsList.getSelectedValue();
                     if (value != null) {
                         projectOpenedEventEmitter.emit(new ProjectOpenedEvent(value));
-                        ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
+                        ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value, false);
                     }
                 } else {
                     if (recentProjectsList.getMousePosition().x > recentProjectsList.getWidth() - 50) {
                         Path value = recentProjectsList.getSelectedValue();
                         if (value != null) {
                             projectOpenedEventEmitter.emit(new ProjectOpenedEvent(value));
-                            ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value);
+                            ((JIPipeProjectWindow) getProjectWorkbench().getWindow()).openProject(value, false);
                         }
                     }
                 }

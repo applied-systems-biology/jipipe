@@ -52,10 +52,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Window that holds an {@link JIPipeProjectWorkbench} instance
@@ -68,6 +65,7 @@ public class JIPipeProjectWindow extends JFrame {
     private JIPipeProject project;
     private JIPipeProjectWorkbench projectUI;
     private Path projectSavePath;
+    private UUID sessionId = UUID.randomUUID();
 
     /**
      * @param context          context
@@ -191,6 +189,7 @@ public class JIPipeProjectWindow extends JFrame {
     public void loadProject(JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         this.project = project;
         this.projectUI = new JIPipeProjectWorkbench(this, context, project, showIntroduction, isNewProject);
+        this.sessionId = UUID.randomUUID();
         setContentPane(projectUI);
     }
 
@@ -264,7 +263,7 @@ public class JIPipeProjectWindow extends JFrame {
                                     "Load template",
                                     JOptionPane.ERROR_MESSAGE);
                         }
-                        openProject(projectFile);
+                        openProject(projectFile, false);
                     });
                 }
             });
@@ -312,9 +311,10 @@ public class JIPipeProjectWindow extends JFrame {
      * Opens a project from a file or folder
      * Asks the user if it should replace the currently displayed project
      *
-     * @param path JSON project file or result folder
+     * @param path               JSON project file or result folder
+     * @param forceCurrentWindow if the project will be forced to be opened in the current window
      */
-    public void openProject(Path path) {
+    public void openProject(Path path, boolean forceCurrentWindow) {
         if (Files.isRegularFile(path)) {
             JIPipeValidationReport report = new JIPipeValidationReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
@@ -349,7 +349,13 @@ public class JIPipeProjectWindow extends JFrame {
                 project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications);
                 project.setWorkDirectory(path.getParent());
                 project.validateUserDirectories(notifications);
-                JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open project", project, false, false);
+                JIPipeProjectWindow window;
+                if (forceCurrentWindow) {
+                    window = this;
+                    loadProject(project, false, false);
+                } else {
+                    window = openProjectInThisOrNewWindow("Open project", project, false, false);
+                }
                 if (window == null)
                     return;
                 window.projectSavePath = path;
@@ -448,7 +454,7 @@ public class JIPipeProjectWindow extends JFrame {
     public void openProject() {
         Path file = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open JIPipe project (*.jip)", UIUtils.EXTENSION_FILTER_JIP);
         if (file != null) {
-            openProject(file);
+            openProject(file, false);
         }
     }
 
@@ -458,7 +464,7 @@ public class JIPipeProjectWindow extends JFrame {
     public void openProjectAndOutput() {
         Path file = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Open JIPipe output folder");
         if (file != null) {
-            openProject(file);
+            openProject(file, false);
         }
     }
 
@@ -596,5 +602,9 @@ public class JIPipeProjectWindow extends JFrame {
         }
         SaveProjectAndCacheToZipRun run = new SaveProjectAndCacheToZipRun(projectUI, project, file);
         JIPipeRunExecuterUI.runInDialog(this, run);
+    }
+
+    public UUID getSessionId() {
+        return sessionId;
     }
 }

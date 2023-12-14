@@ -2068,6 +2068,18 @@ public class UIUtils {
         return String.join("+", keyNames);
     }
 
+    public static JButton createStandardButton(String text, ImageIcon icon, Runnable action) {
+        JButton button = createButton(text, icon, action);
+        setStandardButtonBorder(button);
+        return button;
+    }
+
+    public static JButton createLeftAlignedButton(String text, ImageIcon icon, Runnable action) {
+        JButton button = createButton(text, icon, action);
+        button.setHorizontalAlignment(SwingConstants.LEFT);
+        return button;
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

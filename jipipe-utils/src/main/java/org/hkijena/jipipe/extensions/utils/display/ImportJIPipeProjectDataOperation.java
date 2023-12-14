@@ -29,7 +29,7 @@ public class ImportJIPipeProjectDataOperation implements JIPipeDataDisplayOperat
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         Path folderPath = ((PathData) data).toPath();
         JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
-        window.openProject(folderPath);
+        window.openProject(folderPath, false);
     }
 
     @Override

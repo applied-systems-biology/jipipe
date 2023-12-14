@@ -78,7 +78,7 @@ public class RecentProjectsMenu extends JMenu implements JIPipeParameterCollecti
     }
 
     private void openProject(Path path) {
-        workbenchWindow.openProject(path);
+        workbenchWindow.openProject(path, false);
     }
 
     /**

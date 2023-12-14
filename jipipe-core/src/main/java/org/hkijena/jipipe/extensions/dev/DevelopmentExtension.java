@@ -48,6 +48,7 @@ public class DevelopmentExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerMenuExtension(ExportNodeJsonsTool.class);
         registerMenuExtension(ExportNodeParameterJsonsTool.class);
         registerMenuExtension(ExportNodeSignatureJsonsTool.class);
+        registerMenuExtension(TriggerBackupAllTool.class);
     }
 
     @Override

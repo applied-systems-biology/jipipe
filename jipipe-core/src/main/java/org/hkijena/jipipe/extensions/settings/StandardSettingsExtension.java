@@ -74,13 +74,13 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 null,
                 null,
                 new ProjectsSettings());
-        registerSettingsSheet(AutoSaveSettings.ID,
+        registerSettingsSheet(BackupSettings.ID,
                 "Backup",
                 "Determine the behavior of the automated backup functionality",
                 UIUtils.getIconFromResources("actions/save.png"),
                 null,
                 null,
-                new AutoSaveSettings());
+                new BackupSettings());
         registerSettingsSheet(HistoryJournalSettings.ID,
                 "Journal",
                 "Configure the undo/redo behavior (e.g., how many steps are saved)",
