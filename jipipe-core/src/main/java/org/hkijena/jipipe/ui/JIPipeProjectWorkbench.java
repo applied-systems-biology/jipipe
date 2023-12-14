@@ -431,8 +431,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         // Recent projects entry
         projectMenu.add(new RecentProjectsMenu("Recent projects", UIUtils.getIconFromResources("actions/clock.png"), (JIPipeProjectWindow) getWindow()));
 
-        JMenuItem restoreMenuItem = new JMenuItem("Restore backup ...", UIUtils.getIconFromResources("actions/reload.png"));
-        restoreMenuItem.setToolTipText("Restores an automatically created backup");
+        JMenuItem restoreMenuItem = new JMenuItem("Restore/manage backups ...", UIUtils.getIconFromResources("actions/reload.png"));
+        restoreMenuItem.setToolTipText("Restores an automatically created backup and manages the collection of backups");
         restoreMenuItem.addActionListener(e -> BackupManagerPanel.openNewWindow(this));
         projectMenu.add(restoreMenuItem);
 
