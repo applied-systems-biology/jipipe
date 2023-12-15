@@ -182,7 +182,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                         if (target != null) {
                             Object existing = target.get(Object.class);
                             Object newValue = entry.getValue();
-                            if (!Objects.equals(existing, newValue)) {
+                            if (!parameterSlotAlgorithmSettings.isAttachOnlyNonDefaultParameterAnnotations() || !Objects.equals(existing, newValue)) {
                                 nonDefaultParameters.add(entry.getKey());
                             }
                         }

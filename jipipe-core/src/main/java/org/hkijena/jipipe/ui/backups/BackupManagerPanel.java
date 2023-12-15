@@ -86,7 +86,7 @@ public class BackupManagerPanel extends JIPipeWorkbenchPanel implements JIPipeRu
                 }
             }
         });
-        add(new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, backupTree, propertiesPanel, new AutoResizeSplitPane.DynamicSidebarRatio(350, false)));
+        add(new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, new JScrollPane(backupTree), propertiesPanel, new AutoResizeSplitPane.DynamicSidebarRatio(350, false)));
 
         limitToCurrentProjectFilter.addActionListener(e -> refreshTree());
         searchTextField.addActionListener(e -> refreshTree());
