@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -91,8 +91,8 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
     }
 
     public static class AnnotationSettings extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter annotationName = new DefaultExpressionParameter("\"Annotation\"");
-        private DefaultExpressionParameter annotationValue = new DefaultExpressionParameter("");
+        private JIPipeExpressionParameter annotationName = new JIPipeExpressionParameter("\"Annotation\"");
+        private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("");
 
         @JIPipeDocumentation(name = "Name")
         @JIPipeParameter("name")
@@ -100,12 +100,12 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(name = "Number of rows", description = "The number of rows within the table", key = "num_rows")
         @ExpressionParameterSettingsVariable(name = "Number of columns", description = "The number of columns within the table", key = "num_cols")
-        public DefaultExpressionParameter getAnnotationName() {
+        public JIPipeExpressionParameter getAnnotationName() {
             return annotationName;
         }
 
         @JIPipeParameter("name")
-        public void setAnnotationName(DefaultExpressionParameter annotationName) {
+        public void setAnnotationName(JIPipeExpressionParameter annotationName) {
             this.annotationName = annotationName;
         }
 
@@ -115,12 +115,12 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(name = "Number of rows", description = "The number of rows within the table", key = "num_rows")
         @ExpressionParameterSettingsVariable(name = "Number of columns", description = "The number of columns within the table", key = "num_cols")
-        public DefaultExpressionParameter getAnnotationValue() {
+        public JIPipeExpressionParameter getAnnotationValue() {
             return annotationValue;
         }
 
         @JIPipeParameter("value")
-        public void setAnnotationValue(DefaultExpressionParameter annotationValue) {
+        public void setAnnotationValue(JIPipeExpressionParameter annotationValue) {
             this.annotationValue = annotationValue;
         }
     }

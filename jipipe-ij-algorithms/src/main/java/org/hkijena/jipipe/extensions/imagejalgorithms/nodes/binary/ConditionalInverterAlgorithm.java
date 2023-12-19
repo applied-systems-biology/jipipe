@@ -28,7 +28,7 @@ import java.util.Set;
 @JIPipeOutputSlot(slotName = "Output", value = ImagePlusGreyscaleMaskData.class, autoCreate = true)
 public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter condition = new DefaultExpressionParameter("num_white > num_black");
+    private JIPipeExpressionParameter condition = new JIPipeExpressionParameter("num_white > num_black");
     private boolean applyPerSlice = false;
 
     public ConditionalInverterAlgorithm(JIPipeNodeInfo info) {
@@ -37,7 +37,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     public ConditionalInverterAlgorithm(ConditionalInverterAlgorithm other) {
         super(other);
-        this.condition = new DefaultExpressionParameter(other.condition);
+        this.condition = new JIPipeExpressionParameter(other.condition);
         this.applyPerSlice = other.applyPerSlice;
     }
 
@@ -103,12 +103,12 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @JIPipeDocumentation(name = "Condition", description = "If the expression returns TRUE, the image will be inverted")
     @JIPipeParameter("condition")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
-    public DefaultExpressionParameter getCondition() {
+    public JIPipeExpressionParameter getCondition() {
         return condition;
     }
 
     @JIPipeParameter("condition")
-    public void setCondition(DefaultExpressionParameter condition) {
+    public void setCondition(JIPipeExpressionParameter condition) {
         this.condition = condition;
     }
 

@@ -56,7 +56,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
     private final CustomExpressionVariablesParameter customFilterVariables;
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean outputEmptyLists = true;
 
@@ -79,7 +79,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public FilterRoiByStatisticsAlgorithm(FilterRoiByStatisticsAlgorithm other) {
         super(other);
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new JIPipeExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
@@ -161,12 +161,12 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public DefaultExpressionParameter getFilters() {
+    public JIPipeExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filter")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
     }
 

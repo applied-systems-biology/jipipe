@@ -207,7 +207,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
     public static class MetadataProperty extends AbstractJIPipeParameterCollection {
 
         private String key;
-        private DefaultExpressionParameter value = new DefaultExpressionParameter();
+        private JIPipeExpressionParameter value = new JIPipeExpressionParameter();
 
         public MetadataProperty() {
 
@@ -215,7 +215,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
 
         public MetadataProperty(MetadataProperty other) {
             this.key = other.key;
-            this.value = new DefaultExpressionParameter(other.value);
+            this.value = new JIPipeExpressionParameter(other.value);
         }
 
         @JIPipeParameter(value = "value")
@@ -230,12 +230,12 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the existing ROI metadata/properties (string keys, string values)")
         @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Existing ROI metadata/properties accessible via their string keys")
-        public DefaultExpressionParameter getValue() {
+        public JIPipeExpressionParameter getValue() {
             return value;
         }
 
         @JIPipeParameter("value")
-        public void setValue(DefaultExpressionParameter value) {
+        public void setValue(JIPipeExpressionParameter value) {
             this.value = value;
         }
 

@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -41,7 +41,7 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
     private static ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
     private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("ARRAY(255 - r, g, b)");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("ARRAY(255 - r, g, b)");
     private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusColorData.class));
 
     public ApplyColorMathExpression2DExpression(JIPipeNodeInfo info) {
@@ -51,7 +51,7 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
 
     public ApplyColorMathExpression2DExpression(ApplyColorMathExpression2DExpression other) {
         super(other);
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
         this.outputType = new JIPipeDataInfoRef(other.outputType);
         updateSlots();
     }
@@ -150,12 +150,12 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
             "Alternatively, the expression can return a number that encodes the color components as integer.")
     @JIPipeParameter("expression")
     @ExpressionParameterSettings(variableSource = ColorPixel5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JIPipeParameter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 }

@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -32,7 +32,7 @@ import java.util.Map;
 public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ProcessEnvironment processEnvironment = new ProcessEnvironment();
-    private OptionalDefaultExpressionParameter overrideArguments = new OptionalDefaultExpressionParameter(true, "ARRAY()");
+    private OptionalJIPipeExpressionParameter overrideArguments = new OptionalJIPipeExpressionParameter(true, "ARRAY()");
     private boolean outputOutputFolder = false;
     private boolean cleanUpAfterwards = true;
 
@@ -43,7 +43,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
     public RunProcessIteratingAlgorithm(RunProcessIteratingAlgorithm other) {
         super(other);
         this.processEnvironment = new ProcessEnvironment(other.processEnvironment);
-        this.overrideArguments = new OptionalDefaultExpressionParameter(other.overrideArguments);
+        this.overrideArguments = new OptionalJIPipeExpressionParameter(other.overrideArguments);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.setOutputOutputFolder(other.outputOutputFolder);
     }
@@ -124,12 +124,12 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Override arguments", description = "If enabled, override arguments of the environment with the one provided by the expression. " +
             "Please note that this expression has access to annotations.")
     @JIPipeParameter("override-arguments")
-    public OptionalDefaultExpressionParameter getOverrideArguments() {
+    public OptionalJIPipeExpressionParameter getOverrideArguments() {
         return overrideArguments;
     }
 
     @JIPipeParameter("override-arguments")
-    public void setOverrideArguments(OptionalDefaultExpressionParameter overrideArguments) {
+    public void setOverrideArguments(OptionalJIPipeExpressionParameter overrideArguments) {
         this.overrideArguments = overrideArguments;
     }
 

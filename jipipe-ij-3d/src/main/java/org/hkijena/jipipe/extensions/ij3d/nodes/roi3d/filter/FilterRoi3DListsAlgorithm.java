@@ -27,7 +27,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
 public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter("count > 0");
+    private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("count > 0");
     private boolean includeAnnotations = true;
     private boolean outputEmptyLists = true;
 
@@ -37,7 +37,7 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public FilterRoi3DListsAlgorithm(FilterRoi3DListsAlgorithm other) {
         super(other);
-        this.filter = new DefaultExpressionParameter(other.filter);
+        this.filter = new JIPipeExpressionParameter(other.filter);
         this.includeAnnotations = other.includeAnnotations;
         this.outputEmptyLists = other.outputEmptyLists;
     }
@@ -94,12 +94,12 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Filter", description = "The filter expression used to test ROI lists. Must return a boolean.")
     @JIPipeParameter("filter")
     @ExpressionParameterSettings(variableSource = VariableSource.class, hint = "per ROI list")
-    public DefaultExpressionParameter getFilter() {
+    public JIPipeExpressionParameter getFilter() {
         return filter;
     }
 
     @JIPipeParameter("filter")
-    public void setFilter(DefaultExpressionParameter filter) {
+    public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
 

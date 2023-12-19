@@ -18,7 +18,7 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -32,7 +32,7 @@ import java.awt.*;
  */
 public class ROIProperties extends AbstractJIPipeParameterCollection {
 
-    private DefaultExpressionParameter roiName = new DefaultExpressionParameter("\"unnamed\"");
+    private JIPipeExpressionParameter roiName = new JIPipeExpressionParameter("\"unnamed\"");
     private int positionZ = 0;
     private int positionC = 0;
     private int positionT = 0;
@@ -45,7 +45,7 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
     }
 
     public ROIProperties(ROIProperties other) {
-        this.roiName = new DefaultExpressionParameter(other.roiName);
+        this.roiName = new JIPipeExpressionParameter(other.roiName);
         this.positionZ = other.positionZ;
         this.positionC = other.positionC;
         this.positionT = other.positionT;
@@ -127,12 +127,12 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
     @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getRoiName() {
+    public JIPipeExpressionParameter getRoiName() {
         return roiName;
     }
 
     @JIPipeParameter("roi-name")
-    public void setRoiName(DefaultExpressionParameter roiName) {
+    public void setRoiName(JIPipeExpressionParameter roiName) {
         this.roiName = roiName;
     }
 

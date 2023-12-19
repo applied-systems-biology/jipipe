@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -226,9 +226,9 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         private FontFamilyParameter fontFamily = new FontFamilyParameter();
         private int fontSize = 12;
         private FontStyleParameter fontStyle = FontStyleParameter.Bold;
-        private DefaultExpressionParameter horizontalLabel = new DefaultExpressionParameter("D2S(value, 0) + \" \" + unit");
+        private JIPipeExpressionParameter horizontalLabel = new JIPipeExpressionParameter("D2S(value, 0) + \" \" + unit");
 
-        private DefaultExpressionParameter verticalLabel = new DefaultExpressionParameter("D2S(value, 0) + \" \" + unit");
+        private JIPipeExpressionParameter verticalLabel = new JIPipeExpressionParameter("D2S(value, 0) + \" \" + unit");
         private Color textColor = Color.WHITE;
 
         private boolean hideLabels = false;
@@ -241,8 +241,8 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             this.fontSize = other.fontSize;
             this.fontStyle = other.fontStyle;
             this.textColor = other.textColor;
-            this.horizontalLabel = new DefaultExpressionParameter(other.horizontalLabel);
-            this.verticalLabel = new DefaultExpressionParameter(other.verticalLabel);
+            this.horizontalLabel = new JIPipeExpressionParameter(other.horizontalLabel);
+            this.verticalLabel = new JIPipeExpressionParameter(other.verticalLabel);
             this.hideLabels = other.hideLabels;
         }
 
@@ -251,12 +251,12 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(name = "Unit", description = "The unit of the scale bar")
         @ExpressionParameterSettingsVariable(name = "Value", description = "The value of the scale bar")
-        public DefaultExpressionParameter getHorizontalLabel() {
+        public JIPipeExpressionParameter getHorizontalLabel() {
             return horizontalLabel;
         }
 
         @JIPipeParameter("label-h")
-        public void setHorizontalLabel(DefaultExpressionParameter horizontalLabel) {
+        public void setHorizontalLabel(JIPipeExpressionParameter horizontalLabel) {
             this.horizontalLabel = horizontalLabel;
         }
 
@@ -265,12 +265,12 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(name = "Unit", description = "The unit of the scale bar")
         @ExpressionParameterSettingsVariable(name = "Value", description = "The value of the scale bar")
-        public DefaultExpressionParameter getVerticalLabel() {
+        public JIPipeExpressionParameter getVerticalLabel() {
             return verticalLabel;
         }
 
         @JIPipeParameter("label-v")
-        public void setVerticalLabel(DefaultExpressionParameter verticalLabel) {
+        public void setVerticalLabel(JIPipeExpressionParameter verticalLabel) {
             this.verticalLabel = verticalLabel;
         }
 

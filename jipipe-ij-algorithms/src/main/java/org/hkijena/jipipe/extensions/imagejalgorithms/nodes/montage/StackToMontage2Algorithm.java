@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -53,12 +53,12 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
 
     private final MontageCreator montageCreator;
     private boolean addZCTAnnotations = true;
-    private DefaultExpressionParameter sliceFilter = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter sliceFilter = new JIPipeExpressionParameter();
 
     public StackToMontage2Algorithm(JIPipeNodeInfo info) {
         super(info);
         this.montageCreator = new MontageCreator();
-        this.montageCreator.setLabelExpression(new DefaultExpressionParameter("z + \", \" + c + \", \" + t"));
+        this.montageCreator.setLabelExpression(new JIPipeExpressionParameter("z + \", \" + c + \", \" + t"));
         registerSubParameters(montageCreator);
     }
 
@@ -66,7 +66,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.montageCreator = new MontageCreator(other.montageCreator);
         this.addZCTAnnotations = other.addZCTAnnotations;
-        this.sliceFilter = new DefaultExpressionParameter(other.sliceFilter);
+        this.sliceFilter = new JIPipeExpressionParameter(other.sliceFilter);
         registerSubParameters(this);
     }
 
@@ -105,12 +105,12 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("slice-filter")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = Image5DSliceIndexExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getSliceFilter() {
+    public JIPipeExpressionParameter getSliceFilter() {
         return sliceFilter;
     }
 
     @JIPipeParameter("slice-filter")
-    public void setSliceFilter(DefaultExpressionParameter sliceFilter) {
+    public void setSliceFilter(JIPipeExpressionParameter sliceFilter) {
         this.sliceFilter = sliceFilter;
     }
 }

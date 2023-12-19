@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -101,27 +101,27 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     public static class Entry extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter preprocessor = new DefaultExpressionParameter("text");
-        private DefaultExpressionParameter columnName = new DefaultExpressionParameter("\"Column name\"");
+        private JIPipeExpressionParameter preprocessor = new JIPipeExpressionParameter("text");
+        private JIPipeExpressionParameter columnName = new JIPipeExpressionParameter("\"Column name\"");
 
         public Entry() {
         }
 
         public Entry(Entry other) {
-            this.preprocessor = new DefaultExpressionParameter(other.preprocessor);
-            this.columnName = new DefaultExpressionParameter(other.columnName);
+            this.preprocessor = new JIPipeExpressionParameter(other.preprocessor);
+            this.columnName = new JIPipeExpressionParameter(other.columnName);
         }
 
         @JIPipeDocumentation(name = "Preprocessor", description = "An expression that allows to preprocess the text. You can return an ARRAY to create multiple rows.")
         @JIPipeParameter(value = "preprocessor", uiOrder = -100)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(name = "Text", key = "text", description = "The input text")
-        public DefaultExpressionParameter getPreprocessor() {
+        public JIPipeExpressionParameter getPreprocessor() {
             return preprocessor;
         }
 
         @JIPipeParameter("preprocessor")
-        public void setPreprocessor(DefaultExpressionParameter preprocessor) {
+        public void setPreprocessor(JIPipeExpressionParameter preprocessor) {
             this.preprocessor = preprocessor;
         }
 
@@ -129,12 +129,12 @@ public class TextDataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         @JIPipeParameter(value = "column-name", uiOrder = -90)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(name = "Text", key = "text", description = "The input text")
-        public DefaultExpressionParameter getColumnName() {
+        public JIPipeExpressionParameter getColumnName() {
             return columnName;
         }
 
         @JIPipeParameter("column-name")
-        public void setColumnName(DefaultExpressionParameter columnName) {
+        public void setColumnName(JIPipeExpressionParameter columnName) {
             this.columnName = columnName;
         }
     }

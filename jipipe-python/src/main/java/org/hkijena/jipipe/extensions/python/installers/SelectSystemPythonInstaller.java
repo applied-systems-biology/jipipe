@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -40,7 +40,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
     public static PythonEnvironment generateEnvironment(Configuration configuration) {
         PythonEnvironment generatedEnvironment = new PythonEnvironment();
         generatedEnvironment.setType(PythonEnvironmentType.System);
-        generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
+        generatedEnvironment.setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));
         generatedEnvironment.setExecutablePath(configuration.getPythonExecutable());
         generatedEnvironment.setName(configuration.getName());
         return generatedEnvironment;

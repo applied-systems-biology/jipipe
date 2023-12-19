@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -51,10 +51,10 @@ import java.util.List;
 public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customVariables;
-    private DefaultExpressionParameter tileSizeX = new DefaultExpressionParameter("512");
-    private DefaultExpressionParameter tileSizeY = new DefaultExpressionParameter("512");
-    private DefaultExpressionParameter overlapX = new DefaultExpressionParameter("0");
-    private DefaultExpressionParameter overlapY = new DefaultExpressionParameter("0");
+    private JIPipeExpressionParameter tileSizeX = new JIPipeExpressionParameter("512");
+    private JIPipeExpressionParameter tileSizeY = new JIPipeExpressionParameter("512");
+    private JIPipeExpressionParameter overlapX = new JIPipeExpressionParameter("0");
+    private JIPipeExpressionParameter overlapY = new JIPipeExpressionParameter("0");
     private OptionalAnnotationNameParameter tileXAnnotation = new OptionalAnnotationNameParameter("Tile X", true);
     private OptionalAnnotationNameParameter tileYAnnotation = new OptionalAnnotationNameParameter("Tile Y", true);
     private OptionalAnnotationNameParameter numTilesX = new OptionalAnnotationNameParameter("Num Tiles X", true);
@@ -243,12 +243,12 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = Image5DExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getTileSizeX() {
+    public JIPipeExpressionParameter getTileSizeX() {
         return tileSizeX;
     }
 
     @JIPipeParameter("tile-x")
-    public void setTileSizeX(DefaultExpressionParameter tileSizeX) {
+    public void setTileSizeX(JIPipeExpressionParameter tileSizeX) {
         this.tileSizeX = tileSizeX;
     }
 
@@ -258,12 +258,12 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = Image5DExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getTileSizeY() {
+    public JIPipeExpressionParameter getTileSizeY() {
         return tileSizeY;
     }
 
     @JIPipeParameter("tile-y")
-    public void setTileSizeY(DefaultExpressionParameter tileSizeY) {
+    public void setTileSizeY(JIPipeExpressionParameter tileSizeY) {
         this.tileSizeY = tileSizeY;
     }
 
@@ -317,12 +317,12 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = Image5DExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getOverlapX() {
+    public JIPipeExpressionParameter getOverlapX() {
         return overlapX;
     }
 
     @JIPipeParameter("overlap-x")
-    public void setOverlapX(DefaultExpressionParameter overlapX) {
+    public void setOverlapX(JIPipeExpressionParameter overlapX) {
         this.overlapX = overlapX;
     }
 
@@ -332,12 +332,12 @@ public class TileImage2Dv2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = Image5DExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getOverlapY() {
+    public JIPipeExpressionParameter getOverlapY() {
         return overlapY;
     }
 
     @JIPipeParameter("overlap-y")
-    public void setOverlapY(DefaultExpressionParameter overlapY) {
+    public void setOverlapY(JIPipeExpressionParameter overlapY) {
         this.overlapY = overlapY;
     }
 

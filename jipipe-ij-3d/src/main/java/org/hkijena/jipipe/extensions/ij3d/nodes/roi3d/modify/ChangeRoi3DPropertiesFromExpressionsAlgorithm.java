@@ -41,14 +41,14 @@ import java.util.Map;
 public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customVariables;
-    private OptionalDefaultExpressionParameter roiName = new OptionalDefaultExpressionParameter(false, "Name");
-    private OptionalDefaultExpressionParameter roiComment = new OptionalDefaultExpressionParameter(false, "Comment");
-    private OptionalDefaultExpressionParameter centerX = new OptionalDefaultExpressionParameter(false, "CenterX");
-    private OptionalDefaultExpressionParameter centerY = new OptionalDefaultExpressionParameter(false, "CenterY");
-    private OptionalDefaultExpressionParameter centerZ = new OptionalDefaultExpressionParameter(false, "CenterZ");
-    private OptionalDefaultExpressionParameter channelLocation = new OptionalDefaultExpressionParameter(false, "Channel");
-    private OptionalDefaultExpressionParameter frameLocation = new OptionalDefaultExpressionParameter(false, "Frame");
-    private OptionalDefaultExpressionParameter fillColor = new OptionalDefaultExpressionParameter(false, "FillColor");
+    private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "Name");
+    private OptionalJIPipeExpressionParameter roiComment = new OptionalJIPipeExpressionParameter(false, "Comment");
+    private OptionalJIPipeExpressionParameter centerX = new OptionalJIPipeExpressionParameter(false, "CenterX");
+    private OptionalJIPipeExpressionParameter centerY = new OptionalJIPipeExpressionParameter(false, "CenterY");
+    private OptionalJIPipeExpressionParameter centerZ = new OptionalJIPipeExpressionParameter(false, "CenterZ");
+    private OptionalJIPipeExpressionParameter channelLocation = new OptionalJIPipeExpressionParameter(false, "Channel");
+    private OptionalJIPipeExpressionParameter frameLocation = new OptionalJIPipeExpressionParameter(false, "Frame");
+    private OptionalJIPipeExpressionParameter fillColor = new OptionalJIPipeExpressionParameter(false, "FillColor");
     private ParameterCollectionList metadataEntries = ParameterCollectionList.containingCollection(MetadataEntry.class);
     private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
     private boolean measureInPhysicalUnits = true;
@@ -175,12 +175,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public OptionalDefaultExpressionParameter getRoiName() {
+    public OptionalJIPipeExpressionParameter getRoiName() {
         return roiName;
     }
 
     @JIPipeParameter("roi-name")
-    public void setRoiName(OptionalDefaultExpressionParameter roiName) {
+    public void setRoiName(OptionalJIPipeExpressionParameter roiName) {
         this.roiName = roiName;
     }
 
@@ -195,12 +195,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public OptionalDefaultExpressionParameter getRoiComment() {
+    public OptionalJIPipeExpressionParameter getRoiComment() {
         return roiComment;
     }
 
     @JIPipeParameter("roi-comment")
-    public void setRoiComment(OptionalDefaultExpressionParameter roiComment) {
+    public void setRoiComment(OptionalJIPipeExpressionParameter roiComment) {
         this.roiComment = roiComment;
     }
 
@@ -215,12 +215,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public OptionalDefaultExpressionParameter getCenterX() {
+    public OptionalJIPipeExpressionParameter getCenterX() {
         return centerX;
     }
 
     @JIPipeParameter("center-x")
-    public void setCenterX(OptionalDefaultExpressionParameter centerX) {
+    public void setCenterX(OptionalJIPipeExpressionParameter centerX) {
         this.centerX = centerX;
     }
 
@@ -235,12 +235,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public OptionalDefaultExpressionParameter getCenterY() {
+    public OptionalJIPipeExpressionParameter getCenterY() {
         return centerY;
     }
 
     @JIPipeParameter("center-y")
-    public void setCenterY(OptionalDefaultExpressionParameter centerY) {
+    public void setCenterY(OptionalJIPipeExpressionParameter centerY) {
         this.centerY = centerY;
     }
 
@@ -255,12 +255,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public OptionalDefaultExpressionParameter getCenterZ() {
+    public OptionalJIPipeExpressionParameter getCenterZ() {
         return centerZ;
     }
 
     @JIPipeParameter("center-z")
-    public void setCenterZ(OptionalDefaultExpressionParameter centerZ) {
+    public void setCenterZ(OptionalJIPipeExpressionParameter centerZ) {
         this.centerZ = centerZ;
     }
 
@@ -275,12 +275,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public OptionalDefaultExpressionParameter getChannelLocation() {
+    public OptionalJIPipeExpressionParameter getChannelLocation() {
         return channelLocation;
     }
 
     @JIPipeParameter("channel-location")
-    public void setChannelLocation(OptionalDefaultExpressionParameter channelLocation) {
+    public void setChannelLocation(OptionalJIPipeExpressionParameter channelLocation) {
         this.channelLocation = channelLocation;
     }
 
@@ -295,12 +295,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public OptionalDefaultExpressionParameter getFrameLocation() {
+    public OptionalJIPipeExpressionParameter getFrameLocation() {
         return frameLocation;
     }
 
     @JIPipeParameter("frame-location")
-    public void setFrameLocation(OptionalDefaultExpressionParameter frameLocation) {
+    public void setFrameLocation(OptionalJIPipeExpressionParameter frameLocation) {
         this.frameLocation = frameLocation;
     }
 
@@ -315,12 +315,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public OptionalDefaultExpressionParameter getFillColor() {
+    public OptionalJIPipeExpressionParameter getFillColor() {
         return fillColor;
     }
 
     @JIPipeParameter("fill-color")
-    public void setFillColor(OptionalDefaultExpressionParameter fillColor) {
+    public void setFillColor(OptionalJIPipeExpressionParameter fillColor) {
         this.fillColor = fillColor;
     }
 
@@ -361,14 +361,14 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     public static class MetadataEntry extends AbstractJIPipeParameterCollection {
         private String metadataName;
 
-        private OptionalDefaultExpressionParameter metadataValue = new OptionalDefaultExpressionParameter(false, "metadata.?");
+        private OptionalJIPipeExpressionParameter metadataValue = new OptionalJIPipeExpressionParameter(false, "metadata.?");
 
         public MetadataEntry() {
         }
 
         public MetadataEntry(MetadataEntry other) {
             this.metadataName = other.metadataName;
-            this.metadataValue = new OptionalDefaultExpressionParameter(other.metadataValue);
+            this.metadataValue = new OptionalJIPipeExpressionParameter(other.metadataValue);
         }
 
         @JIPipeDocumentation(name = "Metadata name/key")
@@ -392,12 +392,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
         @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-        public OptionalDefaultExpressionParameter getMetadataValue() {
+        public OptionalJIPipeExpressionParameter getMetadataValue() {
             return metadataValue;
         }
 
         @JIPipeParameter("metadata-value")
-        public void setMetadataValue(OptionalDefaultExpressionParameter metadataValue) {
+        public void setMetadataValue(OptionalJIPipeExpressionParameter metadataValue) {
             this.metadataValue = metadataValue;
         }
     }

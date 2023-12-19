@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -36,7 +36,7 @@ public class CopyNFunction extends ExpressionFunction {
             return source;
         List<Object> result = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            result.add(DefaultExpressionEvaluator.deepCopyObject(source));
+            result.add(JIPipeExpressionEvaluator.deepCopyObject(source));
         }
         return result;
     }

@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -44,7 +44,7 @@ import java.util.Set;
 public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private final CustomExpressionVariablesParameter customFilterVariables;
     private OptionalAnnotationNameParameter componentNameAnnotation = new OptionalAnnotationNameParameter("Component", true);
-    private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter("");
+    private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter("");
     private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();
     private boolean measureInPhysicalUnits = true;
     private boolean requireColocalization = true;
@@ -61,7 +61,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
     public SplitRoi3DIntoConnectedComponentsAlgorithm(SplitRoi3DIntoConnectedComponentsAlgorithm other) {
         super(other);
         this.componentNameAnnotation = new OptionalAnnotationNameParameter(other.componentNameAnnotation);
-        this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
+        this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
         this.overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter(other.overlapFilterMeasurements);
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
@@ -182,12 +182,12 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
     @ExpressionParameterSettingsVariable(fromClass = ROI3DRelationMeasurementExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getOverlapFilter() {
+    public JIPipeExpressionParameter getOverlapFilter() {
         return overlapFilter;
     }
 
     @JIPipeParameter("overlap-filter")
-    public void setOverlapFilter(DefaultExpressionParameter overlapFilter) {
+    public void setOverlapFilter(JIPipeExpressionParameter overlapFilter) {
         this.overlapFilter = overlapFilter;
     }
 

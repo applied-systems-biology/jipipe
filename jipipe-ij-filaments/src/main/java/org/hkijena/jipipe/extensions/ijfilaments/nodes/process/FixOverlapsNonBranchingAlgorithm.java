@@ -46,8 +46,8 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean connectAcrossT = false;
     private boolean excludeExistingEndpoints = true;
     private boolean enable3D = true;
-    private DefaultExpressionParameter filterFunction = new DefaultExpressionParameter("length < 50");
-    private DefaultExpressionParameter scoringFunction = new DefaultExpressionParameter("default");
+    private JIPipeExpressionParameter filterFunction = new JIPipeExpressionParameter("length < 50");
+    private JIPipeExpressionParameter scoringFunction = new JIPipeExpressionParameter("default");
     private OptionalColorParameter newEdgeColor = new OptionalColorParameter(Color.GREEN, true);
 
     private boolean enforceEdgesWithinMask = true;
@@ -66,8 +66,8 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
         this.connectAcrossT = other.connectAcrossT;
         this.enable3D = other.enable3D;
         this.excludeExistingEndpoints = other.excludeExistingEndpoints;
-        this.scoringFunction = new DefaultExpressionParameter(other.scoringFunction);
-        this.filterFunction = new DefaultExpressionParameter(other.filterFunction);
+        this.scoringFunction = new JIPipeExpressionParameter(other.scoringFunction);
+        this.filterFunction = new JIPipeExpressionParameter(other.filterFunction);
         this.newEdgeColor = new OptionalColorParameter(other.newEdgeColor);
         this.enforceEdgesWithinMask = other.enforceEdgesWithinMask;
     }
@@ -113,12 +113,12 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    public DefaultExpressionParameter getFilterFunction() {
+    public JIPipeExpressionParameter getFilterFunction() {
         return filterFunction;
     }
 
     @JIPipeParameter("filter-function")
-    public void setFilterFunction(DefaultExpressionParameter filterFunction) {
+    public void setFilterFunction(JIPipeExpressionParameter filterFunction) {
         this.filterFunction = filterFunction;
     }
 
@@ -135,12 +135,12 @@ public class FixOverlapsNonBranchingAlgorithm extends JIPipeIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    public DefaultExpressionParameter getScoringFunction() {
+    public JIPipeExpressionParameter getScoringFunction() {
         return scoringFunction;
     }
 
     @JIPipeParameter("scoring-function")
-    public void setScoringFunction(DefaultExpressionParameter scoringFunction) {
+    public void setScoringFunction(JIPipeExpressionParameter scoringFunction) {
         this.scoringFunction = scoringFunction;
     }
 

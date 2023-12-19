@@ -3,11 +3,11 @@ package org.hkijena.jipipe.api.nodes;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
+import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -32,7 +32,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
             menu.addSeparator();
 
             String key = parameterEditorUI.getParameterAccess().getKey();
-            DefaultExpressionParameter adaptiveParameter = getAdaptiveParameterSettings().getAdaptiveParameter(key);
+            JIPipeExpressionParameter adaptiveParameter = getAdaptiveParameterSettings().getAdaptiveParameter(key);
 
             if (adaptiveParameter != null) {
                 JMenuItem removeAdaptiveParameter = new JMenuItem("Make parameter static", UIUtils.getIconFromResources("actions/lock.png"));
@@ -55,7 +55,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
 
         if (getAdaptiveParameterSettings().isEnabled()) {
             String key = parameterEditorUI.getParameterAccess().getKey();
-            DefaultExpressionParameter adaptiveParameter = getAdaptiveParameterSettings().getAdaptiveParameter(key);
+            JIPipeExpressionParameter adaptiveParameter = getAdaptiveParameterSettings().getAdaptiveParameter(key);
 
             if (adaptiveParameter != null) {
                 JIPipeManualParameterAccess dummy = JIPipeManualParameterAccess.builder()
@@ -90,7 +90,7 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
                         .setSetter(t -> {
                         }).setSource(new JIPipeDummyParameterCollection()).build();
 
-                DefaultExpressionParameterEditorUI newEditorUI = new DefaultExpressionParameterEditorUI(parameterEditorUI.getWorkbench(), parameterPanel.getParameterTree(), dummy);
+                JIPipeExpressionParameterEditorUI newEditorUI = new JIPipeExpressionParameterEditorUI(parameterEditorUI.getWorkbench(), parameterPanel.getParameterTree(), dummy);
                 JLabel label = new JLabel("Adaptive", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
                 label.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(0, 4, 0, 4),
                         new RoundedLineBorder(new Color(0xE6E6E6), 1, 3)));

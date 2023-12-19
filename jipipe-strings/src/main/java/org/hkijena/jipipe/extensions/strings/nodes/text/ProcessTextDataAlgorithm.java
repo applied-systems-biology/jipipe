@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.strings.StringData;
 @JIPipeOutputSlot(value = StringData.class, slotName = "Output", autoCreate = true)
 public class ProcessTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter textProcessor = new DefaultExpressionParameter("text");
+    private JIPipeExpressionParameter textProcessor = new JIPipeExpressionParameter("text");
 
     public ProcessTextDataAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -29,7 +29,7 @@ public class ProcessTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public ProcessTextDataAlgorithm(ProcessTextDataAlgorithm other) {
         super(other);
-        this.textProcessor = new DefaultExpressionParameter(other.textProcessor);
+        this.textProcessor = new JIPipeExpressionParameter(other.textProcessor);
     }
 
     @Override
@@ -48,12 +48,12 @@ public class ProcessTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter(value = "text-processor")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Text", key = "text", description = "The input text")
-    public DefaultExpressionParameter getTextProcessor() {
+    public JIPipeExpressionParameter getTextProcessor() {
         return textProcessor;
     }
 
     @JIPipeParameter("text-processor")
-    public void setTextProcessor(DefaultExpressionParameter textProcessor) {
+    public void setTextProcessor(JIPipeExpressionParameter textProcessor) {
         this.textProcessor = textProcessor;
     }
 

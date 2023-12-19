@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.RoiOverlapStatisticsVariableSource;
@@ -335,7 +335,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean enabled = true;
         private boolean invert = false;
         private boolean outputOverlaps = false;
-        private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
+        private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter();
         private boolean consumeOnOverlap = false;
 
         private boolean enforceOverlap = true;
@@ -352,7 +352,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.enabled = other.enabled;
             this.invert = other.invert;
             this.outputOverlaps = other.outputOverlaps;
-            this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
+            this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
             this.consumeOnOverlap = other.consumeOnOverlap;
             this.fastMode = other.fastMode;
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
@@ -435,12 +435,12 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 "no filtering is applied.")
         @JIPipeParameter("overlap-filter")
         @ExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariableSource.class, hint = "per overlapping ROI")
-        public DefaultExpressionParameter getOverlapFilter() {
+        public JIPipeExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }
 
         @JIPipeParameter("overlap-filter")
-        public void setOverlapFilter(DefaultExpressionParameter overlapFilter) {
+        public void setOverlapFilter(JIPipeExpressionParameter overlapFilter) {
             this.overlapFilter = overlapFilter;
         }
 

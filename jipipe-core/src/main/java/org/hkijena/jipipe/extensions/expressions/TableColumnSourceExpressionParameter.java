@@ -47,24 +47,24 @@ import java.util.Set;
         "<li>Generating columns: The value expression is called for each row. Return a string or number. You have access to the other column values inside the row (as variables). Example: <code>Mean + 0.5 * X</code>. " +
         "If you do not provide a valid expression, the expression itself is put in as column value (string)</li>" +
         "</ul>")
-public class TableColumnSourceExpressionParameter extends PairParameter<TableColumnSourceExpressionParameter.TableSourceType, DefaultExpressionParameter> implements JIPipeValidatable {
+public class TableColumnSourceExpressionParameter extends PairParameter<TableColumnSourceExpressionParameter.TableSourceType, JIPipeExpressionParameter> implements JIPipeValidatable {
 
     public TableColumnSourceExpressionParameter() {
-        super(TableColumnSourceExpressionParameter.TableSourceType.class, DefaultExpressionParameter.class);
+        super(TableColumnSourceExpressionParameter.TableSourceType.class, JIPipeExpressionParameter.class);
         setKey(TableSourceType.ExistingColumn);
-        setValue(new DefaultExpressionParameter());
+        setValue(new JIPipeExpressionParameter());
     }
 
     public TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType type, String expression) {
-        super(TableColumnSourceExpressionParameter.TableSourceType.class, DefaultExpressionParameter.class);
+        super(TableColumnSourceExpressionParameter.TableSourceType.class, JIPipeExpressionParameter.class);
         setKey(type);
-        setValue(new DefaultExpressionParameter(expression));
+        setValue(new JIPipeExpressionParameter(expression));
     }
 
     public TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter other) {
         super(other);
         this.setKey(other.getKey());
-        this.setValue(new DefaultExpressionParameter(other.getValue()));
+        this.setValue(new JIPipeExpressionParameter(other.getValue()));
     }
 
     /**
@@ -152,7 +152,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
     }
 
     @Override
-    public DefaultExpressionParameter getValue() {
+    public JIPipeExpressionParameter getValue() {
         // Add the UI variables
         super.getValue().getAdditionalUIVariables().addAll(VariableSource.VARIABLES);
         return super.getValue();

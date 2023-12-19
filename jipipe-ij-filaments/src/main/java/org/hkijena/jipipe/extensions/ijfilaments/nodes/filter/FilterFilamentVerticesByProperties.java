@@ -27,7 +27,7 @@ import java.util.Set;
 public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter("");
+    private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("");
 
     public FilterFilamentVerticesByProperties(JIPipeNodeInfo info) {
         super(info);
@@ -37,7 +37,7 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
     public FilterFilamentVerticesByProperties(FilterFilamentVerticesByProperties other) {
         super(other);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
-        this.filter = new DefaultExpressionParameter(other.filter);
+        this.filter = new JIPipeExpressionParameter(other.filter);
     }
 
     @Override
@@ -69,12 +69,12 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getFilter() {
+    public JIPipeExpressionParameter getFilter() {
         return filter;
     }
 
     @JIPipeParameter("filter")
-    public void setFilter(DefaultExpressionParameter filter) {
+    public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
 

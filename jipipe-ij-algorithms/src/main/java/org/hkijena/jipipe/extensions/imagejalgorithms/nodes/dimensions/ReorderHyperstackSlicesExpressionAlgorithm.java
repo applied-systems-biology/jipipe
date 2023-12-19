@@ -35,7 +35,7 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
 
     private final CustomExpressionVariablesParameter customVariables;
 
-    private DefaultExpressionParameter newLocationExpression = new DefaultExpressionParameter("ARRAY(c, z, t)");
+    private JIPipeExpressionParameter newLocationExpression = new JIPipeExpressionParameter("ARRAY(c, z, t)");
 
     private boolean silentlyOverride = false;
 
@@ -48,7 +48,7 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
     public ReorderHyperstackSlicesExpressionAlgorithm(ReorderHyperstackSlicesExpressionAlgorithm other) {
         super(other);
         this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
-        this.newLocationExpression = new DefaultExpressionParameter(other.newLocationExpression);
+        this.newLocationExpression = new JIPipeExpressionParameter(other.newLocationExpression);
         this.silentlyOverride = other.silentlyOverride;
     }
 
@@ -117,12 +117,12 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
     @ExpressionParameterSettingsVariable(key = "c", name = "Current channel location", description = "Current channel location of the slice (zero-based)")
     @ExpressionParameterSettingsVariable(key = "z", name = "Current Z location", description = "Current Z location of the slice (zero-based)")
     @ExpressionParameterSettingsVariable(key = "t", name = "Current frame location", description = "Current frame location of the slice (zero-based)")
-    public DefaultExpressionParameter getNewLocationExpression() {
+    public JIPipeExpressionParameter getNewLocationExpression() {
         return newLocationExpression;
     }
 
     @JIPipeParameter("new-location-expression")
-    public void setNewLocationExpression(DefaultExpressionParameter newLocationExpression) {
+    public void setNewLocationExpression(JIPipeExpressionParameter newLocationExpression) {
         this.newLocationExpression = newLocationExpression;
     }
 

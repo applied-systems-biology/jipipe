@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -38,7 +38,7 @@ public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
     private static ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
     private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("B > 50");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("B > 50");
 
     public ColorThresholdExpression2D(JIPipeNodeInfo info) {
         super(info);
@@ -46,7 +46,7 @@ public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
     public ColorThresholdExpression2D(ColorThresholdExpression2D other) {
         super(other);
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
     }
 
     @Override
@@ -130,12 +130,12 @@ public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
             "original color space, as well as in other color spaces. The expression must return a boolean value or a number (<=0 = background, >0 = foreground).")
     @JIPipeParameter("expression")
     @ExpressionParameterSettings(variableSource = ColorPixel5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JIPipeParameter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 }

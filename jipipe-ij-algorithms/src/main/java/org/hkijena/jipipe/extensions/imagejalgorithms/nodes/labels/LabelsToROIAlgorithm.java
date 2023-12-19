@@ -38,7 +38,7 @@ import java.util.Set;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Labels to ROI")
 public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter labelNameExpression = new DefaultExpressionParameter("\"label-\" + TO_INTEGER(index)");
+    private JIPipeExpressionParameter labelNameExpression = new JIPipeExpressionParameter("\"label-\" + TO_INTEGER(index)");
     private Method method = Method.Floodfill;
 
     private Neighborhood2D connectivity = Neighborhood2D.FourConnected;
@@ -51,7 +51,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.method = other.method;
         this.connectivity = other.connectivity;
-        this.labelNameExpression = new DefaultExpressionParameter(other.labelNameExpression);
+        this.labelNameExpression = new JIPipeExpressionParameter(other.labelNameExpression);
     }
 
     @Override
@@ -141,12 +141,12 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Label name", description = "Expression for the generation of the label name")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @JIPipeParameter("label-name-expression")
-    public DefaultExpressionParameter getLabelNameExpression() {
+    public JIPipeExpressionParameter getLabelNameExpression() {
         return labelNameExpression;
     }
 
     @JIPipeParameter("label-name-expression")
-    public void setLabelNameExpression(DefaultExpressionParameter labelNameExpression) {
+    public void setLabelNameExpression(JIPipeExpressionParameter labelNameExpression) {
         this.labelNameExpression = labelNameExpression;
     }
 

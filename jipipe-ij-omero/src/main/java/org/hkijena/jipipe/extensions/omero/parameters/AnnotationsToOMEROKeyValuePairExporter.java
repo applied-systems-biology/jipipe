@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -14,9 +14,9 @@ import java.util.Map;
 
 public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParameterCollection {
     private boolean enabled = true;
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter("STRING_STARTS_WITH(key, \"OMERO:KV:\")");
-    private DefaultExpressionParameter keyValuePairKey = new DefaultExpressionParameter("REPLACE_IN_STRING(key, \"OMERO:KV:\", \"\")");
-    private DefaultExpressionParameter keyValuePairValue = new DefaultExpressionParameter("value");
+    private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("STRING_STARTS_WITH(key, \"OMERO:KV:\")");
+    private JIPipeExpressionParameter keyValuePairKey = new JIPipeExpressionParameter("REPLACE_IN_STRING(key, \"OMERO:KV:\", \"\")");
+    private JIPipeExpressionParameter keyValuePairValue = new JIPipeExpressionParameter("value");
 
     public AnnotationsToOMEROKeyValuePairExporter() {
 
@@ -24,9 +24,9 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
 
     public AnnotationsToOMEROKeyValuePairExporter(AnnotationsToOMEROKeyValuePairExporter other) {
         this.enabled = other.enabled;
-        this.filter = new DefaultExpressionParameter(other.filter);
-        this.keyValuePairKey = new DefaultExpressionParameter(other.keyValuePairKey);
-        this.keyValuePairValue = new DefaultExpressionParameter(other.keyValuePairValue);
+        this.filter = new JIPipeExpressionParameter(other.filter);
+        this.keyValuePairKey = new JIPipeExpressionParameter(other.keyValuePairKey);
+        this.keyValuePairValue = new JIPipeExpressionParameter(other.keyValuePairValue);
     }
 
     @JIPipeDocumentation(name = "Enabled", description = "Determined if the import of key-value pairs is enabled")
@@ -45,12 +45,12 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
     @ExpressionParameterSettings(hint = "per annotation")
     @ExpressionParameterSettingsVariable(name = "Annotation name", description = "The name/key of the annotation", key = "key")
     @ExpressionParameterSettingsVariable(name = "Annotation value", description = "The value of the annotation", key = "value")
-    public DefaultExpressionParameter getFilter() {
+    public JIPipeExpressionParameter getFilter() {
         return filter;
     }
 
     @JIPipeParameter("filter")
-    public void setFilter(DefaultExpressionParameter filter) {
+    public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
 
@@ -59,12 +59,12 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
     @ExpressionParameterSettings(hint = "per annotation")
     @ExpressionParameterSettingsVariable(name = "Annotation name", description = "The name/key of the annotation", key = "key")
     @ExpressionParameterSettingsVariable(name = "Annotation value", description = "The value of the annotation", key = "value")
-    public DefaultExpressionParameter getKeyValuePairKey() {
+    public JIPipeExpressionParameter getKeyValuePairKey() {
         return keyValuePairKey;
     }
 
     @JIPipeParameter("key-value-pair-key")
-    public void setKeyValuePairKey(DefaultExpressionParameter keyValuePairKey) {
+    public void setKeyValuePairKey(JIPipeExpressionParameter keyValuePairKey) {
         this.keyValuePairKey = keyValuePairKey;
     }
 
@@ -73,12 +73,12 @@ public class AnnotationsToOMEROKeyValuePairExporter extends AbstractJIPipeParame
     @ExpressionParameterSettings(hint = "per annotation")
     @ExpressionParameterSettingsVariable(name = "Annotation name", description = "The name/key of the annotation", key = "key")
     @ExpressionParameterSettingsVariable(name = "Annotation value", description = "The value of the annotation", key = "value")
-    public DefaultExpressionParameter getKeyValuePairValue() {
+    public JIPipeExpressionParameter getKeyValuePairValue() {
         return keyValuePairValue;
     }
 
     @JIPipeParameter("key-value-pair-value")
-    public void setKeyValuePairValue(DefaultExpressionParameter keyValuePairValue) {
+    public void setKeyValuePairValue(JIPipeExpressionParameter keyValuePairValue) {
         this.keyValuePairValue = keyValuePairValue;
     }
 

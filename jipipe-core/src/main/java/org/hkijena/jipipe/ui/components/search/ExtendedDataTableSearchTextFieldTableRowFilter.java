@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.ui.components.search;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -38,7 +38,7 @@ public class ExtendedDataTableSearchTextFieldTableRowFilter extends RowFilter<Ta
             variables.set(entry.getModel().getColumnName(i), getTrueStringValue(entry, i));
         }
         try {
-            DefaultExpressionParameter expressionParameter = new DefaultExpressionParameter(searchTextField.getText());
+            JIPipeExpressionParameter expressionParameter = new JIPipeExpressionParameter(searchTextField.getText());
             return expressionParameter.test(variables);
         } catch (Exception e) {
             return variables.values().stream().anyMatch(o -> searchTextField.test(StringUtils.nullToEmpty(o)));

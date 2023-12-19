@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
@@ -33,9 +33,9 @@ import java.util.List;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Registered ROI", autoCreate = true)
 public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter rotationRange = new DefaultExpressionParameter("MAKE_SEQUENCE(-180, 180, 1)");
+    private JIPipeExpressionParameter rotationRange = new JIPipeExpressionParameter("MAKE_SEQUENCE(-180, 180, 1)");
 
-    private DefaultExpressionParameter scaleRange = new DefaultExpressionParameter("MAKE_SEQUENCE(0.5, 1.5, 0.1)");
+    private JIPipeExpressionParameter scaleRange = new JIPipeExpressionParameter("MAKE_SEQUENCE(0.5, 1.5, 0.1)");
 
     private int xyStep = 5;
 
@@ -46,8 +46,8 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
 
     public RegisterRoiToImageByBrightnessAlgorithm(RegisterRoiToImageByBrightnessAlgorithm other) {
         super(other);
-        this.rotationRange = new DefaultExpressionParameter(other.rotationRange);
-        this.scaleRange = new DefaultExpressionParameter(other.scaleRange);
+        this.rotationRange = new JIPipeExpressionParameter(other.rotationRange);
+        this.scaleRange = new JIPipeExpressionParameter(other.scaleRange);
         this.xyStep = other.xyStep;
     }
 
@@ -146,23 +146,23 @@ public class RegisterRoiToImageByBrightnessAlgorithm extends JIPipeIteratingAlgo
 
     @JIPipeDocumentation(name = "Rotation range", description = "Expression that generates the rotations to be tested")
     @JIPipeParameter("rotation-range")
-    public DefaultExpressionParameter getRotationRange() {
+    public JIPipeExpressionParameter getRotationRange() {
         return rotationRange;
     }
 
     @JIPipeParameter("rotation-range")
-    public void setRotationRange(DefaultExpressionParameter rotationRange) {
+    public void setRotationRange(JIPipeExpressionParameter rotationRange) {
         this.rotationRange = rotationRange;
     }
 
     @JIPipeDocumentation(name = "Scale range", description = "Expression that generates the scales to be tested")
     @JIPipeParameter("scale-range")
-    public DefaultExpressionParameter getScaleRange() {
+    public JIPipeExpressionParameter getScaleRange() {
         return scaleRange;
     }
 
     @JIPipeParameter("scale-range")
-    public void setScaleRange(DefaultExpressionParameter scaleRange) {
+    public void setScaleRange(JIPipeExpressionParameter scaleRange) {
         this.scaleRange = scaleRange;
     }
 

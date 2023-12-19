@@ -18,7 +18,7 @@ import com.fathzer.soft.javaluator.Function;
 import java.util.List;
 
 /**
- * Function that can be utilized in {@link DefaultExpressionEvaluator}.
+ * Function that can be utilized in {@link JIPipeExpressionEvaluator}.
  */
 public abstract class ExpressionFunction extends Function {
     public ExpressionFunction(String name, int argumentCount) {

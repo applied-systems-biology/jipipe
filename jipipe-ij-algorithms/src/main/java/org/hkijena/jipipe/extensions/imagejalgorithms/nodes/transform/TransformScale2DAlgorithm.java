@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -51,8 +51,8 @@ import java.awt.*;
 public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;
-    private OptionalDefaultExpressionParameter xAxis = new OptionalDefaultExpressionParameter(true, "width");
-    private OptionalDefaultExpressionParameter yAxis = new OptionalDefaultExpressionParameter(true, "height");
+    private OptionalJIPipeExpressionParameter xAxis = new OptionalJIPipeExpressionParameter(true, "width");
+    private OptionalJIPipeExpressionParameter yAxis = new OptionalJIPipeExpressionParameter(true, "height");
     private ScaleMode scaleMode = ScaleMode.Stretch;
     private Anchor anchor = Anchor.CenterCenter;
     private Color background = Color.BLACK;
@@ -77,8 +77,8 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TransformScale2DAlgorithm(TransformScale2DAlgorithm other) {
         super(other);
         this.interpolationMethod = other.interpolationMethod;
-        this.xAxis = new OptionalDefaultExpressionParameter(other.xAxis);
-        this.yAxis = new OptionalDefaultExpressionParameter(other.yAxis);
+        this.xAxis = new OptionalJIPipeExpressionParameter(other.xAxis);
+        this.yAxis = new OptionalJIPipeExpressionParameter(other.yAxis);
         this.scaleMode = other.scaleMode;
         this.anchor = other.anchor;
         this.background = other.background;
@@ -227,24 +227,24 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled. If disabled, the aspect ratio is kept.")
     @JIPipeParameter("x-axis")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getxAxis() {
+    public OptionalJIPipeExpressionParameter getxAxis() {
         return xAxis;
     }
 
     @JIPipeParameter("x-axis")
-    public void setxAxis(OptionalDefaultExpressionParameter xAxis) {
+    public void setxAxis(OptionalJIPipeExpressionParameter xAxis) {
         this.xAxis = xAxis;
     }
 
     @JIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled. If disabled, the aspect ratio is kept.")
     @JIPipeParameter("y-axis")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getyAxis() {
+    public OptionalJIPipeExpressionParameter getyAxis() {
         return yAxis;
     }
 
     @JIPipeParameter("y-axis")
-    public void setyAxis(OptionalDefaultExpressionParameter yAxis) {
+    public void setyAxis(OptionalJIPipeExpressionParameter yAxis) {
         this.yAxis = yAxis;
     }
 

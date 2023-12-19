@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions.control;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -34,9 +34,9 @@ public class IfElseExprFunction extends ExpressionFunction {
         boolean condition = (boolean) parameters.get(0);
         ExpressionVariables copy = new ExpressionVariables(variables);
         if (condition)
-            return DefaultExpressionParameter.getEvaluatorInstance().evaluate(parameters.get(1) + "", copy);
+            return JIPipeExpressionParameter.getEvaluatorInstance().evaluate(parameters.get(1) + "", copy);
         else
-            return DefaultExpressionParameter.getEvaluatorInstance().evaluate(parameters.get(2) + "", copy);
+            return JIPipeExpressionParameter.getEvaluatorInstance().evaluate(parameters.get(2) + "", copy);
     }
 
     @Override

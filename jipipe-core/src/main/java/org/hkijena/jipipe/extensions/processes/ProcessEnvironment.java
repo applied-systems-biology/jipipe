@@ -30,11 +30,11 @@ import java.util.Set;
 
 public class ProcessEnvironment extends JIPipeEnvironment {
 
-    private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY()");
+    private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("ARRAY()");
     private Path executablePathWindows = Paths.get("");
     private Path executablePathLinux = Paths.get("");
     private Path executablePathOSX = Paths.get("");
-    private DefaultExpressionParameter workDirectory = new DefaultExpressionParameter("executable_dir");
+    private JIPipeExpressionParameter workDirectory = new JIPipeExpressionParameter("executable_dir");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
     public ProcessEnvironment() {
@@ -43,12 +43,12 @@ public class ProcessEnvironment extends JIPipeEnvironment {
 
     public ProcessEnvironment(ProcessEnvironment other) {
         super(other);
-        this.arguments = new DefaultExpressionParameter(other.arguments);
+        this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.executablePathWindows = other.executablePathWindows;
         this.executablePathLinux = other.executablePathLinux;
         this.executablePathOSX = other.executablePathOSX;
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
-        this.workDirectory = new DefaultExpressionParameter(other.workDirectory);
+        this.workDirectory = new JIPipeExpressionParameter(other.workDirectory);
     }
 
     @Override
@@ -74,13 +74,13 @@ public class ProcessEnvironment extends JIPipeEnvironment {
     @ExpressionParameterSettingsVariable(key = "executable", name = "Executable path", description = "The path to the executable")
     @ExpressionParameterSettingsVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
     @JsonGetter("arguments")
-    public DefaultExpressionParameter getArguments() {
+    public JIPipeExpressionParameter getArguments() {
         return arguments;
     }
 
     @JsonSetter("arguments")
     @JIPipeParameter("arguments")
-    public void setArguments(DefaultExpressionParameter arguments) {
+    public void setArguments(JIPipeExpressionParameter arguments) {
         this.arguments = arguments;
     }
 
@@ -128,13 +128,13 @@ public class ProcessEnvironment extends JIPipeEnvironment {
     @JsonGetter("work-directory")
     @ExpressionParameterSettingsVariable(key = "executable", name = "Executable path", description = "The path to the executable")
     @ExpressionParameterSettingsVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
-    public DefaultExpressionParameter getWorkDirectory() {
+    public JIPipeExpressionParameter getWorkDirectory() {
         return workDirectory;
     }
 
     @JIPipeParameter("work-directory")
     @JsonSetter("work-directory")
-    public void setWorkDirectory(DefaultExpressionParameter workDirectory) {
+    public void setWorkDirectory(JIPipeExpressionParameter workDirectory) {
         this.workDirectory = workDirectory;
     }
 

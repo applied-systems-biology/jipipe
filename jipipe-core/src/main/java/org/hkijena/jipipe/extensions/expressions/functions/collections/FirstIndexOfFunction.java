@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -51,7 +51,7 @@ public class FirstIndexOfFunction extends ExpressionFunction {
             }
             variableName = assignment.substring(0, separatorIndex);
             String expression = assignment.substring(separatorIndex + 1);
-            sequence = (List<?>) DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, variables);
+            sequence = (List<?>) JIPipeExpressionParameter.getEvaluatorInstance().evaluate(expression, variables);
         } else {
             variableName = "item";
             sequence = (List<?>) parameters.get(1);
@@ -61,7 +61,7 @@ public class FirstIndexOfFunction extends ExpressionFunction {
         for (int i = 0; i < sequence.size(); ++i) {
             localVariables.put(variableName, sequence.get(i));
             localVariables.put("index", i);
-            boolean result = DefaultExpressionParameter.getEvaluatorInstance().test(loopedExpression, localVariables);
+            boolean result = JIPipeExpressionParameter.getEvaluatorInstance().test(loopedExpression, localVariables);
             if (result) {
                 return i;
             }

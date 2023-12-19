@@ -4,7 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.extensions.expressions.AbstractExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -17,7 +17,7 @@ import java.util.Collection;
 @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
 @ExpressionParameterSettingsVariable(name = "Annotations map", description = "Map of all annotations (key to value)", key = "all.annotations")
 @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-public class AnnotationFilterExpression extends DefaultExpressionParameter {
+public class AnnotationFilterExpression extends JIPipeExpressionParameter {
 
     public AnnotationFilterExpression() {
     }

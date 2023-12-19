@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -39,7 +39,7 @@ public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
 
     private String value;
     private boolean useExpression = false;
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("MAKE_SEQUENCE(0, 10)");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("MAKE_SEQUENCE(0, 10)");
 
     /**
      * Creates a new instance with a null value
@@ -64,7 +64,7 @@ public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
     public IntegerRange(IntegerRange other) {
         this.value = other.value;
         this.useExpression = other.useExpression;
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
     }
 
     /**
@@ -158,12 +158,12 @@ public class IntegerRange implements JIPipeCustomTextDescriptionParameter {
     }
 
     @JsonGetter("expression")
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JsonSetter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 

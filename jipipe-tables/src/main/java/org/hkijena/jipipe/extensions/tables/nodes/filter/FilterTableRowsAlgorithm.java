@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -48,7 +48,7 @@ import java.util.List;
 public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
 
     /**
      * Creates a new instance
@@ -68,7 +68,7 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public FilterTableRowsAlgorithm(FilterTableRowsAlgorithm other) {
         super(other);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new JIPipeExpressionParameter(other.filters);
     }
 
     @Override
@@ -117,12 +117,12 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Number of columns", description = "The number of columns.", key = "num_cols")
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getFilters() {
+    public JIPipeExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
     }
 

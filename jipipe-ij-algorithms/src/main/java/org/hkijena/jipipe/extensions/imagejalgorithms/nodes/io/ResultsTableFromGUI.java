@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -42,7 +42,7 @@ import java.awt.*;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter titleFilterExpression = new DefaultExpressionParameter("title EQUALS \"Results\"");
+    private JIPipeExpressionParameter titleFilterExpression = new JIPipeExpressionParameter("title EQUALS \"Results\"");
 
     public ResultsTableFromGUI(JIPipeNodeInfo info) {
         super(info);
@@ -50,7 +50,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     public ResultsTableFromGUI(ResultsTableFromGUI other) {
         super(other);
-        this.titleFilterExpression = new DefaultExpressionParameter(other.titleFilterExpression);
+        this.titleFilterExpression = new JIPipeExpressionParameter(other.titleFilterExpression);
     }
 
     @Override
@@ -73,12 +73,12 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filter titles", description = "Allows to filter for the window titles. By default it is set to <pre>title EQUALS \"Results\"</pre>, which selects windows with the name 'Results'. If you want to apply no filtering, set it to 'TRUE'.")
     @JIPipeParameter("title-filters")
-    public DefaultExpressionParameter getTitleFilterExpression() {
+    public JIPipeExpressionParameter getTitleFilterExpression() {
         return titleFilterExpression;
     }
 
     @JIPipeParameter("title-filters")
-    public void setTitleFilterExpression(DefaultExpressionParameter titleFilterExpression) {
+    public void setTitleFilterExpression(JIPipeExpressionParameter titleFilterExpression) {
         this.titleFilterExpression = titleFilterExpression;
     }
 }

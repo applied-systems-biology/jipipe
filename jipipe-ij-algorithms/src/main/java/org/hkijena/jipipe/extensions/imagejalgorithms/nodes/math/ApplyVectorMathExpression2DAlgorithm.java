@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -51,7 +51,7 @@ import java.util.List;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, vector)")
 public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter transformation = new DefaultExpressionParameter("x + y");
+    private JIPipeExpressionParameter transformation = new JIPipeExpressionParameter("x + y");
     private HyperstackDimension componentDimension = HyperstackDimension.Channel;
     private int outputVectorSize = 1;
 
@@ -71,7 +71,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
      */
     public ApplyVectorMathExpression2DAlgorithm(ApplyVectorMathExpression2DAlgorithm other) {
         super(other);
-        this.transformation = new DefaultExpressionParameter(other.transformation);
+        this.transformation = new JIPipeExpressionParameter(other.transformation);
         this.componentDimension = other.componentDimension;
         this.outputVectorSize = other.outputVectorSize;
     }
@@ -263,12 +263,12 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each vector. The expression should return a number.")
     @JIPipeParameter("transformation-function")
     @ExpressionParameterSettings(variableSource = VectorPixel5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getTransformation() {
+    public JIPipeExpressionParameter getTransformation() {
         return transformation;
     }
 
     @JIPipeParameter("transformation-function")
-    public void setTransformation(DefaultExpressionParameter transformation) {
+    public void setTransformation(JIPipeExpressionParameter transformation) {
         this.transformation = transformation;
     }
 

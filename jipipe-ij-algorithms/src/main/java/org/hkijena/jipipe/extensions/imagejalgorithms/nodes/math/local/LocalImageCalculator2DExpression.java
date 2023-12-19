@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.SourceWrapMode;
@@ -41,7 +41,7 @@ import java.util.Map;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (local)")
 public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("(MEDIAN(Local.I1) + I2) / 2");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("(MEDIAN(Local.I1) + I2) / 2");
     private int localWindowWidth = 3;
     private int localWindowHeight = 3;
     private SourceWrapMode sourceWrapMode = SourceWrapMode.Zero;
@@ -57,7 +57,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     public LocalImageCalculator2DExpression(LocalImageCalculator2DExpression other) {
         super(other);
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
         this.localWindowWidth = other.localWindowWidth;
         this.localWindowHeight = other.localWindowHeight;
         this.sourceWrapMode = other.sourceWrapMode;
@@ -152,12 +152,12 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             "'Local.' are also available and contain the local image values (Example: Local.L1). The array contains the pixel values in Row-Major form (x0y0, x1y0, x2y0, x1y1, ...)")
     @JIPipeParameter("expression")
     @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JIPipeParameter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 

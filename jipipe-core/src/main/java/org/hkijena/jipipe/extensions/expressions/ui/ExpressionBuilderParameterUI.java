@@ -17,8 +17,8 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluatorSyntaxTokenMaker;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluatorSyntaxTokenMaker;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -32,7 +32,7 @@ import java.util.Set;
  */
 public class ExpressionBuilderParameterUI extends JPanel {
     private final JComboBox<Mode> modeJComboBox = new JComboBox<>();
-    private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
+    private final JIPipeExpressionEvaluatorSyntaxTokenMaker tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
     private RSyntaxTextArea expressionEditor;
 
     private RSyntaxTextArea rawExpressionEditor;
@@ -136,13 +136,13 @@ public class ExpressionBuilderParameterUI extends JPanel {
             case Boolean:
                 return booleanEditor.isSelected() ? "TRUE" : "FALSE";
             case Variable:
-                return DefaultExpressionEvaluator.escapeVariable(variableEditor.getText());
+                return JIPipeExpressionEvaluator.escapeVariable(variableEditor.getText());
             case Expression:
                 return expressionEditor.getText();
             case RawExpression:
                 return "${" + rawExpressionEditor.getText() + "}";
             case String:
-                return "\"" + DefaultExpressionEvaluator.escapeString(stringEditor.getText()) + "\"";
+                return "\"" + JIPipeExpressionEvaluator.escapeString(stringEditor.getText()) + "\"";
             default:
                 throw new UnsupportedOperationException();
         }

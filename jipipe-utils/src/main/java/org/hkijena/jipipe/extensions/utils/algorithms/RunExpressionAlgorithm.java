@@ -30,7 +30,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter();
     private OptionalAnnotationNameParameter writeToAnnotation = new OptionalAnnotationNameParameter("", false);
     private JIPipeTextAnnotationMergeMode writeToAnnotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
@@ -40,7 +40,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public RunExpressionAlgorithm(RunExpressionAlgorithm other) {
         super(other);
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
         this.writeToAnnotation = new OptionalAnnotationNameParameter(other.writeToAnnotation);
         this.writeToAnnotationMergeStrategy = other.writeToAnnotationMergeStrategy;
     }
@@ -49,12 +49,12 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "All annotations are available as variables, including variables 'data_string' and 'data_type' that provide information about the current data.")
     @JIPipeParameter("expression")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JIPipeParameter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 

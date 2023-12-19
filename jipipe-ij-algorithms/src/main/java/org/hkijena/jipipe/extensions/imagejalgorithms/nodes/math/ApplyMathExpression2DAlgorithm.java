@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -43,7 +43,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, greyscale)")
 public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter transformation = new DefaultExpressionParameter("x + y");
+    private JIPipeExpressionParameter transformation = new JIPipeExpressionParameter("x + y");
 
     /**
      * Instantiates a new node type.
@@ -61,7 +61,7 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
      */
     public ApplyMathExpression2DAlgorithm(ApplyMathExpression2DAlgorithm other) {
         super(other);
-        this.transformation = new DefaultExpressionParameter(other.transformation);
+        this.transformation = new JIPipeExpressionParameter(other.transformation);
     }
 
     @Override
@@ -103,12 +103,12 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("transformation-function")
     @ExpressionParameterSettings(variableSource = GreyscalePixel5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getTransformation() {
+    public JIPipeExpressionParameter getTransformation() {
         return transformation;
     }
 
     @JIPipeParameter("transformation-function")
-    public void setTransformation(DefaultExpressionParameter transformation) {
+    public void setTransformation(JIPipeExpressionParameter transformation) {
         this.transformation = transformation;
 
     }

@@ -25,7 +25,7 @@ public class ExpressionSequenceFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        String expression = DefaultExpressionEvaluator.unescapeString(StringUtils.nullToEmpty(parameters.get(0)));
+        String expression = JIPipeExpressionEvaluator.unescapeString(StringUtils.nullToEmpty(parameters.get(0)));
         Collection<?> indices;
         if (parameters.get(1) instanceof Collection) {
             indices = (Collection<?>) parameters.get(1);
@@ -45,7 +45,7 @@ public class ExpressionSequenceFunction extends ExpressionFunction {
         List<Object> result = new ArrayList<>();
         for (Object item : indices) {
             localVariables.set(itemVariable, item);
-            result.add(DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, localVariables));
+            result.add(JIPipeExpressionParameter.getEvaluatorInstance().evaluate(expression, localVariables));
         }
 
         return result;

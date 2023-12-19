@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -43,9 +43,9 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
     private String outputThresholdColumn = "threshold";
     private String outputForegroundColumn = "foreground";
     private String outputBackgroundColumn = "background";
-    private DefaultExpressionParameter integrationFunctionForeground = new DefaultExpressionParameter("SUM(foreground_values)");
+    private JIPipeExpressionParameter integrationFunctionForeground = new JIPipeExpressionParameter("SUM(foreground_values)");
 
-    private DefaultExpressionParameter integrationFunctionBackground = new DefaultExpressionParameter("SUM(background_values)");
+    private JIPipeExpressionParameter integrationFunctionBackground = new JIPipeExpressionParameter("SUM(background_values)");
 
     private boolean invertThreshold = false;
 
@@ -55,8 +55,8 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
 
     public KeyValueThresholdStatisticsGenerator(KeyValueThresholdStatisticsGenerator other) {
         super(other);
-        this.integrationFunctionForeground = new DefaultExpressionParameter(other.integrationFunctionForeground);
-        this.integrationFunctionBackground = new DefaultExpressionParameter(other.integrationFunctionBackground);
+        this.integrationFunctionForeground = new JIPipeExpressionParameter(other.integrationFunctionForeground);
+        this.integrationFunctionBackground = new JIPipeExpressionParameter(other.integrationFunctionBackground);
         this.invertThreshold = other.invertThreshold;
         this.outputThresholdColumn = other.outputThresholdColumn;
         this.outputBackgroundColumn = other.outputBackgroundColumn;
@@ -209,12 +209,12 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
     @ExpressionParameterSettingsVariable(key = "values_foreground", name = "Values (Foreground)", description = "The values to be integrated")
     @ExpressionParameterSettingsVariable(key = "values_background", name = "Values (Background)", description = "The values to be integrated")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getIntegrationFunctionForeground() {
+    public JIPipeExpressionParameter getIntegrationFunctionForeground() {
         return integrationFunctionForeground;
     }
 
     @JIPipeParameter("integration-function-foreground")
-    public void setIntegrationFunctionForeground(DefaultExpressionParameter integrationFunctionForeground) {
+    public void setIntegrationFunctionForeground(JIPipeExpressionParameter integrationFunctionForeground) {
         this.integrationFunctionForeground = integrationFunctionForeground;
     }
 
@@ -223,12 +223,12 @@ public class KeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorit
     @ExpressionParameterSettingsVariable(key = "values_foreground", name = "Values (Foreground)", description = "The values to be integrated")
     @ExpressionParameterSettingsVariable(key = "values_background", name = "Values (Background)", description = "The values to be integrated")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getIntegrationFunctionBackground() {
+    public JIPipeExpressionParameter getIntegrationFunctionBackground() {
         return integrationFunctionBackground;
     }
 
     @JIPipeParameter("integration-function-background")
-    public void setIntegrationFunctionBackground(DefaultExpressionParameter integrationFunctionBackground) {
+    public void setIntegrationFunctionBackground(JIPipeExpressionParameter integrationFunctionBackground) {
         this.integrationFunctionBackground = integrationFunctionBackground;
     }
 

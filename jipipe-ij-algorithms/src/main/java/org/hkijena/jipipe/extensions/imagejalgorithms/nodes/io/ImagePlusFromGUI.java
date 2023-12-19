@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -45,7 +45,7 @@ import java.util.List;
 public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean onlyActiveImage = true;
-    private DefaultExpressionParameter imageFilters = new DefaultExpressionParameter("");
+    private JIPipeExpressionParameter imageFilters = new JIPipeExpressionParameter("");
     private LogicalOperation imageFiltersOperation = LogicalOperation.LogicalOr;
 
     public ImagePlusFromGUI(JIPipeNodeInfo info) {
@@ -55,7 +55,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     public ImagePlusFromGUI(ImagePlusFromGUI other) {
         super(other);
         this.onlyActiveImage = other.onlyActiveImage;
-        this.imageFilters = new DefaultExpressionParameter(other.imageFilters);
+        this.imageFilters = new JIPipeExpressionParameter(other.imageFilters);
         this.imageFiltersOperation = other.imageFiltersOperation;
     }
 
@@ -100,12 +100,12 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Filter images", description = "Expression to filter the image(s). Each image is tested individually and added imported based on the test results. The expression should return a boolean value. Example: <pre>(title CONTAINS \"data\") AND (depth > 3). Defaults to 'TRUE'</pre>")
     @JIPipeParameter("image-filters")
     @ExpressionParameterSettings(variableSource = ImageQueryExpressionVariableSource.class)
-    public DefaultExpressionParameter getImageFilters() {
+    public JIPipeExpressionParameter getImageFilters() {
         return imageFilters;
     }
 
     @JIPipeParameter("image-filters")
-    public void setImageFilters(DefaultExpressionParameter imageFilters) {
+    public void setImageFilters(JIPipeExpressionParameter imageFilters) {
         this.imageFilters = imageFilters;
     }
 

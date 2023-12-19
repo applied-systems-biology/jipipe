@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -135,7 +135,7 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
 
     public static class SortEntry extends AbstractJIPipeParameterCollection {
 
-        private DefaultExpressionParameter value = new DefaultExpressionParameter();
+        private JIPipeExpressionParameter value = new JIPipeExpressionParameter();
         private SortOrder sortOrder = SortOrder.Ascending;
 
 
@@ -144,7 +144,7 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
         }
 
         public SortEntry(SortEntry other) {
-            this.value = new DefaultExpressionParameter(other.value);
+            this.value = new JIPipeExpressionParameter(other.value);
             this.sortOrder = other.sortOrder;
         }
 
@@ -153,12 +153,12 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-        public DefaultExpressionParameter getValue() {
+        public JIPipeExpressionParameter getValue() {
             return value;
         }
 
         @JIPipeParameter("value")
-        public void setValue(DefaultExpressionParameter value) {
+        public void setValue(JIPipeExpressionParameter value) {
             this.value = value;
         }
 

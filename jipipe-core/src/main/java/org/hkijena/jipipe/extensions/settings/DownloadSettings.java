@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
@@ -64,7 +64,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
                     } else {
                         externalDownloaderProcess.setExecutablePathOSX(wgetPath);
                     }
-                    externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-O\", output_file, url)"));
+                    externalDownloaderProcess.setArguments(new JIPipeExpressionParameter("ARRAY(\"-O\", output_file, url)"));
                 }
                 // Attempt to get cURL
                 if (!externalDownloaderProcess.generateValidityReport(new UnspecifiedValidationReportContext()).isValid()) {
@@ -75,7 +75,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
                         } else {
                             externalDownloaderProcess.setExecutablePathOSX(curlPath);
                         }
-                        externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-L\", \"--retry\", \"5\", url, \"--output\", output_file)"));
+                        externalDownloaderProcess.setArguments(new JIPipeExpressionParameter("ARRAY(\"-L\", \"--retry\", \"5\", url, \"--output\", output_file)"));
                     }
                 }
             } else if (SystemUtils.IS_OS_WINDOWS) {
@@ -83,7 +83,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
 //                Path powerShellPath = PathUtils.findAnyOf(Paths.get("C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"));
 //                if(powerShellPath != null) {
 //                    externalDownloaderProcess.setExecutablePathWindows(powerShellPath);
-//                    externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-NonInteractive\", \"-Command\", \"Invoke-WebRequest \" + url + \" -O \" + output_file)"));
+//                    externalDownloaderProcess.setArguments(new JIPipeExpressionParameter("ARRAY(\"-NonInteractive\", \"-Command\", \"Invoke-WebRequest \" + url + \" -O \" + output_file)"));
 //                }
                 // Windows has no good native downloader. Then we can just use the native one.
                 preferCustomDownloader = false;
@@ -129,14 +129,14 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
         @ExpressionParameterSettingsVariable(name = "URL", key = "url", description = "The URL")
         @JsonGetter("arguments")
         @Override
-        public DefaultExpressionParameter getArguments() {
+        public JIPipeExpressionParameter getArguments() {
             return super.getArguments();
         }
 
         @JIPipeParameter("arguments")
         @JsonSetter("arguments")
         @Override
-        public void setArguments(DefaultExpressionParameter arguments) {
+        public void setArguments(JIPipeExpressionParameter arguments) {
             super.setArguments(arguments);
         }
     }

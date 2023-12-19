@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -48,7 +48,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
     private String outputKeyColumn = "key";
 
     private String outputValueColumn = "value";
-    private DefaultExpressionParameter integrationFunction = new DefaultExpressionParameter("SUM(values)");
+    private JIPipeExpressionParameter integrationFunction = new JIPipeExpressionParameter("SUM(values)");
     private boolean cumulative = false;
     private boolean normalize = false;
 
@@ -61,7 +61,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
 
     public KeyValueHistogramGenerator(KeyValueHistogramGenerator other) {
         super(other);
-        this.integrationFunction = new DefaultExpressionParameter(other.integrationFunction);
+        this.integrationFunction = new JIPipeExpressionParameter(other.integrationFunction);
         this.cumulative = other.cumulative;
         this.normalize = other.normalize;
         this.outputKeyColumn = other.outputKeyColumn;
@@ -232,12 +232,12 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("integration-function")
     @ExpressionParameterSettingsVariable(key = "values", name = "Values", description = "The values to be integrated")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getIntegrationFunction() {
+    public JIPipeExpressionParameter getIntegrationFunction() {
         return integrationFunction;
     }
 
     @JIPipeParameter("integration-function")
-    public void setIntegrationFunction(DefaultExpressionParameter integrationFunction) {
+    public void setIntegrationFunction(JIPipeExpressionParameter integrationFunction) {
         this.integrationFunction = integrationFunction;
     }
 

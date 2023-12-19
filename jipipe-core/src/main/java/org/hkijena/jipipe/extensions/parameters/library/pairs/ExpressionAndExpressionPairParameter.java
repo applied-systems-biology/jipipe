@@ -13,20 +13,20 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.pairs;
 
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 
 /**
  * A parameter that renames an integer into another integer
  */
-public class ExpressionAndExpressionPairParameter extends PairParameter<DefaultExpressionParameter, DefaultExpressionParameter> {
+public class ExpressionAndExpressionPairParameter extends PairParameter<JIPipeExpressionParameter, JIPipeExpressionParameter> {
 
     /**
      * Creates a new instance
      */
     public ExpressionAndExpressionPairParameter() {
-        super(DefaultExpressionParameter.class, DefaultExpressionParameter.class);
+        super(JIPipeExpressionParameter.class, JIPipeExpressionParameter.class);
     }
 
     /**
@@ -37,9 +37,9 @@ public class ExpressionAndExpressionPairParameter extends PairParameter<DefaultE
     public ExpressionAndExpressionPairParameter(ExpressionAndExpressionPairParameter other) {
         super(other);
         if (other.getKey() != null)
-            this.setKey(new DefaultExpressionParameter(other.getKey()));
+            this.setKey(new JIPipeExpressionParameter(other.getKey()));
         if (other.getValue() != null)
-            this.setValue(new DefaultExpressionParameter(other.getValue()));
+            this.setValue(new JIPipeExpressionParameter(other.getValue()));
     }
 
     /**

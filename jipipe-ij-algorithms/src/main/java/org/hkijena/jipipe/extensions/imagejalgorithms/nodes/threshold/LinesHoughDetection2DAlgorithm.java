@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -44,7 +44,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     private OptionalFloatParameter pixelThreshold = new OptionalFloatParameter(true, 0f);
 
-    private DefaultExpressionParameter roiNameExpression = new DefaultExpressionParameter("line_score");
+    private JIPipeExpressionParameter roiNameExpression = new JIPipeExpressionParameter("line_score");
 
     public LinesHoughDetection2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -54,7 +54,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         super(other);
         this.selectTopN = new OptionalIntegerParameter(other.selectTopN);
         this.accumulatorThreshold = other.accumulatorThreshold;
-        this.roiNameExpression = new DefaultExpressionParameter(other.roiNameExpression);
+        this.roiNameExpression = new JIPipeExpressionParameter(other.roiNameExpression);
         this.pixelThreshold = new OptionalFloatParameter(other.pixelThreshold);
     }
 
@@ -206,12 +206,12 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @ExpressionParameterSettingsVariable(key = "line_y0", name = "Line Y0", description = "The first Y position of the line (cartesian coordinates)")
     @ExpressionParameterSettingsVariable(key = "line_x1", name = "Line X1", description = "The second X position of the line (cartesian coordinates)")
     @ExpressionParameterSettingsVariable(key = "line_y1", name = "Line Y1", description = "The second Y position of the line (cartesian coordinates)")
-    public DefaultExpressionParameter getRoiNameExpression() {
+    public JIPipeExpressionParameter getRoiNameExpression() {
         return roiNameExpression;
     }
 
     @JIPipeParameter("roi-name-expression")
-    public void setRoiNameExpression(DefaultExpressionParameter roiNameExpression) {
+    public void setRoiNameExpression(JIPipeExpressionParameter roiNameExpression) {
         this.roiNameExpression = roiNameExpression;
     }
 }

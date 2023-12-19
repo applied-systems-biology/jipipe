@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels.LabelOverlapStatisticsVariableSource;
@@ -459,7 +459,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean outputOverlaps = false;
 
         private boolean enforceOverlap = true;
-        private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
+        private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter();
 
         private boolean measureInPhysicalUnits = true;
 
@@ -470,7 +470,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.enabled = other.enabled;
             this.invert = other.invert;
             this.outputOverlaps = other.outputOverlaps;
-            this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
+            this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
             this.enforceOverlap = other.enforceOverlap;
         }
@@ -514,12 +514,12 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 "no filtering is applied. " + "Please note that writing a custom expression into this field requires that statistics are obtained from labels and overlapping regions, which has a significant impact on the performance.")
         @JIPipeParameter("overlap-filter")
         @ExpressionParameterSettings(variableSource = LabelOverlapStatisticsVariableSource.class, hint = "per overlapping label")
-        public DefaultExpressionParameter getOverlapFilter() {
+        public JIPipeExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }
 
         @JIPipeParameter("overlap-filter")
-        public void setOverlapFilter(DefaultExpressionParameter overlapFilter) {
+        public void setOverlapFilter(JIPipeExpressionParameter overlapFilter) {
             this.overlapFilter = overlapFilter;
         }
 

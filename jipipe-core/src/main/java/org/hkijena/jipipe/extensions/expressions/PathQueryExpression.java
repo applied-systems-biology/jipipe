@@ -24,7 +24,7 @@ import java.util.function.Predicate;
  * Expression for querying strings
  */
 @ExpressionParameterSettings(variableSource = PathFilterExpressionParameterVariableSource.class)
-public class PathQueryExpression extends DefaultExpressionParameter implements Predicate<Path> {
+public class PathQueryExpression extends JIPipeExpressionParameter implements Predicate<Path> {
 
     public PathQueryExpression() {
     }

@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -35,7 +35,7 @@ public class EvaluateFunction extends ExpressionFunction {
         }
         String variableName = assignment.substring(0, separatorIndex);
         String expression = assignment.substring(separatorIndex + 1);
-        Object value = DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, source);
+        Object value = JIPipeExpressionParameter.getEvaluatorInstance().evaluate(expression, source);
         target.put(variableName, value);
     }
 
@@ -74,6 +74,6 @@ public class EvaluateFunction extends ExpressionFunction {
             localVariables = variables;
         }
 
-        return DefaultExpressionParameter.getEvaluatorInstance().evaluate(StringUtils.nullToEmpty(parameters.get(0)), localVariables);
+        return JIPipeExpressionParameter.getEvaluatorInstance().evaluate(StringUtils.nullToEmpty(parameters.get(0)), localVariables);
     }
 }

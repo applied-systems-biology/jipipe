@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -53,7 +53,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
 
     public KeyValueThresholdPartitionGenerator(JIPipeNodeInfo info) {
         super(info);
-        generatedColumns.addFromTemplate(new GeneratedColumn("Key", new DefaultExpressionParameter("key")));
+        generatedColumns.addFromTemplate(new GeneratedColumn("Key", new JIPipeExpressionParameter("key")));
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
@@ -213,14 +213,14 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
 
     public static class GeneratedColumn extends AbstractJIPipeParameterCollection {
         private String name;
-        private DefaultExpressionParameter value = new DefaultExpressionParameter();
+        private JIPipeExpressionParameter value = new JIPipeExpressionParameter();
 
         private boolean skipEmpty = false;
 
         public GeneratedColumn() {
         }
 
-        public GeneratedColumn(String name, DefaultExpressionParameter value) {
+        public GeneratedColumn(String name, JIPipeExpressionParameter value) {
             this.name = name;
             this.value = value;
         }
@@ -250,12 +250,12 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
         @ExpressionParameterSettingsVariable(key = "class1", name = "Class 1", description = "Array of all value pixels with a key larger or equal to the current threshold")
         @ExpressionParameterSettingsVariable(key = "all.values", name = "All values", description = "Array of all values")
         @ExpressionParameterSettingsVariable(key = "all.keys", name = "All keys", description = "Array of all keys")
-        public DefaultExpressionParameter getValue() {
+        public JIPipeExpressionParameter getValue() {
             return value;
         }
 
         @JIPipeParameter("value")
-        public void setValue(DefaultExpressionParameter value) {
+        public void setValue(JIPipeExpressionParameter value) {
             this.value = value;
         }
 

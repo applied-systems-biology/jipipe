@@ -59,7 +59,7 @@ import java.util.Arrays;
 public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customFilterVariables;
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean measureInPhysicalUnits = true;
 
@@ -80,7 +80,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
      */
     public FilterLabelsByStatisticsAlgorithm(FilterLabelsByStatisticsAlgorithm other) {
         super(other);
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new JIPipeExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
@@ -159,12 +159,12 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
     @ExpressionParameterSettingsVariable(fromClass = AllMeasurementExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getFilters() {
+    public JIPipeExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filter")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
     }
 

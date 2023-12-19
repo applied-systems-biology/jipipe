@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -45,7 +45,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private StringQueryExpression valueColumn = new StringQueryExpression();
     private StringQueryExpression categoryColumns = new StringQueryExpression();
-    private DefaultExpressionParameter newColumnName = new DefaultExpressionParameter("JOIN_STRING(category_values, \"_\")");
+    private JIPipeExpressionParameter newColumnName = new JIPipeExpressionParameter("JOIN_STRING(category_values, \"_\")");
     private TableColumnNormalization columnNormalization = TableColumnNormalization.ZeroOrEmpty;
 
     /**
@@ -66,7 +66,7 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.valueColumn = new StringQueryExpression(other.valueColumn);
         this.categoryColumns = new StringQueryExpression(other.categoryColumns);
-        this.newColumnName = new DefaultExpressionParameter(other.newColumnName);
+        this.newColumnName = new JIPipeExpressionParameter(other.newColumnName);
         this.columnNormalization = other.columnNormalization;
     }
 
@@ -141,12 +141,12 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Category values", key = "category_values", description = "The values of the selected categories")
     @ExpressionParameterSettingsVariable(name = "Category columns", key = "category_columns", description = "The column names of the selected categories")
     @ExpressionParameterSettingsVariable(name = "Value", key = "value", description = "The current value")
-    public DefaultExpressionParameter getNewColumnName() {
+    public JIPipeExpressionParameter getNewColumnName() {
         return newColumnName;
     }
 
     @JIPipeParameter("new-column-name")
-    public void setNewColumnName(DefaultExpressionParameter newColumnName) {
+    public void setNewColumnName(JIPipeExpressionParameter newColumnName) {
         this.newColumnName = newColumnName;
     }
 

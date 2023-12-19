@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
@@ -128,7 +128,7 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
     }
 
 
-    public DefaultExpressionParameter getAdaptiveParameter(String key) {
+    public JIPipeExpressionParameter getAdaptiveParameter(String key) {
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getOverriddenParameters()) {
             if (Objects.equals(key, overriddenParameter.getValue())) {
                 return overriddenParameter.getKey();

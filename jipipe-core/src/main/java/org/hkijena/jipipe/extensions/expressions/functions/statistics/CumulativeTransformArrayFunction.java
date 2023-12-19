@@ -21,7 +21,7 @@ public class CumulativeTransformArrayFunction extends ExpressionFunction {
         List<?> items = ImmutableList.copyOf((Collection<?>) parameters.get(0));
         String accumulator = "SUM(values)";
         if (parameters.size() > 1) {
-            accumulator = DefaultExpressionEvaluator.unescapeString("\"" + parameters.get(1) + "\"");
+            accumulator = JIPipeExpressionEvaluator.unescapeString("\"" + parameters.get(1) + "\"");
         }
         List<Object> results = new ArrayList<>();
         List<Object> tmp = new ArrayList<>();
@@ -31,7 +31,7 @@ public class CumulativeTransformArrayFunction extends ExpressionFunction {
                 tmp.add(items.get(j));
             }
             localVariables.set("values", tmp);
-            results.add(DefaultExpressionParameter.getEvaluatorInstance().evaluate(accumulator, localVariables));
+            results.add(JIPipeExpressionParameter.getEvaluatorInstance().evaluate(accumulator, localVariables));
         }
         return results;
     }

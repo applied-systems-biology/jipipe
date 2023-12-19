@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.InterpolationMethod;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariableSource;
@@ -45,9 +45,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExp
 public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private InterpolationMethod interpolationMethod = InterpolationMethod.Bilinear;
-    private OptionalDefaultExpressionParameter xAxis = new OptionalDefaultExpressionParameter(true, "width");
-    private OptionalDefaultExpressionParameter yAxis = new OptionalDefaultExpressionParameter(true, "height");
-    private OptionalDefaultExpressionParameter zAxis = new OptionalDefaultExpressionParameter(true, "MAX(num_z, num_c, num_t)");
+    private OptionalJIPipeExpressionParameter xAxis = new OptionalJIPipeExpressionParameter(true, "width");
+    private OptionalJIPipeExpressionParameter yAxis = new OptionalJIPipeExpressionParameter(true, "height");
+    private OptionalJIPipeExpressionParameter zAxis = new OptionalJIPipeExpressionParameter(true, "MAX(num_z, num_c, num_t)");
 
     private TransformScale2DAlgorithm scale2DAlgorithm =
             JIPipe.createNode("ij1-transform-scale2d");
@@ -72,9 +72,9 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TransformScale3DAlgorithm(TransformScale3DAlgorithm other) {
         super(other);
         this.interpolationMethod = other.interpolationMethod;
-        this.xAxis = new OptionalDefaultExpressionParameter(other.xAxis);
-        this.yAxis = new OptionalDefaultExpressionParameter(other.yAxis);
-        this.zAxis = new OptionalDefaultExpressionParameter(other.zAxis);
+        this.xAxis = new OptionalJIPipeExpressionParameter(other.xAxis);
+        this.yAxis = new OptionalJIPipeExpressionParameter(other.yAxis);
+        this.zAxis = new OptionalJIPipeExpressionParameter(other.zAxis);
     }
 
     @Override
@@ -153,36 +153,36 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "X axis", description = "How the X axis should be scaled")
     @JIPipeParameter("x-axis")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getxAxis() {
+    public OptionalJIPipeExpressionParameter getxAxis() {
         return xAxis;
     }
 
     @JIPipeParameter("x-axis")
-    public void setxAxis(OptionalDefaultExpressionParameter xAxis) {
+    public void setxAxis(OptionalJIPipeExpressionParameter xAxis) {
         this.xAxis = xAxis;
     }
 
     @JIPipeDocumentation(name = "Y axis", description = "How the Y axis should be scaled")
     @JIPipeParameter("y-axis")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getyAxis() {
+    public OptionalJIPipeExpressionParameter getyAxis() {
         return yAxis;
     }
 
     @JIPipeParameter("y-axis")
-    public void setyAxis(OptionalDefaultExpressionParameter yAxis) {
+    public void setyAxis(OptionalJIPipeExpressionParameter yAxis) {
         this.yAxis = yAxis;
     }
 
     @JIPipeDocumentation(name = "Z axis", description = "How the Z axis should be scaled")
     @JIPipeParameter("z-axis")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getzAxis() {
+    public OptionalJIPipeExpressionParameter getzAxis() {
         return zAxis;
     }
 
     @JIPipeParameter("z-axis")
-    public void setzAxis(OptionalDefaultExpressionParameter zAxis) {
+    public void setzAxis(OptionalJIPipeExpressionParameter zAxis) {
         this.zAxis = zAxis;
     }
 }

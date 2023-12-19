@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
@@ -28,13 +28,13 @@ import org.hkijena.jipipe.utils.StringUtils;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nProperties")
 public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalDefaultExpressionParameter physicalDimensionX = new OptionalDefaultExpressionParameter();
-    private OptionalDefaultExpressionParameter physicalDimensionY = new OptionalDefaultExpressionParameter();
-    private OptionalDefaultExpressionParameter physicalDimensionZ = new OptionalDefaultExpressionParameter();
+    private OptionalJIPipeExpressionParameter physicalDimensionX = new OptionalJIPipeExpressionParameter();
+    private OptionalJIPipeExpressionParameter physicalDimensionY = new OptionalJIPipeExpressionParameter();
+    private OptionalJIPipeExpressionParameter physicalDimensionZ = new OptionalJIPipeExpressionParameter();
 
-    private OptionalDefaultExpressionParameter physicalDimensionT = new OptionalDefaultExpressionParameter();
+    private OptionalJIPipeExpressionParameter physicalDimensionT = new OptionalJIPipeExpressionParameter();
 
-    private OptionalDefaultExpressionParameter physicalDimensionValue = new OptionalDefaultExpressionParameter();
+    private OptionalJIPipeExpressionParameter physicalDimensionValue = new OptionalJIPipeExpressionParameter();
 
     public SetPhysicalDimensionsByExpressionsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -42,11 +42,11 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
 
     public SetPhysicalDimensionsByExpressionsAlgorithm(SetPhysicalDimensionsByExpressionsAlgorithm other) {
         super(other);
-        this.physicalDimensionX = new OptionalDefaultExpressionParameter(other.physicalDimensionX);
-        this.physicalDimensionY = new OptionalDefaultExpressionParameter(other.physicalDimensionY);
-        this.physicalDimensionZ = new OptionalDefaultExpressionParameter(other.physicalDimensionZ);
-        this.physicalDimensionT = new OptionalDefaultExpressionParameter(other.physicalDimensionT);
-        this.physicalDimensionValue = new OptionalDefaultExpressionParameter(other.physicalDimensionValue);
+        this.physicalDimensionX = new OptionalJIPipeExpressionParameter(other.physicalDimensionX);
+        this.physicalDimensionY = new OptionalJIPipeExpressionParameter(other.physicalDimensionY);
+        this.physicalDimensionZ = new OptionalJIPipeExpressionParameter(other.physicalDimensionZ);
+        this.physicalDimensionT = new OptionalJIPipeExpressionParameter(other.physicalDimensionT);
+        this.physicalDimensionValue = new OptionalJIPipeExpressionParameter(other.physicalDimensionValue);
     }
 
     @Override
@@ -89,60 +89,60 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "Physical dimension (X)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-x")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getPhysicalDimensionX() {
+    public OptionalJIPipeExpressionParameter getPhysicalDimensionX() {
         return physicalDimensionX;
     }
 
     @JIPipeParameter("physical-dimension-x")
-    public void setPhysicalDimensionX(OptionalDefaultExpressionParameter physicalDimensionX) {
+    public void setPhysicalDimensionX(OptionalJIPipeExpressionParameter physicalDimensionX) {
         this.physicalDimensionX = physicalDimensionX;
     }
 
     @JIPipeDocumentation(name = "Physical dimension (Y)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-y")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getPhysicalDimensionY() {
+    public OptionalJIPipeExpressionParameter getPhysicalDimensionY() {
         return physicalDimensionY;
     }
 
     @JIPipeParameter("physical-dimension-y")
-    public void setPhysicalDimensionY(OptionalDefaultExpressionParameter physicalDimensionY) {
+    public void setPhysicalDimensionY(OptionalJIPipeExpressionParameter physicalDimensionY) {
         this.physicalDimensionY = physicalDimensionY;
     }
 
     @JIPipeDocumentation(name = "Physical dimension (Z)", description = "If enabled, sets the physical dimension of the image")
     @JIPipeParameter("physical-dimension-z")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getPhysicalDimensionZ() {
+    public OptionalJIPipeExpressionParameter getPhysicalDimensionZ() {
         return physicalDimensionZ;
     }
 
     @JIPipeParameter("physical-dimension-z")
-    public void setPhysicalDimensionZ(OptionalDefaultExpressionParameter physicalDimensionZ) {
+    public void setPhysicalDimensionZ(OptionalJIPipeExpressionParameter physicalDimensionZ) {
         this.physicalDimensionZ = physicalDimensionZ;
     }
 
     @JIPipeDocumentation(name = "Physical dimension (T)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
     @JIPipeParameter("physical-dimension-t")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getPhysicalDimensionT() {
+    public OptionalJIPipeExpressionParameter getPhysicalDimensionT() {
         return physicalDimensionT;
     }
 
     @JIPipeParameter("physical-dimension-t")
-    public void setPhysicalDimensionT(OptionalDefaultExpressionParameter physicalDimensionT) {
+    public void setPhysicalDimensionT(OptionalJIPipeExpressionParameter physicalDimensionT) {
         this.physicalDimensionT = physicalDimensionT;
     }
 
     @JIPipeDocumentation(name = "Physical dimension (Value)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
     @JIPipeParameter("physical-dimension-value")
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getPhysicalDimensionValue() {
+    public OptionalJIPipeExpressionParameter getPhysicalDimensionValue() {
         return physicalDimensionValue;
     }
 
     @JIPipeParameter("physical-dimension-value")
-    public void setPhysicalDimensionValue(OptionalDefaultExpressionParameter physicalDimensionValue) {
+    public void setPhysicalDimensionValue(OptionalJIPipeExpressionParameter physicalDimensionValue) {
         this.physicalDimensionValue = physicalDimensionValue;
     }
 }

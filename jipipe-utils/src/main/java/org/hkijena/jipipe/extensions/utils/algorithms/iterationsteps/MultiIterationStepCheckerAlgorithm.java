@@ -17,13 +17,11 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +33,7 @@ import java.util.List;
 @JIPipeNodeAlias(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Filter", aliasName = "Filter multiple data by annotation (multiple data per slot)")
 public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
     private boolean keepOriginalAnnotations = true;
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter filter = new JIPipeExpressionParameter();
     private OptionalAnnotationNameParameter iterationStepIndexAnnotation = new OptionalAnnotationNameParameter("Iteration step", false);
     public MultiIterationStepCheckerAlgorithm(JIPipeNodeInfo info) {
         super(info, new JIPipeIOSlotConfiguration());
@@ -45,7 +43,7 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
         super(other);
         this.keepOriginalAnnotations = other.keepOriginalAnnotations;
         this.iterationStepIndexAnnotation = new OptionalAnnotationNameParameter(other.iterationStepIndexAnnotation);
-        this.filter = new DefaultExpressionParameter(other.filter);
+        this.filter = new JIPipeExpressionParameter(other.filter);
     }
 
     @Override
@@ -110,12 +108,12 @@ public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Current iteration step index", key = "iteration_step_index", description = "The index of the current iteration step")
     @ExpressionParameterSettingsVariable(name = "Number of iteration steps", key = "num_iteration_steps", description = "The number of iteration steps that are processed")
-    public DefaultExpressionParameter getFilter() {
+    public JIPipeExpressionParameter getFilter() {
         return filter;
     }
 
     @JIPipeParameter("filter")
-    public void setFilter(DefaultExpressionParameter filter) {
+    public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
 }

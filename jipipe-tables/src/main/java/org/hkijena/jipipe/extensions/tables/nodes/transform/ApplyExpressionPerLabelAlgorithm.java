@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
@@ -39,7 +39,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
     private String outputKeyColumn = "key";
 
     private String outputValueColumn = "value";
-    private DefaultExpressionParameter integrationFunction = new DefaultExpressionParameter("SUM(values)");
+    private JIPipeExpressionParameter integrationFunction = new JIPipeExpressionParameter("SUM(values)");
     private boolean cumulative = false;
     private boolean normalize = false;
 
@@ -51,7 +51,7 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
         super(other);
         this.keyColumn = new TableColumnSourceExpressionParameter(other.keyColumn);
         this.valueColumn = new TableColumnSourceExpressionParameter(other.valueColumn);
-        this.integrationFunction = new DefaultExpressionParameter(other.integrationFunction);
+        this.integrationFunction = new JIPipeExpressionParameter(other.integrationFunction);
         this.cumulative = other.cumulative;
         this.normalize = other.normalize;
         this.outputKeyColumn = other.outputKeyColumn;
@@ -184,12 +184,12 @@ public class ApplyExpressionPerLabelAlgorithm extends JIPipeSimpleIteratingAlgor
     @JIPipeParameter("integration-function")
     @ExpressionParameterSettingsVariable(key = "values", name = "Values", description = "The values to be integrated")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getIntegrationFunction() {
+    public JIPipeExpressionParameter getIntegrationFunction() {
         return integrationFunction;
     }
 
     @JIPipeParameter("integration-function")
-    public void setIntegrationFunction(DefaultExpressionParameter integrationFunction) {
+    public void setIntegrationFunction(JIPipeExpressionParameter integrationFunction) {
         this.integrationFunction = integrationFunction;
     }
 

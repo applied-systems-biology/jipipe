@@ -7,8 +7,8 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -97,26 +97,26 @@ public class SelectVirtualEnvPythonInstaller extends ExternalEnvironmentInstalle
         if (SystemUtils.IS_OS_WINDOWS) {
             generatedEnvironment.setExecutablePath(selectedPath.resolve("Scripts").resolve("python.exe"));
             generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
-                    "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.resolve("Scripts").toString()) + ";\"" + " + Path",
+                    "\"" + JIPipeExpressionEvaluator.escapeString(selectedPath.resolve("Scripts").toString()) + ";\"" + " + Path",
                     "Path"
             ));
             generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
-                    "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.toString()) + "\"",
+                    "\"" + JIPipeExpressionEvaluator.escapeString(selectedPath.toString()) + "\"",
                     "VIRTUAL_ENV"
             ));
         } else {
             generatedEnvironment.setExecutablePath(selectedPath.resolve("bin").resolve("python"));
             generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
-                    "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.resolve("bin").toString()) + ":\"" + " + PATH",
+                    "\"" + JIPipeExpressionEvaluator.escapeString(selectedPath.resolve("bin").toString()) + ":\"" + " + PATH",
                     "PATH"
             ));
             generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
-                    "\"" + DefaultExpressionEvaluator.escapeString(selectedPath.toString()) + "\"",
+                    "\"" + JIPipeExpressionEvaluator.escapeString(selectedPath.toString()) + "\"",
                     "VIRTUAL_ENV"
             ));
         }
 
-        generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
+        generatedEnvironment.setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));
         generatedEnvironment.setName(configuration.getName());
         if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> {

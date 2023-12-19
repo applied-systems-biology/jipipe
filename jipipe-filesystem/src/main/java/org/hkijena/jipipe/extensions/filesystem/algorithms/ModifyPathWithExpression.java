@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -25,7 +25,7 @@ import java.nio.file.Paths;
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("path");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("path");
 
     public ModifyPathWithExpression(JIPipeNodeInfo info) {
         super(info);
@@ -33,7 +33,7 @@ public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
 
     public ModifyPathWithExpression(ModifyPathWithExpression other) {
         super(other);
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
     }
 
     @Override
@@ -58,12 +58,12 @@ public class ModifyPathWithExpression extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Input path", key = "path", description = "The input path")
     @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
     @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JIPipeParameter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 }

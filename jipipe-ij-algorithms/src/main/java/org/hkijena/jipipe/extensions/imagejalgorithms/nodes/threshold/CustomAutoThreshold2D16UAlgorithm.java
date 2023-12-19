@@ -63,11 +63,11 @@ import java.util.Set;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto threshold (custom, 16-bit)")
 public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter thresholdCalculationExpression = new DefaultExpressionParameter("(stat_max + stat_min) / 2");
+    private JIPipeExpressionParameter thresholdCalculationExpression = new JIPipeExpressionParameter("(stat_max + stat_min) / 2");
     private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
     private AutoThreshold2DAlgorithm.SliceThresholdMode thresholdMode = AutoThreshold2DAlgorithm.SliceThresholdMode.ApplyPerSlice;
 
-    private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
+    private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
@@ -88,10 +88,10 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
      */
     public CustomAutoThreshold2D16UAlgorithm(CustomAutoThreshold2D16UAlgorithm other) {
         super(other);
-        this.thresholdCalculationExpression = new DefaultExpressionParameter(other.thresholdCalculationExpression);
+        this.thresholdCalculationExpression = new JIPipeExpressionParameter(other.thresholdCalculationExpression);
         this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
         this.thresholdMode = other.thresholdMode;
-        this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
+        this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         this.accessPixels = other.accessPixels;
@@ -314,12 +314,12 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
     @JIPipeParameter(value = "thresholding-function", important = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getThresholdCalculationExpression() {
+    public JIPipeExpressionParameter getThresholdCalculationExpression() {
         return thresholdCalculationExpression;
     }
 
     @JIPipeParameter("thresholding-function")
-    public void setThresholdCalculationExpression(DefaultExpressionParameter thresholdCalculationExpression) {
+    public void setThresholdCalculationExpression(JIPipeExpressionParameter thresholdCalculationExpression) {
         this.thresholdCalculationExpression = thresholdCalculationExpression;
     }
 
@@ -364,12 +364,12 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
     @JIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
     @ExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariableSource.class)
     @JIPipeParameter("threshold-combine-expression")
-    public DefaultExpressionParameter getThresholdCombinationExpression() {
+    public JIPipeExpressionParameter getThresholdCombinationExpression() {
         return thresholdCombinationExpression;
     }
 
     @JIPipeParameter("threshold-combine-expression")
-    public void setThresholdCombinationExpression(DefaultExpressionParameter thresholdCombinationExpression) {
+    public void setThresholdCombinationExpression(JIPipeExpressionParameter thresholdCombinationExpression) {
         this.thresholdCombinationExpression = thresholdCombinationExpression;
     }
 

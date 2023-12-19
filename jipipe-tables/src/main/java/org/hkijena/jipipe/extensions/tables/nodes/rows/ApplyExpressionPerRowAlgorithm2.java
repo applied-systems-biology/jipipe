@@ -139,15 +139,15 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
     }
 
     public static class Entry extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter columnName = new DefaultExpressionParameter("\"Output column name\"");
-        private DefaultExpressionParameter value = new DefaultExpressionParameter("row");
+        private JIPipeExpressionParameter columnName = new JIPipeExpressionParameter("\"Output column name\"");
+        private JIPipeExpressionParameter value = new JIPipeExpressionParameter("row");
 
         public Entry() {
         }
 
         public Entry(Entry other) {
-            this.columnName = new DefaultExpressionParameter(other.columnName);
-            this.value = new DefaultExpressionParameter(other.value);
+            this.columnName = new JIPipeExpressionParameter(other.columnName);
+            this.value = new JIPipeExpressionParameter(other.value);
         }
 
         @JIPipeDocumentation(name = "Column name", description = "The name of the column where the value will be written")
@@ -155,12 +155,12 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
         @ExpressionParameterSettingsVariable(fromClass = VariableSource.class)
         @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-        public DefaultExpressionParameter getColumnName() {
+        public JIPipeExpressionParameter getColumnName() {
             return columnName;
         }
 
         @JIPipeParameter("column-name")
-        public void setColumnName(DefaultExpressionParameter columnName) {
+        public void setColumnName(JIPipeExpressionParameter columnName) {
             this.columnName = columnName;
         }
 
@@ -171,12 +171,12 @@ public class ApplyExpressionPerRowAlgorithm2 extends JIPipeSimpleIteratingAlgori
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @ExpressionParameterSettingsVariable(name = "Column name", description = "The output column name", key = "column_name")
         @ExpressionParameterSettingsVariable(name = "Column index", description = "The output column index", key = "column")
-        public DefaultExpressionParameter getValue() {
+        public JIPipeExpressionParameter getValue() {
             return value;
         }
 
         @JIPipeParameter("value")
-        public void setValue(DefaultExpressionParameter value) {
+        public void setValue(JIPipeExpressionParameter value) {
             this.value = value;
         }
     }

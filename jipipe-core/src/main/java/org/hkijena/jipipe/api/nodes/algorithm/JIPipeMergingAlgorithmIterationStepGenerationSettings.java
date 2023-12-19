@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -39,7 +39,7 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
-    private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
+    private JIPipeExpressionParameter customAnnotationMatching = new JIPipeExpressionParameter("exact_match_results");
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
     private boolean forceFlowGraphSolver = false;
     private boolean forceNAIsAny = false;
@@ -54,7 +54,7 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.limit = new OptionalIntegerRange(other.limit);
         this.annotationMatchingMethod = other.annotationMatchingMethod;
-        this.customAnnotationMatching = new DefaultExpressionParameter(other.customAnnotationMatching);
+        this.customAnnotationMatching = new JIPipeExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
         this.forceFlowGraphSolver = other.forceFlowGraphSolver;
         this.forceNAIsAny = other.forceNAIsAny;
@@ -99,12 +99,12 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
     @JIPipeDocumentation(name = "Custom annotation matching method", description = "Expression used to compare two annotation sets.")
     @ExpressionParameterSettings(variableSource = JIPipeCustomAnnotationMatchingExpressionVariables.class)
     @JIPipeParameter(value = "custom-annotation-matching", uiOrder = 2100)
-    public DefaultExpressionParameter getCustomAnnotationMatching() {
+    public JIPipeExpressionParameter getCustomAnnotationMatching() {
         return customAnnotationMatching;
     }
 
     @JIPipeParameter("custom-annotation-matching")
-    public void setCustomAnnotationMatching(DefaultExpressionParameter customAnnotationMatching) {
+    public void setCustomAnnotationMatching(JIPipeExpressionParameter customAnnotationMatching) {
         this.customAnnotationMatching = customAnnotationMatching;
     }
 

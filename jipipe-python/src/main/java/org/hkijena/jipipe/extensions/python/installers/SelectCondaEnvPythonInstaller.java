@@ -6,8 +6,8 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
@@ -45,13 +45,13 @@ public class SelectCondaEnvPythonInstaller extends ExternalEnvironmentInstaller 
         generatedEnvironment.setType(PythonEnvironmentType.Conda);
         generatedEnvironment.setExecutablePath(configuration.condaExecutable);
         if (configuration.overrideEnvironment.isEnabled()) {
-            generatedEnvironment.setArguments(new DefaultExpressionParameter(
+            generatedEnvironment.setArguments(new JIPipeExpressionParameter(
                     String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
-                            DefaultExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
+                            JIPipeExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
         } else {
-            generatedEnvironment.setArguments(new DefaultExpressionParameter(
+            generatedEnvironment.setArguments(new JIPipeExpressionParameter(
                     String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
-                            DefaultExpressionEvaluator.escapeString(configuration.environmentName))));
+                            JIPipeExpressionEvaluator.escapeString(configuration.environmentName))));
         }
         generatedEnvironment.setName(configuration.getName());
         return generatedEnvironment;
