@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Train Weka model from mask (2D)", description = "Trains a Weka model on 2D image data that classified into two classes via a mask.")
+@JIPipeDocumentation(name = "Train Weka model from mask (multiple images, 2D)", description = "Trains a Weka model on 2D image data that classified into two classes via a mask.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus2DGreyscaleMaskData.class, slotName = "Mask", description = "Mask that marks foreground objects via white pixels (255) and the background with black pixels (0)", autoCreate = true)
