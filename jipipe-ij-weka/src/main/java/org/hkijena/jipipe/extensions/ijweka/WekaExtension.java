@@ -148,6 +148,8 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("weka-training-roi-3d", WekaTrainingROI3DAlgorithm.class, wekaIcon);
         registerNodeType("weka-training-mask-2d", WekaTrainingMask2DAlgorithm.class, wekaIcon);
         registerNodeType("weka-training-label-2d", WekaTrainingLabels2DAlgorithm.class, wekaIcon);
+        registerNodeType("weka-training-mask-2d-v2", WekaTrainingMask2DAlgorithm2.class, wekaIcon);
+        registerNodeType("weka-training-label-2d-v2", WekaTrainingLabels2DAlgorithm2.class, wekaIcon);
         registerNodeType("weka-classification-2d", WekaClassification2DAlgorithm.class, wekaIcon);
         registerNodeType("weka-classification-3d", WekaClassification3DAlgorithm.class, wekaIcon);
     }

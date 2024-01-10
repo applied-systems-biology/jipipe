@@ -26,7 +26,9 @@ import weka.classifiers.Classifier;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Train Weka model from labels (2D)", description = "Trains a Weka model on 2D image data that classified by a label image.")
+@JIPipeDocumentation(name = "Train Weka model from labels (2D)", description = "Trains a Weka model on 2D image data that classified by a label image. " +
+        "Can only train on a single image. " +
+        "Use the multi-image node if you want to train from multiple images.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Labels", description = "A labels image", autoCreate = true)

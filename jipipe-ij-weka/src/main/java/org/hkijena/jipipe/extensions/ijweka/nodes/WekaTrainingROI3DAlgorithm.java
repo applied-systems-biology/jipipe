@@ -38,7 +38,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Train Weka model from ROI (3D)", description = "Trains a Weka model on 3D image data. The inputs are ROI that are assigned to the classes and trained on the input image.")
+@JIPipeDocumentation(name = "Train Weka model from ROI (3D)", description = "Trains a Weka model on 3D image data. The inputs are ROI that are assigned to the classes and trained on the input image."+
+        "Can only train on a single image. Please convert ROI to labels/masks and use the appropriate nodes if you want to train on multiple images.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Image", description = "Image on which the training should be applied", autoCreate = true)
 @JIPipeInputSlot(value = ROIListData.class)
