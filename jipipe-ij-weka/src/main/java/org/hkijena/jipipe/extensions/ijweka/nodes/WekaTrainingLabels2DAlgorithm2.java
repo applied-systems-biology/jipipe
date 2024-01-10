@@ -47,7 +47,7 @@ public class WekaTrainingLabels2DAlgorithm2 extends JIPipeMergingAlgorithm {
 
     private WekaFeature2DSettings featureSettings = new WekaFeature2DSettings();
     private WekaClassifierSettings classifierSettings = new WekaClassifierSettings();
-    private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
+    private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
 
 
     public WekaTrainingLabels2DAlgorithm2(JIPipeNodeInfo info) {

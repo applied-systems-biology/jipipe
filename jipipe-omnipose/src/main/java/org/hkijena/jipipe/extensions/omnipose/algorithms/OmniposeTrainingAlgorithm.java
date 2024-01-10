@@ -77,7 +77,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30, false);
     private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
-    private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
+    private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
 
     public OmniposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);

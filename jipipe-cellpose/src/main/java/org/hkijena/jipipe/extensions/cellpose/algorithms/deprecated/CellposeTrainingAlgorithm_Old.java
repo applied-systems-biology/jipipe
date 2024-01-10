@@ -82,7 +82,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
     private int diameter = 30;
     private boolean trainSizeModel = false;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
-    private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
+    private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
     private boolean generateConnectedComponents = true;
 
     private OptionalIntegerParameter segmentedChannel = new OptionalIntegerParameter(false, 0);
