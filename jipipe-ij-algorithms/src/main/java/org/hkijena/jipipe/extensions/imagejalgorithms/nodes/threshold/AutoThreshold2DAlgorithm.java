@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
@@ -62,7 +62,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
     private SliceThresholdMode thresholdMode = SliceThresholdMode.ApplyPerSlice;
 
-    private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
+    private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
@@ -85,7 +85,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.darkBackground = other.darkBackground;
         this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
         this.thresholdMode = other.thresholdMode;
-        this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
+        this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
@@ -276,12 +276,12 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
     @ExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariableSource.class)
     @JIPipeParameter("threshold-combine-expression")
-    public DefaultExpressionParameter getThresholdCombinationExpression() {
+    public JIPipeExpressionParameter getThresholdCombinationExpression() {
         return thresholdCombinationExpression;
     }
 
     @JIPipeParameter("threshold-combine-expression")
-    public void setThresholdCombinationExpression(DefaultExpressionParameter thresholdCombinationExpression) {
+    public void setThresholdCombinationExpression(JIPipeExpressionParameter thresholdCombinationExpression) {
         this.thresholdCombinationExpression = thresholdCombinationExpression;
     }
 

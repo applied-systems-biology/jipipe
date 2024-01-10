@@ -60,7 +60,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean measureInPhysicalUnits = true;
     private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
-    private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
+    private JIPipeExpressionParameter thresholdCombinationExpression = new JIPipeExpressionParameter("MIN(thresholds)");
     private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private boolean excludeEdgeROIs = false;
 
@@ -79,7 +79,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.thresholdAnnotation = new OptionalAnnotationNameParameter(other.thresholdAnnotation);
-        this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
+        this.thresholdCombinationExpression = new JIPipeExpressionParameter(other.thresholdCombinationExpression);
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
         this.excludeEdgeROIs = other.excludeEdgeROIs;
         this.thresholds = new IntegerRange(other.thresholds);
@@ -324,12 +324,12 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     @JIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
     @ExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariableSource.class)
     @JIPipeParameter("threshold-combine-expression")
-    public DefaultExpressionParameter getThresholdCombinationExpression() {
+    public JIPipeExpressionParameter getThresholdCombinationExpression() {
         return thresholdCombinationExpression;
     }
 
     @JIPipeParameter("threshold-combine-expression")
-    public void setThresholdCombinationExpression(DefaultExpressionParameter thresholdCombinationExpression) {
+    public void setThresholdCombinationExpression(JIPipeExpressionParameter thresholdCombinationExpression) {
         this.thresholdCombinationExpression = thresholdCombinationExpression;
     }
 
@@ -368,8 +368,8 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     }
 
     public static class FilteringParameters extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter roiFilterExpression = new DefaultExpressionParameter("Area > 200");
-        private DefaultExpressionParameter thresholdCriteriaExpression = new DefaultExpressionParameter("LENGTH(filtered_roi) >= 1");
+        private JIPipeExpressionParameter roiFilterExpression = new JIPipeExpressionParameter("Area > 200");
+        private JIPipeExpressionParameter thresholdCriteriaExpression = new JIPipeExpressionParameter("LENGTH(filtered_roi) >= 1");
 
         public FilteringParameters() {
         }
@@ -385,12 +385,12 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @JIPipeParameter(value = "roi-filter", important = true)
-        public DefaultExpressionParameter getRoiFilterExpression() {
+        public JIPipeExpressionParameter getRoiFilterExpression() {
             return roiFilterExpression;
         }
 
         @JIPipeParameter("roi-filter")
-        public void setRoiFilterExpression(DefaultExpressionParameter roiFilterExpression) {
+        public void setRoiFilterExpression(JIPipeExpressionParameter roiFilterExpression) {
             this.roiFilterExpression = roiFilterExpression;
         }
 
@@ -401,50 +401,50 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @JIPipeParameter(value = "threshold-criteria", important = true)
-        public DefaultExpressionParameter getThresholdCriteriaExpression() {
+        public JIPipeExpressionParameter getThresholdCriteriaExpression() {
             return thresholdCriteriaExpression;
         }
 
         @JIPipeParameter("threshold-criteria")
-        public void setThresholdCriteriaExpression(DefaultExpressionParameter thresholdCriteriaExpression) {
+        public void setThresholdCriteriaExpression(JIPipeExpressionParameter thresholdCriteriaExpression) {
             this.thresholdCriteriaExpression = thresholdCriteriaExpression;
         }
     }
 
     public static class ScoreParameters extends AbstractJIPipeParameterCollection {
 
-        private OptionalDefaultExpressionParameter scoreExpression = new OptionalDefaultExpressionParameter();
+        private OptionalJIPipeExpressionParameter scoreExpression = new OptionalJIPipeExpressionParameter();
 
-        private DefaultExpressionParameter scoreAccumulationExpression = new DefaultExpressionParameter("SUM(scores)");
+        private JIPipeExpressionParameter scoreAccumulationExpression = new JIPipeExpressionParameter("SUM(scores)");
 
         public ScoreParameters() {
         }
 
         public ScoreParameters(ScoreParameters other) {
-            this.scoreExpression = new OptionalDefaultExpressionParameter(other.scoreExpression);
-            this.scoreAccumulationExpression = new DefaultExpressionParameter(other.scoreAccumulationExpression);
+            this.scoreExpression = new OptionalJIPipeExpressionParameter(other.scoreExpression);
+            this.scoreAccumulationExpression = new JIPipeExpressionParameter(other.scoreAccumulationExpression);
         }
 
         @JIPipeDocumentation(name = "Score function", description = "If enabled, assigns a score to each filtered ROI that is accumulated. This score is maximized to find the best threshold. If disabled, the first threshold is applied where the criteria match.")
         @JIPipeParameter(value = "score", important = true)
-        public OptionalDefaultExpressionParameter getScoreExpression() {
+        public OptionalJIPipeExpressionParameter getScoreExpression() {
             return scoreExpression;
         }
 
         @JIPipeParameter("score")
-        public void setScoreExpression(OptionalDefaultExpressionParameter scoreExpression) {
+        public void setScoreExpression(OptionalJIPipeExpressionParameter scoreExpression) {
             this.scoreExpression = scoreExpression;
         }
 
         @JIPipeDocumentation(name = "Score accumulation function", description = "Expression that determines how the scores are accumulated")
         @JIPipeParameter("score-accumulation")
         @ExpressionParameterSettingsVariable(key = "scores", name = "List of scores", description = "The list of scores")
-        public DefaultExpressionParameter getScoreAccumulationExpression() {
+        public JIPipeExpressionParameter getScoreAccumulationExpression() {
             return scoreAccumulationExpression;
         }
 
         @JIPipeParameter("score-accumulation")
-        public void setScoreAccumulationExpression(DefaultExpressionParameter scoreAccumulationExpression) {
+        public void setScoreAccumulationExpression(JIPipeExpressionParameter scoreAccumulationExpression) {
             this.scoreAccumulationExpression = scoreAccumulationExpression;
         }
     }

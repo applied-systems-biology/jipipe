@@ -41,7 +41,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter("");
+    private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
     private boolean includeAnnotations = true;
 
     /**
@@ -61,7 +61,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public FilterTablesAlgorithm(FilterTablesAlgorithm other) {
         super(other);
         this.includeAnnotations = other.includeAnnotations;
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new JIPipeExpressionParameter(other.filters);
     }
 
     @Override
@@ -98,12 +98,12 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Filters", description = "Expression that is applied per table to determine if it is filtered out. Must return a boolean.")
     @JIPipeParameter("filters")
     @ExpressionParameterSettingsVariable(fromClass = VariableSource.class)
-    public DefaultExpressionParameter getFilters() {
+    public JIPipeExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filters")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
     }
 

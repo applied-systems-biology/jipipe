@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
@@ -107,14 +107,14 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
 
     public static class RenamingEntry extends AbstractJIPipeParameterCollection {
         private StringQueryExpression sourceColumn = new StringQueryExpression("\"Old name\"");
-        private DefaultExpressionParameter newName = new DefaultExpressionParameter("\"New name\"");
+        private JIPipeExpressionParameter newName = new JIPipeExpressionParameter("\"New name\"");
 
         public RenamingEntry() {
         }
 
         public RenamingEntry(RenamingEntry other) {
             this.sourceColumn = new StringQueryExpression(other.sourceColumn);
-            this.newName = new DefaultExpressionParameter(other.newName);
+            this.newName = new JIPipeExpressionParameter(other.newName);
         }
 
         @JIPipeDocumentation(name = "Column to be renamed", description = "The column to be renamed")
@@ -133,12 +133,12 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
         @JIPipeParameter("new-name")
         @ExpressionParameterSettingsVariable(name = "Current name", key = "current_name", description = "The current name")
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getNewName() {
+        public JIPipeExpressionParameter getNewName() {
             return newName;
         }
 
         @JIPipeParameter("new-name")
-        public void setNewName(DefaultExpressionParameter newName) {
+        public void setNewName(JIPipeExpressionParameter newName) {
             this.newName = newName;
         }
     }

@@ -244,7 +244,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean enabled = true;
         private boolean invert = false;
         private boolean outputOverlaps = false;
-        private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
+        private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter();
         private boolean consumeOnOverlap = false;
 
         private boolean measureInPhysicalUnits = true;
@@ -263,7 +263,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.enabled = other.enabled;
             this.invert = other.invert;
             this.outputOverlaps = other.outputOverlaps;
-            this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
+            this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
             this.consumeOnOverlap = other.consumeOnOverlap;
             this.measureInPhysicalUnits = other.measureInPhysicalUnits;
             this.requireColocalization = other.requireColocalization;
@@ -339,12 +339,12 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         @ExpressionParameterSettingsVariable(fromClass = ROI3DRelationMeasurementExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-        public DefaultExpressionParameter getOverlapFilter() {
+        public JIPipeExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }
 
         @JIPipeParameter("overlap-filter")
-        public void setOverlapFilter(DefaultExpressionParameter overlapFilter) {
+        public void setOverlapFilter(JIPipeExpressionParameter overlapFilter) {
             this.overlapFilter = overlapFilter;
         }
 

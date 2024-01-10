@@ -27,7 +27,7 @@ import java.util.Collections;
 public class DoubleFormData extends ParameterFormData {
 
     private double value = 0;
-    private DefaultExpressionParameter validationExpression = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter validationExpression = new JIPipeExpressionParameter();
     private SingleAnnotationIOSettings annotationIOSettings = new SingleAnnotationIOSettings();
 
     public DoubleFormData() {
@@ -59,12 +59,12 @@ public class DoubleFormData extends ParameterFormData {
             "the current number.")
     @JIPipeParameter("validation-expression")
     @ExpressionParameterSettings(variableSource = NumberQueryExpressionVariableSource.class)
-    public DefaultExpressionParameter getValidationExpression() {
+    public JIPipeExpressionParameter getValidationExpression() {
         return validationExpression;
     }
 
     @JIPipeParameter("validation-expression")
-    public void setValidationExpression(DefaultExpressionParameter validationExpression) {
+    public void setValidationExpression(JIPipeExpressionParameter validationExpression) {
         this.validationExpression = validationExpression;
     }
 

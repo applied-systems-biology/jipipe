@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
  */
 @ExpressionParameterSettings(variableSource = TableCellValueExpressionParameterVariableSource.class)
 @JIPipeDocumentationDescription(description = "This parameter accesses all table cells. Please take a look at the expression builder for more information about the available variables.")
-public class TableCellValueQueryExpression extends DefaultExpressionParameter {
+public class TableCellValueQueryExpression extends JIPipeExpressionParameter {
 
     public TableCellValueQueryExpression() {
     }

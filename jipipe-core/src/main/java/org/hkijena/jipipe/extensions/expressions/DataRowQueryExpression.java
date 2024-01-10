@@ -33,7 +33,7 @@ import java.util.Set;
 @JIPipeDocumentationDescription(description = "This parameter allows you to select a subset of data via annotations. If you leave the " +
         "expression empty, all data will match. Otherwise, you can utilize variables that are named after the annotation columns. To test " +
         "for the existence of an annotation (i.e.., NA values), you can use the EXISTS operator.")
-public class DataRowQueryExpression extends DefaultExpressionParameter {
+public class DataRowQueryExpression extends JIPipeExpressionParameter {
 
     public DataRowQueryExpression() {
     }

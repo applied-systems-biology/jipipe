@@ -53,7 +53,7 @@ public class ExpressionBuilderUI extends JPanel {
     private static final EntryRankingFunction RANKING_FUNCTION = new EntryRankingFunction();
     private static final Function<Object, String> ENTRY_TO_STRING_FUNCTION = new EntryToStringFunction();
     private final SearchTextField searchField = new SearchTextField();
-    private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
+    private final JIPipeExpressionEvaluatorSyntaxTokenMaker tokenMaker = new JIPipeExpressionEvaluatorSyntaxTokenMaker();
     private final Set<ExpressionParameterVariable> variables;
     private final JList<Object> commandPaletteList = new JList<>();
     private final List<ExpressionOperatorEntry> operatorEntryList;
@@ -64,9 +64,9 @@ public class ExpressionBuilderUI extends JPanel {
 
     public ExpressionBuilderUI(String expression, Set<ExpressionParameterVariable> variables) {
         this.variables = variables;
-        this.operatorEntryList = ExpressionOperatorEntry.fromEvaluator(DefaultExpressionParameter.getEvaluatorInstance(), true);
+        this.operatorEntryList = ExpressionOperatorEntry.fromEvaluator(JIPipeExpressionParameter.getEvaluatorInstance(), true);
         this.operatorEntryList.sort(Comparator.comparing(ExpressionOperatorEntry::getName));
-        this.constantEntryList = ExpressionConstantEntry.fromEvaluator(DefaultExpressionParameter.getEvaluatorInstance(), true);
+        this.constantEntryList = ExpressionConstantEntry.fromEvaluator(JIPipeExpressionParameter.getEvaluatorInstance(), true);
         this.constantEntryList.sort(Comparator.comparing(ExpressionConstantEntry::getName));
         initialize();
         expressionEditor.setText(expression);
@@ -314,7 +314,7 @@ public class ExpressionBuilderUI extends JPanel {
     }
 
     public void insertVariableAtCaret(String variableName) {
-        insertAtCaret(DefaultExpressionEvaluator.escapeVariable(variableName), true);
+        insertAtCaret(JIPipeExpressionEvaluator.escapeVariable(variableName), true);
         expressionEditor.requestFocusInWindow();
     }
 
@@ -346,13 +346,13 @@ public class ExpressionBuilderUI extends JPanel {
     public void insertOperator(ExpressionOperatorEntry operatorEntry, List<ExpressionBuilderParameterUI> parameterEditorUIList) {
         if (operatorEntry.getOperator().getOperandCount() == 1) {
             if (operatorEntry.getOperator().getAssociativity() == Operator.Associativity.LEFT) {
-                boolean symbolic = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
+                boolean symbolic = JIPipeExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
                 if (symbolic)
                     insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + operatorEntry.getOperator().getSymbol(), true);
                 else
                     insertAtCaret(parameterEditorUIList.get(0).getCurrentExpressionValue() + " " + operatorEntry.getOperator().getSymbol(), true);
             } else {
-                boolean symbolic = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
+                boolean symbolic = JIPipeExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens().contains(operatorEntry.getOperator().getSymbol());
                 if (symbolic)
                     insertAtCaret(operatorEntry.getOperator().getSymbol() + parameterEditorUIList.get(0).getCurrentExpressionValue(), true);
                 else

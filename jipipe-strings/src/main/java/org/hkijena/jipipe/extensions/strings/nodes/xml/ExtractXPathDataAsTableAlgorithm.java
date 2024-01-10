@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -120,38 +120,38 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
     }
 
     public static class Entry extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter xPath = new DefaultExpressionParameter("\"/\"");
-        private DefaultExpressionParameter columnName = new DefaultExpressionParameter("\"Column name\"");
+        private JIPipeExpressionParameter xPath = new JIPipeExpressionParameter("\"/\"");
+        private JIPipeExpressionParameter columnName = new JIPipeExpressionParameter("\"Column name\"");
 
         public Entry() {
         }
 
         public Entry(Entry other) {
-            this.xPath = new DefaultExpressionParameter(other.xPath);
-            this.columnName = new DefaultExpressionParameter(other.columnName);
+            this.xPath = new JIPipeExpressionParameter(other.xPath);
+            this.columnName = new JIPipeExpressionParameter(other.columnName);
         }
 
         @JIPipeDocumentation(name = "XPath", description = "An expression that returns the XPath of the XML entries. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
         @JIPipeParameter(value = "xpath", uiOrder = -100)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getxPath() {
+        public JIPipeExpressionParameter getxPath() {
             return xPath;
         }
 
         @JIPipeParameter("xpath")
-        public void setxPath(DefaultExpressionParameter xPath) {
+        public void setxPath(JIPipeExpressionParameter xPath) {
             this.xPath = xPath;
         }
 
         @JIPipeDocumentation(name = "Column name", description = "The name of the output column.")
         @JIPipeParameter(value = "column-name", uiOrder = -90)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getColumnName() {
+        public JIPipeExpressionParameter getColumnName() {
             return columnName;
         }
 
         @JIPipeParameter("column-name")
-        public void setColumnName(DefaultExpressionParameter columnName) {
+        public void setColumnName(JIPipeExpressionParameter columnName) {
             this.columnName = columnName;
         }
     }

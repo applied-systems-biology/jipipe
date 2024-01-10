@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -27,9 +27,9 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParame
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
 public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter zAxis = new DefaultExpressionParameter("num_z");
-    private DefaultExpressionParameter cAxis = new DefaultExpressionParameter("num_c");
-    private DefaultExpressionParameter tAxis = new DefaultExpressionParameter("num_t");
+    private JIPipeExpressionParameter zAxis = new JIPipeExpressionParameter("num_z");
+    private JIPipeExpressionParameter cAxis = new JIPipeExpressionParameter("num_c");
+    private JIPipeExpressionParameter tAxis = new JIPipeExpressionParameter("num_t");
     private boolean copySlices = true;
 
     public TransformSetHyperstackDimensionsAlgorithm(JIPipeNodeInfo info) {
@@ -38,9 +38,9 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
 
     public TransformSetHyperstackDimensionsAlgorithm(TransformSetHyperstackDimensionsAlgorithm other) {
         super(other);
-        this.zAxis = new DefaultExpressionParameter(other.zAxis);
-        this.cAxis = new DefaultExpressionParameter(other.cAxis);
-        this.tAxis = new DefaultExpressionParameter(other.tAxis);
+        this.zAxis = new JIPipeExpressionParameter(other.zAxis);
+        this.cAxis = new JIPipeExpressionParameter(other.cAxis);
+        this.tAxis = new JIPipeExpressionParameter(other.tAxis);
         this.copySlices = other.copySlices;
     }
 
@@ -62,36 +62,36 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
     @JIPipeDocumentation(name = "Z axis", description = "Expression that returns the size of the Z axis")
     @JIPipeParameter(value = "z-axis", uiOrder = -50)
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getzAxis() {
+    public JIPipeExpressionParameter getzAxis() {
         return zAxis;
     }
 
     @JIPipeParameter("z-axis")
-    public void setzAxis(DefaultExpressionParameter zAxis) {
+    public void setzAxis(JIPipeExpressionParameter zAxis) {
         this.zAxis = zAxis;
     }
 
     @JIPipeDocumentation(name = "C axis", description = "Expression that returns the size of the channel axis")
     @JIPipeParameter(value = "c-axis", uiOrder = -49)
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getcAxis() {
+    public JIPipeExpressionParameter getcAxis() {
         return cAxis;
     }
 
     @JIPipeParameter("c-axis")
-    public void setcAxis(DefaultExpressionParameter cAxis) {
+    public void setcAxis(JIPipeExpressionParameter cAxis) {
         this.cAxis = cAxis;
     }
 
     @JIPipeDocumentation(name = "T axis", description = "Expression that returns the size of the time axis")
     @JIPipeParameter(value = "t-axis", uiOrder = -48)
     @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter gettAxis() {
+    public JIPipeExpressionParameter gettAxis() {
         return tAxis;
     }
 
     @JIPipeParameter("t-axis")
-    public void settAxis(DefaultExpressionParameter tAxis) {
+    public void settAxis(JIPipeExpressionParameter tAxis) {
         this.tAxis = tAxis;
     }
 

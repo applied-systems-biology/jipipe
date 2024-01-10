@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -45,9 +45,9 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
     private Path outputDirectory = Paths.get("exported-data");
     private boolean relativeToProjectDir = false;
 
-    private DefaultExpressionParameter sheetNameExpression = new DefaultExpressionParameter("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
+    private JIPipeExpressionParameter sheetNameExpression = new JIPipeExpressionParameter("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
 
-    private DefaultExpressionParameter orderExpression = new DefaultExpressionParameter("SORT_ASCENDING(sheet_names)");
+    private JIPipeExpressionParameter orderExpression = new JIPipeExpressionParameter("SORT_ASCENDING(sheet_names)");
 
     public ExportTableAsXLSXAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -60,8 +60,8 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.outputDirectory = other.outputDirectory;
         this.relativeToProjectDir = other.relativeToProjectDir;
-        this.orderExpression = new DefaultExpressionParameter(other.orderExpression);
-        this.sheetNameExpression = new DefaultExpressionParameter(other.sheetNameExpression);
+        this.orderExpression = new JIPipeExpressionParameter(other.orderExpression);
+        this.sheetNameExpression = new JIPipeExpressionParameter(other.sheetNameExpression);
         registerSubParameter(exporter);
     }
 
@@ -193,12 +193,12 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Sheet names", description = "Array if sheet names", key = "sheet_names")
     @ExpressionParameterSettingsVariable(name = "Annotations", description = "Map of annotation names to values", key = "annotations")
-    public DefaultExpressionParameter getOrderExpression() {
+    public JIPipeExpressionParameter getOrderExpression() {
         return orderExpression;
     }
 
     @JIPipeParameter("order-expression")
-    public void setOrderExpression(DefaultExpressionParameter orderExpression) {
+    public void setOrderExpression(JIPipeExpressionParameter orderExpression) {
         this.orderExpression = orderExpression;
     }
 
@@ -206,12 +206,12 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("sheet-name-expression")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Annotations", description = "Map of annotation names to values", key = "annotations")
-    public DefaultExpressionParameter getSheetNameExpression() {
+    public JIPipeExpressionParameter getSheetNameExpression() {
         return sheetNameExpression;
     }
 
     @JIPipeParameter("sheet-name-expression")
-    public void setSheetNameExpression(DefaultExpressionParameter sheetNameExpression) {
+    public void setSheetNameExpression(JIPipeExpressionParameter sheetNameExpression) {
         this.sheetNameExpression = sheetNameExpression;
     }
 }

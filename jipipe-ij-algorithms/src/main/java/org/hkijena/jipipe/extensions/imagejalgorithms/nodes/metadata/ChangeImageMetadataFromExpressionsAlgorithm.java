@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.Image5DExpressionParameterVariableSource;
@@ -44,7 +44,7 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final CustomExpressionVariablesParameter customFilterVariables;
-    private OptionalDefaultExpressionParameter imageTitle = new OptionalDefaultExpressionParameter(false, "title");
+    private OptionalJIPipeExpressionParameter imageTitle = new OptionalJIPipeExpressionParameter(false, "title");
 
     /**
      * Instantiates a new node type.
@@ -63,7 +63,7 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
      */
     public ChangeImageMetadataFromExpressionsAlgorithm(ChangeImageMetadataFromExpressionsAlgorithm other) {
         super(other);
-        this.imageTitle = new OptionalDefaultExpressionParameter(other.imageTitle);
+        this.imageTitle = new OptionalJIPipeExpressionParameter(other.imageTitle);
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
@@ -105,12 +105,12 @@ public class ChangeImageMetadataFromExpressionsAlgorithm extends JIPipeSimpleIte
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Image metadata", description = "A map containing the image metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Image metadata/properties accessible via their string keys")
     @ExpressionParameterSettingsVariable(key = "name", description = "The current name of the image")
-    public OptionalDefaultExpressionParameter getImageTitle() {
+    public OptionalJIPipeExpressionParameter getImageTitle() {
         return imageTitle;
     }
 
     @JIPipeParameter("image-title")
-    public void setImageTitle(OptionalDefaultExpressionParameter imageTitle) {
+    public void setImageTitle(OptionalJIPipeExpressionParameter imageTitle) {
         this.imageTitle = imageTitle;
     }
 }

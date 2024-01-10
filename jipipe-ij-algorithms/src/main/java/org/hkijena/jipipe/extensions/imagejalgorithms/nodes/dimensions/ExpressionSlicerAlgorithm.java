@@ -38,9 +38,9 @@ import java.util.stream.Collectors;
 public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customFilterVariables;
-    private DefaultExpressionParameter expressionZ = new DefaultExpressionParameter("z");
-    private DefaultExpressionParameter expressionC = new DefaultExpressionParameter("c");
-    private DefaultExpressionParameter expressionT = new DefaultExpressionParameter("t");
+    private JIPipeExpressionParameter expressionZ = new JIPipeExpressionParameter("z");
+    private JIPipeExpressionParameter expressionC = new JIPipeExpressionParameter("c");
+    private JIPipeExpressionParameter expressionT = new JIPipeExpressionParameter("t");
     private boolean iteratePerZ = false;
     private boolean iteratePerC = false;
     private boolean iteratePerT = false;
@@ -57,9 +57,9 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ExpressionSlicerAlgorithm(ExpressionSlicerAlgorithm other) {
         super(other);
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
-        this.expressionC = new DefaultExpressionParameter(other.expressionC);
-        this.expressionZ = new DefaultExpressionParameter(other.expressionZ);
-        this.expressionT = new DefaultExpressionParameter(other.expressionT);
+        this.expressionC = new JIPipeExpressionParameter(other.expressionC);
+        this.expressionZ = new JIPipeExpressionParameter(other.expressionZ);
+        this.expressionT = new JIPipeExpressionParameter(other.expressionT);
         this.iteratePerC = other.iteratePerC;
         this.iteratePerT = other.iteratePerT;
         this.iteratePerZ = other.iteratePerZ;
@@ -208,12 +208,12 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getExpressionZ() {
+    public JIPipeExpressionParameter getExpressionZ() {
         return expressionZ;
     }
 
     @JIPipeParameter("expression-z")
-    public void setExpressionZ(DefaultExpressionParameter expressionZ) {
+    public void setExpressionZ(JIPipeExpressionParameter expressionZ) {
         this.expressionZ = expressionZ;
     }
 
@@ -224,12 +224,12 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getExpressionC() {
+    public JIPipeExpressionParameter getExpressionC() {
         return expressionC;
     }
 
     @JIPipeParameter("expression-c")
-    public void setExpressionC(DefaultExpressionParameter expressionC) {
+    public void setExpressionC(JIPipeExpressionParameter expressionC) {
         this.expressionC = expressionC;
     }
 
@@ -240,12 +240,12 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getExpressionT() {
+    public JIPipeExpressionParameter getExpressionT() {
         return expressionT;
     }
 
     @JIPipeParameter("expression-t")
-    public void setExpressionT(DefaultExpressionParameter expressionT) {
+    public void setExpressionT(JIPipeExpressionParameter expressionT) {
         this.expressionT = expressionT;
     }
 

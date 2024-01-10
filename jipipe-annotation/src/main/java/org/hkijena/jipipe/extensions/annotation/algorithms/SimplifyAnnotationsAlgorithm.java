@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -34,7 +34,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     private AnnotationQueryExpression annotationFilter = new AnnotationQueryExpression("STRING_STARTS_WITH(key, \"#\")");
     private StringQueryExpression renameFunction = new StringQueryExpression("REPLACE_IN_STRING(value, \"#\", \"\")");
-    private DefaultExpressionParameter combinationFunction = new DefaultExpressionParameter("SUMMARIZE_VARIABLES(\" \", \"=\")");
+    private JIPipeExpressionParameter combinationFunction = new JIPipeExpressionParameter("SUMMARIZE_VARIABLES(\" \", \"=\")");
     private String generatedAnnotationName = "#Dataset";
     private AnnotationRemovalMode annotationRemovalMode = AnnotationRemovalMode.Rename;
 
@@ -48,7 +48,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.renameFunction = other.renameFunction;
         this.generatedAnnotationName = other.generatedAnnotationName;
         this.annotationRemovalMode = other.annotationRemovalMode;
-        this.combinationFunction = new DefaultExpressionParameter(other.combinationFunction);
+        this.combinationFunction = new JIPipeExpressionParameter(other.combinationFunction);
     }
 
     @Override
@@ -139,12 +139,12 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @JIPipeDocumentation(name = "Combination function", description = "Function that determines how annotation names and values are combined.")
     @JIPipeParameter("combination-function")
-    public DefaultExpressionParameter getCombinationFunction() {
+    public JIPipeExpressionParameter getCombinationFunction() {
         return combinationFunction;
     }
 
     @JIPipeParameter("combination-function")
-    public void setCombinationFunction(DefaultExpressionParameter combinationFunction) {
+    public void setCombinationFunction(JIPipeExpressionParameter combinationFunction) {
         this.combinationFunction = combinationFunction;
     }
 

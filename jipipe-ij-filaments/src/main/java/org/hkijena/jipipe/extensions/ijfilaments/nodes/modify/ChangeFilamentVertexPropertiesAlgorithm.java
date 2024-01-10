@@ -27,19 +27,19 @@ import java.util.Map;
 public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
-    private DefaultExpressionParameter centroidX = new DefaultExpressionParameter("default");
-    private DefaultExpressionParameter centroidY = new DefaultExpressionParameter("default");
-    private DefaultExpressionParameter centroidZ = new DefaultExpressionParameter("default");
-    private DefaultExpressionParameter centroidC = new DefaultExpressionParameter("default");
-    private DefaultExpressionParameter centroidT = new DefaultExpressionParameter("default");
-    private DefaultExpressionParameter radius = new DefaultExpressionParameter("default");
-    private DefaultExpressionParameter value = new DefaultExpressionParameter("default");
+    private JIPipeExpressionParameter centroidX = new JIPipeExpressionParameter("default");
+    private JIPipeExpressionParameter centroidY = new JIPipeExpressionParameter("default");
+    private JIPipeExpressionParameter centroidZ = new JIPipeExpressionParameter("default");
+    private JIPipeExpressionParameter centroidC = new JIPipeExpressionParameter("default");
+    private JIPipeExpressionParameter centroidT = new JIPipeExpressionParameter("default");
+    private JIPipeExpressionParameter radius = new JIPipeExpressionParameter("default");
+    private JIPipeExpressionParameter value = new JIPipeExpressionParameter("default");
 
-    private DefaultExpressionParameter physicalSizeX = new DefaultExpressionParameter("default");
+    private JIPipeExpressionParameter physicalSizeX = new JIPipeExpressionParameter("default");
 
-    private DefaultExpressionParameter physicalSizeY = new DefaultExpressionParameter("default");
+    private JIPipeExpressionParameter physicalSizeY = new JIPipeExpressionParameter("default");
 
-    private DefaultExpressionParameter physicalSizeZ = new DefaultExpressionParameter("default");
+    private JIPipeExpressionParameter physicalSizeZ = new JIPipeExpressionParameter("default");
 
     public ChangeFilamentVertexPropertiesAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -49,16 +49,16 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     public ChangeFilamentVertexPropertiesAlgorithm(ChangeFilamentVertexPropertiesAlgorithm other) {
         super(other);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
-        this.centroidX = new DefaultExpressionParameter(other.centroidX);
-        this.centroidY = new DefaultExpressionParameter(other.centroidY);
-        this.centroidZ = new DefaultExpressionParameter(other.centroidZ);
-        this.centroidC = new DefaultExpressionParameter(other.centroidC);
-        this.centroidT = new DefaultExpressionParameter(other.centroidT);
-        this.radius = new DefaultExpressionParameter(other.radius);
-        this.value = new DefaultExpressionParameter(other.value);
-        this.physicalSizeX = new DefaultExpressionParameter(other.physicalSizeX);
-        this.physicalSizeY = new DefaultExpressionParameter(other.physicalSizeY);
-        this.physicalSizeZ = new DefaultExpressionParameter(other.physicalSizeZ);
+        this.centroidX = new JIPipeExpressionParameter(other.centroidX);
+        this.centroidY = new JIPipeExpressionParameter(other.centroidY);
+        this.centroidZ = new JIPipeExpressionParameter(other.centroidZ);
+        this.centroidC = new JIPipeExpressionParameter(other.centroidC);
+        this.centroidT = new JIPipeExpressionParameter(other.centroidT);
+        this.radius = new JIPipeExpressionParameter(other.radius);
+        this.value = new JIPipeExpressionParameter(other.value);
+        this.physicalSizeX = new JIPipeExpressionParameter(other.physicalSizeX);
+        this.physicalSizeY = new JIPipeExpressionParameter(other.physicalSizeY);
+        this.physicalSizeZ = new JIPipeExpressionParameter(other.physicalSizeZ);
     }
 
     @Override
@@ -131,12 +131,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getCentroidX() {
+    public JIPipeExpressionParameter getCentroidX() {
         return centroidX;
     }
 
     @JIPipeParameter("centroid-x")
-    public void setCentroidX(DefaultExpressionParameter centroidX) {
+    public void setCentroidX(JIPipeExpressionParameter centroidX) {
         this.centroidX = centroidX;
     }
 
@@ -151,12 +151,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getCentroidY() {
+    public JIPipeExpressionParameter getCentroidY() {
         return centroidY;
     }
 
     @JIPipeParameter("centroid-y")
-    public void setCentroidY(DefaultExpressionParameter centroidY) {
+    public void setCentroidY(JIPipeExpressionParameter centroidY) {
         this.centroidY = centroidY;
     }
 
@@ -170,12 +170,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getCentroidZ() {
+    public JIPipeExpressionParameter getCentroidZ() {
         return centroidZ;
     }
 
     @JIPipeParameter("centroid-z")
-    public void setCentroidZ(DefaultExpressionParameter centroidZ) {
+    public void setCentroidZ(JIPipeExpressionParameter centroidZ) {
         this.centroidZ = centroidZ;
     }
 
@@ -189,12 +189,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getCentroidC() {
+    public JIPipeExpressionParameter getCentroidC() {
         return centroidC;
     }
 
     @JIPipeParameter("centroid-c")
-    public void setCentroidC(DefaultExpressionParameter centroidC) {
+    public void setCentroidC(JIPipeExpressionParameter centroidC) {
         this.centroidC = centroidC;
     }
 
@@ -208,12 +208,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getCentroidT() {
+    public JIPipeExpressionParameter getCentroidT() {
         return centroidT;
     }
 
     @JIPipeParameter("centroid-t")
-    public void setCentroidT(DefaultExpressionParameter centroidT) {
+    public void setCentroidT(JIPipeExpressionParameter centroidT) {
         this.centroidT = centroidT;
     }
 
@@ -227,12 +227,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getRadius() {
+    public JIPipeExpressionParameter getRadius() {
         return radius;
     }
 
     @JIPipeParameter("radius")
-    public void setRadius(DefaultExpressionParameter radius) {
+    public void setRadius(JIPipeExpressionParameter radius) {
         this.radius = radius;
     }
 
@@ -246,12 +246,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getValue() {
+    public JIPipeExpressionParameter getValue() {
         return value;
     }
 
     @JIPipeParameter("value")
-    public void setValue(DefaultExpressionParameter value) {
+    public void setValue(JIPipeExpressionParameter value) {
         this.value = value;
     }
 
@@ -265,12 +265,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getPhysicalSizeX() {
+    public JIPipeExpressionParameter getPhysicalSizeX() {
         return physicalSizeX;
     }
 
     @JIPipeParameter("physical-size-x")
-    public void setPhysicalSizeX(DefaultExpressionParameter physicalSizeX) {
+    public void setPhysicalSizeX(JIPipeExpressionParameter physicalSizeX) {
         this.physicalSizeX = physicalSizeX;
     }
 
@@ -284,12 +284,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getPhysicalSizeY() {
+    public JIPipeExpressionParameter getPhysicalSizeY() {
         return physicalSizeY;
     }
 
     @JIPipeParameter("physical-size-y")
-    public void setPhysicalSizeY(DefaultExpressionParameter physicalSizeY) {
+    public void setPhysicalSizeY(JIPipeExpressionParameter physicalSizeY) {
         this.physicalSizeY = physicalSizeY;
     }
 
@@ -303,12 +303,12 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
     @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
     @ExpressionParameterSettings(hint = "per vertex")
-    public DefaultExpressionParameter getPhysicalSizeZ() {
+    public JIPipeExpressionParameter getPhysicalSizeZ() {
         return physicalSizeZ;
     }
 
     @JIPipeParameter("physical-size-z")
-    public void setPhysicalSizeZ(DefaultExpressionParameter physicalSizeZ) {
+    public void setPhysicalSizeZ(JIPipeExpressionParameter physicalSizeZ) {
         this.physicalSizeZ = physicalSizeZ;
     }
 

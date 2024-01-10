@@ -59,9 +59,9 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
     private DimensionOperation dimensionCOperation = DimensionOperation.Merge;
     private DimensionOperation dimensionTOperation = DimensionOperation.Follow;
     private OptionalAnnotationNameParameter componentNameAnnotation = new OptionalAnnotationNameParameter("Component", true);
-    private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter();
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
-    private DefaultExpressionParameter graphPostprocessing = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter graphPostprocessing = new JIPipeExpressionParameter();
     private boolean splitAtJunctions = false;
     private boolean trySolveJunctions = true;
 
@@ -77,11 +77,11 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.dimensionCOperation = other.dimensionCOperation;
         this.dimensionTOperation = other.dimensionTOperation;
         this.componentNameAnnotation = new OptionalAnnotationNameParameter(other.componentNameAnnotation);
-        this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
+        this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
         this.splitAtJunctions = other.splitAtJunctions;
         this.trySolveJunctions = other.trySolveJunctions;
-        this.graphPostprocessing = new DefaultExpressionParameter(other.graphPostprocessing);
+        this.graphPostprocessing = new JIPipeExpressionParameter(other.graphPostprocessing);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
@@ -271,12 +271,12 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
             "</ul>")
     @JIPipeParameter("graph-postprocessing")
     @ExpressionParameterSettings(variableSource = GraphPostprocessingVariables.class)
-    public DefaultExpressionParameter getGraphPostprocessing() {
+    public JIPipeExpressionParameter getGraphPostprocessing() {
         return graphPostprocessing;
     }
 
     @JIPipeParameter("graph-postprocessing")
-    public void setGraphPostprocessing(DefaultExpressionParameter graphPostprocessing) {
+    public void setGraphPostprocessing(JIPipeExpressionParameter graphPostprocessing) {
         this.graphPostprocessing = graphPostprocessing;
     }
 
@@ -436,12 +436,12 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
             "no filtering is applied.")
     @JIPipeParameter("overlap-filter")
     @ExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariableSource.class)
-    public DefaultExpressionParameter getOverlapFilter() {
+    public JIPipeExpressionParameter getOverlapFilter() {
         return overlapFilter;
     }
 
     @JIPipeParameter("overlap-filter")
-    public void setOverlapFilter(DefaultExpressionParameter overlapFilter) {
+    public void setOverlapFilter(JIPipeExpressionParameter overlapFilter) {
         this.overlapFilter = overlapFilter;
     }
 

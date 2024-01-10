@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.jgrapht.GraphPath;
@@ -41,7 +41,7 @@ public class JIPipeMultiIterationStepGenerator {
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
     private boolean applyMerging = true;
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
-    private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
+    private JIPipeExpressionParameter customAnnotationMatching = new JIPipeExpressionParameter("exact_match_results");
 
     private boolean forceFlowGraphSolver = false;
 
@@ -574,11 +574,11 @@ public class JIPipeMultiIterationStepGenerator {
         this.annotationMatchingMethod = annotationMatchingMethod;
     }
 
-    public DefaultExpressionParameter getCustomAnnotationMatching() {
+    public JIPipeExpressionParameter getCustomAnnotationMatching() {
         return customAnnotationMatching;
     }
 
-    public void setCustomAnnotationMatching(DefaultExpressionParameter customAnnotationMatching) {
+    public void setCustomAnnotationMatching(JIPipeExpressionParameter customAnnotationMatching) {
         this.customAnnotationMatching = customAnnotationMatching;
     }
 
@@ -618,7 +618,7 @@ public class JIPipeMultiIterationStepGenerator {
             this.annotations = annotations;
         }
 
-        public boolean isCompatibleTo(RowNode otherNode, JIPipeTextAnnotationMatchingMethod annotationMatchingMethod, DefaultExpressionParameter customAnnotationMatching, boolean forceNAIsAny) {
+        public boolean isCompatibleTo(RowNode otherNode, JIPipeTextAnnotationMatchingMethod annotationMatchingMethod, JIPipeExpressionParameter customAnnotationMatching, boolean forceNAIsAny) {
             boolean exactMatchResults;
             if (forceNAIsAny && annotations.containsKey("")) {
                 exactMatchResults = true;

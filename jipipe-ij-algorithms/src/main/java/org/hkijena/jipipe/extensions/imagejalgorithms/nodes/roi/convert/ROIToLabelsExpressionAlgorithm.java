@@ -34,7 +34,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Output label image", autoCreate = true)
 public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private OptionalDefaultExpressionParameter roiToLabelTransformation = new OptionalDefaultExpressionParameter(false, "index");
+    private OptionalJIPipeExpressionParameter roiToLabelTransformation = new OptionalJIPipeExpressionParameter(false, "index");
     private boolean drawOutline = false;
     private boolean fillOutline = true;
 
@@ -44,7 +44,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
     public ROIToLabelsExpressionAlgorithm(ROIToLabelsExpressionAlgorithm other) {
         super(other);
-        this.roiToLabelTransformation = new OptionalDefaultExpressionParameter(other.roiToLabelTransformation);
+        this.roiToLabelTransformation = new OptionalJIPipeExpressionParameter(other.roiToLabelTransformation);
         this.drawOutline = other.drawOutline;
         this.fillOutline = other.fillOutline;
     }
@@ -146,12 +146,12 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "ROI to label function", description = "Expression that converts a ROI into its numeric label index. Must return a number. If disabled, each ROI is assigned its own label.")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @JIPipeParameter("roi-to-label-transformation")
-    public OptionalDefaultExpressionParameter getRoiToLabelTransformation() {
+    public OptionalJIPipeExpressionParameter getRoiToLabelTransformation() {
         return roiToLabelTransformation;
     }
 
     @JIPipeParameter("roi-to-label-transformation")
-    public void setRoiToLabelTransformation(OptionalDefaultExpressionParameter roiToLabelTransformation) {
+    public void setRoiToLabelTransformation(OptionalJIPipeExpressionParameter roiToLabelTransformation) {
         this.roiToLabelTransformation = roiToLabelTransformation;
     }
 

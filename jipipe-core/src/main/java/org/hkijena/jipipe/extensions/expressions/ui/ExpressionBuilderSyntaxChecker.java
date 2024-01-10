@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions.ui;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -33,7 +33,7 @@ public class ExpressionBuilderSyntaxChecker extends JPanel {
     }
 
     private void updateStatus() {
-        Exception exception = DefaultExpressionParameter.getEvaluatorInstance().checkSyntax(expressionEditor.getText());
+        Exception exception = JIPipeExpressionParameter.getEvaluatorInstance().checkSyntax(expressionEditor.getText());
         if (exception == null) {
             statusLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-normal.png"));
             if (expressionEditor.getText().trim().length() == 0)

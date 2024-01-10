@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -42,7 +42,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = OMERODatasetReferenceData.class, slotName = "Dataset", description = "The created dataset", autoCreate = true)
 public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private DefaultExpressionParameter nameGenerator = new DefaultExpressionParameter("\"Untitled\"");
+    private JIPipeExpressionParameter nameGenerator = new JIPipeExpressionParameter("\"Untitled\"");
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
 
@@ -57,7 +57,7 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     public OMEROCreateDatasetAlgorithm(OMEROCreateDatasetAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
-        this.nameGenerator = new DefaultExpressionParameter(other.nameGenerator);
+        this.nameGenerator = new JIPipeExpressionParameter(other.nameGenerator);
         this.keyValuePairExporter = new AnnotationsToOMEROKeyValuePairExporter(other.keyValuePairExporter);
         registerSubParameter(keyValuePairExporter);
         this.tagExporter = new AnnotationsToOMEROTagExporter(other.tagExporter);
@@ -106,12 +106,12 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeDocumentation(name = "Dataset name", description = "Expression that determines that name of the data set")
     @JIPipeParameter("name-generator")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getNameGenerator() {
+    public JIPipeExpressionParameter getNameGenerator() {
         return nameGenerator;
     }
 
     @JIPipeParameter("name-generator")
-    public void setNameGenerator(DefaultExpressionParameter nameGenerator) {
+    public void setNameGenerator(JIPipeExpressionParameter nameGenerator) {
         this.nameGenerator = nameGenerator;
     }
 

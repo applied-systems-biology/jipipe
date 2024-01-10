@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -48,7 +48,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataGeneratorAlgorithm {
 
-    private DefaultExpressionParameter function = new DefaultExpressionParameter("0");
+    private JIPipeExpressionParameter function = new JIPipeExpressionParameter("0");
     private OptionalIntegerParameter overwriteWidth = new OptionalIntegerParameter(false, 256);
     private OptionalIntegerParameter overwriteHeight = new OptionalIntegerParameter(false, 256);
     private OptionalIntegerParameter overwriteSizeZ = new OptionalIntegerParameter(false, 1);
@@ -73,7 +73,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
      */
     public GenerateMissingImageFromMathExpression2D(GenerateMissingImageFromMathExpression2D other) {
         super(other);
-        this.function = new DefaultExpressionParameter(other.function);
+        this.function = new JIPipeExpressionParameter(other.function);
         this.overwriteWidth = new OptionalIntegerParameter(other.overwriteWidth);
         this.overwriteHeight = new OptionalIntegerParameter(other.overwriteHeight);
         this.overwriteSizeZ = new OptionalIntegerParameter(other.overwriteSizeZ);
@@ -170,12 +170,12 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("function")
     @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getFunction() {
+    public JIPipeExpressionParameter getFunction() {
         return function;
     }
 
     @JIPipeParameter("function")
-    public void setFunction(DefaultExpressionParameter transformation) {
+    public void setFunction(JIPipeExpressionParameter transformation) {
         this.function = transformation;
     }
 

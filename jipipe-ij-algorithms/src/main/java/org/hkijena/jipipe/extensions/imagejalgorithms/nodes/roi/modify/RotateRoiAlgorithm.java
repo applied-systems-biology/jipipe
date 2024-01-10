@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -42,9 +42,9 @@ import java.awt.geom.Point2D;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter angle = new DefaultExpressionParameter("15");
-    private DefaultExpressionParameter centerX = new DefaultExpressionParameter("0");
-    private DefaultExpressionParameter centerY = new DefaultExpressionParameter("0");
+    private JIPipeExpressionParameter angle = new JIPipeExpressionParameter("15");
+    private JIPipeExpressionParameter centerX = new JIPipeExpressionParameter("0");
+    private JIPipeExpressionParameter centerY = new JIPipeExpressionParameter("0");
 
     public RotateRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -53,9 +53,9 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     public RotateRoiAlgorithm(RotateRoiAlgorithm other) {
         super(other);
-        this.angle = new DefaultExpressionParameter(other.angle);
-        this.centerX = new DefaultExpressionParameter(other.centerX);
-        this.centerY = new DefaultExpressionParameter(other.centerY);
+        this.angle = new JIPipeExpressionParameter(other.angle);
+        this.centerX = new JIPipeExpressionParameter(other.centerX);
+        this.centerY = new JIPipeExpressionParameter(other.centerY);
     }
 
     @Override
@@ -88,12 +88,12 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("angle")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = Image5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getAngle() {
+    public JIPipeExpressionParameter getAngle() {
         return angle;
     }
 
     @JIPipeParameter("angle")
-    public void setAngle(DefaultExpressionParameter angle) {
+    public void setAngle(JIPipeExpressionParameter angle) {
         this.angle = angle;
     }
 
@@ -101,12 +101,12 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("center-x")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = Image5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getCenterX() {
+    public JIPipeExpressionParameter getCenterX() {
         return centerX;
     }
 
     @JIPipeParameter("center-x")
-    public void setCenterX(DefaultExpressionParameter centerX) {
+    public void setCenterX(JIPipeExpressionParameter centerX) {
         this.centerX = centerX;
     }
 
@@ -114,12 +114,12 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("center-y")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = Image5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getCenterY() {
+    public JIPipeExpressionParameter getCenterY() {
         return centerY;
     }
 
     @JIPipeParameter("center-y")
-    public void setCenterY(DefaultExpressionParameter centerY) {
+    public void setCenterY(JIPipeExpressionParameter centerY) {
         this.centerY = centerY;
     }
 }

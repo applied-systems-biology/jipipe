@@ -46,7 +46,7 @@ import java.util.ArrayList;
 public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter("");
+    private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
 
     public OMEROListGroupsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -55,7 +55,7 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
     public OMEROListGroupsAlgorithm(OMEROListGroupsAlgorithm other) {
         super(other);
         this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new JIPipeExpressionParameter(other.filters);
     }
 
     @Override
@@ -88,12 +88,12 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
     @ExpressionParameterSettingsVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
     @ExpressionParameterSettingsVariable(name = "OMERO group name", description = "Name of the group", key = "name")
     @ExpressionParameterSettingsVariable(name = "OMERO group id", description = "ID of the group", key = "id")
-    public DefaultExpressionParameter getFilters() {
+    public JIPipeExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filter")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
     }
 

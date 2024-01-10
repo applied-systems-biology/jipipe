@@ -20,31 +20,31 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * An {@link AbstractExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
+ * An {@link AbstractExpressionParameter} that utilizes the {@link JIPipeExpressionEvaluator} to generate results
  */
-public class DefaultExpressionParameter extends AbstractExpressionParameter {
-    private static DefaultExpressionEvaluator EVALUATOR;
+public class JIPipeExpressionParameter extends AbstractExpressionParameter {
+    private static JIPipeExpressionEvaluator EVALUATOR;
 
     private java.util.Set<ExpressionParameterVariable> additionalUIVariables = new HashSet<>();
 
-    public DefaultExpressionParameter() {
+    public JIPipeExpressionParameter() {
     }
 
-    public DefaultExpressionParameter(String expression) {
+    public JIPipeExpressionParameter(String expression) {
         super(expression);
     }
 
-    public DefaultExpressionParameter(AbstractExpressionParameter other) {
+    public JIPipeExpressionParameter(AbstractExpressionParameter other) {
         super(other);
     }
 
-    public static DefaultExpressionEvaluator getEvaluatorInstance() {
+    public static JIPipeExpressionEvaluator getEvaluatorInstance() {
         if (EVALUATOR == null) {
-            EVALUATOR = new DefaultExpressionEvaluator();
+            EVALUATOR = new JIPipeExpressionEvaluator();
             // Prevent evaluator stuck without registered functions
             if (JIPipe.getInstance() != null) {
                 JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeLambda((emitter, event) -> {
-                    EVALUATOR = new DefaultExpressionEvaluator();
+                    EVALUATOR = new JIPipeExpressionEvaluator();
                 });
             }
         }
@@ -64,15 +64,15 @@ public class DefaultExpressionParameter extends AbstractExpressionParameter {
         this.additionalUIVariables = additionalUIVariables;
     }
 
-    public static class List extends ListParameter<DefaultExpressionParameter> {
+    public static class List extends ListParameter<JIPipeExpressionParameter> {
         public List() {
-            super(DefaultExpressionParameter.class);
+            super(JIPipeExpressionParameter.class);
         }
 
-        public List(Collection<DefaultExpressionParameter> other) {
-            super(DefaultExpressionParameter.class);
-            for (DefaultExpressionParameter parameter : other) {
-                add(new DefaultExpressionParameter(parameter));
+        public List(Collection<JIPipeExpressionParameter> other) {
+            super(JIPipeExpressionParameter.class);
+            for (JIPipeExpressionParameter parameter : other) {
+                add(new JIPipeExpressionParameter(parameter));
             }
         }
     }

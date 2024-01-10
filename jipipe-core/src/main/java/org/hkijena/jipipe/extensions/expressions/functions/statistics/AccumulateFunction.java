@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -31,7 +31,7 @@ public class AccumulateFunction extends ExpressionFunction {
         String operator = parameters.size() > 1 ? StringUtils.nullToEmpty(parameters.get(1)) : "+";
         String expression = String.join(operator, variableNames);
 
-        return DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, localVariables);
+        return JIPipeExpressionParameter.getEvaluatorInstance().evaluate(expression, localVariables);
     }
 
     @Override

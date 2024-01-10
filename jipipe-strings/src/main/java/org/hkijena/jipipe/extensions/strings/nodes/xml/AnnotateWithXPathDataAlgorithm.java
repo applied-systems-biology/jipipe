@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -114,38 +114,38 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     public static class Entry extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter xPath = new DefaultExpressionParameter("\"/\"");
-        private DefaultExpressionParameter annotationName = new DefaultExpressionParameter("\"Annotation name\"");
+        private JIPipeExpressionParameter xPath = new JIPipeExpressionParameter("\"/\"");
+        private JIPipeExpressionParameter annotationName = new JIPipeExpressionParameter("\"Annotation name\"");
 
         public Entry() {
         }
 
         public Entry(Entry other) {
-            this.xPath = new DefaultExpressionParameter(other.xPath);
-            this.annotationName = new DefaultExpressionParameter(other.annotationName);
+            this.xPath = new JIPipeExpressionParameter(other.xPath);
+            this.annotationName = new JIPipeExpressionParameter(other.annotationName);
         }
 
         @JIPipeDocumentation(name = "XPath", description = "An expression that returns the XPath of the XML entries. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
         @JIPipeParameter(value = "xpath", uiOrder = -100)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getxPath() {
+        public JIPipeExpressionParameter getxPath() {
             return xPath;
         }
 
         @JIPipeParameter("xpath")
-        public void setxPath(DefaultExpressionParameter xPath) {
+        public void setxPath(JIPipeExpressionParameter xPath) {
             this.xPath = xPath;
         }
 
         @JIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
         @JIPipeParameter(value = "annotation-name", uiOrder = -90)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getAnnotationName() {
+        public JIPipeExpressionParameter getAnnotationName() {
             return annotationName;
         }
 
         @JIPipeParameter("annotation-name")
-        public void setAnnotationName(DefaultExpressionParameter annotationName) {
+        public void setAnnotationName(JIPipeExpressionParameter annotationName) {
             this.annotationName = annotationName;
         }
     }

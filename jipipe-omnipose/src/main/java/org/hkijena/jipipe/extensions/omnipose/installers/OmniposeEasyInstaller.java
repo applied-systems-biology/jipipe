@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.omnipose.OmniposeSettings;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -100,7 +100,7 @@ public class OmniposeEasyInstaller extends EasyInstallExternalEnvironmentInstall
     protected PythonEnvironment generateEnvironment() {
         PythonEnvironment environment = new PythonEnvironment();
         environment.setType(PythonEnvironmentType.System);
-        environment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
+        environment.setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));
         if (SystemUtils.IS_OS_WINDOWS) {
             environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python.exe"));
         } else {

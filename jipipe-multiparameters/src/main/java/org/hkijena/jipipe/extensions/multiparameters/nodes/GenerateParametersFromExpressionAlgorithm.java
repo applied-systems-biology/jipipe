@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -180,7 +180,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
     public static class Column extends AbstractJIPipeParameterCollection {
         private String key;
         private JIPipeParameterTypeInfoRef type = new JIPipeParameterTypeInfoRef();
-        private DefaultExpressionParameter values = new DefaultExpressionParameter("ARRAY()");
+        private JIPipeExpressionParameter values = new JIPipeExpressionParameter("ARRAY()");
         private boolean valuesAreJson = false;
 
         public Column() {
@@ -189,7 +189,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         public Column(Column other) {
             this.key = other.key;
             this.type = new JIPipeParameterTypeInfoRef(other.type);
-            this.values = new DefaultExpressionParameter(other.values);
+            this.values = new JIPipeExpressionParameter(other.values);
             this.valuesAreJson = other.valuesAreJson;
         }
 
@@ -221,12 +221,12 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-        public DefaultExpressionParameter getValues() {
+        public JIPipeExpressionParameter getValues() {
             return values;
         }
 
         @JIPipeParameter("values")
-        public void setValues(DefaultExpressionParameter values) {
+        public void setValues(JIPipeExpressionParameter values) {
             this.values = values;
         }
 

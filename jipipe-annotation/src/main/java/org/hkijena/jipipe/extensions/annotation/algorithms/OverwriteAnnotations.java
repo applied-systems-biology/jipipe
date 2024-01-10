@@ -29,8 +29,8 @@ import java.util.Map;
 public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customVariables;
-    private DefaultExpressionParameter removeExistingAnnotationsFilter = new AnnotationQueryExpression("false");
-    private DefaultExpressionParameter sourceAnnotationFilter = new AnnotationQueryExpression("true");
+    private JIPipeExpressionParameter removeExistingAnnotationsFilter = new AnnotationQueryExpression("false");
+    private JIPipeExpressionParameter sourceAnnotationFilter = new AnnotationQueryExpression("true");
     private JIPipeTextAnnotationMergeMode mergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public OverwriteAnnotations(JIPipeNodeInfo info) {
@@ -88,12 +88,12 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
     @ExpressionParameterSettingsVariable(name = "Annotation value", key = "value", description = "The value of the currently processed annotation")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getRemoveExistingAnnotationsFilter() {
+    public JIPipeExpressionParameter getRemoveExistingAnnotationsFilter() {
         return removeExistingAnnotationsFilter;
     }
 
     @JIPipeParameter("remove-existing-annotations-filter")
-    public void setRemoveExistingAnnotationsFilter(DefaultExpressionParameter removeExistingAnnotationsFilter) {
+    public void setRemoveExistingAnnotationsFilter(JIPipeExpressionParameter removeExistingAnnotationsFilter) {
         this.removeExistingAnnotationsFilter = removeExistingAnnotationsFilter;
     }
 
@@ -107,12 +107,12 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Target annotation value", key = "target.value", description = "The value of the target annotation. NULL if it is not set.")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @JIPipeParameter("source-annotation-filter")
-    public DefaultExpressionParameter getSourceAnnotationFilter() {
+    public JIPipeExpressionParameter getSourceAnnotationFilter() {
         return sourceAnnotationFilter;
     }
 
     @JIPipeParameter("source-annotation-filter")
-    public void setSourceAnnotationFilter(DefaultExpressionParameter sourceAnnotationFilter) {
+    public void setSourceAnnotationFilter(JIPipeExpressionParameter sourceAnnotationFilter) {
         this.sourceAnnotationFilter = sourceAnnotationFilter;
     }
 

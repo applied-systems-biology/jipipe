@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
@@ -84,7 +84,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return graph;
     }
 
-    private static void calculateNewVertexLocation(double factorX, double factorY, double factorZ, DefaultExpressionParameter locationMergingFunction, Map<FilamentVertex, Point3d> locationMap, ExpressionVariables variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
+    private static void calculateNewVertexLocation(double factorX, double factorY, double factorZ, JIPipeExpressionParameter locationMergingFunction, Map<FilamentVertex, Point3d> locationMap, ExpressionVariables variables, FilamentVertex vertex, Collection<FilamentVertex> group) {
         // Apply average where applicable
         if (factorX > 0) {
             variables.set("values", group.stream().map(v -> locationMap.get(v).getX()).collect(Collectors.toList()));
@@ -473,7 +473,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         return multimap;
     }
 
-    public void smooth(double factorX, double factorY, double factorZ, boolean enforceSameComponent, DefaultExpressionParameter locationMergingFunction) {
+    public void smooth(double factorX, double factorY, double factorZ, boolean enforceSameComponent, JIPipeExpressionParameter locationMergingFunction) {
         // Backup
         Map<FilamentVertex, Point3d> locationMap = new IdentityHashMap<>();
         for (FilamentVertex vertex : vertexSet()) {

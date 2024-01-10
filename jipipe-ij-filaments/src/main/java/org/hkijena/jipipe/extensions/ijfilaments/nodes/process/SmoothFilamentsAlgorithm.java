@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
@@ -26,7 +26,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private double factorZ = 0;
     private boolean enforceSameComponent = true;
 
-    private DefaultExpressionParameter locationMergingFunction = new DefaultExpressionParameter("AVG(values)");
+    private JIPipeExpressionParameter locationMergingFunction = new JIPipeExpressionParameter("AVG(values)");
 
     public SmoothFilamentsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -37,7 +37,7 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.factorX = other.factorX;
         this.factorY = other.factorY;
         this.factorZ = other.factorZ;
-        this.locationMergingFunction = new DefaultExpressionParameter(other.locationMergingFunction);
+        this.locationMergingFunction = new JIPipeExpressionParameter(other.locationMergingFunction);
         this.enforceSameComponent = other.enforceSameComponent;
     }
 
@@ -88,12 +88,12 @@ public class SmoothFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettings(hint = "per axis")
     @ExpressionParameterSettingsVariable(key = "values", description = "The list of values", name = "Values")
     @JIPipeParameter("location-merging-function")
-    public DefaultExpressionParameter getLocationMergingFunction() {
+    public JIPipeExpressionParameter getLocationMergingFunction() {
         return locationMergingFunction;
     }
 
     @JIPipeParameter("location-merging-function")
-    public void setLocationMergingFunction(DefaultExpressionParameter locationMergingFunction) {
+    public void setLocationMergingFunction(JIPipeExpressionParameter locationMergingFunction) {
         this.locationMergingFunction = locationMergingFunction;
     }
 

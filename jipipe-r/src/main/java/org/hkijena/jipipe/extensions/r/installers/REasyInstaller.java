@@ -18,7 +18,7 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.r.OptionalREnvironment;
@@ -97,7 +97,7 @@ public class REasyInstaller extends EasyInstallExternalEnvironmentInstaller<REnv
     @Override
     protected REnvironment generateEnvironment() {
         REnvironment environment = new REnvironment();
-        environment.setArguments(new DefaultExpressionParameter("ARRAY(script_file)"));
+        environment.setArguments(new JIPipeExpressionParameter("ARRAY(script_file)"));
         if (SystemUtils.IS_OS_WINDOWS) {
             environment.setRExecutablePath(getRelativeRBinaryDir().resolve("R.exe"));
             environment.setRScriptExecutablePath(getRelativeRBinaryDir().resolve("Rscript.exe"));

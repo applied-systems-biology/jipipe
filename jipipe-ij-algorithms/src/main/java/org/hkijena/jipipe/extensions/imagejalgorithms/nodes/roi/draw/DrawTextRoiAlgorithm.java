@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -31,7 +31,7 @@ import java.awt.geom.Rectangle2D;
 public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final ROIProperties roiProperties;
-    private DefaultExpressionParameter text = new DefaultExpressionParameter("\"your text here\"");
+    private JIPipeExpressionParameter text = new JIPipeExpressionParameter("\"your text here\"");
 
     private FixedMargin location = new FixedMargin();
     private boolean center = false;
@@ -59,7 +59,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.center = other.center;
         this.angle = other.angle;
         this.antialiased = other.antialiased;
-        this.text = new DefaultExpressionParameter(other.text);
+        this.text = new JIPipeExpressionParameter(other.text);
     }
 
     @Override
@@ -132,12 +132,12 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Text", description = "Expression that generates the text")
     @JIPipeParameter(value = "text", important = true)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getText() {
+    public JIPipeExpressionParameter getText() {
         return text;
     }
 
     @JIPipeParameter("text")
-    public void setText(DefaultExpressionParameter text) {
+    public void setText(JIPipeExpressionParameter text) {
         this.text = text;
     }
 

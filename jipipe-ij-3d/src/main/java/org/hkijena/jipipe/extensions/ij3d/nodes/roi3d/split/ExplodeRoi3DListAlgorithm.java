@@ -33,7 +33,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
-    private DefaultExpressionParameter annotationValue = new DefaultExpressionParameter("\"index=\" + index + \";name=\" + name");
+    private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("\"index=\" + index + \";name=\" + name");
 
     /**
      * Instantiates a new node type.
@@ -55,7 +55,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.generatedAnnotation = other.generatedAnnotation;
-        this.annotationValue = new DefaultExpressionParameter(other.annotationValue);
+        this.annotationValue = new JIPipeExpressionParameter(other.annotationValue);
     }
 
     @Override
@@ -113,12 +113,12 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(key = "name", name = "ROI name", description = "The name of the ROI")
     @ExpressionParameterSettingsVariable(key = "index", name = "ROI index", description = "The index of the ROI")
     @ExpressionParameterSettingsVariable(key = "num_roi", name = "Number of ROI", description = "The number of ROI in the list")
-    public DefaultExpressionParameter getAnnotationValue() {
+    public JIPipeExpressionParameter getAnnotationValue() {
         return annotationValue;
     }
 
     @JIPipeParameter("roi-name")
-    public void setAnnotationValue(DefaultExpressionParameter annotationValue) {
+    public void setAnnotationValue(JIPipeExpressionParameter annotationValue) {
         this.annotationValue = annotationValue;
     }
 

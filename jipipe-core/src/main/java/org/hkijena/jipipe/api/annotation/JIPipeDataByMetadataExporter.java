@@ -42,7 +42,7 @@ import java.util.Set;
  * Class that exports data based on metadata
  */
 public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollection {
-    private DefaultExpressionParameter fileNameGenerator = new StringQueryExpression("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
+    private JIPipeExpressionParameter fileNameGenerator = new StringQueryExpression("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
     private boolean forceName = true;
 
     private boolean makeFilesystemCompatible = true;
@@ -61,12 +61,12 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
             "You can use the following function to automatically generate the name from annotations: <code>SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")</code>")
     @JIPipeParameter(value = "file-name", important = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
-    public DefaultExpressionParameter getFileNameGenerator() {
+    public JIPipeExpressionParameter getFileNameGenerator() {
         return fileNameGenerator;
     }
 
     @JIPipeParameter("file-name")
-    public void setFileNameGenerator(DefaultExpressionParameter fileNameGenerator) {
+    public void setFileNameGenerator(JIPipeExpressionParameter fileNameGenerator) {
         this.fileNameGenerator = fileNameGenerator;
     }
 

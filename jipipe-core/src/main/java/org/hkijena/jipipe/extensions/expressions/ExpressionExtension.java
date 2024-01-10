@@ -24,7 +24,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.string.*;
 import org.hkijena.jipipe.extensions.expressions.functions.util.PrintFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.variables.*;
 import org.hkijena.jipipe.extensions.expressions.functions.vector.*;
-import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
+import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -55,16 +55,16 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("expression",
-                DefaultExpressionParameter.class,
-                DefaultExpressionParameter.List.class,
+                JIPipeExpressionParameter.class,
+                JIPipeExpressionParameter.List.class,
                 null,
                 null,
                 "Expression",
                 "A mathematical or conditional logic expression",
-                DefaultExpressionParameterEditorUI.class);
-        registerParameterEditor(DefaultExpressionParameter.class, DefaultExpressionParameterEditorUI.class);
+                JIPipeExpressionParameterEditorUI.class);
+        registerParameterEditor(JIPipeExpressionParameter.class, JIPipeExpressionParameterEditorUI.class);
         registerParameterType("optional-expression",
-                OptionalDefaultExpressionParameter.class,
+                OptionalJIPipeExpressionParameter.class,
                 "Optional expression",
                 "A mathematical or conditional logic expression");
         registerParameterType("table-column-source",
@@ -84,35 +84,35 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null,
                 "Annotation query expression",
                 "An expression that is used to filter annotations",
-                DefaultExpressionParameterEditorUI.class);
+                JIPipeExpressionParameterEditorUI.class);
         registerParameterType("data-annotation-query-expression",
                 DataAnnotationQueryExpression.class,
                 null,
                 null,
                 "Data annotation query expression",
                 "An expression that is used to filter annotations",
-                DefaultExpressionParameterEditorUI.class);
+                JIPipeExpressionParameterEditorUI.class);
         registerParameterType("string-query-expression",
                 StringQueryExpression.class,
                 null,
                 null,
                 "String query expression",
                 "An expression that is used to filter strings",
-                DefaultExpressionParameterEditorUI.class);
+                JIPipeExpressionParameterEditorUI.class);
         registerParameterType("table-cell-value-query-expression",
                 TableCellValueQueryExpression.class,
                 null,
                 null,
                 "Table cell value query expression",
                 "An expression that tests for table cells",
-                DefaultExpressionParameterEditorUI.class);
+                JIPipeExpressionParameterEditorUI.class);
         registerParameterType("path-query-expression",
                 PathQueryExpression.class,
                 null,
                 null,
                 "Path query expression",
                 "An expression that is used to filter paths",
-                DefaultExpressionParameterEditorUI.class);
+                JIPipeExpressionParameterEditorUI.class);
         registerParameterType("named-string-query-expression",
                 NamedStringQueryExpression.class,
                 NamedStringQueryExpression.List.class,
@@ -127,14 +127,14 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null,
                 "String map query expression",
                 "An expression that is used to query string-string key value pairs",
-                DefaultExpressionParameterEditorUI.class);
+                JIPipeExpressionParameterEditorUI.class);
         registerParameterType("annotation-generator-expression",
                 AnnotationGeneratorExpression.class,
                 null,
                 null,
                 "Annotation generator expression",
                 "An expression that is used to generate annotations",
-                DefaultExpressionParameterEditorUI.class);
+                JIPipeExpressionParameterEditorUI.class);
         registerParameterType("named-annotation-generator-expression",
                 NamedTextAnnotationGeneratorExpression.class,
                 NamedTextAnnotationGeneratorExpression.List.class,

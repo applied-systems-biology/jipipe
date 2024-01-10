@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.ilastik.IlastikSettings;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -31,8 +31,6 @@ import org.hkijena.jipipe.utils.PathUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Install Ilastik (EasyInstaller)", description = "Downloads a pre-packaged version of Ilastik")
@@ -106,13 +104,13 @@ public class IlastikEasyInstaller extends EasyInstallExternalEnvironmentInstalle
         ProcessEnvironment environment = new ProcessEnvironment();
         if (SystemUtils.IS_OS_WINDOWS) {
             environment.setExecutablePathWindows(getRelativeIlastikDir().resolve("ilastik.exe"));
-            environment.setArguments(new DefaultExpressionParameter("cli_parameters"));
+            environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
         } else if(SystemUtils.IS_OS_LINUX) {
             environment.setExecutablePathLinux(getRelativeIlastikDir().resolve("run_ilastik.sh"));
-            environment.setArguments(new DefaultExpressionParameter("cli_parameters"));
+            environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
         } else {
             environment.setExecutablePathOSX(getRelativeIlastikDir().resolve("run_ilastik.sh"));
-            environment.setArguments(new DefaultExpressionParameter("cli_parameters"));
+            environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
         }
         environment.setName(getTargetPackage().getName());
         return environment;

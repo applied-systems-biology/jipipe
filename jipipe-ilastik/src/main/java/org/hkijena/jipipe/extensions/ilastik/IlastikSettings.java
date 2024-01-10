@@ -10,11 +10,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
-
-import java.util.List;
 
 public class IlastikSettings extends AbstractJIPipeParameterCollection {
 
@@ -26,7 +24,7 @@ public class IlastikSettings extends AbstractJIPipeParameterCollection {
 
     public IlastikSettings() {
         easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-ilastik.json");
-        environment.setArguments(new DefaultExpressionParameter("cli_parameters"));
+        environment.setArguments(new JIPipeExpressionParameter("cli_parameters"));
     }
 
     public static IlastikSettings getInstance() {

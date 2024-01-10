@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -35,15 +35,15 @@ import java.util.Collection;
 public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private BorderMode borderMode = BorderMode.Constant;
-    private DefaultExpressionParameter borderColor = new DefaultExpressionParameter("0");
+    private JIPipeExpressionParameter borderColor = new JIPipeExpressionParameter("0");
 
-    private DefaultExpressionParameter marginLeft = new DefaultExpressionParameter("10");
+    private JIPipeExpressionParameter marginLeft = new JIPipeExpressionParameter("10");
 
-    private DefaultExpressionParameter marginTop = new DefaultExpressionParameter("10");
+    private JIPipeExpressionParameter marginTop = new JIPipeExpressionParameter("10");
 
-    private DefaultExpressionParameter marginRight = new DefaultExpressionParameter("10");
+    private JIPipeExpressionParameter marginRight = new JIPipeExpressionParameter("10");
 
-    private DefaultExpressionParameter marginBottom = new DefaultExpressionParameter("10");
+    private JIPipeExpressionParameter marginBottom = new JIPipeExpressionParameter("10");
 
     public AddBorder2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -52,11 +52,11 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public AddBorder2DAlgorithm(AddBorder2DAlgorithm other) {
         super(other);
         this.borderMode = other.borderMode;
-        this.borderColor = new DefaultExpressionParameter(other.borderColor);
-        this.marginLeft = new DefaultExpressionParameter(other.marginLeft);
-        this.marginTop = new DefaultExpressionParameter(other.marginTop);
-        this.marginRight = new DefaultExpressionParameter(other.marginRight);
-        this.marginBottom = new DefaultExpressionParameter(other.marginBottom);
+        this.borderColor = new JIPipeExpressionParameter(other.borderColor);
+        this.marginLeft = new JIPipeExpressionParameter(other.marginLeft);
+        this.marginTop = new JIPipeExpressionParameter(other.marginTop);
+        this.marginRight = new JIPipeExpressionParameter(other.marginRight);
+        this.marginBottom = new JIPipeExpressionParameter(other.marginBottom);
     }
 
     public static ImagePlus addBorder(ImagePlus img, int left, int top, int right, int bottom, BorderMode borderMode, double colorGreyscale, Color colorRGB, JIPipeProgressInfo progressInfo) {
@@ -196,12 +196,12 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "Return an array to set the border to an RGB color.")
     @JIPipeParameter("border-color")
     @ExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getBorderColor() {
+    public JIPipeExpressionParameter getBorderColor() {
         return borderColor;
     }
 
     @JIPipeParameter("border-color")
-    public void setBorderColor(DefaultExpressionParameter borderColor) {
+    public void setBorderColor(JIPipeExpressionParameter borderColor) {
         this.borderColor = borderColor;
     }
 
@@ -209,12 +209,12 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("margin-left")
     @ExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = ImageQueryExpressionVariableSource.class)
-    public DefaultExpressionParameter getMarginLeft() {
+    public JIPipeExpressionParameter getMarginLeft() {
         return marginLeft;
     }
 
     @JIPipeParameter("margin-left")
-    public void setMarginLeft(DefaultExpressionParameter marginLeft) {
+    public void setMarginLeft(JIPipeExpressionParameter marginLeft) {
         this.marginLeft = marginLeft;
     }
 
@@ -222,12 +222,12 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("margin-top")
     @ExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = ImageQueryExpressionVariableSource.class)
-    public DefaultExpressionParameter getMarginTop() {
+    public JIPipeExpressionParameter getMarginTop() {
         return marginTop;
     }
 
     @JIPipeParameter("margin-top")
-    public void setMarginTop(DefaultExpressionParameter marginTop) {
+    public void setMarginTop(JIPipeExpressionParameter marginTop) {
         this.marginTop = marginTop;
     }
 
@@ -235,12 +235,12 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("margin-right")
     @ExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = ImageQueryExpressionVariableSource.class)
-    public DefaultExpressionParameter getMarginRight() {
+    public JIPipeExpressionParameter getMarginRight() {
         return marginRight;
     }
 
     @JIPipeParameter("margin-right")
-    public void setMarginRight(DefaultExpressionParameter marginRight) {
+    public void setMarginRight(JIPipeExpressionParameter marginRight) {
         this.marginRight = marginRight;
     }
 
@@ -248,12 +248,12 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("margin-bottom")
     @ExpressionParameterSettings(variableSource = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = ImageQueryExpressionVariableSource.class)
-    public DefaultExpressionParameter getMarginBottom() {
+    public JIPipeExpressionParameter getMarginBottom() {
         return marginBottom;
     }
 
     @JIPipeParameter("margin-bottom")
-    public void setMarginBottom(DefaultExpressionParameter marginBottom) {
+    public void setMarginBottom(JIPipeExpressionParameter marginBottom) {
         this.marginBottom = marginBottom;
     }
 }

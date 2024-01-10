@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
@@ -36,7 +36,7 @@ public class REnvironment extends JIPipeEnvironment {
     public static final String ENVIRONMENT_ID = "r";
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
-    private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
+    private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("ARRAY(script_file)");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
     public REnvironment() {
@@ -50,7 +50,7 @@ public class REnvironment extends JIPipeEnvironment {
         super(other);
         this.RExecutablePath = other.RExecutablePath;
         this.RScriptExecutablePath = other.RScriptExecutablePath;
-        this.arguments = new DefaultExpressionParameter(other.arguments);
+        this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
     }
 
@@ -104,13 +104,13 @@ public class REnvironment extends JIPipeEnvironment {
     @JIPipeParameter("arguments")
     @ExpressionParameterSettings(variableSource = RArgumentsVariableSource.class)
     @JsonGetter("arguments")
-    public DefaultExpressionParameter getArguments() {
+    public JIPipeExpressionParameter getArguments() {
         return arguments;
     }
 
     @JsonSetter("arguments")
     @JIPipeParameter("arguments")
-    public void setArguments(DefaultExpressionParameter arguments) {
+    public void setArguments(JIPipeExpressionParameter arguments) {
         this.arguments = arguments;
     }
 

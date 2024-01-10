@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -98,11 +98,11 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
             if (rangeString.isUseExpression()) {
                 JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder()
                         .setSource(new JIPipeDummyParameterCollection())
-                        .setFieldClass(DefaultExpressionParameter.class)
+                        .setFieldClass(JIPipeExpressionParameter.class)
                         .setGetter(rangeString::getExpression)
                         .addAnnotation(new IntegerRangeExpressionVariablesAnnotationImpl())
                         .setSetter(expression -> {
-                            rangeString.setExpression((DefaultExpressionParameter) expression);
+                            rangeString.setExpression((JIPipeExpressionParameter) expression);
                             setParameter(rangeString, false);
                             checkParameter();
                         }).build();

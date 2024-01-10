@@ -36,14 +36,14 @@ import java.util.stream.Collectors;
  */
 public class MontageCreator extends AbstractJIPipeParameterCollection {
 
-    private DefaultExpressionParameter labelExpression = new DefaultExpressionParameter("default_label");
-    private OptionalDefaultExpressionParameter sortingLabelExpression = new OptionalDefaultExpressionParameter(false, "default_label");
+    private JIPipeExpressionParameter labelExpression = new JIPipeExpressionParameter("default_label");
+    private OptionalJIPipeExpressionParameter sortingLabelExpression = new OptionalJIPipeExpressionParameter(false, "default_label");
     private OptionalIntegerParameter forceNumRows = new OptionalIntegerParameter();
     private OptionalIntegerParameter forceNumColumns = new OptionalIntegerParameter();
     private boolean forceRGB = false;
     private boolean rgbUseRender = true;
-    private DefaultExpressionParameter tileWidth = new DefaultExpressionParameter("MAX(max_image_width, max_label_width)");
-    private DefaultExpressionParameter tileHeight = new DefaultExpressionParameter("max_image_height");
+    private JIPipeExpressionParameter tileWidth = new JIPipeExpressionParameter("MAX(max_image_width, max_label_width)");
+    private JIPipeExpressionParameter tileHeight = new JIPipeExpressionParameter("max_image_height");
     private final CanvasParameters canvasParameters;
     private final LabelParameters labelParameters;
     private final ImageParameters imageParameters;
@@ -56,12 +56,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     }
 
     public MontageCreator(MontageCreator other) {
-        this.labelExpression = new DefaultExpressionParameter(other.labelExpression);
-        this.sortingLabelExpression = new OptionalDefaultExpressionParameter(other.sortingLabelExpression);
+        this.labelExpression = new JIPipeExpressionParameter(other.labelExpression);
+        this.sortingLabelExpression = new OptionalJIPipeExpressionParameter(other.sortingLabelExpression);
         this.forceNumRows = new OptionalIntegerParameter(other.forceNumRows);
         this.forceNumColumns = new OptionalIntegerParameter(other.forceNumColumns);
-        this.tileWidth = new DefaultExpressionParameter(other.tileWidth);
-        this.tileHeight = new DefaultExpressionParameter(other.tileHeight);
+        this.tileWidth = new JIPipeExpressionParameter(other.tileWidth);
+        this.tileHeight = new JIPipeExpressionParameter(other.tileHeight);
         this.canvasParameters = new CanvasParameters(other.canvasParameters);
         this.labelParameters = new LabelParameters(other.labelParameters);
         this.imageParameters = new ImageParameters(other.imageParameters);
@@ -387,12 +387,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
     @ExpressionParameterSettingsVariable(fromClass = Image5DSliceIndexExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getLabelExpression() {
+    public JIPipeExpressionParameter getLabelExpression() {
         return labelExpression;
     }
 
     @JIPipeParameter("label-expression")
-    public void setLabelExpression(DefaultExpressionParameter labelExpression) {
+    public void setLabelExpression(JIPipeExpressionParameter labelExpression) {
         this.labelExpression = labelExpression;
     }
 
@@ -402,12 +402,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     @ExpressionParameterSettingsVariable(key = "default_label", name = "Default label", description = "Default label that summarizes the annotations")
     @ExpressionParameterSettings(hint = "per image")
     @ExpressionParameterSettingsVariable(fromClass = Image5DSliceIndexExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getSortingLabelExpression() {
+    public OptionalJIPipeExpressionParameter getSortingLabelExpression() {
         return sortingLabelExpression;
     }
 
     @JIPipeParameter("sorting-label-expression")
-    public void setSortingLabelExpression(OptionalDefaultExpressionParameter sortingLabelExpression) {
+    public void setSortingLabelExpression(OptionalJIPipeExpressionParameter sortingLabelExpression) {
         this.sortingLabelExpression = sortingLabelExpression;
     }
 
@@ -451,12 +451,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     @ExpressionParameterSettingsVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
     @ExpressionParameterSettingsVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
     @ExpressionParameterSettingsVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
-    public DefaultExpressionParameter getTileWidth() {
+    public JIPipeExpressionParameter getTileWidth() {
         return tileWidth;
     }
 
     @JIPipeParameter("tile-width")
-    public void setTileWidth(DefaultExpressionParameter tileWidth) {
+    public void setTileWidth(JIPipeExpressionParameter tileWidth) {
         this.tileWidth = tileWidth;
     }
 
@@ -465,12 +465,12 @@ public class MontageCreator extends AbstractJIPipeParameterCollection {
     @ExpressionParameterSettingsVariable(key = "max_image_width", name = "Maximum image width", description = "The maximum width of the input images")
     @ExpressionParameterSettingsVariable(key = "max_image_height", name = "Maximum image height", description = "The maximum height of the input images")
     @ExpressionParameterSettingsVariable(key = "max_label_width", name = "Maximum label width", description = "The maximum width of all labels. Zero if no labels are drawn.")
-    public DefaultExpressionParameter getTileHeight() {
+    public JIPipeExpressionParameter getTileHeight() {
         return tileHeight;
     }
 
     @JIPipeParameter("tile-height")
-    public void setTileHeight(DefaultExpressionParameter tileHeight) {
+    public void setTileHeight(JIPipeExpressionParameter tileHeight) {
         this.tileHeight = tileHeight;
     }
 

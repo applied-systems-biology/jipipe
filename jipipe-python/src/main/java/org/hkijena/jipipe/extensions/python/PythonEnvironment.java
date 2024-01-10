@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
@@ -38,7 +38,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
     public static final String ENVIRONMENT_ID = "python";
 
     private PythonEnvironmentType type = PythonEnvironmentType.System;
-    private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
+    private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("ARRAY(script_file)");
     private Path executablePath = Paths.get("");
     private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
 
@@ -46,7 +46,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
 
     }
 
-    public PythonEnvironment(PythonEnvironmentType type, DefaultExpressionParameter arguments, Path executablePath) {
+    public PythonEnvironment(PythonEnvironmentType type, JIPipeExpressionParameter arguments, Path executablePath) {
         this.type = type;
         this.arguments = arguments;
         this.executablePath = executablePath;
@@ -55,7 +55,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
     public PythonEnvironment(PythonEnvironment other) {
         super(other);
         this.type = other.type;
-        this.arguments = new DefaultExpressionParameter(other.arguments);
+        this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;
         this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
     }
@@ -81,13 +81,13 @@ public class PythonEnvironment extends JIPipeEnvironment {
     @JIPipeParameter("arguments")
     @ExpressionParameterSettings(variableSource = PythonArgumentsVariableSource.class)
     @JsonGetter("arguments")
-    public DefaultExpressionParameter getArguments() {
+    public JIPipeExpressionParameter getArguments() {
         return arguments;
     }
 
     @JsonSetter("arguments")
     @JIPipeParameter("arguments")
-    public void setArguments(DefaultExpressionParameter arguments) {
+    public void setArguments(JIPipeExpressionParameter arguments) {
         this.arguments = arguments;
     }
 

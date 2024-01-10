@@ -51,7 +51,7 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
 public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private final CustomExpressionVariablesParameter customFilterVariables;
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
     private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
     private boolean outputEmptyLists = true;
     private boolean measureInPhysicalUnits = true;
@@ -73,7 +73,7 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public FilterRoi3DByStatisticsAlgorithm(FilterRoi3DByStatisticsAlgorithm other) {
         super(other);
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new JIPipeExpressionParameter(other.filters);
         this.measurements = new ROI3DMeasurementSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
@@ -147,12 +147,12 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public DefaultExpressionParameter getFilters() {
+    public JIPipeExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filter")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
     }
 

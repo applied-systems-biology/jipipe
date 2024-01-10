@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -44,7 +44,7 @@ public class ForEachFunction extends ExpressionFunction {
             }
             variableName = assignment.substring(0, separatorIndex);
             String expression = assignment.substring(separatorIndex + 1);
-            sequence = (Collection<?>) DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, variables);
+            sequence = (Collection<?>) JIPipeExpressionParameter.getEvaluatorInstance().evaluate(expression, variables);
         } else {
             variableName = "item";
             sequence = (Collection<?>) parameters.get(1);
@@ -56,7 +56,7 @@ public class ForEachFunction extends ExpressionFunction {
         for (Object item : sequence) {
             localVariables.put(variableName, item);
             localVariables.put("index", i);
-            result.add(DefaultExpressionParameter.getEvaluatorInstance().evaluate(loopedExpression, localVariables));
+            result.add(JIPipeExpressionParameter.getEvaluatorInstance().evaluate(loopedExpression, localVariables));
             ++i;
         }
 

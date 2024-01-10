@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -114,38 +114,38 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     public static class Entry extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter jsonPath = new DefaultExpressionParameter("\"$\"");
-        private DefaultExpressionParameter columnName = new DefaultExpressionParameter("\"Column name\"");
+        private JIPipeExpressionParameter jsonPath = new JIPipeExpressionParameter("\"$\"");
+        private JIPipeExpressionParameter columnName = new JIPipeExpressionParameter("\"Column name\"");
 
         public Entry() {
         }
 
         public Entry(Entry other) {
-            this.jsonPath = new DefaultExpressionParameter(other.jsonPath);
-            this.columnName = new DefaultExpressionParameter(other.columnName);
+            this.jsonPath = new JIPipeExpressionParameter(other.jsonPath);
+            this.columnName = new JIPipeExpressionParameter(other.columnName);
         }
 
         @JIPipeDocumentation(name = "JSON path", description = "An expression that returns the JsonPath of the JSON entries. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")
         @JIPipeParameter(value = "json-path", uiOrder = -100)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getJsonPath() {
+        public JIPipeExpressionParameter getJsonPath() {
             return jsonPath;
         }
 
         @JIPipeParameter("json-path")
-        public void setJsonPath(DefaultExpressionParameter jsonPath) {
+        public void setJsonPath(JIPipeExpressionParameter jsonPath) {
             this.jsonPath = jsonPath;
         }
 
         @JIPipeDocumentation(name = "Column name", description = "The name of the output column.")
         @JIPipeParameter(value = "column-name", uiOrder = -90)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getColumnName() {
+        public JIPipeExpressionParameter getColumnName() {
             return columnName;
         }
 
         @JIPipeParameter("column-name")
-        public void setColumnName(DefaultExpressionParameter columnName) {
+        public void setColumnName(JIPipeExpressionParameter columnName) {
             this.columnName = columnName;
         }
     }

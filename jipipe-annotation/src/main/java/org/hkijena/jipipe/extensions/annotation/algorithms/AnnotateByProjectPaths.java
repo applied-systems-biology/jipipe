@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
@@ -101,7 +101,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
     }
 
     public static class Entry extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter annotationName = new DefaultExpressionParameter("\"Annotation name\"");
+        private JIPipeExpressionParameter annotationName = new JIPipeExpressionParameter("\"Annotation name\"");
         private DataExportExpressionParameter annotationValue = new DataExportExpressionParameter();
 
         public Entry() {
@@ -109,12 +109,12 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
 
         @JIPipeDocumentation(name = "Annotation name", description = "An expression that generates the annotation name")
         @JIPipeParameter("annotation-name")
-        public DefaultExpressionParameter getAnnotationName() {
+        public JIPipeExpressionParameter getAnnotationName() {
             return annotationName;
         }
 
         @JIPipeParameter("annotation-name")
-        public void setAnnotationName(DefaultExpressionParameter annotationName) {
+        public void setAnnotationName(JIPipeExpressionParameter annotationName) {
             this.annotationName = annotationName;
         }
 

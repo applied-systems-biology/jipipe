@@ -41,7 +41,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
+    private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
     private boolean outputEmptyLists = true;
 
     /**
@@ -60,7 +60,7 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterRoiByNameAlgorithm(FilterRoiByNameAlgorithm other) {
         super(other);
-        this.filters = new DefaultExpressionParameter(other.filters);
+        this.filters = new JIPipeExpressionParameter(other.filters);
         this.outputEmptyLists = other.outputEmptyLists;
     }
 
@@ -94,12 +94,12 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per ROI. " +
             "Click the 'f' button to see all available variables you can test.")
     @ExpressionParameterSettings(variableSource = VariableSource.class, hint = "per ROI")
-    public DefaultExpressionParameter getFilters() {
+    public JIPipeExpressionParameter getFilters() {
         return filters;
     }
 
     @JIPipeParameter("filter")
-    public void setFilters(DefaultExpressionParameter filters) {
+    public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
     }
 

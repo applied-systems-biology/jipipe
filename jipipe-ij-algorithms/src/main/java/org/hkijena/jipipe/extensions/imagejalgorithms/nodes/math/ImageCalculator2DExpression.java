@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -37,7 +37,7 @@ import java.util.Map;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator... (expression)")
 public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("(I1 + I2) / 2");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("(I1 + I2) / 2");
 
     public ImageCalculator2DExpression(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
@@ -50,7 +50,7 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     public ImageCalculator2DExpression(ImageCalculator2DExpression other) {
         super(other);
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
     }
 
     @Override
@@ -125,12 +125,12 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             "positional variables, there are variables available that are named according to the input slots and contain the current pixel value of this slot.")
     @JIPipeParameter("expression")
     @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class, hint = "per pixel")
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JIPipeParameter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 }

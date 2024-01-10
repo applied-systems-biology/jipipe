@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -32,7 +32,7 @@ import java.util.Map;
 @JIPipeInputSlot(value = XMLData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = StringData.class, slotName = "Output", autoCreate = true)
 public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    private DefaultExpressionParameter xPath = new DefaultExpressionParameter("\"/\"");
+    private JIPipeExpressionParameter xPath = new JIPipeExpressionParameter("\"/\"");
     private StringAndStringPairParameter.List namespaceMap = new StringAndStringPairParameter.List();
 
     public ExtractTextFromXMLAlgorithm(JIPipeNodeInfo info) {
@@ -78,12 +78,12 @@ public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeDocumentation(name = "XPath", description = "An expression that returns the XPath of the XML entries. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
     @JIPipeParameter(value = "xpath")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getxPath() {
+    public JIPipeExpressionParameter getxPath() {
         return xPath;
     }
 
     @JIPipeParameter("xpath")
-    public void setxPath(DefaultExpressionParameter xPath) {
+    public void setxPath(JIPipeExpressionParameter xPath) {
         this.xPath = xPath;
     }
 }

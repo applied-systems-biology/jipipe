@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -44,7 +44,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter function = new DefaultExpressionParameter("x + y");
+    private JIPipeExpressionParameter function = new JIPipeExpressionParameter("x + y");
     private int width = 256;
     private int height = 256;
     private int sizeZ = 1;
@@ -67,7 +67,7 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
      */
     public GenerateFromMathExpression2D(GenerateFromMathExpression2D other) {
         super(other);
-        this.function = new DefaultExpressionParameter(other.function);
+        this.function = new JIPipeExpressionParameter(other.function);
         this.width = other.width;
         this.height = other.height;
         this.sizeZ = other.sizeZ;
@@ -115,12 +115,12 @@ public class GenerateFromMathExpression2D extends JIPipeSimpleIteratingAlgorithm
     @ExpressionParameterSettings(hint = "per pixel")
     @ExpressionParameterSettingsVariable(fromClass = PixelCoordinate5DExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getFunction() {
+    public JIPipeExpressionParameter getFunction() {
         return function;
     }
 
     @JIPipeParameter("function")
-    public void setFunction(DefaultExpressionParameter transformation) {
+    public void setFunction(JIPipeExpressionParameter transformation) {
         this.function = transformation;
     }
 

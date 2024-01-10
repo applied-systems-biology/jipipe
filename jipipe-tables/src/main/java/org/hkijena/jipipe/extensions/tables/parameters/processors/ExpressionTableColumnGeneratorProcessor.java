@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 
@@ -21,19 +21,19 @@ import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
  * Processor-like parameter that maps a column generator to a string
  */
 @PairParameterSettings(singleRow = false, keyLabel = "Generator", valueLabel = "Column name")
-public class ExpressionTableColumnGeneratorProcessor extends PairParameter<DefaultExpressionParameter, String> {
+public class ExpressionTableColumnGeneratorProcessor extends PairParameter<JIPipeExpressionParameter, String> {
     /**
      * Creates a new instance
      */
     public ExpressionTableColumnGeneratorProcessor() {
-        super(DefaultExpressionParameter.class, String.class);
-        setKey(new DefaultExpressionParameter("column + \": row \" + row"));
+        super(JIPipeExpressionParameter.class, String.class);
+        setKey(new JIPipeExpressionParameter("column + \": row \" + row"));
         setValue("");
     }
 
     public ExpressionTableColumnGeneratorProcessor(String expression, String columnName) {
-        super(DefaultExpressionParameter.class, String.class);
-        setKey(new DefaultExpressionParameter(expression));
+        super(JIPipeExpressionParameter.class, String.class);
+        setKey(new JIPipeExpressionParameter(expression));
         setValue(columnName);
     }
 

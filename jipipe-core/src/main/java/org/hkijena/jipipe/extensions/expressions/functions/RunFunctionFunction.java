@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
@@ -29,7 +29,7 @@ public class RunFunctionFunction extends ExpressionFunction {
 
         String functionName = "" + parameters.get(0);
         String expression = functionName + "(" + String.join(", ", variableNames) + ") ";
-        return DefaultExpressionParameter.getEvaluatorInstance().evaluate(expression, localVariables);
+        return JIPipeExpressionParameter.getEvaluatorInstance().evaluate(expression, localVariables);
     }
 
     @Override

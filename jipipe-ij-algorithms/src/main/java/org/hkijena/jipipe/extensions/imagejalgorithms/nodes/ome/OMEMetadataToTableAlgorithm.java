@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -69,14 +69,14 @@ public class OMEMetadataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public static class Entry extends AbstractJIPipeParameterCollection {
         private OMEAccessorParameter accessor = new OMEAccessorParameter();
-        private DefaultExpressionParameter columnName = new DefaultExpressionParameter("\"Column name\"");
+        private JIPipeExpressionParameter columnName = new JIPipeExpressionParameter("\"Column name\"");
 
         public Entry() {
         }
 
         public Entry(Entry other) {
             this.accessor = new OMEAccessorParameter(other.accessor);
-            this.columnName = new DefaultExpressionParameter(other.columnName);
+            this.columnName = new JIPipeExpressionParameter(other.columnName);
         }
 
         @JIPipeDocumentation(name = "OME metadata", description = "The metadata to query from OME")
@@ -93,12 +93,12 @@ public class OMEMetadataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         @JIPipeDocumentation(name = "Column name", description = "The name of the output column.")
         @JIPipeParameter(value = "column-name", uiOrder = -90)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getColumnName() {
+        public JIPipeExpressionParameter getColumnName() {
             return columnName;
         }
 
         @JIPipeParameter("column-name")
-        public void setColumnName(DefaultExpressionParameter columnName) {
+        public void setColumnName(JIPipeExpressionParameter columnName) {
             this.columnName = columnName;
         }
     }

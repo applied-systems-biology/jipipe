@@ -13,14 +13,13 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -31,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
-    private DefaultExpressionParameter xAxis = new DefaultExpressionParameter("");
-    private DefaultExpressionParameter yAxis = new DefaultExpressionParameter("");
+    private JIPipeExpressionParameter xAxis = new JIPipeExpressionParameter("");
+    private JIPipeExpressionParameter yAxis = new JIPipeExpressionParameter("");
     private Color backgroundColor = Color.BLACK;
     private Anchor anchor = Anchor.CenterCenter;
 
@@ -40,8 +39,8 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
     }
 
     public CanvasEqualizer(CanvasEqualizer other) {
-        this.xAxis = new DefaultExpressionParameter(other.xAxis);
-        this.yAxis = new DefaultExpressionParameter(other.yAxis);
+        this.xAxis = new JIPipeExpressionParameter(other.xAxis);
+        this.yAxis = new JIPipeExpressionParameter(other.yAxis);
         this.backgroundColor = other.backgroundColor;
         this.anchor = other.anchor;
     }
@@ -163,12 +162,12 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
     @ExpressionParameterSettingsVariable(key = "width", name = "Width", description = "Calculated width of the output image")
     @ExpressionParameterSettingsVariable(key = "height", name = "Height", description = "Calculated height of the output image")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getxAxis() {
+    public JIPipeExpressionParameter getxAxis() {
         return xAxis;
     }
 
     @JIPipeParameter("x-axis-expression")
-    public void setxAxis(DefaultExpressionParameter xAxis) {
+    public void setxAxis(JIPipeExpressionParameter xAxis) {
         this.xAxis = xAxis;
     }
 
@@ -177,12 +176,12 @@ public class CanvasEqualizer extends AbstractJIPipeParameterCollection {
     @ExpressionParameterSettingsVariable(key = "width", name = "Width", description = "Calculated width of the output image")
     @ExpressionParameterSettingsVariable(key = "height", name = "Height", description = "Calculated height of the output image")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getyAxis() {
+    public JIPipeExpressionParameter getyAxis() {
         return yAxis;
     }
 
     @JIPipeParameter("y-axis-expression")
-    public void setyAxis(DefaultExpressionParameter yAxis) {
+    public void setyAxis(JIPipeExpressionParameter yAxis) {
         this.yAxis = yAxis;
     }
 

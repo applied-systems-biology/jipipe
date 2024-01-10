@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter("thickness > 10");
+    private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("thickness > 10");
     private boolean excludeZero = true;
 
     private float deletedLabel = 0;
@@ -49,7 +49,7 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
     public FilterLabelsByThicknessAlgorithm(FilterLabelsByThicknessAlgorithm other) {
         super(other);
-        this.filter = new DefaultExpressionParameter(other.filter);
+        this.filter = new JIPipeExpressionParameter(other.filter);
         this.excludeZero = other.excludeZero;
         this.deletedLabel = other.deletedLabel;
     }
@@ -264,12 +264,12 @@ public class FilterLabelsByThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filter", description = "Determines whether a label is kept or removed")
     @JIPipeParameter("filter")
-    public DefaultExpressionParameter getFilter() {
+    public JIPipeExpressionParameter getFilter() {
         return filter;
     }
 
     @JIPipeParameter("filter")
-    public void setFilter(DefaultExpressionParameter filter) {
+    public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
 

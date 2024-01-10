@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 /**
  * Describes basic properties of a {@link AbstractExpressionParameter}
  */
-public class DefaultExpressionEvaluator extends ExpressionEvaluator {
+public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionConstant CONSTANT_NULL = new NullConstant();
     public static final ExpressionConstant CONSTANT_NEWLINE = new NewLineConstant();
     public static final ExpressionConstant CONSTANT_TRUE = new BooleanTrueConstant();
@@ -77,7 +77,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     private final Set<String> knownOperatorTokens = new HashSet<>();
     private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
 
-    public DefaultExpressionEvaluator() {
+    public JIPipeExpressionEvaluator() {
         super(createParameters());
         for (Operator operator : getOperators()) {
             knownOperatorTokens.add(operator.getSymbol());
@@ -161,30 +161,30 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
      */
     public static String escapeVariable(String variableName) {
         if (variableName.contains(" ") || variableName.contains("(") || variableName.contains(")"))
-            variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+            variableName = "$\"" + JIPipeExpressionEvaluator.escapeString(variableName) + "\"";
         else {
-            List<String> tokens = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens();
+            List<String> tokens = JIPipeExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens();
             boolean processed = false;
             for (String token : tokens) {
                 if (variableName.contains(token)) {
-                    variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                    variableName = "$\"" + JIPipeExpressionEvaluator.escapeString(variableName) + "\"";
                     processed = true;
                     break;
                 }
             }
             if (!processed) {
-                for (Operator operator : DefaultExpressionParameter.getEvaluatorInstance().getOperators()) {
+                for (Operator operator : JIPipeExpressionParameter.getEvaluatorInstance().getOperators()) {
                     if (operator.getSymbol().equals(variableName)) {
-                        variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                        variableName = "$\"" + JIPipeExpressionEvaluator.escapeString(variableName) + "\"";
                         processed = true;
                         break;
                     }
                 }
             }
             if (!processed) {
-                for (Constant constant : DefaultExpressionParameter.getEvaluatorInstance().getConstants()) {
+                for (Constant constant : JIPipeExpressionParameter.getEvaluatorInstance().getConstants()) {
                     if (constant.getName().equals(variableName)) {
-                        variableName = "$\"" + DefaultExpressionEvaluator.escapeString(variableName) + "\"";
+                        variableName = "$\"" + JIPipeExpressionEvaluator.escapeString(variableName) + "\"";
                         processed = true;
                         break;
                     }
@@ -238,7 +238,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         if (!escapedString.startsWith("\"")) {
             escapedString = "\"" + escapedString + "\"";
         }
-        return org.hkijena.jipipe.utils.StringUtils.nullToEmpty(DefaultExpressionParameter.getEvaluatorInstance().evaluate(escapedString, new ExpressionVariables()));
+        return org.hkijena.jipipe.utils.StringUtils.nullToEmpty(JIPipeExpressionParameter.getEvaluatorInstance().evaluate(escapedString, new ExpressionVariables()));
     }
 
     public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {

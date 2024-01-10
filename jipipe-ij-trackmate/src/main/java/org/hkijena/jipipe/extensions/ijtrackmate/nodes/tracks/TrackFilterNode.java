@@ -28,7 +28,7 @@ import java.util.Map;
 public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customVariables;
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter("track_displacement > 10");
+    private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("track_displacement > 10");
 
     public TrackFilterNode(JIPipeNodeInfo info) {
         super(info);
@@ -38,7 +38,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
     public TrackFilterNode(TrackFilterNode other) {
         super(other);
         this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
-        this.filter = new DefaultExpressionParameter(other.filter);
+        this.filter = new JIPipeExpressionParameter(other.filter);
     }
 
     @Override
@@ -95,12 +95,12 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getFilter() {
+    public JIPipeExpressionParameter getFilter() {
         return filter;
     }
 
     @JIPipeParameter("filter")
-    public void setFilter(DefaultExpressionParameter filter) {
+    public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
 

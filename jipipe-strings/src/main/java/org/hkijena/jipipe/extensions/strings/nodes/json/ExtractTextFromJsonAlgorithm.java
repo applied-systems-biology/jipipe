@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 @JIPipeOutputSlot(value = StringData.class, slotName = "Output", autoCreate = true)
 public class ExtractTextFromJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter jsonPath = new DefaultExpressionParameter("\"$\"");
+    private JIPipeExpressionParameter jsonPath = new JIPipeExpressionParameter("\"$\"");
 
     public ExtractTextFromJsonAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -56,12 +56,12 @@ public class ExtractTextFromJsonAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @JIPipeDocumentation(name = "JSON path", description = "An expression that returns the JsonPath of the JSON entries. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")
     @JIPipeParameter(value = "json-path")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getJsonPath() {
+    public JIPipeExpressionParameter getJsonPath() {
         return jsonPath;
     }
 
     @JIPipeParameter("json-path")
-    public void setJsonPath(DefaultExpressionParameter jsonPath) {
+    public void setJsonPath(JIPipeExpressionParameter jsonPath) {
         this.jsonPath = jsonPath;
     }
 }

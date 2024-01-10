@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -44,7 +44,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter oldLabelColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"old\"");
     private TableColumnSourceExpressionParameter newLabelColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"new\"");
-    private OptionalDefaultExpressionParameter missingValueReplacement = new OptionalDefaultExpressionParameter(false, "0");
+    private OptionalJIPipeExpressionParameter missingValueReplacement = new OptionalJIPipeExpressionParameter(false, "0");
 
     private boolean ignoreZero = false;
 
@@ -56,7 +56,7 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.oldLabelColumn = new TableColumnSourceExpressionParameter(other.oldLabelColumn);
         this.newLabelColumn = new TableColumnSourceExpressionParameter(other.newLabelColumn);
-        this.missingValueReplacement = new OptionalDefaultExpressionParameter(other.missingValueReplacement);
+        this.missingValueReplacement = new OptionalJIPipeExpressionParameter(other.missingValueReplacement);
         this.ignoreZero = other.ignoreZero;
     }
 
@@ -85,12 +85,12 @@ public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Replace missing mappings", description = "If enabled, replace mappings missing from the table by the value defined by this expression. If disabled, missing mappings are ignored and affected labels are not changed.")
     @JIPipeParameter("missing-value-replacement")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public OptionalDefaultExpressionParameter getMissingValueReplacement() {
+    public OptionalJIPipeExpressionParameter getMissingValueReplacement() {
         return missingValueReplacement;
     }
 
     @JIPipeParameter("missing-value-replacement")
-    public void setMissingValueReplacement(OptionalDefaultExpressionParameter missingValueReplacement) {
+    public void setMissingValueReplacement(OptionalJIPipeExpressionParameter missingValueReplacement) {
         this.missingValueReplacement = missingValueReplacement;
     }
 

@@ -52,7 +52,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customExpressionVariables;
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
-    private DefaultExpressionParameter annotationValue = new DefaultExpressionParameter("\"index=\" + index + \";name=\" + name");
+    private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("\"index=\" + index + \";name=\" + name");
 
     /**
      * Instantiates a new node type.
@@ -74,7 +74,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.generatedAnnotation = other.generatedAnnotation;
-        this.annotationValue = new DefaultExpressionParameter(other.annotationValue);
+        this.annotationValue = new JIPipeExpressionParameter(other.annotationValue);
     }
 
     @Override
@@ -137,12 +137,12 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
-    public DefaultExpressionParameter getAnnotationValue() {
+    public JIPipeExpressionParameter getAnnotationValue() {
         return annotationValue;
     }
 
     @JIPipeParameter("roi-name")
-    public void setAnnotationValue(DefaultExpressionParameter annotationValue) {
+    public void setAnnotationValue(JIPipeExpressionParameter annotationValue) {
         this.annotationValue = annotationValue;
     }
 

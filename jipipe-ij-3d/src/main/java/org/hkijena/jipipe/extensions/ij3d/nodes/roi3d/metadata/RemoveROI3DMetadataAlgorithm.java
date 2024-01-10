@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -26,7 +26,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ROI3DListData.class, slotName = "Output", autoCreate = true)
 public class RemoveROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filterExpression = new DefaultExpressionParameter("true");
+    private JIPipeExpressionParameter filterExpression = new JIPipeExpressionParameter("true");
 
     public RemoveROI3DMetadataAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -34,7 +34,7 @@ public class RemoveROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     public RemoveROI3DMetadataAlgorithm(RemoveROI3DMetadataAlgorithm other) {
         super(other);
-        this.filterExpression = new DefaultExpressionParameter(other.filterExpression);
+        this.filterExpression = new JIPipeExpressionParameter(other.filterExpression);
     }
 
     @Override
@@ -69,12 +69,12 @@ public class RemoveROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @ExpressionParameterSettingsVariable(key = "key", name = "Metadata key", description = "The name of the metadata")
     @ExpressionParameterSettingsVariable(key = "value", name = "Metadata value", description = "The value of the metadata")
     @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Other ROI metadata/properties accessible via their string keys")
-    public DefaultExpressionParameter getFilterExpression() {
+    public JIPipeExpressionParameter getFilterExpression() {
         return filterExpression;
     }
 
     @JIPipeParameter("filter")
-    public void setFilterExpression(DefaultExpressionParameter filterExpression) {
+    public void setFilterExpression(JIPipeExpressionParameter filterExpression) {
         this.filterExpression = filterExpression;
     }
 }

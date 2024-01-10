@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
         "<pre>PATH_COMBINE(project_data_dirs [\"outputs\"], \"Outputs\", \"Output_file\")</pre>\n\n" +
         "Using expression functions: You can also use the standard string concatenation function to generate paths" +
         "<pre>project_dir + \"/Outputs/Output_file\"</pre>")
-public class DataExportExpressionParameter extends DefaultExpressionParameter {
+public class DataExportExpressionParameter extends JIPipeExpressionParameter {
     public DataExportExpressionParameter() {
         super("PATH_COMBINE(data_dir, auto_file_name)");
     }

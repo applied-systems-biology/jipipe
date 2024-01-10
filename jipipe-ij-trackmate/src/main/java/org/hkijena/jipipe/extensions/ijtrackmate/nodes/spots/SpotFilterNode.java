@@ -30,7 +30,7 @@ import java.util.Map;
 public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
     private final CustomExpressionVariablesParameter customVariables;
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter("quality > 30");
+    private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("quality > 30");
 
     public SpotFilterNode(JIPipeNodeInfo info) {
         super(info);
@@ -40,7 +40,7 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
     public SpotFilterNode(SpotFilterNode other) {
         super(other);
         this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
-        this.filter = new DefaultExpressionParameter(other.filter);
+        this.filter = new JIPipeExpressionParameter(other.filter);
     }
 
     @Override
@@ -100,12 +100,12 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    public DefaultExpressionParameter getFilter() {
+    public JIPipeExpressionParameter getFilter() {
         return filter;
     }
 
     @JIPipeParameter("filter")
-    public void setFilter(DefaultExpressionParameter filter) {
+    public void setFilter(JIPipeExpressionParameter filter) {
         this.filter = filter;
     }
 

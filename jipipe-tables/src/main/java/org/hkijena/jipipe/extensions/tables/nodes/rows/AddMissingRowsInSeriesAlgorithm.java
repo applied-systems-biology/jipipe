@@ -49,9 +49,9 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
     private StringQueryExpression countingColumn = new StringQueryExpression();
     private ExpressionTableColumnGeneratorProcessorParameterList defaultValues = new ExpressionTableColumnGeneratorProcessorParameterList();
 
-    private OptionalDefaultExpressionParameter minCounter = new OptionalDefaultExpressionParameter();
+    private OptionalJIPipeExpressionParameter minCounter = new OptionalJIPipeExpressionParameter();
 
-    private OptionalDefaultExpressionParameter maxCounter = new OptionalDefaultExpressionParameter();
+    private OptionalJIPipeExpressionParameter maxCounter = new OptionalJIPipeExpressionParameter();
 
     private double expectedStep = 1.0;
 
@@ -65,8 +65,8 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         super(other);
         this.countingColumn = new StringQueryExpression(other.countingColumn);
         this.defaultValues = new ExpressionTableColumnGeneratorProcessorParameterList(other.defaultValues);
-        this.minCounter = new OptionalDefaultExpressionParameter(other.minCounter);
-        this.maxCounter = new OptionalDefaultExpressionParameter(other.maxCounter);
+        this.minCounter = new OptionalJIPipeExpressionParameter(other.minCounter);
+        this.maxCounter = new OptionalJIPipeExpressionParameter(other.maxCounter);
         this.expectedStep = other.expectedStep;
         this.ignoreEmptyTables = other.ignoreEmptyTables;
     }
@@ -227,24 +227,24 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
     @JIPipeDocumentation(name = "Custom minimum counter", description = "If enabled, override the automatically determined minimum counter. Otherwise, the minimum is the minimum in the whole table")
     @JIPipeParameter("min-counter")
     @ExpressionParameterSettingsVariable(fromClass = CounterVariableSource.class)
-    public OptionalDefaultExpressionParameter getMinCounter() {
+    public OptionalJIPipeExpressionParameter getMinCounter() {
         return minCounter;
     }
 
     @JIPipeParameter("min-counter")
-    public void setMinCounter(OptionalDefaultExpressionParameter minCounter) {
+    public void setMinCounter(OptionalJIPipeExpressionParameter minCounter) {
         this.minCounter = minCounter;
     }
 
     @JIPipeDocumentation(name = "Custom maximum counter", description = "If enabled, override the automatically determined maximum counter. Otherwise, the maximum is the maximum in the whole table")
     @JIPipeParameter("max-counter")
     @ExpressionParameterSettingsVariable(fromClass = CounterVariableSource.class)
-    public OptionalDefaultExpressionParameter getMaxCounter() {
+    public OptionalJIPipeExpressionParameter getMaxCounter() {
         return maxCounter;
     }
 
     @JIPipeParameter("max-counter")
-    public void setMaxCounter(OptionalDefaultExpressionParameter maxCounter) {
+    public void setMaxCounter(OptionalJIPipeExpressionParameter maxCounter) {
         this.maxCounter = maxCounter;
     }
 

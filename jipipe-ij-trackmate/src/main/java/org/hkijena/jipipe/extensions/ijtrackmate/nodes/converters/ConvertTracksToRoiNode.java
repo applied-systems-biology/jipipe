@@ -34,10 +34,10 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
 
-    private OptionalDefaultExpressionParameter roiName = new OptionalDefaultExpressionParameter(false, "\"ID\" + id");
-    private OptionalDefaultExpressionParameter fillColor = new OptionalDefaultExpressionParameter(false, "");
-    private OptionalDefaultExpressionParameter lineColor = new OptionalDefaultExpressionParameter(false, "RGB_COLOR(255, 255, 0)");
-    private OptionalDefaultExpressionParameter lineWidth = new OptionalDefaultExpressionParameter(false, "1");
+    private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "\"ID\" + id");
+    private OptionalJIPipeExpressionParameter fillColor = new OptionalJIPipeExpressionParameter(false, "");
+    private OptionalJIPipeExpressionParameter lineColor = new OptionalJIPipeExpressionParameter(false, "RGB_COLOR(255, 255, 0)");
+    private OptionalJIPipeExpressionParameter lineWidth = new OptionalJIPipeExpressionParameter(false, "1");
 
     public ConvertTracksToRoiNode(JIPipeNodeInfo info) {
         super(info);
@@ -161,12 +161,12 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Spot ID", key = "spot.id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Spot index", key = "spot.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
-    public OptionalDefaultExpressionParameter getFillColor() {
+    public OptionalJIPipeExpressionParameter getFillColor() {
         return fillColor;
     }
 
     @JIPipeParameter("fill-color")
-    public void setFillColor(OptionalDefaultExpressionParameter fillColor) {
+    public void setFillColor(OptionalJIPipeExpressionParameter fillColor) {
         this.fillColor = fillColor;
     }
 
@@ -180,12 +180,12 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Spot ID", key = "spot.id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Spot index", key = "spot.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
-    public OptionalDefaultExpressionParameter getLineColor() {
+    public OptionalJIPipeExpressionParameter getLineColor() {
         return lineColor;
     }
 
     @JIPipeParameter("line-color")
-    public void setLineColor(OptionalDefaultExpressionParameter lineColor) {
+    public void setLineColor(OptionalJIPipeExpressionParameter lineColor) {
         this.lineColor = lineColor;
     }
 
@@ -199,12 +199,12 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Spot ID", key = "spot.id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Spot index", key = "spot.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
-    public OptionalDefaultExpressionParameter getLineWidth() {
+    public OptionalJIPipeExpressionParameter getLineWidth() {
         return lineWidth;
     }
 
     @JIPipeParameter("line-width")
-    public void setLineWidth(OptionalDefaultExpressionParameter lineWidth) {
+    public void setLineWidth(OptionalJIPipeExpressionParameter lineWidth) {
         this.lineWidth = lineWidth;
     }
 
@@ -218,12 +218,12 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Spot ID", key = "spot.id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Spot index", key = "spot.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
-    public OptionalDefaultExpressionParameter getRoiName() {
+    public OptionalJIPipeExpressionParameter getRoiName() {
         return roiName;
     }
 
     @JIPipeParameter("roi-name")
-    public void setRoiName(OptionalDefaultExpressionParameter roiName) {
+    public void setRoiName(OptionalJIPipeExpressionParameter roiName) {
         this.roiName = roiName;
     }
 }

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.registries;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 
@@ -45,7 +45,7 @@ public class JIPipeExpressionRegistry {
     }
 
     /**
-     * Registered expression functions. Utilized within {@link DefaultExpressionEvaluator}.
+     * Registered expression functions. Utilized within {@link JIPipeExpressionEvaluator}.
      *
      * @return the registered functions
      */

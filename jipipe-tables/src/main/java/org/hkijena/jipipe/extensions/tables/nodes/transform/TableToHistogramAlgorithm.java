@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
@@ -33,12 +33,12 @@ import java.util.List;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private TableColumnSourceExpressionParameter inputColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Column name\"");
-    private DefaultExpressionParameter valueFilter = new DefaultExpressionParameter("NOT IS_NAN(value)");
-    private DefaultExpressionParameter numBins = new DefaultExpressionParameter("inf");
-    private DefaultExpressionParameter outputColumnBinMin = new DefaultExpressionParameter("\"Bin min\"");
-    private DefaultExpressionParameter outputColumnBinMax = new DefaultExpressionParameter("\"Bin max\"");
-    private DefaultExpressionParameter outputColumnBinCount = new DefaultExpressionParameter("\"Count\"");
-    private DefaultExpressionParameter accumulationFunction = new DefaultExpressionParameter("COUNT(values)");
+    private JIPipeExpressionParameter valueFilter = new JIPipeExpressionParameter("NOT IS_NAN(value)");
+    private JIPipeExpressionParameter numBins = new JIPipeExpressionParameter("inf");
+    private JIPipeExpressionParameter outputColumnBinMin = new JIPipeExpressionParameter("\"Bin min\"");
+    private JIPipeExpressionParameter outputColumnBinMax = new JIPipeExpressionParameter("\"Bin max\"");
+    private JIPipeExpressionParameter outputColumnBinCount = new JIPipeExpressionParameter("\"Count\"");
+    private JIPipeExpressionParameter accumulationFunction = new JIPipeExpressionParameter("COUNT(values)");
     private boolean cumulative = false;
     private boolean normalize = false;
 
@@ -49,12 +49,12 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public TableToHistogramAlgorithm(TableToHistogramAlgorithm other) {
         super(other);
         this.inputColumn = new TableColumnSourceExpressionParameter(other.inputColumn);
-        this.valueFilter = new DefaultExpressionParameter(other.valueFilter);
-        this.numBins = new DefaultExpressionParameter(other.numBins);
-        this.outputColumnBinMin = new DefaultExpressionParameter(other.outputColumnBinMin);
-        this.outputColumnBinMax = new DefaultExpressionParameter(other.outputColumnBinMax);
-        this.outputColumnBinCount = new DefaultExpressionParameter(other.outputColumnBinCount);
-        this.accumulationFunction = new DefaultExpressionParameter(other.accumulationFunction);
+        this.valueFilter = new JIPipeExpressionParameter(other.valueFilter);
+        this.numBins = new JIPipeExpressionParameter(other.numBins);
+        this.outputColumnBinMin = new JIPipeExpressionParameter(other.outputColumnBinMin);
+        this.outputColumnBinMax = new JIPipeExpressionParameter(other.outputColumnBinMax);
+        this.outputColumnBinCount = new JIPipeExpressionParameter(other.outputColumnBinCount);
+        this.accumulationFunction = new JIPipeExpressionParameter(other.accumulationFunction);
         this.cumulative = other.cumulative;
         this.normalize = other.normalize;
     }
@@ -210,72 +210,72 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("value-filter")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "value", description = "The value to be tested", name = "Value")
-    public DefaultExpressionParameter getValueFilter() {
+    public JIPipeExpressionParameter getValueFilter() {
         return valueFilter;
     }
 
     @JIPipeParameter("value-filter")
-    public void setValueFilter(DefaultExpressionParameter valueFilter) {
+    public void setValueFilter(JIPipeExpressionParameter valueFilter) {
         this.valueFilter = valueFilter;
     }
 
     @JIPipeDocumentation(name = "Number of bins", description = "The number of bins. If set to infinite (<code>inf</code>), there will be as many bins as unique values")
     @JIPipeParameter("num-bins")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getNumBins() {
+    public JIPipeExpressionParameter getNumBins() {
         return numBins;
     }
 
     @JIPipeParameter("num-bins")
-    public void setNumBins(DefaultExpressionParameter numBins) {
+    public void setNumBins(JIPipeExpressionParameter numBins) {
         this.numBins = numBins;
     }
 
     @JIPipeDocumentation(name = "Accumulation function", description = "Function that accumulates the values inside a bin")
     @ExpressionParameterSettingsVariable(key = "values", description = "The values to be accumulated", name = "Values")
     @JIPipeParameter("accumulation-function")
-    public DefaultExpressionParameter getAccumulationFunction() {
+    public JIPipeExpressionParameter getAccumulationFunction() {
         return accumulationFunction;
     }
 
     @JIPipeParameter("accumulation-function")
-    public void setAccumulationFunction(DefaultExpressionParameter accumulationFunction) {
+    public void setAccumulationFunction(JIPipeExpressionParameter accumulationFunction) {
         this.accumulationFunction = accumulationFunction;
     }
 
     @JIPipeDocumentation(name = "Output column (bin min)", description = "The column where the minimum value of a bin will be written")
     @JIPipeParameter(value = "output-column-bin-min", uiOrder = -90)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getOutputColumnBinMin() {
+    public JIPipeExpressionParameter getOutputColumnBinMin() {
         return outputColumnBinMin;
     }
 
     @JIPipeParameter("output-column-bin-min")
-    public void setOutputColumnBinMin(DefaultExpressionParameter outputColumnBinMin) {
+    public void setOutputColumnBinMin(JIPipeExpressionParameter outputColumnBinMin) {
         this.outputColumnBinMin = outputColumnBinMin;
     }
 
     @JIPipeDocumentation(name = "Output column (bin max)", description = "The column where the maximum value of a bin will be written")
     @JIPipeParameter(value = "output-column-bin-max", uiOrder = -80)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getOutputColumnBinMax() {
+    public JIPipeExpressionParameter getOutputColumnBinMax() {
         return outputColumnBinMax;
     }
 
     @JIPipeParameter("output-column-bin-max")
-    public void setOutputColumnBinMax(DefaultExpressionParameter outputColumnBinMax) {
+    public void setOutputColumnBinMax(JIPipeExpressionParameter outputColumnBinMax) {
         this.outputColumnBinMax = outputColumnBinMax;
     }
 
     @JIPipeDocumentation(name = "Output column (accumulated)", description = "The [normalized/cumulative] accumulated values in the bin")
     @JIPipeParameter(value = "output-column-bin-count", uiOrder = -70)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getOutputColumnBinCount() {
+    public JIPipeExpressionParameter getOutputColumnBinCount() {
         return outputColumnBinCount;
     }
 
     @JIPipeParameter("output-column-bin-count")
-    public void setOutputColumnBinCount(DefaultExpressionParameter outputColumnBinCount) {
+    public void setOutputColumnBinCount(JIPipeExpressionParameter outputColumnBinCount) {
         this.outputColumnBinCount = outputColumnBinCount;
     }
 

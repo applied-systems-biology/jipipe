@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.parameters.processors;
 
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.api.functions.FunctionParameter;
 
@@ -21,12 +21,12 @@ import org.hkijena.jipipe.extensions.parameters.api.functions.FunctionParameter;
  * A parameter that models processing an input column via an conversion function
  * and generating an output column
  */
-public class ExpressionTableColumnProcessorParameter extends FunctionParameter<StringQueryExpression, DefaultExpressionParameter, String> {
+public class ExpressionTableColumnProcessorParameter extends FunctionParameter<StringQueryExpression, JIPipeExpressionParameter, String> {
 
     public ExpressionTableColumnProcessorParameter() {
-        super(StringQueryExpression.class, DefaultExpressionParameter.class, String.class);
+        super(StringQueryExpression.class, JIPipeExpressionParameter.class, String.class);
         setInput(new StringQueryExpression());
-        setParameter(new DefaultExpressionParameter("values"));
+        setParameter(new JIPipeExpressionParameter("values"));
         setOutput("Output column");
     }
 

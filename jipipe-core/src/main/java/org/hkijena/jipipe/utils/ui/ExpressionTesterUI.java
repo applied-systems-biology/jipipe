@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
+import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionParameterEditorUI;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -38,14 +38,14 @@ import java.util.List;
 import java.util.*;
 
 /**
- * A developer tool to test {@link org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator}
+ * A developer tool to test {@link JIPipeExpressionEvaluator}
  */
 public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
-    private final DefaultExpressionEvaluator evaluator = new DefaultExpressionEvaluator();
+    private final JIPipeExpressionEvaluator evaluator = new JIPipeExpressionEvaluator();
     private final MarkdownReader resultReader = new MarkdownReader(false);
     private final StringBuilder resultOutput = new StringBuilder();
-    private DefaultExpressionParameterEditorUI expressionEditor;
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter();
+    private JIPipeExpressionParameterEditorUI expressionEditor;
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter();
 
     public ExpressionTesterUI(JIPipeWorkbench workbench) {
         super(workbench);
@@ -62,10 +62,10 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
 
         JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder().setName("Expression").setFieldClass(JIPipeParameter.class)
                 .setGetter(this::getExpression).setSetter(o -> {
-                    setExpression((DefaultExpressionParameter) o);
+                    setExpression((JIPipeExpressionParameter) o);
                     return true;
                 }).setSource(new JIPipeDummyParameterCollection()).build();
-        expressionEditor = new DefaultExpressionParameterEditorUI(getWorkbench(), new JIPipeParameterTree(access.getSource()), access);
+        expressionEditor = new JIPipeExpressionParameterEditorUI(getWorkbench(), new JIPipeParameterTree(access.getSource()), access);
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(expressionEditor, BorderLayout.CENTER);
@@ -149,11 +149,11 @@ public class ExpressionTesterUI extends JIPipeWorkbenchPanel {
         SwingUtilities.invokeLater(() -> resultReader.getScrollPane().getVerticalScrollBar().setValue(resultReader.getScrollPane().getVerticalScrollBar().getMaximum()));
     }
 
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 }

@@ -48,7 +48,7 @@ import java.util.Set;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images")
 public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("id > 10 AND num_pixels > 50");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("id > 10 AND num_pixels > 50");
 
     public FilterLabelsByExpression3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -56,7 +56,7 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
 
     public FilterLabelsByExpression3DAlgorithm(FilterLabelsByExpression3DAlgorithm other) {
         super(other);
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
     }
 
     @Override
@@ -87,12 +87,12 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
     @JIPipeDocumentation(name = "Filter expression", description = "This filter expression determines which labels are kept. Annotations are available as variables.")
     @ExpressionParameterSettings(variableSource = FilterLabelsByExpression2DAlgorithm.VariableSource.class, hint = "per label")
     @JIPipeParameter("expression")
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JIPipeParameter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 

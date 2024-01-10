@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -93,38 +93,38 @@ public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorith
     }
 
     public static class Entry extends AbstractJIPipeParameterCollection {
-        private DefaultExpressionParameter jsonPath = new DefaultExpressionParameter("\"$\"");
-        private DefaultExpressionParameter annotationName = new DefaultExpressionParameter("\"Annotation name\"");
+        private JIPipeExpressionParameter jsonPath = new JIPipeExpressionParameter("\"$\"");
+        private JIPipeExpressionParameter annotationName = new JIPipeExpressionParameter("\"Annotation name\"");
 
         public Entry() {
         }
 
         public Entry(Entry other) {
-            this.jsonPath = new DefaultExpressionParameter(other.jsonPath);
-            this.annotationName = new DefaultExpressionParameter(other.annotationName);
+            this.jsonPath = new JIPipeExpressionParameter(other.jsonPath);
+            this.annotationName = new JIPipeExpressionParameter(other.annotationName);
         }
 
         @JIPipeDocumentation(name = "JSON path", description = "An expression that returns the JsonPath of the JSON entries. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")
         @JIPipeParameter(value = "json-path", uiOrder = -100)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getJsonPath() {
+        public JIPipeExpressionParameter getJsonPath() {
             return jsonPath;
         }
 
         @JIPipeParameter("json-path")
-        public void setJsonPath(DefaultExpressionParameter jsonPath) {
+        public void setJsonPath(JIPipeExpressionParameter jsonPath) {
             this.jsonPath = jsonPath;
         }
 
         @JIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
         @JIPipeParameter(value = "annotation-name", uiOrder = -90)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getAnnotationName() {
+        public JIPipeExpressionParameter getAnnotationName() {
             return annotationName;
         }
 
         @JIPipeParameter("annotation-name")
-        public void setAnnotationName(DefaultExpressionParameter annotationName) {
+        public void setAnnotationName(JIPipeExpressionParameter annotationName) {
             this.annotationName = annotationName;
         }
     }

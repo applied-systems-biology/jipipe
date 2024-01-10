@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -85,14 +85,14 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
 
     public static class Entry extends AbstractJIPipeParameterCollection {
         private OMEAccessorParameter accessor = new OMEAccessorParameter();
-        private DefaultExpressionParameter annotationName = new DefaultExpressionParameter("\"Annotation name\"");
+        private JIPipeExpressionParameter annotationName = new JIPipeExpressionParameter("\"Annotation name\"");
 
         public Entry() {
         }
 
         public Entry(Entry other) {
             this.accessor = new OMEAccessorParameter(other.accessor);
-            this.annotationName = new DefaultExpressionParameter(other.annotationName);
+            this.annotationName = new JIPipeExpressionParameter(other.annotationName);
         }
 
         @JIPipeDocumentation(name = "OME metadata", description = "The metadata to query from OME")
@@ -109,12 +109,12 @@ public class AnnotateOMEWithMetadataAlgorithm extends JIPipeSimpleIteratingAlgor
         @JIPipeDocumentation(name = "Annotation name", description = "The name of the output annotation.")
         @JIPipeParameter(value = "annotation-name", uiOrder = -90)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        public DefaultExpressionParameter getAnnotationName() {
+        public JIPipeExpressionParameter getAnnotationName() {
             return annotationName;
         }
 
         @JIPipeParameter("annotation-name")
-        public void setAnnotationName(DefaultExpressionParameter annotationName) {
+        public void setAnnotationName(JIPipeExpressionParameter annotationName) {
             this.annotationName = annotationName;
         }
     }

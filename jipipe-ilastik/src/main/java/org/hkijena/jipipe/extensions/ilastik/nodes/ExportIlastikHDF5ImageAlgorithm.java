@@ -16,7 +16,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DataExportExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
@@ -42,7 +42,7 @@ import static org.hkijena.jipipe.extensions.ilastik.utils.ImgUtils.DEFAULT_AXES;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter hdf5Path = new DefaultExpressionParameter("\"exported_data\"");
+    private JIPipeExpressionParameter hdf5Path = new JIPipeExpressionParameter("\"exported_data\"");
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
 
     private String axes = ImgUtils.toStringAxes(DEFAULT_AXES);
@@ -53,7 +53,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
 
     public ExportIlastikHDF5ImageAlgorithm(ExportIlastikHDF5ImageAlgorithm other) {
         super(other);
-        this.hdf5Path = new DefaultExpressionParameter(other.hdf5Path);
+        this.hdf5Path = new JIPipeExpressionParameter(other.hdf5Path);
         this.filePath = new DataExportExpressionParameter(other.filePath);
         this.axes = other.axes;
     }
@@ -94,12 +94,12 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
     @JIPipeDocumentation(name = "HDF5 internal path", description = "Path to the HDF5 data set to export")
     @JIPipeParameter("hdf5-path")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getHdf5Path() {
+    public JIPipeExpressionParameter getHdf5Path() {
         return hdf5Path;
     }
 
     @JIPipeParameter("hdf5-path")
-    public void setHdf5Path(DefaultExpressionParameter hdf5Path) {
+    public void setHdf5Path(JIPipeExpressionParameter hdf5Path) {
         this.hdf5Path = hdf5Path;
     }
 

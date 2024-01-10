@@ -29,26 +29,26 @@ import java.util.Set;
 /**
  * Generates tokens for an {@link ExpressionEvaluator} instance.
  */
-public class DefaultExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMaker {
+public class JIPipeExpressionEvaluatorSyntaxTokenMaker extends AbstractTokenMaker {
 
     private final List<String> knownNonAlphanumericOperatorTokens;
     private Set<String> operators;
 
-    public DefaultExpressionEvaluatorSyntaxTokenMaker() {
-        knownNonAlphanumericOperatorTokens = DefaultExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens();
+    public JIPipeExpressionEvaluatorSyntaxTokenMaker() {
+        knownNonAlphanumericOperatorTokens = JIPipeExpressionParameter.getEvaluatorInstance().getKnownNonAlphanumericOperatorTokens();
     }
 
     @Override
     public TokenMap getWordsToHighlight() {
         TokenMap tokenMap = new TokenMap();
-        for (Constant constant : DefaultExpressionParameter.getEvaluatorInstance().getConstants()) {
+        for (Constant constant : JIPipeExpressionParameter.getEvaluatorInstance().getConstants()) {
             tokenMap.put(constant.getName(), Token.RESERVED_WORD);
         }
-        for (Function function : DefaultExpressionParameter.getEvaluatorInstance().getFunctions()) {
+        for (Function function : JIPipeExpressionParameter.getEvaluatorInstance().getFunctions()) {
             tokenMap.put(function.getName(), Token.FUNCTION);
         }
         operators = new HashSet<>();
-        for (Operator operator : DefaultExpressionParameter.getEvaluatorInstance().getOperators()) {
+        for (Operator operator : JIPipeExpressionParameter.getEvaluatorInstance().getOperators()) {
             tokenMap.put(operator.getSymbol(), Token.OPERATOR);
             operators.add(operator.getSymbol());
         }

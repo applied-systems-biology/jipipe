@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.library.primitives;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -209,7 +209,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
         numberField.addActionListener(e -> {
             // Try using an expression
             try {
-                Object result = DefaultExpressionParameter.getEvaluatorInstance().evaluate(numberField.getText());
+                Object result = JIPipeExpressionParameter.getEvaluatorInstance().evaluate(numberField.getText());
                 if (result instanceof Number) {
                     numberField.setText(formatNumber(((Number) result).doubleValue()));
                 }

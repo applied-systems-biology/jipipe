@@ -15,7 +15,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -43,7 +43,7 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
     private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
     private static ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
     private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
-    private DefaultExpressionParameter expression = new DefaultExpressionParameter("(r + g + b) / 3");
+    private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("(r + g + b) / 3");
     private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusGreyscale32FData.class));
 
     public ColorToGreyscaleExpression2D(JIPipeNodeInfo info) {
@@ -53,7 +53,7 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
 
     public ColorToGreyscaleExpression2D(ColorToGreyscaleExpression2D other) {
         super(other);
-        this.expression = new DefaultExpressionParameter(other.expression);
+        this.expression = new JIPipeExpressionParameter(other.expression);
         this.outputType = new JIPipeDataInfoRef(other.outputType);
         updateSlots();
     }
@@ -151,12 +151,12 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
             "original color space, as well as in other color spaces. The expression must return a number that will be stored as greyscale value.")
     @JIPipeParameter("expression")
     @ExpressionParameterSettings(variableSource = ColorPixel5DExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getExpression() {
+    public JIPipeExpressionParameter getExpression() {
         return expression;
     }
 
     @JIPipeParameter("expression")
-    public void setExpression(DefaultExpressionParameter expression) {
+    public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
     }
 }
