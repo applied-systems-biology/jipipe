@@ -14,9 +14,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.LABColorSpace;
@@ -27,6 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ColorPixel5DExpression
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.List;
 
@@ -43,14 +43,17 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
     private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("ARRAY(255 - r, g, b)");
     private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusColorData.class));
+    private final CustomExpressionVariablesParameter customExpressionVariables;
 
     public ApplyColorMathExpression2DExpression(JIPipeNodeInfo info) {
         super(info);
+        this.customExpressionVariables = new CustomExpressionVariablesParameter();
         updateSlots();
     }
 
     public ApplyColorMathExpression2DExpression(ApplyColorMathExpression2DExpression other) {
         super(other);
+        this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
         this.expression = new JIPipeExpressionParameter(other.expression);
         this.outputType = new JIPipeDataInfoRef(other.outputType);
         updateSlots();
@@ -88,6 +91,8 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
         variableSet.set("num_z", inputData.getImage().getNSlices());
         variableSet.set("num_c", inputData.getImage().getNChannels());
         variableSet.set("num_t", inputData.getImage().getNFrames());
+        customExpressionVariables.writeToVariables(variableSet, true, "custom", true, "custom");
+
         ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
@@ -150,6 +155,8 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
             "Alternatively, the expression can return a number that encodes the color components as integer.")
     @JIPipeParameter("expression")
     @ExpressionParameterSettings(variableSource = ColorPixel5DExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public JIPipeExpressionParameter getExpression() {
         return expression;
     }
@@ -157,5 +164,12 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
     @JIPipeParameter("expression")
     public void setExpression(JIPipeExpressionParameter expression) {
         this.expression = expression;
+    }
+
+    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomExpressionVariables() {
+        return customExpressionVariables;
     }
 }
