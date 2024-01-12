@@ -38,9 +38,9 @@ import java.util.List;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath", aliasName = "Macro... (per pixel, color)")
 public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingAlgorithm {
 
-    private static ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
-    private static ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
-    private static ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
+    private static final ColorSpace COLOR_SPACE_RGB = new RGBColorSpace();
+    private static final ColorSpace COLOR_SPACE_HSB = new HSBColorSpace();
+    private static final ColorSpace COLOR_SPACE_LAB = new LABColorSpace();
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("ARRAY(255 - r, g, b)");
     private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(JIPipeDataInfo.getInstance(ImagePlusColorData.class));
     private final CustomExpressionVariablesParameter customExpressionVariables;
