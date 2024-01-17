@@ -975,8 +975,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 if (!found)
                     continue;
 
-                objectCreator3D.reset();
                 if (withEdges) {
+                    objectCreator3D.reset();
                     Filaments3DData extracted = extractShallowCopy(connectedSet);
                     for (FilamentEdge edge : extracted.edgeSet()) {
                         if (ctProgress.isCancelled())
@@ -1002,8 +1002,14 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                                     targetRadius);
                         }
                     }
+
+                    ROI3D roi3D = new ROI3D(objectCreator3D.getObject3DVoxels(1));
+                    roi3D.setFrame(index.getT() + 1);
+                    roi3D.setChannel(index.getC() + 1);
+                    result.add(roi3D);
                 }
                 if (withVertices) {
+                    objectCreator3D.reset();
                     for (FilamentVertex vertex : connectedSet) {
                         if (ctProgress.isCancelled())
                             return;
@@ -1018,12 +1024,12 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                                 radius,
                                 false);
                     }
-                }
 
-                ROI3D roi3D = new ROI3D(objectCreator3D.getObject3DVoxels(1));
-                roi3D.setFrame(index.getT() + 1);
-                roi3D.setChannel(index.getC() + 1);
-                result.add(roi3D);
+                    ROI3D roi3D = new ROI3D(objectCreator3D.getObject3DVoxels(1));
+                    roi3D.setFrame(index.getT() + 1);
+                    roi3D.setChannel(index.getC() + 1);
+                    result.add(roi3D);
+                }
             }
         }, progressInfo);
 
