@@ -218,7 +218,8 @@ public class JIPipeCLI {
         run.getProgressInfo().setLogToStdOut(true);
         run.run();
 
-        System.exit(0);
+//        System.exit(0); // unreliable due to bug in scijava
+        Runtime.getRuntime().halt(0);
     }
 
     private static void showHelp() {
