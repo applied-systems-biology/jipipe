@@ -293,6 +293,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new SliceBeforeFunction());
         registerExpressionFunction(new SliceAfterFunction());
         registerExpressionFunction(new GetItemOrDefaultFunction());
+        registerExpressionFunction(new StringTrimFunction());
     }
 
     @Override
