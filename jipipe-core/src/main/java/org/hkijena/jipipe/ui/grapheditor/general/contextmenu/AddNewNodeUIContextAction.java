@@ -6,6 +6,7 @@ import org.hkijena.jipipe.ui.grapheditor.nodefinder.JIPipeNodeFinderDialogUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class AddNewNodeUIContextAction implements NodeUIContextAction {
@@ -23,6 +24,11 @@ public class AddNewNodeUIContextAction implements NodeUIContextAction {
     @Override
     public String getName() {
         return "Add new node here ...";
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_A, KeyEvent.SHIFT_MASK, true);
     }
 
     @Override
