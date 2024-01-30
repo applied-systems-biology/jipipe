@@ -46,7 +46,7 @@ import java.awt.*;
 public class LabelsToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ColorMaps.CommonLabelMaps colorMap = ColorMaps.CommonLabelMaps.MAIN_COLORS;
-    private Color backgroundColor = Color.WHITE;
+    private Color backgroundColor = Color.BLACK;
     private boolean shuffleLut = true;
 
     public LabelsToRGBAlgorithm(JIPipeNodeInfo info) {

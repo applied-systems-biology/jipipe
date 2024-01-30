@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.grouping;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.primitives.Ints;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
@@ -88,6 +90,24 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
         JIPipeMutableSlotConfiguration inputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupInput().getSlotConfiguration();
         JIPipeMutableSlotConfiguration outputSlotConfiguration = (JIPipeMutableSlotConfiguration) getGroupOutput().getSlotConfiguration();
 
+        Multimap<String, JIPipeDataSlot> inputSourcesBackup = HashMultimap.create();
+        Multimap<String, JIPipeDataSlot> outputTargetsBackup = HashMultimap.create();
+
+        // Backup connections
+        if(getParentGraph() != null) {
+            for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
+                for (JIPipeDataSlot sourceSlot : getParentGraph().getInputIncomingSourceSlots(inputSlot)) {
+                    inputSourcesBackup.put(inputSlot.getName(), sourceSlot);
+                }
+            }
+            for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
+                for (JIPipeDataSlot targetSlot : getParentGraph().getOutputOutgoingTargetSlots(outputSlot)) {
+                    outputTargetsBackup.put(outputSlot.getName(), targetSlot);
+                }
+            }
+        }
+
+        // Delete and re-add slots
         slotConfiguration.setInputSealed(true);
         slotConfiguration.setOutputSealed(true);
         slotConfiguration.clearInputSlots(false);
@@ -97,6 +117,32 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeIter
         }
         for (Map.Entry<String, JIPipeDataSlotInfo> entry : outputSlotConfiguration.getOutputSlots().entrySet()) {
             slotConfiguration.addSlot(entry.getKey(), entry.getValue(), false);
+        }
+
+        // Reconnect
+        for (Map.Entry<String, JIPipeDataSlot> entry : inputSourcesBackup.entries()) {
+            JIPipeInputDataSlot inputSlot = getInputSlot(entry.getKey());
+            JIPipeDataSlot sourceSlot = entry.getValue();
+            if(inputSlot != null && inputSlot.accepts(sourceSlot.getAcceptedDataType())) {
+                try {
+                    getParentGraph().connect(sourceSlot, inputSlot);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        for (Map.Entry<String, JIPipeDataSlot> entry : outputTargetsBackup.entries()) {
+            JIPipeOutputDataSlot outputSlot = getOutputSlot(entry.getKey());
+            JIPipeDataSlot targetSlot = entry.getValue();
+            if(outputSlot != null && targetSlot.accepts(outputSlot.getAcceptedDataType())) {
+                try {
+                    getParentGraph().connect(outputSlot, targetSlot);
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
