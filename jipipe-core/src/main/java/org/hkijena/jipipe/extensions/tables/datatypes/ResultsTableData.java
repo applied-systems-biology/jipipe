@@ -768,7 +768,11 @@ public class ResultsTableData implements JIPipeData, TableModel {
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try {
-            table.saveAs(PathUtils.ensureExtension(storage.getFileSystemPath().resolve(name),".csv").toString());
+            Path path = PathUtils.ensureExtension(storage.getFileSystemPath().resolve(name), ".csv");
+            if(Files.isRegularFile(path)) {
+                Files.delete(path);
+            }
+            table.saveAs(path.toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
