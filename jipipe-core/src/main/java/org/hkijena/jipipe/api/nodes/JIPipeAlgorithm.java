@@ -80,6 +80,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         super(other);
         this.enabled = other.enabled;
         this.passThrough = other.passThrough;
+        this.runtimePartition = new RuntimePartitionReferenceParameter(other.runtimePartition);
     }
 
     @Override
