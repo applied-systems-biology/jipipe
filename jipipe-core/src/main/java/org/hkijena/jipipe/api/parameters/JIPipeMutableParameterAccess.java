@@ -115,7 +115,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.description = other.description;
         this.hidden = other.hidden;
         this.fieldClass = other.fieldClass;
-        this.value = other.value;
+        this.value = JIPipe.getParameterTypes().getInfoByFieldClass(other.fieldClass).duplicate(other.value);
         this.priority = other.priority;
         this.persistence = other.persistence;
         this.uiOrder = other.uiOrder;
