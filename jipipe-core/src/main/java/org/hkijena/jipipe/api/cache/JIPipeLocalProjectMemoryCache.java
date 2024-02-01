@@ -199,7 +199,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
                 if (currentNode == null || !currentNode.functionallyEquals(cachedNode)) {
                     updated = true;
                     removeAndInvalidateNodeCache_(uuid, progressInfo);
-                    progressInfo.log("Removed invalid node state for " + uuid);
+                    progressInfo.log("Removed invalid node state for " + uuid + " [not functionally equal to cached]");
                 }
             }
         }
