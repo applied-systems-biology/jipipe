@@ -96,16 +96,17 @@ public class JIPipeGUICommand implements Command {
 
         // Resolve missing ImageJ dependencies
         if (!extensionSettings.isSilent()) {
-            resolveMissingImageJDependencies(issues);
-
-            {
+            SwingUtilities.invokeLater(() ->  {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 issues.reportValidity(new UnspecifiedValidationReportContext(), report);
                 if (!report.isValid()) {
                     UIUtils.openValidityReportDialog(new JIPipeDummyWorkbench(), null, report, "JIPipe extension registry", "Issues were detected during the initialization of certain extensions. " +
-                            "Please review the following items. Close the window to ignore the messages and load JIPipe.", true);
+                            "Please review the following items. Close the window to ignore the messages and load JIPipe.", false);
                 }
-            }
+            });
+            SwingUtilities.invokeLater(() -> {
+                resolveMissingImageJDependencies(issues);
+            });
         }
 
         // Run application

@@ -39,7 +39,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MissingRegistrationUpdateSiteResolver extends JDialog implements JIPipeWorkbench, JIPipeModernPluginManager.UpdateSitesReadyEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+public class MissingRegistrationUpdateSiteResolver extends JFrame implements JIPipeWorkbench, JIPipeModernPluginManager.UpdateSitesReadyEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private final Context context;
     private final JIPipeRegistryIssues issues;
@@ -56,8 +56,8 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         this.context = context;
         this.issues = issues;
         setSize(1024, 768);
-        setTitle("Missing ImageJ dependencies");
-        setModal(true);
+        setTitle("JIPipe - Missing ImageJ dependencies");
+        setIconImage(UIUtils.getJIPipeIcon128());
         getContentPane().setLayout(new BorderLayout());
         initialize();
 
