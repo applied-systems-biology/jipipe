@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -245,6 +246,18 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return the component or null if none should be available
      */
     default Component preview(int width, int height) {
+        return null;
+    }
+
+    /**
+     * This function generates a thumbnail for this data
+     * Can return null
+     * @param width the width
+     * @param height the height
+     * @param progressInfo  the progress info
+     * @return the thumbnail or null
+     */
+    default JIPipeThumbnailData toThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
         return null;
     }
 

@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.data.thumbnails;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 
@@ -13,4 +14,9 @@ import java.awt.*;
 @JIPipeHidden
 public interface JIPipeThumbnailData extends JIPipeData {
     Component renderToComponent(int width, int height);
+
+    @Override
+    default JIPipeThumbnailData toThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        return this;
+    }
 }
