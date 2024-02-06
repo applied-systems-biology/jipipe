@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
@@ -100,6 +101,16 @@ public class CLIJImageData implements JIPipeData {
         ImagePlusData data = pull();
         if (data != null) {
             return data.preview(width, height);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        ImagePlusData data = pull();
+        if (data != null) {
+            return data.createThumbnail(width, height, progressInfo);
         } else {
             return null;
         }

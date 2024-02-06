@@ -64,8 +64,8 @@ public class DataAnnotationQueryExpression extends JIPipeExpressionParameter {
         try {
             for (JIPipeDataAnnotation annotation : annotations) {
                 variableSet.set("key", annotation.getName());
-                variableSet.set("data_string", annotation.getVirtualData().getStringRepresentation());
-                variableSet.set("data_type_id", JIPipeDataInfo.getInstance(annotation.getVirtualData().getDataClass()).getId());
+                variableSet.set("data_string", annotation.getDataItemStore().getStringRepresentation());
+                variableSet.set("data_type_id", JIPipeDataInfo.getInstance(annotation.getDataItemStore().getDataClass()).getId());
                 boolean evaluationResult = test(variableSet);
                 if (evaluationResult)
                     return annotation;
@@ -104,8 +104,8 @@ public class DataAnnotationQueryExpression extends JIPipeExpressionParameter {
             return result;
         for (JIPipeDataAnnotation annotation : annotations) {
             variableSet.set("key", annotation.getName());
-            variableSet.set("data_string", annotation.getVirtualData().getStringRepresentation());
-            variableSet.set("data_type_id", JIPipeDataInfo.getInstance(annotation.getVirtualData().getDataClass()).getId());
+            variableSet.set("data_string", annotation.getDataItemStore().getStringRepresentation());
+            variableSet.set("data_type_id", JIPipeDataInfo.getInstance(annotation.getDataItemStore().getDataClass()).getId());
             boolean evaluationResult = test(variableSet);
             if (evaluationResult)
                 result.add(annotation);

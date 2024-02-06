@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3D;
@@ -191,6 +193,36 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
 //        }
         graphics.dispose();
         return new JLabel(new ImageIcon(image));
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        Rectangle boundsXY = getBoundsXY();
+        if (boundsXY.width == 0)
+            boundsXY.width = width;
+        if (boundsXY.height == 0)
+            boundsXY.height = height;
+        double scale = Math.min(1.0 * width / boundsXY.width, 1.0 * height / boundsXY.height);
+        BufferedImage image = new BufferedImage((int) (boundsXY.width * scale), (int) (boundsXY.height * scale), BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = image.createGraphics();
+        for (FilamentEdge edge : edgeSet()) {
+            FilamentVertex edgeSource = getEdgeSource(edge);
+            FilamentVertex edgeTarget = getEdgeTarget(edge);
+            int x1 = (int) Math.round((edgeSource.getSpatialLocation().getX() - boundsXY.x) * scale);
+            int y1 = (int) Math.round((edgeSource.getSpatialLocation().getY() - boundsXY.y) * scale);
+            int x2 = (int) Math.round((edgeTarget.getSpatialLocation().getX() - boundsXY.x) * scale);
+            int y2 = (int) Math.round((edgeTarget.getSpatialLocation().getY() - boundsXY.y) * scale);
+            graphics.setPaint(edge.getColor());
+            graphics.drawLine(x1, y1, x2, y2);
+        }
+//        for (FilamentVertex vertex : vertexSet()) {
+//            int x1 = (int)Math.round((vertex.getCentroid().getX() - boundsXY.x) * scale + dx);
+//            int y1 = (int)Math.round((vertex.getCentroid().getY() - boundsXY.y) * scale + dy);
+//            graphics.setPaint(vertex.getColor());
+//            graphics.drawRect(x1,y1,1,1);
+//        }
+        graphics.dispose();
+        return new JIPipeImageThumbnailData(image);
     }
 
     @Override

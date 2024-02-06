@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.JIPipeImageViewer;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -201,6 +202,11 @@ public class LUTData implements JIPipeData {
     @Override
     public Component preview(int width, int height) {
         return new ImagePlusData(toImage(width, height)).preview(width, height);
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        return new ImagePlusData(toImage(width, height)).createThumbnail(width, height, progressInfo);
     }
 
     /**

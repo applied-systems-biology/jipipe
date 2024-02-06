@@ -23,6 +23,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -33,6 +36,7 @@ import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 /**
  * Encapsulates a {@link java.nio.file.Path}
@@ -45,6 +49,7 @@ import java.nio.file.Paths;
         "    \"path\": \"[The path]\"\n" +
         "}" +
         "</pre>", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/path-data.schema.json")
+@JIPipeFastThumbnail
 public class PathData implements JIPipeData {
     private String path;
 
@@ -107,6 +112,18 @@ public class PathData implements JIPipeData {
             }
         }
         return new JLabel(name);
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        String name = "N/A";
+        if (path != null) {
+            try {
+                name = Paths.get(path).getFileName().toString();
+            } catch (InvalidPathException e) {
+            }
+        }
+        return new JIPipeTextThumbnailData(name);
     }
 
     /**

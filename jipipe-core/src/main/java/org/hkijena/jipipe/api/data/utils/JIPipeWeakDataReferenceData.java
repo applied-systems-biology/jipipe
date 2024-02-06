@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
@@ -58,6 +59,16 @@ public class JIPipeWeakDataReferenceData implements JIPipeData {
         JIPipeData data = dataReference.get();
         if (data != null) {
             return data.preview(width, height);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        JIPipeData data = dataReference.get();
+        if (data != null) {
+            return data.createThumbnail(width, height, progressInfo);
         } else {
             return null;
         }

@@ -11,6 +11,10 @@ import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeEmptyThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeGridThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.grapheditortool.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
@@ -73,6 +77,19 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("jipipe:weak-reference",
                 JIPipeWeakDataReferenceData.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+        registerDatatype("jipipe:thumbnail-image",
+                JIPipeImageThumbnailData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+        registerDatatype("jipipe:thumbnail-text",
+                JIPipeTextThumbnailData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+        registerDatatype("jipipe:thumbnail-empty",
+                JIPipeEmptyThumbnailData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+        registerDatatype("jipipe:thumbnail-grid",
+                JIPipeGridThumbnailData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+
         registerNodeTypeCategory(new InternalNodeTypeCategory());
         registerNodeTypeCategory(new DataSourceNodeTypeCategory());
         registerNodeTypeCategory(new FileSystemNodeTypeCategory());

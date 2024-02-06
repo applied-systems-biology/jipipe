@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.ui.cache;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -22,16 +23,15 @@ import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.concurrent.ExecutionException;
 
 /**
  * A component that acts as table cell (or other component) that generates a preview of a cached {@link org.hkijena.jipipe.api.data.JIPipeData}
  * Preview generation is put into its own thread. On finishing the thread, the parent component's repaint method is called
  */
-public class JIPipeCachedDataPreview extends JPanel {
+public class JIPipeCachedDataPreview extends JPanel implements JIPipeThumbnailGenerationQueue.ThumbnailGeneratedEventListener {
     private final Component parentComponent;
     private final Store<JIPipeDataItemStore> data;
-    private Worker worker;
+    private boolean renderedOrRendering;
 
     /**
      * Creates a new instance
@@ -44,8 +44,9 @@ public class JIPipeCachedDataPreview extends JPanel {
         this.parentComponent = parentComponent;
         this.data = new WeakStore<>(data);
         initialize();
-        if (!deferRendering)
+        if (!deferRendering) {
             renderPreview();
+        }
     }
 
     /**
@@ -59,21 +60,38 @@ public class JIPipeCachedDataPreview extends JPanel {
         this.parentComponent = parentComponent;
         this.data = data;
         initialize();
-        if (!deferRendering)
+        if (!deferRendering) {
             renderPreview();
+        }
     }
 
     public boolean isRenderedOrRendering() {
-        return worker != null;
+        return renderedOrRendering;
     }
 
     /**
      * Renders the preview if it is not already rendered
      */
     public void renderPreview() {
-        if (worker == null) {
-            worker = new Worker(this);
-            worker.execute();
+        renderedOrRendering = true;
+        JIPipeDataItemStore dataItemStore = data.get();
+        if(dataItemStore != null) {
+            JIPipeThumbnailData thumbnail = dataItemStore.getThumbnail();
+            int previewSize = GeneralDataSettings.getInstance().getPreviewSize();
+            boolean success = thumbnail != null;
+            if(success) {
+                if(thumbnail.hasSize()) {
+                    if(thumbnail.getWidth() < previewSize && thumbnail.getHeight() < previewSize) {
+                        success = false;
+                    }
+                }
+            }
+            if(success) {
+                setPreview(thumbnail.renderToComponent(previewSize, previewSize));
+            }
+            else {
+                JIPipeThumbnailGenerationQueue.getInstance().enqueue(dataItemStore, previewSize, previewSize);
+            }
         }
     }
 
@@ -96,6 +114,8 @@ public class JIPipeCachedDataPreview extends JPanel {
         setLayout(new BorderLayout());
         JLabel label = new JLabel("Please wait ...", UIUtils.getIconFromResources("actions/hourglass-half.png"), JLabel.LEFT);
         add(label, BorderLayout.CENTER);
+
+        JIPipeThumbnailGenerationQueue.getInstance().getThumbnailGeneratedEventEmitter().subscribe(this);
     }
 
     /**
@@ -107,35 +127,23 @@ public class JIPipeCachedDataPreview extends JPanel {
         return data.get();
     }
 
-    /**
-     * The worker that generates the component
-     */
-    private static class Worker extends SwingWorker<Component, Object> {
-
-        private final JIPipeCachedDataPreview parent;
-        private final int width = GeneralDataSettings.getInstance().getPreviewSize();
-
-        private Worker(JIPipeCachedDataPreview parent) {
-            this.parent = parent;
-        }
-
-        @Override
-        protected Component doInBackground() throws Exception {
-            JIPipeDataItemStore virtualData = parent.data.get();
-            if (virtualData != null && !virtualData.isClosed())
-                return virtualData.getData(new JIPipeProgressInfo()).preview(width, width);
-            else
-                return new JLabel("N/A");
-        }
-
-        @Override
-        protected void done() {
-            try {
-                parent.setPreview(get());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-                parent.setPreview(null);
+    @Override
+    public void onThumbnailGenerated(JIPipeThumbnailGenerationQueue.ThumbnailGeneratedEvent event) {
+        JIPipeDataItemStore dataItemStore = data.get();
+        if(dataItemStore != null) {
+            if(event.getStore() == dataItemStore) {
+                JIPipeThumbnailData thumbnail = dataItemStore.getThumbnail();
+                int previewSize = GeneralDataSettings.getInstance().getPreviewSize();
+                if(thumbnail != null) {
+                    setPreview(thumbnail.renderToComponent(previewSize, previewSize));
+                }
+                else {
+                    setPreview(null);
+                }
             }
+        }
+        else {
+            JIPipeThumbnailGenerationQueue.getInstance().getThumbnailGeneratedEventEmitter().unsubscribe(this);
         }
     }
 }

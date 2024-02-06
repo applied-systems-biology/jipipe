@@ -15,6 +15,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.CachedSpotCollectionDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -138,6 +140,46 @@ public class SpotsCollectionData extends ModelData {
         ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
         BufferedImage bufferedImage = resized.getBufferedImage();
         return new JLabel(new ImageIcon(bufferedImage));
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = getImage();
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
+        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+        rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
+
+        // ROI rendering
+        ROIListData rois = spotsToROIList();
+        int dMax = 1;
+        for (Roi roi : rois) {
+            int d = roi.getZPosition() + roi.getCPosition() + roi.getTPosition();
+            dMax = Math.max(d, dMax);
+        }
+        for (Roi roi : rois) {
+            int d = roi.getZPosition() + roi.getCPosition() + roi.getTPosition();
+            roi.setStrokeColor(ColorMap.hsv.apply(1.0 * d / dMax));
+        }
+        rois.draw(rgbImage.getProcessor(),
+                new ImageSliceIndex(0, 0, 0),
+                true,
+                true,
+                true,
+                true,
+                false,
+                false,
+                1,
+                Color.RED,
+                Color.YELLOW,
+                Collections.emptyList());
+
+        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+        return new JIPipeImageThumbnailData(resized);
     }
 
     @Override

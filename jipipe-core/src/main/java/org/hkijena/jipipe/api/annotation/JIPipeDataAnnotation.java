@@ -8,16 +8,16 @@ import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 
 public class JIPipeDataAnnotation implements JIPipeAnnotation {
     private final String name;
-    private final JIPipeDataItemStore virtualData;
+    private final JIPipeDataItemStore dataItemStore;
 
-    public JIPipeDataAnnotation(String name, JIPipeDataItemStore virtualData) {
+    public JIPipeDataAnnotation(String name, JIPipeDataItemStore dataItemStore) {
         this.name = name;
-        this.virtualData = virtualData;
+        this.dataItemStore = dataItemStore;
     }
 
     public JIPipeDataAnnotation(String name, JIPipeData data) {
         this.name = name;
-        this.virtualData = new JIPipeDataItemStore(data);
+        this.dataItemStore = new JIPipeDataItemStore(data);
     }
 
     /**
@@ -26,11 +26,11 @@ public class JIPipeDataAnnotation implements JIPipeAnnotation {
      * @return the copy
      */
     public JIPipeDataAnnotation duplicate(JIPipeProgressInfo progressInfo) {
-        return new JIPipeDataAnnotation(getName(), getVirtualData().duplicate(progressInfo));
+        return new JIPipeDataAnnotation(getName(), getDataItemStore().duplicate(progressInfo));
     }
 
     public Class<? extends JIPipeData> getDataClass() {
-        return virtualData.getDataClass();
+        return dataItemStore.getDataClass();
     }
 
     @Override
@@ -38,16 +38,16 @@ public class JIPipeDataAnnotation implements JIPipeAnnotation {
         return name;
     }
 
-    public JIPipeDataItemStore getVirtualData() {
-        return virtualData;
+    public JIPipeDataItemStore getDataItemStore() {
+        return dataItemStore;
     }
 
     public <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
-        return (T) JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), klass, progressInfo);
+        return (T) JIPipe.getDataTypes().convert(dataItemStore.getData(progressInfo), klass, progressInfo);
     }
 
     @Override
     public String toString() {
-        return "$" + name + "=" + virtualData.getStringRepresentation() + " [" + JIPipeDataInfo.getInstance(getDataClass()).getId() + "]";
+        return "$" + name + "=" + dataItemStore.getStringRepresentation() + " [" + JIPipeDataInfo.getInstance(getDataClass()).getId() + "]";
     }
 }

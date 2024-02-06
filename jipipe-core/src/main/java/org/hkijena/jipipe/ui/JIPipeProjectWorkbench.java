@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -372,7 +373,16 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench, J
         statusBar.add(statusText);
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
 
-        // Virtual control
+        // Thumbnail generation control
+        JIPipeRunnerQueueButton thumbnailQueueButton = new JIPipeRunnerQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue());
+        thumbnailQueueButton.makeFlat();
+        thumbnailQueueButton.setReadyLabel("");
+        thumbnailQueueButton.setTasksFinishedLabel("");
+        thumbnailQueueButton.setTaskSingleRunningLabel("Generating thumbnail");
+        thumbnailQueueButton.setTaskSingleEnqueuedRunningLabel("Generating thumbnails (%d)");
+        statusBar.add(thumbnailQueueButton);
+
+        // Memory control
         JButton optionsButton = memoryOptionsControl.createOptionsButton();
         UIUtils.makeFlat(optionsButton);
         statusBar.add(optionsButton);

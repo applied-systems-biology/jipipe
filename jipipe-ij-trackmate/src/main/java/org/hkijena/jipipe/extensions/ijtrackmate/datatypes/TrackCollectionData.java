@@ -30,6 +30,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.tracks.CachedTracksCollectionDataViewerWindow;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -39,9 +42,12 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -301,6 +307,42 @@ public class TrackCollectionData extends SpotsCollectionData {
         graphics.dispose();
         Image scaledInstance = bufferedImage.getScaledInstance(imageWidth, imageHeight, Image.SCALE_DEFAULT);
         return new JLabel(new ImageIcon(scaledInstance));
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = getImage();
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+//        boolean smooth = factor < 0;
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
+        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+        rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
+
+        computeTrackFeatures(new JIPipeProgressInfo());
+
+        // ROI rendering
+        BufferedImage bufferedImage = rgbImage.getBufferedImage();
+        DisplaySettings displaySettings = new DisplaySettings();
+        displaySettings.setLineThickness(5);
+        displaySettings.setTrackDisplayMode(DisplaySettings.TrackDisplayMode.FULL);
+        displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.TRACKS, "TRACK_ID");
+        displaySettings.setTrackMinMax(0, getTrackModel().nTracks(true));
+        TrackOverlay overlay = new TrackOverlay(getModel(), rgbImage, displaySettings);
+        try {
+            Field field = Roi.class.getDeclaredField("ic");
+            field.setAccessible(true);
+            field.set(overlay, new ImageCanvas(getImage()));
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        Graphics2D graphics = bufferedImage.createGraphics();
+        overlay.drawOverlay(graphics);
+        graphics.dispose();
+        Image scaledInstance = bufferedImage.getScaledInstance(imageWidth, imageHeight, Image.SCALE_DEFAULT);
+        return new JIPipeImageThumbnailData(scaledInstance);
     }
 
     @Override

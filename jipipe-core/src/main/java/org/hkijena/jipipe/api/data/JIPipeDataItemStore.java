@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.utils.data.Store;
 
 import java.io.Closeable;
@@ -23,9 +24,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.locks.StampedLock;
 
 /**
- * Manages virtual data
- * This class can store data in memory or in a temporary path.
- * Please note that the temporary data is not automatically cleaned up by finalize()! Please call close() to remove any files.
+ * Manages data and users
  */
 public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPipeData> {
 
@@ -34,6 +33,7 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
     private final String stringRepresentation;
     private final WeakHashMap<Object, Boolean> users = new WeakHashMap<>();
     private JIPipeData data;
+    private JIPipeThumbnailData thumbnail;
     private boolean closed = false;
 
     /**
@@ -58,7 +58,9 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
             throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         }
         JIPipeData data = getData(progressInfo).duplicate(progressInfo);
-        return new JIPipeDataItemStore(data);
+        JIPipeDataItemStore copy = new JIPipeDataItemStore(data);
+        copy.thumbnail = thumbnail;
+        return copy;
     }
 
     /**
@@ -84,6 +86,40 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
             JIPipeData data = getData_(progressInfo);
             data = JIPipe.getDataTypes().convert(data, klass, progressInfo);
             return (T) data;
+        } finally {
+            stampedLock.unlock(stamp);
+        }
+    }
+
+    /**
+     * Gets the currently stored thumbnail
+     *
+     * @return the thumbnail or null
+     */
+    public JIPipeThumbnailData getThumbnail() {
+        long stamp = stampedLock.readLock();
+        try {
+            if (closed) {
+                throw new IllegalStateException("The data object is already destroyed (use-after-free)");
+            }
+            return thumbnail;
+        } finally {
+            stampedLock.unlock(stamp);
+        }
+    }
+
+    /**
+     * Sets the thumbnail
+     *
+     * @param thumbnail the thumbnail or null
+     */
+    public void setThumbnail(JIPipeThumbnailData thumbnail) {
+        long stamp = stampedLock.writeLock();
+        try {
+            if (closed) {
+                throw new IllegalStateException("The data object is already destroyed (use-after-free)");
+            }
+            this.thumbnail = thumbnail;
         } finally {
             stampedLock.unlock(stamp);
         }
@@ -165,8 +201,7 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
         long stamp = stampedLock.readLock();
         try {
             return users.isEmpty();
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }
@@ -183,8 +218,7 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
             }
             data = null;
             users.clear();
-        }
-        finally {
+        } finally {
             stampedLock.unlock(stamp);
         }
     }

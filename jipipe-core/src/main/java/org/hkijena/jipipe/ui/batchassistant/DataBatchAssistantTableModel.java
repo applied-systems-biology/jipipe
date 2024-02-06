@@ -173,7 +173,7 @@ public class DataBatchAssistantTableModel implements TableModel {
             if (preview == null) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowIndex, dataAnnotationName);
                 if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    preview = new JIPipeCachedDataPreview(table, dataAnnotation.getVirtualData(), true);
+                    preview = new JIPipeCachedDataPreview(table, dataAnnotation.getDataItemStore(), true);
                     dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
                 } else {
                     preview = new JLabel("N/A");

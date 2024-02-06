@@ -45,7 +45,7 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
-        Component preview = data.preview(previewWidth, previewHeight);
+        Component preview = data.createThumbnail(previewWidth, previewHeight, progressInfo).renderToComponent(previewWidth, previewHeight);
         if (preview != null) {
             try {
                 SwingUtilities.invokeAndWait(() -> {

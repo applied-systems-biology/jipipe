@@ -245,6 +245,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @param height the target height
      * @return the component or null if none should be available
      */
+    @Deprecated
     default Component preview(int width, int height) {
         return null;
     }
@@ -257,7 +258,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @param progressInfo  the progress info
      * @return the thumbnail or null
      */
-    default JIPipeThumbnailData toThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+    default JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
         return null;
     }
 

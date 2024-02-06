@@ -49,6 +49,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeEmptyThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -1012,6 +1015,47 @@ public class OMEImageData implements JIPipeData {
             return new JLabel(new ImageIcon(bufferedImage));
         } else {
             return new JLabel("N/A");
+        }
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        if (image != null) {
+            double factorX = 1.0 * width / image.getWidth();
+            double factorY = 1.0 * height / image.getHeight();
+            double factor = Math.max(factorX, factorY);
+            boolean smooth = factor < 0;
+            int imageWidth = (int) (image.getWidth() * factor);
+            int imageHeight = (int) (image.getHeight() * factor);
+            ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+            if (rgbImage.getStackSize() != 1) {
+                // Reduce processing time
+                rgbImage = new ImagePlus("Preview", rgbImage.getProcessor());
+            }
+            if (rgbImage == image) {
+                rgbImage = ImageJUtils.duplicate(rgbImage);
+            }
+            // ROI rendering
+            if (rois != null && !rois.isEmpty()) {
+                rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
+                rois.draw(rgbImage.getProcessor(),
+                        new ImageSliceIndex(0, 0, 0),
+                        false,
+                        false,
+                        false,
+                        true,
+                        false,
+                        false,
+                        1,
+                        Color.RED,
+                        Color.YELLOW,
+                        Collections.emptyList());
+            }
+
+            ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+            return new JIPipeImageThumbnailData(resized);
+        } else {
+            return new JIPipeEmptyThumbnailData();
         }
     }
 

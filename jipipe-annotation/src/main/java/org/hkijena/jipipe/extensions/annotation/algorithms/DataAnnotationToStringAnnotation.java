@@ -44,7 +44,7 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         for (String name : ImmutableList.copyOf(iterationStep.getMergedDataAnnotations().keySet())) {
             if (nameFilter.test(name)) {
-                annotationList.add(new JIPipeTextAnnotation(name, iterationStep.getMergedDataAnnotation(name).getVirtualData().getStringRepresentation()));
+                annotationList.add(new JIPipeTextAnnotation(name, iterationStep.getMergedDataAnnotation(name).getDataItemStore().getStringRepresentation()));
                 if (!keepDataAnnotations)
                     iterationStep.getMergedTextAnnotations().remove(name);
             }

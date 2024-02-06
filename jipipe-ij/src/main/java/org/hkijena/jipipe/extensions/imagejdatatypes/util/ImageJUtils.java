@@ -32,6 +32,7 @@ import ij.plugin.filter.AVI_Writer;
 import ij.plugin.filter.Convolver;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -406,6 +407,27 @@ public class ImageJUtils {
         ImageProcessor resized = firstSliceImage.getProcessor().resize(imageWidth, imageHeight, smooth);
         BufferedImage bufferedImage = resized.getBufferedImage();
         return new JLabel(new ImageIcon(bufferedImage));
+    }
+
+    /**
+     * Generates a thumbnail for a colored image with color space
+     *
+     * @param image  the image
+     * @param width  the width
+     * @param height the height
+     * @return the preview
+     */
+    public static JIPipeImageThumbnailData generateThumbnail(ImagePlus image, ColorSpace colorSpace, int width, int height) {
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
+        ImagePlus firstSliceImage = new ImagePlus("Preview", image.getProcessor().duplicate());
+        colorSpace.convertToRGB(firstSliceImage, new JIPipeProgressInfo());
+        ImageProcessor resized = firstSliceImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+        return new JIPipeImageThumbnailData(resized);
     }
 
     /**

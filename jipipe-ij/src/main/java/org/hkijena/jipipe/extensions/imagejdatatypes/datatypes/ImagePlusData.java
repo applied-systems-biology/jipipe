@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
@@ -345,6 +347,65 @@ public class ImagePlusData implements JIPipeData {
         CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
         window.setVisible(true);
         SwingUtilities.invokeLater(window::reloadDisplayedData);
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.min(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) Math.max(1, image.getWidth() * factor);
+        int imageHeight = (int) Math.max(1, image.getHeight() * factor);
+        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+        if (rgbImage.getStackSize() != 1) {
+            // Reduce processing time
+            rgbImage = new ImagePlus("Preview", rgbImage.getProcessor().duplicate()); // The duplicate is important (calibration!)
+        }
+        if (rgbImage == image) {
+            rgbImage = ImageJUtils.duplicate(rgbImage);
+        }
+//            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
+//                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
+//            }
+        if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
+            // Copy LUT
+            rgbImage.setLut(image.getProcessor().getLut());
+
+            // Render to RGB
+            rgbImage = ImageJUtils.renderToRGBWithLUTIfNeeded(rgbImage, new JIPipeProgressInfo());
+        } else {
+            // Convert to RGB if necessary (HSB, LAB, ...)
+            getColorSpace().convertToRGB(rgbImage, new JIPipeProgressInfo());
+        }
+
+        // ROI rendering
+        ROIListData rois = new ROIListData();
+        if (image.getRoi() != null)
+            rois.add(image.getRoi());
+        if (image.getOverlay() != null) {
+            rois.addAll(Arrays.asList(image.getOverlay().toArray()));
+        }
+        if (!rois.isEmpty()) {
+            if (rgbImage == image || rgbImage.getProcessor() == image.getProcessor()) {
+                rgbImage = ImageJUtils.duplicate(rgbImage);
+            }
+            rois.draw(rgbImage.getProcessor(),
+                    new ImageSliceIndex(0, 0, 0),
+                    false,
+                    false,
+                    false,
+                    true,
+                    false,
+                    false,
+                    1,
+                    Color.RED,
+                    Color.YELLOW,
+                    Collections.emptyList());
+        }
+
+        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+        return new JIPipeImageThumbnailData(resized);
     }
 
     @Override

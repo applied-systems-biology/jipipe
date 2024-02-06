@@ -367,7 +367,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
             if (dataTable != null) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowList.get(rowIndex), dataAnnotationName);
                 if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    preview = new JIPipeCachedDataPreview(table, dataAnnotation.getVirtualData(), true);
+                    preview = new JIPipeCachedDataPreview(table, dataAnnotation.getDataItemStore(), true);
                     dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
                 } else {
                     preview = new JLabel("N/A");

@@ -8,6 +8,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeIconLabelThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -23,6 +26,7 @@ import java.awt.*;
 @JIPipeHidden
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@JIPipeFastThumbnail
 public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
 
     private ResultsTableData perSlotStatus = new ResultsTableData();
@@ -58,6 +62,11 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
     @Override
     public Component preview(int width, int height) {
         return new JLabel(getStatusMessage(), UIUtils.getIconFromResources(isStatusValid() ? "emblems/vcs-normal.png" : "emblems/warning.png"), JLabel.LEFT);
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        return  new JIPipeIconLabelThumbnailData(getStatusMessage(), isStatusValid() ? "emblems/vcs-normal.png" : "emblems/warning.png");
     }
 
     @Override

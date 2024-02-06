@@ -43,6 +43,9 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
@@ -80,6 +83,7 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
 @JIPipeCommonData
+@JIPipeFastThumbnail
 public class ResultsTableData implements JIPipeData, TableModel {
 
     private static final char commaSubstitute = 0x08B3;
@@ -505,6 +509,14 @@ public class ResultsTableData implements JIPipeData, TableModel {
         JLabel label = new JLabel(text);
         label.setSize(label.getPreferredSize());
         return label;
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        String text = String.format("<html><strong>%d rows<br/>%d columns</strong><br/>%s</html>", getRowCount(), getColumnCount(), String.join(", ", getColumnNames()));
+        JLabel label = new JLabel(text);
+        label.setSize(label.getPreferredSize());
+        return new JIPipeTextThumbnailData(text);
     }
 
     /**

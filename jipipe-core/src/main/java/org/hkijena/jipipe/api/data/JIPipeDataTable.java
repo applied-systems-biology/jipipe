@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.data;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -15,7 +16,7 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.api.data.thumbnails.*;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -43,12 +44,12 @@ import java.util.concurrent.locks.StampedLock;
 @JIPipeDocumentation(name = "Data table", description = "A table of data")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-data-table.schema.json")
+@JIPipeHeavyData
 public class JIPipeDataTable implements JIPipeData, TableModel {
     private final StampedLock stampedLock = new StampedLock();
     private final List<TableModelListener> listeners = new ArrayList<>();
     private final ArrayList<JIPipeDataItemStore> dataArray = new ArrayList<>();
     private final ArrayList<JIPipeDataContext> dataContextsArray = new ArrayList<>();
-    private final ArrayList<JIPipeThumbnailData> thumbnailsArray = new ArrayList<>();
     private final List<String> textAnnotationColumnNames = new ArrayList<>();
     private final Map<String, ArrayList<JIPipeTextAnnotation>> textAnnotationArrays = new HashMap<>();
     private final List<String> dataAnnotationColumnNames = new ArrayList<>();
@@ -91,9 +92,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
                     other.getDataContext(row),
                     rowProgress);
-
-            // Copy over thumbnail data
-            thumbnailsArray.set(thumbnailsArray.size() - 1, other.thumbnailsArray.get(row));
         }
     }
 
@@ -159,9 +157,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
                     getDataContext(row),
                     rowProgress);
-
-            // Copy over thumbnail data
-            result.thumbnailsArray.set(result.thumbnailsArray.size() - 1, thumbnailsArray.get(row));
         }
         return result;
     }
@@ -324,7 +319,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             }
             dataArray.clear();
             dataContextsArray.clear();
-            thumbnailsArray.clear();
             textAnnotationColumnNames.clear();
             textAnnotationArrays.clear();
             dataAnnotationsArrays.clear();
@@ -503,23 +497,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public <T extends JIPipeData> T getData(int row, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
         long stamp = stampedLock.readLock();
         try {
-            return (T) JIPipe.getDataTypes().convert(dataArray.get(row).getData(progressInfo), dataClass, progressInfo);
-        } finally {
-            stampedLock.unlock(stamp);
-        }
-    }
-
-    /**
-     * Returns the current thumbnail for the specified row
-     * Can return null, if the thumbnail was not yet set
-     *
-     * @param row the row
-     * @return the thumbnail or null if none was calculated yet
-     */
-    public JIPipeThumbnailData getThumbnail(int row) {
-        long stamp = stampedLock.readLock();
-        try {
-            return thumbnailsArray.get(row);
+            return JIPipe.getDataTypes().convert(dataArray.get(row).getData(progressInfo), dataClass, progressInfo);
         } finally {
             stampedLock.unlock(stamp);
         }
@@ -661,23 +639,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             virtualData.addUser(this);
             this.dataArray.set(row, virtualData);
 
-            // Invalidate thumbnail
-            this.thumbnailsArray.set(row, null);
-        } finally {
-            stampedLock.unlock(stamp);
-        }
-    }
-
-    /**
-     * Sets the thumbnail of the row
-     *
-     * @param row           the row
-     * @param thumbnailData the thumbnail. can be null.
-     */
-    public void setThumbnail(int row, JIPipeThumbnailData thumbnailData) {
-        long stamp = stampedLock.writeLock();
-        try {
-            this.thumbnailsArray.set(row, thumbnailData);
         } finally {
             stampedLock.unlock(stamp);
         }
@@ -738,9 +699,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             }
             this.dataArray.set(row, virtualData);
             virtualData.addUser(this);
-
-            // Reset thumbnail
-            this.thumbnailsArray.set(row, null);
         } finally {
             stampedLock.unlock(stamp);
         }
@@ -786,7 +744,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param annotation the annotation
      */
     public void setDataAnnotation(int row, JIPipeDataAnnotation annotation) {
-        setDataAnnotationItemStore(row, annotation.getName(), annotation.getVirtualData());
+        setDataAnnotationItemStore(row, annotation.getName(), annotation.getDataItemStore());
     }
 
     /**
@@ -1115,7 +1073,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             virtualData.addUser(this);
             dataArray.add(virtualData);
             dataContextsArray.add(context != null ? context : new JIPipeMutableDataContext());
-            thumbnailsArray.add(null);
             for (JIPipeTextAnnotation annotation : annotations) {
                 List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnArray_(annotation.getName());
                 annotationArray.set(getRowCount_() - 1, annotation);
@@ -1242,9 +1199,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     JIPipeDataAnnotationMergeMode.OverwriteExisting,
                     table.getDataContext(row),
                     addDataProgress);
-
-            // Copy thumbnail
-            setThumbnail(dataArray.size() - 1, table.getThumbnail(row));
         }
     }
 
@@ -1403,10 +1357,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             } finally {
                 stampedLock.unlock(stamp);
             }
-
-            // Copy thumbnail
-            setThumbnail(thumbnailsArray.size() - 1, sourceSlot.getThumbnail(row));
-
         }
     }
 
@@ -1435,7 +1385,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                 List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnArray_(annotation.getName());
                 annotationArray.set(getRowCount_() - 1, annotation);
             }
-            thumbnailsArray.add(null);
         } finally {
             stampedLock.unlock(stamp);
         }
@@ -1504,7 +1453,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     JIPipeData converted = JIPipe.getDataTypes().convert(virtualData.getData(rowProgress), dataClass, progressInfo);
                     virtualData = new JIPipeDataItemStore(converted);
                     dataArray.set(row, virtualData);
-                    thumbnailsArray.set(row, null);
                 }
             }
             this.acceptedDataType = dataClass;
@@ -1544,10 +1492,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                     list.set(i, null);
                 }
             }
-            for (int i = 0; i < thumbnailsArray.size(); i++) {
-                thumbnailsArray.set(i, null);
-            }
-
         } finally {
             stampedLock.unlock(stamp);
         }
@@ -1571,9 +1515,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             for (Map.Entry<String, JIPipeDataItemStore> entry : getDataAnnotationItemStoreMap_(row).entrySet()) {
                 result.setDataAnnotationItemStore(result.getRowCount() - 1, entry.getKey(), entry.getValue());
             }
-
-            // Copy thumbnail
-            result.setThumbnail(result.thumbnailsArray.size() - 1, thumbnailsArray.get(row));
         }
         return result;
     }
@@ -1624,7 +1565,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         long stamp = stampedLock.writeLock();
         try {
             dataArray.add(virtualData);
-            thumbnailsArray.add(null);
             dataContextsArray.add(context != null ? context : new JIPipeMutableDataContext());
             virtualData.addUser(this);
             for (JIPipeTextAnnotation annotation : annotations) {
@@ -1632,7 +1572,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                 annotationArray.set(getRowCount_() - 1, annotation);
             }
             for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
-                setDataAnnotationItemStore_(getRowCount_() - 1, annotation.getName(), annotation.getVirtualData());
+                setDataAnnotationItemStore_(getRowCount_() - 1, annotation.getName(), annotation.getDataItemStore());
             }
         } finally {
             stampedLock.unlock(stamp);
@@ -1675,7 +1615,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         try {
             JIPipeDataItemStore virtualData = new JIPipeDataItemStore(data);
             this.dataArray.add(virtualData);
-            this.thumbnailsArray.add(null);
             this.dataContextsArray.add(context != null ? context : new JIPipeMutableDataContext());
             virtualData.addUser(this);
             for (JIPipeTextAnnotation annotation : annotations) {
@@ -1683,7 +1622,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                 annotationArray.set(getRowCount_() - 1, annotation);
             }
             for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
-                setDataAnnotationItemStore_(getRowCount_() - 1, annotation.getName(), annotation.getVirtualData());
+                setDataAnnotationItemStore_(getRowCount_() - 1, annotation.getName(), annotation.getDataItemStore());
             }
         } finally {
             stampedLock.unlock(stamp);
@@ -1766,6 +1705,17 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             }
             return panel;
         }
+    }
+
+    @Override
+    public JIPipeThumbnailData createThumbnail(int width, int height, JIPipeProgressInfo progressInfo) {
+        List<JIPipeThumbnailData> thumbnailData = new ArrayList<>();
+        int count = Math.min(9, getRowCount());
+        for (int i = 0; i < count; i++) {
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Thumbnail", i, count);
+            thumbnailData.add(getData(i, JIPipeData.class, rowProgress).createThumbnail(width, height, rowProgress));
+        }
+        return new JIPipeGridThumbnailData(thumbnailData);
     }
 
     @Override

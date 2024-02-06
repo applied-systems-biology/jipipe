@@ -39,6 +39,11 @@ public class JIPipeRunnerQueueButton extends JButton implements JIPipeWorkbenchA
     private int lastProgress;
     private int lastMaxProgress;
     private boolean flatMode = false;
+    private String readyLabel = "Ready";
+    private String tasksFinishedLabel = "All tasks finished";
+    private String taskSingleRunningLabel = "1 task running";
+
+    private String taskSingleEnqueuedRunningLabel = "1 task running (+ %d enqueued)";
 
     /**
      * Creates new instance
@@ -58,6 +63,42 @@ public class JIPipeRunnerQueueButton extends JButton implements JIPipeWorkbenchA
         runnerQueue.getProgressEventEmitter().subscribeWeak(this);
         runnerQueue.getFinishedEventEmitter().subscribeWeak(this);
         runnerQueue.getEnqueuedEventEmitter().subscribeWeak(this);
+    }
+
+    public String getTaskSingleRunningLabel() {
+        return taskSingleRunningLabel;
+    }
+
+    public void setTaskSingleRunningLabel(String taskSingleRunningLabel) {
+        this.taskSingleRunningLabel = taskSingleRunningLabel;
+        updateStatus();
+    }
+
+    public String getTaskSingleEnqueuedRunningLabel() {
+        return taskSingleEnqueuedRunningLabel;
+    }
+
+    public void setTaskSingleEnqueuedRunningLabel(String taskSingleEnqueuedRunningLabel) {
+        this.taskSingleEnqueuedRunningLabel = taskSingleEnqueuedRunningLabel;
+        updateStatus();
+    }
+
+    public String getReadyLabel() {
+        return readyLabel;
+    }
+
+    public void setReadyLabel(String readyLabel) {
+        this.readyLabel = readyLabel;
+        updateStatus();
+    }
+
+    public String getTasksFinishedLabel() {
+        return tasksFinishedLabel;
+    }
+
+    public void setTasksFinishedLabel(String tasksFinishedLabel) {
+        this.tasksFinishedLabel = tasksFinishedLabel;
+        updateStatus();
     }
 
     private void initialize() {
@@ -144,18 +185,18 @@ public class JIPipeRunnerQueueButton extends JButton implements JIPipeWorkbenchA
             setIcon(throbberIcon);
             int size = runnerQueue.size();
             if (size <= 1) {
-                setText("1 task running");
+                setText(taskSingleRunningLabel);
             } else {
-                setText("1 task running (+" + (size - 1) + " enqueued)");
+                setText(String.format(taskSingleEnqueuedRunningLabel, (size - 1)));
             }
             repaint();
         } else {
             showProgress = false;
             setIcon(UIUtils.getIconFromResources("actions/check-circle.png"));
             if (!processAlreadyQueued) {
-                setText("Ready");
+                setText(readyLabel);
             } else {
-                setText("All tasks finished");
+                setText(tasksFinishedLabel);
             }
             repaint();
         }

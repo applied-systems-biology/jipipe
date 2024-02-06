@@ -72,7 +72,7 @@ public class RenameDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         for (JIPipeDataAnnotation annotation : ImmutableList.copyOf(iterationStep.getMergedDataAnnotations().values())) {
             for (StringQueryExpressionAndStringPairParameter renamingItem : renamingItems) {
                 if (renamingItem.getKey().test(annotation.getName())) {
-                    annotations.add(new JIPipeDataAnnotation(renamingItem.getValue(), annotation.getVirtualData()));
+                    annotations.add(new JIPipeDataAnnotation(renamingItem.getValue(), annotation.getDataItemStore()));
                     iterationStep.getMergedTextAnnotations().remove(annotation.getName());
                 }
             }

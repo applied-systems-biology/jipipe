@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.api.data.thumbnails;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
@@ -9,9 +11,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.extensions.strings.StringData;
+import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,43 +23,33 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "Text thumbnail", description = "Text thumbnail data (used internally)")
+@JIPipeDocumentation(name = "Text and icon thumbnail", description = "Text and icon thumbnail data (used internally)")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.txt file that stores the current string.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/string-data.schema.json")
 @JIPipeHidden
-public class JIPipeTextThumbnailData implements JIPipeThumbnailData {
+public class JIPipeIconLabelThumbnailData extends JIPipeSerializedJsonObjectData implements JIPipeThumbnailData {
 
-    private final String text;
+    private String text;
+    private String icon;
 
-    public JIPipeTextThumbnailData(String text) {
+    public JIPipeIconLabelThumbnailData(String text, String icon) {
         this.text = text;
+        this.icon = icon;
     }
 
-    public JIPipeTextThumbnailData(JIPipeTextThumbnailData other) {
+    public JIPipeIconLabelThumbnailData(JIPipeIconLabelThumbnailData other) {
         this.text = other.text;
+        this.icon = other.icon;
     }
 
-    public static JIPipeTextThumbnailData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        Path file = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".txt");
-        try {
-            return new JIPipeTextThumbnailData(file != null ? new String(Files.readAllBytes(file), Charsets.UTF_8) : "N/A");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public static JIPipeIconLabelThumbnailData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+      return JIPipeSerializedJsonObjectData.importData(storage, JIPipeIconLabelThumbnailData.class);
     }
 
-    @Override
-    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        try (FileWriter writer = new FileWriter(PathUtils.ensureExtension(storage.getFileSystemPath().resolve(name), ".txt").toFile())) {
-            writer.write(text);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new JIPipeTextThumbnailData(this);
+        return new JIPipeIconLabelThumbnailData(this);
     }
 
     @Override
@@ -64,13 +57,37 @@ public class JIPipeTextThumbnailData implements JIPipeThumbnailData {
 
     }
 
+    @JsonGetter("text")
     public String getText() {
         return text;
     }
 
+    @JsonSetter("text")
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    @JsonGetter("icon")
+    public String getIcon() {
+        return icon;
+    }
+
+    @JsonSetter("icon")
+    public void setIcon(String icon) {
+        this.icon = icon;
+    }
+
     @Override
     public Component renderToComponent(int width, int height) {
-        return new JLabel(text);
+        JLabel label = new JLabel(text);
+        try {
+            ImageIcon iconFromResources = UIUtils.getIconFromResources(icon);
+            label.setIcon(iconFromResources);
+        }
+        catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+        return label;
     }
 
     @Override
