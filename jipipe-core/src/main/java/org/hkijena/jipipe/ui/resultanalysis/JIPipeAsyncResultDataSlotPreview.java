@@ -140,7 +140,7 @@ public abstract class JIPipeAsyncResultDataSlotPreview extends JIPipeResultDataS
             // Failed to load thumbnail -> Load data
             JIPipeData data = parent.loadData(storageFolder);
             if (data != null)
-                return data.preview(previewSize, previewSize);
+                return data.createThumbnail(previewSize, previewSize, new JIPipeProgressInfo()).renderToComponent(previewSize, previewSize);
             else
                 return null;
         }

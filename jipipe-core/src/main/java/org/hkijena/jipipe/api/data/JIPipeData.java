@@ -292,7 +292,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
         for (int i = 0; i < sizes.size(); i++) {
             Dimension size = sizes.get(i);
             progressInfo.resolveAndLog(size.width + "x" + size.height, i, sizes.size());
-            Component component = preview(size.width, size.height);
+            Component component = createThumbnail(size.width, size.height, progressInfo).renderToComponent(size.width, size.height);
             if (component == null)
                 continue;
             int trueWidth = Math.max(component.getWidth(), size.width);
