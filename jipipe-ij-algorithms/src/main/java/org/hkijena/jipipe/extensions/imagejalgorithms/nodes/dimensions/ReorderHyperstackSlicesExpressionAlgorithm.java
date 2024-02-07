@@ -14,9 +14,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.Image5DExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -109,14 +109,14 @@ public class ReorderHyperstackSlicesExpressionAlgorithm extends JIPipeSimpleIter
             "the slice is discarded. Locations do not need to be consecutive and positive (compensation by the algorithm). Duplicate locations are not supported and will be overwritten by one of the " +
             "affected images.")
     @JIPipeParameter(value = "new-location-expression", important = true)
-    @ExpressionParameterSettings(hint = "per slice ARRAY(c, z, t)")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(fromClass = Image5DExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "c", name = "Current channel location", description = "Current channel location of the slice (zero-based)")
-    @ExpressionParameterSettingsVariable(key = "z", name = "Current Z location", description = "Current Z location of the slice (zero-based)")
-    @ExpressionParameterSettingsVariable(key = "t", name = "Current frame location", description = "Current frame location of the slice (zero-based)")
+    @JIPipeExpressionParameterSettings(hint = "per slice ARRAY(c, z, t)")
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "c", name = "Current channel location", description = "Current channel location of the slice (zero-based)")
+    @JIPipeExpressionParameterVariable(key = "z", name = "Current Z location", description = "Current Z location of the slice (zero-based)")
+    @JIPipeExpressionParameterVariable(key = "t", name = "Current frame location", description = "Current frame location of the slice (zero-based)")
     public JIPipeExpressionParameter getNewLocationExpression() {
         return newLocationExpression;
     }

@@ -20,12 +20,12 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.SourceWrapMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.PixelCoordinate5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
 import java.util.ArrayList;
@@ -151,7 +151,7 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
             "positional variables, there are variables available that are named according to the input slots and contain the current pixel value of this slot. Arrays prefixed with " +
             "'Local.' are also available and contain the local image values (Example: Local.L1). The array contains the pixel values in Row-Major form (x0y0, x1y0, x2y0, x1y1, ...)")
     @JIPipeParameter("expression")
-    @ExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getExpression() {
         return expression;
     }

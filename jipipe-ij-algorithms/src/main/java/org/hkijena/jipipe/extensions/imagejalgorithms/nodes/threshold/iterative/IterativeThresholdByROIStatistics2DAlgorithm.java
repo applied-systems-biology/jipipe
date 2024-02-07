@@ -20,17 +20,17 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.ThresholdsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.threshold.ThresholdsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -322,7 +322,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
     }
 
     @JIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
-    @ExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariablesInfo.class)
     @JIPipeParameter("threshold-combine-expression")
     public JIPipeExpressionParameter getThresholdCombinationExpression() {
         return thresholdCombinationExpression;
@@ -380,10 +380,10 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         }
 
         @JIPipeDocumentation(name = "ROI filter", description = "This expression is applied for each ROI and determines whether the ROI fulfills the required criteria.")
-        @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-        @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+        @JIPipeExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+        @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @JIPipeParameter(value = "roi-filter", important = true)
         public JIPipeExpressionParameter getRoiFilterExpression() {
             return roiFilterExpression;
@@ -395,11 +395,11 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         }
 
         @JIPipeDocumentation(name = "Threshold criteria", description = "This expression is applied for each threshold after the ROI were filtered.")
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(key = "all_roi", name = "All ROI", description = "A list of all ROI that were detected in this iteration")
-        @ExpressionParameterSettingsVariable(key = "filtered_roi", name = "Filtered ROI", description = "A list of all filtered ROI that were detected in this iteration")
-        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-        @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(key = "all_roi", name = "All ROI", description = "A list of all ROI that were detected in this iteration")
+        @JIPipeExpressionParameterVariable(key = "filtered_roi", name = "Filtered ROI", description = "A list of all filtered ROI that were detected in this iteration")
+        @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+        @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @JIPipeParameter(value = "threshold-criteria", important = true)
         public JIPipeExpressionParameter getThresholdCriteriaExpression() {
             return thresholdCriteriaExpression;
@@ -438,7 +438,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
         @JIPipeDocumentation(name = "Score accumulation function", description = "Expression that determines how the scores are accumulated")
         @JIPipeParameter("score-accumulation")
-        @ExpressionParameterSettingsVariable(key = "scores", name = "List of scores", description = "The list of scores")
+        @JIPipeExpressionParameterVariable(key = "scores", name = "List of scores", description = "The list of scores")
         public JIPipeExpressionParameter getScoreAccumulationExpression() {
             return scoreAccumulationExpression;
         }

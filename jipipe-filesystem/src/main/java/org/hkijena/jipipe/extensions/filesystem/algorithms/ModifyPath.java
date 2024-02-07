@@ -10,10 +10,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.variables.PathFilterExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.PathFilterExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -50,7 +50,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
         }
         variables.putProjectDirectories(getProjectDirectory(), getProjectDataDirs());
 
-        PathFilterExpressionParameterVariableSource.buildFor(input.toPath(), variables);
+        PathFilterExpressionParameterVariablesInfo.buildFor(input.toPath(), variables);
         Object result = expression.evaluate(variables);
         if (result instanceof String) {
             iterationStep.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.nullToEmpty(result))), progressInfo);
@@ -66,8 +66,8 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
             "Additionally, annotations are available as variables if enabled.\n\nIf the expression returns a non-string value, the path data will be skipped.\n\n" +
             "To improve compatibility between operating systems, we recommend to use '/' as path separator.")
     @JIPipeParameter("expression")
-    @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
-    @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
+    @JIPipeExpressionParameterVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
+    @JIPipeExpressionParameterVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
     public PathQueryExpression getExpression() {
         return expression;
     }

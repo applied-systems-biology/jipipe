@@ -144,7 +144,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "ROI to label function", description = "Expression that converts a ROI into its numeric label index. Must return a number. If disabled, each ROI is assigned its own label.")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     @JIPipeParameter("roi-to-label-transformation")
     public OptionalJIPipeExpressionParameter getRoiToLabelTransformation() {
         return roiToLabelTransformation;
@@ -177,7 +177,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
         this.fillOutline = fillOutline;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

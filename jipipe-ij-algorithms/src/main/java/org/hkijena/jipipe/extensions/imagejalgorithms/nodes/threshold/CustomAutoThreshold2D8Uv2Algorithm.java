@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -363,7 +363,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
         this.accessPixels = accessPixels;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();
@@ -408,7 +408,7 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
         }
 
         @JIPipeDocumentation(name = "Threshold combination function", description = "This expression combines multiple thresholds into one numeric threshold.")
-        @ExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariableSource.class)
+        @JIPipeExpressionParameterSettings(variableSource = ThresholdsExpressionParameterVariablesInfo.class)
         @JIPipeParameter("threshold-combine-expression")
         public JIPipeExpressionParameter getThresholdCombinationExpression() {
             return thresholdCombinationExpression;
@@ -423,8 +423,8 @@ public class CustomAutoThreshold2D8Uv2Algorithm extends JIPipeIteratingAlgorithm
                 "The expression should return a number that will be used as threshold. A pixel is set to 255 if its value is larger than " +
                 "this threshold.")
         @JIPipeParameter(value = "thresholding-function", important = true)
-        @ExpressionParameterSettings(variableSource = VariableSource.class)
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+        @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getThresholdCalculationExpression() {
             return thresholdCalculationExpression;
         }

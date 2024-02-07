@@ -83,11 +83,11 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Filter", description = "Allows to filter the returned groups")
     @JIPipeParameter("filter")
-    @ExpressionParameterSettings(hint = "per OMERO data set")
-    @ExpressionParameterSettingsVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
-    @ExpressionParameterSettingsVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
-    @ExpressionParameterSettingsVariable(name = "OMERO group name", description = "Name of the group", key = "name")
-    @ExpressionParameterSettingsVariable(name = "OMERO group id", description = "ID of the group", key = "id")
+    @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
+    @JIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
+    @JIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
+    @JIPipeExpressionParameterVariable(name = "OMERO group name", description = "Name of the group", key = "name")
+    @JIPipeExpressionParameterVariable(name = "OMERO group id", description = "ID of the group", key = "id")
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

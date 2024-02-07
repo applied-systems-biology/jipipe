@@ -10,11 +10,11 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
+import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -75,7 +75,7 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
             for (Map.Entry<String, String> entry : vertex.getMetadata().entrySet()) {
                 variables.set("metadata." + entry.getKey(), entry.getValue());
             }
-            FilamentVertexVariableSource.writeToVariables(outputData, vertex, variables, "");
+            FilamentVertexVariablesInfo.writeToVariables(outputData, vertex, variables, "");
 
             // Centroid X
             variables.set("default", vertex.getSpatialLocation().getX());
@@ -123,14 +123,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Centroid X", description = "The X location of the centroid")
     @JIPipeParameter("centroid-x")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getCentroidX() {
         return centroidX;
     }
@@ -143,14 +143,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Centroid Y", description = "The Y location of the centroid")
     @JIPipeParameter("centroid-y")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getCentroidY() {
         return centroidY;
     }
@@ -162,14 +162,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Centroid Z", description = "The Z location of the centroid")
     @JIPipeParameter("centroid-z")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getCentroidZ() {
         return centroidZ;
     }
@@ -181,14 +181,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Centroid channel", description = "The channel/c location of the centroid")
     @JIPipeParameter("centroid-c")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getCentroidC() {
         return centroidC;
     }
@@ -200,14 +200,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Centroid frame", description = "The frame/t location of the centroid")
     @JIPipeParameter("centroid-t")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getCentroidT() {
         return centroidT;
     }
@@ -219,14 +219,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Radius", description = "The radius of the vertex")
     @JIPipeParameter("radius")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getRadius() {
         return radius;
     }
@@ -238,14 +238,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Value", description = "The value of the vertex")
     @JIPipeParameter("value")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getValue() {
         return value;
     }
@@ -257,14 +257,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Physical voxel size X", description = "The physical size of a voxel (X). Must return a string in the format '[Value] [Unit]'")
     @JIPipeParameter("physical-size-x")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getPhysicalSizeX() {
         return physicalSizeX;
     }
@@ -276,14 +276,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Physical voxel size Y", description = "The physical size of a voxel (Y). Must return a string in the format '[Value] [Unit]'")
     @JIPipeParameter("physical-size-y")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getPhysicalSizeY() {
         return physicalSizeY;
     }
@@ -295,14 +295,14 @@ public class ChangeFilamentVertexPropertiesAlgorithm extends JIPipeSimpleIterati
 
     @JIPipeDocumentation(name = "Physical voxel size Z", description = "The physical size of a voxel (Y). Must return a string in the format '[Value] [Unit]'")
     @JIPipeParameter("physical-size-z")
-    @ExpressionParameterSettingsVariable(name = "Default value", key = "default", description = "The current value")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(name = "Default value", key = "default", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "metadata", name = "Vertex metadata", description = "A map containing the vertex metadata/properties (string keys, string values)")
+    @JIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "Vertex metadata/properties accessible via their string keys")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getPhysicalSizeZ() {
         return physicalSizeZ;
     }

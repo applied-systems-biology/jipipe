@@ -26,7 +26,7 @@ import java.util.*;
 /**
  * A parameter that contains an expression.
  * This allows users to set up filters etc. from within the UI.
- * Use {@link ExpressionParameterSettings} to control the behavior of this parameter.
+ * Use {@link JIPipeExpressionParameterSettings} to control the behavior of this parameter.
  */
 public abstract class AbstractExpressionParameter implements JIPipeCustomTextDescriptionParameter {
     private String expression = "";

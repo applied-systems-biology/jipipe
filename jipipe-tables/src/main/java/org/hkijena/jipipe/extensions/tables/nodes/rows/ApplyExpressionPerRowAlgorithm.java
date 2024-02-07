@@ -104,9 +104,9 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
             "New columns are created if needed. Existing values are overwritten. The operations are applied in order, meaning that you have access to the results of all previous operations.")
     @JIPipeParameter("expression-list")
     @PairParameterSettings(singleRow = false, keyLabel = "Expression", valueLabel = "Column name")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public ExpressionTableColumnGeneratorProcessorParameterList getExpressionList() {
         return expressionList;
     }
@@ -123,7 +123,7 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
         return customExpressionVariables;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         private final static Set<ExpressionParameterVariable> VARIABLES;
 
         static {

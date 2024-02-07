@@ -48,7 +48,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Expression", description = "Expression that is executed per data batch. " +
             "All annotations are available as variables, including variables 'data_string' and 'data_type' that provide information about the current data.")
     @JIPipeParameter("expression")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     public JIPipeExpressionParameter getExpression() {
         return expression;
     }
@@ -99,7 +99,7 @@ public class RunExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), data, annotationList, writeToAnnotationMergeStrategy, progressInfo);
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();

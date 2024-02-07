@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 /**
  * Expression for querying strings
  */
-@ExpressionParameterSettings(variableSource = StringQueryExpressionVariableSource.class, hint = "\"<specific value>\" / value == \"<specific value>\"")
+@JIPipeExpressionParameterSettings(variableSource = StringQueryExpressionVariablesInfo.class, hint = "\"<specific value>\" / value == \"<specific value>\"")
 @JIPipeDocumentationDescription(description = "This parameter is an expression that has two modes: " +
         "(1) Selecting an existing string, and (2) Matching an existing strings by boolean operators<br/>" +
         "<ol><li>Type in the string in double quotes. Example: <pre>\"hello world\"</pre></li>" +

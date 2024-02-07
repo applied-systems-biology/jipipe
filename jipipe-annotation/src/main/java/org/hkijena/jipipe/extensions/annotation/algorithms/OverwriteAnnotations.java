@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
@@ -81,13 +81,13 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Remove existing annotations", description = "Expression that determines whether an existing annotation is removed. Set to <code>false</code> to not remove existing annotations.")
     @JIPipeParameter("remove-existing-annotations-filter")
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
-    @ExpressionParameterSettingsVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
-    @ExpressionParameterSettingsVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
-    @ExpressionParameterSettingsVariable(name = "Annotation value", key = "value", description = "The value of the currently processed annotation")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
+    @JIPipeExpressionParameterVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
+    @JIPipeExpressionParameterVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
+    @JIPipeExpressionParameterVariable(name = "Annotation value", key = "value", description = "The value of the currently processed annotation")
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getRemoveExistingAnnotationsFilter() {
         return removeExistingAnnotationsFilter;
     }
@@ -98,14 +98,14 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Selected source annotations", description = "Expression that determines whether a source annotation is copied into the target. Set to <code>true</code> to copy all annotations.")
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
-    @ExpressionParameterSettingsVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
-    @ExpressionParameterSettingsVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
-    @ExpressionParameterSettingsVariable(name = "Source annotation value", key = "source.value", description = "The value of the currently processed source annotation")
-    @ExpressionParameterSettingsVariable(name = "Target annotation value", key = "target.value", description = "The value of the target annotation. NULL if it is not set.")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
+    @JIPipeExpressionParameterVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
+    @JIPipeExpressionParameterVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
+    @JIPipeExpressionParameterVariable(name = "Source annotation value", key = "source.value", description = "The value of the currently processed source annotation")
+    @JIPipeExpressionParameterVariable(name = "Target annotation value", key = "target.value", description = "The value of the target annotation. NULL if it is not set.")
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeParameter("source-annotation-filter")
     public JIPipeExpressionParameter getSourceAnnotationFilter() {
         return sourceAnnotationFilter;

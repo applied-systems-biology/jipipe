@@ -58,7 +58,7 @@ public class DoubleFormData extends ParameterFormData {
     @JIPipeDocumentation(name = "Validation expression", description = "Expression that is used to validate the user input. There is a variable 'value' available that tests " +
             "the current number.")
     @JIPipeParameter("validation-expression")
-    @ExpressionParameterSettings(variableSource = NumberQueryExpressionVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = NumberQueryExpressionVariablesInfo.class)
     public JIPipeExpressionParameter getValidationExpression() {
         return validationExpression;
     }

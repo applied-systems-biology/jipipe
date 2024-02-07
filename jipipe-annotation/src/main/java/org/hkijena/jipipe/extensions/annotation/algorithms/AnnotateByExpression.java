@@ -95,11 +95,11 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("generated-annotation")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Name")
     @StringParameterSettings(monospace = true)
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
-    @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
+    @JIPipeExpressionParameterVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
     public NamedTextAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;
     }
@@ -127,7 +127,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         return customVariables;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

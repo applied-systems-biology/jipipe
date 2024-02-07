@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Expression for selecting rows inside a data table
  */
-@ExpressionParameterSettings(variableSource = DataRowQueryExpression.VariableSource.class)
+@JIPipeExpressionParameterSettings(variableSource = DataRowQueryExpression.VariablesInfo.class)
 @JIPipeDocumentationDescription(description = "This parameter allows you to select a subset of data via annotations. If you leave the " +
         "expression empty, all data will match. Otherwise, you can utilize variables that are named after the annotation columns. To test " +
         "for the existence of an annotation (i.e.., NA values), you can use the EXISTS operator.")
@@ -122,7 +122,7 @@ public class DataRowQueryExpression extends JIPipeExpressionParameter {
         return test(variables);
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         private final static Set<ExpressionParameterVariable> VARIABLES;
 
         static {

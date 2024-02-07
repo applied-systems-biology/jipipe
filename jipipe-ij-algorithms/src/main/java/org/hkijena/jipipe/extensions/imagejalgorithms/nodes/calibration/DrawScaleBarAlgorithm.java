@@ -16,9 +16,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
@@ -248,9 +248,9 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         @JIPipeDocumentation(name = "Label (horizontal)", description = "Expression that determines the text to be rendered.")
         @JIPipeParameter(value = "label-h", important = true)
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(name = "Unit", description = "The unit of the scale bar")
-        @ExpressionParameterSettingsVariable(name = "Value", description = "The value of the scale bar")
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
+        @JIPipeExpressionParameterVariable(name = "Value", description = "The value of the scale bar")
         public JIPipeExpressionParameter getHorizontalLabel() {
             return horizontalLabel;
         }
@@ -262,9 +262,9 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         @JIPipeDocumentation(name = "Label (vertical)", description = "Expression that determines the text to be rendered.")
         @JIPipeParameter(value = "label-v", important = true)
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(name = "Unit", description = "The unit of the scale bar")
-        @ExpressionParameterSettingsVariable(name = "Value", description = "The value of the scale bar")
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(name = "Unit", description = "The unit of the scale bar")
+        @JIPipeExpressionParameterVariable(name = "Value", description = "The value of the scale bar")
         public JIPipeExpressionParameter getVerticalLabel() {
             return verticalLabel;
         }

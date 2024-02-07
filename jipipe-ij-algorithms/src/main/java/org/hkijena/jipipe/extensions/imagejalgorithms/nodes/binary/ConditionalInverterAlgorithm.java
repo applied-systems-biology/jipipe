@@ -102,7 +102,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
 
     @JIPipeDocumentation(name = "Condition", description = "If the expression returns TRUE, the image will be inverted")
     @JIPipeParameter("condition")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     public JIPipeExpressionParameter getCondition() {
         return condition;
     }
@@ -123,7 +123,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.applyPerSlice = applyPerSlice;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         private final static Set<ExpressionParameterVariable> VARIABLES;
 

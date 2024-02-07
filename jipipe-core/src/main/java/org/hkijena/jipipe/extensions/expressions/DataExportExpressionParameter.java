@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.expressions;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
@@ -16,15 +16,15 @@ import java.util.stream.Collectors;
 /**
  * An expression parameter designed for data export
  */
-@ExpressionParameterSettings(hint = "per data item")
-@ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-@ExpressionParameterSettingsVariable(name = "Annotations", description = "Map of annotations", key = "annotations")
-@ExpressionParameterSettingsVariable(name = "Data string", description = "String representation of the data (if available)", key = "data_string")
-@ExpressionParameterSettingsVariable(name = "Data row", description = "Source row of the data (if available, otherwise -1)", key = "data_row")
-@ExpressionParameterSettingsVariable(name = "Data directory", description = "The default data directory (run scratch dir or user-selected directory)", key = "data_dir")
-@ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
-@ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
-@ExpressionParameterSettingsVariable(name = "Automatically generated name", description = "A file name that was automatically generated based on annotations", key = "auto_file_name")
+@JIPipeExpressionParameterSettings(hint = "per data item")
+@JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+@JIPipeExpressionParameterVariable(name = "Annotations", description = "Map of annotations", key = "annotations")
+@JIPipeExpressionParameterVariable(name = "Data string", description = "String representation of the data (if available)", key = "data_string")
+@JIPipeExpressionParameterVariable(name = "Data row", description = "Source row of the data (if available, otherwise -1)", key = "data_row")
+@JIPipeExpressionParameterVariable(name = "Data directory", description = "The default data directory (run scratch dir or user-selected directory)", key = "data_dir")
+@JIPipeExpressionParameterVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
+@JIPipeExpressionParameterVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
+@JIPipeExpressionParameterVariable(name = "Automatically generated name", description = "A file name that was automatically generated based on annotations", key = "auto_file_name")
 @JIPipeDocumentationDescription(description = "This function should return a valid file path string, which can be either hardcoded or built using string or <code>PATH_COMBINE</code> operations.\n\n" +
         "Hard-cording file paths: Just type the path into quotes as shown below " +
         "<pre>" +

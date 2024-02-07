@@ -14,6 +14,7 @@
 
 package org.hkijena.jipipe.extensions.ijfilaments.display;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -271,14 +272,15 @@ public class FilamentsManagerPlugin2D extends JIPipeImageViewerPlugin2D {
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (displayFilamentsViewMenuItem.getState()) {
+            ImmutableList<Filaments3DData> copy = ImmutableList.copyOf(filamentsList);
             List<Filaments3DData> selectedValuesList = filamentsListControl.getSelectedValuesList();
             if (selectedValuesList.isEmpty()) {
-                for (Filaments3DData data : filamentsList) {
+                for (Filaments3DData data : copy) {
                     filamentsDrawer.drawFilamentsOnGraphics(data, graphics2D, renderArea,
                             getViewerPanel2D().getCanvas().getZoom(), sliceIndex.getZ(), sliceIndex.getC(), sliceIndex.getT(), false);
                 }
             } else {
-                for (Filaments3DData data : filamentsList) {
+                for (Filaments3DData data : copy) {
                     if (!selectedValuesList.contains(data)) {
                         filamentsDrawer.drawFilamentsOnGraphics(data, graphics2D, renderArea,
                                 getViewerPanel2D().getCanvas().getZoom(), sliceIndex.getZ(), sliceIndex.getC(), sliceIndex.getT(), true);

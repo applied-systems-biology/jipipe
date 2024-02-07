@@ -28,8 +28,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.TableCellExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.TableCellExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -129,7 +129,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate. ")
     @JIPipeParameter(value = "column-x1", uiOrder = -100)
-    @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
     public TableColumnSourceExpressionParameter getColumnX1() {
         return columnX1;
     }
@@ -140,7 +140,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate. ")
-    @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
     @JIPipeParameter(value = "column-y1", uiOrder = -90)
     public TableColumnSourceExpressionParameter getColumnY1() {
         return columnY1;
@@ -152,7 +152,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. ")
-    @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
     @JIPipeParameter(value = "column-radius", uiOrder = -80)
     public TableColumnSourceExpressionParameter getColumnRadius() {
         return columnRadius;

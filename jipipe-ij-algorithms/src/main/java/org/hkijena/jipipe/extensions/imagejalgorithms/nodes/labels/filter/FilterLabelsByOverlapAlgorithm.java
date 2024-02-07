@@ -26,9 +26,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels.LabelOverlapStatisticsVariableSource;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.labels.LabelOverlapStatisticsVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -513,7 +513,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 " Please open the expression builder to see a list of all available variables. If the filter is empty, " +
                 "no filtering is applied. " + "Please note that writing a custom expression into this field requires that statistics are obtained from labels and overlapping regions, which has a significant impact on the performance.")
         @JIPipeParameter("overlap-filter")
-        @ExpressionParameterSettings(variableSource = LabelOverlapStatisticsVariableSource.class, hint = "per overlapping label")
+        @JIPipeExpressionParameterSettings(variableSource = LabelOverlapStatisticsVariablesInfo.class, hint = "per overlapping label")
         public JIPipeExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }

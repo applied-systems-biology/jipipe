@@ -60,7 +60,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
             "If you do not want to customize the file name, you can create you own string based on available annotations. For example, you can insert <code>#Dataset + \"_\" + Threshold</code> to store the data set and a threshold annotation.\n\n" +
             "You can use the following function to automatically generate the name from annotations: <code>SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")</code>")
     @JIPipeParameter(value = "file-name", important = true)
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     public JIPipeExpressionParameter getFileNameGenerator() {
         return fileNameGenerator;
     }
@@ -293,7 +293,7 @@ public class JIPipeDataByMetadataExporter extends AbstractJIPipeParameterCollect
         return Paths.get(metadataString).normalize();
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

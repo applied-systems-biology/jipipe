@@ -71,8 +71,8 @@ public class ProcessEnvironment extends JIPipeEnvironment {
 
     @JIPipeDocumentation(name = "Arguments", description = "Arguments passed to the process.")
     @JIPipeParameter("arguments")
-    @ExpressionParameterSettingsVariable(key = "executable", name = "Executable path", description = "The path to the executable")
-    @ExpressionParameterSettingsVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
+    @JIPipeExpressionParameterVariable(key = "executable", name = "Executable path", description = "The path to the executable")
+    @JIPipeExpressionParameterVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
     @JsonGetter("arguments")
     public JIPipeExpressionParameter getArguments() {
         return arguments;
@@ -126,8 +126,8 @@ public class ProcessEnvironment extends JIPipeEnvironment {
     @JIPipeDocumentation(name = "Work directory", description = "The work directory of the process")
     @JIPipeParameter("work-directory")
     @JsonGetter("work-directory")
-    @ExpressionParameterSettingsVariable(key = "executable", name = "Executable path", description = "The path to the executable")
-    @ExpressionParameterSettingsVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
+    @JIPipeExpressionParameterVariable(key = "executable", name = "Executable path", description = "The path to the executable")
+    @JIPipeExpressionParameterVariable(key = "executable_dir", name = "Executable containing directory", description = "The path to the directory that contains the executable")
     public JIPipeExpressionParameter getWorkDirectory() {
         return workDirectory;
     }
@@ -163,7 +163,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
-    @ExpressionParameterSettingsVariable(fromClass = EnvironmentVariablesSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = EnvironmentVariablesSource.class)
     public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
         return environmentVariables;
     }
@@ -192,7 +192,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
                 '}';
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
-import org.hkijena.jipipe.extensions.expressions.variables.PathFilterExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.PathFilterExpressionParameterVariablesInfo;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 /**
  * Expression for querying strings
  */
-@ExpressionParameterSettings(variableSource = PathFilterExpressionParameterVariableSource.class)
+@JIPipeExpressionParameterSettings(variableSource = PathFilterExpressionParameterVariablesInfo.class)
 public class PathQueryExpression extends JIPipeExpressionParameter implements Predicate<Path> {
 
     public PathQueryExpression() {
@@ -46,7 +46,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
      */
     public Path queryFirst(Collection<Path> strings, ExpressionVariables expressionVariables) {
         for (Path string : strings) {
-            PathFilterExpressionParameterVariableSource.buildFor(string, expressionVariables);
+            PathFilterExpressionParameterVariablesInfo.buildFor(string, expressionVariables);
             if (test(expressionVariables))
                 return string;
         }
@@ -63,7 +63,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
     public java.util.List<Path> queryAll(Collection<Path> strings, ExpressionVariables expressionVariables) {
         java.util.List<Path> result = new ArrayList<>();
         for (Path string : strings) {
-            PathFilterExpressionParameterVariableSource.buildFor(string, expressionVariables);
+            PathFilterExpressionParameterVariablesInfo.buildFor(string, expressionVariables);
             if (test(expressionVariables))
                 result.add(string);
         }
@@ -90,7 +90,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
     public boolean test(Path string, ExpressionVariables expressionVariables) {
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
-        PathFilterExpressionParameterVariableSource.buildFor(string, expressionVariables);
+        PathFilterExpressionParameterVariablesInfo.buildFor(string, expressionVariables);
         return test(expressionVariables);
     }
 
@@ -105,7 +105,7 @@ public class PathQueryExpression extends JIPipeExpressionParameter implements Pr
         if ("true".equals(getExpression()) || getExpression().trim().isEmpty())
             return true;
         for (Path string : strings) {
-            PathFilterExpressionParameterVariableSource.buildFor(string, expressionVariables);
+            PathFilterExpressionParameterVariablesInfo.buildFor(string, expressionVariables);
             if (test(expressionVariables))
                 return true;
         }

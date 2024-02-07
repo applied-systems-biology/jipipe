@@ -12,9 +12,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
@@ -79,7 +79,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
             "This expression must return an array. You have two variables 'script_file' and 'python_executable'. 'script_file' is always " +
             "replaced by the Python script that is currently executed.")
     @JIPipeParameter("arguments")
-    @ExpressionParameterSettings(variableSource = PythonArgumentsVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = PythonArgumentsVariablesInfo.class)
     @JsonGetter("arguments")
     public JIPipeExpressionParameter getArguments() {
         return arguments;
@@ -114,7 +114,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
             "variables are available as variables")
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
-    @ExpressionParameterSettings(variableSource = EnvironmentVariablesSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = EnvironmentVariablesSource.class)
     public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
         return environmentVariables;
     }
@@ -153,7 +153,7 @@ public class PythonEnvironment extends JIPipeEnvironment {
                 '}';
     }
 
-    public static class PythonArgumentsVariableSource implements ExpressionParameterVariableSource {
+    public static class PythonArgumentsVariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();

@@ -12,11 +12,11 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImagePlusPropertiesExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 
 @JIPipeDocumentation(name = "Set hyperstack dimensions", description = "Sets the exact hyperstack dimensions of the incoming images. If you provide " +
@@ -48,7 +48,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ExpressionVariables variables = new ExpressionVariables();
-        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, image, iterationStep.getMergedTextAnnotations().values());
+        ImagePlusPropertiesExpressionParameterVariablesInfo.extractValues(variables, image, iterationStep.getMergedTextAnnotations().values());
 
         int z = (int) zAxis.evaluateToNumber(variables);
         int c = (int) cAxis.evaluateToNumber(variables);
@@ -61,7 +61,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
 
     @JIPipeDocumentation(name = "Z axis", description = "Expression that returns the size of the Z axis")
     @JIPipeParameter(value = "z-axis", uiOrder = -50)
-    @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getzAxis() {
         return zAxis;
     }
@@ -73,7 +73,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
 
     @JIPipeDocumentation(name = "C axis", description = "Expression that returns the size of the channel axis")
     @JIPipeParameter(value = "c-axis", uiOrder = -49)
-    @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getcAxis() {
         return cAxis;
     }
@@ -85,7 +85,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
 
     @JIPipeDocumentation(name = "T axis", description = "Expression that returns the size of the time axis")
     @JIPipeParameter(value = "t-axis", uiOrder = -48)
-    @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter gettAxis() {
         return tAxis;
     }

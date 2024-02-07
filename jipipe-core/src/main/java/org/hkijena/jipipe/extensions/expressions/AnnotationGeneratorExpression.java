@@ -21,7 +21,7 @@ import java.util.Collection;
 /**
  * An expression that is used to generate annotations for data
  */
-@ExpressionParameterSettings(variableSource = AnnotationGeneratorExpressionVariableSource.class)
+@JIPipeExpressionParameterSettings(variableSource = AnnotationGeneratorExpressionVariablesInfo.class)
 @JIPipeDocumentationDescription(description = "The expression result will be converted to a string. All existing annotations are available " +
         "as variables that can be accessed directly, or if they contain special characters or spaces via the $ operator.")
 public class AnnotationGeneratorExpression extends JIPipeExpressionParameter {

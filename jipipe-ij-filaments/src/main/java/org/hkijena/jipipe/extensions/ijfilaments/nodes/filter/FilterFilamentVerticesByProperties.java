@@ -10,11 +10,11 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.Filaments3DData;
 import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariableSource;
+import org.hkijena.jipipe.extensions.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.HashSet;
@@ -52,7 +52,7 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
         Set<FilamentVertex> toDelete = new HashSet<>();
         for (FilamentVertex vertex : outputData.vertexSet()) {
             // Write variables
-            FilamentVertexVariableSource.writeToVariables(outputData, vertex, variables, "");
+            FilamentVertexVariablesInfo.writeToVariables(outputData, vertex, variables, "");
             if (!filter.test(variables)) {
                 toDelete.add(vertex);
             }
@@ -64,11 +64,11 @@ public class FilterFilamentVerticesByProperties extends JIPipeSimpleIteratingAlg
 
     @JIPipeDocumentation(name = "Only keep vertex if", description = "If the filter is left empty or returns TRUE, the vertex is kept. Otherwise the vertex is deleted.")
     @JIPipeParameter("filter")
-    @ExpressionParameterSettingsVariable(fromClass = FilamentVertexVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettings(hint = "per vertex")
+    @JIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterSettings(hint = "per vertex")
     public JIPipeExpressionParameter getFilter() {
         return filter;
     }

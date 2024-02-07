@@ -4,8 +4,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.ui.JIPipeExpressionParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -60,10 +60,10 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
             if (adaptiveParameter != null) {
                 JIPipeManualParameterAccess dummy = JIPipeManualParameterAccess.builder()
                         .setFieldClass(StringQueryExpression.class)
-                        .addAnnotation(new ExpressionParameterSettingsVariable() {
+                        .addAnnotation(new JIPipeExpressionParameterVariable() {
                             @Override
                             public Class<? extends Annotation> annotationType() {
-                                return ExpressionParameterSettingsVariable.class;
+                                return JIPipeExpressionParameterVariable.class;
                             }
 
                             @Override
@@ -82,8 +82,8 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
                             }
 
                             @Override
-                            public Class<? extends ExpressionParameterVariableSource> fromClass() {
-                                return JIPipeAdaptiveParameterSettings.VariableSource.class;
+                            public Class<? extends ExpressionParameterVariablesInfo> fromClass() {
+                                return JIPipeAdaptiveParameterSettings.VariablesInfo.class;
                             }
                         })
                         .setKey(key).setGetter(() -> adaptiveParameter)

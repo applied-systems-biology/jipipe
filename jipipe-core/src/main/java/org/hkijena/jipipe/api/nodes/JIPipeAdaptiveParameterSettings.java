@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -70,7 +70,7 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
             "The 'Parameter key' setting determines to which parameter this value is written to.")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Parameter key")
     @StringParameterSettings(monospace = true)
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     @JIPipeParameter(value = "overridden-parameters", important = true, uiOrder = -100)
     public StringQueryExpressionAndStringPairParameter.List getOverriddenParameters() {
         return overriddenParameters;
@@ -159,7 +159,7 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
         }
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

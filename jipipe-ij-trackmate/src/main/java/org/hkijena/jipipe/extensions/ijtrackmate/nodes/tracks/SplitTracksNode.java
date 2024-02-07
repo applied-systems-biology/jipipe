@@ -11,12 +11,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NamedTextAnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSource;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariablesInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,7 +56,7 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
                 if (feature == null)
                     feature = Double.NaN;
 
-                String variableName = TrackFeatureVariableSource.keyToVariable(trackFeature);
+                String variableName = TrackFeatureVariablesInfo.keyToVariable(trackFeature);
                 variables.set(variableName, feature);
             }
             TrackCollectionData newTrackCollectionData = new TrackCollectionData(oldTrackCollectionData);
@@ -75,11 +75,11 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
-    @ExpressionParameterSettingsVariable(fromClass = TrackFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(name = "Track ID", key = "id", description = "Numeric track ID. Please note that the ID is not necessarily consecutive.")
-    @ExpressionParameterSettingsVariable(name = "Track index", key = "index", description = "Numeric index.")
-    @ExpressionParameterSettingsVariable(name = "Number of tracks", key = "n_tracks", description = "The total number of tracks")
+    @JIPipeExpressionParameterVariable(fromClass = TrackFeatureVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(name = "Track ID", key = "id", description = "Numeric track ID. Please note that the ID is not necessarily consecutive.")
+    @JIPipeExpressionParameterVariable(name = "Track index", key = "index", description = "Numeric index.")
+    @JIPipeExpressionParameterVariable(name = "Number of tracks", key = "n_tracks", description = "The total number of tracks")
     public NamedTextAnnotationGeneratorExpression.List getAnnotationGenerator() {
         return annotationGenerator;
     }

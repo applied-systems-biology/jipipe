@@ -139,7 +139,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Label name", description = "Expression for the generation of the label name")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     @JIPipeParameter("label-name-expression")
     public JIPipeExpressionParameter getLabelNameExpression() {
         return labelNameExpression;
@@ -199,7 +199,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {

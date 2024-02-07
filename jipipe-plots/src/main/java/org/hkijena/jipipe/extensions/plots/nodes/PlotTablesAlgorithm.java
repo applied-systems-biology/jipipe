@@ -228,7 +228,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Series name", description = "Expression that is used to generate the series name")
     @JIPipeParameter("series-name")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     public StringQueryExpression getSeriesName() {
         return seriesName;
     }
@@ -238,7 +238,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         this.seriesName = seriesName;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

@@ -26,9 +26,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.TableCellExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.TableCellExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
@@ -99,7 +99,7 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
 
     @JIPipeDocumentation(name = "Columns", description = "Columns to be generated")
     @JIPipeParameter("columns")
-    @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = TableCellExpressionParameterVariablesInfo.class)
     @PairParameterSettings(singleRow = false, keyLabel = "Function", valueLabel = "Output column")
     public ExpressionTableColumnGeneratorProcessorParameterList getColumns() {
         return columns;

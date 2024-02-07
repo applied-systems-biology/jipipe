@@ -28,10 +28,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Image5DSliceIndexExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.Image5DSliceIndexExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -77,7 +77,7 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
         ImageJUtils.forEachIndexedZCTSlice(stack, (ip, index) -> {
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            Image5DSliceIndexExpressionParameterVariableSource.apply(variables, stack, index);
+            Image5DSliceIndexExpressionParameterVariablesInfo.apply(variables, stack, index);
 
             if(sliceFilter.test(variables)) {
                 ImagePlus imp = new ImagePlus("Slice", ip);
@@ -103,8 +103,8 @@ public class StackToMontage2Algorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Limit to slices", description = "Allows to limit the montage to specific slices")
     @JIPipeParameter("slice-filter")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = Image5DSliceIndexExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = Image5DSliceIndexExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getSliceFilter() {
         return sliceFilter;
     }

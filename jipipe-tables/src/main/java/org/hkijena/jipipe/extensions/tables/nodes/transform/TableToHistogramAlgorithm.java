@@ -17,10 +17,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
@@ -196,7 +196,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Input column", description = "The column to be used for creating a histogram")
     @JIPipeParameter(value = "input-column", uiOrder = -100, important = true)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
     public TableColumnSourceExpressionParameter getInputColumn() {
         return inputColumn;
     }
@@ -208,8 +208,8 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Value filter", description = "Allows to remove values before they are included into the histogram calculations")
     @JIPipeParameter("value-filter")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "value", description = "The value to be tested", name = "Value")
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "value", description = "The value to be tested", name = "Value")
     public JIPipeExpressionParameter getValueFilter() {
         return valueFilter;
     }
@@ -221,7 +221,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Number of bins", description = "The number of bins. If set to infinite (<code>inf</code>), there will be as many bins as unique values")
     @JIPipeParameter("num-bins")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getNumBins() {
         return numBins;
     }
@@ -232,7 +232,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Accumulation function", description = "Function that accumulates the values inside a bin")
-    @ExpressionParameterSettingsVariable(key = "values", description = "The values to be accumulated", name = "Values")
+    @JIPipeExpressionParameterVariable(key = "values", description = "The values to be accumulated", name = "Values")
     @JIPipeParameter("accumulation-function")
     public JIPipeExpressionParameter getAccumulationFunction() {
         return accumulationFunction;
@@ -245,7 +245,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Output column (bin min)", description = "The column where the minimum value of a bin will be written")
     @JIPipeParameter(value = "output-column-bin-min", uiOrder = -90)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getOutputColumnBinMin() {
         return outputColumnBinMin;
     }
@@ -257,7 +257,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Output column (bin max)", description = "The column where the maximum value of a bin will be written")
     @JIPipeParameter(value = "output-column-bin-max", uiOrder = -80)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getOutputColumnBinMax() {
         return outputColumnBinMax;
     }
@@ -269,7 +269,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Output column (accumulated)", description = "The [normalized/cumulative] accumulated values in the bin")
     @JIPipeParameter(value = "output-column-bin-count", uiOrder = -70)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getOutputColumnBinCount() {
         return outputColumnBinCount;
     }

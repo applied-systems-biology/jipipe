@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.extensions.omero.OMEROSettings;
 import org.hkijena.jipipe.extensions.omero.OptionalOMEROCredentialsEnvironment;
@@ -92,12 +92,12 @@ public class OMEROListDatasetsAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Filter", description = "Allows to filter the returned data sets")
     @JIPipeParameter("filter")
-    @ExpressionParameterSettings(hint = "per OMERO data set")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
-    @ExpressionParameterSettingsVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
-    @ExpressionParameterSettingsVariable(name = "OMERO dataset name", description = "Name of the data set", key = "name")
-    @ExpressionParameterSettingsVariable(name = "OMERO dataset id", description = "ID of the data set", key = "id")
+    @JIPipeExpressionParameterSettings(hint = "per OMERO data set")
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(name = "OMERO tags", description = "List of OMERO tag names associated with the data object", key = "tags")
+    @JIPipeExpressionParameterVariable(name = "OMERO key-value pairs", description = "Map containing OMERO key-value pairs with the data object", key = "kv_pairs")
+    @JIPipeExpressionParameterVariable(name = "OMERO dataset name", description = "Name of the data set", key = "name")
+    @JIPipeExpressionParameterVariable(name = "OMERO dataset id", description = "ID of the data set", key = "id")
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

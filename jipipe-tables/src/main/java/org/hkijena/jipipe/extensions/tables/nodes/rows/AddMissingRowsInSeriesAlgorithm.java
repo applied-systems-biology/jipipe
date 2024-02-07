@@ -202,7 +202,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @JIPipeDocumentation(name = "Counting column", description = "The column that contains the counter (e.g., the time frame)")
     @JIPipeParameter(value = "counting-column", important = true)
-    @ExpressionParameterSettingsVariable(fromClass = CounterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public StringQueryExpression getCountingColumn() {
         return countingColumn;
     }
@@ -214,7 +214,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @JIPipeDocumentation(name = "Default values", description = "Determines the default values if a row is missing")
     @JIPipeParameter("default-values")
-    @ExpressionParameterSettingsVariable(fromClass = DefaultValuesVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = DefaultValuesVariablesInfo.class)
     public ExpressionTableColumnGeneratorProcessorParameterList getDefaultValues() {
         return defaultValues;
     }
@@ -226,7 +226,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @JIPipeDocumentation(name = "Custom minimum counter", description = "If enabled, override the automatically determined minimum counter. Otherwise, the minimum is the minimum in the whole table")
     @JIPipeParameter("min-counter")
-    @ExpressionParameterSettingsVariable(fromClass = CounterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getMinCounter() {
         return minCounter;
     }
@@ -238,7 +238,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @JIPipeDocumentation(name = "Custom maximum counter", description = "If enabled, override the automatically determined maximum counter. Otherwise, the maximum is the maximum in the whole table")
     @JIPipeParameter("max-counter")
-    @ExpressionParameterSettingsVariable(fromClass = CounterVariableSource.class)
+    @JIPipeExpressionParameterVariable(fromClass = CounterVariablesInfo.class)
     public OptionalJIPipeExpressionParameter getMaxCounter() {
         return maxCounter;
     }
@@ -248,7 +248,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         this.maxCounter = maxCounter;
     }
 
-    public static class CounterVariableSource implements ExpressionParameterVariableSource {
+    public static class CounterVariablesInfo implements ExpressionParameterVariablesInfo {
         private final static Set<ExpressionParameterVariable> VARIABLES;
 
         static {
@@ -266,7 +266,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         }
     }
 
-    public static class DefaultValuesVariableSource implements ExpressionParameterVariableSource {
+    public static class DefaultValuesVariablesInfo implements ExpressionParameterVariablesInfo {
         private final static Set<ExpressionParameterVariable> VARIABLES;
 
         static {

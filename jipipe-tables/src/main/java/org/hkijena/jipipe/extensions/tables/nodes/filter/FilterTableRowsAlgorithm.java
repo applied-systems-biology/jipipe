@@ -27,9 +27,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -109,14 +109,14 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "Then you can filter the table via an expression 'AREA > 100 AND X > 200 AND X < 1000'." +
             "Annotations are available as variables.")
     @JIPipeParameter("filters")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(name = "<Columns>", description = "The column value of the current row")
-    @ExpressionParameterSettingsVariable(name = "all.<Column>", description = "List of all values of the column")
-    @ExpressionParameterSettingsVariable(name = "Row index", description = "The index of the table row. The first row is indexed with zero.", key = "index")
-    @ExpressionParameterSettingsVariable(name = "Number of rows", description = "The number of rows.", key = "num_row")
-    @ExpressionParameterSettingsVariable(name = "Number of columns", description = "The number of columns.", key = "num_cols")
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(name = "<Columns>", description = "The column value of the current row")
+    @JIPipeExpressionParameterVariable(name = "all.<Column>", description = "List of all values of the column")
+    @JIPipeExpressionParameterVariable(name = "Row index", description = "The index of the table row. The first row is indexed with zero.", key = "index")
+    @JIPipeExpressionParameterVariable(name = "Number of rows", description = "The number of rows.", key = "num_row")
+    @JIPipeExpressionParameterVariable(name = "Number of columns", description = "The number of columns.", key = "num_cols")
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public JIPipeExpressionParameter getFilters() {
         return filters;
     }

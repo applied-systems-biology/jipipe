@@ -21,9 +21,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -244,12 +244,12 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
 
         @JIPipeDocumentation(name = "Value")
         @JIPipeParameter("value")
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(key = "key", name = "Key", description = "The current key/threshold")
-        @ExpressionParameterSettingsVariable(key = "class0", name = "Class 0", description = "Array of all value pixels with a key less than the current threshold")
-        @ExpressionParameterSettingsVariable(key = "class1", name = "Class 1", description = "Array of all value pixels with a key larger or equal to the current threshold")
-        @ExpressionParameterSettingsVariable(key = "all.values", name = "All values", description = "Array of all values")
-        @ExpressionParameterSettingsVariable(key = "all.keys", name = "All keys", description = "Array of all keys")
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(key = "key", name = "Key", description = "The current key/threshold")
+        @JIPipeExpressionParameterVariable(key = "class0", name = "Class 0", description = "Array of all value pixels with a key less than the current threshold")
+        @JIPipeExpressionParameterVariable(key = "class1", name = "Class 1", description = "Array of all value pixels with a key larger or equal to the current threshold")
+        @JIPipeExpressionParameterVariable(key = "all.values", name = "All values", description = "Array of all values")
+        @JIPipeExpressionParameterVariable(key = "all.keys", name = "All keys", description = "Array of all keys")
         public JIPipeExpressionParameter getValue() {
             return value;
         }

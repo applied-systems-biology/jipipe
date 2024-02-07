@@ -308,6 +308,9 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
         // Add parameters of this source. Sub-parameters are excluded
         for (Map.Entry<String, GetterSetterPair> entry : getterSetterPairs.entrySet()) {
             GetterSetterPair pair = entry.getValue();
+            if(pair == null || pair.getFieldClass() == null) {
+                throw new NullPointerException("Reflection parameter for " + source + ": parameter '" + entry.getKey() + "' is null or has no field class");
+            }
             boolean isSubParameter = JIPipeParameterCollection.class.isAssignableFrom(pair.getFieldClass()) && pair.setter == null;
             if (pair.getFieldClass() != null && !isSubParameter) {
                 if (pair.getter == null || pair.setter == null)

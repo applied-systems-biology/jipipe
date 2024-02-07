@@ -103,10 +103,10 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
     }
 
     @JIPipeDocumentation(name = "Expression", description = "The expression is executed per ROI.")
-    @ExpressionParameterSettings(variableSource = VariableSource.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @JIPipeParameter("expression")
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public StringQueryExpression getExpression() {
         return expression;
     }
@@ -168,7 +168,7 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         return customFilterVariables;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

@@ -16,12 +16,12 @@ package org.hkijena.jipipe.api.nodes;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class JIPipeCustomAnnotationMatchingExpressionVariables implements ExpressionParameterVariableSource {
+public class JIPipeCustomAnnotationMatchingExpressionVariables implements ExpressionParameterVariablesInfo {
 
     public final static Set<ExpressionParameterVariable> EXPRESSION_PARAMETER_VARIABLES;
 

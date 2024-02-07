@@ -27,13 +27,13 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.VectorPixel5DExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.VectorPixel5DExpressionParameterVariablesInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -262,7 +262,7 @@ public class ApplyVectorMathExpression2DAlgorithm extends JIPipeSimpleIteratingA
 
     @JIPipeDocumentation(name = "Function", description = "The function that is applied to each vector. The expression should return a number.")
     @JIPipeParameter("transformation-function")
-    @ExpressionParameterSettings(variableSource = VectorPixel5DExpressionParameterVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VectorPixel5DExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getTransformation() {
         return transformation;
     }

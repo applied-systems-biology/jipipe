@@ -85,9 +85,9 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. ")
     @JIPipeParameter("annotation-value")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
-    @ExpressionParameterSettingsVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
-    @ExpressionParameterSettingsVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
+    @JIPipeExpressionParameterVariable(name = "Project directory", description = "The project directory (if available; will be the same as the data directory otherwise)", key = "project_dir")
+    @JIPipeExpressionParameterVariable(name = "Project data directories", description = "The user-configured project data directories as map. Access entries by the key.", key = "project_data_dirs")
     public StringQueryExpression getAnnotationValue() {
         return annotationValue;
     }
@@ -99,7 +99,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Annotation name", description = "The name of the generated annotation. ")
     @JIPipeParameter("annotation-name")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     public StringQueryExpression getAnnotationName() {
         return annotationName;
     }
@@ -109,7 +109,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.annotationName = annotationName;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

@@ -22,7 +22,7 @@ import java.util.Set;
 /**
  * A parameter that is intended to set or scale an integer
  */
-@ExpressionParameterSettings(variableSource = NumericFunctionExpression.VariableSource.class)
+@JIPipeExpressionParameterSettings(variableSource = NumericFunctionExpression.VariablesInfo.class)
 public class NumericFunctionExpression extends JIPipeExpressionParameter {
     public NumericFunctionExpression() {
         super("default");
@@ -63,7 +63,7 @@ public class NumericFunctionExpression extends JIPipeExpressionParameter {
         setExpression(x + "");
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         private static final Set<ExpressionParameterVariable> VARIABLES = new HashSet<>();
 

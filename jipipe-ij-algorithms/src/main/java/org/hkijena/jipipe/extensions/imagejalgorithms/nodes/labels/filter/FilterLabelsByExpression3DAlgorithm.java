@@ -85,7 +85,7 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
     }
 
     @JIPipeDocumentation(name = "Filter expression", description = "This filter expression determines which labels are kept. Annotations are available as variables.")
-    @ExpressionParameterSettings(variableSource = FilterLabelsByExpression2DAlgorithm.VariableSource.class, hint = "per label")
+    @JIPipeExpressionParameterSettings(variableSource = FilterLabelsByExpression2DAlgorithm.VariablesInfo.class, hint = "per label")
     @JIPipeParameter("expression")
     public JIPipeExpressionParameter getExpression() {
         return expression;
@@ -96,7 +96,7 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
         this.expression = expression;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();

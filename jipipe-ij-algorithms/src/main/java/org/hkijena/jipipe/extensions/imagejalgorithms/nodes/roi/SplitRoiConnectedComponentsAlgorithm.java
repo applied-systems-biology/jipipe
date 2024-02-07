@@ -270,7 +270,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
             "<li>ISOLATE removes all edges of the node</li>" +
             "</ul>")
     @JIPipeParameter("graph-postprocessing")
-    @ExpressionParameterSettings(variableSource = GraphPostprocessingVariables.class)
+    @JIPipeExpressionParameterSettings(variableSource = GraphPostprocessingVariables.class)
     public JIPipeExpressionParameter getGraphPostprocessing() {
         return graphPostprocessing;
     }
@@ -435,7 +435,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. Please open the expression builder to see a list of all available variables. If the filter is empty, " +
             "no filtering is applied.")
     @JIPipeParameter("overlap-filter")
-    @ExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariablesInfo.class)
     public JIPipeExpressionParameter getOverlapFilter() {
         return overlapFilter;
     }
@@ -501,7 +501,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         Split
     }
 
-    public static class GraphPostprocessingVariables implements ExpressionParameterVariableSource {
+    public static class GraphPostprocessingVariables implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

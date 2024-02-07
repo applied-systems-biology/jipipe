@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.transform.AddBorder2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
@@ -106,7 +106,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         } else {
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(iterationStep.getMergedTextAnnotations());
-            ImageQueryExpressionVariableSource.buildVariablesSet(originalImg, variables);
+            ImageQueryExpressionVariablesInfo.buildVariablesSet(originalImg, variables);
 
             int left = (int) (addBorder2DAlgorithm.getMarginLeft().evaluateToNumber(variables));
             int top = (int) (addBorder2DAlgorithm.getMarginTop().evaluateToNumber(variables));

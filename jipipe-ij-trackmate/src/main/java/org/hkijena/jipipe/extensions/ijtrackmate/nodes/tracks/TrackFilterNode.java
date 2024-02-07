@@ -11,9 +11,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSource;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariablesInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
         // Define all.* variables
         Map<String, List<Object>> allVariables = new HashMap<>();
         for (String trackFeature : trackCollectionData.getModel().getFeatureModel().getTrackFeatures()) {
-            String variableName = TrackFeatureVariableSource.keyToVariable(trackFeature);
+            String variableName = TrackFeatureVariablesInfo.keyToVariable(trackFeature);
             allVariables.put(variableName, new ArrayList<>());
         }
         for (Integer trackID : trackCollectionData.getTrackModel().trackIDs(true)) {
@@ -63,7 +63,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
                 if (feature == null)
                     feature = Double.NaN;
 
-                String variableName = TrackFeatureVariableSource.keyToVariable(trackFeature);
+                String variableName = TrackFeatureVariablesInfo.keyToVariable(trackFeature);
                 allVariables.get(variableName).add(feature);
             }
         }
@@ -78,7 +78,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
                 if (feature == null)
                     feature = Double.NaN;
 
-                String variableName = TrackFeatureVariableSource.keyToVariable(trackFeature);
+                String variableName = TrackFeatureVariablesInfo.keyToVariable(trackFeature);
                 variables.set(variableName, feature);
             }
             if (!filter.test(variables)) {
@@ -90,11 +90,11 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filter", description = "The expression is executed per track. If it returns TRUE, the track is kept.")
     @JIPipeParameter(value = "filter", important = true)
-    @ExpressionParameterSettings(hint = "per track")
-    @ExpressionParameterSettingsVariable(fromClass = TrackFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterSettings(hint = "per track")
+    @JIPipeExpressionParameterVariable(fromClass = TrackFeatureVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public JIPipeExpressionParameter getFilter() {
         return filter;
     }

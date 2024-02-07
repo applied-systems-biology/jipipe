@@ -26,10 +26,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariableSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.util.LogicalOperation;
 
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
         }
         ExpressionVariables variableSet = new ExpressionVariables();
         for (ImagePlus rawImage : rawImages) {
-            ImageQueryExpressionVariableSource.buildVariablesSet(rawImage, variableSet);
+            ImageQueryExpressionVariablesInfo.buildVariablesSet(rawImage, variableSet);
             if (imageFilters.test(variableSet)) {
                 iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate(progressInfo), progressInfo);
             }
@@ -99,7 +99,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filter images", description = "Expression to filter the image(s). Each image is tested individually and added imported based on the test results. The expression should return a boolean value. Example: <pre>(title CONTAINS \"data\") AND (depth > 3). Defaults to 'TRUE'</pre>")
     @JIPipeParameter("image-filters")
-    @ExpressionParameterSettings(variableSource = ImageQueryExpressionVariableSource.class)
+    @JIPipeExpressionParameterSettings(variableSource = ImageQueryExpressionVariablesInfo.class)
     public JIPipeExpressionParameter getImageFilters() {
         return imageFilters;
     }

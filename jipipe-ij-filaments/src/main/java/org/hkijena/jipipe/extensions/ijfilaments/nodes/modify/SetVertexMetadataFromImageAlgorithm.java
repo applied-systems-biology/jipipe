@@ -51,11 +51,11 @@ public class SetVertexMetadataFromImageAlgorithm extends JIPipeIteratingAlgorith
         ImagePlus thickness = iterationStep.getInputData("Value", ImagePlusGreyscaleData.class, progressInfo).getImage();
 
         for (FilamentVertex vertex : filaments.vertexSet()) {
-            int z = Math.max(0, vertex.getSpatialLocation().getZ());
+            int z = (int) Math.max(0, vertex.getSpatialLocation().getZ());
             int c = Math.max(0, vertex.getNonSpatialLocation().getChannel());
             int t = Math.max(0, vertex.getNonSpatialLocation().getFrame());
             ImageProcessor ip = ImageJUtils.getSliceZero(thickness, c, z, t);
-            float d = ip.getf(vertex.getSpatialLocation().getX(), vertex.getSpatialLocation().getY());
+            float d = ip.getf((int) vertex.getSpatialLocation().getX(), (int) vertex.getSpatialLocation().getY());
             vertex.setMetadata(metadataKey, d);
         }
 

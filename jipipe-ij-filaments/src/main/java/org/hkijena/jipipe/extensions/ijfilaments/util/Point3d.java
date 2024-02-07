@@ -2,20 +2,21 @@ package org.hkijena.jipipe.extensions.ijfilaments.util;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.hkijena.jipipe.extensions.parameters.library.quantities.Quantity;
 import org.scijava.vecmath.Vector3d;
 
 import java.util.Objects;
 
 public class Point3d {
-    private int x;
-    private int y;
-    private int z;
+    private double x;
+    private double y;
+    private double z;
 
     public Point3d() {
     }
 
-    public Point3d(int x, int y, int z) {
+    public Point3d(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -28,32 +29,32 @@ public class Point3d {
     }
 
     @JsonGetter("x")
-    public int getX() {
+    public double getX() {
         return x;
     }
 
     @JsonSetter("x")
-    public void setX(int x) {
+    public void setX(double x) {
         this.x = x;
     }
 
     @JsonGetter("y")
-    public int getY() {
+    public double getY() {
         return y;
     }
 
     @JsonSetter("y")
-    public void setY(int y) {
+    public void setY(double y) {
         this.y = y;
     }
 
     @JsonGetter("z")
-    public int getZ() {
+    public double getZ() {
         return z;
     }
 
     @JsonSetter("z")
-    public void setZ(int z) {
+    public void setZ(double z) {
         this.z = z;
     }
 
@@ -82,12 +83,16 @@ public class Point3d {
                 + Math.pow(z - other.getZ(), 2));
     }
 
-    public Vector3d toVector3d() {
+    public Vector3d toSciJavaVector3d() {
         return new Vector3d(x, y, z);
     }
 
+    public Vector3D toApacheVector3d() {
+        return new Vector3D(x, y, z);
+    }
+
     public Vector3d toNormalizedVector3d() {
-        Vector3d vector3d = toVector3d();
+        Vector3d vector3d = toSciJavaVector3d();
         vector3d.normalize();
         return vector3d;
     }

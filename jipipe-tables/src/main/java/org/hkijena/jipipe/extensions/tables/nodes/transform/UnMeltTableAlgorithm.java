@@ -24,10 +24,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -137,10 +137,10 @@ public class UnMeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "New column name", description = "The function that creates the new column name. If the returned string is empty or null, then the value will be skipped.")
     @JIPipeParameter(value = "new-column-name")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(name = "Category values", key = "category_values", description = "The values of the selected categories")
-    @ExpressionParameterSettingsVariable(name = "Category columns", key = "category_columns", description = "The column names of the selected categories")
-    @ExpressionParameterSettingsVariable(name = "Value", key = "value", description = "The current value")
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(name = "Category values", key = "category_values", description = "The values of the selected categories")
+    @JIPipeExpressionParameterVariable(name = "Category columns", key = "category_columns", description = "The column names of the selected categories")
+    @JIPipeExpressionParameterVariable(name = "Value", key = "value", description = "The current value")
     public JIPipeExpressionParameter getNewColumnName() {
         return newColumnName;
     }

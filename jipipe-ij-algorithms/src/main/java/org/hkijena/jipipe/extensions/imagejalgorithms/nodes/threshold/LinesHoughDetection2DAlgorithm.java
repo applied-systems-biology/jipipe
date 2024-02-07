@@ -17,9 +17,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.HoughLines;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -195,17 +195,17 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "ROI name", description = "The name of the generated line ROI is calculated from this expression")
     @JIPipeParameter("roi-name-expression")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "img_c", name = "Image C", description = "Current channel slice (zero-based)")
-    @ExpressionParameterSettingsVariable(key = "img_z", name = "Image Z", description = "Current Z slice (zero-based)")
-    @ExpressionParameterSettingsVariable(key = "img_t", name = "Image T", description = "Current frame slice (zero-based)")
-    @ExpressionParameterSettingsVariable(key = "line_theta", name = "Line Theta", description = "Theta parameter of the line (polar coordinates)")
-    @ExpressionParameterSettingsVariable(key = "line_rho", name = "Line Rho", description = "Rho parameter of the line (polar coordinates)")
-    @ExpressionParameterSettingsVariable(key = "line_score", name = "Line score", description = "The score of the line")
-    @ExpressionParameterSettingsVariable(key = "line_x0", name = "Line X0", description = "The first X position of the line (cartesian coordinates)")
-    @ExpressionParameterSettingsVariable(key = "line_y0", name = "Line Y0", description = "The first Y position of the line (cartesian coordinates)")
-    @ExpressionParameterSettingsVariable(key = "line_x1", name = "Line X1", description = "The second X position of the line (cartesian coordinates)")
-    @ExpressionParameterSettingsVariable(key = "line_y1", name = "Line Y1", description = "The second Y position of the line (cartesian coordinates)")
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(key = "img_c", name = "Image C", description = "Current channel slice (zero-based)")
+    @JIPipeExpressionParameterVariable(key = "img_z", name = "Image Z", description = "Current Z slice (zero-based)")
+    @JIPipeExpressionParameterVariable(key = "img_t", name = "Image T", description = "Current frame slice (zero-based)")
+    @JIPipeExpressionParameterVariable(key = "line_theta", name = "Line Theta", description = "Theta parameter of the line (polar coordinates)")
+    @JIPipeExpressionParameterVariable(key = "line_rho", name = "Line Rho", description = "Rho parameter of the line (polar coordinates)")
+    @JIPipeExpressionParameterVariable(key = "line_score", name = "Line score", description = "The score of the line")
+    @JIPipeExpressionParameterVariable(key = "line_x0", name = "Line X0", description = "The first X position of the line (cartesian coordinates)")
+    @JIPipeExpressionParameterVariable(key = "line_y0", name = "Line Y0", description = "The first Y position of the line (cartesian coordinates)")
+    @JIPipeExpressionParameterVariable(key = "line_x1", name = "Line X1", description = "The second X position of the line (cartesian coordinates)")
+    @JIPipeExpressionParameterVariable(key = "line_y1", name = "Line Y1", description = "The second Y position of the line (cartesian coordinates)")
     public JIPipeExpressionParameter getRoiNameExpression() {
         return roiNameExpression;
     }

@@ -209,8 +209,8 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                     targetRadius = overrideEdgeThickness.getContent();
                 }
 
-                drawLineOnProcessor(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
-                        target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
+                drawLineOnProcessor((int) source.getSpatialLocation().getX(), (int) source.getSpatialLocation().getY(), (int) source.getSpatialLocation().getZ(),
+                        (int) target.getSpatialLocation().getX(), (int) target.getSpatialLocation().getY(), (int) target.getSpatialLocation().getZ(),
                         edge.getColor(),
                         sourceRadius,
                         targetRadius,
@@ -234,7 +234,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                 if (overrideVertexRadius.isEnabled())
                     radius = overrideVertexRadius.getContent();
 
-                drawBallOnProcessor(vertex.getSpatialLocation().getX(), vertex.getSpatialLocation().getY(), vertex.getSpatialLocation().getZ(), color, radius, hollowVertices, processor, z);
+                drawBallOnProcessor((int) vertex.getSpatialLocation().getX(), (int) vertex.getSpatialLocation().getY(), (int) vertex.getSpatialLocation().getZ(), color, radius, hollowVertices, processor, z);
             }
         }
     }
@@ -316,8 +316,8 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                     targetRadius = overrideEdgeThickness.getContent();
                 }
 
-                drawLineOnGraphics(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
-                        target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
+                drawLineOnGraphics((int) source.getSpatialLocation().getX(), (int) source.getSpatialLocation().getY(), (int) source.getSpatialLocation().getZ(),
+                        (int) target.getSpatialLocation().getX(), (int) target.getSpatialLocation().getY(), (int) target.getSpatialLocation().getZ(),
                         edge.getColor(),
                         sourceRadius,
                         targetRadius,
@@ -344,7 +344,7 @@ public class FilamentsDrawer extends AbstractJIPipeParameterCollection {
                 if (overrideVertexRadius.isEnabled())
                     radius = overrideVertexRadius.getContent();
 
-                drawBallOnGraphics(vertex.getSpatialLocation().getX(), vertex.getSpatialLocation().getY(), vertex.getSpatialLocation().getZ(), color, radius,
+                drawBallOnGraphics((int) vertex.getSpatialLocation().getX(), (int) vertex.getSpatialLocation().getY(), (int) vertex.getSpatialLocation().getZ(), color, radius,
                         hollowVertices, graphics2D, z, renderArea, magnification, drawMuted);
             }
         }

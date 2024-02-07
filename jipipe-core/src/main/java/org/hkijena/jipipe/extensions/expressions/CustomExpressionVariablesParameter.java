@@ -1,8 +1,10 @@
 package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +19,7 @@ public class CustomExpressionVariablesParameter extends JIPipeDynamicParameterCo
         super(true);
     }
 
-    public CustomExpressionVariablesParameter(JIPipeGraphNode target) {
+    public CustomExpressionVariablesParameter(AbstractJIPipeParameterCollection target) {
         super(true);
         target.registerSubParameter(this);
     }
@@ -26,7 +28,7 @@ public class CustomExpressionVariablesParameter extends JIPipeDynamicParameterCo
         super(other);
     }
 
-    public CustomExpressionVariablesParameter(CustomExpressionVariablesParameter other, JIPipeGraphNode target) {
+    public CustomExpressionVariablesParameter(CustomExpressionVariablesParameter other, AbstractJIPipeParameterCollection target) {
         super(other);
         target.registerSubParameter(this);
     }

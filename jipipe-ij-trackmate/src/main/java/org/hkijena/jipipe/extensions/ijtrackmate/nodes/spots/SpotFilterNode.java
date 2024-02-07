@@ -13,9 +13,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariableSource;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariablesInfo;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
@@ -58,13 +58,13 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
         Map<String, List<Object>> allVariables = new HashMap<>();
         for (Spot spot : oldCollection.iterable(true)) {
             for (Map.Entry<String, Double> entry : spot.getFeatures().entrySet()) {
-                String variableName = SpotFeatureVariableSource.keyToVariable(entry.getKey());
+                String variableName = SpotFeatureVariablesInfo.keyToVariable(entry.getKey());
                 allVariables.put(variableName, new ArrayList<>());
             }
         }
         for (Spot spot : oldCollection.iterable(true)) {
             for (Map.Entry<String, Double> entry : spot.getFeatures().entrySet()) {
-                String variableName = SpotFeatureVariableSource.keyToVariable(entry.getKey());
+                String variableName = SpotFeatureVariablesInfo.keyToVariable(entry.getKey());
                 allVariables.get(variableName).add(entry.getValue());
             }
         }
@@ -78,7 +78,7 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
             variables.set("id", spot.ID());
             variables.set("index", index);
             for (Map.Entry<String, Double> entry : spot.getFeatures().entrySet()) {
-                String variableName = SpotFeatureVariableSource.keyToVariable(entry.getKey());
+                String variableName = SpotFeatureVariablesInfo.keyToVariable(entry.getKey());
                 variables.set(variableName, entry.getValue());
             }
             if (filter.test(variables)) {
@@ -92,14 +92,14 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filter", description = "The expression is executed per spot. If it returns TRUE, the spot is kept.")
     @JIPipeParameter(value = "filter", important = true)
-    @ExpressionParameterSettings(hint = "per spot")
-    @ExpressionParameterSettingsVariable(fromClass = SpotFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
-    @ExpressionParameterSettingsVariable(name = "Spot index", key = "index", description = "Numeric index.")
-    @ExpressionParameterSettingsVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
-    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
+    @JIPipeExpressionParameterSettings(hint = "per spot")
+    @JIPipeExpressionParameterVariable(fromClass = SpotFeatureVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
+    @JIPipeExpressionParameterVariable(name = "Spot index", key = "index", description = "Numeric index.")
+    @JIPipeExpressionParameterVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
+    @JIPipeExpressionParameterVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @JIPipeExpressionParameterVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public JIPipeExpressionParameter getFilter() {
         return filter;
     }

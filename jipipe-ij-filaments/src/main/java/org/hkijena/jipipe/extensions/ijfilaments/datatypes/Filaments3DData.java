@@ -111,7 +111,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                 finalLocation = vertex.getSpatialLocationInUnit(consensusUnit);
             }
         } else {
-            finalLocation = vertex.getSpatialLocation().toVector3d();
+            finalLocation = vertex.getSpatialLocation().toSciJavaVector3d();
         }
         return finalLocation;
     }
@@ -243,10 +243,10 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                         edgeSource.getNonSpatialLocation().getFrame() != edgeTarget.getNonSpatialLocation().getFrame()) {
                     if (ignoreNon2DEdges)
                         continue;
-                    outputData.add(edgeToRoiLine(edge, edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), forcedLineThickness));
-                    outputData.add(edgeToRoiLine(edge, edgeTarget.getSpatialLocation().getZ(), edgeTarget.getNonSpatialLocation().getChannel(), edgeTarget.getNonSpatialLocation().getFrame(), forcedLineThickness));
+                    outputData.add(edgeToRoiLine(edge, (int) edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), forcedLineThickness));
+                    outputData.add(edgeToRoiLine(edge, (int) edgeTarget.getSpatialLocation().getZ(), edgeTarget.getNonSpatialLocation().getChannel(), edgeTarget.getNonSpatialLocation().getFrame(), forcedLineThickness));
                 } else {
-                    outputData.add(edgeToRoiLine(edge, edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), forcedLineThickness));
+                    outputData.add(edgeToRoiLine(edge, (int) edgeSource.getSpatialLocation().getZ(), edgeSource.getNonSpatialLocation().getChannel(), edgeSource.getNonSpatialLocation().getFrame(), forcedLineThickness));
                 }
             }
         }
@@ -275,7 +275,7 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
         roi.setStrokeColor(vertex.getColor());
 //        roi.setFillColor(vertex.getColor());
         int c = Math.max(-1, nonSpatialLocation.getChannel());
-        int z = Math.max(-1, centroid.getZ());
+        int z = (int) Math.max(-1, centroid.getZ());
         int t = Math.max(-1, nonSpatialLocation.getFrame());
         roi.setPosition(c + 1, z + 1, t + 1);
         return roi;
@@ -568,17 +568,17 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
     }
 
     public Rectangle getBoundsXY() {
-        int minX = Integer.MAX_VALUE;
-        int maxX = Integer.MIN_VALUE;
-        int minY = Integer.MAX_VALUE;
-        int maxY = Integer.MIN_VALUE;
+        double minX = Integer.MAX_VALUE;
+        double maxX = Integer.MIN_VALUE;
+        double minY = Integer.MAX_VALUE;
+        double maxY = Integer.MIN_VALUE;
         for (FilamentVertex vertex : vertexSet()) {
             minX = Math.min(minX, vertex.getSpatialLocation().getX());
             maxX = Math.max(maxX, vertex.getSpatialLocation().getX());
             minY = Math.min(minY, vertex.getSpatialLocation().getY());
             maxY = Math.max(maxY, vertex.getSpatialLocation().getY());
         }
-        return new Rectangle(minX, minY, maxX - minX, maxY - minY);
+        return new Rectangle((int) minX, (int) minY, (int) (maxX - minX), (int) (maxY - minY));
     }
 
     public void removeVertexIf(Predicate<FilamentVertex> predicate) {
@@ -1016,8 +1016,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                         FilamentVertex source = extracted.getEdgeSource(edge);
                         FilamentVertex target = extracted.getEdgeTarget(edge);
                         if (forcedLineThickness >= 0) {
-                            objectCreator3D.createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
-                                    target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
+                            objectCreator3D.createLine((int) source.getSpatialLocation().getX(), (int) source.getSpatialLocation().getY(), (int) source.getSpatialLocation().getZ(),
+                                    (int) target.getSpatialLocation().getX(), (int) target.getSpatialLocation().getY(), (int) target.getSpatialLocation().getZ(),
                                     1,
                                     forcedLineThickness);
                         } else {
@@ -1027,8 +1027,8 @@ public class Filaments3DData extends SimpleGraph<FilamentVertex, FilamentEdge> i
                                 sourceRadius = forcedVertexRadius;
                                 targetRadius = forcedVertexRadius;
                             }
-                            objectCreator3D.createLine(source.getSpatialLocation().getX(), source.getSpatialLocation().getY(), source.getSpatialLocation().getZ(),
-                                    target.getSpatialLocation().getX(), target.getSpatialLocation().getY(), target.getSpatialLocation().getZ(),
+                            objectCreator3D.createLine((int) source.getSpatialLocation().getX(), (int) source.getSpatialLocation().getY(), (int) source.getSpatialLocation().getZ(),
+                                    (int) target.getSpatialLocation().getX(), (int) target.getSpatialLocation().getY(), (int) target.getSpatialLocation().getZ(),
                                     1,
                                     sourceRadius,
                                     targetRadius);

@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
@@ -87,7 +87,7 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     }
 
     @JIPipeDocumentation(name = "Custom annotation matching method", description = "Expression used to compare two annotation sets.")
-    @ExpressionParameterSettings(variableSource = JIPipeCustomAnnotationMatchingExpressionVariables.class)
+    @JIPipeExpressionParameterSettings(variableSource = JIPipeCustomAnnotationMatchingExpressionVariables.class)
     @JIPipeParameter(value = "custom-annotation-matching", uiOrder = 2100)
     public JIPipeExpressionParameter getCustomAnnotationMatching() {
         return customAnnotationMatching;

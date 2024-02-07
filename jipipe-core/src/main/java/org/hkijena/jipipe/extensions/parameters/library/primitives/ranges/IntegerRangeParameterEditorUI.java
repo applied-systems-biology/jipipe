@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
@@ -134,10 +134,10 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
         }
     }
 
-    private static class IntegerRangeExpressionVariablesAnnotationImpl implements ExpressionParameterSettings {
+    private static class IntegerRangeExpressionVariablesAnnotationImpl implements JIPipeExpressionParameterSettings {
         @Override
-        public Class<? extends ExpressionParameterVariableSource> variableSource() {
-            return IntegerRange.VariableSource.class;
+        public Class<? extends ExpressionParameterVariablesInfo> variableSource() {
+            return IntegerRange.VariablesInfo.class;
         }
 
         @Override
@@ -147,7 +147,7 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
 
         @Override
         public Class<? extends Annotation> annotationType() {
-            return ExpressionParameterSettings.class;
+            return JIPipeExpressionParameterSettings.class;
         }
     }
 }

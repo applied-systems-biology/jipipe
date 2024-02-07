@@ -25,10 +25,10 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
@@ -119,7 +119,7 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
 
         @JIPipeDocumentation(name = "Column to be renamed", description = "The column to be renamed")
         @JIPipeParameter("source-column")
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
         public StringQueryExpression getSourceColumn() {
             return sourceColumn;
         }
@@ -131,8 +131,8 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
 
         @JIPipeDocumentation(name = "New name", description = "The new name of the column")
         @JIPipeParameter("new-name")
-        @ExpressionParameterSettingsVariable(name = "Current name", key = "current_name", description = "The current name")
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+        @JIPipeExpressionParameterVariable(name = "Current name", key = "current_name", description = "The current name")
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
         public JIPipeExpressionParameter getNewName() {
             return newName;
         }

@@ -14,9 +14,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -96,10 +96,10 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
 
         @JIPipeDocumentation(name = "Name")
         @JIPipeParameter("name")
-        @ExpressionParameterSettingsVariable(name = "<Column>", description = "All values of the specified column as list", key = "")
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(name = "Number of rows", description = "The number of rows within the table", key = "num_rows")
-        @ExpressionParameterSettingsVariable(name = "Number of columns", description = "The number of columns within the table", key = "num_cols")
+        @JIPipeExpressionParameterVariable(name = "<Column>", description = "All values of the specified column as list", key = "")
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(name = "Number of rows", description = "The number of rows within the table", key = "num_rows")
+        @JIPipeExpressionParameterVariable(name = "Number of columns", description = "The number of columns within the table", key = "num_cols")
         public JIPipeExpressionParameter getAnnotationName() {
             return annotationName;
         }
@@ -111,10 +111,10 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
 
         @JIPipeDocumentation(name = "Value")
         @JIPipeParameter("value")
-        @ExpressionParameterSettingsVariable(name = "<Column>", description = "All values of the specified column as list", key = "")
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(name = "Number of rows", description = "The number of rows within the table", key = "num_rows")
-        @ExpressionParameterSettingsVariable(name = "Number of columns", description = "The number of columns within the table", key = "num_cols")
+        @JIPipeExpressionParameterVariable(name = "<Column>", description = "All values of the specified column as list", key = "")
+        @JIPipeExpressionParameterVariable(fromClass = TextAnnotationsExpressionParameterVariablesInfo.class)
+        @JIPipeExpressionParameterVariable(name = "Number of rows", description = "The number of rows within the table", key = "num_rows")
+        @JIPipeExpressionParameterVariable(name = "Number of columns", description = "The number of columns within the table", key = "num_cols")
         public JIPipeExpressionParameter getAnnotationValue() {
             return annotationValue;
         }

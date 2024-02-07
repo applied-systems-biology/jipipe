@@ -18,9 +18,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.RoiOverlapStatisticsVariableSource;
+import org.hkijena.jipipe.extensions.imagejalgorithms.nodes.roi.RoiOverlapStatisticsVariablesInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -434,7 +434,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 " Please open the expression builder to see a list of all available variables. If the filter is empty, " +
                 "no filtering is applied.")
         @JIPipeParameter("overlap-filter")
-        @ExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariableSource.class, hint = "per overlapping ROI")
+        @JIPipeExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariablesInfo.class, hint = "per overlapping ROI")
         public JIPipeExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }

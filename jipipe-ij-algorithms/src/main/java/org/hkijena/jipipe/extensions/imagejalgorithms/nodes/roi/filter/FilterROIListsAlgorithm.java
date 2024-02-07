@@ -90,7 +90,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filter", description = "The filter expression used to test ROI lists. Must return a boolean.")
     @JIPipeParameter("filter")
-    @ExpressionParameterSettings(variableSource = VariableSource.class, hint = "per ROI list")
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI list")
     public JIPipeExpressionParameter getFilter() {
         return filter;
     }
@@ -100,7 +100,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.filter = filter;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
 

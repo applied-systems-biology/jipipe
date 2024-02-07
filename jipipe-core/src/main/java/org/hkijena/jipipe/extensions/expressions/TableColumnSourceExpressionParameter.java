@@ -38,7 +38,7 @@ import java.util.Set;
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
-@ExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariableSource.class, hint = "table column/data")
+@JIPipeExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariablesInfo.class, hint = "table column/data")
 @PairParameterSettings(keyLabel = "Column source", valueLabel = "Column name/value")
 @JIPipeDocumentationDescription(description = "This parameter can be used to either select an existing column from a table or to generate a new column by providing a value for each row." +
         "<ul>" +
@@ -154,7 +154,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
     @Override
     public JIPipeExpressionParameter getValue() {
         // Add the UI variables
-        super.getValue().getAdditionalUIVariables().addAll(VariableSource.VARIABLES);
+        super.getValue().getAdditionalUIVariables().addAll(VariablesInfo.VARIABLES);
         return super.getValue();
     }
 
@@ -176,7 +176,7 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         }
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
+    public static class VariablesInfo implements ExpressionParameterVariablesInfo {
         public final static Set<ExpressionParameterVariable> VARIABLES;
 
         static {

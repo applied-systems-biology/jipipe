@@ -24,7 +24,7 @@ import java.util.Objects;
 /**
  * An expression that is used to query annotations
  */
-@ExpressionParameterSettings(variableSource = DataAnnotationQueryExpressionVariableSource.class)
+@JIPipeExpressionParameterSettings(variableSource = DataAnnotationQueryExpressionVariablesInfo.class)
 @JIPipeDocumentationDescription(description = "This parameter is an expression that has two modes: " +
         "(1) Selecting an existing annotation by its name, and (2) Matching an existing annotation by boolean operators<br/>" +
         "<ol><li>Type in the name of the existing annotation. Put the name in double quotes (optional, but recommended). Example: <pre>\"#Dataset\"</pre></li>" +
