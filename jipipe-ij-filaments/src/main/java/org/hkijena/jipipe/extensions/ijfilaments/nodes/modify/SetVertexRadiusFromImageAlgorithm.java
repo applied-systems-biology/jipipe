@@ -45,4 +45,6 @@ public class SetVertexRadiusFromImageAlgorithm extends JIPipeIteratingAlgorithm 
 
         iterationStep.addOutputData(getFirstOutputSlot(), filaments, progressInfo);
     }
+
+
 }
